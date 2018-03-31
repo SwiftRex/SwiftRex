@@ -12,10 +12,10 @@ private class _AnyMiddlewareBase<StateType>: Middleware {
         }
     }
 
-    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void {
+    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
         fatalError("Must override")
     }
-    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void {
+    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
         fatalError("Must override")
     }
 
@@ -33,10 +33,10 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
         self.concrete = concrete
     }
 
-    override func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void {
+    override func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
         return concrete.handle(event: event, getState: getState, next: next)
     }
-    override func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void {
+    override func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
         return concrete.handle(action: action, getState: getState, next: next)
     }
 
@@ -53,10 +53,10 @@ final class AnyMiddleware<StateType>: Middleware {
         self.box = _AnyMiddlewareBox(concrete)
     }
 
-    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void {
+    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
         return box.handle(event: event,getState: getState,next: next)
     }
-    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void {
+    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
         return box.handle(action: action,getState: getState,next: next)
     }
 

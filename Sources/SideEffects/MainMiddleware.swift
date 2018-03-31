@@ -13,7 +13,7 @@ public final class MiddlewareContainer<GlobalState>: Middleware {
         middlewares.insert(AnyMiddleware(middleware), at: 0)
     }
 
-    public func handle(event: Event, getState: @escaping GetState<GlobalState>, next: @escaping (Event, @escaping GetState<GlobalState>) -> Void) {
+    public func handle(event: Event, getState: @escaping GetState<GlobalState>, next: @escaping NextEventHandler<GlobalState>) {
         let chain = middlewares.reduce(next) { nextHandler, middleware in
             return { (chainEvent: Event, chainGetState: @escaping GetState<GlobalState>) in
                 middleware.handle(event: chainEvent, getState: chainGetState, next: nextHandler)
@@ -22,7 +22,7 @@ public final class MiddlewareContainer<GlobalState>: Middleware {
         chain(event, getState)
     }
 
-    public func handle(action: Action, getState: @escaping GetState<GlobalState>, next: @escaping (Action, @escaping GetState<GlobalState>) -> Void) {
+    public func handle(action: Action, getState: @escaping GetState<GlobalState>, next: @escaping NextActionHandler<GlobalState>) {
         let chain = middlewares.reduce(next) { nextHandler, middleware in
             return { (chainAction: Action, chainGetState: @escaping GetState<GlobalState>) in
                 middleware.handle(action: chainAction, getState: chainGetState, next: nextHandler)

@@ -35,10 +35,10 @@ class MiddlewareMock: Middleware {
     var handleEventGetStateNextCalled: Bool {
         return handleEventGetStateNextCallsCount > 0
     }
-    var handleEventGetStateNextReceivedArguments: (event: Event, getState: GetState<StateType>, next: (Event, @escaping GetState<StateType>) -> Void)?
-    var handleEventGetStateNextClosure: ((Event, @escaping GetState<StateType>, @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void)?
+    var handleEventGetStateNextReceivedArguments: (event: Event, getState: GetState<StateType>, next: NextEventHandler<StateType>)?
+    var handleEventGetStateNextClosure: ((Event, @escaping GetState<StateType>, @escaping NextEventHandler<StateType>) -> Void)?
 
-    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) {
+    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) {
         handleEventGetStateNextCallsCount += 1
         handleEventGetStateNextReceivedArguments = (event: event, getState: getState, next: next)
         handleEventGetStateNextClosure?(event, getState, next)
@@ -50,10 +50,10 @@ class MiddlewareMock: Middleware {
     var handleActionGetStateNextCalled: Bool {
         return handleActionGetStateNextCallsCount > 0
     }
-    var handleActionGetStateNextReceivedArguments: (action: Action, getState: GetState<StateType>, next: (Action, @escaping GetState<StateType>) -> Void)?
-    var handleActionGetStateNextClosure: ((Action, @escaping GetState<StateType>, @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void)?
+    var handleActionGetStateNextReceivedArguments: (action: Action, getState: GetState<StateType>, next: NextActionHandler<StateType>)?
+    var handleActionGetStateNextClosure: ((Action, @escaping GetState<StateType>, @escaping NextActionHandler<StateType>) -> Void)?
 
-    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) {
+    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) {
         handleActionGetStateNextCallsCount += 1
         handleActionGetStateNextReceivedArguments = (action: action, getState: getState, next: next)
         handleActionGetStateNextClosure?(action, getState, next)
