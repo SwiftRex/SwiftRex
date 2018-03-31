@@ -201,9 +201,6 @@
 		D595F77A206EBF1300E02733 /* AutoHashable.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoHashable.stencil; sourceTree = "<group>"; };
 		D595F77B206EBF1300E02733 /* AutoCases.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoCases.stencil; sourceTree = "<group>"; };
 		D595F77C206EBF1300E02733 /* AutoEquatable.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoEquatable.stencil; sourceTree = "<group>"; };
-		D595F77E206EC0FC00E02733 /* AutoLenses.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoLenses.generated.swift; sourceTree = "<group>"; };
-		D595F77F206EC0FD00E02733 /* AutoHashable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoHashable.generated.swift; sourceTree = "<group>"; };
-		D595F780206EC0FD00E02733 /* AutoEquatable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoEquatable.generated.swift; sourceTree = "<group>"; };
 		D595F781206EC0FD00E02733 /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		D595F792206EC84900E02733 /* TypeErase.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = TypeErase.stencil; sourceTree = "<group>"; };
 		D595F793206EC8E900E02733 /* TypeErase.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeErase.generated.swift; sourceTree = "<group>"; };
@@ -486,9 +483,6 @@
 		D595F773206EBE7A00E02733 /* CodeGeneration */ = {
 			isa = PBXGroup;
 			children = (
-				D595F780206EC0FD00E02733 /* AutoEquatable.generated.swift */,
-				D595F77F206EC0FD00E02733 /* AutoHashable.generated.swift */,
-				D595F77E206EC0FC00E02733 /* AutoLenses.generated.swift */,
 				D595F781206EC0FD00E02733 /* AutoMockable.generated.swift */,
 				D595F79D206ED9D500E02733 /* Protocols.swift */,
 				D595F793206EC8E900E02733 /* TypeErase.generated.swift */,

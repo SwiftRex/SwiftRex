@@ -4,4 +4,10 @@ sources:
 templates:
   include:
     - Sources/CodeGeneration/Templates
+  exclude:
+    - Sources/CodeGeneration/Templates/AutoCases.stencil
+    - Sources/CodeGeneration/Templates/AutoEquatable.stencil
+    - Sources/CodeGeneration/Templates/AutoHashable.stencil
+    - Sources/CodeGeneration/Templates/AutoLenses.stencil
+
 output: Sources/CodeGeneration
