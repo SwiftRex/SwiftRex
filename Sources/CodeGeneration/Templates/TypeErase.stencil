@@ -46,21 +46,21 @@ private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.na
     {% endfor %}
 }
 
-final class Any{{type.name}}<{{ type.annotations.TypeErase }}>: {{type.name}} {
+public final class Any{{type.name}}<{{ type.annotations.TypeErase }}>: {{type.name}} {
     private let box: _Any{{type.name}}Base<{{ type.annotations.TypeErase }}>
 
-    init<Concrete: {{type.name}}>(_ concrete: Concrete) where Concrete.{{ type.annotations.TypeErase }} == {{ type.annotations.TypeErase }} {
+    public init<Concrete: {{type.name}}>(_ concrete: Concrete) where Concrete.{{ type.annotations.TypeErase }} == {{ type.annotations.TypeErase }} {
         self.box = _Any{{type.name}}Box(concrete)
     }
 
     {% for m in type.methods %}
-    func {{m.name}} -> {{m.returnTypeName}} {
+    public func {{m.name}} -> {{m.returnTypeName}} {
         return box.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %},{% endif %}{% endfor %})
     }
     {% endfor %}
 
     {% for p in type.variables %}
-    var {{p.name}}: {{p.typeName}} {
+    public var {{p.name}}: {{p.typeName}} {
         get { return box.{{p.name}} }
         {% if p.isMutable %}set { box.{{p.name}} = newValue }{% endif %}
     }

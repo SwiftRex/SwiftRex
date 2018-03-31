@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D50C0F35207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
+		D50C0F36207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
+		D50C0F37207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
+		D50C0F38207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
 		D51638F8206F426800469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F7206F426800469F96 /* RxSwift.framework */; };
 		D51638FA206F429300469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F9206F429300469F96 /* RxSwift.framework */; };
 		D51638FC206F42AD00469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FB206F42AD00469F96 /* RxSwift.framework */; };
@@ -14,6 +18,10 @@
 		D5163900206F528900469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F7206F426800469F96 /* RxSwift.framework */; };
 		D5163902206F528A00469F96 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5163901206F528A00469F96 /* RxTest.framework */; };
 		D5163904206FD40B00469F96 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */; };
+		D575BB7C20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
+		D575BB7D20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
+		D575BB7E20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
+		D575BB7F20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
 		D5946F9D206FE1A600D8F4D2 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */; };
 		D5946FA0206FEB2400D8F4D2 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946F9F206FEB2400D8F4D2 /* TestState.swift */; };
 		D5946FA2206FEB3600D8F4D2 /* Action1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FA1206FEB3600D8F4D2 /* Action1.swift */; };
@@ -29,6 +37,16 @@
 		D5946FB6206FEBD400D8F4D2 /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB5206FEBD400D8F4D2 /* NameReducer.swift */; };
 		D5946FB8206FEBED00D8F4D2 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB7206FEBED00D8F4D2 /* TestStore.swift */; };
 		D5946FBA206FEBFC00D8F4D2 /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB9206FEBFC00D8F4D2 /* TimelySideEffect.swift */; };
+		D5946FC42070065400D8F4D2 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC2207005F700D8F4D2 /* Operator.swift */; };
+		D5946FC52070065500D8F4D2 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC2207005F700D8F4D2 /* Operator.swift */; };
+		D5946FC62070065600D8F4D2 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC2207005F700D8F4D2 /* Operator.swift */; };
+		D5946FC72070065700D8F4D2 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC2207005F700D8F4D2 /* Operator.swift */; };
+		D5946FC920700B8800D8F4D2 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC820700B8800D8F4D2 /* BypassMiddleware.swift */; };
+		D5946FCA20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC820700B8800D8F4D2 /* BypassMiddleware.swift */; };
+		D5946FCB20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC820700B8800D8F4D2 /* BypassMiddleware.swift */; };
+		D5946FCC20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FC820700B8800D8F4D2 /* BypassMiddleware.swift */; };
+		D5946FCF2070122900D8F4D2 /* MiddlewareContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FCE2070122900D8F4D2 /* MiddlewareContainerTests.swift */; };
+		D5946FD1207012E900D8F4D2 /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FD0207012E900D8F4D2 /* MiddlewareTestsBase.swift */; };
 		D595F6D1206E818C00E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F6FE206E834F00E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F6FF206E835000E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -83,10 +101,10 @@
 		D595F764206E9E0B00E02733 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F762206E9E0B00E02733 /* StoreBase.swift */; };
 		D595F765206E9E0B00E02733 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F762206E9E0B00E02733 /* StoreBase.swift */; };
 		D595F766206E9E0B00E02733 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F762206E9E0B00E02733 /* StoreBase.swift */; };
-		D595F768206EAB7E00E02733 /* MainMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* MainMiddleware.swift */; };
-		D595F769206EAB7E00E02733 /* MainMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* MainMiddleware.swift */; };
-		D595F76A206EAB7E00E02733 /* MainMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* MainMiddleware.swift */; };
-		D595F76B206EAB7E00E02733 /* MainMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* MainMiddleware.swift */; };
+		D595F768206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* ComposedMiddleware.swift */; };
+		D595F769206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* ComposedMiddleware.swift */; };
+		D595F76A206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* ComposedMiddleware.swift */; };
+		D595F76B206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* ComposedMiddleware.swift */; };
 		D595F76D206EBB3A00E02733 /* ReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F76C206EBB3A00E02733 /* ReducerTests.swift */; };
 		D595F76F206EBB9000E02733 /* AnyError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F76E206EBB9000E02733 /* AnyError.swift */; };
 		D595F785206EC0FD00E02733 /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F781206EC0FD00E02733 /* AutoMockable.generated.swift */; };
@@ -94,7 +112,7 @@
 		D595F79A206ED16900E02733 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F793206EC8E900E02733 /* TypeErase.generated.swift */; };
 		D595F79B206ED16B00E02733 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F793206EC8E900E02733 /* TypeErase.generated.swift */; };
 		D595F79C206ED16B00E02733 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F793206EC8E900E02733 /* TypeErase.generated.swift */; };
-		D5BB2CEB206EE3D6003FB823 /* MiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BB2CEA206EE3D6003FB823 /* MiddlewareTests.swift */; };
+		D5BB2CEB206EE3D6003FB823 /* GeneralMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BB2CEA206EE3D6003FB823 /* GeneralMiddlewareTests.swift */; };
 		D5BB2CED206F186F003FB823 /* StoreBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BB2CEC206F186F003FB823 /* StoreBaseTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -109,12 +127,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectLineMiddleware.swift; sourceTree = "<group>"; };
 		D51638F7206F426800469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638F9206F429300469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/watchOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638FB206F42AD00469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/tvOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638FD206F42C200469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 		D5163901206F528A00469F96 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
 		D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
+		D575BB7B20702E3B00A965EA /* ComposedReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposedReducer.swift; sourceTree = "<group>"; };
 		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 		D5946F9F206FEB2400D8F4D2 /* TestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
 		D5946FA1206FEB3600D8F4D2 /* Action1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action1.swift; sourceTree = "<group>"; };
@@ -130,6 +150,10 @@
 		D5946FB5206FEBD400D8F4D2 /* NameReducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameReducer.swift; sourceTree = "<group>"; };
 		D5946FB7206FEBED00D8F4D2 /* TestStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestStore.swift; sourceTree = "<group>"; };
 		D5946FB9206FEBFC00D8F4D2 /* TimelySideEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelySideEffect.swift; sourceTree = "<group>"; };
+		D5946FC2207005F700D8F4D2 /* Operator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operator.swift; sourceTree = "<group>"; };
+		D5946FC820700B8800D8F4D2 /* BypassMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BypassMiddleware.swift; sourceTree = "<group>"; };
+		D5946FCE2070122900D8F4D2 /* MiddlewareContainerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareContainerTests.swift; sourceTree = "<group>"; };
+		D5946FD0207012E900D8F4D2 /* MiddlewareTestsBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareTestsBase.swift; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6CF206E818C00E02733 /* SwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRex.h; sourceTree = "<group>"; };
 		D595F6D0206E818C00E02733 /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
@@ -159,7 +183,7 @@
 		D595F758206E9DC400E02733 /* ActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandler.swift; sourceTree = "<group>"; };
 		D595F75D206E9DE800E02733 /* StateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateProvider.swift; sourceTree = "<group>"; };
 		D595F762206E9E0B00E02733 /* StoreBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBase.swift; sourceTree = "<group>"; };
-		D595F767206EAB7E00E02733 /* MainMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMiddleware.swift; sourceTree = "<group>"; };
+		D595F767206EAB7E00E02733 /* ComposedMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposedMiddleware.swift; sourceTree = "<group>"; };
 		D595F76C206EBB3A00E02733 /* ReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
 		D595F76E206EBB9000E02733 /* AnyError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyError.swift; sourceTree = "<group>"; };
 		D595F777206EBF1200E02733 /* AutoLenses.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoLenses.stencil; sourceTree = "<group>"; };
@@ -174,7 +198,7 @@
 		D595F792206EC84900E02733 /* TypeErase.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = TypeErase.stencil; sourceTree = "<group>"; };
 		D595F793206EC8E900E02733 /* TypeErase.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeErase.generated.swift; sourceTree = "<group>"; };
 		D595F79D206ED9D500E02733 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
-		D5BB2CEA206EE3D6003FB823 /* MiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareTests.swift; sourceTree = "<group>"; };
+		D5BB2CEA206EE3D6003FB823 /* GeneralMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5BB2CEC206F186F003FB823 /* StoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -334,6 +358,16 @@
 			path = Store;
 			sourceTree = "<group>";
 		};
+		D5946FCD2070121300D8F4D2 /* Middleware */ = {
+			isa = PBXGroup;
+			children = (
+				D5BB2CEA206EE3D6003FB823 /* GeneralMiddlewareTests.swift */,
+				D5946FCE2070122900D8F4D2 /* MiddlewareContainerTests.swift */,
+				D5946FD0207012E900D8F4D2 /* MiddlewareTestsBase.swift */,
+			);
+			path = Middleware;
+			sourceTree = "<group>";
+		};
 		D595F6CD206E818C00E02733 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -351,6 +385,7 @@
 			isa = PBXGroup;
 			children = (
 				D595F6CF206E818C00E02733 /* SwiftRex.h */,
+				D5946FC2207005F700D8F4D2 /* Operator.swift */,
 				D595F74B206E8A2C00E02733 /* TypeAlias.swift */,
 				D595F773206EBE7A00E02733 /* CodeGeneration */,
 				D595F6FD206E821D00E02733 /* Metadata */,
@@ -375,10 +410,10 @@
 		D595F706206E866100E02733 /* SwiftRex iOSTests */ = {
 			isa = PBXGroup;
 			children = (
+				D5946FCD2070121300D8F4D2 /* Middleware */,
 				D5946F9E206FEB0900D8F4D2 /* Mocks */,
 				D595F709206E866100E02733 /* Info.plist */,
 				D595F76C206EBB3A00E02733 /* ReducerTests.swift */,
-				D5BB2CEA206EE3D6003FB823 /* MiddlewareTests.swift */,
 				D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */,
 				D5BB2CEC206F186F003FB823 /* StoreBaseTests.swift */,
 			);
@@ -402,6 +437,7 @@
 			isa = PBXGroup;
 			children = (
 				D595F72D206E88B300E02733 /* Action.swift */,
+				D575BB7B20702E3B00A965EA /* ComposedReducer.swift */,
 				D595F732206E88C600E02733 /* Event.swift */,
 				D595F73C206E88F900E02733 /* Reducer.swift */,
 			);
@@ -423,7 +459,9 @@
 		D595F752206E9D7E00E02733 /* SideEffects */ = {
 			isa = PBXGroup;
 			children = (
-				D595F767206EAB7E00E02733 /* MainMiddleware.swift */,
+				D5946FC820700B8800D8F4D2 /* BypassMiddleware.swift */,
+				D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */,
+				D595F767206EAB7E00E02733 /* ComposedMiddleware.swift */,
 				D595F741206E891000E02733 /* Middleware.swift */,
 				D595F737206E88E700E02733 /* SideEffectProducer.swift */,
 			);
@@ -836,14 +874,18 @@
 				D595F75E206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F742206E891000E02733 /* Middleware.swift in Sources */,
 				D595F799206EC9BF00E02733 /* TypeErase.generated.swift in Sources */,
+				D5946FC920700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
+				D575BB7C20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F733206E88C600E02733 /* Event.swift in Sources */,
 				D595F74C206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D50C0F35207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F72E206E88B300E02733 /* Action.swift in Sources */,
 				D595F763206E9E0B00E02733 /* StoreBase.swift in Sources */,
-				D595F768206EAB7E00E02733 /* MainMiddleware.swift in Sources */,
+				D595F768206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */,
 				D595F747206E892E00E02733 /* Store.swift in Sources */,
 				D595F754206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73D206E88F900E02733 /* Reducer.swift in Sources */,
+				D5946FC72070065700D8F4D2 /* Operator.swift in Sources */,
 				D595F759206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F738206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
@@ -856,14 +898,18 @@
 				D595F75F206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F743206E891000E02733 /* Middleware.swift in Sources */,
 				D595F79A206ED16900E02733 /* TypeErase.generated.swift in Sources */,
+				D5946FCA20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
+				D575BB7D20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F734206E88C600E02733 /* Event.swift in Sources */,
 				D595F74D206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D50C0F36207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F72F206E88B300E02733 /* Action.swift in Sources */,
 				D595F764206E9E0B00E02733 /* StoreBase.swift in Sources */,
-				D595F769206EAB7E00E02733 /* MainMiddleware.swift in Sources */,
+				D595F769206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */,
 				D595F748206E892E00E02733 /* Store.swift in Sources */,
 				D595F755206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73E206E88F900E02733 /* Reducer.swift in Sources */,
+				D5946FC62070065600D8F4D2 /* Operator.swift in Sources */,
 				D595F75A206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F739206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
@@ -876,14 +922,18 @@
 				D595F760206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F744206E891000E02733 /* Middleware.swift in Sources */,
 				D595F79C206ED16B00E02733 /* TypeErase.generated.swift in Sources */,
+				D5946FCB20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
+				D575BB7E20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F735206E88C600E02733 /* Event.swift in Sources */,
 				D595F74E206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D50C0F37207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F730206E88B300E02733 /* Action.swift in Sources */,
 				D595F765206E9E0B00E02733 /* StoreBase.swift in Sources */,
-				D595F76A206EAB7E00E02733 /* MainMiddleware.swift in Sources */,
+				D595F76A206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */,
 				D595F749206E892E00E02733 /* Store.swift in Sources */,
 				D595F756206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73F206E88F900E02733 /* Reducer.swift in Sources */,
+				D5946FC52070065500D8F4D2 /* Operator.swift in Sources */,
 				D595F75B206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F73A206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
@@ -896,14 +946,18 @@
 				D595F761206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F745206E891000E02733 /* Middleware.swift in Sources */,
 				D595F79B206ED16B00E02733 /* TypeErase.generated.swift in Sources */,
+				D5946FCC20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
+				D575BB7F20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F736206E88C600E02733 /* Event.swift in Sources */,
 				D595F74F206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D50C0F38207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F731206E88B300E02733 /* Action.swift in Sources */,
 				D595F766206E9E0B00E02733 /* StoreBase.swift in Sources */,
-				D595F76B206EAB7E00E02733 /* MainMiddleware.swift in Sources */,
+				D595F76B206EAB7E00E02733 /* ComposedMiddleware.swift in Sources */,
 				D595F74A206E892E00E02733 /* Store.swift in Sources */,
 				D595F757206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F740206E88F900E02733 /* Reducer.swift in Sources */,
+				D5946FC42070065400D8F4D2 /* Operator.swift in Sources */,
 				D595F75C206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F73B206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
@@ -917,9 +971,11 @@
 				D5946FA8206FEB5300D8F4D2 /* Event1.swift in Sources */,
 				D5163904206FD40B00469F96 /* SideEffectProducerTests.swift in Sources */,
 				D5946FAA206FEB7200D8F4D2 /* Event2.swift in Sources */,
-				D5BB2CEB206EE3D6003FB823 /* MiddlewareTests.swift in Sources */,
+				D5BB2CEB206EE3D6003FB823 /* GeneralMiddlewareTests.swift in Sources */,
+				D5946FCF2070122900D8F4D2 /* MiddlewareContainerTests.swift in Sources */,
 				D595F76F206EBB9000E02733 /* AnyError.swift in Sources */,
 				D595F785206EC0FD00E02733 /* AutoMockable.generated.swift in Sources */,
+				D5946FD1207012E900D8F4D2 /* MiddlewareTestsBase.swift in Sources */,
 				D5946FB2206FEBA400D8F4D2 /* MiddlewareMock.swift in Sources */,
 				D5946FB8206FEBED00D8F4D2 /* TestStore.swift in Sources */,
 				D5946FA6206FEB4B00D8F4D2 /* Action3.swift in Sources */,

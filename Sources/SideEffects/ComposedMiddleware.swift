@@ -1,4 +1,4 @@
-public final class MiddlewareContainer<GlobalState>: Middleware {
+public final class ComposedMiddleware<GlobalState>: Middleware {
     private var middlewares: [AnyMiddleware<GlobalState>] = []
 
     public weak var actionHandler: ActionHandler? {
@@ -30,4 +30,16 @@ public final class MiddlewareContainer<GlobalState>: Middleware {
         }
         chain(action, getState)
     }
+}
+
+public func >>> <M1: Middleware, M2: Middleware> (lhs: M1, rhs: M2) -> ComposedMiddleware<M1.StateType> where M1.StateType == M2.StateType {
+
+    let container = lhs as? ComposedMiddleware<M1.StateType> ?? {
+        let newContainer: ComposedMiddleware<M1.StateType> = .init()
+        newContainer.append(middleware: lhs)
+        return newContainer
+        }()
+
+    container.append(middleware: rhs)
+    return container
 }

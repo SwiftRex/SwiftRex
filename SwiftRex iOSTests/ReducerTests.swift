@@ -61,4 +61,67 @@ class ReducerTests: XCTestCase {
         XCTAssertEqual("", state.name)
         XCTAssertEqual(previousState, state)
     }
+
+    func testComposeTwoAnyReducers() {
+        let reducer1 = AnyReducer(ReducerMock())
+        let reducer2 = AnyReducer(NameReducer())
+        let sut = reducer1 >>> reducer2
+
+        XCTAssertEqual(2, sut.reducers.count)
+        XCTAssert(reducer1 === sut.reducers[0])
+        XCTAssert(reducer2 === sut.reducers[1])
+    }
+
+    func testComposeThreeAnyReducers() {
+        let reducer1 = AnyReducer(ReducerMock())
+        let reducer2 = AnyReducer(NameReducer())
+        let reducer3 = AnyReducer(NameReducer())
+        let sut = reducer1 >>> reducer2 >>> reducer3
+
+        XCTAssertEqual(3, sut.reducers.count)
+        XCTAssert(reducer1 === sut.reducers[0])
+        XCTAssert(reducer2 === sut.reducers[1])
+        XCTAssert(reducer3 === sut.reducers[2])
+    }
+
+    func testComposeTwoGroupsOfAnyReducers() {
+        let reducer1 = AnyReducer(ReducerMock())
+        let reducer2 = AnyReducer(NameReducer())
+        let reducer3 = AnyReducer(NameReducer())
+        let reducer4 = AnyReducer(ReducerMock())
+        let sut = (reducer1 >>> reducer2) >>> (reducer3 >>> reducer4)
+
+        XCTAssertEqual(4, sut.reducers.count)
+        XCTAssert(reducer1 === sut.reducers[0])
+        XCTAssert(reducer2 === sut.reducers[1])
+        XCTAssert(reducer3 === sut.reducers[2])
+        XCTAssert(reducer4 === sut.reducers[3])
+    }
+
+    func testComposeTwoReducers() {
+        let reducer1 = ReducerMock()
+        let reducer2 = NameReducer()
+        let sut = reducer1 >>> reducer2
+
+        XCTAssertEqual(2, sut.reducers.count)
+    }
+
+    func testComposeThreeReducers() {
+        let reducer1 = ReducerMock()
+        let reducer2 = NameReducer()
+        let reducer3 = NameReducer()
+        let sut = reducer1 >>> reducer2 >>> reducer3
+
+        XCTAssertEqual(3, sut.reducers.count)
+    }
+
+    func testComposeTwoGroupsOfReducers() {
+        let reducer1 = ReducerMock()
+        let reducer2 = NameReducer()
+        let reducer3 = NameReducer()
+        let reducer4 = ReducerMock()
+        let sut = (reducer1 >>> reducer2) >>> (reducer3 >>> reducer4)
+
+        XCTAssertEqual(4, sut.reducers.count)
+    }
 }

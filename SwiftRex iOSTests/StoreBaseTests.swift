@@ -26,9 +26,10 @@ class StoreBaseTests: XCTestCase {
             XCTAssertEqual("", getState().name)
             next(chainEvent, getState)
         }
+
         let sut = TestStore(initialState: TestState(),
-                            reducers: [reducer.reduce],
-                            middlewares: [middleware1, middleware2])
+                            reducer: reducer,
+                            middleware: middleware1 >>> middleware2)
 
         // Then
         sut.dispatch(event)
@@ -73,8 +74,8 @@ class StoreBaseTests: XCTestCase {
             return TestState(value: UUID(), name: "reduced")
         }
         let sut = TestStore(initialState: TestState(),
-                            reducers: [reducer.reduce],
-                            middlewares: [middleware1, middleware2])
+                            reducer: reducer,
+                            middleware: middleware1 >>> middleware2)
 
         // Then
         sut.trigger(action)
@@ -94,7 +95,7 @@ class StoreBaseTests: XCTestCase {
         var state: TestState?
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
 
         // Then
         sut.subscribe(onNext: { newState in
@@ -116,7 +117,7 @@ class StoreBaseTests: XCTestCase {
         var state: TestState?
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
 
         // Then
         sut.subscribe(onNext: { newState in
@@ -140,7 +141,7 @@ class StoreBaseTests: XCTestCase {
         var state: TestState?
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
         sut.subscribe(onNext: { newState in
             state = newState
             changes += 1
@@ -167,7 +168,7 @@ class StoreBaseTests: XCTestCase {
         var state: TestState?
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
         sut.subscribe(onNext: { newState in
             state = newState
             changes += 1
@@ -194,7 +195,7 @@ class StoreBaseTests: XCTestCase {
         var state: TestState?
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
         sut.distinctUntilChanged().subscribe(onNext: { newState in
             state = newState
             changes += 1
@@ -221,7 +222,7 @@ class StoreBaseTests: XCTestCase {
         var state: TestState?
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
         sut.subscribe(onNext: { newState in
             state = newState
             changes += 1
@@ -248,7 +249,7 @@ class StoreBaseTests: XCTestCase {
         var state: TestState?
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
         sut.distinctUntilChanged().subscribe(onNext: { newState in
             state = newState
             changes += 1
@@ -274,7 +275,7 @@ class StoreBaseTests: XCTestCase {
         let reducer = NameReducer()
         var changes = 0
         let sut = TestStore(initialState: TestState(),
-                            mainReducer: reducer.reduce)
+                            reducer: reducer)
         let shouldDispose = expectation(description: "it should dispose the subscription")
 
         // Then

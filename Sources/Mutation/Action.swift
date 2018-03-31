@@ -1,1 +1,1 @@
-public protocol Action: Event { }
+public protocol Action { }

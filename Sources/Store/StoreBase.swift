@@ -1,46 +1,43 @@
 import RxSwift
 
-open class StoreBase<GlobalState>: Store {
-    public typealias E = GlobalState
+open class StoreBase<E>: Store {
+    private let middleware: AnyMiddleware<E>
+    private let reducer: AnyReducer<E>
+    private let state: BehaviorSubject<E>
 
-    private let mainReducer: ReducerFunction<GlobalState>
-    private let state: BehaviorSubject<GlobalState>
+    public init<R: Reducer, M: Middleware>(
+        initialState: E,
+        reducer: R,
+        middleware: M) where R.StateType == E, M.StateType == E {
 
-    public let middlewares: MiddlewareContainer<GlobalState> = .init()
-
-    public init(initialState: GlobalState, mainReducer: @escaping ReducerFunction<GlobalState>) {
-        self.state = BehaviorSubject<GlobalState>(value: initialState)
-        self.mainReducer = mainReducer
-        self.middlewares.actionHandler = self
+        self.state = BehaviorSubject<E>(value: initialState)
+        self.reducer = AnyReducer(reducer)
+        self.middleware = AnyMiddleware(middleware)
+        self.middleware.actionHandler = self
     }
 
-    public convenience init<M: Middleware>(
-        initialState: GlobalState,
-        reducers: [ReducerFunction<GlobalState>],
-        middlewares: [M] = []) where M.StateType == GlobalState {
+    public convenience init<R: Reducer>(
+        initialState: E,
+        reducer: R) where R.StateType == E {
 
-        self.init(initialState: initialState) { state, action in
-            reducers.reduce(state) { $1($0, action) }
-        }
-
-        middlewares.forEach(self.middlewares.append)
+        self.init(initialState: initialState, reducer: reducer, middleware: BypassMiddleware())
     }
 
     open func dispatch(_ event: Event) {
-        let ignore: (Event, GetState<GlobalState>) -> Void = { _, _ in }
-        middlewares.handle(
+        let ignore: (Event, GetState<E>) -> Void = { _, _ in }
+        middleware.handle(
             event: event,
             getState: { [unowned self] in try! self.state.value() },
             next: ignore)
     }
 
     open func trigger(_ action: Action) {
-        middlewares.handle(
+        middleware.handle(
             action: action,
             getState: { [unowned self] in try! self.state.value() },
             next: { action, _ in
                 let oldState = try! self.state.value()
-                let newState = self.mainReducer(oldState, action)
+                let newState = self.reducer.reduce(oldState, action: action)
                 self.state.onNext(newState)
         })
     }

@@ -46,21 +46,21 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
     }
 }
 
-final class AnyMiddleware<StateType>: Middleware {
+public final class AnyMiddleware<StateType>: Middleware {
     private let box: _AnyMiddlewareBase<StateType>
 
-    init<Concrete: Middleware>(_ concrete: Concrete) where Concrete.StateType == StateType {
+    public init<Concrete: Middleware>(_ concrete: Concrete) where Concrete.StateType == StateType {
         self.box = _AnyMiddlewareBox(concrete)
     }
 
-    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
+    public func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
         return box.handle(event: event,getState: getState,next: next)
     }
-    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
+    public func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
         return box.handle(action: action,getState: getState,next: next)
     }
 
-    var actionHandler: ActionHandler? {
+    public var actionHandler: ActionHandler? {
         get { return box.actionHandler }
         set { box.actionHandler = newValue }
     }
@@ -94,14 +94,14 @@ private final class _AnyReducerBox<Concrete: Reducer>: _AnyReducerBase<Concrete.
 
 }
 
-final class AnyReducer<StateType>: Reducer {
+public final class AnyReducer<StateType>: Reducer {
     private let box: _AnyReducerBase<StateType>
 
-    init<Concrete: Reducer>(_ concrete: Concrete) where Concrete.StateType == StateType {
+    public init<Concrete: Reducer>(_ concrete: Concrete) where Concrete.StateType == StateType {
         self.box = _AnyReducerBox(concrete)
     }
 
-    func reduce(_ currentState: StateType, action: Action) -> StateType {
+    public func reduce(_ currentState: StateType, action: Action) -> StateType {
         return box.reduce(currentState,action: action)
     }
 
@@ -135,14 +135,14 @@ private final class _AnySideEffectProducerBox<Concrete: SideEffectProducer>: _An
 
 }
 
-final class AnySideEffectProducer<StateType>: SideEffectProducer {
+public final class AnySideEffectProducer<StateType>: SideEffectProducer {
     private let box: _AnySideEffectProducerBase<StateType>
 
-    init<Concrete: SideEffectProducer>(_ concrete: Concrete) where Concrete.StateType == StateType {
+    public init<Concrete: SideEffectProducer>(_ concrete: Concrete) where Concrete.StateType == StateType {
         self.box = _AnySideEffectProducerBox(concrete)
     }
 
-    func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
+    public func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
         return box.handle(event: event,getState: getState)
     }
 
