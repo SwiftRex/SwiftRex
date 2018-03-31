@@ -51,7 +51,7 @@ class RotationMiddleware: Middleware {
         self.name = name
     }
 
-    func handle(action: Action, getState: @escaping () -> TestState, next: @escaping (Action, @escaping () -> TestState) -> Void) {
+    func handle(action: Action, getState: @escaping GetState<TestState>, next: @escaping (Action, @escaping GetState<TestState>) -> Void) {
         let newAction: Action
         switch action {
         case let oldAction as Action1:
@@ -76,7 +76,7 @@ class RotationMiddleware: Middleware {
         next(newAction, getState)
     }
 
-    func handle(event: Event, getState: @escaping () -> TestState, next: @escaping (Event, @escaping () -> TestState) -> Void) {
+    func handle(event: Event, getState: @escaping GetState<TestState>, next: @escaping (Event, @escaping GetState<TestState>) -> Void) {
         let newEvent: Event
         switch event {
         case let oldEvent as Event1:

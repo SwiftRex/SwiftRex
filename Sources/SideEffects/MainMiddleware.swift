@@ -6,18 +6,18 @@ public final class MiddlewareContainer<GlobalState>: Middleware {
         middlewares.insert(AnyMiddleware(middleware), at: 0)
     }
 
-    public func handle(event: Event, getState: @escaping () -> GlobalState, next: @escaping (Event, @escaping () -> GlobalState) -> Void) {
+    public func handle(event: Event, getState: @escaping GetState<GlobalState>, next: @escaping (Event, @escaping GetState<GlobalState>) -> Void) {
         let chain = middlewares.reduce(next) { nextHandler, middleware in
-            return { (chainEvent: Event, chainGetState: @escaping () -> GlobalState) in
+            return { (chainEvent: Event, chainGetState: @escaping GetState<GlobalState>) in
                 middleware.handle(event: chainEvent, getState: chainGetState, next: nextHandler)
             }
         }
         chain(event, getState)
     }
 
-    public func handle(action: Action, getState: @escaping () -> GlobalState, next: @escaping (Action, @escaping () -> GlobalState) -> Void) {
+    public func handle(action: Action, getState: @escaping GetState<GlobalState>, next: @escaping (Action, @escaping GetState<GlobalState>) -> Void) {
         let chain = middlewares.reduce(next) { nextHandler, middleware in
-            return { (chainAction: Action, chainGetState: @escaping () -> GlobalState) in
+            return { (chainAction: Action, chainGetState: @escaping GetState<GlobalState>) in
                 middleware.handle(action: chainAction, getState: chainGetState, next: nextHandler)
             }
         }

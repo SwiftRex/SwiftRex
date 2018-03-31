@@ -26,7 +26,7 @@ open class StoreBase<GlobalState>: Store {
     }
 
     open func dispatch(_ event: Event) {
-        let ignore: (Event, () -> GlobalState) -> Void = { _, _ in }
+        let ignore: (Event, GetState<GlobalState>) -> Void = { _, _ in }
         middlewares.handle(
             event: event,
             getState: { [unowned self] in self.currentState },

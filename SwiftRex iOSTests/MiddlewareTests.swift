@@ -183,7 +183,7 @@ class MiddlewareTests: XCTestCase {
     private func lastActionInChain<A: Action & Equatable>(_ action: A,
                                                           state: TestState,
                                                           expectation: XCTestExpectation)
-        -> (Action, @escaping () -> TestState) -> Void {
+        -> (Action, @escaping GetState<TestState>) -> Void {
         return { chainAction, chainStateGetter in
             XCTAssertEqual(action, chainAction as! A)
             XCTAssertEqual(state, chainStateGetter())
@@ -194,7 +194,7 @@ class MiddlewareTests: XCTestCase {
     private func lastEventInChain<E: Event & Equatable>(_ event: E,
                                                           state: TestState,
                                                           expectation: XCTestExpectation)
-        -> (Event, @escaping () -> TestState) -> Void {
+        -> (Event, @escaping GetState<TestState>) -> Void {
             return { chainEvent, chainStateGetter in
                 XCTAssertEqual(event, chainEvent as! E)
                 XCTAssertEqual(state, chainStateGetter())

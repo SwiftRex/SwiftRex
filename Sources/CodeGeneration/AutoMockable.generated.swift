@@ -32,10 +32,10 @@ class MiddlewareMock: Middleware {
     var handleEventGetStateNextCalled: Bool {
         return handleEventGetStateNextCallsCount > 0
     }
-    var handleEventGetStateNextReceivedArguments: (event: Event, getState: () -> StateType, next: (Event, @escaping () -> StateType) -> Void)?
-    var handleEventGetStateNextClosure: ((Event, @escaping () -> StateType, @escaping (Event, @escaping () -> StateType) -> Void) -> Void)?
+    var handleEventGetStateNextReceivedArguments: (event: Event, getState: GetState<StateType>, next: (Event, @escaping GetState<StateType>) -> Void)?
+    var handleEventGetStateNextClosure: ((Event, @escaping GetState<StateType>, @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void)?
 
-    func handle(event: Event, getState: @escaping () -> StateType, next: @escaping (Event, @escaping () -> StateType) -> Void) {
+    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) {
         handleEventGetStateNextCallsCount += 1
         handleEventGetStateNextReceivedArguments = (event: event, getState: getState, next: next)
         handleEventGetStateNextClosure?(event, getState, next)
@@ -47,10 +47,10 @@ class MiddlewareMock: Middleware {
     var handleActionGetStateNextCalled: Bool {
         return handleActionGetStateNextCallsCount > 0
     }
-    var handleActionGetStateNextReceivedArguments: (action: Action, getState: () -> StateType, next: (Action, @escaping () -> StateType) -> Void)?
-    var handleActionGetStateNextClosure: ((Action, @escaping () -> StateType, @escaping (Action, @escaping () -> StateType) -> Void) -> Void)?
+    var handleActionGetStateNextReceivedArguments: (action: Action, getState: GetState<StateType>, next: (Action, @escaping GetState<StateType>) -> Void)?
+    var handleActionGetStateNextClosure: ((Action, @escaping GetState<StateType>, @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void)?
 
-    func handle(action: Action, getState: @escaping () -> StateType, next: @escaping (Action, @escaping () -> StateType) -> Void) {
+    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) {
         handleActionGetStateNextCallsCount += 1
         handleActionGetStateNextReceivedArguments = (action: action, getState: getState, next: next)
         handleActionGetStateNextClosure?(action, getState, next)

@@ -12,10 +12,10 @@ private class _AnyMiddlewareBase<StateType>: Middleware {
         }
     }
 
-    func handle(event: Event, getState: @escaping () -> StateType, next: @escaping (Event, @escaping () -> StateType) -> Void) -> Void {
+    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void {
         fatalError("Must override")
     }
-    func handle(action: Action, getState: @escaping () -> StateType, next: @escaping (Action, @escaping () -> StateType) -> Void) -> Void {
+    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void {
         fatalError("Must override")
     }
 
@@ -29,10 +29,10 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
         self.concrete = concrete
     }
 
-    override func handle(event: Event, getState: @escaping () -> StateType, next: @escaping (Event, @escaping () -> StateType) -> Void) -> Void {
+    override func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void {
         return concrete.handle(event: event, getState: getState, next: next)
     }
-    override func handle(action: Action, getState: @escaping () -> StateType, next: @escaping (Action, @escaping () -> StateType) -> Void) -> Void {
+    override func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void {
         return concrete.handle(action: action, getState: getState, next: next)
     }
 
@@ -45,10 +45,10 @@ final class AnyMiddleware<StateType>: Middleware {
         self.box = _AnyMiddlewareBox(concrete)
     }
 
-    func handle(event: Event, getState: @escaping () -> StateType, next: @escaping (Event, @escaping () -> StateType) -> Void) -> Void {
+    func handle(event: Event, getState: @escaping GetState<StateType>, next: @escaping (Event, @escaping GetState<StateType>) -> Void) -> Void {
         return box.handle(event: event,getState: getState,next: next)
     }
-    func handle(action: Action, getState: @escaping () -> StateType, next: @escaping (Action, @escaping () -> StateType) -> Void) -> Void {
+    func handle(action: Action, getState: @escaping GetState<StateType>, next: @escaping (Action, @escaping GetState<StateType>) -> Void) -> Void {
         return box.handle(action: action,getState: getState,next: next)
     }
 
@@ -105,7 +105,7 @@ private class _AnySideEffectFactoryBase<StateType>: SideEffectFactory {
         }
     }
 
-    func evaluate(event: Event, getState: @escaping () -> StateType) -> Observable<Action> {
+    func evaluate(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
         fatalError("Must override")
     }
 
@@ -119,7 +119,7 @@ private final class _AnySideEffectFactoryBox<Concrete: SideEffectFactory>: _AnyS
         self.concrete = concrete
     }
 
-    override func evaluate(event: Event, getState: @escaping () -> StateType) -> Observable<Action> {
+    override func evaluate(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
         return concrete.evaluate(event: event, getState: getState)
     }
 
@@ -132,7 +132,7 @@ final class AnySideEffectFactory<StateType>: SideEffectFactory {
         self.box = _AnySideEffectFactoryBox(concrete)
     }
 
-    func evaluate(event: Event, getState: @escaping () -> StateType) -> Observable<Action> {
+    func evaluate(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
         return box.evaluate(event: event,getState: getState)
     }
 
