@@ -26,6 +26,24 @@ typealias Event = SwiftRex.Event
 
 
 
+class ActionHandlerMock: ActionHandler {
+
+    //MARK: - trigger
+
+    var triggerCallsCount = 0
+    var triggerCalled: Bool {
+        return triggerCallsCount > 0
+    }
+    var triggerReceivedAction: Action?
+    var triggerClosure: ((Action) -> Void)?
+
+    func trigger(_ action: Action) {
+        triggerCallsCount += 1
+        triggerReceivedAction = action
+        triggerClosure?(action)
+    }
+
+}
 class MiddlewareMock: Middleware {
     var actionHandler: ActionHandler?
 

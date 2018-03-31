@@ -1,11 +1,10 @@
 @testable import SwiftRex
 import XCTest
 
-class BypassMiddlewareTests: MiddlewareTestsBase {
-
-    func testBypassMiddlewareAction() {
+class DirectLineMiddlewareTests: MiddlewareTestsBase {
+    func testDirectLineMiddlewareAction() {
         // Given
-        let sut = BypassMiddleware<TestState>()
+        let sut = DirectLineMiddleware<TestState>()
 
         let actionHandler = ActionHandlerMock()
         sut.actionHandler = actionHandler
@@ -23,9 +22,9 @@ class BypassMiddlewareTests: MiddlewareTestsBase {
         XCTAssertEqual(0, actionHandler.triggerCallsCount)
     }
 
-    func testBypassMiddlewareEvent() {
+    func testDirectLineMiddlewareEvent() {
         // Given
-        let sut = BypassMiddleware<TestState>()
+        let sut = DirectLineMiddleware<TestState>()
 
         let actionHandler = ActionHandlerMock()
         sut.actionHandler = actionHandler
@@ -41,5 +40,26 @@ class BypassMiddlewareTests: MiddlewareTestsBase {
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
         XCTAssertEqual(0, actionHandler.triggerCallsCount)
+    }
+
+    func testDirectLineMiddlewareEventThatIsAnAction() {
+        // Given
+        let sut = DirectLineMiddleware<TestState>()
+
+        let actionHandler = ActionHandlerMock()
+        sut.actionHandler = actionHandler
+        let state = TestState()
+        let getState = { state }
+        let event = EventAndActionReference()
+        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
+        let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
+
+        // Then
+        sut.handle(event: event, getState: getState, next: lastInChain)
+
+        // Expect
+        wait(for: [lastInChainWasCalledExpectation], timeout: 3)
+        XCTAssertEqual(1, actionHandler.triggerCallsCount)
+        XCTAssert((actionHandler.triggerReceivedAction as! EventAndActionReference) === event)
     }
 }
