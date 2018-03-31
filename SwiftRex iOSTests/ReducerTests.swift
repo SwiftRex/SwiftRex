@@ -124,4 +124,32 @@ class ReducerTests: XCTestCase {
 
         XCTAssertEqual(4, sut.reducers.count)
     }
+
+    func testReduceComposedReducers() {
+        let reducer1 = ReducerMock()
+        let reducer2 = ReducerMock()
+        let sut = reducer1 >>> reducer2
+
+        reducer1.reduceActionClosure = { state, _ in
+            XCTAssertEqual(1, reducer1.reduceActionCallsCount)
+            XCTAssertEqual(0, reducer2.reduceActionCallsCount)
+            XCTAssertEqual("", state.name)
+            var state = state
+            state.name += "a"
+            return state
+        }
+        reducer2.reduceActionClosure = { state, _ in
+            XCTAssertEqual(1, reducer1.reduceActionCallsCount)
+            XCTAssertEqual(1, reducer2.reduceActionCallsCount)
+            XCTAssertEqual("a", state.name)
+            var state = state
+            state.name += "b"
+            return state
+        }
+
+        let result = sut.reduce(TestState(), action: Action1())
+        XCTAssertEqual(1, reducer1.reduceActionCallsCount)
+        XCTAssertEqual(1, reducer2.reduceActionCallsCount)
+        XCTAssertEqual("ab", result.name)
+    }
 }
