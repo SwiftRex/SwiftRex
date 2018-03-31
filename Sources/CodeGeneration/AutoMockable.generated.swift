@@ -5,13 +5,15 @@
 // swiftlint:disable variable_name
 
 import Foundation
-import SwiftRex
+import RxSwift
+@testable import SwiftRex
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 #elseif os(OSX)
 import AppKit
 #endif
 
+typealias Event = SwiftRex.Event
 
 
 
@@ -74,6 +76,25 @@ class ReducerMock: Reducer {
         reduceActionCallsCount += 1
         reduceActionReceivedArguments = (currentState: currentState, action: action)
         return reduceActionClosure.map({ $0(currentState, action) }) ?? reduceActionReturnValue
+    }
+
+}
+class SideEffectProducerMock: SideEffectProducer {
+
+    //MARK: - handle
+
+    var handleEventGetStateCallsCount = 0
+    var handleEventGetStateCalled: Bool {
+        return handleEventGetStateCallsCount > 0
+    }
+    var handleEventGetStateReceivedArguments: (event: Event, getState: GetState<StateType>)?
+    var handleEventGetStateReturnValue: Observable<Action>!
+    var handleEventGetStateClosure: ((Event, @escaping GetState<StateType>) -> Observable<Action>)?
+
+    func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
+        handleEventGetStateCallsCount += 1
+        handleEventGetStateReceivedArguments = (event: event, getState: getState)
+        return handleEventGetStateClosure.map({ $0(event, getState) }) ?? handleEventGetStateReturnValue
     }
 
 }

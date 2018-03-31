@@ -13,6 +13,8 @@
 		D51638FE206F42C200469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FD206F42C200469F96 /* RxSwift.framework */; };
 		D5163900206F528900469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F7206F426800469F96 /* RxSwift.framework */; };
 		D5163902206F528A00469F96 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5163901206F528A00469F96 /* RxTest.framework */; };
+		D5163904206FD40B00469F96 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */; };
+		D5946F9D206FE1A600D8F4D2 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */; };
 		D595F6D1206E818C00E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F6FE206E834F00E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F6FF206E835000E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -31,10 +33,10 @@
 		D595F734206E88C600E02733 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F732206E88C600E02733 /* Event.swift */; };
 		D595F735206E88C600E02733 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F732206E88C600E02733 /* Event.swift */; };
 		D595F736206E88C600E02733 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F732206E88C600E02733 /* Event.swift */; };
-		D595F738206E88E700E02733 /* SideEffectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectFactory.swift */; };
-		D595F739206E88E700E02733 /* SideEffectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectFactory.swift */; };
-		D595F73A206E88E700E02733 /* SideEffectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectFactory.swift */; };
-		D595F73B206E88E700E02733 /* SideEffectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectFactory.swift */; };
+		D595F738206E88E700E02733 /* SideEffectProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectProducer.swift */; };
+		D595F739206E88E700E02733 /* SideEffectProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectProducer.swift */; };
+		D595F73A206E88E700E02733 /* SideEffectProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectProducer.swift */; };
+		D595F73B206E88E700E02733 /* SideEffectProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F737206E88E700E02733 /* SideEffectProducer.swift */; };
 		D595F73D206E88F900E02733 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F73C206E88F900E02733 /* Reducer.swift */; };
 		D595F73E206E88F900E02733 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F73C206E88F900E02733 /* Reducer.swift */; };
 		D595F73F206E88F900E02733 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F73C206E88F900E02733 /* Reducer.swift */; };
@@ -98,6 +100,8 @@
 		D51638FB206F42AD00469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/tvOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638FD206F42C200469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 		D5163901206F528A00469F96 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
+		D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
+		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6CF206E818C00E02733 /* SwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRex.h; sourceTree = "<group>"; };
 		D595F6D0206E818C00E02733 /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
@@ -118,7 +122,7 @@
 		D595F722206E868F00E02733 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D595F72D206E88B300E02733 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		D595F732206E88C600E02733 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
-		D595F737206E88E700E02733 /* SideEffectFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectFactory.swift; sourceTree = "<group>"; };
+		D595F737206E88E700E02733 /* SideEffectProducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducer.swift; sourceTree = "<group>"; };
 		D595F73C206E88F900E02733 /* Reducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reducer.swift; sourceTree = "<group>"; };
 		D595F741206E891000E02733 /* Middleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Middleware.swift; sourceTree = "<group>"; };
 		D595F746206E892E00E02733 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
@@ -183,6 +187,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5946F9D206FE1A600D8F4D2 /* RxBlocking.framework in Frameworks */,
 				D5163902206F528A00469F96 /* RxTest.framework in Frameworks */,
 				D5163900206F528900469F96 /* RxSwift.framework in Frameworks */,
 				D595F70A206E866100E02733 /* SwiftRex.framework in Frameworks */,
@@ -202,6 +207,7 @@
 		D51638F6206F426700469F96 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */,
 				D5163901206F528A00469F96 /* RxTest.framework */,
 				D51638FD206F42C200469F96 /* RxSwift.framework */,
 				D51638FB206F42AD00469F96 /* RxSwift.framework */,
@@ -267,6 +273,7 @@
 				D595F76C206EBB3A00E02733 /* ReducerTests.swift */,
 				D5BB2CEA206EE3D6003FB823 /* MiddlewareTests.swift */,
 				D595F76E206EBB9000E02733 /* Mocks.swift */,
+				D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */,
 				D5BB2CEC206F186F003FB823 /* StoreBaseTests.swift */,
 			);
 			path = "SwiftRex iOSTests";
@@ -312,7 +319,7 @@
 			children = (
 				D595F767206EAB7E00E02733 /* MainMiddleware.swift */,
 				D595F741206E891000E02733 /* Middleware.swift */,
-				D595F737206E88E700E02733 /* SideEffectFactory.swift */,
+				D595F737206E88E700E02733 /* SideEffectProducer.swift */,
 			);
 			path = SideEffects;
 			sourceTree = "<group>";
@@ -657,10 +664,13 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/RxTest.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RxBlocking.framework",
 			);
 			name = Carthage;
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxTest.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxBlocking.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -729,7 +739,7 @@
 				D595F754206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73D206E88F900E02733 /* Reducer.swift in Sources */,
 				D595F759206E9DC400E02733 /* ActionHandler.swift in Sources */,
-				D595F738206E88E700E02733 /* SideEffectFactory.swift in Sources */,
+				D595F738206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -749,7 +759,7 @@
 				D595F755206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73E206E88F900E02733 /* Reducer.swift in Sources */,
 				D595F75A206E9DC400E02733 /* ActionHandler.swift in Sources */,
-				D595F739206E88E700E02733 /* SideEffectFactory.swift in Sources */,
+				D595F739206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -769,7 +779,7 @@
 				D595F756206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73F206E88F900E02733 /* Reducer.swift in Sources */,
 				D595F75B206E9DC400E02733 /* ActionHandler.swift in Sources */,
-				D595F73A206E88E700E02733 /* SideEffectFactory.swift in Sources */,
+				D595F73A206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -789,7 +799,7 @@
 				D595F757206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F740206E88F900E02733 /* Reducer.swift in Sources */,
 				D595F75C206E9DC400E02733 /* ActionHandler.swift in Sources */,
-				D595F73B206E88E700E02733 /* SideEffectFactory.swift in Sources */,
+				D595F73B206E88E700E02733 /* SideEffectProducer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -798,6 +808,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D595F76D206EBB3A00E02733 /* ReducerTests.swift in Sources */,
+				D5163904206FD40B00469F96 /* SideEffectProducerTests.swift in Sources */,
 				D5BB2CEB206EE3D6003FB823 /* MiddlewareTests.swift in Sources */,
 				D595F76F206EBB9000E02733 /* Mocks.swift in Sources */,
 				D595F785206EC0FD00E02733 /* AutoMockable.generated.swift in Sources */,

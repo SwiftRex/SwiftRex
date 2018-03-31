@@ -106,22 +106,22 @@ final class AnyReducer<StateType>: Reducer {
     }
 
 }
-// MARK: - Type Eraser for SideEffectFactory
+// MARK: - Type Eraser for SideEffectProducer
 
-private class _AnySideEffectFactoryBase<StateType>: SideEffectFactory {
+private class _AnySideEffectProducerBase<StateType>: SideEffectProducer {
     init() {
-        guard type(of: self) != _AnySideEffectFactoryBase.self else {
-            fatalError("_AnySideEffectFactoryBase<StateType> instances can not be created; create a subclass instance instead")
+        guard type(of: self) != _AnySideEffectProducerBase.self else {
+            fatalError("_AnySideEffectProducerBase<StateType> instances can not be created; create a subclass instance instead")
         }
     }
 
-    func evaluate(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
+    func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
         fatalError("Must override")
     }
 
 }
 
-private final class _AnySideEffectFactoryBox<Concrete: SideEffectFactory>: _AnySideEffectFactoryBase<Concrete.StateType> {
+private final class _AnySideEffectProducerBox<Concrete: SideEffectProducer>: _AnySideEffectProducerBase<Concrete.StateType> {
     var concrete: Concrete
     typealias StateType = Concrete.StateType
 
@@ -129,21 +129,21 @@ private final class _AnySideEffectFactoryBox<Concrete: SideEffectFactory>: _AnyS
         self.concrete = concrete
     }
 
-    override func evaluate(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
-        return concrete.evaluate(event: event, getState: getState)
+    override func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
+        return concrete.handle(event: event, getState: getState)
     }
 
 }
 
-final class AnySideEffectFactory<StateType>: SideEffectFactory {
-    private let box: _AnySideEffectFactoryBase<StateType>
+final class AnySideEffectProducer<StateType>: SideEffectProducer {
+    private let box: _AnySideEffectProducerBase<StateType>
 
-    init<Concrete: SideEffectFactory>(_ concrete: Concrete) where Concrete.StateType == StateType {
-        self.box = _AnySideEffectFactoryBox(concrete)
+    init<Concrete: SideEffectProducer>(_ concrete: Concrete) where Concrete.StateType == StateType {
+        self.box = _AnySideEffectProducerBox(concrete)
     }
 
-    func evaluate(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
-        return box.evaluate(event: event,getState: getState)
+    func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
+        return box.handle(event: event,getState: getState)
     }
 
 }

@@ -2,13 +2,15 @@
 // swiftlint:disable variable_name
 
 import Foundation
-import SwiftRex
+import RxSwift
+@testable import SwiftRex
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 #elseif os(OSX)
 import AppKit
 #endif
 
+typealias Event = SwiftRex.Event
 {% macro swiftifyMethodName name %}{{ name | replace:"(","_" | replace:")","" | replace:":","_" | replace:"`","" | snakeToCamelCase | lowerFirstWord }}{% endmacro %}
 
 {% macro methodThrowableErrorDeclaration method %}
