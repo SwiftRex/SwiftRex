@@ -19,6 +19,10 @@ private class _AnyMiddlewareBase<StateType>: Middleware {
         fatalError("Must override")
     }
 
+    var actionHandler: ActionHandler? {
+        get { fatalError("Must override") }
+        set { fatalError("Must override") }
+    }
 }
 
 private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<Concrete.StateType> {
@@ -36,6 +40,10 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
         return concrete.handle(action: action, getState: getState, next: next)
     }
 
+    override var actionHandler: ActionHandler? {
+        get { return concrete.actionHandler }
+        set { concrete.actionHandler = newValue }
+    }
 }
 
 final class AnyMiddleware<StateType>: Middleware {
@@ -52,6 +60,10 @@ final class AnyMiddleware<StateType>: Middleware {
         return box.handle(action: action,getState: getState,next: next)
     }
 
+    var actionHandler: ActionHandler? {
+        get { return box.actionHandler }
+        set { box.actionHandler = newValue }
+    }
 }
 
 // MARK: - Type Eraser for Reducer

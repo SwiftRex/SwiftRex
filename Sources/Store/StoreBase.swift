@@ -11,12 +11,13 @@ open class StoreBase<GlobalState>: Store {
     public init(initialState: GlobalState, mainReducer: @escaping ReducerFunction<GlobalState>) {
         self.currentState = initialState
         self.mainReducer = mainReducer
+        self.middlewares.actionHandler = self
     }
 
     public convenience init<M: Middleware>(
         initialState: GlobalState,
         reducers: [ReducerFunction<GlobalState>],
-        middlewares: [M]) where M.StateType == GlobalState {
+        middlewares: [M] = []) where M.StateType == GlobalState {
 
         self.init(initialState: initialState) { state, action in
             reducers.reduce(state) { $1($0, action) }

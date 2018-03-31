@@ -1,8 +1,15 @@
 public final class MiddlewareContainer<GlobalState>: Middleware {
     private var middlewares: [AnyMiddleware<GlobalState>] = []
 
+    public weak var actionHandler: ActionHandler? {
+        didSet {
+            middlewares.forEach { $0.actionHandler = actionHandler }
+        }
+    }
+
     public func append<M: Middleware>(middleware: M) where M.StateType == GlobalState {
         // Add in reverse order because we reduce from top to bottom and trigger from the last
+        middleware.actionHandler = middleware.actionHandler ?? actionHandler
         middlewares.insert(AnyMiddleware(middleware), at: 0)
     }
 

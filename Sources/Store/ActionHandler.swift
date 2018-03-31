@@ -1,3 +1,3 @@
-public protocol ActionHandler {
+public protocol ActionHandler: class {
     func trigger(_ action: Action)
 }

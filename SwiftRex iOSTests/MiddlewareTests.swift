@@ -180,6 +180,25 @@ class MiddlewareTests: XCTestCase {
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
     }
 
+    func testMiddlewareActionHandlerPropagationOnInit() {
+        let middlewares = ["m1", "m2", "m3", "m4"]
+            .map(RotationMiddleware.init)
+        (0..<4).forEach { XCTAssertNil(middlewares[$0].actionHandler) }
+
+        let store = TestStore(initialState: TestState(), reducers: [], middlewares: middlewares)
+        (0..<4).forEach { XCTAssert(middlewares[$0].actionHandler === store) }
+    }
+
+    func testMiddlewareActionHandlerPropagationOnAppend() {
+        let store = TestStore(initialState: TestState(), reducers: [], middlewares: [RotationMiddleware]())
+
+        let middlewares = ["m1", "m2", "m3", "m4"]
+            .map(RotationMiddleware.init)
+        (0..<4).forEach { XCTAssertNil(middlewares[$0].actionHandler) }
+        (0..<4).map { middlewares[$0] }.forEach(store.middlewares.append)
+        (0..<4).forEach { XCTAssert(middlewares[$0].actionHandler === store) }
+    }
+
     private func lastActionInChain<A: Action & Equatable>(_ action: A,
                                                           state: TestState,
                                                           expectation: XCTestExpectation)

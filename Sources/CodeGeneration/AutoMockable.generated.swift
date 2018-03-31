@@ -25,6 +25,7 @@ import AppKit
 
 
 class MiddlewareMock: Middleware {
+    var actionHandler: ActionHandler?
 
     //MARK: - handle
 

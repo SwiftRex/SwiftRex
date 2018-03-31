@@ -45,6 +45,7 @@ extension MiddlewareMock {
 }
 
 class RotationMiddleware: Middleware {
+    weak var actionHandler: ActionHandler?
     private var name: String
 
     init(name: String) {
