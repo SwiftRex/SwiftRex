@@ -15,6 +15,20 @@
 		D5163902206F528A00469F96 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5163901206F528A00469F96 /* RxTest.framework */; };
 		D5163904206FD40B00469F96 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */; };
 		D5946F9D206FE1A600D8F4D2 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */; };
+		D5946FA0206FEB2400D8F4D2 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946F9F206FEB2400D8F4D2 /* TestState.swift */; };
+		D5946FA2206FEB3600D8F4D2 /* Action1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FA1206FEB3600D8F4D2 /* Action1.swift */; };
+		D5946FA4206FEB4700D8F4D2 /* Action2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FA3206FEB4700D8F4D2 /* Action2.swift */; };
+		D5946FA6206FEB4B00D8F4D2 /* Action3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FA5206FEB4B00D8F4D2 /* Action3.swift */; };
+		D5946FA8206FEB5300D8F4D2 /* Event1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FA7206FEB5300D8F4D2 /* Event1.swift */; };
+		D5946FAA206FEB7200D8F4D2 /* Event2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FA9206FEB7200D8F4D2 /* Event2.swift */; };
+		D5946FAC206FEB7600D8F4D2 /* Event3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FAB206FEB7600D8F4D2 /* Event3.swift */; };
+		D5946FAE206FEB7C00D8F4D2 /* SideEffectProducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FAD206FEB7C00D8F4D2 /* SideEffectProducerMock.swift */; };
+		D5946FB0206FEB9E00D8F4D2 /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FAF206FEB9E00D8F4D2 /* ReducerMock.swift */; };
+		D5946FB2206FEBA400D8F4D2 /* MiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB1206FEBA400D8F4D2 /* MiddlewareMock.swift */; };
+		D5946FB4206FEBAC00D8F4D2 /* RotationMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB3206FEBAC00D8F4D2 /* RotationMiddleware.swift */; };
+		D5946FB6206FEBD400D8F4D2 /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB5206FEBD400D8F4D2 /* NameReducer.swift */; };
+		D5946FB8206FEBED00D8F4D2 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB7206FEBED00D8F4D2 /* TestStore.swift */; };
+		D5946FBA206FEBFC00D8F4D2 /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5946FB9206FEBFC00D8F4D2 /* TimelySideEffect.swift */; };
 		D595F6D1206E818C00E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F6FE206E834F00E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F6FF206E835000E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -74,7 +88,7 @@
 		D595F76A206EAB7E00E02733 /* MainMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* MainMiddleware.swift */; };
 		D595F76B206EAB7E00E02733 /* MainMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F767206EAB7E00E02733 /* MainMiddleware.swift */; };
 		D595F76D206EBB3A00E02733 /* ReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F76C206EBB3A00E02733 /* ReducerTests.swift */; };
-		D595F76F206EBB9000E02733 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F76E206EBB9000E02733 /* Mocks.swift */; };
+		D595F76F206EBB9000E02733 /* AnyError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F76E206EBB9000E02733 /* AnyError.swift */; };
 		D595F785206EC0FD00E02733 /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F781206EC0FD00E02733 /* AutoMockable.generated.swift */; };
 		D595F799206EC9BF00E02733 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F793206EC8E900E02733 /* TypeErase.generated.swift */; };
 		D595F79A206ED16900E02733 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F793206EC8E900E02733 /* TypeErase.generated.swift */; };
@@ -102,6 +116,20 @@
 		D5163901206F528A00469F96 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
 		D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
+		D5946F9F206FEB2400D8F4D2 /* TestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
+		D5946FA1206FEB3600D8F4D2 /* Action1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action1.swift; sourceTree = "<group>"; };
+		D5946FA3206FEB4700D8F4D2 /* Action2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action2.swift; sourceTree = "<group>"; };
+		D5946FA5206FEB4B00D8F4D2 /* Action3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action3.swift; sourceTree = "<group>"; };
+		D5946FA7206FEB5300D8F4D2 /* Event1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event1.swift; sourceTree = "<group>"; };
+		D5946FA9206FEB7200D8F4D2 /* Event2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event2.swift; sourceTree = "<group>"; };
+		D5946FAB206FEB7600D8F4D2 /* Event3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event3.swift; sourceTree = "<group>"; };
+		D5946FAD206FEB7C00D8F4D2 /* SideEffectProducerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerMock.swift; sourceTree = "<group>"; };
+		D5946FAF206FEB9E00D8F4D2 /* ReducerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
+		D5946FB1206FEBA400D8F4D2 /* MiddlewareMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
+		D5946FB3206FEBAC00D8F4D2 /* RotationMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationMiddleware.swift; sourceTree = "<group>"; };
+		D5946FB5206FEBD400D8F4D2 /* NameReducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameReducer.swift; sourceTree = "<group>"; };
+		D5946FB7206FEBED00D8F4D2 /* TestStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestStore.swift; sourceTree = "<group>"; };
+		D5946FB9206FEBFC00D8F4D2 /* TimelySideEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelySideEffect.swift; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6CF206E818C00E02733 /* SwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRex.h; sourceTree = "<group>"; };
 		D595F6D0206E818C00E02733 /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
@@ -133,7 +161,7 @@
 		D595F762206E9E0B00E02733 /* StoreBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBase.swift; sourceTree = "<group>"; };
 		D595F767206EAB7E00E02733 /* MainMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMiddleware.swift; sourceTree = "<group>"; };
 		D595F76C206EBB3A00E02733 /* ReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
-		D595F76E206EBB9000E02733 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
+		D595F76E206EBB9000E02733 /* AnyError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyError.swift; sourceTree = "<group>"; };
 		D595F777206EBF1200E02733 /* AutoLenses.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoLenses.stencil; sourceTree = "<group>"; };
 		D595F779206EBF1200E02733 /* AutoMockable.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoMockable.stencil; sourceTree = "<group>"; };
 		D595F77A206EBF1300E02733 /* AutoHashable.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoHashable.stencil; sourceTree = "<group>"; };
@@ -228,6 +256,84 @@
 			);
 			sourceTree = "<group>";
 		};
+		D5946F9E206FEB0900D8F4D2 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				D5946FBB206FEC2B00D8F4D2 /* Action */,
+				D5946FBC206FEC3400D8F4D2 /* Event */,
+				D5946FBF206FEC6700D8F4D2 /* Helper */,
+				D5946FBD206FEC4600D8F4D2 /* Middleware */,
+				D5946FBE206FEC5900D8F4D2 /* Reducer */,
+				D5946FC0206FEC7F00D8F4D2 /* SideEffectProducer */,
+				D5946FC1206FECA900D8F4D2 /* Store */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		D5946FBB206FEC2B00D8F4D2 /* Action */ = {
+			isa = PBXGroup;
+			children = (
+				D5946FA1206FEB3600D8F4D2 /* Action1.swift */,
+				D5946FA3206FEB4700D8F4D2 /* Action2.swift */,
+				D5946FA5206FEB4B00D8F4D2 /* Action3.swift */,
+			);
+			path = Action;
+			sourceTree = "<group>";
+		};
+		D5946FBC206FEC3400D8F4D2 /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				D5946FA7206FEB5300D8F4D2 /* Event1.swift */,
+				D5946FA9206FEB7200D8F4D2 /* Event2.swift */,
+				D5946FAB206FEB7600D8F4D2 /* Event3.swift */,
+			);
+			path = Event;
+			sourceTree = "<group>";
+		};
+		D5946FBD206FEC4600D8F4D2 /* Middleware */ = {
+			isa = PBXGroup;
+			children = (
+				D5946FB1206FEBA400D8F4D2 /* MiddlewareMock.swift */,
+				D5946FB3206FEBAC00D8F4D2 /* RotationMiddleware.swift */,
+			);
+			path = Middleware;
+			sourceTree = "<group>";
+		};
+		D5946FBE206FEC5900D8F4D2 /* Reducer */ = {
+			isa = PBXGroup;
+			children = (
+				D5946FB5206FEBD400D8F4D2 /* NameReducer.swift */,
+				D5946FAF206FEB9E00D8F4D2 /* ReducerMock.swift */,
+			);
+			path = Reducer;
+			sourceTree = "<group>";
+		};
+		D5946FBF206FEC6700D8F4D2 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				D595F76E206EBB9000E02733 /* AnyError.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		D5946FC0206FEC7F00D8F4D2 /* SideEffectProducer */ = {
+			isa = PBXGroup;
+			children = (
+				D5946FAD206FEB7C00D8F4D2 /* SideEffectProducerMock.swift */,
+				D5946FB9206FEBFC00D8F4D2 /* TimelySideEffect.swift */,
+			);
+			path = SideEffectProducer;
+			sourceTree = "<group>";
+		};
+		D5946FC1206FECA900D8F4D2 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				D5946F9F206FEB2400D8F4D2 /* TestState.swift */,
+				D5946FB7206FEBED00D8F4D2 /* TestStore.swift */,
+			);
+			path = Store;
+			sourceTree = "<group>";
+		};
 		D595F6CD206E818C00E02733 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -269,10 +375,10 @@
 		D595F706206E866100E02733 /* SwiftRex iOSTests */ = {
 			isa = PBXGroup;
 			children = (
+				D5946F9E206FEB0900D8F4D2 /* Mocks */,
 				D595F709206E866100E02733 /* Info.plist */,
 				D595F76C206EBB3A00E02733 /* ReducerTests.swift */,
 				D5BB2CEA206EE3D6003FB823 /* MiddlewareTests.swift */,
-				D595F76E206EBB9000E02733 /* Mocks.swift */,
 				D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */,
 				D5BB2CEC206F186F003FB823 /* StoreBaseTests.swift */,
 			);
@@ -808,11 +914,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				D595F76D206EBB3A00E02733 /* ReducerTests.swift in Sources */,
+				D5946FA8206FEB5300D8F4D2 /* Event1.swift in Sources */,
 				D5163904206FD40B00469F96 /* SideEffectProducerTests.swift in Sources */,
+				D5946FAA206FEB7200D8F4D2 /* Event2.swift in Sources */,
 				D5BB2CEB206EE3D6003FB823 /* MiddlewareTests.swift in Sources */,
-				D595F76F206EBB9000E02733 /* Mocks.swift in Sources */,
+				D595F76F206EBB9000E02733 /* AnyError.swift in Sources */,
 				D595F785206EC0FD00E02733 /* AutoMockable.generated.swift in Sources */,
+				D5946FB2206FEBA400D8F4D2 /* MiddlewareMock.swift in Sources */,
+				D5946FB8206FEBED00D8F4D2 /* TestStore.swift in Sources */,
+				D5946FA6206FEB4B00D8F4D2 /* Action3.swift in Sources */,
+				D5946FB6206FEBD400D8F4D2 /* NameReducer.swift in Sources */,
+				D5946FB4206FEBAC00D8F4D2 /* RotationMiddleware.swift in Sources */,
+				D5946FA0206FEB2400D8F4D2 /* TestState.swift in Sources */,
+				D5946FAC206FEB7600D8F4D2 /* Event3.swift in Sources */,
+				D5946FB0206FEB9E00D8F4D2 /* ReducerMock.swift in Sources */,
+				D5946FBA206FEBFC00D8F4D2 /* TimelySideEffect.swift in Sources */,
+				D5946FA4206FEB4700D8F4D2 /* Action2.swift in Sources */,
+				D5946FAE206FEB7C00D8F4D2 /* SideEffectProducerMock.swift in Sources */,
 				D5BB2CED206F186F003FB823 /* StoreBaseTests.swift in Sources */,
+				D5946FA2206FEB3600D8F4D2 /* Action1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
