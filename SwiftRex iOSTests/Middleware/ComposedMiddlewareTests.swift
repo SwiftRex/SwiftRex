@@ -1,8 +1,8 @@
 @testable import SwiftRex
 import XCTest
 
-class MiddlewareContainerTests: MiddlewareTestsBase {
-    func testMiddlewareContainerAction() {
+class ComposedMiddlewareTests: MiddlewareTestsBase {
+    func testComposedMiddlewareAction() {
         // Given
         let sut = ComposedMiddleware<TestState>()
         ["m1", "m2"]
@@ -25,7 +25,7 @@ class MiddlewareContainerTests: MiddlewareTestsBase {
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
     }
 
-    func testMiddlewareContainerEvent() {
+    func testComposedMiddlewareEvent() {
         // Given
         let sut = ComposedMiddleware<TestState>()
         ["m1", "m2"]
@@ -48,7 +48,7 @@ class MiddlewareContainerTests: MiddlewareTestsBase {
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
     }
 
-    func testMiddlewareContainerOrderAction() {
+    func testComposedMiddlewareOrderAction() {
         // Given
         let sut = ComposedMiddleware<TestState>()
         ["m1", "m2", "m3", "m4"]
@@ -71,7 +71,7 @@ class MiddlewareContainerTests: MiddlewareTestsBase {
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
     }
 
-    func testMiddlewareContainerOrderEvent() {
+    func testComposedMiddlewareOrderEvent() {
         // Given
         let sut = ComposedMiddleware<TestState>()
         ["m1", "m2", "m3", "m4"]
