@@ -1,7 +1,7 @@
 @testable import SwiftRex
 import XCTest
 
-class BypassContainerTests: MiddlewareTestsBase {
+class BypassMiddlewareTests: MiddlewareTestsBase {
 
     func testBypassMiddlewareAction() {
         // Given

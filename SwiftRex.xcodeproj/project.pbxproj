@@ -22,7 +22,7 @@
 		D575BB7D20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
 		D575BB7E20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
 		D575BB7F20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
-		D575BB8120703AB000A965EA /* BypassContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB8020703AB000A965EA /* BypassContainerTests.swift */; };
+		D575BB8120703AB000A965EA /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB8020703AB000A965EA /* BypassMiddlewareTests.swift */; };
 		D575BB8320703CB000A965EA /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB8220703CB000A965EA /* ActionReference.swift */; };
 		D575BB8520703CEB00A965EA /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB8420703CEB00A965EA /* EventReference.swift */; };
 		D5946F9D206FE1A600D8F4D2 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */; };
@@ -138,7 +138,7 @@
 		D5163901206F528A00469F96 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
 		D5163903206FD40B00469F96 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D575BB7B20702E3B00A965EA /* ComposedReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposedReducer.swift; sourceTree = "<group>"; };
-		D575BB8020703AB000A965EA /* BypassContainerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassContainerTests.swift; sourceTree = "<group>"; };
+		D575BB8020703AB000A965EA /* BypassMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassMiddlewareTests.swift; sourceTree = "<group>"; };
 		D575BB8220703CB000A965EA /* ActionReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionReference.swift; sourceTree = "<group>"; };
 		D575BB8420703CEB00A965EA /* EventReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReference.swift; sourceTree = "<group>"; };
 		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
@@ -369,7 +369,7 @@
 		D5946FCD2070121300D8F4D2 /* Middleware */ = {
 			isa = PBXGroup;
 			children = (
-				D575BB8020703AB000A965EA /* BypassContainerTests.swift */,
+				D575BB8020703AB000A965EA /* BypassMiddlewareTests.swift */,
 				D5BB2CEA206EE3D6003FB823 /* GeneralMiddlewareTests.swift */,
 				D5946FCE2070122900D8F4D2 /* ComposedMiddlewareTests.swift */,
 				D5946FD0207012E900D8F4D2 /* MiddlewareTestsBase.swift */,
@@ -999,7 +999,7 @@
 				D5946FAE206FEB7C00D8F4D2 /* SideEffectProducerMock.swift in Sources */,
 				D5BB2CED206F186F003FB823 /* StoreBaseTests.swift in Sources */,
 				D575BB8320703CB000A965EA /* ActionReference.swift in Sources */,
-				D575BB8120703AB000A965EA /* BypassContainerTests.swift in Sources */,
+				D575BB8120703AB000A965EA /* BypassMiddlewareTests.swift in Sources */,
 				D5946FA2206FEB3600D8F4D2 /* Action1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
