@@ -1,0 +1,68 @@
+{% for type in types.protocols|annotated:"TypeErase" %}
+
+// MARK: - Type Eraser for {{type.name}}
+
+private class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.name}} {
+    init() {
+        guard type(of: self) != _Any{{type.name}}Base.self else {
+            fatalError("_Any{{type.name}}Base<{{type.annotations.TypeErase}}> instances can not be created; create a subclass instance instead")
+        }
+    }
+
+    {% for m in type.methods %}
+    func {{m.name}} -> {{m.returnTypeName}} {
+        fatalError("Must override")
+    }
+    {% endfor %}
+
+    {% for p in type.variables %}
+    var {{p.name}}: {{p.typeName}} {
+        get { fatalError("Must override") }
+        {% if p.isMutable %}set { fatalError("Must override") }{% endif %}
+    }
+    {% endfor %}
+}
+
+private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.name}}Base<Concrete.{{type.annotations.TypeErase}}> {
+    var concrete: Concrete
+    typealias {{type.annotations.TypeErase}} = Concrete.{{type.annotations.TypeErase}}
+
+    init(_ concrete: Concrete) {
+        self.concrete = concrete
+    }
+
+    {% for m in type.methods %}
+    override func {{m.name}} -> {{m.returnTypeName}} {
+        return concrete.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %}, {% endif %}{% endfor %})
+    }
+    {% endfor %}
+
+    {% for p in type.variables %}
+    override var {{p.name}}: {{p.typeName}} {
+        get { return concrete.{{p.name}} }
+        {% if p.isMutable %}set { concrete.{{p.name}} = newValue }{% endif %}
+    }
+    {% endfor %}
+}
+
+final class Any{{type.name}}<{{ type.annotations.TypeErase }}>: {{type.name}} {
+    private let box: _Any{{type.name}}Base<{{ type.annotations.TypeErase }}>
+
+    init<Concrete: {{type.name}}>(_ concrete: Concrete) where Concrete.{{ type.annotations.TypeErase }} == {{ type.annotations.TypeErase }} {
+        self.box = _Any{{type.name}}Box(concrete)
+    }
+
+    {% for m in type.methods %}
+    func {{m.name}} -> {{m.returnTypeName}} {
+        return box.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %},{% endif %}{% endfor %})
+    }
+    {% endfor %}
+
+    {% for p in type.variables %}
+    var {{p.name}}: {{p.typeName}} {
+        get { return box.{{p.name}} }
+        {% if p.isMutable %}set { box.{{p.name}} = newValue }{% endif %}
+    }
+    {% endfor %}
+}
+{% endfor %}

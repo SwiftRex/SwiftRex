@@ -1,0 +1,7 @@
+sources:
+  include:
+    - Sources
+templates:
+  include:
+    - Sources/CodeGeneration/Templates
+output: Sources/CodeGeneration

@@ -1,0 +1,53 @@
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+*.moved-aside
+*.xcuserstate
+
+# Not Mapped
+**/captures
+**/derivedData
+**/Certificates
+**/xcuserdata
+**/Carthage
+
+.vscode
+
+## Built application files
+**/build/
+**/DerivedData/
+**/derivedData/
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+**/fastlane/env_vars.properties
+**/fastlane/Appfile
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+*.hmap
+*.ipa
+*.dSYM
+*.DSYM
+*.DSYM.zip
+*.dSYM.zip
