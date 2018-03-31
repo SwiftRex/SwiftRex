@@ -1,7 +1,7 @@
 // Generated using Sourcery 0.10.1 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
-
+import RxSwift
 
 // MARK: - Type Eraser for Middleware
 
@@ -65,7 +65,6 @@ final class AnyMiddleware<StateType>: Middleware {
         set { box.actionHandler = newValue }
     }
 }
-
 // MARK: - Type Eraser for Reducer
 
 private class _AnyReducerBase<StateType>: Reducer {
@@ -107,7 +106,6 @@ final class AnyReducer<StateType>: Reducer {
     }
 
 }
-
 // MARK: - Type Eraser for SideEffectFactory
 
 private class _AnySideEffectFactoryBase<StateType>: SideEffectFactory {

@@ -1,5 +1,6 @@
-{% for type in types.protocols|annotated:"TypeErase" %}
+import RxSwift
 
+{% for type in types.protocols|annotated:"TypeErase" %}
 // MARK: - Type Eraser for {{type.name}}
 
 private class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.name}} {

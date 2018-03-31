@@ -1,4 +1,5 @@
-public protocol StateProvider {
-    associatedtype StateType
-    func subscribe() -> Observable<StateType>
+import RxSwift
+
+public protocol StateProvider: ObservableType {
+    typealias StateType = E
 }

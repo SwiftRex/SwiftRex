@@ -1,15 +1,15 @@
+import RxSwift
+
 open class StoreBase<GlobalState>: Store {
+    public typealias E = GlobalState
+
     private let mainReducer: ReducerFunction<GlobalState>
-    private var currentState: GlobalState {
-        didSet {
-            // notify
-        }
-    }
+    private let state: BehaviorSubject<GlobalState>
 
     public let middlewares: MiddlewareContainer<GlobalState> = .init()
 
     public init(initialState: GlobalState, mainReducer: @escaping ReducerFunction<GlobalState>) {
-        self.currentState = initialState
+        self.state = BehaviorSubject<GlobalState>(value: initialState)
         self.mainReducer = mainReducer
         self.middlewares.actionHandler = self
     }
@@ -30,18 +30,22 @@ open class StoreBase<GlobalState>: Store {
         let ignore: (Event, GetState<GlobalState>) -> Void = { _, _ in }
         middlewares.handle(
             event: event,
-            getState: { [unowned self] in self.currentState },
+            getState: { [unowned self] in try! self.state.value() },
             next: ignore)
     }
 
     open func trigger(_ action: Action) {
         middlewares.handle(
             action: action,
-            getState: { [unowned self] in self.currentState },
-            next: { action, _ in self.currentState = self.mainReducer(self.currentState, action) })
+            getState: { [unowned self] in try! self.state.value() },
+            next: { action, _ in
+                let oldState = try! self.state.value()
+                let newState = self.mainReducer(oldState, action)
+                self.state.onNext(newState)
+        })
     }
 
-    open func subscribe() -> Observable<GlobalState> {
-        return Observable()
+    public func subscribe<O>(_ observer: O) -> Disposable where O: ObserverType, O.E == StateType {
+        return state.subscribe(observer)
     }
 }

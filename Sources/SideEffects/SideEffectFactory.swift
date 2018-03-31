@@ -1,3 +1,5 @@
+import RxSwift
+
 // sourcery: TypeErase = StateType
 public protocol SideEffectFactory {
     associatedtype StateType
