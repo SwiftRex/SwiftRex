@@ -387,13 +387,13 @@
 		D5A606F2207126DD00D682EF /* SwiftRexTests */ = {
 			isa = PBXGroup;
 			children = (
-				D5A607182071287A00D682EF /* Middleware */,
-				D5A606FD2071287900D682EF /* Mocks */,
+				D5A606F5207126DD00D682EF /* Info.plist */,
 				D5A6071F2071287A00D682EF /* ReducerTests.swift */,
 				D5A607212071287A00D682EF /* SideEffectProducerTests.swift */,
 				D5A606FC2071287900D682EF /* StoreBaseTests.swift */,
 				D5A607202071287A00D682EF /* SwiftRexTests.swift */,
-				D5A606F5207126DD00D682EF /* Info.plist */,
+				D5A607182071287A00D682EF /* Middleware */,
+				D5A606FD2071287900D682EF /* Mocks */,
 			);
 			path = SwiftRexTests;
 			sourceTree = "<group>";
@@ -401,12 +401,12 @@
 		D5A606FD2071287900D682EF /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				D5A606FE2071287900D682EF /* Middleware */,
-				D5A607022071287900D682EF /* SideEffectProducer */,
-				D5A607052071287900D682EF /* Reducer */,
 				D5A607082071287900D682EF /* Action */,
-				D5A6070D2071287900D682EF /* Helper */,
 				D5A6070F2071287900D682EF /* Event */,
+				D5A6070D2071287900D682EF /* Helper */,
+				D5A606FE2071287900D682EF /* Middleware */,
+				D5A607052071287900D682EF /* Reducer */,
+				D5A607022071287900D682EF /* SideEffectProducer */,
 				D5A607152071287900D682EF /* Store */,
 			);
 			path = Mocks;
@@ -415,9 +415,9 @@
 		D5A606FE2071287900D682EF /* Middleware */ = {
 			isa = PBXGroup;
 			children = (
-				D5A606FF2071287900D682EF /* SideEffectMiddlewareMock.swift */,
 				D5A607002071287900D682EF /* MiddlewareMock.swift */,
 				D5A607012071287900D682EF /* RotationMiddleware.swift */,
+				D5A606FF2071287900D682EF /* SideEffectMiddlewareMock.swift */,
 			);
 			path = Middleware;
 			sourceTree = "<group>";
@@ -434,8 +434,8 @@
 		D5A607052071287900D682EF /* Reducer */ = {
 			isa = PBXGroup;
 			children = (
-				D5A607062071287900D682EF /* ReducerMock.swift */,
 				D5A607072071287900D682EF /* NameReducer.swift */,
+				D5A607062071287900D682EF /* ReducerMock.swift */,
 			);
 			path = Reducer;
 			sourceTree = "<group>";
@@ -443,10 +443,10 @@
 		D5A607082071287900D682EF /* Action */ = {
 			isa = PBXGroup;
 			children = (
-				D5A607092071287900D682EF /* ActionReference.swift */,
+				D5A6070C2071287900D682EF /* Action1.swift */,
 				D5A6070A2071287900D682EF /* Action2.swift */,
 				D5A6070B2071287900D682EF /* Action3.swift */,
-				D5A6070C2071287900D682EF /* Action1.swift */,
+				D5A607092071287900D682EF /* ActionReference.swift */,
 			);
 			path = Action;
 			sourceTree = "<group>";
@@ -462,11 +462,11 @@
 		D5A6070F2071287900D682EF /* Event */ = {
 			isa = PBXGroup;
 			children = (
-				D5A607102071287900D682EF /* EventAndActionReference.swift */,
-				D5A607112071287900D682EF /* Event3.swift */,
 				D5A607122071287900D682EF /* Event1.swift */,
-				D5A607132071287900D682EF /* EventReference.swift */,
 				D5A607142071287900D682EF /* Event2.swift */,
+				D5A607112071287900D682EF /* Event3.swift */,
+				D5A607102071287900D682EF /* EventAndActionReference.swift */,
+				D5A607132071287900D682EF /* EventReference.swift */,
 			);
 			path = Event;
 			sourceTree = "<group>";
@@ -483,12 +483,12 @@
 		D5A607182071287A00D682EF /* Middleware */ = {
 			isa = PBXGroup;
 			children = (
+				D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */,
+				D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */,
 				D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */,
+				D5A6071C2071287A00D682EF /* GeneralMiddlewareTests.swift */,
 				D5A6071A2071287A00D682EF /* MiddlewareTestsBase.swift */,
 				D5A6071B2071287A00D682EF /* SideEffectMiddlewareTests.swift */,
-				D5A6071C2071287A00D682EF /* GeneralMiddlewareTests.swift */,
-				D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */,
-				D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */,
 			);
 			path = Middleware;
 			sourceTree = "<group>";
