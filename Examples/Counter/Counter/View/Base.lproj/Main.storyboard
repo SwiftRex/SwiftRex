@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Counter" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qnX-M5-1ZJ">
+                                <rect key="frame" x="16" y="28" width="65" height="30"/>
+                                <state key="normal" title="Decrease"/>
+                                <connections>
+                                    <action selector="decreaseButtonEvent:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ihv-Lc-Khq"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="da6-We-2RT">
+                                <rect key="frame" x="300" y="28" width="59" height="30"/>
+                                <state key="normal" title="Increase"/>
+                                <connections>
+                                    <action selector="increaseButtonEvent:" destination="BYZ-38-t0r" eventType="touchUpInside" id="BaJ-zM-o5w"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HlZ-d2-IXw">
+                                <rect key="frame" x="174" y="318.5" width="28" height="50.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="42"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Mjh-SD-Dph">
+                                <rect key="frame" x="177" y="36" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="da6-We-2RT" secondAttribute="trailing" constant="16" id="96w-59-QtS"/>
+                            <constraint firstItem="Mjh-SD-Dph" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="EJM-d2-GSU"/>
+                            <constraint firstItem="HlZ-d2-IXw" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="V0B-5x-Bcg"/>
+                            <constraint firstItem="qnX-M5-1ZJ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="WH2-pj-Z0Y"/>
+                            <constraint firstItem="Mjh-SD-Dph" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="hxV-Qc-byA"/>
+                            <constraint firstItem="HlZ-d2-IXw" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="sG7-No-5tG"/>
+                            <constraint firstItem="qnX-M5-1ZJ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="xeH-zW-Uvk"/>
+                            <constraint firstItem="da6-We-2RT" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="xl4-UL-c7L"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <connections>
+                        <outlet property="decreaseButton" destination="qnX-M5-1ZJ" id="Ldi-vE-bRX"/>
+                        <outlet property="increaseButton" destination="da6-We-2RT" id="spH-Q7-8yk"/>
+                        <outlet property="spinnerView" destination="Mjh-SD-Dph" id="XAk-0I-Svi"/>
+                        <outlet property="valueLabel" destination="HlZ-d2-IXw" id="RYd-ek-Vcp"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+</document>

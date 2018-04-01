@@ -43,6 +43,8 @@ open class StoreBase<E>: Store {
     }
 
     public func subscribe<O>(_ observer: O) -> Disposable where O: ObserverType, O.E == StateType {
-        return state.subscribe(observer)
+        return state
+            .observeOn(MainScheduler.instance)
+            .subscribe(observer)
     }
 }
