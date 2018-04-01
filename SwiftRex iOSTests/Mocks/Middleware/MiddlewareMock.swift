@@ -1,6 +1,4 @@
-import RxSwift
-@testable import SwiftRex
-import XCTest
+import SwiftRex
 
 extension MiddlewareMock {
     typealias StateType = TestState

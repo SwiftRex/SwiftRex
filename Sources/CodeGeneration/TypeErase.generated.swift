@@ -115,7 +115,7 @@ private class _AnySideEffectProducerBase<StateType>: SideEffectProducer {
         }
     }
 
-    func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
+    func execute(getState: @escaping GetState<StateType>) -> Observable<Action> {
         fatalError("Must override")
     }
 
@@ -129,8 +129,8 @@ private final class _AnySideEffectProducerBox<Concrete: SideEffectProducer>: _An
         self.concrete = concrete
     }
 
-    override func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
-        return concrete.handle(event: event, getState: getState)
+    override func execute(getState: @escaping GetState<StateType>) -> Observable<Action> {
+        return concrete.execute(getState: getState)
     }
 
 }
@@ -142,8 +142,8 @@ public final class AnySideEffectProducer<StateType>: SideEffectProducer {
         self.box = _AnySideEffectProducerBox(concrete)
     }
 
-    public func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
-        return box.handle(event: event,getState: getState)
+    public func execute(getState: @escaping GetState<StateType>) -> Observable<Action> {
+        return box.execute(getState: getState)
     }
 
 }

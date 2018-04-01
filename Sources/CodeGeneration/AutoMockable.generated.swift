@@ -99,20 +99,20 @@ class ReducerMock: Reducer {
 }
 class SideEffectProducerMock: SideEffectProducer {
 
-    //MARK: - handle
+    //MARK: - execute
 
-    var handleEventGetStateCallsCount = 0
-    var handleEventGetStateCalled: Bool {
-        return handleEventGetStateCallsCount > 0
+    var executeGetStateCallsCount = 0
+    var executeGetStateCalled: Bool {
+        return executeGetStateCallsCount > 0
     }
-    var handleEventGetStateReceivedArguments: (event: Event, getState: GetState<StateType>)?
-    var handleEventGetStateReturnValue: Observable<Action>!
-    var handleEventGetStateClosure: ((Event, @escaping GetState<StateType>) -> Observable<Action>)?
+    var executeGetStateReceivedGetState: GetState<StateType>?
+    var executeGetStateReturnValue: Observable<Action>!
+    var executeGetStateClosure: ((@escaping GetState<StateType>) -> Observable<Action>)?
 
-    func handle(event: Event, getState: @escaping GetState<StateType>) -> Observable<Action> {
-        handleEventGetStateCallsCount += 1
-        handleEventGetStateReceivedArguments = (event: event, getState: getState)
-        return handleEventGetStateClosure.map({ $0(event, getState) }) ?? handleEventGetStateReturnValue
+    func execute(getState: @escaping GetState<StateType>) -> Observable<Action> {
+        executeGetStateCallsCount += 1
+        executeGetStateReceivedGetState = getState
+        return executeGetStateClosure.map({ $0(getState) }) ?? executeGetStateReturnValue
     }
 
 }

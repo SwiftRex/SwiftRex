@@ -9,23 +9,21 @@ class SideEffectProducerTests: XCTestCase {
         // Given
         let sepMock = SideEffectProducerMock()
         let sut = AnySideEffectProducer(sepMock)
-        let event = Event1()
         let state = TestState()
         let getState = { state }
         let action1 = Action1()
         let action2 = Action2()
         let action3 = Action3()
-        sepMock.handleEventGetStateReturnValue = Observable.of(action1, action2, action3)
+        sepMock.executeGetStateReturnValue = Observable.of(action1, action2, action3)
 
         // Then
-        let result = try! sut.handle(event: event, getState: getState)
+        let result = try! sut.execute(getState: getState)
             .toBlocking()
             .toArray()
 
         // Expect
-        XCTAssertEqual(1, sepMock.handleEventGetStateCallsCount)
-        XCTAssertEqual(event, sepMock.handleEventGetStateReceivedArguments!.event as! Event1)
-        XCTAssertEqual(state, sepMock.handleEventGetStateReceivedArguments!.getState())
+        XCTAssertEqual(1, sepMock.executeGetStateCallsCount)
+        XCTAssertEqual(state, sepMock.executeGetStateReceivedGetState!())
         let expectedResult: [Action] = [action1, action2, action3]
         XCTAssertEqual(3, result.count)
         XCTAssertEqual(expectedResult[0] as! Action1, result[0] as! Action1)
@@ -35,13 +33,13 @@ class SideEffectProducerTests: XCTestCase {
 
     func testTimelySideEffectEventOneAction() {
         // Given
-        let sut = AnySideEffectProducer(TimelySideEffect(name: "tse"))
+        let event = Event1()
+        let sut = AnySideEffectProducer(TimelySideEffect(event: event, name: "tse"))
         let state = TestState()
         let getState = { state }
-        let event = Event1()
 
         // Then
-        let result = try! sut.handle(event: event, getState: getState)
+        let result = try! sut.execute(getState: getState)
             .toBlocking()
             .toArray()
 
@@ -52,13 +50,13 @@ class SideEffectProducerTests: XCTestCase {
 
     func testTimelySideEffectEventTwoActions() {
         // Given
-        let sut = AnySideEffectProducer(TimelySideEffect(name: "tse"))
+        let event = Event2()
+        let sut = AnySideEffectProducer(TimelySideEffect(event: event, name: "tse"))
         let state = TestState()
         let getState = { state }
-        let event = Event2()
 
         // Then
-        let result = try! sut.handle(event: event, getState: getState)
+        let result = try! sut.execute(getState: getState)
             .toBlocking()
             .toArray()
 
@@ -70,13 +68,13 @@ class SideEffectProducerTests: XCTestCase {
 
     func testTimelySideEffectEventThreeActions() {
         // Given
-        let sut = AnySideEffectProducer(TimelySideEffect(name: "tse"))
+        let event = Event3()
+        let sut = AnySideEffectProducer(TimelySideEffect(event: event, name: "tse"))
         let state = TestState()
         let getState = { state }
-        let event = Event3()
 
         // Then
-        let result = try! sut.handle(event: event, getState: getState)
+        let result = try! sut.execute(getState: getState)
             .toBlocking()
             .toArray()
 

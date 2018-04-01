@@ -3,13 +3,15 @@ import RxSwift
 import XCTest
 
 class TimelySideEffect: SideEffectProducer {
+    private var event: Event
     private var name: String
 
-    init(name: String) {
+    init(event: Event, name: String) {
+        self.event = event
         self.name = name
     }
 
-    func handle(event: Event, getState: @escaping () -> TestState) -> Observable<Action> {
+    func execute(getState: @escaping () -> TestState) -> Observable<Action> {
         let actionChain: [Action]
         switch event {
         case _ as Event1:
