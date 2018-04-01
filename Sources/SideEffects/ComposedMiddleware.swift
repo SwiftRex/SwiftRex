@@ -1,6 +1,8 @@
 public final class ComposedMiddleware<GlobalState>: Middleware {
     private var middlewares: [AnyMiddleware<GlobalState>] = []
 
+    public init() { }
+
     public weak var actionHandler: ActionHandler? {
         didSet {
             middlewares.forEach { $0.actionHandler = actionHandler }

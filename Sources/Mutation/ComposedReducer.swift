@@ -1,6 +1,8 @@
 public final class ComposedReducer<GlobalState>: Reducer {
     private(set) var reducers: [AnyReducer<GlobalState>] = []
 
+    public init() { }
+
     public func append<R: Reducer>(reducer: R) where R.StateType == GlobalState {
         reducers.append((reducer as? AnyReducer) ?? AnyReducer(reducer))
     }

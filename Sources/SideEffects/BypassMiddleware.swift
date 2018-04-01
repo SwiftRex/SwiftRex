@@ -1,6 +1,8 @@
 public final class BypassMiddleware<GlobalState>: Middleware {
     public weak var actionHandler: ActionHandler?
 
+    public init() { }
+
     public func handle(event: Event, getState: @escaping GetState<GlobalState>, next: @escaping NextEventHandler<GlobalState>) {
         next(event, getState)
     }

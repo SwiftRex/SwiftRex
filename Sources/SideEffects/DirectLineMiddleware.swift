@@ -1,6 +1,8 @@
 public final class DirectLineMiddleware<GlobalState>: Middleware {
     public weak var actionHandler: ActionHandler?
 
+    public init() { }
+
     public func handle(event: Event, getState: @escaping GetState<GlobalState>, next: @escaping NextEventHandler<GlobalState>) {
         if let actionHandler = actionHandler, let action = event as? Action {
             actionHandler.trigger(action)
