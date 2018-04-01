@@ -67,11 +67,6 @@
 		D595F6FF206E835000E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F700206E835000E02733 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D595F6CF206E818C00E02733 /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D595F70A206E866100E02733 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6CC206E818C00E02733 /* SwiftRex.framework */; };
-		D595F717206E868D00E02733 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F716206E868D00E02733 /* AppDelegate.swift */; };
-		D595F719206E868D00E02733 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F718206E868D00E02733 /* ViewController.swift */; };
-		D595F71C206E868D00E02733 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D595F71A206E868D00E02733 /* Main.storyboard */; };
-		D595F71E206E868F00E02733 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D595F71D206E868F00E02733 /* Assets.xcassets */; };
-		D595F721206E868F00E02733 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D595F71F206E868F00E02733 /* LaunchScreen.storyboard */; };
 		D595F72E206E88B300E02733 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F72D206E88B300E02733 /* Action.swift */; };
 		D595F72F206E88B300E02733 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F72D206E88B300E02733 /* Action.swift */; };
 		D595F730206E88B300E02733 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = D595F72D206E88B300E02733 /* Action.swift */; };
@@ -184,13 +179,6 @@
 		D595F6F7206E81C900E02733 /* Info-macOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-macOS.plist"; sourceTree = "<group>"; };
 		D595F705206E866000E02733 /* SwiftRex iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftRex iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F709206E866100E02733 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D595F714206E868D00E02733 /* SwiftRex Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwiftRex Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D595F716206E868D00E02733 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D595F718206E868D00E02733 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		D595F71B206E868D00E02733 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		D595F71D206E868F00E02733 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D595F720206E868F00E02733 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		D595F722206E868F00E02733 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D595F72D206E88B300E02733 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		D595F732206E88C600E02733 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		D595F737206E88E700E02733 /* SideEffectProducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducer.swift; sourceTree = "<group>"; };
@@ -262,13 +250,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D595F711206E868D00E02733 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -290,7 +271,6 @@
 			children = (
 				D595F6FC206E81DD00E02733 /* Sources */,
 				D595F706206E866100E02733 /* SwiftRex iOSTests */,
-				D595F715206E868D00E02733 /* SwiftRex Example */,
 				D595F6CD206E818C00E02733 /* Products */,
 				D51638F6206F426700469F96 /* Frameworks */,
 			);
@@ -399,7 +379,6 @@
 				D595F6E7206E81B900E02733 /* SwiftRex.framework */,
 				D595F6F4206E81C900E02733 /* SwiftRex.framework */,
 				D595F705206E866000E02733 /* SwiftRex iOSTests.xctest */,
-				D595F714206E868D00E02733 /* SwiftRex Example.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -441,19 +420,6 @@
 				D5BB2CEC206F186F003FB823 /* StoreBaseTests.swift */,
 			);
 			path = "SwiftRex iOSTests";
-			sourceTree = "<group>";
-		};
-		D595F715206E868D00E02733 /* SwiftRex Example */ = {
-			isa = PBXGroup;
-			children = (
-				D595F716206E868D00E02733 /* AppDelegate.swift */,
-				D595F718206E868D00E02733 /* ViewController.swift */,
-				D595F71A206E868D00E02733 /* Main.storyboard */,
-				D595F71D206E868F00E02733 /* Assets.xcassets */,
-				D595F71F206E868F00E02733 /* LaunchScreen.storyboard */,
-				D595F722206E868F00E02733 /* Info.plist */,
-			);
-			path = "SwiftRex Example";
 			sourceTree = "<group>";
 		};
 		D595F750206E9CDD00E02733 /* Mutation */ = {
@@ -651,23 +617,6 @@
 			productReference = D595F705206E866000E02733 /* SwiftRex iOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D595F713206E868D00E02733 /* SwiftRex Example */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D595F723206E868F00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex Example" */;
-			buildPhases = (
-				D595F710206E868D00E02733 /* Sources */,
-				D595F711206E868D00E02733 /* Frameworks */,
-				D595F712206E868D00E02733 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "SwiftRex Example";
-			productName = "SwiftRex Example";
-			productReference = D595F714206E868D00E02733 /* SwiftRex Example.app */;
-			productType = "com.apple.product-type.application";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -696,9 +645,6 @@
 					D595F704206E866000E02733 = {
 						CreatedOnToolsVersion = 9.3;
 					};
-					D595F713206E868D00E02733 = {
-						CreatedOnToolsVersion = 9.3;
-					};
 				};
 			};
 			buildConfigurationList = D56C6BC8206E80D0007FA63E /* Build configuration list for PBXProject "SwiftRex" */;
@@ -719,7 +665,6 @@
 				D595F6E6206E81B900E02733 /* SwiftRex tvOS */,
 				D595F6F3206E81C900E02733 /* SwiftRex macOS */,
 				D595F704206E866000E02733 /* SwiftRex iOSTests */,
-				D595F713206E868D00E02733 /* SwiftRex Example */,
 			);
 		};
 /* End PBXProject section */
@@ -757,16 +702,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D595F712206E868D00E02733 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D595F721206E868F00E02733 /* LaunchScreen.storyboard in Resources */,
-				D595F71E206E868F00E02733 /* Assets.xcassets in Resources */,
-				D595F71C206E868D00E02733 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1024,15 +959,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D595F710206E868D00E02733 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D595F719206E868D00E02733 /* ViewController.swift in Sources */,
-				D595F717206E868D00E02733 /* AppDelegate.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1042,25 +968,6 @@
 			targetProxy = D595F70B206E866100E02733 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		D595F71A206E868D00E02733 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D595F71B206E868D00E02733 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		D595F71F206E868F00E02733 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D595F720206E868F00E02733 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		D56C6BC9206E80D0007FA63E /* Debug */ = {
@@ -1888,144 +1795,6 @@
 			};
 			name = Release;
 		};
-		D595F724206E868F00E02733 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 7BK8NL3DYL;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "SwiftRex Example/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.developercity.SwiftRex-Example";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D595F725206E868F00E02733 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 7BK8NL3DYL;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "SwiftRex Example/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.developercity.SwiftRex-Example";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2079,15 +1848,6 @@
 			buildConfigurations = (
 				D595F70E206E866100E02733 /* Debug */,
 				D595F70F206E866100E02733 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D595F723206E868F00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex Example" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D595F724206E868F00E02733 /* Debug */,
-				D595F725206E868F00E02733 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
