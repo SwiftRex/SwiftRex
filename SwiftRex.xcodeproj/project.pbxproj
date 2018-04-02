@@ -11,6 +11,10 @@
 		D50C0F36207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
 		D50C0F37207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
 		D50C0F38207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
+		D516136D2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D516136C2072B5EA0085DC80 /* LoggerMiddleware.swift */; };
+		D516136E2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D516136C2072B5EA0085DC80 /* LoggerMiddleware.swift */; };
+		D516136F2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D516136C2072B5EA0085DC80 /* LoggerMiddleware.swift */; };
+		D51613702072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D516136C2072B5EA0085DC80 /* LoggerMiddleware.swift */; };
 		D51638F8206F426800469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F7206F426800469F96 /* RxSwift.framework */; };
 		D51638FA206F429300469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F9206F429300469F96 /* RxSwift.framework */; };
 		D51638FC206F42AD00469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FB206F42AD00469F96 /* RxSwift.framework */; };
@@ -134,6 +138,7 @@
 
 /* Begin PBXFileReference section */
 		D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectLineMiddleware.swift; sourceTree = "<group>"; };
+		D516136C2072B5EA0085DC80 /* LoggerMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerMiddleware.swift; sourceTree = "<group>"; };
 		D51638F7206F426800469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638F9206F429300469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/watchOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638FB206F42AD00469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/tvOS/RxSwift.framework; sourceTree = "<group>"; };
@@ -343,6 +348,7 @@
 				D5946FC820700B8800D8F4D2 /* BypassMiddleware.swift */,
 				D595F767206EAB7E00E02733 /* ComposedMiddleware.swift */,
 				D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */,
+				D516136C2072B5EA0085DC80 /* LoggerMiddleware.swift */,
 				D595F741206E891000E02733 /* Middleware.swift */,
 				D595F737206E88E700E02733 /* SideEffectProducer.swift */,
 				D575BB8A2070500F00A965EA /* SideEffectMiddleware.swift */,
@@ -842,6 +848,7 @@
 				D575BB7C20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F733206E88C600E02733 /* Event.swift in Sources */,
 				D595F74C206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D516136D2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
 				D50C0F35207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F72E206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8B2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,
@@ -867,6 +874,7 @@
 				D575BB7D20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F734206E88C600E02733 /* Event.swift in Sources */,
 				D595F74D206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D516136E2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
 				D50C0F36207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F72F206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8C2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,
@@ -892,6 +900,7 @@
 				D575BB7E20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F735206E88C600E02733 /* Event.swift in Sources */,
 				D595F74E206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D516136F2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
 				D50C0F37207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F730206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8D2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,
@@ -917,6 +926,7 @@
 				D575BB7F20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F736206E88C600E02733 /* Event.swift in Sources */,
 				D595F74F206E8A2C00E02733 /* TypeAlias.swift in Sources */,
+				D51613702072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
 				D50C0F38207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F731206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8E2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,

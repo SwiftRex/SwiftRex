@@ -31,7 +31,6 @@ class RepositorySearchPresenter: RepositorySearchPresenterProtocol {
                 return offset.y + frame.height >= contentSize.height - 100
             }
             .distinctUntilChanged()
-            .debug()
             .filter { $0 }
             .map { _ in RepositorySearchEvent.approachingEndOfCurrentPage }
             .subscribe(onNext: eventHandler.dispatch)
