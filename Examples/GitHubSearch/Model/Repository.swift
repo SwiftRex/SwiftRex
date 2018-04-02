@@ -1,6 +1,6 @@
 import Foundation
 
-struct Repository: Equatable, CustomDebugStringConvertible {
+struct Repository: Equatable, CustomDebugStringConvertible, Codable {
     var name: String
     var url: URL
 

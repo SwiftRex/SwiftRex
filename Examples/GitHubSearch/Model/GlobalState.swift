@@ -1,6 +1,6 @@
 import Foundation
 
-struct GlobalState: Equatable {
+struct GlobalState: Equatable, Encodable {
     var query: String?
     var lastSearch: AsyncResult<[Repository]> = .notLoaded
     var currentRepositories: [Repository] = []

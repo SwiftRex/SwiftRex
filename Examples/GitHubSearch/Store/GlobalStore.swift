@@ -6,11 +6,14 @@ class GlobalStore: StoreBase<GlobalState>, GlobalStateProvider {
     init() {
         let logger = LoggerMiddleware(stateTransformer: stateTransformer,
                                       actionTransformer: actionTransformer)
+
+        let monitor: MonitorMiddleware<GlobalState> = MonitorMiddleware()
+
         let services = ServicesMiddleware()
 
         super.init(initialState: GlobalState(),
                    reducer: RepositorySearchReducer(),
-                   middleware: logger >>> services)
+                   middleware: logger >>> monitor >>> services)
     }
 }
 

@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D50AE89F2072E8890058FE6A /* MonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE89E2072E8890058FE6A /* MonitorService.swift */; };
+		D50AE8A02072E8890058FE6A /* MonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE89E2072E8890058FE6A /* MonitorService.swift */; };
+		D50AE8A12072E8890058FE6A /* MonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE89E2072E8890058FE6A /* MonitorService.swift */; };
+		D50AE8A22072E8890058FE6A /* MonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE89E2072E8890058FE6A /* MonitorService.swift */; };
+		D50AE8A42072E8D40058FE6A /* SuasEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A32072E8D40058FE6A /* SuasEncodable.swift */; };
+		D50AE8A52072E8D40058FE6A /* SuasEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A32072E8D40058FE6A /* SuasEncodable.swift */; };
+		D50AE8A62072E8D40058FE6A /* SuasEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A32072E8D40058FE6A /* SuasEncodable.swift */; };
+		D50AE8A72072E8D40058FE6A /* SuasEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A32072E8D40058FE6A /* SuasEncodable.swift */; };
+		D50AE8A92072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A82072E8FA0058FE6A /* MonitorMiddleware.swift */; };
+		D50AE8AA2072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A82072E8FA0058FE6A /* MonitorMiddleware.swift */; };
+		D50AE8AB2072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A82072E8FA0058FE6A /* MonitorMiddleware.swift */; };
+		D50AE8AC2072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AE8A82072E8FA0058FE6A /* MonitorMiddleware.swift */; };
 		D50C0F35207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
 		D50C0F36207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
 		D50C0F37207023D300EA6316 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */; };
@@ -137,6 +149,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D50AE89E2072E8890058FE6A /* MonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorService.swift; sourceTree = "<group>"; };
+		D50AE8A32072E8D40058FE6A /* SuasEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuasEncodable.swift; sourceTree = "<group>"; };
+		D50AE8A82072E8FA0058FE6A /* MonitorMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorMiddleware.swift; sourceTree = "<group>"; };
 		D50C0F34207023D300EA6316 /* DirectLineMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectLineMiddleware.swift; sourceTree = "<group>"; };
 		D516136C2072B5EA0085DC80 /* LoggerMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerMiddleware.swift; sourceTree = "<group>"; };
 		D51638F7206F426800469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
@@ -258,6 +273,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D50AE89D2072E86A0058FE6A /* SuasMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				D50AE8A82072E8FA0058FE6A /* MonitorMiddleware.swift */,
+				D50AE89E2072E8890058FE6A /* MonitorService.swift */,
+				D50AE8A32072E8D40058FE6A /* SuasEncodable.swift */,
+			);
+			path = SuasMonitor;
+			sourceTree = "<group>";
+		};
 		D51638F6206F426700469F96 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -304,6 +329,7 @@
 				D595F750206E9CDD00E02733 /* Mutation */,
 				D595F752206E9D7E00E02733 /* SideEffects */,
 				D595F751206E9D6100E02733 /* Store */,
+				D50AE89D2072E86A0058FE6A /* SuasMonitor */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -842,6 +868,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D50AE89F2072E8890058FE6A /* MonitorService.swift in Sources */,
 				D595F75E206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F799206EC9BF00E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FC920700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
@@ -849,6 +876,7 @@
 				D595F733206E88C600E02733 /* Event.swift in Sources */,
 				D595F74C206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D516136D2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
+				D50AE8A92072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */,
 				D50C0F35207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F72E206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8B2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,
@@ -858,6 +886,7 @@
 				D595F747206E892E00E02733 /* Store.swift in Sources */,
 				D595F754206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73D206E88F900E02733 /* Reducer.swift in Sources */,
+				D50AE8A42072E8D40058FE6A /* SuasEncodable.swift in Sources */,
 				D5946FC72070065700D8F4D2 /* Operator.swift in Sources */,
 				D595F759206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F738206E88E700E02733 /* SideEffectProducer.swift in Sources */,
@@ -868,6 +897,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D50AE8A02072E8890058FE6A /* MonitorService.swift in Sources */,
 				D595F75F206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F79A206ED16900E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FCA20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
@@ -875,6 +905,7 @@
 				D595F734206E88C600E02733 /* Event.swift in Sources */,
 				D595F74D206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D516136E2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
+				D50AE8AA2072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */,
 				D50C0F36207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F72F206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8C2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,
@@ -884,6 +915,7 @@
 				D595F748206E892E00E02733 /* Store.swift in Sources */,
 				D595F755206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73E206E88F900E02733 /* Reducer.swift in Sources */,
+				D50AE8A52072E8D40058FE6A /* SuasEncodable.swift in Sources */,
 				D5946FC62070065600D8F4D2 /* Operator.swift in Sources */,
 				D595F75A206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F739206E88E700E02733 /* SideEffectProducer.swift in Sources */,
@@ -894,6 +926,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D50AE8A12072E8890058FE6A /* MonitorService.swift in Sources */,
 				D595F760206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F79C206ED16B00E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FCB20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
@@ -901,6 +934,7 @@
 				D595F735206E88C600E02733 /* Event.swift in Sources */,
 				D595F74E206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D516136F2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
+				D50AE8AB2072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */,
 				D50C0F37207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F730206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8D2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,
@@ -910,6 +944,7 @@
 				D595F749206E892E00E02733 /* Store.swift in Sources */,
 				D595F756206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F73F206E88F900E02733 /* Reducer.swift in Sources */,
+				D50AE8A62072E8D40058FE6A /* SuasEncodable.swift in Sources */,
 				D5946FC52070065500D8F4D2 /* Operator.swift in Sources */,
 				D595F75B206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F73A206E88E700E02733 /* SideEffectProducer.swift in Sources */,
@@ -920,6 +955,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D50AE8A22072E8890058FE6A /* MonitorService.swift in Sources */,
 				D595F761206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F79B206ED16B00E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FCC20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
@@ -927,6 +963,7 @@
 				D595F736206E88C600E02733 /* Event.swift in Sources */,
 				D595F74F206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D51613702072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
+				D50AE8AC2072E8FA0058FE6A /* MonitorMiddleware.swift in Sources */,
 				D50C0F38207023D300EA6316 /* DirectLineMiddleware.swift in Sources */,
 				D595F731206E88B300E02733 /* Action.swift in Sources */,
 				D575BB8E2070500F00A965EA /* SideEffectMiddleware.swift in Sources */,
@@ -936,6 +973,7 @@
 				D595F74A206E892E00E02733 /* Store.swift in Sources */,
 				D595F757206E9DB100E02733 /* EventHandler.swift in Sources */,
 				D595F740206E88F900E02733 /* Reducer.swift in Sources */,
+				D50AE8A72072E8D40058FE6A /* SuasEncodable.swift in Sources */,
 				D5946FC42070065400D8F4D2 /* Operator.swift in Sources */,
 				D595F75C206E9DC400E02733 /* ActionHandler.swift in Sources */,
 				D595F73B206E88E700E02733 /* SideEffectProducer.swift in Sources */,

@@ -1,33 +1,33 @@
 import Foundation
 import RxSwift
 
-protocol Cancelable {
+public protocol Cancelable {
     func cancel()
 }
 
 extension URLSessionTask: Cancelable { }
 
-struct CancelableBox: Cancelable {
+public struct CancelableBox: Cancelable {
     var cancelFunction: () -> Void
 
     init(cancelFunction: @escaping () -> Void) {
         self.cancelFunction = cancelFunction
     }
 
-    func cancel() {
+    public func cancel() {
         cancelFunction()
     }
 }
 
-class ObservableCancelable: ObservableType, Cancelable {
-    typealias E = Bool
+public class ObservableCancelable: ObservableType, Cancelable {
+    public typealias E = Bool
     private let cancelled = BehaviorSubject<Bool>(value: false)
 
-    func subscribe<O>(_ observer: O) -> Disposable where O: ObserverType, ObservableCancelable.E == O.E {
+    public func subscribe<O>(_ observer: O) -> Disposable where O: ObserverType, ObservableCancelable.E == O.E {
         return cancelled.subscribe(observer)
     }
 
-    func cancel() {
+    public func cancel() {
         cancelled.onNext(true)
     }
 }

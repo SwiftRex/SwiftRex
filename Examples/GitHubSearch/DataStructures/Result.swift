@@ -89,3 +89,39 @@ public func ??? <T>(result: Result<T>, defaultValue: @autoclosure () throws -> T
             return try defaultValue()
         }
 }
+
+public struct EncodedError: Error, Codable {
+    let message: String
+}
+
+extension Result {
+    enum CodingKeys: CodingKey {
+        case success
+        case failure
+    }
+}
+
+extension Result: Encodable where T: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .success(let value):
+            try container.encode(value, forKey: .success)
+        case .failure(let error):
+            try container.encode(EncodedError(message: error.localizedDescription), forKey: .failure)
+        }
+    }
+}
+
+extension Result: Decodable where T: Decodable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        do {
+            let successValue = try container.decode(T.self, forKey: .success)
+            self = .success(successValue)
+        } catch {
+            let error = try container.decode(EncodedError.self, forKey: .failure)
+            self = .failure(error)
+        }
+    }
+}
