@@ -4,6 +4,9 @@ open class StoreBase<E>: Store {
     private let middleware: AnyMiddleware<E>
     private let reducer: AnyReducer<E>
     private let state: BehaviorSubject<E>
+    private let dispatchEventQueue = DispatchQueue.main
+    private let triggerActionQueue = DispatchQueue.main
+    private let reduceQueue = DispatchQueue.main
 
     public init<R: Reducer, M: Middleware>(
         initialState: E,
@@ -24,6 +27,26 @@ open class StoreBase<E>: Store {
     }
 
     open func dispatch(_ event: Event) {
+        dispatchEventQueue.async {
+            self.middlewarePipeline(for: event)
+        }
+    }
+
+    open func trigger(_ action: Action) {
+        triggerActionQueue.async {
+            self.middlewarePipeline(for: action)
+        }
+    }
+
+    public func subscribe<O>(_ observer: O) -> Disposable where O: ObserverType, O.E == StateType {
+        return state
+            .observeOn(MainScheduler.instance)
+            .subscribe(observer)
+    }
+}
+
+extension StoreBase {
+    private func middlewarePipeline(for event: Event) {
         let ignore: (Event, GetState<E>) -> Void = { _, _ in }
         middleware.handle(
             event: event,
@@ -31,20 +54,20 @@ open class StoreBase<E>: Store {
             next: ignore)
     }
 
-    open func trigger(_ action: Action) {
+    private func middlewarePipeline(for action: Action) {
         middleware.handle(
             action: action,
             getState: { [unowned self] in try! self.state.value() },
-            next: { action, _ in
-                let oldState = try! self.state.value()
-                let newState = self.reducer.reduce(oldState, action: action)
-                self.state.onNext(newState)
-        })
+            next: { [weak self] action, _ in
+                self?.reduceQueue.async {
+                    self?.reduce(action: action)
+                }
+            })
     }
 
-    public func subscribe<O>(_ observer: O) -> Disposable where O: ObserverType, O.E == StateType {
-        return state
-            .observeOn(MainScheduler.instance)
-            .subscribe(observer)
+    private func reduce(action: Action) {
+        let oldState = try! state.value()
+        let newState = reducer.reduce(oldState, action: action)
+        state.onNext(newState)
     }
 }

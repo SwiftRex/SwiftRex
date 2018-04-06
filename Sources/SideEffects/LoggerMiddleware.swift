@@ -17,7 +17,7 @@ public final class LoggerMiddleware<GlobalState>: Middleware {
     private let eventTransformer: (Event) -> String
     private let actionTransformer: (Action) -> String
     private let actionTitleFormatter: ((Action, Date, UInt64) -> String)?
-    private let eventTitleFormatter: ((Event, Date) -> String)?
+    private let eventTitleFormatter: ((Event, Date, UInt64) -> String)?
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss.SSS"
@@ -32,7 +32,7 @@ public final class LoggerMiddleware<GlobalState>: Middleware {
         actionFilter: @escaping (GlobalState, Action) -> Bool = { _, _ in true },
         debugOnly: Bool = true,
         actionTitleFormatter: ((Action, Date, UInt64) -> String)? = nil,
-        eventTitleFormatter: ((Event, Date) -> String)? = nil,
+        eventTitleFormatter: ((Event, Date, UInt64) -> String)? = nil,
         stateTransformer: @escaping (GlobalState) -> String = { "\($0)" },
         actionTransformer: @escaping (Action) -> String = { "\($0)" },
         eventTransformer: @escaping (Event) -> String = { "\($0)" },
@@ -60,14 +60,17 @@ public final class LoggerMiddleware<GlobalState>: Middleware {
 
         let startTime = DispatchTime.now()
 
-        let firstLine = logEventTitle(event: event, startTime: startTime)
+        next(event, getState)
+
+        let endTime = DispatchTime.now()
+
+        let firstLine = logEventTitle(event: event, startTime: startTime, endTime: endTime)
+
         logger([
             firstLine,
             line(prefix: "├─ Event      ► ", content: "\(eventTransformer(event))", length: lineLength),
             closingLine(length: firstLine.count)
             ].joined(separator: "\n"))
-
-        next(event, getState)
     }
 
     public func handle(action: Action, getState: @escaping GetState<GlobalState>, next: @escaping NextActionHandler<GlobalState>) {
@@ -98,14 +101,17 @@ public final class LoggerMiddleware<GlobalState>: Middleware {
 extension LoggerMiddleware {
     private func logEventTitle(
         event: Event,
-        startTime: DispatchTime) -> String {
+        startTime: DispatchTime,
+        endTime: DispatchTime) -> String {
+        let duration = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
 
         if let titleFormatter = eventTitleFormatter {
-            return titleFormatter(event, Date())
+            return titleFormatter(event, Date(), duration)
         } else {
             return title(
                 type: "Event",
                 value: "\(type(of: event))",
+                duration: duration,
                 date: Date(),
                 showTimestamp: showTimestamp,
                 showDuration: showDuration)
@@ -152,7 +158,7 @@ extension LoggerMiddleware {
     private func title(
         type: String,
         value: String,
-        duration: UInt64 = 0,
+        duration: UInt64,
         date: Date,
         showTimestamp: Bool,
         showDuration: Bool
