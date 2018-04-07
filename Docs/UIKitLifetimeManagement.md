@@ -1,4 +1,4 @@
-# 🚦 UIKit lifetime management
+# 🌪 UIKit lifetime management
 
 Now imagine that you start an API call to add a movie to your favorites from your details page, but you close that screen before it completes. Having the API Client in your ViewController means that once the screen is dismissed, the completion handler block may not be called, and eventual loggers, trackers or state updates won't happen. That's why we keep API Client and analytics trackers as singletons, independent from UIKit life cycle. As the system grows, we have more and more of these classes making side-effects and all of them is a dependency that must be resolved, or injected, on your ViewController. And that's not enough, if the completion handler of any of these classes need some updated View State to complete other tasks, as analytics trackers for example, you can't simply capture `[unowned self]` or `[weak self]` with `guard let`. Let's illustrate the problem:
 
@@ -24,7 +24,7 @@ Now, if the ViewController above is dismissed most of the completion block is no
 let queryText = searchBar.text
 let screenName = self.screenName
 let nextPage = currentPage + 1
-let isUserLoggedIn: userState != nil
+let isUserLoggedIn = userState != nil
 
 api.fetchNextPage(pageNumber: nextPage,
                   query: searchBar.text) { [weak self, tracker] pageResults in
