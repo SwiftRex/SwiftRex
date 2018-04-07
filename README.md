@@ -21,12 +21,12 @@ That's the scenario where SwiftRex shines, because it:
 I'm not gonna lie, it's a completely different way of writing apps, as most reactive approaches are; but once you get used to, it makes more sense and enables you to reuse much more code between your projects, gives you better tooling for writing software, testing, debugging, logging and finally thinking about events, state and mutation as you've never done before. And I promise you, it's gonna be a way with no return, an Unidirectional journey.
 
 # Parts
-- 🏪 [Store](#store)
-- 🕹 [Event](#event)
-- 🏄‍ [Action](#action)
-- ⛓️ [Middleware](#middleware)
-- 🌍 [SideEffectProducer](#sideeffectproducer)
-- ⚙️ [Reducer](#reducer)
+- 🏪 [Store](#-store)
+- 🕹 [Event](#-event)
+- 🏄‍ [Action](#-action)
+- ⛓️ [Middleware](#-middleware)
+- 🌍 [SideEffectProducer](#-sideeffectproducer)
+- ⚙️ [Reducer](#-reducer)
 
 ## 🏪 Store
 
@@ -74,7 +74,7 @@ enum MovieListAction: Action {
 }
 ```
 
-## ⛓️ Middleware
+## ⛓ Middleware
 
 We already know what events and actions are: both are lightweight structures that are dispatched (event) or triggered (action) into the Store. The store enqueues a new item that arrives and submits it to a pipeline of Middlewares. So, in other words, a Middleware is class that handles actions and events, and has the power to trigger more actions to the next Middlewares in the chain. A very simple Middleware will receive an Event and current state, and trigger an equivalent Action to the Store.
 
