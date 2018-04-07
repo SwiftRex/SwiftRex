@@ -34,7 +34,9 @@ That's where our journey begins. The store will glue everything together and its
 
 Being an event handler means that ViewControllers can dispatch events to it, such as `userTappedButtonX`, `didScrollToPosition:`, `viewDidLoad` or `queryTextFieldChangedTo:`. On the other hand, being a state provider basically means that store is an `Observable<T>`, where `T` is the `State` of your app, so ViewControllers can subscribe to state changes and react to them. We will see how the communication flows later, but for now it's enough to understand that Store is the single point of contact with UIKit so it's a class that you want to inject as a dependency on all ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance but ViewController doesn't need to know that.
 
-![Store and ViewController](Docs/Misc/StoreBase.png)
+<p align="center">
+  <img src="Docs/Misc/StoreBase.png" title="Store and ViewController">
+</p>
 
 You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the UIKit world. Theoretically it should be possible to keep multiple stores - one per module or per ViewController - and keep them in sync through Rx observation, in a "Flux"-like approach. However, the main goal of SwiftRex is to keep an unified state independent from UIKit, therefore it's the recommended approach.
 
@@ -92,6 +94,10 @@ In the first case, we create the `URLSessionDataTask`, call `task.resume` and im
 The third case, however, offers many more possibilities. You can think about the possible three states of a movie: watched, not watched, mutating. You can even split the "mutating" case in two: "mutating to watched" and "mutating to unwatched". What you get from that is the ability to disable the "watch" button, or replaced it by an activity indicator view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate situation. To offer that, you call `task.resume` and immediately trigger a `setMovieAsUnwatchRequestInProgress`, while inside the response completion handler you evaluate the response and trigger another action to update the movie state again.
 
 Complex Middlewares can even run Timers or subscribe to CoreData, Realm, CoreLocation, Firebase Realtime Database or other notifications or delegates. Rx Observables are also welcome.
+
+<p align="center">
+  <img src="Docs/Misc/StoreInternals.png" title="Store internals">
+</p>
 
 ## 🌍 SideEffectProducer
 
