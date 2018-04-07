@@ -107,7 +107,7 @@ func execute(getState: @escaping GetState<StateType>) -> Observable<Action>
 
 Given the current state (that can be checked consistently at any point), return an Observable sequence of `Action`. In your Rx pipeline you can trigger as many side-effects as you want, and every time an Action occurs you can easily notify the observer, that forwards it to the Store.
 
-## ⚙️ Reducer
+## ⚙ Reducer
 
 The pipeline of Middlewares can trigger Actions, and handle both Events and Actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the "Reducer" function. Actually, it's a protocol that requires only one method:
 
