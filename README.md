@@ -1,12 +1,12 @@
 # Introduction
 
-SwiftRex is a framework that combines event-sourcing pattern and reactive programming, providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.
+SwiftRex is a framework that combines [event-sourcing pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing) and reactive programming ([RxSwift](https://github.com/ReactiveX/RxSwift)), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.
 
-This pattern is also known as "Unidirectional Dataflow" or "Redux".
+This pattern is also known as "Unidirectional Dataflow" or ["Redux"](https://redux.js.org/basics/data-flow).
 
 # Goals
 
-Several architectures and design patterns for mobile development nowadays propose to solve specific issues related to Single Responsibility Principle (such as Massive ViewControllers), or improve testability and dependency management. Other common challenges for mobile developers such as handling state or dealing properly with UIKit life cycle and ownership are less explored but can be equally harmful for an app.
+Several architectures and design patterns for mobile development nowadays propose to solve specific issues related to [Single Responsibility Principle](https://www.youtube.com/watch?v=Gt0M_OHKhQE) (such as Massive ViewControllers), or improve testability and dependency management. Other common challenges for mobile developers such as handling state, race conditions, thread-safety or dealing properly with UIKit life cycle and ownership are less explored but can be equally harmful for an app.
 
 Managing all of these problems may sound like an impossible task that would require lots of patterns and really complex test scenarios. After all, how to to reproduce a rare but critical error that happens only with some of your users but never in developers' equipment? This can be frustrating and most of us has probably faced such problems from time to time.
 
@@ -14,9 +14,9 @@ That's the scenario where SwiftRex shines, because it:
 - enforces the application of Single Responsibility Principle
 - offers a clear test strategy for each layer
 - isolates all the side-effects in middleware boxes
-- minimizes the usage of dependencies or third-party libraries on ViewControllers/Presenters/Interactors, so you don't have to keep sending dozens of dependencies across your views while routing through them
-- detaches state, services, mutation and other side-effects completely from the UIKit life cycle and its ownership tree
-- and last but not least, offers a proper state management offering a trustable truth that will never be inconsistent or out of sync among screens.
+- minimizes the usage of dependencies on ViewControllers/Presenters/Interactors, so you don't have to keep sending dozens of dependencies across your views while routing through them
+- detaches state, services, mutation and other side-effects completely from the UIKit life cycle and its ownership tree ([see why](Docs/UIKitLifetimeManagement.md))
+- and last but not least, offers a proper state management offering a trustable truth that will never be inconsistent or out of sync among screens ([see why](Docs/StateManagement.md)).
 
 I'm not gonna lie, it's a completely different way of writing apps, as most reactive approaches are; but once you get used to, it makes more sense and enables you to reuse much more code between your projects, gives you better tooling for writing software, testing, debugging, logging and finally thinking about events, state and mutation as you've never done before. And I promise you, it's gonna be a way with no return, an Unidirectional journey.
 
@@ -38,12 +38,24 @@ Being an event handler means that ViewControllers can dispatch events to it, suc
   <img src="Docs/Misc/StoreBase.png" title="Store and ViewController">
 </p>
 
+In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
+
+<p align="center">
+  <img src="Docs/Misc/CocoaMVC.gif" title="iOS MVC">
+</p>
+
+You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
+
 You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the UIKit world. Theoretically it should be possible to keep multiple stores - one per module or per ViewController - and keep them in sync through Rx observation, in a "Flux"-like approach. However, the main goal of SwiftRex is to keep an unified state independent from UIKit, therefore it's the recommended approach.
 
 A Store holds three important foundations:
 - a Middleware pipeline
 - a Reducer function
 - current state
+
+<p align="center">
+  <img src="Docs/Misc/StoreInternals.png" title="Store internals">
+</p>
 
 ## 🕹 Event
 
@@ -93,11 +105,22 @@ In the first case, we create the `URLSessionDataTask`, call `task.resume` and im
 
 The third case, however, offers many more possibilities. You can think about the possible three states of a movie: watched, not watched, mutating. You can even split the "mutating" case in two: "mutating to watched" and "mutating to unwatched". What you get from that is the ability to disable the "watch" button, or replaced it by an activity indicator view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate situation. To offer that, you call `task.resume` and immediately trigger a `setMovieAsUnwatchRequestInProgress`, while inside the response completion handler you evaluate the response and trigger another action to update the movie state again.
 
-Complex Middlewares can even run Timers or subscribe to CoreData, Realm, CoreLocation, Firebase Realtime Database or other notifications or delegates. Rx Observables are also welcome.
-
-<p align="center">
-  <img src="Docs/Misc/StoreInternals.png" title="Store internals">
-</p>
+Because Middlewares access all events and the state of the app at any point, anything can be done in these small and reusable boxes. For example, the same CoreLocation middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state `struct`. Some suggestions of Middlewares:
+- Run Timers, pooling some external resource or updating some local state at a constant time
+- Subscribe for CoreData changes
+- Subscribe for Realm changes
+- Subscribe for Firebase Realtime Database notifications
+- Be a CoreLocation delegate, checking for significant location changes or beacon ranges and triggering actions to update the state
+- Be a HealthKit delegate to track activities, or even combining that with CoreLocation observation in order to track the activity route
+- Logger
+- Telemetry
+- Analytics tracker
+- WatchConnectivity sync, keep iOS and watchOS state in sync
+- API calls and other "cold observables"
+- Reachability
+- Navigation through the app (Redux Coordinator pattern)
+- `NotificationCenter` and other delegates
+- RxSwift observables
 
 ## 🌍 SideEffectProducer
 
