@@ -54,10 +54,10 @@ public final class AnyMiddleware<StateType>: Middleware {
     }
 
     public func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) {
-        return box.handle(event: event, getState: getState, next: next)
+    return box.handle(event: event, getState: getState, next: next)
     }
     public func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) {
-        return box.handle(action: action, getState: getState, next: next)
+    return box.handle(action: action, getState: getState, next: next)
     }
 
     public var actionHandler: ActionHandler? {
@@ -102,7 +102,7 @@ public final class AnySideEffectProducer<StateType>: SideEffectProducer {
     }
 
     public func execute(getState: @escaping GetState<StateType>) -> Observable<ActionProtocol> {
-        return box.execute(getState: getState)
+    return box.execute(getState: getState)
     }
 
 }

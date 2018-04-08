@@ -1,4 +1,3 @@
-// sourcery: AutoMockable
 // sourcery: TypeErase = StateType
 public protocol Middleware: class {
     associatedtype StateType

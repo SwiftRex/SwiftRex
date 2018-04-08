@@ -10,7 +10,7 @@ private class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.name
         }
     }
 
-    {% for m in type.methods %}
+    {% for m in type.methods|!definedInExtension %}
     func {{m.name}} -> {{m.returnTypeName}} {
         fatalError("Must override")
     }
@@ -32,7 +32,7 @@ private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.na
         self.concrete = concrete
     }
 
-    {% for m in type.methods %}
+    {% for m in type.methods|!definedInExtension %}
     override func {{m.name}} -> {{m.returnTypeName}} {
         return concrete.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %}, {% endif %}{% endfor %})
     }
@@ -53,9 +53,9 @@ public final class Any{{type.name}}<{{ type.annotations.TypeErase }}>: {{type.na
         self.box = _Any{{type.name}}Box(concrete)
     }
 
-    {% for m in type.methods %}
+    {% for m in type.methods|!definedInExtension %}
     public func {{m.name}} -> {{m.returnTypeName}} {
-        return box.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %},{% endif %}{% endfor %})
+    return box.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %},{% endif %}{% endfor %})
     }
     {% endfor %}
 

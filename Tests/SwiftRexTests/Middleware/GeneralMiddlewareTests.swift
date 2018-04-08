@@ -4,7 +4,7 @@ import XCTest
 class GeneralMiddlewareTests: MiddlewareTestsBase {
     func testAnyMiddlewareEvent() {
         // Given
-        let middlewareMock = MiddlewareMock()
+        let middlewareMock = MiddlewareMock<TestState>()
         let sut = AnyMiddleware(middlewareMock)
         let event = Event1()
         let state = TestState()
@@ -28,7 +28,7 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
 
     func testAnyMiddlewareAction() {
         // Given
-        let middlewareMock = MiddlewareMock()
+        let middlewareMock = MiddlewareMock<TestState>()
         let sut = AnyMiddleware(middlewareMock)
         let action = Action1()
         let state = TestState()

@@ -11,6 +11,12 @@
 		D51638FA206F429300469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F9206F429300469F96 /* RxSwift.framework */; };
 		D51638FC206F42AD00469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FB206F42AD00469F96 /* RxSwift.framework */; };
 		D51638FE206F42C200469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FD206F42C200469F96 /* RxSwift.framework */; };
+		D51C8ACF207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D51C8AD2207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D51C8AD4207ACAD900EAC486 /* SubstateMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */; };
+		D51C8AD6207ACDA300EAC486 /* MiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */; };
 		D52E2164207A6D9B00A88E39 /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52E2162207A6CEC00A88E39 /* ReducerMock.swift */; };
 		D59D580B207AA1B40010412E /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D59D580C207AA1B40010412E /* EventProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E7207AA1B40010412E /* EventProtocol.swift */; };
@@ -87,7 +93,6 @@
 		D5A606F6207126DD00D682EF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6CC206E818C00E02733 /* SwiftRex.framework */; };
 		D5A607222071287A00D682EF /* StoreBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A606FC2071287900D682EF /* StoreBaseTests.swift */; };
 		D5A607232071287A00D682EF /* SideEffectMiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A606FF2071287900D682EF /* SideEffectMiddlewareMock.swift */; };
-		D5A607242071287A00D682EF /* MiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607002071287900D682EF /* MiddlewareMock.swift */; };
 		D5A607252071287A00D682EF /* RotationMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607012071287900D682EF /* RotationMiddleware.swift */; };
 		D5A607262071287A00D682EF /* SideEffectProducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607032071287900D682EF /* SideEffectProducerMock.swift */; };
 		D5A607272071287A00D682EF /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
@@ -134,6 +139,9 @@
 		D51638FB206F42AD00469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/tvOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638FD206F42C200469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 		D5163901206F528A00469F96 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
+		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
+		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
+		D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
 		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
 		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -174,7 +182,6 @@
 		D5A606F5207126DD00D682EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D5A606FC2071287900D682EF /* StoreBaseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
 		D5A606FF2071287900D682EF /* SideEffectMiddlewareMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectMiddlewareMock.swift; sourceTree = "<group>"; };
-		D5A607002071287900D682EF /* MiddlewareMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
 		D5A607012071287900D682EF /* RotationMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationMiddleware.swift; sourceTree = "<group>"; };
 		D5A607032071287900D682EF /* SideEffectProducerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerMock.swift; sourceTree = "<group>"; };
 		D5A607042071287900D682EF /* TimelySideEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelySideEffect.swift; sourceTree = "<group>"; };
@@ -342,6 +349,7 @@
 				D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */,
 				D59D57FA207AA1B40010412E /* SideEffectMiddleware.swift */,
 				D59D57FE207AA1B40010412E /* SideEffectProducer.swift */,
+				D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */,
 			);
 			path = Middlewares;
 			sourceTree = "<group>";
@@ -407,7 +415,7 @@
 		D5A606FE2071287900D682EF /* Middleware */ = {
 			isa = PBXGroup;
 			children = (
-				D5A607002071287900D682EF /* MiddlewareMock.swift */,
+				D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */,
 				D5A607012071287900D682EF /* RotationMiddleware.swift */,
 				D5A606FF2071287900D682EF /* SideEffectMiddlewareMock.swift */,
 			);
@@ -481,6 +489,7 @@
 				D5A6071C2071287A00D682EF /* GeneralMiddlewareTests.swift */,
 				D5A6071A2071287A00D682EF /* MiddlewareTestsBase.swift */,
 				D5A6071B2071287A00D682EF /* SideEffectMiddlewareTests.swift */,
+				D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */,
 			);
 			path = Middleware;
 			sourceTree = "<group>";
@@ -837,6 +846,7 @@
 				D59D580E207AA1B40010412E /* Operator.swift in Sources */,
 				D59D581F207AA1B40010412E /* SideEffectProducer.swift in Sources */,
 				D59D580C207AA1B40010412E /* EventProtocol.swift in Sources */,
+				D51C8ACF207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D59D580B207AA1B40010412E /* Reducer.swift in Sources */,
 				D59D5827207AA1B40010412E /* EventHandler.swift in Sources */,
 				D59D5818207AA1B40010412E /* TypeAlias.swift in Sources */,
@@ -861,6 +871,7 @@
 				D59D5858207AA2680010412E /* TypeErase.generated.swift in Sources */,
 				D59D5849207AA1F90010412E /* Middleware.swift in Sources */,
 				D59D5848207AA1F90010412E /* SideEffectMiddleware.swift in Sources */,
+				D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D59D5836207AA1E70010412E /* EventHandler.swift in Sources */,
 				D59D5838207AA1E70010412E /* StoreBase.swift in Sources */,
 				D59D584C207AA1F90010412E /* SideEffectProducer.swift in Sources */,
@@ -885,6 +896,7 @@
 				D59D585B207AA2690010412E /* TypeErase.generated.swift in Sources */,
 				D59D5842207AA1F80010412E /* Middleware.swift in Sources */,
 				D59D5841207AA1F80010412E /* SideEffectMiddleware.swift in Sources */,
+				D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D59D5831207AA1E60010412E /* EventHandler.swift in Sources */,
 				D59D5833207AA1E60010412E /* StoreBase.swift in Sources */,
 				D59D5845207AA1F80010412E /* SideEffectProducer.swift in Sources */,
@@ -909,6 +921,7 @@
 				D59D585E207AA26A0010412E /* TypeErase.generated.swift in Sources */,
 				D59D583B207AA1F70010412E /* Middleware.swift in Sources */,
 				D59D583A207AA1F70010412E /* SideEffectMiddleware.swift in Sources */,
+				D51C8AD2207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D59D582C207AA1E50010412E /* EventHandler.swift in Sources */,
 				D59D582E207AA1E50010412E /* StoreBase.swift in Sources */,
 				D59D583E207AA1F70010412E /* SideEffectProducer.swift in Sources */,
@@ -927,6 +940,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D51C8AD4207ACAD900EAC486 /* SubstateMiddlewareTests.swift in Sources */,
 				D5A6072B2071287A00D682EF /* Action2.swift in Sources */,
 				D5A607222071287A00D682EF /* StoreBaseTests.swift in Sources */,
 				D5A607272071287A00D682EF /* TimelySideEffect.swift in Sources */,
@@ -951,11 +965,11 @@
 				D5A6072A2071287A00D682EF /* ActionReference.swift in Sources */,
 				D5A6073B2071287A00D682EF /* BypassMiddlewareTests.swift in Sources */,
 				D5A607332071287A00D682EF /* Event2.swift in Sources */,
-				D5A607242071287A00D682EF /* MiddlewareMock.swift in Sources */,
 				D5A607342071287A00D682EF /* TestState.swift in Sources */,
 				D5A607292071287A00D682EF /* NameReducer.swift in Sources */,
 				D5A607392071287A00D682EF /* GeneralMiddlewareTests.swift in Sources */,
 				D5A607352071287A00D682EF /* TestStore.swift in Sources */,
+				D51C8AD6207ACDA300EAC486 /* MiddlewareMock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

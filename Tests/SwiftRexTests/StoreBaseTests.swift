@@ -8,8 +8,8 @@ class StoreBaseTests: XCTestCase {
         // Given
         let event = Event1()
         let (reducer, reducerMock) = createReducerMock()
-        let middleware1 = MiddlewareMock()
-        let middleware2 = MiddlewareMock()
+        let middleware1 = MiddlewareMock<TestState>()
+        let middleware2 = MiddlewareMock<TestState>()
         let middleware2ShouldRun = expectation(description: "Middleware 2 should run")
 
         middleware1.handleEventGetStateNextClosure = { chainEvent, getState, next in
@@ -49,8 +49,8 @@ class StoreBaseTests: XCTestCase {
     func testStoreTriggerAction() {
         // Given
         let action = Action1()
-        let middleware1 = MiddlewareMock()
-        let middleware2 = MiddlewareMock()
+        let middleware1 = MiddlewareMock<TestState>()
+        let middleware2 = MiddlewareMock<TestState>()
         let reducerShouldRun = expectation(description: "Reducer should run")
         let (reducer, reducerMock) = createReducerMock()
         middleware1.handleActionGetStateNextClosure = { chainAction, getState, next in
