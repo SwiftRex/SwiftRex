@@ -8,17 +8,11 @@ open class StoreBase<E>: Store {
     private let triggerActionQueue = DispatchQueue.main
     private let reduceQueue = DispatchQueue.main
 
-    init(state: BehaviorSubject<E>, reducer: Reducer<E>, middleware: AnyMiddleware<E>) {
-        self.state = state
+    public init<M: Middleware>(initialState: E, reducer: Reducer<E>, middleware: M) where M.StateType == E {
+        self.state = BehaviorSubject<E>(value: initialState)
         self.reducer = reducer
-        self.middleware = middleware
+        self.middleware = AnyMiddleware(middleware)
         self.middleware.actionHandler = self
-    }
-
-    public convenience init<M: Middleware>(initialState: E, reducer: Reducer<E>, middleware: M) where M.StateType == E {
-        self.init(state: BehaviorSubject<E>(value: initialState),
-                  reducer: reducer,
-                  middleware: AnyMiddleware(middleware))
     }
 
     public convenience init(initialState: E, reducer: Reducer<E>) {

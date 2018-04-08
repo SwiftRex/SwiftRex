@@ -100,9 +100,9 @@
 		D5161133207A9DC5001D3680 /* MonitorMiddleware */ = {
 			isa = PBXGroup;
 			children = (
-				D50BCAAC207AB1E50008202E /* Extensions */,
 				D53C5172207A956200B4FA1D /* SwiftRexMonitorMiddleware.h */,
 				D51DF189207AAD6100B73F92 /* LoggerMiddleware.swift */,
+				D50BCAAC207AB1E50008202E /* Extensions */,
 				D5161134207A9E82001D3680 /* Metadata */,
 				D51DF18A207AAD6100B73F92 /* SuasMonitor */,
 			);
