@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D50BCAA9207AB02A0008202E /* SwiftRexMonitorMiddleware.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D50BCAA8207AB02A0008202E /* SwiftRexMonitorMiddleware.framework */; };
+		D50BCAAB207AB03B0008202E /* SwiftRexMonitorMiddleware.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D50BCAAA207AB03B0008202E /* SwiftRexMonitorMiddleware.framework */; };
 		D57EF85120716C7100590CD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57EF85020716C7100590CD2 /* AppDelegate.swift */; };
 		D57EF85320716C7100590CD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57EF85220716C7100590CD2 /* ViewController.swift */; };
 		D57EF85620716C7100590CD2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D57EF85420716C7100590CD2 /* Main.storyboard */; };
@@ -52,6 +54,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D50BCAA8207AB02A0008202E /* SwiftRexMonitorMiddleware.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftRexMonitorMiddleware.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D50BCAAA207AB03B0008202E /* SwiftRexMonitorMiddleware.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftRexMonitorMiddleware.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D57EF84D20716C7100590CD2 /* Counter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Counter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D57EF85020716C7100590CD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D57EF85220716C7100590CD2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -104,6 +108,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D50BCAA9207AB02A0008202E /* SwiftRexMonitorMiddleware.framework in Frameworks */,
 				D57EF89B20716F9600590CD2 /* SwiftRex.framework in Frameworks */,
 				D57EF86220716DED00590CD2 /* RxSwift.framework in Frameworks */,
 			);
@@ -113,6 +118,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D50BCAAB207AB03B0008202E /* SwiftRexMonitorMiddleware.framework in Frameworks */,
 				D57EF8E42071B90900590CD2 /* RxCocoa.framework in Frameworks */,
 				D57EF8D72071ABC900590CD2 /* SwiftRex.framework in Frameworks */,
 				D57EF8D52071ABC500590CD2 /* RxSwift.framework in Frameworks */,
@@ -155,6 +161,8 @@
 		D57EF86020716DEC00590CD2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D50BCAAA207AB03B0008202E /* SwiftRexMonitorMiddleware.framework */,
+				D50BCAA8207AB02A0008202E /* SwiftRexMonitorMiddleware.framework */,
 				D57EF8E32071B90800590CD2 /* RxCocoa.framework */,
 				D57EF8D62071ABC900590CD2 /* SwiftRex.framework */,
 				D57EF89A20716F9600590CD2 /* SwiftRex.framework */,

@@ -1,6 +1,6 @@
 import SwiftRex
 
-class EventAndActionReference: Event, Action, Equatable {
+class EventAndActionReference: EventProtocol, ActionProtocol, Equatable {
     static func == (lhs: EventAndActionReference, rhs: EventAndActionReference) -> Bool {
         return lhs === rhs
     }

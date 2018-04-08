@@ -1,6 +1,6 @@
 import SwiftRex
 
-enum RepositorySearchEvent: Event {
+enum RepositorySearchEvent: EventProtocol {
     case changedQuery(String?)
     case approachingEndOfCurrentPage
 }

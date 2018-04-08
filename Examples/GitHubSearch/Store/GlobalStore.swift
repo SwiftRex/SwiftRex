@@ -1,6 +1,7 @@
 import Foundation
 import RxSwift
 import SwiftRex
+import SwiftRexMonitorMiddleware
 
 class GlobalStore: StoreBase<GlobalState>, GlobalStateProvider {
     init() {
@@ -21,7 +22,7 @@ private func stateTransformer(state: GlobalState) -> String {
     return state.debugDescription
 }
 
-private func actionTransformer(action: Action) -> String {
+private func actionTransformer(action: ActionProtocol) -> String {
     let actionDescription = "\(action)"
 
     return actionDescription.count < 50

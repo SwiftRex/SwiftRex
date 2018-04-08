@@ -6,8 +6,6 @@ protocol RepositorySearchPresenterProtocol {
 }
 
 class RepositorySearchPresenter: RepositorySearchPresenterProtocol {
-    typealias Event = SwiftRex.Event
-
     private let stateProvider: GlobalStateProvider
     private let eventHandler: EventHandler
     private var inputDisposeBag: DisposeBag?

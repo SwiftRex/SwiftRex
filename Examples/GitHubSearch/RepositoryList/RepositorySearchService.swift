@@ -10,14 +10,14 @@ final class RepositorySearchService: SideEffectProducer {
         self.event = event
     }
 
-    func execute(getState: @escaping () -> GlobalState) -> Observable<Action> {
+    func execute(getState: @escaping () -> GlobalState) -> Observable<ActionProtocol> {
         let state = getState()
 
         switch event {
         case .changedQuery(let query):
-            return loadFirstPage(query, state).map { $0 as Action }
+            return loadFirstPage(query, state).map { $0 as ActionProtocol }
         case .approachingEndOfCurrentPage:
-            return loadNextPage(state).map { $0 as Action }
+            return loadNextPage(state).map { $0 as ActionProtocol }
         }
     }
 

@@ -1,6 +1,6 @@
 import SwiftRex
 
-enum CounterAction: Action {
+enum CounterAction: ActionProtocol {
     case increaseValue
     case decreaseValue
     case setLoading(Bool)

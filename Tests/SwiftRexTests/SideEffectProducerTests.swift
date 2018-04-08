@@ -24,7 +24,7 @@ class SideEffectProducerTests: XCTestCase {
         // Expect
         XCTAssertEqual(1, sepMock.executeGetStateCallsCount)
         XCTAssertEqual(state, sepMock.executeGetStateReceivedGetState!())
-        let expectedResult: [Action] = [action1, action2, action3]
+        let expectedResult: [ActionProtocol] = [action1, action2, action3]
         XCTAssertEqual(3, result.count)
         XCTAssertEqual(expectedResult[0] as! Action1, result[0] as! Action1)
         XCTAssertEqual(expectedResult[1] as! Action2, result[1] as! Action2)

@@ -10,8 +10,8 @@ class RotationMiddleware: Middleware {
         self.name = name
     }
 
-    func handle(action: Action, getState: @escaping GetState<TestState>, next: @escaping NextActionHandler<TestState>) {
-        let newAction: Action
+    func handle(action: ActionProtocol, getState: @escaping GetState<TestState>, next: @escaping NextActionHandler<TestState>) {
+        let newAction: ActionProtocol
         switch action {
         case let oldAction as Action1:
             var action2 = Action2()
@@ -35,8 +35,8 @@ class RotationMiddleware: Middleware {
         next(newAction, getState)
     }
 
-    func handle(event: Event, getState: @escaping GetState<TestState>, next: @escaping NextEventHandler<TestState>) {
-        let newEvent: Event
+    func handle(event: EventProtocol, getState: @escaping GetState<TestState>, next: @escaping NextEventHandler<TestState>) {
+        let newEvent: EventProtocol
         switch event {
         case let oldEvent as Event1:
             var event2 = Event2()

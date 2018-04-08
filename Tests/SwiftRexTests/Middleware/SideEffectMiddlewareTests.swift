@@ -39,7 +39,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
         sut.underlyingDisposeBag = DisposeBag()
         sut.underlyingAllowEventToPropagate = true
-        var actionsCalled: [Action] = []
+        var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
 
         // Then
@@ -67,7 +67,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
         sut.underlyingDisposeBag = DisposeBag()
         sut.underlyingAllowEventToPropagate = false
-        var actionsCalled: [Action] = []
+        var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
 
         // Then
@@ -119,7 +119,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
         sut.underlyingDisposeBag = DisposeBag()
         sut.underlyingAllowEventToPropagate = true
-        var actionsCalled: [Action] = []
+        var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
 
         // Then

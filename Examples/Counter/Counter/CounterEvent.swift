@@ -1,6 +1,6 @@
 import SwiftRex
 
-enum CounterEvent: Event {
+enum CounterEvent: EventProtocol {
     case increaseRequest
     case decreaseRequest
 }

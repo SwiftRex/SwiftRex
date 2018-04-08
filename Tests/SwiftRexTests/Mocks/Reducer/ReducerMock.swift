@@ -19,7 +19,7 @@ class ReducerMock {
     var reduceActionCalled: Bool {
         return reduceActionCallsCount > 0
     }
-    var reduceActionReceivedArguments: (currentState: TestState, action: Action)?
+    var reduceActionReceivedArguments: (currentState: TestState, action: ActionProtocol)?
     var reduceActionReturnValue: TestState!
-    var reduceActionClosure: ((TestState, Action) -> TestState)?
+    var reduceActionClosure: ((TestState, ActionProtocol) -> TestState)?
 }

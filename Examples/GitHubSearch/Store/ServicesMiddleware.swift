@@ -8,7 +8,7 @@ final class ServicesMiddleware: SideEffectMiddleware {
     var allowEventToPropagate = false
     var disposeBag = DisposeBag()
 
-    func sideEffect(for event: SwiftRex.Event) -> AnySideEffectProducer<GlobalState>? {
+    func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<GlobalState>? {
         switch event {
         case let event as RepositorySearchEvent:
             return AnySideEffectProducer(RepositorySearchService(event: event))

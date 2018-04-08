@@ -8,10 +8,10 @@ final class CounterService: SideEffectProducer {
         self.event = event
     }
 
-    func execute(getState: @escaping () -> GlobalState) -> Observable<Action> {
+    func execute(getState: @escaping () -> GlobalState) -> Observable<ActionProtocol> {
         switch event {
-        case .increaseRequest: return increase().map { $0 as Action }
-        case .decreaseRequest: return decrease().map { $0 as Action }
+        case .increaseRequest: return increase().map { $0 as ActionProtocol }
+        case .decreaseRequest: return decrease().map { $0 as ActionProtocol }
         }
     }
 
