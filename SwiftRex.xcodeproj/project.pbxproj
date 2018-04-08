@@ -290,23 +290,24 @@
 				D59D57E9207AA1B40010412E /* Operator.swift */,
 				D59D57F6207AA1B40010412E /* TypeAlias.swift */,
 				D59D57EA207AA1B40010412E /* CodeGeneration */,
+				D59D57E5207AA1B40010412E /* CoreTypes */,
 				D59D5800207AA1B40010412E /* Metadata */,
-				D59D57E5207AA1B40010412E /* Mutation */,
-				D59D57F8207AA1B40010412E /* SideEffects */,
+				D59D57F8207AA1B40010412E /* Middlewares */,
 				D59D5805207AA1B40010412E /* Store */,
 			);
 			name = Core;
 			path = Sources/Core;
 			sourceTree = "<group>";
 		};
-		D59D57E5207AA1B40010412E /* Mutation */ = {
+		D59D57E5207AA1B40010412E /* CoreTypes */ = {
 			isa = PBXGroup;
 			children = (
 				D59D57E8207AA1B40010412E /* ActionProtocol.swift */,
 				D59D57E7207AA1B40010412E /* EventProtocol.swift */,
+				D59D57FB207AA1B40010412E /* Middleware.swift */,
 				D59D57E6207AA1B40010412E /* Reducer.swift */,
 			);
-			path = Mutation;
+			path = CoreTypes;
 			sourceTree = "<group>";
 		};
 		D59D57EA207AA1B40010412E /* CodeGeneration */ = {
@@ -333,17 +334,16 @@
 			path = Templates;
 			sourceTree = "<group>";
 		};
-		D59D57F8207AA1B40010412E /* SideEffects */ = {
+		D59D57F8207AA1B40010412E /* Middlewares */ = {
 			isa = PBXGroup;
 			children = (
 				D59D57F9207AA1B40010412E /* BypassMiddleware.swift */,
 				D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */,
 				D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */,
-				D59D57FB207AA1B40010412E /* Middleware.swift */,
 				D59D57FA207AA1B40010412E /* SideEffectMiddleware.swift */,
 				D59D57FE207AA1B40010412E /* SideEffectProducer.swift */,
 			);
-			path = SideEffects;
+			path = Middlewares;
 			sourceTree = "<group>";
 		};
 		D59D5800207AA1B40010412E /* Metadata */ = {
