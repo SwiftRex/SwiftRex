@@ -17,3 +17,14 @@ extension Reducer: Monoid {
         }
     }
 }
+
+extension Reducer {
+    public func lift<Whole>(_ substatePath: WritableKeyPath<Whole, StateType>) -> Reducer<Whole> {
+        return Reducer<Whole> { wholeState, action in
+            var wholeState = wholeState
+            let substate = wholeState[keyPath: substatePath]
+            wholeState[keyPath: substatePath] = self.reduce(substate, action)
+            return wholeState
+        }
+    }
+}

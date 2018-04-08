@@ -146,4 +146,41 @@ class ReducerTests: XCTestCase {
 
         XCTAssertEqual(original, reduced)
     }
+
+    func testLiftReducer() {
+        let original = TestState(value: UUID(), name: "a")
+        let reducer = Reducer<String> { state, action in
+            return state + "b"
+        }
+
+        let reduced = reducer.lift(\TestState.name).reduce(original, Action1())
+
+        XCTAssertEqual(original.value, reduced.value)
+        XCTAssertEqual("ab", reduced.name)
+    }
+
+    func testComposeTwoLiftedReducers() {
+        let uuidBefore = UUID()
+        let uuidAfter = UUID()
+
+        let original = TestState(value: uuidBefore, name: "a")
+
+        let reducerValue = Reducer<UUID> { state, action in
+            XCTAssertEqual(uuidBefore, state)
+            return uuidAfter
+        }
+
+        let reducerName = Reducer<String> { state, action in
+            return state + "b"
+        }
+
+        let reducer =
+            reducerValue.lift(\TestState.value)
+                <> reducerName.lift(\TestState.name)
+
+        let reduced = reducer.reduce(original, Action1())
+
+        XCTAssertEqual(uuidAfter, reduced.value)
+        XCTAssertEqual("ab", reduced.name)
+    }
 }
