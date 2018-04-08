@@ -5,7 +5,7 @@ import SwiftRex
 class GlobalStore: StoreBase<GlobalState>, GlobalStateProvider {
     init() {
         super.init(initialState: GlobalState(),
-                   reducer: CounterReducer(),
+                   reducer: counterReducer,
                    middleware: ServicesMiddleware())
     }
 }

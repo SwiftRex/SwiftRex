@@ -31,10 +31,7 @@
 		D51638FA206F429300469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F9206F429300469F96 /* RxSwift.framework */; };
 		D51638FC206F42AD00469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FB206F42AD00469F96 /* RxSwift.framework */; };
 		D51638FE206F42C200469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FD206F42C200469F96 /* RxSwift.framework */; };
-		D575BB7C20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
-		D575BB7D20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
-		D575BB7E20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
-		D575BB7F20702E3B00A965EA /* ComposedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB7B20702E3B00A965EA /* ComposedReducer.swift */; };
+		D52E2164207A6D9B00A88E39 /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52E2162207A6CEC00A88E39 /* ReducerMock.swift */; };
 		D575BB8B2070500F00A965EA /* SideEffectMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB8A2070500F00A965EA /* SideEffectMiddleware.swift */; };
 		D575BB8C2070500F00A965EA /* SideEffectMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB8A2070500F00A965EA /* SideEffectMiddleware.swift */; };
 		D575BB8D2070500F00A965EA /* SideEffectMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D575BB8A2070500F00A965EA /* SideEffectMiddleware.swift */; };
@@ -110,7 +107,6 @@
 		D5A607252071287A00D682EF /* RotationMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607012071287900D682EF /* RotationMiddleware.swift */; };
 		D5A607262071287A00D682EF /* SideEffectProducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607032071287900D682EF /* SideEffectProducerMock.swift */; };
 		D5A607272071287A00D682EF /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
-		D5A607282071287A00D682EF /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607062071287900D682EF /* ReducerMock.swift */; };
 		D5A607292071287A00D682EF /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607072071287900D682EF /* NameReducer.swift */; };
 		D5A6072A2071287A00D682EF /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607092071287900D682EF /* ActionReference.swift */; };
 		D5A6072B2071287A00D682EF /* Action2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070A2071287900D682EF /* Action2.swift */; };
@@ -159,7 +155,7 @@
 		D51638FB206F42AD00469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/tvOS/RxSwift.framework; sourceTree = "<group>"; };
 		D51638FD206F42C200469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 		D5163901206F528A00469F96 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
-		D575BB7B20702E3B00A965EA /* ComposedReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposedReducer.swift; sourceTree = "<group>"; };
+		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
 		D575BB8A2070500F00A965EA /* SideEffectMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectMiddleware.swift; sourceTree = "<group>"; };
 		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 		D5946FC2207005F700D8F4D2 /* Operator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operator.swift; sourceTree = "<group>"; };
@@ -202,7 +198,6 @@
 		D5A607012071287900D682EF /* RotationMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationMiddleware.swift; sourceTree = "<group>"; };
 		D5A607032071287900D682EF /* SideEffectProducerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerMock.swift; sourceTree = "<group>"; };
 		D5A607042071287900D682EF /* TimelySideEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelySideEffect.swift; sourceTree = "<group>"; };
-		D5A607062071287900D682EF /* ReducerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
 		D5A607072071287900D682EF /* NameReducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameReducer.swift; sourceTree = "<group>"; };
 		D5A607092071287900D682EF /* ActionReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionReference.swift; sourceTree = "<group>"; };
 		D5A6070A2071287900D682EF /* Action2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action2.swift; sourceTree = "<group>"; };
@@ -349,7 +344,6 @@
 			isa = PBXGroup;
 			children = (
 				D595F72D206E88B300E02733 /* Action.swift */,
-				D575BB7B20702E3B00A965EA /* ComposedReducer.swift */,
 				D595F732206E88C600E02733 /* Event.swift */,
 				D595F73C206E88F900E02733 /* Reducer.swift */,
 			);
@@ -464,7 +458,7 @@
 			isa = PBXGroup;
 			children = (
 				D5A607072071287900D682EF /* NameReducer.swift */,
-				D5A607062071287900D682EF /* ReducerMock.swift */,
+				D52E2162207A6CEC00A88E39 /* ReducerMock.swift */,
 			);
 			path = Reducer;
 			sourceTree = "<group>";
@@ -872,7 +866,6 @@
 				D595F75E206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F799206EC9BF00E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FC920700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
-				D575BB7C20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F733206E88C600E02733 /* Event.swift in Sources */,
 				D595F74C206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D516136D2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
@@ -901,7 +894,6 @@
 				D595F75F206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F79A206ED16900E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FCA20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
-				D575BB7D20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F734206E88C600E02733 /* Event.swift in Sources */,
 				D595F74D206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D516136E2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
@@ -930,7 +922,6 @@
 				D595F760206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F79C206ED16B00E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FCB20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
-				D575BB7E20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F735206E88C600E02733 /* Event.swift in Sources */,
 				D595F74E206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D516136F2072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
@@ -959,7 +950,6 @@
 				D595F761206E9DE800E02733 /* StateProvider.swift in Sources */,
 				D595F79B206ED16B00E02733 /* TypeErase.generated.swift in Sources */,
 				D5946FCC20700B8800D8F4D2 /* BypassMiddleware.swift in Sources */,
-				D575BB7F20702E3B00A965EA /* ComposedReducer.swift in Sources */,
 				D595F736206E88C600E02733 /* Event.swift in Sources */,
 				D595F74F206E8A2C00E02733 /* TypeAlias.swift in Sources */,
 				D51613702072B5EA0085DC80 /* LoggerMiddleware.swift in Sources */,
@@ -989,12 +979,12 @@
 				D5A607272071287A00D682EF /* TimelySideEffect.swift in Sources */,
 				D5A6072D2071287A00D682EF /* Action1.swift in Sources */,
 				D5A6073E2071287A00D682EF /* SideEffectProducerTests.swift in Sources */,
+				D52E2164207A6D9B00A88E39 /* ReducerMock.swift in Sources */,
 				D5A6072F2071287A00D682EF /* EventAndActionReference.swift in Sources */,
 				D5A6072C2071287A00D682EF /* Action3.swift in Sources */,
 				D5A607382071287A00D682EF /* SideEffectMiddlewareTests.swift in Sources */,
 				D5A607252071287A00D682EF /* RotationMiddleware.swift in Sources */,
 				D5A607232071287A00D682EF /* SideEffectMiddlewareMock.swift in Sources */,
-				D5A607282071287A00D682EF /* ReducerMock.swift in Sources */,
 				D5A6074320712A1C00D682EF /* AutoMockable.generated.swift in Sources */,
 				D5A607302071287A00D682EF /* Event3.swift in Sources */,
 				D5A607322071287A00D682EF /* EventReference.swift in Sources */,

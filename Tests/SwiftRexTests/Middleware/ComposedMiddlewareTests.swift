@@ -103,14 +103,14 @@ class ComposedMiddlewareTests: MiddlewareTestsBase {
         XCTAssertNil(composedMiddlewares.actionHandler)
 
         let store = TestStore(initialState: TestState(),
-                              reducer: ReducerMock(),
+                              reducer: createReducerMock().0,
                               middleware: composedMiddlewares)
         (0..<4).forEach { XCTAssert(middlewares[$0].actionHandler === store) }
     }
 
     func testMiddlewareActionHandlerPropagationOnAppend() {
         let container: ComposedMiddleware<TestState> = .init()
-        let store = TestStore(initialState: TestState(), reducer: ReducerMock(), middleware: container)
+        let store = TestStore(initialState: TestState(), reducer: createReducerMock().0, middleware: container)
 
         let middlewares = ["m1", "m2", "m3", "m4"]
             .map(RotationMiddleware.init)

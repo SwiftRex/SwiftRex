@@ -65,47 +65,6 @@ public final class AnyMiddleware<StateType>: Middleware {
         set { box.actionHandler = newValue }
     }
 }
-// MARK: - Type Eraser for Reducer
-
-private class _AnyReducerBase<StateType>: Reducer {
-    init() {
-        guard type(of: self) != _AnyReducerBase.self else {
-            fatalError("_AnyReducerBase<StateType> instances can not be created; create a subclass instance instead")
-        }
-    }
-
-    func reduce(_ currentState: StateType, action: Action) -> StateType {
-        fatalError("Must override")
-    }
-
-}
-
-private final class _AnyReducerBox<Concrete: Reducer>: _AnyReducerBase<Concrete.StateType> {
-    var concrete: Concrete
-    typealias StateType = Concrete.StateType
-
-    init(_ concrete: Concrete) {
-        self.concrete = concrete
-    }
-
-    override func reduce(_ currentState: StateType, action: Action) -> StateType {
-        return concrete.reduce(currentState, action: action)
-    }
-
-}
-
-public final class AnyReducer<StateType>: Reducer {
-    private let box: _AnyReducerBase<StateType>
-
-    public init<Concrete: Reducer>(_ concrete: Concrete) where Concrete.StateType == StateType {
-        self.box = _AnyReducerBox(concrete)
-    }
-
-    public func reduce(_ currentState: StateType, action: Action) -> StateType {
-        return box.reduce(currentState,action: action)
-    }
-
-}
 // MARK: - Type Eraser for SideEffectProducer
 
 private class _AnySideEffectProducerBase<StateType>: SideEffectProducer {

@@ -12,7 +12,7 @@ class GlobalStore: StoreBase<GlobalState>, GlobalStateProvider {
         let services = ServicesMiddleware()
 
         super.init(initialState: GlobalState(),
-                   reducer: RepositorySearchReducer(),
+                   reducer: repositorySearchReducer,
                    middleware: logger >>> monitor >>> services)
     }
 }

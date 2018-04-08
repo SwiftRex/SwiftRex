@@ -78,25 +78,6 @@ class MiddlewareMock: Middleware {
     }
 
 }
-class ReducerMock: Reducer {
-
-    //MARK: - reduce
-
-    var reduceActionCallsCount = 0
-    var reduceActionCalled: Bool {
-        return reduceActionCallsCount > 0
-    }
-    var reduceActionReceivedArguments: (currentState: StateType, action: Action)?
-    var reduceActionReturnValue: StateType!
-    var reduceActionClosure: ((StateType, Action) -> StateType)?
-
-    func reduce(_ currentState: StateType, action: Action) -> StateType {
-        reduceActionCallsCount += 1
-        reduceActionReceivedArguments = (currentState: currentState, action: action)
-        return reduceActionClosure.map({ $0(currentState, action) }) ?? reduceActionReturnValue
-    }
-
-}
 class SideEffectProducerMock: SideEffectProducer {
 
     //MARK: - execute

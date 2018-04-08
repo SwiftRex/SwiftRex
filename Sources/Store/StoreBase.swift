@@ -2,26 +2,26 @@ import RxSwift
 
 open class StoreBase<E>: Store {
     private let middleware: AnyMiddleware<E>
-    private let reducer: AnyReducer<E>
+    private let reducer: Reducer<E>
     private let state: BehaviorSubject<E>
     private let dispatchEventQueue = DispatchQueue.main
     private let triggerActionQueue = DispatchQueue.main
     private let reduceQueue = DispatchQueue.main
 
-    public init<R: Reducer, M: Middleware>(
+    public init<M: Middleware>(
         initialState: E,
-        reducer: R,
-        middleware: M) where R.StateType == E, M.StateType == E {
+        reducer: Reducer<E>,
+        middleware: M) where M.StateType == E {
 
         self.state = BehaviorSubject<E>(value: initialState)
-        self.reducer = AnyReducer(reducer)
+        self.reducer = reducer
         self.middleware = AnyMiddleware(middleware)
         self.middleware.actionHandler = self
     }
 
-    public convenience init<R: Reducer>(
+    public convenience init(
         initialState: E,
-        reducer: R) where R.StateType == E {
+        reducer: Reducer<E>) {
 
         self.init(initialState: initialState, reducer: reducer, middleware: BypassMiddleware())
     }
@@ -67,7 +67,7 @@ extension StoreBase {
 
     private func reduce(action: Action) {
         let oldState = try! state.value()
-        let newState = reducer.reduce(oldState, action: action)
+        let newState = reducer.reduce(oldState, action)
         state.onNext(newState)
     }
 }

@@ -4,15 +4,14 @@ import XCTest
 class ReducerTests: XCTestCase {
     func testAnyReducer() {
         // Given
-        let reducerMock = ReducerMock()
-        let sut = AnyReducer(reducerMock)
+        let (sut, reducerMock) = createReducerMock()
         let action = Action1()
         let stateBefore = TestState()
         let stateExpected = TestState()
         reducerMock.reduceActionReturnValue = stateExpected
 
         // Then
-        let stateAfter = sut.reduce(stateBefore, action: action)
+        let stateAfter = sut.reduce(stateBefore, action)
 
         // Expect
         XCTAssertEqual(1, reducerMock.reduceActionCallsCount)
@@ -24,11 +23,11 @@ class ReducerTests: XCTestCase {
 
     func testNameReducerAction1() {
         // Given
-        let sut = AnyReducer(NameReducer())
+        let sut = createNameReducer()
         let previousState = TestState()
 
         // Then
-        let state = sut.reduce(previousState, action: Action1())
+        let state = sut.reduce(previousState, Action1())
 
         // Expect
         XCTAssertEqual(previousState.value, state.value)
@@ -37,11 +36,11 @@ class ReducerTests: XCTestCase {
 
     func testNameReducerAction2() {
         // Given
-        let sut = AnyReducer(NameReducer())
+        let sut = createNameReducer()
         let previousState = TestState()
 
         // Then
-        let state = sut.reduce(previousState, action: Action2())
+        let state = sut.reduce(previousState, Action2())
 
         // Expect
         XCTAssertEqual(previousState.value, state.value)
@@ -50,11 +49,11 @@ class ReducerTests: XCTestCase {
 
     func testNameReducerAction3() {
         // Given
-        let sut = AnyReducer(NameReducer())
+        let sut = createNameReducer()
         let previousState = TestState()
 
         // Then
-        let state = sut.reduce(previousState, action: Action3())
+        let state = sut.reduce(previousState, Action3())
 
         // Expect
         XCTAssertEqual(previousState.value, state.value)
@@ -62,94 +61,89 @@ class ReducerTests: XCTestCase {
         XCTAssertEqual(previousState, state)
     }
 
-    func testComposeTwoAnyReducers() {
-        let reducer1 = AnyReducer(ReducerMock())
-        let reducer2 = AnyReducer(NameReducer())
-        let sut = reducer1 >>> reducer2
-
-        XCTAssertEqual(2, sut.reducers.count)
-        XCTAssert(reducer1 === sut.reducers[0])
-        XCTAssert(reducer2 === sut.reducers[1])
-    }
-
-    func testComposeThreeAnyReducers() {
-        let reducer1 = AnyReducer(ReducerMock())
-        let reducer2 = AnyReducer(NameReducer())
-        let reducer3 = AnyReducer(NameReducer())
-        let sut = reducer1 >>> reducer2 >>> reducer3
-
-        XCTAssertEqual(3, sut.reducers.count)
-        XCTAssert(reducer1 === sut.reducers[0])
-        XCTAssert(reducer2 === sut.reducers[1])
-        XCTAssert(reducer3 === sut.reducers[2])
-    }
-
-    func testComposeTwoGroupsOfAnyReducers() {
-        let reducer1 = AnyReducer(ReducerMock())
-        let reducer2 = AnyReducer(NameReducer())
-        let reducer3 = AnyReducer(NameReducer())
-        let reducer4 = AnyReducer(ReducerMock())
-        let sut = (reducer1 >>> reducer2) >>> (reducer3 >>> reducer4)
-
-        XCTAssertEqual(4, sut.reducers.count)
-        XCTAssert(reducer1 === sut.reducers[0])
-        XCTAssert(reducer2 === sut.reducers[1])
-        XCTAssert(reducer3 === sut.reducers[2])
-        XCTAssert(reducer4 === sut.reducers[3])
-    }
-
     func testComposeTwoReducers() {
-        let reducer1 = ReducerMock()
-        let reducer2 = NameReducer()
-        let sut = reducer1 >>> reducer2
+        let reducer1: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "1"
+            return state
+        }
 
-        XCTAssertEqual(2, sut.reducers.count)
+        let reducer2: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "2"
+            return state
+        }
+
+        let sut = reducer1 <> reducer2
+
+        let result = sut.reduce(TestState(value: UUID(), name: "0"), Action1())
+
+        XCTAssertEqual("012", result.name)
     }
 
     func testComposeThreeReducers() {
-        let reducer1 = ReducerMock()
-        let reducer2 = NameReducer()
-        let reducer3 = NameReducer()
-        let sut = reducer1 >>> reducer2 >>> reducer3
+        let reducer1: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "1"
+            return state
+        }
 
-        XCTAssertEqual(3, sut.reducers.count)
+        let reducer2: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "2"
+            return state
+        }
+
+        let reducer3: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "3"
+            return state
+        }
+
+        let sut = reducer1 <> reducer2 <> reducer3
+
+        let result = sut.reduce(TestState(value: UUID(), name: "0"), Action1())
+
+        XCTAssertEqual("0123", result.name)
     }
 
     func testComposeTwoGroupsOfReducers() {
-        let reducer1 = ReducerMock()
-        let reducer2 = NameReducer()
-        let reducer3 = NameReducer()
-        let reducer4 = ReducerMock()
-        let sut = (reducer1 >>> reducer2) >>> (reducer3 >>> reducer4)
+        let reducer1: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "1"
+            return state
+        }
 
-        XCTAssertEqual(4, sut.reducers.count)
+        let reducer2: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "2"
+            return state
+        }
+
+        let reducer3: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "3"
+            return state
+        }
+
+        let reducer4: Reducer<TestState> = Reducer { state, _ in
+            var state = state
+            state.name += "4"
+            return state
+        }
+
+        let sut = (reducer1 <> reducer2) <> (reducer3 <> reducer4)
+
+        let result = sut.reduce(TestState(value: UUID(), name: "0"), Action1())
+
+        XCTAssertEqual("01234", result.name)
     }
 
-    func testReduceComposedReducers() {
-        let reducer1 = ReducerMock()
-        let reducer2 = ReducerMock()
-        let sut = reducer1 >>> reducer2
+    func testEmptyReducer() {
+        let original = TestState()
+        let reducer = Reducer<TestState>.empty
+        let reduced = reducer.reduce(original, Action1())
 
-        reducer1.reduceActionClosure = { state, _ in
-            XCTAssertEqual(1, reducer1.reduceActionCallsCount)
-            XCTAssertEqual(0, reducer2.reduceActionCallsCount)
-            XCTAssertEqual("", state.name)
-            var state = state
-            state.name += "a"
-            return state
-        }
-        reducer2.reduceActionClosure = { state, _ in
-            XCTAssertEqual(1, reducer1.reduceActionCallsCount)
-            XCTAssertEqual(1, reducer2.reduceActionCallsCount)
-            XCTAssertEqual("a", state.name)
-            var state = state
-            state.name += "b"
-            return state
-        }
-
-        let result = sut.reduce(TestState(), action: Action1())
-        XCTAssertEqual(1, reducer1.reduceActionCallsCount)
-        XCTAssertEqual(1, reducer2.reduceActionCallsCount)
-        XCTAssertEqual("ab", result.name)
+        XCTAssertEqual(original, reduced)
     }
 }

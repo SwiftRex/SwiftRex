@@ -3,9 +3,7 @@ import RxSwift
 import XCTest
 
 final class TestStore: StoreBase<TestState> {
-    typealias E = TestState
-
-    override init<R, M>(initialState: E, reducer: R, middleware: M) where E == R.StateType, R: Reducer, M: Middleware, R.StateType == M.StateType {
+    override init<M>(initialState: TestState, reducer: Reducer<TestState>, middleware: M) where M.StateType == TestState, M: Middleware {
         super.init(initialState: initialState, reducer: reducer, middleware: middleware)
     }
 }
