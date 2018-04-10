@@ -149,7 +149,7 @@ class ReducerTests: XCTestCase {
 
     func testLiftReducer() {
         let original = TestState(value: UUID(), name: "a")
-        let reducer = Reducer<String> { state, action in
+        let reducer = Reducer<String> { state, _ in
             return state + "b"
         }
 
@@ -165,12 +165,12 @@ class ReducerTests: XCTestCase {
 
         let original = TestState(value: uuidBefore, name: "a")
 
-        let reducerValue = Reducer<UUID> { state, action in
+        let reducerValue = Reducer<UUID> { state, _ in
             XCTAssertEqual(uuidBefore, state)
             return uuidAfter
         }
 
-        let reducerName = Reducer<String> { state, action in
+        let reducerName = Reducer<String> { state, _ in
             return state + "b"
         }
 

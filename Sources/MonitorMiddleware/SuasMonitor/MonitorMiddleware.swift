@@ -168,9 +168,9 @@ public class MonitorMiddleware<GlobalState>: Middleware {
     private func sendToMonitor(state: GlobalState, action: ActionProtocol) {
 
         let dictionaryToSend: [String: Any] = [
-            "action" : "\(type(of: action))",
+            "action": "\(type(of: action))",
             "actionData": dictionary(forAction: action),
-            "state" : dictionary(forState: state)
+            "state": dictionary(forState: state)
         ]
 
         var data = try! JSONSerialization.data(withJSONObject: dictionaryToSend, options: [])

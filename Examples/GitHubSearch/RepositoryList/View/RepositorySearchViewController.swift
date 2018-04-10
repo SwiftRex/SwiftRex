@@ -29,7 +29,7 @@ class RepositorySearchViewController: UIViewController {
             .disposed(by: disposeBag)
 
         dataSource
-            .bind(to: tableView.rx.items(cellIdentifier: "cell")) { indexPath, name, cell in
+            .bind(to: tableView.rx.items(cellIdentifier: "cell")) { _, name, cell in
                 cell.textLabel?.text = name
             }
             .disposed(by: disposeBag)

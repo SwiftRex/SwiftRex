@@ -136,7 +136,7 @@ extension DefaultMonitorService: StreamDelegate {
             break
 
         case Stream.Event.hasBytesAvailable:
-            let data = Data.init(reading: (aStream as! InputStream))
+            let data = Data(reading: (aStream as! InputStream))
             if data.count == 0 {
                 removeStream(stream: aStream)
                 logString("Suas Monitor Disonnected To Client")

@@ -140,7 +140,7 @@ extension LoggerMiddleware {
     }
 
     private func closingLine(length: Int) -> String {
-        return "└" + String.init(repeating: "─", count: length - 1)
+        return "└" + String(repeating: "─", count: length - 1)
     }
 
     private var shouldLog: Bool {
