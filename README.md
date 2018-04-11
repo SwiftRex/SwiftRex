@@ -1,5 +1,3 @@
-[![Coverage Status](https://coveralls.io/repos/github/luizmb/SwiftRex/badge.svg?branch=master)](https://coveralls.io/github/luizmb/SwiftRex?branch=master)
-
 # Introduction
 
 SwiftRex is a framework that combines [event-sourcing pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing) and reactive programming ([RxSwift](https://github.com/ReactiveX/RxSwift)), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.
