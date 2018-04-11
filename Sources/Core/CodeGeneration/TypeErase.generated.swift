@@ -1,29 +1,9 @@
-// Generated using Sourcery 0.10.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.11.2 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 import RxSwift
 
 // MARK: - Type Eraser for Middleware
-
-private class _AnyMiddlewareBase<StateType>: Middleware {
-    init() {
-        guard type(of: self) != _AnyMiddlewareBase.self else {
-            fatalError("_AnyMiddlewareBase<StateType> instances can not be created; create a subclass instance instead")
-        }
-    }
-
-    func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) {
-        fatalError("Must override")
-    }
-    func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) {
-        fatalError("Must override")
-    }
-
-    var actionHandler: ActionHandler? {
-        get { fatalError("Must override") }
-        set { fatalError("Must override") }
-    }
-}
 
 private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<Concrete.StateType> {
     var concrete: Concrete
@@ -65,20 +45,8 @@ public final class AnyMiddleware<StateType>: Middleware {
         set { box.actionHandler = newValue }
     }
 }
+
 // MARK: - Type Eraser for SideEffectProducer
-
-private class _AnySideEffectProducerBase<StateType>: SideEffectProducer {
-    init() {
-        guard type(of: self) != _AnySideEffectProducerBase.self else {
-            fatalError("_AnySideEffectProducerBase<StateType> instances can not be created; create a subclass instance instead")
-        }
-    }
-
-    func execute(getState: @escaping GetState<StateType>) -> Observable<ActionProtocol> {
-        fatalError("Must override")
-    }
-
-}
 
 private final class _AnySideEffectProducerBox<Concrete: SideEffectProducer>: _AnySideEffectProducerBase<Concrete.StateType> {
     var concrete: Concrete

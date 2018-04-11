@@ -35,6 +35,7 @@
 ._*
 .Spotlight-V100
 .Trashes
+.coveralls.yml
 ehthumbs.db
 Thumbs.db
 
@@ -44,6 +45,8 @@ Thumbs.db
 **/fastlane/Preview.html
 **/fastlane/screenshots
 **/fastlane/test_output
+
+**/test_reports
 
 *.hmap
 *.ipa

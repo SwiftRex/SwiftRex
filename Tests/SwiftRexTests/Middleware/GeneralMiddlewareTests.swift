@@ -1,3 +1,4 @@
+import Nimble
 @testable import SwiftRex
 import XCTest
 
@@ -86,5 +87,16 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
 
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
+    }
+
+    func testActionHandler() {
+        let rotationMiddleware = RotationMiddleware(name: "m1")
+        let actionHandler = TestStore(initialState: TestState(),
+                                      reducer: createReducerMock().0,
+                                      middleware: rotationMiddleware)
+        let sut = AnyMiddleware(rotationMiddleware)
+
+        XCTAssert(actionHandler === sut.actionHandler)
+        XCTAssert(actionHandler === rotationMiddleware.actionHandler)
     }
 }

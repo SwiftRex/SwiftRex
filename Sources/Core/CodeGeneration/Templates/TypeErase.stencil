@@ -1,28 +1,40 @@
+// sourcery:file:TypeErase.generated.abstract.swift
 import RxSwift
 
+@inline(never)
+private func _abstract(file: StaticString = #file, line: UInt = #line) -> Never {
+    fatalError("Method must be overridden", file: file, line: line)
+}
 {% for type in types.protocols|annotated:"TypeErase" %}
+
 // MARK: - Type Eraser for {{type.name}}
 
-private class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.name}} {
+internal class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.name}} {
     init() {
         guard type(of: self) != _Any{{type.name}}Base.self else {
-            fatalError("_Any{{type.name}}Base<{{type.annotations.TypeErase}}> instances can not be created; create a subclass instance instead")
+            _abstract()
         }
     }
 
     {% for m in type.methods|!definedInExtension %}
     func {{m.name}} -> {{m.returnTypeName}} {
-        fatalError("Must override")
+        _abstract()
     }
-    {% endfor %}
 
+    {% endfor %}
     {% for p in type.variables %}
     var {{p.name}}: {{p.typeName}} {
-        get { fatalError("Must override") }
-        {% if p.isMutable %}set { fatalError("Must override") }{% endif %}
+        get { _abstract() }
+        {% if p.isMutable %}set { _abstract() }{% endif %}
     }
     {% endfor %}
 }
+{% endfor %}
+// sourcery:end
+import RxSwift
+{% for type in types.protocols|annotated:"TypeErase" %}
+
+// MARK: - Type Eraser for {{type.name}}
 
 private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.name}}Base<Concrete.{{type.annotations.TypeErase}}> {
     var concrete: Concrete
