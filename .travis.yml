@@ -8,6 +8,6 @@ cache:
 before_install:
   - brew update
   - brew outdated carthage || brew upgrade carthage
-  - brew install swiftlint
-  - brew install sourcery
+  - brew outdated swiftlint || brew upgrade swiftlint
+  - brew outdated sourcery || brew upgrade sourcery
   - carthage bootstrap --verbose --no-use-binaries --cache-builds
