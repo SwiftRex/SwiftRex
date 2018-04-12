@@ -4,8 +4,9 @@ xcode_project: SwiftRex.xcodeproj
 xcode_scheme: SwiftRex iOS
 cache:
   directories:
-  - Carthage
-  - travis_bundle_dir
+    - Carthage
+    - "../travis_bundle_dir"
+    - /home/travis/.rvm/
 env:
   global:
     - LC_CTYPE=en_US.UTF-8
