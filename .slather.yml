@@ -1,9 +1,9 @@
 coverage_service: coveralls
 xcodeproj: SwiftRex.xcodeproj
 scheme: SwiftRex iOS
-source_directory: Sources/Core
-output_directory: test_reports
-ignore:
-  - DerivedData/*
-  - "**/CodeGeneration/*.abstract.swift"
-  - Tests/*
+# source_directory: Sources/Core
+# output_directory: test_reports
+# ignore:
+#  - DerivedData/*
+#  - "**/CodeGeneration/*.abstract.swift"
+#  - Tests/*
