@@ -19,7 +19,7 @@ before_install:
   - brew outdated sourcery || brew upgrade sourcery
 install:
   - bundle install
-  - script/bootstrap-if-needed
+  - scripts/bootstrap-if-needed
 script:
   - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ iOS -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 7,OS=11.3" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=YES VALID_ARCHS=x86_64 | xcpretty
 after_success:
