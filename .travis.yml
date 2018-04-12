@@ -5,6 +5,7 @@ xcode_scheme: SwiftRex iOS
 cache:
   directories:
   - Carthage
+  - travis_bundle_dir
 env:
   global:
     - LC_CTYPE=en_US.UTF-8
@@ -16,8 +17,9 @@ before_install:
   - brew outdated swiftlint || brew upgrade swiftlint
   - brew outdated sourcery || brew upgrade sourcery
 install:
-  - bundle install
+  - bundle install --without=documentation --path ../travis_bundle_dir
   - carthage bootstrap --verbose --no-use-binaries --cache-builds | xcpretty -c
 script:
-  - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ iOS -destination "platform=iOS Simulator,name=iPhone 7,OS=11.3" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO | xcpretty
-after_success: slather
+  - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ iOS -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 7,OS=11.3" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=YES VALID_ARCHS=x86_64 | xcpretty
+after_success:
+  - bundle exec slather
