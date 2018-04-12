@@ -6,4 +6,5 @@ output_directory: test_reports
 ignore:
   - DerivedData/*
   - "**/CodeGeneration/*.abstract.swift"
+  - "**/CodeGeneration/AutoMockable.generated.swift"
   - Tests/*
