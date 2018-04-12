@@ -1,3 +1,9 @@
+[![Build Status](https://travis-ci.org/luizmb/SwiftRex.svg?branch=master)](https://travis-ci.org/luizmb/SwiftRex)
+
+[![Coverage Status](https://coveralls.io/repos/github/luizmb/SwiftRex/badge.svg)](https://coveralls.io/github/luizmb/SwiftRex)
+
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 # Introduction
 
 SwiftRex is a framework that combines [event-sourcing pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing) and reactive programming ([RxSwift](https://github.com/ReactiveX/RxSwift)), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.

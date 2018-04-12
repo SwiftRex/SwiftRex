@@ -2,14 +2,21 @@ osx_image: xcode9.3
 language: objective-c
 xcode_project: SwiftRex.xcodeproj
 xcode_scheme: SwiftRex iOS
-script:
-  - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ iOS -destination "platform=iOS Simulator,name=iPhone 7,OS=11.3" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO | xcpretty
 cache:
   directories:
   - Carthage
+env:
+  global:
+    - LC_CTYPE=en_US.UTF-8
+    - LANG=en_US.UTF-8
+    - FRAMEWORK_NAME="SwiftRex"
 before_install:
   - brew update
   - brew outdated carthage || brew upgrade carthage
   - brew outdated swiftlint || brew upgrade swiftlint
   - brew outdated sourcery || brew upgrade sourcery
-  - carthage bootstrap --verbose --no-use-binaries --cache-builds
+  - carthage bootstrap --verbose --no-use-binaries --cache-builds | xcpretty -c
+install:
+  - bundle install
+script:
+  - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ iOS -destination "platform=iOS Simulator,name=iPhone 7,OS=11.3" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO | xcpretty
