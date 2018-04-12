@@ -3,8 +3,8 @@
   <a href="https://travis-ci.org/luizmb/SwiftRex" target="_blank">
     <img alt="Build Status" src="https://travis-ci.org/luizmb/SwiftRex.svg?branch=master">
   </a>
-  <a href="https://coveralls.io/github/luizmb/SwiftRex" target="_blank">
-    <img alt="Coverage Status" src="https://coveralls.io/repos/github/luizmb/SwiftRex/badge.svg">
+  <a href='https://coveralls.io/github/luizmb/SwiftRex?branch=master'>
+    <img src='https://coveralls.io/repos/github/luizmb/SwiftRex/badge.svg?branch=master' alt='Coverage Status' />
   </a>
   <a href="https://github.com/Carthage/Carthage" target="_blank">
     <img alt="Carthage compatible" src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat">
