@@ -6,7 +6,6 @@ cache:
   directories:
     - Carthage
     - vendor/bundle
-    # - /home/travis/.rvm/
 env:
   global:
     - LC_CTYPE=en_US.UTF-8
