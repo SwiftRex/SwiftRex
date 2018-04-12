@@ -5,7 +5,7 @@ BOOTSTRAP="$SCRIPT_DIR/bootstrap"
 CACHED_CARTFILE="Carthage/Cartfile.resolved"
 
 if [ -e "$CACHED_CARTFILE" ]; then
-    OUTDATED_DEPENDENCIES=$(scripts/cartfilediff "$CACHED_CARTFILE" Cartfile.resolved)
+    OUTDATED_DEPENDENCIES=$(cartfilediff "$CACHED_CARTFILE" Cartfile.resolved)
 
     if [ ! -z "$OUTDATED_DEPENDENCIES" ]
     then
