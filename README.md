@@ -1,14 +1,14 @@
 <p align="center">
-  <img alt="Swift" src="https://img.shields.io/badge/Swift-4.1-orange.svg">
-  <a href="https://travis-ci.org/luizmb/SwiftRex" target="_blank">
-    <img alt="Build Status" src="https://travis-ci.org/luizmb/SwiftRex.svg?branch=master">
-  </a>
-  <a href='https://coveralls.io/github/luizmb/SwiftRex?branch=master'>
-    <img src='https://coveralls.io/repos/github/luizmb/SwiftRex/badge.svg?branch=master' alt='Coverage Status' />
-  </a>
-  <a href="https://github.com/Carthage/Carthage" target="_blank">
-    <img alt="Carthage compatible" src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat">
-  </a>
+    <img alt="Swift" src="https://img.shields.io/badge/Swift-4.1-orange.svg">
+    <a href="https://travis-ci.org/luizmb/SwiftRex" target="_blank">
+        <img alt="Build Status" src="https://img.shields.io/travis/luizmb/SwiftRex.svg?branch=master&maxAge=600">
+    </a>
+    <a href='https://coveralls.io/github/luizmb/SwiftRex?branch=master'>
+        <img src='https://img.shields.io/coveralls/github/luizmb/SwiftRex.svg?branch=master&maxAge=600' alt='Coverage Status' />
+    </a>
+    <a href="https://github.com/Carthage/Carthage" target="_blank">
+        <img alt="Carthage compatible" src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat">
+    </a>
 </p>
 
 # Introduction
