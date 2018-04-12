@@ -9,6 +9,7 @@
     <a href="https://github.com/Carthage/Carthage" target="_blank">
         <img alt="Carthage compatible" src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat">
     </a>
+    <img alt="Platform" src="https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-lightgray.svg">
     <a href="https://github.com/luizmb/SwiftRex/blob/master/LICENSE">
         <img alt="GitHub license" src="https://img.shields.io/github/license/luizmb/SwiftRex.svg">
     </a>
