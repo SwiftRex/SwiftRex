@@ -1,0 +1,3 @@
+#!/bin/bash
+
+carthage bootstrap $@ --verbose --platform iOS --no-use-binaries --cache-builds | xcpretty -c
