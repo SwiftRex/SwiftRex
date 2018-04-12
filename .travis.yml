@@ -20,3 +20,4 @@ install:
   - carthage bootstrap --verbose --no-use-binaries --cache-builds | xcpretty -c
 script:
   - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ iOS -destination "platform=iOS Simulator,name=iPhone 7,OS=11.3" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO | xcpretty
+after_success: slather
