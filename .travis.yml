@@ -3,10 +3,10 @@ language: objective-c
 xcode_project: SwiftRex.xcodeproj
 xcode_scheme: SwiftRex iOS
 cache:
-  bundler: true
   directories:
     - Carthage
     - /home/travis/.rvm/
+    - vendor/bundle
 env:
   global:
     - LC_CTYPE=en_US.UTF-8
@@ -18,7 +18,7 @@ before_install:
   - brew outdated swiftlint || brew upgrade swiftlint
   - brew outdated sourcery || brew upgrade sourcery
 install:
-  - bundle install
+  - bundle install --deployment
   - scripts/bootstrap-if-needed
 script:
   - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ iOS -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 7,OS=11.3" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=YES VALID_ARCHS=x86_64 | xcpretty
