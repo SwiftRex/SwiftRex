@@ -1,4 +1,3 @@
-import Cocoa
 import PlaygroundSupport
 import SwiftRex
 
@@ -29,7 +28,7 @@ let reducer = Reducer<GlobalState> { state, action in
 }
 
 // Store glues all pieces together
-class Store: StoreBase<GlobalState> {
+final class Store: StoreBase<GlobalState> {
     init() {
         super.init(initialState: GlobalState(), reducer: reducer, middleware: DirectLineMiddleware())
     }
