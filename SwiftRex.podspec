@@ -19,7 +19,6 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target      = '10.0'
 
   s.source_files  = "Sources/**/*.{swift,h,m}"
-  s.exclude_files = "**/AutoMockable.generated.swift"
   s.frameworks    = "Foundation"
   s.dependency "RxSwift", "~> 4.1"
 end

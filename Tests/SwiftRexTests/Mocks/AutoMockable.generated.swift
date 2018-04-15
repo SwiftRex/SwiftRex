@@ -1,9 +1,6 @@
 // Generated using Sourcery 0.11.2 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
-// swiftlint:disable line_length
-// swiftlint:disable variable_name
-
 import Foundation
 import RxSwift
 @testable import SwiftRex
@@ -13,21 +10,9 @@ import UIKit
 import AppKit
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
 class ActionHandlerMock: ActionHandler {
 
-    //MARK: - trigger
+    // MARK: - trigger
 
     var triggerCallsCount = 0
     var triggerCalled: Bool {
@@ -45,7 +30,7 @@ class ActionHandlerMock: ActionHandler {
 }
 class SideEffectProducerMock: SideEffectProducer {
 
-    //MARK: - execute
+    // MARK: - execute
 
     var executeGetStateCallsCount = 0
     var executeGetStateCalled: Bool {
