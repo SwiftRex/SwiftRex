@@ -1,13 +1,13 @@
 sources:
   include:
-    - Sources/Core
+    - Sources
 templates:
   include:
-    - Sources/Core/CodeGeneration/Templates
+    - Sources/CodeGeneration/Templates
   exclude:
-    - Sources/Core/CodeGeneration/Templates/AutoCases.stencil
-    - Sources/Core/CodeGeneration/Templates/AutoEquatable.stencil
-    - Sources/Core/CodeGeneration/Templates/AutoHashable.stencil
-    - Sources/Core/CodeGeneration/Templates/AutoLenses.stencil
+    - Sources/CodeGeneration/Templates/AutoCases.stencil
+    - Sources/CodeGeneration/Templates/AutoEquatable.stencil
+    - Sources/CodeGeneration/Templates/AutoHashable.stencil
+    - Sources/CodeGeneration/Templates/AutoLenses.stencil
 
-output: Sources/Core/CodeGeneration
+output: Sources/CodeGeneration

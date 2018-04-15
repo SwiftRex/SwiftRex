@@ -277,10 +277,25 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D56C3E402082E991002E914C /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D59D57F7207AA1B40010412E /* SwiftRex.h */,
+				D59D57E9207AA1B40010412E /* Operator.swift */,
+				D59D57F6207AA1B40010412E /* TypeAlias.swift */,
+				D59D57EA207AA1B40010412E /* CodeGeneration */,
+				D59D57E5207AA1B40010412E /* CoreTypes */,
+				D59D5800207AA1B40010412E /* Metadata */,
+				D59D57F8207AA1B40010412E /* Middlewares */,
+				D59D5805207AA1B40010412E /* Store */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
 		D56C6BC4206E80D0007FA63E = {
 			isa = PBXGroup;
 			children = (
-				D59D57E4207AA1B40010412E /* Core */,
+				D56C3E402082E991002E914C /* Sources */,
 				D5A606C4207125DD00D682EF /* Tests */,
 				D595F6CD206E818C00E02733 /* Products */,
 				D51638F6206F426700469F96 /* Frameworks */,
@@ -297,22 +312,6 @@
 				D5A606F1207126DC00D682EF /* SwiftRexTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D59D57E4207AA1B40010412E /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				D59D57F7207AA1B40010412E /* SwiftRex.h */,
-				D59D57E9207AA1B40010412E /* Operator.swift */,
-				D59D57F6207AA1B40010412E /* TypeAlias.swift */,
-				D59D57EA207AA1B40010412E /* CodeGeneration */,
-				D59D57E5207AA1B40010412E /* CoreTypes */,
-				D59D5800207AA1B40010412E /* Metadata */,
-				D59D57F8207AA1B40010412E /* Middlewares */,
-				D59D5805207AA1B40010412E /* Store */,
-			);
-			name = Core;
-			path = Sources/Core;
 			sourceTree = "<group>";
 		};
 		D59D57E5207AA1B40010412E /* CoreTypes */ = {
@@ -1083,7 +1082,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-iOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-iOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1162,7 +1161,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-iOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-iOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1247,7 +1246,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-watchOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-watchOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1326,7 +1325,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-watchOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-watchOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1411,7 +1410,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-tvOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-tvOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1490,7 +1489,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-tvOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-tvOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1577,7 +1576,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-macOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-macOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1657,7 +1656,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Sources/Core/Metadata/Info-macOS.plist";
+				INFOPLIST_FILE = "Sources/Metadata/Info-macOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
