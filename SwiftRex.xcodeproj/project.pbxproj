@@ -17,10 +17,6 @@
 		D51C8AD2207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD4207ACAD900EAC486 /* SubstateMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */; };
 		D51C8AD6207ACDA300EAC486 /* MiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */; };
-		D51CA4BB2083A4A3000B9A7B /* SwiftRex_Playground.h in Headers */ = {isa = PBXBuildFile; fileRef = D51CA4B92083A4A3000B9A7B /* SwiftRex_Playground.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D51CA4BF2083A4BD000B9A7B /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRex.framework */; };
-		D51CA4C02083A4CE000B9A7B /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FD206F42C200469F96 /* RxSwift.framework */; };
-		D51CA4C32083A590000B9A7B /* Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51CA4C22083A590000B9A7B /* Empty.swift */; };
 		D52E2164207A6D9B00A88E39 /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52E2162207A6CEC00A88E39 /* ReducerMock.swift */; };
 		D55EFB0B207E9ECA00BC8822 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D55EFB0A207E9ECA00BC8822 /* Nimble.framework */; };
 		D55EFB0D207EBAA300BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
@@ -151,11 +147,6 @@
 		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
 		D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
-		D51CA4B72083A4A3000B9A7B /* SwiftRex_Playground.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex_Playground.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D51CA4B92083A4A3000B9A7B /* SwiftRex_Playground.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRex_Playground.h; sourceTree = "<group>"; };
-		D51CA4BA2083A4A3000B9A7B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D51CA4C12083A554000B9A7B /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		D51CA4C22083A590000B9A7B /* Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Empty.swift; sourceTree = "<group>"; };
 		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
 		D55EFB0A207E9ECA00BC8822 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
 		D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeErase.generated.abstract.swift; sourceTree = "<group>"; };
@@ -225,15 +216,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D51CA4B32083A4A3000B9A7B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D51CA4C02083A4CE000B9A7B /* RxSwift.framework in Frameworks */,
-				D51CA4BF2083A4BD000B9A7B /* SwiftRex.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D595F6C8206E818C00E02733 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -295,17 +277,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D51CA4B82083A4A3000B9A7B /* Playground */ = {
-			isa = PBXGroup;
-			children = (
-				D51CA4C12083A554000B9A7B /* Playground.playground */,
-				D51CA4B92083A4A3000B9A7B /* SwiftRex_Playground.h */,
-				D51CA4BA2083A4A3000B9A7B /* Info.plist */,
-				D51CA4C22083A590000B9A7B /* Empty.swift */,
-			);
-			path = Playground;
-			sourceTree = "<group>";
-		};
 		D56C3E402082E991002E914C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -326,7 +297,6 @@
 			children = (
 				D56C3E402082E991002E914C /* Sources */,
 				D5A606C4207125DD00D682EF /* Tests */,
-				D51CA4B82083A4A3000B9A7B /* Playground */,
 				D595F6CD206E818C00E02733 /* Products */,
 				D51638F6206F426700469F96 /* Frameworks */,
 			);
@@ -340,7 +310,6 @@
 				D595F6E7206E81B900E02733 /* SwiftRex.framework */,
 				D595F6F4206E81C900E02733 /* SwiftRex.framework */,
 				D5A606F1207126DC00D682EF /* SwiftRexTests.xctest */,
-				D51CA4B72083A4A3000B9A7B /* SwiftRex_Playground.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -537,14 +506,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D51CA4B42083A4A3000B9A7B /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D51CA4BB2083A4A3000B9A7B /* SwiftRex_Playground.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D595F6C9206E818C00E02733 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -580,25 +541,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		D51CA4B62083A4A3000B9A7B /* SwiftRex Playground */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D51CA4BE2083A4A3000B9A7B /* Build configuration list for PBXNativeTarget "SwiftRex Playground" */;
-			buildPhases = (
-				D51CA4B22083A4A3000B9A7B /* Sources */,
-				D51CA4B32083A4A3000B9A7B /* Frameworks */,
-				D51CA4B42083A4A3000B9A7B /* Headers */,
-				D51CA4B52083A4A3000B9A7B /* Resources */,
-				D564D0062083A7A70097A358 /* Carthage */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "SwiftRex Playground";
-			productName = "SwiftRex Playground";
-			productReference = D51CA4B72083A4A3000B9A7B /* SwiftRex_Playground.framework */;
-			productType = "com.apple.product-type.framework";
-		};
 		D595F6CB206E818C00E02733 /* SwiftRex iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6D4206E818C00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex iOS" */;
@@ -705,10 +647,6 @@
 				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0930;
 				TargetAttributes = {
-					D51CA4B62083A4A3000B9A7B = {
-						CreatedOnToolsVersion = 9.3;
-						LastSwiftMigration = 0930;
-					};
 					D595F6CB206E818C00E02733 = {
 						CreatedOnToolsVersion = 9.3;
 						LastSwiftMigration = 0930;
@@ -749,19 +687,11 @@
 				D595F6E6206E81B900E02733 /* SwiftRex tvOS */,
 				D595F6F3206E81C900E02733 /* SwiftRex macOS */,
 				D5A606F0207126DC00D682EF /* SwiftRexTests */,
-				D51CA4B62083A4A3000B9A7B /* SwiftRex Playground */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D51CA4B52083A4A3000B9A7B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D595F6CA206E818C00E02733 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -848,22 +778,6 @@
 			shellPath = /bin/sh;
 			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
 		};
-		D564D0062083A7A70097A358 /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/Mac/RxSwift.framework",
-			);
-			name = Carthage;
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
-		};
 		D595F770206EBC4B00E02733 /* Sourcery */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -933,14 +847,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D51CA4B22083A4A3000B9A7B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D51CA4C32083A590000B9A7B /* Empty.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D595F6C7206E818C00E02733 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1093,171 +999,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		D51CA4BC2083A4A3000B9A7B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 7BK8NL3DYL;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
-				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Playground/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.developercity.SwiftRex-Playground";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		D51CA4BD2083A4A3000B9A7B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 7BK8NL3DYL;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
-				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Playground/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.developercity.SwiftRex-Playground";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		D56C6BC9206E80D0007FA63E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2084,15 +1825,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D51CA4BE2083A4A3000B9A7B /* Build configuration list for PBXNativeTarget "SwiftRex Playground" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D51CA4BC2083A4A3000B9A7B /* Debug */,
-				D51CA4BD2083A4A3000B9A7B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		D56C6BC8206E80D0007FA63E /* Build configuration list for PBXProject "SwiftRex" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
