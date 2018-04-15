@@ -13,9 +13,21 @@ import UIKit
 import AppKit
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
 class ActionHandlerMock: ActionHandler {
 
-    // MARK: - trigger
+    //MARK: - trigger
 
     var triggerCallsCount = 0
     var triggerCalled: Bool {
@@ -33,7 +45,7 @@ class ActionHandlerMock: ActionHandler {
 }
 class SideEffectProducerMock: SideEffectProducer {
 
-    // MARK: - execute
+    //MARK: - execute
 
     var executeGetStateCallsCount = 0
     var executeGetStateCalled: Bool {

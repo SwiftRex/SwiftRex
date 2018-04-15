@@ -1,6 +1,7 @@
 // Generated using Sourcery 0.11.2 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
+
 import RxSwift
 
 // MARK: - Type Eraser for Middleware
@@ -13,10 +14,10 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
         self.concrete = concrete
     }
 
-    override func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) {
+    override func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
         return concrete.handle(event: event, getState: getState, next: next)
     }
-    override func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) {
+    override func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
         return concrete.handle(action: action, getState: getState, next: next)
     }
 
@@ -33,11 +34,11 @@ public final class AnyMiddleware<StateType>: Middleware {
         self.box = _AnyMiddlewareBox(concrete)
     }
 
-    public func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) {
-    return box.handle(event: event, getState: getState, next: next)
+    public func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
+    return box.handle(event: event,getState: getState,next: next)
     }
-    public func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) {
-    return box.handle(action: action, getState: getState, next: next)
+    public func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
+    return box.handle(action: action,getState: getState,next: next)
     }
 
     public var actionHandler: ActionHandler? {
