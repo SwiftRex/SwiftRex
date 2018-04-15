@@ -3,5 +3,4 @@ xcodeproj: SwiftRex.xcodeproj
 scheme: SwiftRex iOS
 ignore:
   - "**/CodeGeneration/*.abstract.swift"
-  - "**/CodeGeneration/AutoMockable.generated.swift"
   - Tests/*

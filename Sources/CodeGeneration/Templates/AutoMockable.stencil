@@ -1,6 +1,4 @@
-// swiftlint:disable line_length
-// swiftlint:disable variable_name
-
+// sourcery:file:../../Tests/SwiftRexTests/Mocks/AutoMockable.generated.swift
 import Foundation
 import RxSwift
 @testable import SwiftRex
@@ -114,3 +112,4 @@ class {{ type.name }}Mock: {{ type.name }} {
 {% endfor %}
 }
 {% endif %}{% endfor %}
+// sourcery:end
