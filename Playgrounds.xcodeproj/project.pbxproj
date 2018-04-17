@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D51524B32086ADB100F2965F /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5B78E9F20867DEC00AC913F /* RxSwift.framework */; };
 		D5B841BD2083CD46006BAB69 /* Playgrounds.h in Headers */ = {isa = PBXBuildFile; fileRef = D5B841BB2083CD46006BAB69 /* Playgrounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5B841CB2083CDED006BAB69 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5B841CA2083CDED006BAB69 /* SwiftRex.framework */; };
-		D5B841CD2083CDFA006BAB69 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5B841CC2083CDFA006BAB69 /* RxSwift.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,7 +177,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5B841CD2083CDFA006BAB69 /* RxSwift.framework in Frameworks */,
+				D51524B32086ADB100F2965F /* RxSwift.framework in Frameworks */,
 				D5B841CB2083CDED006BAB69 /* SwiftRex.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
