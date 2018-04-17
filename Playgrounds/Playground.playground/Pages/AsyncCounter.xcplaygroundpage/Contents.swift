@@ -157,7 +157,7 @@ final class CounterMiddleware: SideEffectMiddleware {
  Reducers
  *******************************************************************************
 
- Let's combine two reducers: one for handling `CounterAction` and the second
+ Let's compose two reducers: one for handling `CounterAction` and the second
  for the `AlertAction`.
  */
 let counterReducer = Reducer<CountingState> { state, action in
@@ -192,6 +192,10 @@ let alertReducer = Reducer<AlertMessage> { state, action in
     }
 }
 
+let composedReducer =
+    counterReducer.lift(\GlobalState.countingState)
+        <> alertReducer.lift(\GlobalState.lastMessage)
+
 /*******************************************************************************
  Store
  *******************************************************************************
@@ -201,8 +205,7 @@ let alertReducer = Reducer<AlertMessage> { state, action in
 final class Store: StoreBase<GlobalState> {
     init() {
         super.init(initialState: GlobalState(),
-                   reducer: counterReducer.lift(\GlobalState.countingState)
-                    <> alertReducer.lift(\GlobalState.lastMessage),
+                   reducer: composedReducer,
                    middleware: CounterMiddleware())
     }
 }
@@ -230,11 +233,11 @@ struct CounterViewModel: CustomDebugStringConvertible {
         case .requestingToIncrease:
             emoji = "⏳"
             title = "Increasing"
-            details = "Increasing: \(state.currentNumber) => \(state.currentNumber + 1)"
+            details = "\(state.currentNumber) => \(state.currentNumber + 1)"
         case .requestingToDecrease:
             emoji = "⏳"
             title = "Decreasing"
-            details = "Decreasing: \(state.currentNumber) => \(state.currentNumber - 1)"
+            details = "\(state.currentNumber) => \(state.currentNumber - 1)"
         }
     }
 
@@ -249,8 +252,7 @@ struct CounterViewModel: CustomDebugStringConvertible {
 
  Two roles (input + output):
  1) Sends user events to the store
- 2) Subscriber for the store notifications (whenever state changes) and converts
-    to user interface
+ 2) Subscriber for the store notifications (state changes) and presents it
  */
 
 let disposeBag = DisposeBag()
@@ -343,7 +345,7 @@ events
  ⏳    | Decreasing: 3 => 2
  ✅    | Value: 2
 
- As we can see, two operations have failed because another request
+ As we can see, three operations have failed because another request
  was in progress and the "user" tapped the increase or decrease
  button. In a real-world app we could simply bind the
  `state.countingState.isLoading` to the button, making it disabled,
