@@ -53,9 +53,8 @@ enum CounterAction: ActionProtocol, Equatable {
     case didStartRequest(CounterEvent)
 }
 
-enum AlertAction: ActionProtocol, Equatable {
-    case error(Date, String)
-}
+// SideEffectError is a struct that implements ActionProtocol and
+// can be returned from a SideEffectMiddleware in case of error
 
 /*******************************************************************************
  Counter Service
@@ -66,69 +65,45 @@ enum AlertAction: ActionProtocol, Equatable {
  or decreases some number in the cloud.
  */
 final class CounterService: SideEffectProducer {
+    struct RequestError: Error, Equatable, CustomDebugStringConvertible {
+        let reason: String
+
+        var debugDescription: String {
+            return reason
+        }
+    }
+
     var event: CounterEvent
 
     init(event: CounterEvent) {
         self.event = event
     }
 
+    // This is a cold observable, that means, subscribing it
+    // causes a side effect, which could be a network call
+    // or a disk operation for example.
     func execute(getState: @escaping () -> GlobalState) -> Observable<ActionProtocol> {
-        // Here we guard against triggering a request when other is
-        // currently happening. In a real-life scenario we could instead
-        // cancel the pending request or simply ignore
         switch (event, getState().countingState.requestState) {
         case (.didTapIncrease, .stopped):
-            return increase().map { $0 as ActionProtocol }
+            return .concat(
+                // Immediately inform that the request has started
+                .just(CounterAction.didStartRequest(.didTapIncrease)),
+                // Simulate some slow operation that returns after around 0.5 second
+                Observable<ActionProtocol>.just(CounterAction.successfullyIncreased)
+                    .delay(0.5, scheduler: SerialDispatchQueueScheduler(qos: .background))
+            )
         case (.didTapDecrease, .stopped):
-            return decrease().map { $0 as ActionProtocol }
-        case (.didTapIncrease, _):
-            return .just(AlertAction.error(Date(), "Can't increase: another pending operation"))
-        case (.didTapDecrease, _):
-            return .just(AlertAction.error(Date(), "Can't decrease: another pending operation"))
-        }
-    }
-
-    func increase() -> Observable<CounterAction> {
-        return Observable.create { observer in
-            // This is a cold observable, that means, subscribing it
-            // causes a side effect, which could be a network call
-            // or a disk operation for example.
-            observer.onNext(CounterAction.didStartRequest(.didTapIncrease))
-            let cancel = Disposables.create { }
-
-            DispatchQueue
-                .global()
-                .asyncAfter(deadline: .now() + 0.5) {
-                    guard !cancel.isDisposed else { return }
-                    observer.onNext(CounterAction.successfullyIncreased)
-                    // Done with this side effect operation!
-                    // Let's complete it and allow it to be disposed
-                    observer.onCompleted()
-            }
-
-            return cancel
-        }
-    }
-
-    func decrease() -> Observable<CounterAction> {
-        return Observable.create { observer in
-            // This is a cold observable, that means, subscribing it
-            // causes a side effect, which could be a network call
-            // or a disk operation for example.
-            observer.onNext(CounterAction.didStartRequest(.didTapDecrease))
-            let cancel = Disposables.create { }
-
-            DispatchQueue
-                .global()
-                .asyncAfter(deadline: .now() + 0.5) {
-                    guard !cancel.isDisposed else { return }
-                    observer.onNext(CounterAction.successfullyDecreased)
-                    // Done with this side effect operation!
-                    // Let's complete it and allow it to be disposed
-                    observer.onCompleted()
-            }
-
-            return cancel
+            return .concat(
+                // Immediately inform that the request has started
+                .just(CounterAction.didStartRequest(.didTapIncrease)),
+                // Simulate some slow operation that returns after around 0.5 second
+                Observable<ActionProtocol>.just(CounterAction.successfullyDecreased)
+                    .delay(0.5, scheduler: SerialDispatchQueueScheduler(qos: .background))
+            )
+        default:
+            // Here we guard against triggering a request when other is currently happening.
+            // In a real-life scenario we could instead cancel the pending request or simply ignore.
+            return .error(RequestError(reason: "Another pending operation"))
         }
     }
 }
@@ -184,12 +159,10 @@ let counterReducer = Reducer<CountingState> { state, action in
 }
 
 let alertReducer = Reducer<AlertMessage> { state, action in
-    guard let alertAction = action as? AlertAction else { return state }
+    guard let sideEffectError = action as? SideEffectError else { return state }
 
-    switch alertAction {
-    case .error(let date, let text):
-        return AlertMessage(date: date, text: text)
-    }
+    return AlertMessage(date: sideEffectError.date,
+                        text: "Can't execute \(sideEffectError.originalEvent): \(sideEffectError.error)")
 }
 
 let composedReducer =
@@ -211,7 +184,6 @@ final class Store: StoreBase<GlobalState> {
 }
 
 let store = Store()
-
 
 /*******************************************************************************
  ViewModel
@@ -316,9 +288,9 @@ let events = [
 ]
 
 // Interval between taps
-// Setting to 0.55, which is very close to the time needed to
+// Setting to 0.6, which is very close to the time needed to
 // fullfil the request, may result in some alerts to the user
-let interval = 0.55
+let interval = 0.6
 
 events
     .enumerated()
@@ -335,23 +307,23 @@ events
  ✅    | Value: 0
  ⏳    | Increasing: 0 => 1
  ✅    | Value: 1
- ❌    | Can't increase: another pending operation
  ⏳    | Increasing: 1 => 2
  ✅    | Value: 2
- ❌    | Can't decrease: another pending operation
+ ❌    | Can't execute didTapIncrease: Another pending operation
  ⏳    | Increasing: 2 => 3
- ❌    | Can't decrease: another pending operation
- ✅    | Value: 3
- ⏳    | Decreasing: 3 => 2
+ ✅    | Value: 1
+ ⏳    | Increasing: 1 => 2
  ✅    | Value: 2
+ ❌    | Can't execute didTapDecrease: Another pending operation
+ ⏳    | Increasing: 2 => 3
+ ✅    | Value: 1
 
- As we can see, three operations have failed because another request
+ As we can see, two operations have failed because another request
  was in progress and the "user" tapped the increase or decrease
  button. In a real-world app we could simply bind the
  `state.countingState.isLoading` to the button, making it disabled,
  or perhaps cancel the current request and make another one.
 */
-
 
 // Useful extensions
 extension ObservableType {

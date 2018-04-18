@@ -1,8 +1,9 @@
 import RxSwift
 
-struct SideEffectError: ActionProtocol {
-    let originalEvent: EventProtocol
-    let error: Error
+public struct SideEffectError: ActionProtocol {
+    public var date: Date
+    public let originalEvent: EventProtocol
+    public let error: Error
 }
 
 public protocol SideEffectMiddleware: Middleware {
@@ -23,7 +24,7 @@ extension SideEffectMiddleware {
                 self?.actionHandler?.trigger(action)
             },
             onError: { [weak self] error in
-                let action = SideEffectError(originalEvent: event, error: error)
+                let action = SideEffectError(date: Date(), originalEvent: event, error: error)
                 self?.actionHandler?.trigger(action)
             }
         ).disposed(by: disposeBag)
