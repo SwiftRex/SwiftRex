@@ -133,7 +133,7 @@ final class CounterMiddleware: SideEffectMiddleware {
  *******************************************************************************
 
  Let's compose two reducers: one for handling `CounterAction` and the second
- for the `AlertAction`.
+ for the `SideEffectError`.
  */
 let counterReducer = Reducer<CountingState> { state, action in
     guard let counterAction = action as? CounterAction else { return state }
