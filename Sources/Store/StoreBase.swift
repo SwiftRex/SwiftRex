@@ -1,3 +1,4 @@
+import Foundation
 import RxSwift
 
 open class StoreBase<E>: Store {

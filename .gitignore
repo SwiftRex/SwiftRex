@@ -28,6 +28,7 @@
 **/build/
 **/DerivedData/
 **/derivedData/
+**/.build/
 
 # OS-specific files
 .DS_Store
