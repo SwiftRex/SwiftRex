@@ -1,4 +1,4 @@
-// sourcery:file:../../Tests/SwiftRexTests/Mocks/AutoMockable.generated.swift
+// sourcery:file:../../UnitTests/Mocks/AutoMockable.generated.swift
 import Foundation
 import RxSwift
 @testable import SwiftRex
