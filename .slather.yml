@@ -1,6 +1,6 @@
 coverage_service: coveralls
 xcodeproj: SwiftRex.xcodeproj
-scheme: SwiftRex iOS
+scheme: SwiftRex macOS
 ignore:
   - "**/CodeGeneration/*.abstract.swift"
   - Tests/*
