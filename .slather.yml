@@ -3,4 +3,4 @@ xcodeproj: SwiftRex.xcodeproj
 scheme: SwiftRex macOS
 ignore:
   - "**/CodeGeneration/*.abstract.swift"
-  - Tests/*
+  - UnitTests/*
