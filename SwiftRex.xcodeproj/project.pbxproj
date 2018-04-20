@@ -583,6 +583,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6DF206E81AE00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex watchOS" */;
 			buildPhases = (
+				D578B2BA208A6E300035AE9C /* Sourcery */,
+				D578B2BD208A6E440035AE9C /* Lint */,
 				D595F6D5206E81AE00E02733 /* Sources */,
 				D595F6D6206E81AE00E02733 /* Frameworks */,
 				D595F6D7206E81AE00E02733 /* Headers */,
@@ -602,6 +604,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6EC206E81BA00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex tvOS" */;
 			buildPhases = (
+				D578B2BB208A6E350035AE9C /* Sourcery */,
+				D578B2BE208A6E490035AE9C /* Lint */,
 				D595F6E2206E81B900E02733 /* Sources */,
 				D595F6E3206E81B900E02733 /* Frameworks */,
 				D595F6E4206E81B900E02733 /* Headers */,
@@ -621,6 +625,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6F9206E81C900E02733 /* Build configuration list for PBXNativeTarget "SwiftRex macOS" */;
 			buildPhases = (
+				D578B2BC208A6E3C0035AE9C /* Sourcery */,
+				D578B2BF208A6E4E0035AE9C /* Lint */,
 				D595F6EF206E81C900E02733 /* Sources */,
 				D595F6F0206E81C900E02733 /* Frameworks */,
 				D595F6F1206E81C900E02733 /* Headers */,
@@ -796,6 +802,90 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
+		};
+		D578B2BA208A6E300035AE9C /* Sourcery */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Sourcery;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which sourcery >/dev/null; then\n    sourcery\nelse\n    echo \"warning: Sourcery not installed, please run `brew install sourcery`\"\nfi";
+		};
+		D578B2BB208A6E350035AE9C /* Sourcery */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Sourcery;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which sourcery >/dev/null; then\n    sourcery\nelse\n    echo \"warning: Sourcery not installed, please run `brew install sourcery`\"\nfi";
+		};
+		D578B2BC208A6E3C0035AE9C /* Sourcery */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Sourcery;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which sourcery >/dev/null; then\n    sourcery\nelse\n    echo \"warning: Sourcery not installed, please run `brew install sourcery`\"\nfi";
+		};
+		D578B2BD208A6E440035AE9C /* Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Lint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint autocorrect\nelse\n    echo \"warning: SwiftLint not installed, please run `brew install swiftlint`\"\nfi";
+		};
+		D578B2BE208A6E490035AE9C /* Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Lint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint autocorrect\nelse\n    echo \"warning: SwiftLint not installed, please run `brew install swiftlint`\"\nfi";
+		};
+		D578B2BF208A6E4E0035AE9C /* Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Lint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint autocorrect\nelse\n    echo \"warning: SwiftLint not installed, please run `brew install swiftlint`\"\nfi";
 		};
 		D595F770206EBC4B00E02733 /* Sourcery */ = {
 			isa = PBXShellScriptBuildPhase;
