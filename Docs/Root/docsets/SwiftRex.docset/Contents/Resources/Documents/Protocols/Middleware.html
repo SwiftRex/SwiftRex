@@ -14,7 +14,7 @@
     <a title="Middleware Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (1% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (58% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -140,7 +140,43 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> pipeline in order to handle each <code><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> dispatched and to create <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> in response. It&rsquo;s also capable of handling each <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> before the <code><a href="../Structs/Reducer.html">Reducer</a></code> to do its job.</p>
+
+<p>We already know what <code><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> are: both are lightweight structures that are dispatched (event) or triggered (action) into the <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>. The store enqueues a new item that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>Middleware</code> is class that handles actions and events, and has the power to trigger more actions to the <code><a href="../Protocols/ActionHandler.html">ActionHandler</a></code> chain. A very simple <code>Middleware</code> will receive an <code><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and current state, and trigger an equivalent <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> to the <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
+
+<p>For example, a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event would be handled by a <code>Middleware</code> that checks the state and finds that current list has certain movie at the given row index, and this movie has been already marked as watched before. That <code>Middleware</code> was able to learn that thanks to the <code>getState: @escaping () -&gt; StateType</code> closure received together with the <code><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>, and which can be checked at any point to read an updated state. Our example <code>Middleware</code> then will trigger a <code>MovieListAction.setMovieAsUnwatched(movieId:)</code> action to be handled by itself, other middlewares or the <code><a href="../Structs/Reducer.html">Reducer</a></code> chain.</p>
+
+<p>However, this would be a very naive implementation. Most of the times we handle data that must be persisted in a database or through a REST API. State only lives in memory, but before changing the memory we should at least start Side-Effects. Let&rsquo;s revisit the example above and say that we got a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event. Yes, we still should check what movie is at that row and whether or not it&rsquo;s watched. Now, we can trigger a <code>URLSession</code> task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:</p>
+
+<ul>
+<li>assume that this API won&rsquo;t fail, and mark the movie immediately as unwatched;</li>
+<li>don&rsquo;t assume anything and wait for the <code>HTTPResponse</code>;</li>
+<li>provide a very precise state management, meaning that we immediately change the state of our movie to <q>it&rsquo;s being changed</q> and, once we get the response we update again.</li>
+</ul>
+
+<p>In the first case, we create the <code>URLSessionDataTask</code>, call <code>task.resume()</code> and immediately trigger the <code>setMovieAsUnwatched</code> action. We may use the completion handler or the <code>HTTPRequest</code> to confirm the result and rollback if needed. In the second case, after calling <code>task.resume()</code> we don&rsquo;t trigger any action, only when we get the response in case it was successful one.</p>
+
+<p>The third case, however, offers many more possibilities. You can think about the possible three states of a movie: watched, not watched, mutating. You can even split the <q>mutating</q> case in two: <q>mutating to watched</q> and <q>mutating to unwatched</q>. What you get from that is the ability to disable the <q>watch</q> button, or replaced it by an activity indicator view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate situation. To offer that, you call task.resume and immediately trigger a <code>setMovieAsUnwatchRequestInProgress</code>, while inside the response completion handler you evaluate the response and trigger another action to update the movie state again.</p>
+
+<p>Because the <code>Middleware</code> accesses all events and the state of the app at any point, anything can be done in these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct. Some suggestions of middlewares:</p>
+
+<ul>
+<li>Run Timers, pooling some external resource or updating some local state at a constant time</li>
+<li>Subscribe for <code>CoreData</code> changes</li>
+<li>Subscribe for <code>Realm</code> changes</li>
+<li>Subscribe for <code>Firebase Realtime Database</code> notifications</li>
+<li>Be a <code>CoreLocation</code> delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</li>
+<li>Be a <code>HealthKit</code> delegate to track activities, or even combining that with <code>CoreLocation</code> observation in order to track the activity route</li>
+<li>Logger</li>
+<li>Telemetry</li>
+<li>Analytics tracker</li>
+<li><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</li>
+<li>API calls and other <q>cold observables</q></li>
+<li>Reachability</li>
+<li>Navigation through the app (Redux Coordinator pattern)</li>
+<li><code>NotificationCenter</code> and other delegates</li>
+<li><code>RxSwift</code> observables</li>
+</ul>
 
           </section>
           <section class="section task-group-section">
@@ -159,7 +195,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The State that this <code>Middleware</code> knowns how to handle. Thanks to lenses, this state can be a sub-state lifted to a global state. Please check <code><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewarePAAE4liftAA08SubstateC0Cyqd__xGs15WritableKeyPathCyqd__9StateTypeQzGlF">lift(_:)</a></code> for more details.</p>
 
                       </div>
                       <div class="declaration">
@@ -186,7 +222,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>A <code>Middleware</code> is capable of triggering <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> to the <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>. This property is a nullable <code><a href="../Protocols/ActionHandler.html">ActionHandler</a></code> used for the middleware to trigger the actions. It&rsquo;s gonna be injected by the <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> or by a parent <code>Middleware</code>, so don&rsquo;t worry about it, just use it whenever you need to trigger something.</p>
 
                       </div>
                       <div class="declaration">
@@ -213,7 +249,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Handles the incoming events and may trigger side-effects, may trigger actions, may start an asynchronous operation.</p>
 
                       </div>
                       <div class="declaration">
@@ -223,6 +259,49 @@
                           <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">event</span><span class="p">:</span> <span class="kt"><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></span><span class="p">,</span> <span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateType">StateType</a></span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">next</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateType">StateType</a></span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>event</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the event to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>getState</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that can be used to get the current state at any point in time</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>next</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -240,7 +319,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Handles the incoming actions and may change them or trigger additional ones. Usually this is not the best place to start side-effects or trigger new actions, it should be more as an observation point for tracking, logging and telemetry.</p>
 
                       </div>
                       <div class="declaration">
@@ -250,6 +329,49 @@
                           <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt"><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span><span class="p">,</span> <span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateType">StateType</a></span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">next</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateType">StateType</a></span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the action to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>getState</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that can be used to get the current state at any point in time</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>next</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the next <code>Middleware</code> in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the <code><a href="../Structs/Reducer.html">Reducer</a></code> pipeline.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -274,7 +396,29 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>A lenses method. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state.
+So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the <code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this middleware can be used within our <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> or even composed with others. It also can be used in other apps as long as we have a way to lift it to the world of <code>Whole</code>.</p>
 
                       </div>
                       <div class="declaration">
@@ -284,6 +428,29 @@
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">Whole</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">substatePath</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">Whole</span><span class="p">,</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateType">StateType</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a></span><span class="o">&lt;</span><span class="kt">Whole</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>substatePath</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the keyPath that goes from <code>Whole</code> to <code>Part</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code><a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a></code><code>&lt;Whole, Self&gt;</code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa, by using the key path.</p>
                       </div>
                     </section>
                   </div>

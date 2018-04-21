@@ -54,6 +54,10 @@
 		D578B2B7208A6BCA0035AE9C /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D578B2B4208A6BCA0035AE9C /* Nimble.framework */; };
 		D578B2B8208A6BCA0035AE9C /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D578B2B5208A6BCA0035AE9C /* RxBlocking.framework */; };
 		D578B2B9208A6BCA0035AE9C /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D578B2B6208A6BCA0035AE9C /* RxTest.framework */; };
+		D5866FC7208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
+		D5866FC8208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
+		D5866FC9208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
+		D5866FCA208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D59D580B207AA1B40010412E /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D59D580C207AA1B40010412E /* EventProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E7207AA1B40010412E /* EventProtocol.swift */; };
 		D59D580D207AA1B40010412E /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
@@ -156,6 +160,7 @@
 		D578B2B4208A6BCA0035AE9C /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/Mac/Nimble.framework; sourceTree = "<group>"; };
 		D578B2B5208A6BCA0035AE9C /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/Mac/RxBlocking.framework; sourceTree = "<group>"; };
 		D578B2B6208A6BCA0035AE9C /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/Mac/RxTest.framework; sourceTree = "<group>"; };
+		D5866FC6208AD53B00507523 /* Monoid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monoid.swift; sourceTree = "<group>"; };
 		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6DA206E81AE00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -287,10 +292,9 @@
 			isa = PBXGroup;
 			children = (
 				D59D57F7207AA1B40010412E /* SwiftRex.h */,
-				D59D57E9207AA1B40010412E /* Operator.swift */,
-				D59D57F6207AA1B40010412E /* TypeAlias.swift */,
 				D59D57EA207AA1B40010412E /* CodeGeneration */,
 				D59D57E5207AA1B40010412E /* CoreTypes */,
+				D5866FC5208AD51000507523 /* Foundation */,
 				D59D5800207AA1B40010412E /* Metadata */,
 				D59D57F8207AA1B40010412E /* Middlewares */,
 				D59D5805207AA1B40010412E /* Store */,
@@ -319,6 +323,16 @@
 				D5A606FD2071287900D682EF /* Mocks */,
 			);
 			path = UnitTests;
+			sourceTree = "<group>";
+		};
+		D5866FC5208AD51000507523 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				D5866FC6208AD53B00507523 /* Monoid.swift */,
+				D59D57E9207AA1B40010412E /* Operator.swift */,
+				D59D57F6207AA1B40010412E /* TypeAlias.swift */,
+			);
+			path = Foundation;
 			sourceTree = "<group>";
 		};
 		D595F6CD206E818C00E02733 /* Products */ = {
@@ -984,6 +998,7 @@
 				D51C8ACF207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D55EFB0D207EBAA300BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D580B207AA1B40010412E /* Reducer.swift in Sources */,
+				D5866FC7208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5827207AA1B40010412E /* EventHandler.swift in Sources */,
 				D59D5818207AA1B40010412E /* TypeAlias.swift in Sources */,
 				D59D580F207AA1B40010412E /* TypeErase.generated.swift in Sources */,
@@ -1010,6 +1025,7 @@
 				D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D55EFB10207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D5836207AA1E70010412E /* EventHandler.swift in Sources */,
+				D5866FC8208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5838207AA1E70010412E /* StoreBase.swift in Sources */,
 				D59D584C207AA1F90010412E /* SideEffectProducer.swift in Sources */,
 				D59D5847207AA1F90010412E /* BypassMiddleware.swift in Sources */,
@@ -1036,6 +1052,7 @@
 				D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D55EFB0F207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D5831207AA1E60010412E /* EventHandler.swift in Sources */,
+				D5866FC9208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5833207AA1E60010412E /* StoreBase.swift in Sources */,
 				D59D5845207AA1F80010412E /* SideEffectProducer.swift in Sources */,
 				D59D5840207AA1F80010412E /* BypassMiddleware.swift in Sources */,
@@ -1062,6 +1079,7 @@
 				D51C8AD2207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
 				D55EFB0E207EBB0100BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D582C207AA1E50010412E /* EventHandler.swift in Sources */,
+				D5866FCA208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D582E207AA1E50010412E /* StoreBase.swift in Sources */,
 				D59D583E207AA1F70010412E /* SideEffectProducer.swift in Sources */,
 				D59D5839207AA1F70010412E /* BypassMiddleware.swift in Sources */,

@@ -13,7 +13,7 @@
     <a title="Protocols  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (1% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (58% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -184,7 +184,43 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> pipeline in order to handle each <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> dispatched and to create <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> in response. It&rsquo;s also capable of handling each <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> before the <code><a href="Structs/Reducer.html">Reducer</a></code> to do its job.</p>
+
+<p>We already know what <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> are: both are lightweight structures that are dispatched (event) or triggered (action) into the <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>. The store enqueues a new item that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>Middleware</code> is class that handles actions and events, and has the power to trigger more actions to the <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> chain. A very simple <code>Middleware</code> will receive an <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and current state, and trigger an equivalent <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> to the <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
+
+<p>For example, a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event would be handled by a <code>Middleware</code> that checks the state and finds that current list has certain movie at the given row index, and this movie has been already marked as watched before. That <code>Middleware</code> was able to learn that thanks to the <code>getState: @escaping () -&gt; StateType</code> closure received together with the <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>, and which can be checked at any point to read an updated state. Our example <code>Middleware</code> then will trigger a <code>MovieListAction.setMovieAsUnwatched(movieId:)</code> action to be handled by itself, other middlewares or the <code><a href="Structs/Reducer.html">Reducer</a></code> chain.</p>
+
+<p>However, this would be a very naive implementation. Most of the times we handle data that must be persisted in a database or through a REST API. State only lives in memory, but before changing the memory we should at least start Side-Effects. Let&rsquo;s revisit the example above and say that we got a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event. Yes, we still should check what movie is at that row and whether or not it&rsquo;s watched. Now, we can trigger a <code>URLSession</code> task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:</p>
+
+<ul>
+<li>assume that this API won&rsquo;t fail, and mark the movie immediately as unwatched;</li>
+<li>don&rsquo;t assume anything and wait for the <code>HTTPResponse</code>;</li>
+<li>provide a very precise state management, meaning that we immediately change the state of our movie to <q>it&rsquo;s being changed</q> and, once we get the response we update again.</li>
+</ul>
+
+<p>In the first case, we create the <code>URLSessionDataTask</code>, call <code>task.resume()</code> and immediately trigger the <code>setMovieAsUnwatched</code> action. We may use the completion handler or the <code>HTTPRequest</code> to confirm the result and rollback if needed. In the second case, after calling <code>task.resume()</code> we don&rsquo;t trigger any action, only when we get the response in case it was successful one.</p>
+
+<p>The third case, however, offers many more possibilities. You can think about the possible three states of a movie: watched, not watched, mutating. You can even split the <q>mutating</q> case in two: <q>mutating to watched</q> and <q>mutating to unwatched</q>. What you get from that is the ability to disable the <q>watch</q> button, or replaced it by an activity indicator view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate situation. To offer that, you call task.resume and immediately trigger a <code>setMovieAsUnwatchRequestInProgress</code>, while inside the response completion handler you evaluate the response and trigger another action to update the movie state again.</p>
+
+<p>Because the <code>Middleware</code> accesses all events and the state of the app at any point, anything can be done in these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct. Some suggestions of middlewares:</p>
+
+<ul>
+<li>Run Timers, pooling some external resource or updating some local state at a constant time</li>
+<li>Subscribe for <code>CoreData</code> changes</li>
+<li>Subscribe for <code>Realm</code> changes</li>
+<li>Subscribe for <code>Firebase Realtime Database</code> notifications</li>
+<li>Be a <code>CoreLocation</code> delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</li>
+<li>Be a <code>HealthKit</code> delegate to track activities, or even combining that with <code>CoreLocation</code> observation in order to track the activity route</li>
+<li>Logger</li>
+<li>Telemetry</li>
+<li>Analytics tracker</li>
+<li><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</li>
+<li>API calls and other <q>cold observables</q></li>
+<li>Reachability</li>
+<li>Navigation through the app (Redux Coordinator pattern)</li>
+<li><code>NotificationCenter</code> and other delegates</li>
+<li><code>RxSwift</code> observables</li>
+</ul>
 
                         <a href="Protocols/Middleware.html" class="slightly-smaller">See more</a>
                       </div>
@@ -257,6 +293,40 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">EventHandler</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex6MonoidP"></a>
+                    <a name="//apple_ref/swift/Protocol/Monoid" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex6MonoidP">Monoid</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Protocol for a monoid container, allowing monoidal composition</p>
+
+<p>For example, having a <code>f(x) -&gt; x</code> and a <code>g(x) -&gt; x</code>, one would be able to compose <code>h = f &lt;&gt; g</code> in a way that the new function <code>h(x)</code> will be similar to <code>g(f(x))</code></p>
+
+                        <a href="Protocols/Monoid.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Monoid</span></code></pre>
 
                         </div>
                       </div>
@@ -344,7 +414,21 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>🕹 <code>EventProtocol</code> represents an event, usually created in response to an user&rsquo;s input, such as tap, swipe, pinch, scroll.</p>
+
+<p>An <code>EventProtocol</code> is usually a request from your user to which the app should respond, for example the tab bar icon was tapped, a menu item was selected, a swipe gesture from left to right on cell number <code>3</code> or a new character was pressed in a search bar. Other events can be generated by other actors, such as timers or <code>CoreLocation</code> updates, but let&rsquo;s skip that for a moment and thing exclusively about the main actor of most use cases: the user. Because the user interaction is given mainly throughout an <code>UIViewController</code>, we should agree that View Controllers will create and dispatch most events to the <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>, where the <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline will handle it to decide whether or not act on each.</p>
+
+<p><code>EventProtocol</code> is a marker protocol and usually you want to keep events as tiny value-type structures: struct or enum. Having associated values is completely optional, but please keep in mind that you should pass as minimum information as necessary, and avoid passing value that&rsquo;s already in the state.</p>
+
+<p>For example, if there&rsquo;s a table view showing a list of movies, for each cell you may have a <q>Mark as Watched</q> (or Unwatched) button and a <q>Show Details</q> button, while the navigation bar has a button to mark all as watched. In that case, event enum could be:</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">MovieListEvent</span><span class="p">:</span> <span class="kt">EventProtocol</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">didTapWatchToggle</span><span class="p">(</span><span class="nv">rowIndex</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">didTapDetailsButton</span><span class="p">(</span><span class="nv">rowIndex</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">didTapMarkAllAsWatched</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Because your <code>State</code> already knows whether or not the movie was watched, you just need to offer a single <q>toggle</q> event instead of two events for watch or unwatch, and also there&rsquo;s no need for an extra boolean parameter. Moreover, you could pass the <code>IndexPath.row</code> instead of <code>movieId</code> so your enum becomes essentially a generic control event and your cells don&rsquo;t have to maintain IDs or any other model information.</p>
 
                       </div>
                       <div class="declaration">
@@ -375,7 +459,18 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>🏄‍ <code>ActionProtocol</code> represents an action, usually created by a <code><a href="Protocols/Middleware.html">Middleware</a></code> in response to an event.</p>
+
+<p>Like events, <code>ActionProtocol</code> is also a marker protocol which concrete implementation is a value-type structure holding the associated value that is necessary to request a change in the state. Differently from events, although, actions have more meaningful values and are driven by business logic. While an <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> represents taps in the interface and usually has associated values like <code>3</code> or <code>true</code>, an <code>ActionProtocol</code> is expected to hold the information required to mutate the state, such as: <q>got a new list of movies</q> with an associated values of <code>[Movie]</code>, or <q>delete invoice</q> and the associated value being the Invoice object. That way, we should not expect actions to be triggered by an <code>UIViewController</code>, only by a <code><a href="Protocols/Middleware.html">Middleware</a></code> running in the <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>. Some middlewares can create one or multiple actions out of an event, collecting the proper state information from the indexes passed with the event, and then finally composing a very meaningful action that contains exactly the metadata for the change.</p>
+
+<p>An event may end up not changing the state, but an action necessarily implies that the state will be mutated accordingly; for example the event <code>viewDidLoad</code> may not change your state, having the only purpose of logging or tracking analytics events (let&rsquo;s talk about side-effects later), and in that case don&rsquo;t change anything in the app; while an action <code>userHasLoggedIn</code> will necessarily change something on the state.</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">MovieListAction</span><span class="p">:</span> <span class="kt">ActionProtocol</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">setMovieAsWatched</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">setMovieAsUnwatched</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">setCurrentMovieDetailsPage</span><span class="p">(</span><span class="nv">movie</span><span class="p">:</span> <span class="kt">Movie</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">setMoviesAsWatched</span><span class="p">(</span><span class="nv">movies</span><span class="p">:</span> <span class="p">[</span><span class="kt">Movie</span><span class="p">])</span>
+<span class="p">}</span>
+</code></pre>
 
                       </div>
                       <div class="declaration">
@@ -414,38 +509,6 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Store</span><span class="p">:</span> <span class="kt"><a href="Protocols/EventHandler.html">EventHandler</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/ActionHandler.html">ActionHandler</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/StateProvider.html">StateProvider</a></span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex6MonoidP"></a>
-                    <a name="//apple_ref/swift/Protocol/Monoid" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex6MonoidP">Monoid</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                        <a href="Protocols/Monoid.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Monoid</span></code></pre>
 
                         </div>
                       </div>

@@ -13,7 +13,7 @@
     <a title="Structures  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (1% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (58% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -184,7 +184,17 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>⚙ <code>Reducer</code> is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.</p>
+
+<p>The <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline can trigger <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, and handles both <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code>Reducer</code> function. Actually, it&rsquo;s a protocol that requires only one method:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">currentState</span><span class="p">:</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+</code></pre>
+
+<p>Given the current state and an action, returns the calculated state. This function will be executed in the last stage of an action handling, when all middlewares had the chance to modify or improve the action. Because a reduce function is composable monoid and also can be lifted through lenses, it&rsquo;s possible to write fine-grained <q>sub-reducer</q> that will handle only a <q>sub-state</q>, creating a pipeline of reducers.</p>
+
+<p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the <code>Reducer</code> structs or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always good to do a final sanity check before changing the state.</p>
+
+<p>Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.</p>
 
                         <a href="Structs/Reducer.html" class="slightly-smaller">See more</a>
                       </div>

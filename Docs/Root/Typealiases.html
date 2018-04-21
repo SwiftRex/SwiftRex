@@ -13,7 +13,7 @@
     <a title="Type Aliases  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (1% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (58% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -152,7 +152,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Zero-argument function that returns the current state. <br/>
+<code>() -&gt; StateType</code></p>
 
                       </div>
                       <div class="declaration">
@@ -179,7 +180,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>State reducer: takes current state and an action, computes the new state. <br/>
+<code>(StateType, ActionProtocol) -&gt; StateType</code></p>
 
                       </div>
                       <div class="declaration">
@@ -206,7 +208,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Evaluation of an incoming Event, returning an sequence of Actions. <br/>
+<code>(EventProtocol, () -&gt; StateType) -&gt; Observable&lt;ActionProtocol&gt;</code></p>
 
                       </div>
                       <div class="declaration">
@@ -233,7 +236,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>A function that calls the next event handler in the chain. <br/>
+<code>(EventProtocol, () -&gt; StateType) -&gt; Void</code></p>
 
                       </div>
                       <div class="declaration">
@@ -260,7 +264,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>A function that calls the next action handler in the chain. <br/>
+<code>(ActionProtocol, () -&gt; StateType) -&gt; Void</code></p>
 
                       </div>
                       <div class="declaration">

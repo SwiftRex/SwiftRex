@@ -1,167 +1,6 @@
 {
   "warnings": [
     {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 30,
-      "symbol": "AnyMiddleware",
-      "symbol_kind": "source.lang.swift.decl.class",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 33,
-      "symbol": "AnyMiddleware.init(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 37,
-      "symbol": "AnyMiddleware.handle(event:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 40,
-      "symbol": "AnyMiddleware.handle(action:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 44,
-      "symbol": "AnyMiddleware.actionHandler",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 66,
-      "symbol": "AnySideEffectProducer",
-      "symbol_kind": "source.lang.swift.decl.class",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 69,
-      "symbol": "AnySideEffectProducer.init(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CodeGeneration/TypeErase.generated.swift",
-      "line": 73,
-      "symbol": "AnySideEffectProducer.execute(getState:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/ActionProtocol.swift",
-      "line": 1,
-      "symbol": "ActionProtocol",
-      "symbol_kind": "source.lang.swift.decl.protocol",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/EventProtocol.swift",
-      "line": 1,
-      "symbol": "EventProtocol",
-      "symbol_kind": "source.lang.swift.decl.protocol",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Middleware.swift",
-      "line": null,
-      "symbol": "Middleware",
-      "symbol_kind": "source.lang.swift.decl.extension",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Middleware.swift",
-      "line": 2,
-      "symbol": "Middleware",
-      "symbol_kind": "source.lang.swift.decl.protocol",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Middleware.swift",
-      "line": 3,
-      "symbol": "Middleware.StateType",
-      "symbol_kind": "source.lang.swift.decl.associatedtype",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Middleware.swift",
-      "line": 4,
-      "symbol": "Middleware.actionHandler",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Middleware.swift",
-      "line": 5,
-      "symbol": "Middleware.handle(event:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Middleware.swift",
-      "line": 6,
-      "symbol": "Middleware.handle(action:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Reducer.swift",
-      "line": null,
-      "symbol": "Reducer",
-      "symbol_kind": "source.lang.swift.decl.extension",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Reducer.swift",
-      "line": null,
-      "symbol": "Reducer",
-      "symbol_kind": "source.lang.swift.decl.extension",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Reducer.swift",
-      "line": 1,
-      "symbol": "Reducer",
-      "symbol_kind": "source.lang.swift.decl.struct",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Reducer.swift",
-      "line": 4,
-      "symbol": "Reducer.init(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Reducer.swift",
-      "line": 10,
-      "symbol": "Reducer.empty",
-      "symbol_kind": "source.lang.swift.decl.var.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Reducer.swift",
-      "line": 14,
-      "symbol": "Reducer.<>(_:_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/CoreTypes/Reducer.swift",
-      "line": 22,
-      "symbol": "Reducer.lift(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/BypassMiddleware.swift",
       "line": 1,
       "symbol": "BypassMiddleware",
@@ -170,29 +9,8 @@
     },
     {
       "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/BypassMiddleware.swift",
-      "line": 2,
-      "symbol": "BypassMiddleware.actionHandler",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/BypassMiddleware.swift",
       "line": 4,
       "symbol": "BypassMiddleware.init()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/BypassMiddleware.swift",
-      "line": 6,
-      "symbol": "BypassMiddleware.handle(event:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/BypassMiddleware.swift",
-      "line": 10,
-      "symbol": "BypassMiddleware.handle(action:getState:next:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
@@ -212,29 +30,8 @@
     },
     {
       "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/ComposedMiddleware.swift",
-      "line": 6,
-      "symbol": "ComposedMiddleware.actionHandler",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/ComposedMiddleware.swift",
       "line": 12,
       "symbol": "ComposedMiddleware.append(middleware:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/ComposedMiddleware.swift",
-      "line": 18,
-      "symbol": "ComposedMiddleware.handle(event:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/ComposedMiddleware.swift",
-      "line": 27,
-      "symbol": "ComposedMiddleware.handle(action:getState:next:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
@@ -254,29 +51,8 @@
     },
     {
       "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/DirectLineMiddleware.swift",
-      "line": 2,
-      "symbol": "DirectLineMiddleware.actionHandler",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/DirectLineMiddleware.swift",
       "line": 4,
       "symbol": "DirectLineMiddleware.init()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/DirectLineMiddleware.swift",
-      "line": 6,
-      "symbol": "DirectLineMiddleware.handle(event:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/DirectLineMiddleware.swift",
-      "line": 14,
-      "symbol": "DirectLineMiddleware.handle(action:getState:next:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
@@ -344,20 +120,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/SideEffectMiddleware.swift",
-      "line": 17,
-      "symbol": "SideEffectMiddleware.handle(event:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/SideEffectMiddleware.swift",
-      "line": 38,
-      "symbol": "SideEffectMiddleware.handle(action:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/SideEffectProducer.swift",
       "line": 5,
       "symbol": "SideEffectProducer",
@@ -383,55 +145,6 @@
       "line": 1,
       "symbol": "SubstateMiddleware",
       "symbol_kind": "source.lang.swift.decl.class",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/SubstateMiddleware.swift",
-      "line": 3,
-      "symbol": "SubstateMiddleware.actionHandler",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/SubstateMiddleware.swift",
-      "line": 20,
-      "symbol": "SubstateMiddleware.handle(event:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/SubstateMiddleware.swift",
-      "line": 28,
-      "symbol": "SubstateMiddleware.handle(action:getState:next:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Middlewares/SubstateMiddleware.swift",
-      "line": 38,
-      "symbol": "Middleware.lift(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Operator.swift",
-      "line": 20,
-      "symbol": "Monoid",
-      "symbol_kind": "source.lang.swift.decl.protocol",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Operator.swift",
-      "line": 21,
-      "symbol": "Monoid.empty",
-      "symbol_kind": "source.lang.swift.decl.var.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/Operator.swift",
-      "line": 22,
-      "symbol": "Monoid.<>(_:_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
@@ -516,41 +229,6 @@
       "line": 29,
       "symbol": "StoreBase.trigger(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/TypeAlias.swift",
-      "line": 3,
-      "symbol": "GetState",
-      "symbol_kind": "source.lang.swift.decl.typealias",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/TypeAlias.swift",
-      "line": 4,
-      "symbol": "ReduceFunction",
-      "symbol_kind": "source.lang.swift.decl.typealias",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/TypeAlias.swift",
-      "line": 5,
-      "symbol": "EventEvaluation",
-      "symbol_kind": "source.lang.swift.decl.typealias",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/TypeAlias.swift",
-      "line": 6,
-      "symbol": "NextEventHandler",
-      "symbol_kind": "source.lang.swift.decl.typealias",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luizguitar/Documents/code/SwiftRex/Sources/TypeAlias.swift",
-      "line": 7,
-      "symbol": "NextActionHandler",
-      "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     }
   ],

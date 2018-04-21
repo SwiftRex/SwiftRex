@@ -27,20 +27,38 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
     }
 }
 
+/**
+ Type-erased `Middleware`
+ */
 public final class AnyMiddleware<StateType>: Middleware {
     private let box: _AnyMiddlewareBase<StateType>
 
+    /**
+     Default initializer for `AnyMiddleware`
+
+     - Parameter concrete: Concrete type that implements `Middleware`
+    */
     public init<Concrete: Middleware>(_ concrete: Concrete) where Concrete.StateType == StateType {
         self.box = _AnyMiddlewareBox(concrete)
     }
 
+    /**
+     Proxy method for `Middleware.handle(event:getState:next:)`
+     */
     public func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
-    return box.handle(event: event,getState: getState,next: next)
-    }
-    public func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
-    return box.handle(action: action,getState: getState,next: next)
+        return box.handle(event: event,getState: getState,next: next)
     }
 
+    /**
+     Proxy method for `Middleware.handle(action:getState:next:)`
+     */
+    public func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
+        return box.handle(action: action,getState: getState,next: next)
+    }
+
+    /**
+     Proxy property for `Middleware.actionHandler`
+     */
     public var actionHandler: ActionHandler? {
         get { return box.actionHandler }
         set { box.actionHandler = newValue }
@@ -63,15 +81,26 @@ private final class _AnySideEffectProducerBox<Concrete: SideEffectProducer>: _An
 
 }
 
+/**
+ Type-erased `SideEffectProducer`
+ */
 public final class AnySideEffectProducer<StateType>: SideEffectProducer {
     private let box: _AnySideEffectProducerBase<StateType>
 
+    /**
+     Default initializer for `AnySideEffectProducer`
+
+     - Parameter concrete: Concrete type that implements `SideEffectProducer`
+    */
     public init<Concrete: SideEffectProducer>(_ concrete: Concrete) where Concrete.StateType == StateType {
         self.box = _AnySideEffectProducerBox(concrete)
     }
 
+    /**
+     Proxy method for `SideEffectProducer.execute(getState:)`
+     */
     public func execute(getState: @escaping GetState<StateType>) -> Observable<ActionProtocol> {
-    return box.execute(getState: getState)
+        return box.execute(getState: getState)
     }
 
 }

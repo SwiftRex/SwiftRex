@@ -16,8 +16,3 @@ precedencegroup MonoidAppend {
 }
 
 infix operator <>: MonoidAppend
-
-public protocol Monoid {
-    static var empty: Self { get }
-    static func <> (lhs: Self, rhs: Self) -> Self
-}
