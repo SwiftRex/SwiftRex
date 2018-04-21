@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SwiftRex  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="SwiftRex  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">SwiftRex Docs</a> (1% documented)</p>
+        <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">SwiftRex Reference</a>
+        <img id="carat" src="img/carat.png" />
+        SwiftRex  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/AnySideEffectProducer.html">AnySideEffectProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/BypassMiddleware.html">BypassMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DirectLineMiddleware.html">DirectLineMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SubstateMiddleware.html">SubstateMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/EventHandler.html">EventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/Monoid.html">Monoid</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SideEffectProducer.html">SideEffectProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/StateProvider.html">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/Reducer.html">Reducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SideEffectError.html">SideEffectError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <p align="center">
+    <img alt="Swift" src="https://img.shields.io/badge/Swift-4.1-orange.svg">
+    <a href="https://travis-ci.org/luizmb/SwiftRex" target="_blank">
+        <img alt="Build Status" src="https://img.shields.io/travis/luizmb/SwiftRex.svg?branch=master&maxAge=600">
+    </a>
+    <a href="https://coveralls.io/github/luizmb/SwiftRex?branch=master" target="_blank">
+        <img src="https://img.shields.io/coveralls/github/luizmb/SwiftRex.svg?branch=master&maxAge=600" alt="Coverage Status" />
+    </a>
+    <a href="Docs/Root/index.html">
+        <img src="Docs/Root/badge.svg" alt="Jazzy Documentation" />
+    </a>
+    <a href="https://github.com/Carthage/Carthage" target="_blank">
+        <img alt="Carthage compatible" src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat">
+    </a>
+    <a href="https://cocoapods.org/pods/SwiftRex" target="_blank">
+        <img alt="CocoaPods compatible" src="https://img.shields.io/cocoapods/v/SwiftRex.svg?style=flat">
+    </a>
+    <img alt="Platform" src="https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-lightgray.svg">
+    <a href="https://github.com/luizmb/SwiftRex/blob/master/LICENSE">
+        <img alt="GitHub license" src="https://img.shields.io/github/license/luizmb/SwiftRex.svg">
+    </a>
+</p>
+<h1 id='introduction' class='heading'>Introduction</h1>
+
+<p>SwiftRex is a framework that combines <a href="https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing">event-sourcing pattern</a> and reactive programming (<a href="https://github.com/ReactiveX/RxSwift">RxSwift</a>), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.</p>
+
+<p>This pattern is also known as <q>Unidirectional Dataflow</q> or <a href="https://redux.js.org/basics/data-flow"><q>Redux</q></a>.</p>
+<h1 id='goals' class='heading'>Goals</h1>
+
+<p>Several architectures and design patterns for mobile development nowadays propose to solve specific issues related to <a href="https://www.youtube.com/watch?v=Gt0M_OHKhQE">Single Responsibility Principle</a> (such as Massive ViewControllers), or improve testability and dependency management. Other common challenges for mobile developers such as handling state, race conditions, thread-safety or dealing properly with UIKit life cycle and ownership are less explored but can be equally harmful for an app.</p>
+
+<p>Managing all of these problems may sound like an impossible task that would require lots of patterns and really complex test scenarios. After all, how to to reproduce a rare but critical error that happens only with some of your users but never in developers&rsquo; equipment? This can be frustrating and most of us has probably faced such problems from time to time.</p>
+
+<p>That&rsquo;s the scenario where SwiftRex shines, because it:</p>
+
+<ul>
+<li>enforces the application of Single Responsibility Principle</li>
+<li>offers a clear test strategy for each layer</li>
+<li>isolates all the side-effects in middleware boxes</li>
+<li>minimizes the usage of dependencies on ViewControllers/Presenters/Interactors, so you don&rsquo;t have to keep sending dozens of dependencies across your views while routing through them</li>
+<li>detaches state, services, mutation and other side-effects completely from the UIKit life cycle and its ownership tree (<a href="Docs/UIKitLifetimeManagement.md">see why</a>)</li>
+<li>and last but not least, offers a proper state management offering a trustable truth that will never be inconsistent or out of sync among screens (<a href="Docs/StateManagement.md">see why</a>).</li>
+</ul>
+
+<p>I&rsquo;m not gonna lie, it&rsquo;s a completely different way of writing apps, as most reactive approaches are; but once you get used to, it makes more sense and enables you to reuse much more code between your projects, gives you better tooling for writing software, testing, debugging, logging and finally thinking about events, state and mutation as you&rsquo;ve never done before. And I promise you, it&rsquo;s gonna be a way with no return, an Unidirectional journey.</p>
+<h1 id='parts' class='heading'>Parts</h1>
+
+<ul>
+<li>🏪 <a href="#-store">Store</a></li>
+<li>🕹 <a href="#-event">Event</a></li>
+<li>🏄‍ <a href="#-action">Action</a></li>
+<li>⛓️ <a href="#-middleware">Middleware</a></li>
+<li>🌍 <a href="#-sideeffectproducer">SideEffectProducer</a></li>
+<li>⚙️ <a href="#-reducer">Reducer</a></li>
+</ul>
+<h2 id='store' class='heading'>🏪 Store</h2>
+
+<p>That&rsquo;s where our journey begins. The store will glue everything together and its responsibility is being a proxy to the non-Redux world. For that reason, it implements two critical protocols for inputs and outputs: <code><a href="Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code>.</p>
+
+<p>Being an event handler means that ViewControllers can dispatch events to it, such as <code>userTappedButtonX</code>, <code>didScrollToPosition:</code>, <code>viewDidLoad</code> or <code>queryTextFieldChangedTo:</code>. On the other hand, being a state provider basically means that store is an <code>Observable&lt;T&gt;</code>, where <code>T</code> is the <code>State</code> of your app, so ViewControllers can subscribe to state changes and react to them. We will see how the communication flows later, but for now it&rsquo;s enough to understand that Store is the single point of contact with UIKit so it&rsquo;s a class that you want to inject as a dependency on all ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code><a href="Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code> -, both eventually pointing to the same instance but ViewController doesn&rsquo;t need to know that.</p>
+
+<p align="center">
+  <img src="Docs/Misc/StoreBase.png" title="Store and ViewController">
+</p>
+
+<p>In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:</p>
+
+<p align="center">
+  <img src="Docs/Misc/CocoaMVC.gif" title="iOS MVC">
+</p>
+
+<p>You can think of Store as a very heavy <q>Model</q> layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the <q>Massive</q> problem from a layer to another, but later in this docs it&rsquo;s gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.</p>
+
+<p>You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That&rsquo;s crucial for making the store completely detached from the UIKit world. Theoretically it should be possible to keep multiple stores - one per module or per ViewController - and keep them in sync through Rx observation, in a <q>Flux</q>-like approach. However, the main goal of SwiftRex is to keep an unified state independent from UIKit, therefore it&rsquo;s the recommended approach.</p>
+
+<p>A Store holds three important foundations:</p>
+
+<ul>
+<li>a Middleware pipeline</li>
+<li>a Reducer function</li>
+<li>current state</li>
+</ul>
+
+<p align="center">
+  <img src="Docs/Misc/StoreInternals.png" title="Store internals">
+</p>
+<h2 id='event' class='heading'>🕹 Event</h2>
+
+<p>An event is usually a request from your user to which the app should respond, for example the tab bar icon was tapped, a menu item was selected, a swipe gesture from left to right on cell number 3 or a new character was pressed in a search bar. Other events can be generated by other actors, such as timers or GPS position, but let&rsquo;s skip that for a moment and thing exclusively about the main actor of most use cases: the user. Because the user interaction is given mainly throughout ViewControllers, we should agree that ViewControllers will create and dispatch most events to the Store.</p>
+
+<p>Event is a marker protocol and usually you want to keep events as tiny value-type structures: <code>struct</code> or <code>enum</code>. Having associated values is completely optional, but please keep in mind that you should pass as minimum information as necessary, and avoid passing value that&rsquo;s already in the state.</p>
+
+<p>For example, if there&rsquo;s a table view showing a list of movies, for each cell you may have a <q>Mark as Watched</q> (or Unwatched) button and a <q>Show Details</q> button, while the navigation bar has a button to mark all as watched. In that case, event enum could be:</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">MovieListEvent</span><span class="p">:</span> <span class="kt">Event</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">didTapWatchToggle</span><span class="p">(</span><span class="nv">rowIndex</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">didTapDetailsButton</span><span class="p">(</span><span class="nv">rowIndex</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">didTapMarkAllAsWatched</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Because your state already knows whether or not the movie was watched, you just need to offer a single <q>toggle</q> event instead of two events for watch or unwatch, and also there&rsquo;s no need for an extra boolean parameter. Moreover, you could pass the IndexPath.row instead of <code>movieId</code> so your enum becomes essentially a generic control event and your cells don&rsquo;t have to maintain IDs or any other model information.</p>
+<h2 id='action' class='heading'>🏄‍ Action</h2>
+
+<p>Like events, Action is also a marker protocol which concrete implementation is a value-type structure holding the associated value that is necessary to request a change in the state. Differently from events, although, actions have more meaningful values and are driven by business logic. While events represent taps in the interface and associated values like <q>3</q> or <q>true</q>, an action is expected to hold the information required to mutate the state, such as: <q>got a new list of movies</q> with an associated values of <code>[Movie]</code>, or <q>delete invoice</q> and the associated value being the <code>Invoice</code> object. That way, we should not expect actions to be triggered by ViewControllers, only by Middlewares running in the Store. Some Middlewares can create one or multiple actions out of an event, collecting the proper state information from the indexes passed with the event, and then finally composing a very meaningful action that contains exactly the metadata for the change.</p>
+
+<p>An event may end up not changing the state, but an action necessarily implies that the state will be mutated accordingly; for example the event <q>viewDidLoad</q> may not change your state, having the only purpose of logging or tracking analytics events (let&rsquo;s talk about side-effects later), and in that case don&rsquo;t change anything in the app; while an action <q>userHasLoggedIn</q> will necessarily change something on the state.</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">MovieListAction</span><span class="p">:</span> <span class="kt">Action</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">setMovieAsWatched</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">setMovieAsUnwatched</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">setCurrentMovieDetailsPage</span><span class="p">(</span><span class="nv">movie</span><span class="p">:</span> <span class="kt">Movie</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">setMoviesAsWatched</span><span class="p">(</span><span class="nv">movies</span><span class="p">:</span> <span class="p">[</span><span class="kt">Movie</span><span class="p">])</span>
+<span class="p">}</span>
+</code></pre>
+<h2 id='middleware' class='heading'>⛓ Middleware</h2>
+
+<p>We already know what events and actions are: both are lightweight structures that are dispatched (event) or triggered (action) into the Store. The store enqueues a new item that arrives and submits it to a pipeline of Middlewares. So, in other words, a Middleware is class that handles actions and events, and has the power to trigger more actions to the next Middlewares in the chain. A very simple Middleware will receive an Event and current state, and trigger an equivalent Action to the Store.</p>
+
+<p>For example, the <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> shown before is handled by a middleware that checks the state and finds that current list has certain movie at the given row index, and this movie has been already marked as watched before. The Middleware was able to learn that thanks to the <code>getState: @escaping () -&gt; StateType</code> closure received together with the Event, and which can be checked at any point to read an updated state. Our example Middleware then will trigger a <code>MovieListAction.setMovieAsUnwatched(movieId:)</code>.</p>
+
+<p>However, this would be a very naive implementation. Most of the times we handle data that must be persisted in a database or through a REST API. State only lives in memory, but before changing the memory we should at least start Side-Effects. Let&rsquo;s revisit the example above and say that we got a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event. Yes, we still should check what movie is at that row and whether or not it&rsquo;s watched. Now, we can trigger a <code>URLSession</code> task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:</p>
+
+<ul>
+<li>assume that this API won&rsquo;t fail, and mark the movie immediately as unwatched;</li>
+<li>don&rsquo;t assume anything and wait for the HTTP Response;</li>
+<li>provide a very precise state management, meaning that we immediately change the state of our movie to <q>it&rsquo;s been changed</q> and, once we get the response we update again.</li>
+</ul>
+
+<p>In the first case, we create the <code>URLSessionDataTask</code>, call <code>task.resume</code> and immediately trigger the <code>setMovieAsUnwatched</code> action. We may use the completion handler or the HTTP Request to confirm the result and rollback if needed. In the second case, after calling <code>task.resume</code> we don&rsquo;t trigger any action, only when we get the response in case it was successful one.</p>
+
+<p>The third case, however, offers many more possibilities. You can think about the possible three states of a movie: watched, not watched, mutating. You can even split the <q>mutating</q> case in two: <q>mutating to watched</q> and <q>mutating to unwatched</q>. What you get from that is the ability to disable the <q>watch</q> button, or replaced it by an activity indicator view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate situation. To offer that, you call <code>task.resume</code> and immediately trigger a <code>setMovieAsUnwatchRequestInProgress</code>, while inside the response completion handler you evaluate the response and trigger another action to update the movie state again.</p>
+
+<p>Because Middlewares access all events and the state of the app at any point, anything can be done in these small and reusable boxes. For example, the same CoreLocation middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state <code>struct</code>. Some suggestions of Middlewares:</p>
+
+<ul>
+<li>Run Timers, pooling some external resource or updating some local state at a constant time</li>
+<li>Subscribe for CoreData changes</li>
+<li>Subscribe for Realm changes</li>
+<li>Subscribe for Firebase Realtime Database notifications</li>
+<li>Be a CoreLocation delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</li>
+<li>Be a HealthKit delegate to track activities, or even combining that with CoreLocation observation in order to track the activity route</li>
+<li>Logger</li>
+<li>Telemetry</li>
+<li>Analytics tracker</li>
+<li>WatchConnectivity sync, keep iOS and watchOS state in sync</li>
+<li>API calls and other <q>cold observables</q></li>
+<li>Reachability</li>
+<li>Navigation through the app (Redux Coordinator pattern)</li>
+<li><code>NotificationCenter</code> and other delegates</li>
+<li>RxSwift observables</li>
+</ul>
+<h2 id='sideeffectproducer' class='heading'>🌍 SideEffectProducer</h2>
+
+<p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift users we bring a <code><a href="Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable pipelines. The Middleware requires the implementation of only one method:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sideEffect</span><span class="p">(</span><span class="k">for</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnySideEffectProducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">?</span>
+</code></pre>
+
+<p>Given an event, map it to a Side-Effect producer that handles such event. And what is a Side-Effect producer? It&rsquo;s a protocol with a single method to be implemented:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">execute</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Action</span><span class="o">&gt;</span>
+</code></pre>
+
+<p>Given the current state (that can be checked consistently at any point), return an Observable sequence of <code>Action</code>. In your Rx pipeline you can trigger as many side-effects as you want, and every time an Action occurs you can easily notify the observer, that forwards it to the Store.</p>
+<h2 id='reducer' class='heading'>⚙ Reducer</h2>
+
+<p>The pipeline of Middlewares can trigger Actions, and handle both Events and Actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <q>Reducer</q> function. Actually, it&rsquo;s a protocol that requires only one method:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">currentState</span><span class="p">:</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+</code></pre>
+
+<p>Given the current state and an action, return the calculated state. This function will be executed in the last stage of an action handling, when all middlewares had the chance to modify or improve the action. Because a <code>reduce</code> function is composable, it&rsquo;s possible to write fine-grained <q>sub-reducer</q> that will handle only a <q>sub-state</q>, creating a pipeline of reducers.</p>
+
+<p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the <q>Reducer</q> <code>structs</code> or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always good to do a final sanity check before changing the state.</p>
+
+<p>Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-21)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

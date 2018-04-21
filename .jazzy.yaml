@@ -1,0 +1,10 @@
+xcodebuild_arguments:
+  - -project
+  - SwiftRex.xcodeproj
+  - -scheme
+  - SwiftRex macOS
+author: SwiftRex
+author_url: https://github.com/luizmb/SwiftRex
+github_url: https://github.com/luizmb/SwiftRex
+module: SwiftRex
+output: Docs/Root

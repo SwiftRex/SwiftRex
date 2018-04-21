@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SubstateMiddleware Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/SubstateMiddleware" class="dashAnchor"></a>
+    <a title="SubstateMiddleware Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">SwiftRex Docs</a> (1% documented)</p>
+        <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">SwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        SubstateMiddleware Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/AnySideEffectProducer.html">AnySideEffectProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/BypassMiddleware.html">BypassMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DirectLineMiddleware.html">DirectLineMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/EventHandler.html">EventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Monoid.html">Monoid</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StateProvider.html">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Reducer.html">Reducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SideEffectError.html">SideEffectError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>SubstateMiddleware</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">SubstateMiddleware</span><span class="o">&lt;</span><span class="kt">Whole</span><span class="p">,</span> <span class="kt">PartMiddleware</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                </div>
+              </div>
+            <p>Undocumented</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18SubstateMiddlewareC13actionHandlerAA06ActionF0_pSgvp"></a>
+                    <a name="//apple_ref/swift/Property/actionHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18SubstateMiddlewareC13actionHandlerAA06ActionF0_pSgvp">actionHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">actionHandler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ActionHandler.html">ActionHandler</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18SubstateMiddlewareC6handleyAA13EventProtocol_p5event_xyc8getStateyAaE_p_xyctc4nexttF"></a>
+                    <a name="//apple_ref/swift/Method/handle(event:getState:next:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18SubstateMiddlewareC6handleyAA13EventProtocol_p5event_xyc8getStateyAaE_p_xyctc4nexttF">handle(event:getState:next:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">event</span><span class="p">:</span> <span class="kt"><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></span><span class="p">,</span> <span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt">Whole</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">next</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a></span><span class="o">&lt;</span><span class="kt">Whole</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18SubstateMiddlewareC6handleyAA14ActionProtocol_p6action_xyc8getStateyAaE_p_xyctc4nexttF"></a>
+                    <a name="//apple_ref/swift/Method/handle(action:getState:next:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18SubstateMiddlewareC6handleyAA14ActionProtocol_p6action_xyc8getStateyAaE_p_xyctc4nexttF">handle(action:getState:next:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt"><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span><span class="p">,</span> <span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt">Whole</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">next</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a></span><span class="o">&lt;</span><span class="kt">Whole</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-21)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
