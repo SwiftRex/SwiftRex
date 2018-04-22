@@ -6,9 +6,9 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-orange.svg)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://github.com/apple/swift-package-manager)
-[![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-252532.svg)](https://github.com/luizmb/SwiftRex)
 ![Swift](https://img.shields.io/badge/Swift-4.1-orange.svg)
-[![License Apache 2.0](https://img.shields.io/github/license/luizmb/SwiftRex.svg)](https://github.com/luizmb/SwiftRex/blob/master/LICENSE)
+[![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-252532.svg)](https://github.com/luizmb/SwiftRex)
+[![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/luizmb/SwiftRex/blob/master/LICENSE)
 
 # Introduction
 
