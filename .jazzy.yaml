@@ -7,7 +7,7 @@ author: SwiftRex
 author_url: https://github.com/luizmb/SwiftRex
 github_url: https://github.com/luizmb/SwiftRex
 module: SwiftRex
-output: docs
+output: docs/api
 
 custom_categories:
 - name: Store (contracts)
