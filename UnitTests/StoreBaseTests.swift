@@ -32,7 +32,7 @@ class StoreBaseTests: XCTestCase {
 
         let sut = TestStore(initialState: TestState(),
                             reducer: reducer,
-                            middleware: middleware1 >>> middleware2)
+                            middleware: middleware1 <> middleware2)
 
         // Then
         sut.dispatch(event)
@@ -80,7 +80,7 @@ class StoreBaseTests: XCTestCase {
         }
         let sut = TestStore(initialState: TestState(),
                             reducer: reducer,
-                            middleware: middleware1 >>> middleware2)
+                            middleware: middleware1 <> middleware2)
 
         // Then
         sut.trigger(action)

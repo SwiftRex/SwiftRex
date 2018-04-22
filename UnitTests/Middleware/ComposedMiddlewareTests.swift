@@ -99,7 +99,7 @@ class ComposedMiddlewareTests: MiddlewareTestsBase {
             .map(RotationMiddleware.init)
         (0..<4).forEach { XCTAssertNil(middlewares[$0].actionHandler) }
 
-        let composedMiddlewares = middlewares[0] >>> middlewares[1] >>> middlewares[2] >>> middlewares[3]
+        let composedMiddlewares = middlewares[0] <> middlewares[1] <> middlewares[2] <> middlewares[3]
         XCTAssertNil(composedMiddlewares.actionHandler)
 
         let store = TestStore(initialState: TestState(),
