@@ -8,3 +8,44 @@ author_url: https://github.com/luizmb/SwiftRex
 github_url: https://github.com/luizmb/SwiftRex
 module: SwiftRex
 output: Docs/Root
+
+custom_categories:
+- name: Store (contracts)
+  children:
+  - Store
+  - EventProtocol
+  - EventHandler
+  - StateProvider
+- name: Store (basic implementation)
+  children:
+  - StoreBase
+  - ActionHandler
+- name: Reducer
+  children:
+  - Reducer
+  - ActionProtocol
+- name: Middleware (basics)
+  children:
+  - Middleware
+  - BypassMiddleware
+  - DirectLineMiddleware
+  - ComposedMiddleware
+  - "<>(_:_:)"
+  - SubstateMiddleware
+  - AnyMiddleware
+- name: Side-Effects
+  children:
+  - SideEffectMiddleware
+  - SideEffectProducer
+  - SideEffectError
+  - AnySideEffectProducer
+- name: Composition helpers
+  children:
+  - Monoid
+- name: Closure type-aliases
+  children:
+  - EventEvaluation
+  - GetState
+  - NextActionHandler
+  - NextEventHandler
+  - ReduceFunction
