@@ -14,7 +14,7 @@
     <a title="ComposedMiddleware Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (58% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -58,7 +58,7 @@
             <a href="../Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+                <a href="../Functions.html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -140,7 +140,11 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> or an <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</p>
+
+<p>It could be initialized manually by using the <code>init()</code> and configured by using the method <code>append(middleware:)</code>, but if you&rsquo;re ok with using custom operators you can compose two or more middlewares using the diamond operator:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddleware</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
 
           </section>
           <section class="section task-group-section">
@@ -159,7 +163,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Default initializer for <code>ComposedMiddleware</code>, use this only if you don&rsquo;t like custom operators, otherwise create a <code>ComposedMiddleware</code> by composing two or more middlewares using the diamond operator, as shown below:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddleware</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span>
+</code></pre>
 
                       </div>
                       <div class="declaration">
@@ -176,9 +182,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewareP13actionHandlerAA06ActionE0_pSgvp"></a>
+                    <a name="/s:8SwiftRex18ComposedMiddlewareC13actionHandlerAA06ActionF0_pSgXwvp"></a>
                     <a name="//apple_ref/swift/Property/actionHandler" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP13actionHandlerAA06ActionE0_pSgvp">actionHandler</a>
+                    <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareC13actionHandlerAA06ActionF0_pSgXwvp">actionHandler</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -186,7 +192,10 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>A <code><a href="../Protocols/Middleware.html">Middleware</a></code> is capable of triggering <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> to the <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>. This property is a nullable <code><a href="../Protocols/ActionHandler.html">ActionHandler</a></code> used for the middleware to trigger the actions. It&rsquo;s gonna be injected by the <code><a href="../Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> or by a parent <code><a href="../Protocols/Middleware.html">Middleware</a></code>, so don&rsquo;t worry about it, just use it whenever you need to trigger something.</p>
+
+<p>A <code>ComposedMiddleware</code> also sets its child middlewares to the same <code><a href="../Protocols/ActionHandler.html">ActionHandler</a></code> whenever this property is set.</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -212,7 +221,13 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Appends a new middleware to end of the composition (inner chain). Use this only if you don&rsquo;t like custom operators, otherwise create a <code>ComposedMiddleware</code> append more middlewares to the composition by using the diamond operator, as shown below:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">composedOfTwoMiddlewares</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+<p>Or</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
 
                       </div>
                       <div class="declaration">
@@ -229,9 +244,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewareP6handleyAA13EventProtocol_p5event_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF"></a>
+                    <a name="/s:8SwiftRex18ComposedMiddlewareC6handleyAA13EventProtocol_p5event_xyc8getStateyAaE_p_xyctc4nexttF"></a>
                     <a name="//apple_ref/swift/Method/handle(event:getState:next:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handleyAA13EventProtocol_p5event_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF">handle(event:getState:next:)</a>
+                    <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareC6handleyAA13EventProtocol_p5event_xyc8getStateyAaE_p_xyctc4nexttF">handle(event:getState:next:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -239,7 +254,10 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Handles the incoming events. The <code>ComposedMiddleware</code> will call <code>handle(event:getState:next:)</code> for all its internal middlewares, in the order as they were composed and when all of them are done, the <code><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> will be forwarded to the next middleware in the chain.</p>
+
+<p>The internal middlewares in this <code>ComposedMiddleware</code> container may trigger side-effects, may trigger actions, may start an asynchronous operation.</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -249,15 +267,58 @@
 
                         </div>
                       </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>event</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the event to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>getState</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that can be used to get the current state at any point in time</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>next</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </section>
                   </div>
                 </li>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewareP6handleyAA14ActionProtocol_p6action_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF"></a>
+                    <a name="/s:8SwiftRex18ComposedMiddlewareC6handleyAA14ActionProtocol_p6action_xyc8getStateyAaE_p_xyctc4nexttF"></a>
                     <a name="//apple_ref/swift/Method/handle(action:getState:next:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handleyAA14ActionProtocol_p6action_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF">handle(action:getState:next:)</a>
+                    <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareC6handleyAA14ActionProtocol_p6action_xyc8getStateyAaE_p_xyctc4nexttF">handle(action:getState:next:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -265,7 +326,10 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Handles the incoming actions. The <code>ComposedMiddleware</code> will call <code>handle(action:getState:next:)</code> for all its internal middlewares, in the order as they were composed and when all of them are done, the <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> will be forwarded to the next middleware in the chain.</p>
+
+<p>The internal middlewares in this <code>ComposedMiddleware</code> container may change the <code><a href="../Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> or trigger additional ones. Usually this is not the best place to start side-effects or trigger new actions, it should be more as an observation point for tracking, logging and telemetry.</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -275,6 +339,49 @@
 
                         </div>
                       </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the action to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>getState</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that can be used to get the current state at any point in time</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>next</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the next <code><a href="../Protocols/Middleware.html">Middleware</a></code> in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the <code><a href="../Structs/Reducer.html">Reducer</a></code> pipeline.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </section>
                   </div>
                 </li>
@@ -283,7 +390,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-21)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-22)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

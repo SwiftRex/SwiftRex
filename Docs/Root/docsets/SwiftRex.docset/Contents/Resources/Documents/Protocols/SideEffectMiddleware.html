@@ -14,7 +14,7 @@
     <a title="SideEffectMiddleware Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (58% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -58,7 +58,7 @@
             <a href="../Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+                <a href="../Functions.html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -140,7 +140,7 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>Defines a protocol for implementing a middleware that executes <code>RxSwift</code> side-effects. Instead of implementing the regular <code>handle(event:getState:next:)</code> and <code>handle(action:getState:next:)</code> methods, this protocol only requires a mapping from <code><a href="../Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> to <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code>.</p>
 
           </section>
           <section class="section task-group-section">
@@ -159,7 +159,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Allows the following middlewares in the chain to have a chance of handling the same events already handled</p>
 
                       </div>
                       <div class="declaration">
@@ -186,7 +186,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>A dispose bag that owns the lifetime of each <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code> observation, usually this <code>DisposeBag</code> will be a stored property in the <code>SideEffectMiddleware</code> instance</p>
 
                       </div>
                       <div class="declaration">
@@ -213,7 +213,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Maps the incoming event to the proper <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code>, wrapped in a type-eraser <code><a href="../Classes/AnySideEffectProducer.html">AnySideEffectProducer</a></code></p>
 
                       </div>
                       <div class="declaration">
@@ -234,9 +234,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewareP6handleyAA13EventProtocol_p5event_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF"></a>
+                    <a name="/s:8SwiftRex20SideEffectMiddlewarePAAE6handleyAA13EventProtocol_p5event_9StateTypeQzyc03getJ0yAaE_p_AHyctc4nexttF"></a>
                     <a name="//apple_ref/swift/Method/handle(event:getState:next:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handleyAA13EventProtocol_p5event_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF">handle(event:getState:next:)</a>
+                    <a class="token" href="#/s:8SwiftRex20SideEffectMiddlewarePAAE6handleyAA13EventProtocol_p5event_9StateTypeQzyc03getJ0yAaE_p_AHyctc4nexttF">handle(event:getState:next:)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -247,7 +247,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Handles the incoming events and may trigger side-effects, may trigger actions, may start an asynchronous operation.</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -257,15 +258,58 @@
 
                         </div>
                       </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>event</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the event to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>getState</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that can be used to get the current state at any point in time</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>next</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </section>
                   </div>
                 </li>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewareP6handleyAA14ActionProtocol_p6action_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF"></a>
+                    <a name="/s:8SwiftRex20SideEffectMiddlewarePAAE6handleyAA14ActionProtocol_p6action_9StateTypeQzyc03getJ0yAaE_p_AHyctc4nexttF"></a>
                     <a name="//apple_ref/swift/Method/handle(action:getState:next:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handleyAA14ActionProtocol_p6action_9StateTypeQzyc03getH0yAaE_p_AHyctc4nexttF">handle(action:getState:next:)</a>
+                    <a class="token" href="#/s:8SwiftRex20SideEffectMiddlewarePAAE6handleyAA14ActionProtocol_p6action_9StateTypeQzyc03getJ0yAaE_p_AHyctc4nexttF">handle(action:getState:next:)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -276,7 +320,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Handles the incoming actions and may change them or trigger additional ones. Usually this is not the best place to start side-effects or trigger new actions, it should be more as an observation point for tracking, logging and telemetry.</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -286,6 +331,49 @@
 
                         </div>
                       </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the action to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>getState</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that can be used to get the current state at any point in time</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>next</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the next <code><a href="../Protocols/Middleware.html">Middleware</a></code> in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the <code><a href="../Structs/Reducer.html">Reducer</a></code> pipeline.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </section>
                   </div>
                 </li>
@@ -294,7 +382,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-21)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-22)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
