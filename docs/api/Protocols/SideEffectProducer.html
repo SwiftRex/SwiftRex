@@ -150,7 +150,17 @@
 
                 </div>
               </div>
-            <p>Defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
+            <p>🌍 <code>SideEffectProducer</code> defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
+
+<p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift users we bring a <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable pipelines. The Middleware requires the implementation of only one method:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sideEffect</span><span class="p">(</span><span class="k">for</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnySideEffectProducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">?</span>
+</code></pre>
+
+<p>Given an event, map it to a Side-Effect producer that handles such event. And what is a Side-Effect producer? It&rsquo;s a protocol with a single method to be implemented:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">execute</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Action</span><span class="o">&gt;</span>
+</code></pre>
+
+<p>Given the current state (that can be checked consistently at any point), return an Observable sequence of <code>Action</code>. In your Rx pipeline you can trigger as many side-effects as you want, and every time an Action occurs you can easily notify the observer, that forwards it to the Store.</p>
 
           </section>
           <section class="section task-group-section">
