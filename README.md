@@ -2,7 +2,7 @@
 
 [![Build Status](https://img.shields.io/travis/luizmb/SwiftRex.svg?branch=master&maxAge=600)](https://travis-ci.org/luizmb/SwiftRex)
 [![Coverage Status](https://img.shields.io/coveralls/github/luizmb/SwiftRex.svg?branch=master&maxAge=600)](https://coveralls.io/github/luizmb/SwiftRex?branch=master)
-[![Jazzy Documentation](Docs/Root/badge.svg)](Docs/Root/index.html)
+[![Jazzy Documentation](docs/badge.svg)](docs/index.html)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-orange.svg)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://github.com/apple/swift-package-manager)
@@ -27,8 +27,8 @@ That's the scenario where SwiftRex shines, because it:
 - offers a clear test strategy for each layer
 - isolates all the side-effects in middleware boxes
 - minimizes the usage of dependencies on ViewControllers/Presenters/Interactors, so you don't have to keep sending dozens of dependencies across your views while routing through them
-- detaches state, services, mutation and other side-effects completely from the UIKit life cycle and its ownership tree ([see why](Docs/UIKitLifetimeManagement.md))
-- and last but not least, offers a proper state management offering a trustable truth that will never be inconsistent or out of sync among screens ([see why](Docs/StateManagement.md)).
+- detaches state, services, mutation and other side-effects completely from the UIKit life cycle and its ownership tree ([see why](misc/UIKitLifetimeManagement.md))
+- and last but not least, offers a proper state management offering a trustable truth that will never be inconsistent or out of sync among screens ([see why](misc/StateManagement.md)).
 
 I'm not gonna lie, it's a completely different way of writing apps, as most reactive approaches are; but once you get used to, it makes more sense and enables you to reuse much more code between your projects, gives you better tooling for writing software, testing, debugging, logging and finally thinking about events, state and mutation as you've never done before. And I promise you, it's gonna be a way with no return, an Unidirectional journey.
 
@@ -46,11 +46,11 @@ That's where our journey begins. The store will glue everything together and its
 
 Being an event handler means that ViewControllers can dispatch events to it, such as `userTappedButtonX`, `didScrollToPosition:`, `viewDidLoad` or `queryTextFieldChangedTo:`. On the other hand, being a state provider basically means that store is an `Observable<T>`, where `T` is the `State` of your app, so ViewControllers can subscribe to state changes and react to them. We will see how the communication flows later, but for now it's enough to understand that Store is the single point of contact with UIKit so it's a class that you want to inject as a dependency on all ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance but ViewController doesn't need to know that.
 
-![Store and ViewController](Docs/Misc/StoreBase.png)
+![Store and ViewController](misc/img/StoreBase.png)
 
 In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
 
-![iOS MVC](Docs/Misc/CocoaMVC.gif)
+![iOS MVC](misc/img/CocoaMVC.gif)
 
 You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
 
@@ -61,7 +61,7 @@ A Store holds three important foundations:
 - a Reducer function
 - current state
 
-![Store internals](Docs/Misc/StoreInternals.png)
+![Store internals](misc/img/StoreInternals.png)
 
 ## 🕹 Event
 
