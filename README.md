@@ -1,25 +1,14 @@
-<p align="center">
-    <img alt="Swift" src="https://img.shields.io/badge/Swift-4.1-orange.svg">
-    <a href="https://travis-ci.org/luizmb/SwiftRex" target="_blank">
-        <img alt="Build Status" src="https://img.shields.io/travis/luizmb/SwiftRex.svg?branch=master&maxAge=600">
-    </a>
-    <a href="https://coveralls.io/github/luizmb/SwiftRex?branch=master" target="_blank">
-        <img src="https://img.shields.io/coveralls/github/luizmb/SwiftRex.svg?branch=master&maxAge=600" alt="Coverage Status" />
-    </a>
-    <a href="Docs/Root/index.html">
-        <img src="Docs/Root/badge.svg" alt="Jazzy Documentation" />
-    </a>
-    <a href="https://github.com/Carthage/Carthage" target="_blank">
-        <img alt="Carthage compatible" src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat">
-    </a>
-    <a href="https://cocoapods.org/pods/SwiftRex" target="_blank">
-        <img alt="CocoaPods compatible" src="https://img.shields.io/cocoapods/v/SwiftRex.svg?style=flat">
-    </a>
-    <img alt="Platform" src="https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-lightgray.svg">
-    <a href="https://github.com/luizmb/SwiftRex/blob/master/LICENSE">
-        <img alt="GitHub license" src="https://img.shields.io/github/license/luizmb/SwiftRex.svg">
-    </a>
-</p>
+# SwiftRex
+
+[![Build Status](https://img.shields.io/travis/luizmb/SwiftRex.svg?branch=master&maxAge=600)](https://travis-ci.org/luizmb/SwiftRex)
+[![Coverage Status](https://img.shields.io/coveralls/github/luizmb/SwiftRex.svg?branch=master&maxAge=600)](https://coveralls.io/github/luizmb/SwiftRex?branch=master)
+[![Jazzy Documentation](Docs/Root/badge.svg)](Docs/Root/index.html)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-orange.svg)](https://github.com/Carthage/Carthage)
+[![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
+[![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://github.com/apple/swift-package-manager)
+[![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-252532.svg)](https://github.com/luizmb/SwiftRex)
+![Swift](https://img.shields.io/badge/Swift-4.1-orange.svg)
+[![License Apache 2.0](https://img.shields.io/github/license/luizmb/SwiftRex.svg)](https://github.com/luizmb/SwiftRex/blob/master/LICENSE)
 
 # Introduction
 
@@ -57,15 +46,11 @@ That's where our journey begins. The store will glue everything together and its
 
 Being an event handler means that ViewControllers can dispatch events to it, such as `userTappedButtonX`, `didScrollToPosition:`, `viewDidLoad` or `queryTextFieldChangedTo:`. On the other hand, being a state provider basically means that store is an `Observable<T>`, where `T` is the `State` of your app, so ViewControllers can subscribe to state changes and react to them. We will see how the communication flows later, but for now it's enough to understand that Store is the single point of contact with UIKit so it's a class that you want to inject as a dependency on all ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance but ViewController doesn't need to know that.
 
-<p align="center">
-  <img src="Docs/Misc/StoreBase.png" title="Store and ViewController">
-</p>
+![Store and ViewController](Docs/Misc/StoreBase.png)
 
 In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
 
-<p align="center">
-  <img src="Docs/Misc/CocoaMVC.gif" title="iOS MVC">
-</p>
+![iOS MVC](Docs/Misc/CocoaMVC.gif)
 
 You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
 
@@ -76,9 +61,7 @@ A Store holds three important foundations:
 - a Reducer function
 - current state
 
-<p align="center">
-  <img src="Docs/Misc/StoreInternals.png" title="Store internals">
-</p>
+![Store internals](Docs/Misc/StoreInternals.png)
 
 ## 🕹 Event
 
