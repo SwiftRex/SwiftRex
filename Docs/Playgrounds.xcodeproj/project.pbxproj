@@ -94,7 +94,6 @@
 				D5B841B42083CD46006BAB69 /* Frameworks */,
 				D5B841B52083CD46006BAB69 /* Headers */,
 				D5B841B62083CD46006BAB69 /* Resources */,
-				D5B841CE2083CE03006BAB69 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -145,25 +144,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		D5B841CE2083CE03006BAB69 /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/Mac/RxSwift.framework",
-			);
-			name = Carthage;
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D5B841B32083CD46006BAB69 /* Sources */ = {
