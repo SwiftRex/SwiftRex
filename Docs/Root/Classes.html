@@ -13,7 +13,7 @@
     <a title="Classes  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (58% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -57,7 +57,7 @@
             <a href="Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Functions.html#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+                <a href="Functions.html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -152,7 +152,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The <code>DirectLineMiddleware</code> is a useful tool when you have a very simple <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that is also an <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> and no decision has to be made other than forwarding the event as it is to the action queue.</p>
+
+<p>If the incoming <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> is not an <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, this middleware will act like <code><a href="Classes/BypassMiddleware.html">BypassMiddleware</a></code>, simply forwarding it to the next middleware in the chain.</p>
+
+<p>For example:</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">CounterEvent</span><span class="p">:</span> <span class="kt">EventProtocol</span><span class="p">,</span> <span class="kt">ActionProtocol</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">increment</span><span class="p">,</span> <span class="n">decrement</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>When this <code>CounterEvent</code> is dispatched to the store, thanks to a <code>DirectLineMiddleware</code> it will be forwarded to the <code><a href="Structs/Reducer.html">Reducer</a></code> without any explicit handling. So you can have a reducer that understands <code>CounterEvent</code> and use it to calculate the new <code>State</code>.</p>
+
+<p>This can be really convenient for very simple actions.</p>
 
                         <a href="Classes/DirectLineMiddleware.html" class="slightly-smaller">See more</a>
                       </div>
@@ -184,7 +196,11 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> or an <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</p>
+
+<p>It could be initialized manually by using the <code>init()</code> and configured by using the method <code>append(middleware:)</code>, but if you&rsquo;re ok with using custom operators you can compose two or more middlewares using the diamond operator:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddleware</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
 
                         <a href="Classes/ComposedMiddleware.html" class="slightly-smaller">See more</a>
                       </div>
@@ -294,7 +310,11 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>This is a container that lifts a sub-state middleware to a global state middleware.</p>
+
+<p>Internally you find the middleware responsible for handling events and actions for a sub-state (<code>Part</code>), while this outer class will be able to compose with global state (<code>Whole</code>) in your <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
+
+<p>You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call <code><a href="Protocols/Middleware.html#/s:8SwiftRex10MiddlewarePAAE4liftAA08SubstateC0Cyqd__xGs15WritableKeyPathCyqd__9StateTypeQzGlF">Middleware.lift(_:)</a></code>, passing as parameter the keyPath from whole to part.</p>
 
                         <a href="Classes/SubstateMiddleware.html" class="slightly-smaller">See more</a>
                       </div>
@@ -326,7 +346,24 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>🏪 <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> defines a protocol for the state store of an app. It must have an input and an output:</p>
+
+<ul>
+<li>an <code><a href="Protocols/EventHandler.html">EventHandler</a></code>: that&rsquo;s the store input, so it&rsquo;s able to receive and distribute events of type <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>. Being an event handler means that an <code>UIViewController</code> can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>.</li>
+<li>a <code><a href="Protocols/StateProvider.html">StateProvider</a></code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an <code>UIViewController</code> can subscribe to state changes and react to them.</li>
+</ul>
+
+<p>The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> is the single point of contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code><a href="Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code> -, both eventually pointing to the same instance.</p>
+
+<p>You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That&rsquo;s crucial for making the store completely detached from the <code>UIKit</code> world. Theoretically it should be possible to keep multiple stores - one per module or per <code>UIViewController</code> - and keep them in sync through Rx observation, like the <q>Flux</q> approach. However, the main goal of SwiftRex is to keep an unified state independent from <code>UIKit</code>, therefore it&rsquo;s the recommended approach.</p>
+
+<p>The <code>StoreBase</code> implementation also is:</p>
+
+<ul>
+<li>an <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code>: be able to receive and distribute actions of type <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code></li>
+</ul>
+
+<p>A <code>StoreBase</code> uses <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline and <code><a href="Structs/Reducer.html">Reducer</a></code> pipeline. It creates a queue of incoming events that is handled to the middleware pipeline, which triggers actions back to the store. These actions are put in a queue that again are handled to the middleware pipeline, usually for logging or analytics purposes. The actions are them forwarded to the <code><a href="Structs/Reducer.html">Reducer</a></code> pipeline, together with the current state. One by one, the reducers will handle the action and incrementally change a copy of the app state. When this process is done, the store takes the resulting state, sets it as the current state and notifies all subscribers.</p>
 
                         <a href="Classes/StoreBase.html" class="slightly-smaller">See more</a>
                       </div>
@@ -334,7 +371,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">StoreBase</span><span class="o">&lt;</span><span class="kt">E</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">StoreBase</span><span class="o">&lt;</span><span class="kt">E</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/ActionHandler.html">ActionHandler</a></span></code></pre>
 
                         </div>
                       </div>
@@ -358,7 +395,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The <code>BypassMiddleware</code> won&rsquo;t do any operation to either, <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="Protocols.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, it will simply forward them to the next middleware in the chain. It can be useful for Unit Tests or for some compositions.</p>
 
                         <a href="Classes/BypassMiddleware.html" class="slightly-smaller">See more</a>
                       </div>
@@ -378,7 +415,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-21)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-22)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

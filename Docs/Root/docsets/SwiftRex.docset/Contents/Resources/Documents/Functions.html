@@ -13,7 +13,7 @@
     <a title="Functions  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (58% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -57,7 +57,7 @@
             <a href="Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Functions.html#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+                <a href="Functions.html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -142,9 +142,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF"></a>
-                    <a name="//apple_ref/swift/Function/&gt;&gt;&gt;(_:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+                    <a name="/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF"></a>
+                    <a name="//apple_ref/swift/Function/&lt;&gt;(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -152,16 +152,63 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Initializes a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code> from the <code>lhs</code> and <code>rhs</code> middlewares parameters, or appends to the <code>lhs</code> if it is already a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code>, as shown below:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">composedOfTwoMiddlewares</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+<p>Or</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+<p>Or</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddlewares</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">composedMiddlewares</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+<span class="c1">// assert(composedMiddlewares == firstMiddleware &lt;&gt; secondMiddleware &lt;&gt; thirdMiddleware)</span>
+</code></pre>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&gt;&gt;&gt;</span> <span class="o">&lt;</span><span class="kt">M1</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="p">,</span> <span class="kt">M2</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">M1</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">M2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></span><span class="o">&lt;</span><span class="kt">M1</span><span class="o">.</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">M1</span><span class="o">.</span><span class="kt">StateType</span> <span class="o">==</span> <span class="kt">M2</span><span class="o">.</span><span class="kt">StateType</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;&gt;</span> <span class="o">&lt;</span><span class="kt">M1</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="p">,</span> <span class="kt">M2</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">M1</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">M2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></span><span class="o">&lt;</span><span class="kt">M1</span><span class="o">.</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">M1</span><span class="o">.</span><span class="kt">StateType</span> <span class="o">==</span> <span class="kt">M2</span><span class="o">.</span><span class="kt">StateType</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>lhs</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A flat middleware or a composed middleware, in case it&rsquo;s a flat one, this operation will create a new <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code> and return it, otherwise it will append the <code>rhs</code> to this composed lhs one mutating it and also returning it.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>rhs</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A flat middleware to be appended to the end of a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code> that calls the <code>lhs</code> methods before the <code>rhs</code> ones. If <code>lhs</code> is already a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code>, we will return the same instance after mutating it to have the <code>rhs</code> in the end of its chain.</p>
                       </div>
                     </section>
                   </div>
@@ -171,7 +218,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-21)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-22)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

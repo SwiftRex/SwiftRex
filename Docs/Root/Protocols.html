@@ -13,7 +13,7 @@
     <a title="Protocols  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (58% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -57,7 +57,7 @@
             <a href="Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Functions.html#/s:8SwiftRex3gggoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&gt;&gt;&gt;(_:_:)</a>
+                <a href="Functions.html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -152,7 +152,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p><code>StateProvider</code> defines a protocol for an <code>ObservableType</code> of <code>StateType</code>, so everybody can observe the global state changes through this container. Usually a <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
 
                         <a href="Protocols/StateProvider.html" class="slightly-smaller">See more</a>
                       </div>
@@ -252,7 +252,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Defines a protocol for implementing a middleware that executes <code>RxSwift</code> side-effects. Instead of implementing the regular <code>handle(event:getState:next:)</code> and <code>handle(action:getState:next:)</code> methods, this protocol only requires a mapping from <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> to <code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code>.</p>
 
                         <a href="Protocols/SideEffectMiddleware.html" class="slightly-smaller">See more</a>
                       </div>
@@ -284,7 +284,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p><code>EventHandler</code> defines a protocol for something able to receive and distribute events. Usually a <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
 
                         <a href="Protocols/EventHandler.html" class="slightly-smaller">See more</a>
                       </div>
@@ -350,7 +350,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
 
                         <a href="Protocols/SideEffectProducer.html" class="slightly-smaller">See more</a>
                       </div>
@@ -382,7 +382,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p><code>ActionHandler</code> defines a protocol for something able to receive and distribute actions. A <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> doesn&rsquo;t need to be <code>ActionHandler</code>, because this would expose the inner working of it. The <code><a href="Classes/StoreBase.html">StoreBase</a></code>, on the other hand, is a default implementation of a <code><a href="Protocols.html#/s:8SwiftRex5StoreP">Store</a></code> that happens to use middlewares and <code>ActionHandler</code>.</p>
 
                         <a href="Protocols/ActionHandler.html" class="slightly-smaller">See more</a>
                       </div>
@@ -501,14 +501,27 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>🏪 <code>Store</code> defines a protocol for the state store of an app. It must have an input and an output:</p>
+
+<ul>
+<li>an <code><a href="Protocols/EventHandler.html">EventHandler</a></code>: that&rsquo;s the store input, so it&rsquo;s able to receive and distribute events of type <code><a href="Protocols.html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>. Being an event handler means that an <code>UIViewController</code> can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>.</li>
+<li>a <code><a href="Protocols/StateProvider.html">StateProvider</a></code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an <code>UIViewController</code> can subscribe to state changes and react to them.</li>
+</ul>
+
+<p>The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code>Store</code> is the single point of contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code><a href="Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code> -, both eventually pointing to the same instance.</p>
+
+<p>You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That&rsquo;s crucial for making the store completely detached from the <code>UIKit</code> world. Theoretically it should be possible to keep multiple stores - one per module or per <code>UIViewController</code> - and keep them in sync through Rx observation, like the <q>Flux</q> approach. However, the main goal of SwiftRex is to keep an unified state independent from <code>UIKit</code>, therefore it&rsquo;s the recommended approach.</p>
+
+<p>Specific implementations of a store will require mechanisms to distribute events, mutate the state and notifies subscribers, probably by using <code><a href="Protocols/Middleware.html">Middleware</a></code> and being an <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> too, but this is not necessary for the outside world, that only needs the input and output bus of a store.</p>
+
+<p>Please check (and inherit from) <code><a href="Classes/StoreBase.html">StoreBase</a></code> for a standard implementation.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Store</span><span class="p">:</span> <span class="kt"><a href="Protocols/EventHandler.html">EventHandler</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/ActionHandler.html">ActionHandler</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/StateProvider.html">StateProvider</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Store</span><span class="p">:</span> <span class="kt"><a href="Protocols/EventHandler.html">EventHandler</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/StateProvider.html">StateProvider</a></span></code></pre>
 
                         </div>
                       </div>
@@ -520,7 +533,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-21)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-22)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
