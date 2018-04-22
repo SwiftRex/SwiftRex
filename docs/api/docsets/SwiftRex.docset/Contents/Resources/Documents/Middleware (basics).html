@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Middleware (basics)  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="Middleware (basics)  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">SwiftRex Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Middleware (basics)  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Store (contracts).html">Store (contracts)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/EventHandler.html">EventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/StateProvider.html">StateProvider</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Store (basic implementation).html">Store (basic implementation)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Reducer.html">Reducer</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/Reducer.html">Reducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Middleware (basics).html">Middleware (basics)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/BypassMiddleware.html">BypassMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DirectLineMiddleware.html">DirectLineMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Middleware (basics).html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SubstateMiddleware.html">SubstateMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Side-Effects.html">Side-Effects</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SideEffectProducer.html">SideEffectProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SideEffectError.html">SideEffectError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/AnySideEffectProducer.html">AnySideEffectProducer</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Composition helpers.html">Composition helpers</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/Monoid.html">Monoid</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Closure type-aliases.html">Closure type-aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Middleware (basics)</h1>
+            
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewareP"></a>
+                    <a name="//apple_ref/swift/Protocol/Middleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewareP">Middleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> pipeline in order to handle each <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> dispatched and to create <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> in response. It&rsquo;s also capable of handling each <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> before the <code><a href="Structs/Reducer.html">Reducer</a></code> to do its job.</p>
+
+<p>We already know what <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> are: both are lightweight structures that are dispatched (event) or triggered (action) into the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>. The store enqueues a new item that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>Middleware</code> is class that handles actions and events, and has the power to trigger more actions to the <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> chain. A very simple <code>Middleware</code> will receive an <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and current state, and trigger an equivalent <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> to the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
+
+<p>For example, a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event would be handled by a <code>Middleware</code> that checks the state and finds that current list has certain movie at the given row index, and this movie has been already marked as watched before. That <code>Middleware</code> was able to learn that thanks to the <code>getState: @escaping () -&gt; StateType</code> closure received together with the <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>, and which can be checked at any point to read an updated state. Our example <code>Middleware</code> then will trigger a <code>MovieListAction.setMovieAsUnwatched(movieId:)</code> action to be handled by itself, other middlewares or the <code><a href="Structs/Reducer.html">Reducer</a></code> chain.</p>
+
+<p>However, this would be a very naive implementation. Most of the times we handle data that must be persisted in a database or through a REST API. State only lives in memory, but before changing the memory we should at least start Side-Effects. Let&rsquo;s revisit the example above and say that we got a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event. Yes, we still should check what movie is at that row and whether or not it&rsquo;s watched. Now, we can trigger a <code>URLSession</code> task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:</p>
+
+<ul>
+<li>assume that this API won&rsquo;t fail, and mark the movie immediately as unwatched;</li>
+<li>don&rsquo;t assume anything and wait for the <code>HTTPResponse</code>;</li>
+<li>provide a very precise state management, meaning that we immediately change the state of our movie to <q>it&rsquo;s being changed</q> and, once we get the response we update again.</li>
+</ul>
+
+<p>In the first case, we create the <code>URLSessionDataTask</code>, call <code>task.resume()</code> and immediately trigger the <code>setMovieAsUnwatched</code> action. We may use the completion handler or the <code>HTTPRequest</code> to confirm the result and rollback if needed. In the second case, after calling <code>task.resume()</code> we don&rsquo;t trigger any action, only when we get the response in case it was successful one.</p>
+
+<p>The third case, however, offers many more possibilities. You can think about the possible three states of a movie: watched, not watched, mutating. You can even split the <q>mutating</q> case in two: <q>mutating to watched</q> and <q>mutating to unwatched</q>. What you get from that is the ability to disable the <q>watch</q> button, or replaced it by an activity indicator view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate situation. To offer that, you call task.resume and immediately trigger a <code>setMovieAsUnwatchRequestInProgress</code>, while inside the response completion handler you evaluate the response and trigger another action to update the movie state again.</p>
+
+<p>Because the <code>Middleware</code> accesses all events and the state of the app at any point, anything can be done in these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct. Some suggestions of middlewares:</p>
+
+<ul>
+<li>Run Timers, pooling some external resource or updating some local state at a constant time</li>
+<li>Subscribe for <code>CoreData</code> changes</li>
+<li>Subscribe for <code>Realm</code> changes</li>
+<li>Subscribe for <code>Firebase Realtime Database</code> notifications</li>
+<li>Be a <code>CoreLocation</code> delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</li>
+<li>Be a <code>HealthKit</code> delegate to track activities, or even combining that with <code>CoreLocation</code> observation in order to track the activity route</li>
+<li>Logger</li>
+<li>Telemetry</li>
+<li>Analytics tracker</li>
+<li><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</li>
+<li>API calls and other <q>cold observables</q></li>
+<li>Reachability</li>
+<li>Navigation through the app (Redux Coordinator pattern)</li>
+<li><code>NotificationCenter</code> and other delegates</li>
+<li><code>RxSwift</code> observables</li>
+</ul>
+
+                        <a href="Protocols/Middleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Middleware</span><span class="p">:</span> <span class="kd">class</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16BypassMiddlewareC"></a>
+                    <a name="//apple_ref/swift/Class/BypassMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16BypassMiddlewareC">BypassMiddleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The <code>BypassMiddleware</code> won&rsquo;t do any operation to either, <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, it will simply forward them to the next middleware in the chain. It can be useful for Unit Tests or for some compositions.</p>
+
+                        <a href="Classes/BypassMiddleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">BypassMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex20DirectLineMiddlewareC"></a>
+                    <a name="//apple_ref/swift/Class/DirectLineMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex20DirectLineMiddlewareC">DirectLineMiddleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The <code>DirectLineMiddleware</code> is a useful tool when you have a very simple <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that is also an <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> and no decision has to be made other than forwarding the event as it is to the action queue.</p>
+
+<p>If the incoming <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> is not an <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, this middleware will act like <code><a href="Classes/BypassMiddleware.html">BypassMiddleware</a></code>, simply forwarding it to the next middleware in the chain.</p>
+
+<p>For example:</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">CounterEvent</span><span class="p">:</span> <span class="kt">EventProtocol</span><span class="p">,</span> <span class="kt">ActionProtocol</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">increment</span><span class="p">,</span> <span class="n">decrement</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>When this <code>CounterEvent</code> is dispatched to the store, thanks to a <code>DirectLineMiddleware</code> it will be forwarded to the <code><a href="Structs/Reducer.html">Reducer</a></code> without any explicit handling. So you can have a reducer that understands <code>CounterEvent</code> and use it to calculate the new <code>State</code>.</p>
+
+<p>This can be really convenient for very simple actions.</p>
+
+                        <a href="Classes/DirectLineMiddleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">DirectLineMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18ComposedMiddlewareC"></a>
+                    <a name="//apple_ref/swift/Class/ComposedMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareC">ComposedMiddleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> or an <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</p>
+
+<p>It could be initialized manually by using the <code>init()</code> and configured by using the method <code>append(middleware:)</code>, but if you&rsquo;re ok with using custom operators you can compose two or more middlewares using the diamond operator:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddleware</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+                        <a href="Classes/ComposedMiddleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ComposedMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF"></a>
+                    <a name="//apple_ref/swift/Function/&lt;&gt;(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializes a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code> from the <code>lhs</code> and <code>rhs</code> middlewares parameters, or appends to the <code>lhs</code> if it is already a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code>, as shown below:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">composedOfTwoMiddlewares</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+<p>Or</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+<p>Or</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddlewares</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">composedMiddlewares</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+<span class="c1">// assert(composedMiddlewares == firstMiddleware &lt;&gt; secondMiddleware &lt;&gt; thirdMiddleware)</span>
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;&gt;</span> <span class="o">&lt;</span><span class="kt">M1</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="p">,</span> <span class="kt">M2</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">M1</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">M2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></span><span class="o">&lt;</span><span class="kt">M1</span><span class="o">.</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">M1</span><span class="o">.</span><span class="kt">StateType</span> <span class="o">==</span> <span class="kt">M2</span><span class="o">.</span><span class="kt">StateType</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>lhs</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A flat middleware or a composed middleware, in case it&rsquo;s a flat one, this operation will create a new <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code> and return it, otherwise it will append the <code>rhs</code> to this composed lhs one mutating it and also returning it.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>rhs</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A flat middleware to be appended to the end of a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code> that calls the <code>lhs</code> methods before the <code>rhs</code> ones. If <code>lhs</code> is already a <code><a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a></code>, we will return the same instance after mutating it to have the <code>rhs</code> in the end of its chain.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18SubstateMiddlewareC"></a>
+                    <a name="//apple_ref/swift/Class/SubstateMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18SubstateMiddlewareC">SubstateMiddleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>This is a container that lifts a sub-state middleware to a global state middleware.</p>
+
+<p>Internally you find the middleware responsible for handling events and actions for a sub-state (<code>Part</code>), while this outer class will be able to compose with global state (<code>Whole</code>) in your <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
+
+<p>You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call <code><a href="Protocols/Middleware.html#/s:8SwiftRex10MiddlewarePAAE4liftAA08SubstateC0Cyqd__xGs15WritableKeyPathCyqd__9StateTypeQzGlF">Middleware.lift(_:)</a></code>, passing as parameter the keyPath from whole to part.</p>
+
+                        <a href="Classes/SubstateMiddleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">SubstateMiddleware</span><span class="o">&lt;</span><span class="kt">Whole</span><span class="p">,</span> <span class="kt">PartMiddleware</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Type%20Eraser%20for%20Middleware"></a>
+                <a name="//apple_ref/swift/Section/Type Eraser for Middleware" class="dashAnchor"></a>
+                <a href="#/Type%20Eraser%20for%20Middleware">
+                  <h3 class="section-name">Type Eraser for Middleware</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareC"></a>
+                    <a name="//apple_ref/swift/Class/AnyMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareC">AnyMiddleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Type-erased <code><a href="Protocols/Middleware.html">Middleware</a></code></p>
+
+                        <a href="Classes/AnyMiddleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-23)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

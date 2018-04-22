@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Reducer Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/Reducer" class="dashAnchor"></a>
+    <a title="Reducer Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">SwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        Reducer Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Store (contracts).html">Store (contracts)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/EventHandler.html">EventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StateProvider.html">StateProvider</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Store (basic implementation).html">Store (basic implementation)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Reducer.html">Reducer</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Reducer.html">Reducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Middleware (basics).html">Middleware (basics)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/BypassMiddleware.html">BypassMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DirectLineMiddleware.html">DirectLineMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Middleware (basics).html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Side-Effects.html">Side-Effects</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SideEffectError.html">SideEffectError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/AnySideEffectProducer.html">AnySideEffectProducer</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Composition helpers.html">Composition helpers</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/Monoid.html">Monoid</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Closure type-aliases.html">Closure type-aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Reducer</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                </div>
+              </div>
+            <p>⚙ <code>Reducer</code> is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.</p>
+
+<p>The <code><a href="../Protocols/Middleware.html">Middleware</a></code> pipeline can trigger <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, and handles both <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code>Reducer</code> function. Actually, it&rsquo;s a protocol that requires only one method:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">currentState</span><span class="p">:</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+</code></pre>
+
+<p>Given the current state and an action, returns the calculated state. This function will be executed in the last stage of an action handling, when all middlewares had the chance to modify or improve the action. Because a reduce function is composable monoid and also can be lifted through lenses, it&rsquo;s possible to write fine-grained <q>sub-reducer</q> that will handle only a <q>sub-state</q>, creating a pipeline of reducers.</p>
+
+<p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the <code>Reducer</code> structs or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always good to do a final sanity check before changing the state.</p>
+
+<p>Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex7ReducerVACyxGxx_AA14ActionProtocol_ptccfc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerVACyxGxx_AA14ActionProtocol_ptccfc">init(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Reducer initializer takes only the underlying function <code>(S, A) -&gt; S</code> that is the reducer function itself.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">reduce</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">StateType</span><span class="p">,</span> <span class="kt"><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>reduce</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from the old state and an action.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex7ReducerV5emptyACyxGvpZ"></a>
+                    <a name="//apple_ref/swift/Variable/empty" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerV5emptyACyxGvpZ">empty</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Neutral monoidal container. Composing any monoid with an empty monoid should result in a function unchanged, regardless if the empty element is on the left-hand side or the right-hand side.</p>
+
+<p>Therefore, <code>Reducer&lt;StateType&gt; &lt;&gt; empty == Reducer&lt;StateType&gt; == empty &lt;&gt; Reducer&lt;StateType&gt;</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nv">empty</span><span class="p">:</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex7ReducerV2lgoiACyxGAE_AEtFZ"></a>
+                    <a name="//apple_ref/swift/Method/&lt;&gt;(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerV2lgoiACyxGAE_AEtFZ">&lt;&gt;(_:_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Monoid Append operation</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>lhs</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>First monoid <code>(S, A) -&gt; S</code>, let&rsquo;s call it <code>f(x)</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>rhs</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Second monoid <code>(S, A) -&gt; S</code>, let&rsquo;s call it <code>g(x)</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a composed monoid <code>(S, A) -&gt; S</code> equivalent to <code>g(f(x))</code></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex7ReducerV4liftACyqd__Gs15WritableKeyPathCyqd__xGlF"></a>
+                    <a name="//apple_ref/swift/Method/lift(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerV4liftACyqd__Gs15WritableKeyPathCyqd__xGlF">lift(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A lenses method. The global state of your app is <em>Whole</em>, and the <code>Reducer</code> handles <em>Part</em>, that is a sub-state.
+So for example you may want to have a <code>gpsReducer</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its reducer will be part of an external framework, used by dozens of apps. Internally probably the <code>Reducer</code> will receive some known <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> and calculate a new location. On the main app we have a global state, that we now call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code><a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> understands <code>Whole</code> and our <code>gpsReducer</code> understands <code>Part</code>, we must <code>lift(_:)</code> the <code>Reducer</code> to the <code>Whole</code> level, by using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateReducer</span> <span class="o">=</span> <span class="n">gpsReducer</span><span class="o">.</span><span class="nf">lift</span><span class="p">(\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this reducer can be used within our <code><a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> or even composed with others. It also can be used in other apps as long as we have a way to lift it to the world of <code>Whole</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">Whole</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">substatePath</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">Whole</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">Whole</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>substatePath</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the keyPath that goes from <code>Whole</code> to <code>Part</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code>Reducer&lt;Whole&gt;</code> that maps <code>Whole</code> to <code>Part</code> and vice-versa, by using the key path.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-23)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
