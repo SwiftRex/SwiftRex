@@ -50,7 +50,9 @@ I'm not gonna lie, it's a completely different way of writing apps, as most reac
 
  The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `Store` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
 
- ![Store and ViewController](https://luizmb.github.io/SwiftRex/markdown/img/Redux1.gif)
+ [![Store and ViewController](https://luizmb.github.io/SwiftRex/markdown/img/Redux1.png)](https://luizmb.github.io/SwiftRex/markdown/img/Redux1/index.html)
+
+ (Tap to see the animated flow)
 
  In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
 
