@@ -576,13 +576,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6D4206E818C00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex iOS" */;
 			buildPhases = (
-				D595F770206EBC4B00E02733 /* Sourcery */,
-				D595F771206EBC6900E02733 /* Lint */,
+				D595F770206EBC4B00E02733 /* Make script */,
 				D595F6C7206E818C00E02733 /* Sources */,
 				D595F6C8206E818C00E02733 /* Frameworks */,
 				D595F6C9206E818C00E02733 /* Headers */,
 				D595F6CA206E818C00E02733 /* Resources */,
-				D595F772206EBCC500E02733 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -597,13 +595,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6DF206E81AE00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex watchOS" */;
 			buildPhases = (
-				D578B2BA208A6E300035AE9C /* Sourcery */,
-				D578B2BD208A6E440035AE9C /* Lint */,
+				D578B2BA208A6E300035AE9C /* Make script */,
 				D595F6D5206E81AE00E02733 /* Sources */,
 				D595F6D6206E81AE00E02733 /* Frameworks */,
 				D595F6D7206E81AE00E02733 /* Headers */,
 				D595F6D8206E81AE00E02733 /* Resources */,
-				D51638F3206F417700469F96 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -618,13 +614,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6EC206E81BA00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex tvOS" */;
 			buildPhases = (
-				D578B2BB208A6E350035AE9C /* Sourcery */,
-				D578B2BE208A6E490035AE9C /* Lint */,
+				D578B2BB208A6E350035AE9C /* Make script */,
 				D595F6E2206E81B900E02733 /* Sources */,
 				D595F6E3206E81B900E02733 /* Frameworks */,
 				D595F6E4206E81B900E02733 /* Headers */,
 				D595F6E5206E81B900E02733 /* Resources */,
-				D51638F4206F417E00469F96 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -639,13 +633,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6F9206E81C900E02733 /* Build configuration list for PBXNativeTarget "SwiftRex macOS" */;
 			buildPhases = (
-				D578B2BC208A6E3C0035AE9C /* Sourcery */,
-				D578B2BF208A6E4E0035AE9C /* Lint */,
+				D51638F5206F418700469F96 /* Make script */,
 				D595F6EF206E81C900E02733 /* Sources */,
 				D595F6F0206E81C900E02733 /* Frameworks */,
 				D595F6F1206E81C900E02733 /* Headers */,
 				D595F6F2206E81C900E02733 /* Resources */,
-				D51638F5206F418700469F96 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -747,53 +739,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		D51638F3206F417700469F96 /* Carthage */ = {
+		D51638F5206F418700469F96 /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/watchOS/RxSwift.framework",
 			);
-			name = Carthage;
+			name = "Make script";
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
-		};
-		D51638F4206F417E00469F96 /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/tvOS/RxSwift.framework",
-			);
-			name = Carthage;
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
-		};
-		D51638F5206F418700469F96 /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/Mac/RxSwift.framework",
-			);
-			name = Carthage;
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
+			shellScript = "make prebuild-mac";
 		};
 		D578B294208A69E40035AE9C /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -817,133 +775,47 @@
 			shellPath = /bin/sh;
 			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
 		};
-		D578B2BA208A6E300035AE9C /* Sourcery */ = {
+		D578B2BA208A6E300035AE9C /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = Sourcery;
+			name = "Make script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which sourcery >/dev/null; then\n    sourcery\nelse\n    echo \"warning: Sourcery not installed, please run `brew install sourcery`\"\nfi";
+			shellScript = "make prebuild-watchos";
 		};
-		D578B2BB208A6E350035AE9C /* Sourcery */ = {
+		D578B2BB208A6E350035AE9C /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = Sourcery;
+			name = "Make script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which sourcery >/dev/null; then\n    sourcery\nelse\n    echo \"warning: Sourcery not installed, please run `brew install sourcery`\"\nfi";
+			shellScript = "make prebuild-tvos";
 		};
-		D578B2BC208A6E3C0035AE9C /* Sourcery */ = {
+		D595F770206EBC4B00E02733 /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = Sourcery;
+			name = "Make script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which sourcery >/dev/null; then\n    sourcery\nelse\n    echo \"warning: Sourcery not installed, please run `brew install sourcery`\"\nfi";
-		};
-		D578B2BD208A6E440035AE9C /* Lint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = Lint;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint autocorrect\nelse\n    echo \"warning: SwiftLint not installed, please run `brew install swiftlint`\"\nfi";
-		};
-		D578B2BE208A6E490035AE9C /* Lint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = Lint;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint autocorrect\nelse\n    echo \"warning: SwiftLint not installed, please run `brew install swiftlint`\"\nfi";
-		};
-		D578B2BF208A6E4E0035AE9C /* Lint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = Lint;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint autocorrect\nelse\n    echo \"warning: SwiftLint not installed, please run `brew install swiftlint`\"\nfi";
-		};
-		D595F770206EBC4B00E02733 /* Sourcery */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = Sourcery;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which sourcery >/dev/null; then\n    sourcery\nelse\n    echo \"warning: Sourcery not installed, please run `brew install sourcery`\"\nfi";
-		};
-		D595F771206EBC6900E02733 /* Lint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = Lint;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint autocorrect\nelse\n    echo \"warning: SwiftLint not installed, please run `brew install swiftlint`\"\nfi";
-		};
-		D595F772206EBCC500E02733 /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
-			);
-			name = Carthage;
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
+			shellScript = "make prebuild-ios";
 		};
 /* End PBXShellScriptBuildPhase section */
 
