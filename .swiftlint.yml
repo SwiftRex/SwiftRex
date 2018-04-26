@@ -42,12 +42,9 @@ excluded:
 opt_in_rules: # some rules are only opt-in
   - closure_end_indentation
   - closure_spacing
-  - conditional_binding_cascade
   - empty_count
-  - explicit_failure_calls
   - explicit_init
   - first_where
-  - force_https
   - nimble_operator
   - number_separator
   - object_literal
