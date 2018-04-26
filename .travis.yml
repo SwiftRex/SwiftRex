@@ -22,6 +22,6 @@ install:
   - bundle install --path vendor/bundle
   - scripts/bootstrap-if-needed
 script:
-  - set -o pipefail && xcodebuild clean test -project SwiftRex.xcodeproj -scheme SwiftRex\ macOS CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=YES VALID_ARCHS=x86_64 | xcpretty
+  - make test-macos
 after_success:
   - bundle exec slather
