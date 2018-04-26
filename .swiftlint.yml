@@ -1,4 +1,7 @@
-line_length: 145
+line_length:
+  warning: 145
+  error: 145
+  ignores_comments: true
 file_length:
   warning: 500
   error: 1000

@@ -11,8 +11,8 @@ PlaygroundPage.current.needsIndefiniteExecution = true
  Shared among all modules of our app
  */
 struct GlobalState: Equatable {
-    var countingState: CountingState = CountingState()
-    var lastMessage: AlertMessage = AlertMessage(date: Date.distantPast, text: nil)
+    var countingState = CountingState()
+    var lastMessage = AlertMessage(date: Date.distantPast, text: nil)
 }
 
 struct CountingState: Equatable {
@@ -296,7 +296,8 @@ events
     .enumerated()
     .map { pair in
         (time: DispatchTime.now() + Double(pair.0) * interval,
-         work: pair.1) }
+         work: pair.1)
+    }
     .forEach {
         DispatchQueue.main.asyncAfter(deadline: $0.time, execute: $0.work)
     }

@@ -36,20 +36,23 @@ test-all: test-mac test-ios
 
 # Lint
 
-lint:
-	@if which swiftlint >/dev/null; then \
+lint-check:
+	set -o pipefail && \
+		swiftlint; \
+
+lint-autocorrect:
+	set -o pipefail && \
 		swiftlint autocorrect; \
-	else \
-    	echo "warning: SwiftLint not installed, please run `brew install swiftlint`"; \
-	fi
 
 # Sourcery
 
 sourcery:
 	@if which sourcery >/dev/null; then \
-		sourcery; \
+		set -o pipefail && \
+			sourcery; \
 	else \
-		echo "warning: Sourcery not installed, please run `brew install sourcery`"; \
+		echo "warning: Sourcery not installed, please run `brew install sourcery`" \
+		exit 1; \
 	fi
 
 # Carthage Copy
@@ -60,9 +63,11 @@ carthage-copy:
 		export SCRIPT_INPUT_FILE_COUNT=1 \
 		export SCRIPT_OUTPUT_FILE_0="$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework" \
 		export SCRIPT_OUTPUT_FILE_COUNT=1; \
-		carthage copy-frameworks; \
+		set -o pipefail && \
+			carthage copy-frameworks; \
 	else \
-		echo "warning: Carthage not installed, please run `brew install carthage`"; \
+		echo "warning: Carthage not installed, please run `brew install carthage`" \
+		exit 1; \
 	fi
 
 carthage-copy-mac: PLATFORM = Mac
@@ -79,10 +84,10 @@ carthage-copy-tvos: carthage-copy
 
 # Pre-Build
 
-prebuild-mac: sourcery lint carthage-copy-mac
+prebuild-mac: sourcery lint-autocorrect lint-check carthage-copy-mac
 
-prebuild-ios: sourcery lint carthage-copy-ios
+prebuild-ios: sourcery lint-autocorrect lint-check carthage-copy-ios
 
-prebuild-watchos: sourcery lint carthage-copy-watchos
+prebuild-watchos: sourcery lint-autocorrect lint-check carthage-copy-watchos
 
-prebuild-tvos: sourcery lint carthage-copy-tvos
+prebuild-tvos: sourcery lint-autocorrect lint-check carthage-copy-tvos

@@ -1,5 +1,6 @@
 import SwiftRex
 
+// swiftlint:disable all
 class MiddlewareMock<StateType>: Middleware {
     var actionHandler: ActionHandler?
 
@@ -33,3 +34,4 @@ class MiddlewareMock<StateType>: Middleware {
         handleActionGetStateNextClosure?(action, getState, next)
     }
 }
+// swiftlint:enable all

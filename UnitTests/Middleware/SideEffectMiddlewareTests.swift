@@ -71,7 +71,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
 
         // Then
-        sut.handle(event: event, getState: getState, next: { _, _ in XCTFail() })
+        sut.handle(event: event, getState: getState, next: { _, _ in XCTFail("It should be propagating") })
 
         // Expect
         XCTAssertEqual(3, actionHandler.triggerCallsCount)

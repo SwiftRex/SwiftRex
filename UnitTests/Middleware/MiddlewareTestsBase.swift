@@ -4,8 +4,8 @@ import XCTest
 class MiddlewareTestsBase: XCTestCase {
 
     func lastActionInChain<A: ActionProtocol & Equatable>(_ action: A,
-                                                  state: TestState,
-                                                  expectation: XCTestExpectation)
+                                                          state: TestState,
+                                                          expectation: XCTestExpectation)
         -> (ActionProtocol, @escaping GetState<TestState>) -> Void {
             return { chainAction, chainStateGetter in
                 XCTAssertEqual(action, chainAction as! A)
