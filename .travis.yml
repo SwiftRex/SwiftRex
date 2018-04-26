@@ -13,9 +13,9 @@ env:
     - FRAMEWORK_NAME="SwiftRex"
 before_install:
   - brew update
-  - brew outdated carthage || brew upgrade carthage
-  - brew outdated swiftlint || brew upgrade swiftlint
-  - brew outdated sourcery || brew upgrade sourcery
+  - brew install carthage || brew outdated carthage || brew upgrade carthage
+  - brew install swiftlint || brew outdated swiftlint || brew upgrade swiftlint
+  - brew install sourcery || brew outdated sourcery || brew upgrade sourcery
   - curl -L -O https://github.com/YPlan/CartfileDiff/releases/download/0.1/CartfileDiff.pkg
   - sudo installer -pkg CartfileDiff.pkg -target /
 install:
