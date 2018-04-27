@@ -46,7 +46,7 @@ extension Reducer: Monoid {
      */
     public static func <> (lhs: Reducer<StateType>, rhs: Reducer<StateType>) -> Reducer<StateType> {
         return Reducer { state, action in
-            return rhs.reduce(lhs.reduce(state, action), action)
+            rhs.reduce(lhs.reduce(state, action), action)
         }
     }
 }

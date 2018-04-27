@@ -7,7 +7,7 @@ let createReducerMock: () -> (Reducer<TestState>, ReducerMock) = {
     return (Reducer { state, action in
         mock.reduceActionCallsCount += 1
         mock.reduceActionReceivedArguments = (currentState: state, action: action)
-        return mock.reduceActionClosure.map({ $0(state, action) }) ?? mock.reduceActionReturnValue
+        return mock.reduceActionClosure.map { $0(state, action) } ?? mock.reduceActionReturnValue
     }, mock)
 }
 
