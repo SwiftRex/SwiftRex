@@ -72,6 +72,11 @@ carthage-copy-watchos: carthage-copy
 carthage-copy-tvos: PLATFORM = tvOS
 carthage-copy-tvos: carthage-copy
 
+# Jazzy
+
+jazzy:
+	bundle exec jazzy
+
 # Pre-Build
 
 prebuild-mac: sourcery lint-autocorrect lint-check carthage-copy-mac
