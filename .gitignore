@@ -29,6 +29,7 @@
 **/DerivedData/
 **/derivedData/
 **/.build/
+Developer.xcconfig
 
 # OS-specific files
 .DS_Store
