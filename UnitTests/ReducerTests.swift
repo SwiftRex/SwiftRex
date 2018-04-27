@@ -150,7 +150,7 @@ class ReducerTests: XCTestCase {
     func testLiftReducer() {
         let original = TestState(value: UUID(), name: "a")
         let reducer = Reducer<String> { state, _ in
-            return state + "b"
+            state + "b"
         }
 
         let reduced = reducer.lift(\TestState.name).reduce(original, Action1())
@@ -171,7 +171,7 @@ class ReducerTests: XCTestCase {
         }
 
         let reducerName = Reducer<String> { state, _ in
-            return state + "b"
+            state + "b"
         }
 
         let reducer =

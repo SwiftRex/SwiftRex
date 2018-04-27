@@ -27,7 +27,7 @@ class SideEffectMiddlewareMock: SideEffectMiddleware {
     func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<StateType>? {
         sideEffectForCallsCount += 1
         sideEffectForReceivedEvent = event
-        return sideEffectForClosure.map({ $0(event) }) ?? sideEffectForReturnValue
+        return sideEffectForClosure.map { $0(event) } ?? sideEffectForReturnValue
     }
 }
 
