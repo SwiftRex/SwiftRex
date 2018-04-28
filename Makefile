@@ -1,3 +1,11 @@
+# Version
+
+set-version:
+ifndef TO
+    $(error Missing new version number. Please use `make set-version TO=1.2.3`)
+endif
+	sed -i .bkp -E "s/(s\.version.*=.*)'.*'/\1'${TO}'/" SwiftRex.podspec
+	sed -i .bkp -E "s/(CURRENT_PROJECT_VERSION.*= ).*/\1${TO}/" Configuration/SwiftRex-Common.xcconfig
 # Xcodeproj
 
 xcodeproj:
