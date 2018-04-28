@@ -14,6 +14,7 @@
 
 *.moved-aside
 *.xcuserstate
+*.bkp
 
 # Not Mapped
 **/captures
