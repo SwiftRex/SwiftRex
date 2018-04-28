@@ -119,3 +119,76 @@ ifndef CARTHAGE
     $(error "Carthage not installed, please run `brew install carthage`")
 endif
 
+# Help
+
+help:
+	@echo Possible tasks
+	@echo
+	@echo make set-version TO=1.2.3
+	@echo -- sets the SwiftRex version to the given value
+	@echo -- param1: TO = required, new version number
+	@echo
+	@echo make xcodeproj
+	@echo -- creates xcodeproj for those using Swift Package Manager
+	@echo
+	@echo make test-macos
+	@echo -- runs the unit tests for the macOS target
+	@echo
+	@echo make test-ios
+	@echo -- runs the unit tests for the iOS target
+	@echo
+	@echo make test-swift
+	@echo -- runs the unit tests using Swift Package Manager
+	@echo
+	@echo make test-all
+	@echo -- runs the unit tests for macOS and iOS targets
+	@echo
+	@echo make lint-check
+	@echo -- validates the code style
+	@echo
+	@echo make lint-autocorrect
+	@echo -- automatic linting for auto-fixable rules
+	@echo
+	@echo make sourcery
+	@echo -- code generation
+	@echo
+	@echo make carthage-copy PLATFORM=Mac
+	@echo -- runs the Carthage Framework copy for a given platform
+	@echo -- param1: PLATFORM = required, Carthage build platform
+	@echo
+	@echo make carthage-copy-mac
+	@echo -- runs the Carthage Framework copy for macOS target
+	@echo
+	@echo make carthage-copy-ios
+	@echo -- runs the Carthage Framework copy for iOS target
+	@echo
+	@echo make carthage-copy-watchos
+	@echo -- runs the Carthage Framework copy for watchOS target
+	@echo
+	@echo make carthage-copy-tvos
+	@echo -- runs the Carthage Framework copy for tvOS target
+	@echo
+	@echo make jazzy
+	@echo -- generates documentation
+	@echo
+	@echo make prebuild-mac
+	@echo -- runs the pre-build phases on macOS target
+	@echo
+	@echo make prebuild-ios
+	@echo -- runs the pre-build phases on iOS target
+	@echo
+	@echo make prebuild-watchos
+	@echo -- runs the pre-build phases on watchOS target
+	@echo
+	@echo make prebuild-tvos
+	@echo -- runs the pre-build phases on tvOS target
+	@echo
+	@echo make check-lint
+	@echo -- checks if Swiftlint is installed
+	@echo
+	@echo make check-sourcery
+	@echo -- checks if Sourcery is installed
+	@echo
+	@echo make check-carthage
+	@echo -- checks if Carthage is installed
+	@echo
