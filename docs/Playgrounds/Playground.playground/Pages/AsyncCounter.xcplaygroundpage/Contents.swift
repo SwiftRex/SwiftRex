@@ -276,31 +276,26 @@ viewDidLoad()
 
  Let's simulate some button taps
  */
-
-let events = [
-    buttonIncrease.onNext,
-    buttonIncrease.onNext,
-    buttonIncrease.onNext,
-    buttonDecrease.onNext,
-    buttonIncrease.onNext,
-    buttonDecrease.onNext,
-    buttonDecrease.onNext
+let taps = [
+    buttonIncrease,
+    buttonIncrease,
+    buttonIncrease,
+    buttonDecrease,
+    buttonIncrease,
+    buttonDecrease,
+    buttonDecrease
 ]
 
 // Interval between taps
-// Setting to 0.6, which is very close to the time needed to
+// Setting to a number close to 0.5, which is the time needed to
 // fullfil the request, may result in some alerts to the user
-let interval = 0.6
+let interval = 0.55
 
-events
-    .enumerated()
-    .map { pair in
-        (time: DispatchTime.now() + Double(pair.0) * interval,
-         work: pair.1)
-    }
-    .forEach {
-        DispatchQueue.main.asyncAfter(deadline: $0.time, execute: $0.work)
-    }
+taps
+    .map(Observable<PublishSubject<Void>>.just)
+    .map(delay(interval))
+    .concat()
+    .subscribe(onNext: { $0.onNext(()) })
 
 /*
  Example of an expected result:
@@ -348,3 +343,16 @@ extension ObservableType {
         return self.distinctUntilChanged { $0[keyPath: keyPath] == $1[keyPath: keyPath] }
     }
 }
+
+extension Collection where Element: ObservableConvertibleType {
+    func concat() -> Observable<Element.E> {
+        return Observable<Element.E>.concat(self.map { $0.asObservable() })
+    }
+}
+
+func delay<T>(_ time: Double) -> (Observable<T>) -> Observable<T> {
+    return { observable in
+        observable.asObservable().delay(RxTimeInterval(time), scheduler: MainScheduler.instance)
+    }
+}
+
