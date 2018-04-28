@@ -9,6 +9,10 @@ set-version:
 	sed -i .bkp -E "s/(CURRENT_PROJECT_VERSION.*= ).*/\1${TO}/" Configuration/SwiftRex-Common.xcconfig
 endif
 
+# Pod push
+pod-push:
+	pod trunk push SwiftRex.podspec --allow-warnings
+
 # Xcodeproj
 
 xcodeproj:
@@ -127,6 +131,9 @@ help:
 	@echo make set-version TO=1.2.3
 	@echo -- sets the SwiftRex version to the given value
 	@echo -- param1: TO = required, new version number
+	@echo
+	@echo make pod-push
+	@echo -- publishes the pod on CocoaPods repository
 	@echo
 	@echo make xcodeproj
 	@echo -- creates xcodeproj for those using Swift Package Manager
