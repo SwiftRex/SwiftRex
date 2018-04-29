@@ -31,7 +31,6 @@ open class StoreBase<E>: Store, ActionHandler {
     private let state: BehaviorSubject<E>
     private let dispatchEventQueue = DispatchQueue.main
     private let triggerActionQueue = DispatchQueue.main
-    private let reduceQueue = DispatchQueue.main
 
     /**
      Required initializer that takes all the expected pipelines
@@ -115,8 +114,12 @@ extension StoreBase {
             action: action,
             getState: { [unowned self] in try! self.state.value() },
             next: { [weak self] action, _ in
-                self?.reduceQueue.async {
-                    self?.reduce(action: action)
+                let reducer = { self?.reduce(action: action) }
+
+                if Thread.isMainThread {
+                    reducer()
+                } else {
+                    DispatchQueue.main.sync(execute: reducer)
                 }
             })
     }
