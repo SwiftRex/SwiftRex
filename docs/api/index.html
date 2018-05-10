@@ -13,7 +13,7 @@
     <a title="SwiftRex  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (0% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -31,10 +31,10 @@
             <a href="Store (contracts).html">Store (contracts)</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Store (contracts).html#/Store">Store</a>
+                <a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
               </li>
               <li class="nav-group-task">
-                <a href="Store (contracts).html#/EventProtocol">EventProtocol</a>
+                <a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="Protocols/EventHandler.html">EventHandler</a>
@@ -62,7 +62,7 @@
                 <a href="Structs/Reducer.html">Reducer</a>
               </li>
               <li class="nav-group-task">
-                <a href="Reducer.html#/ActionProtocol">ActionProtocol</a>
+                <a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
               </li>
             </ul>
           </li>
@@ -82,7 +82,7 @@
                 <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Middleware (basics).html#/&lt;&gt;(_:_:)">&lt;&gt;(_:_:)</a>
+                <a href="Middleware (basics).html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/SubstateMiddleware.html">SubstateMiddleware</a>
@@ -121,19 +121,19 @@
             <a href="Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/GetState">GetState</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/NextActionHandler">NextActionHandler</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/NextEventHandler">NextEventHandler</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/ReduceFunction">ReduceFunction</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
               </li>
             </ul>
           </li>
@@ -191,14 +191,14 @@
 </ul>
 <h2 id='store' class='heading'>🏪 Store</h2>
 
-<p><code><a href="Store (contracts).html#/Store">Store</a></code> defines a protocol for the state store of an app. It must have an input and an output:</p>
+<p><code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> defines a protocol for the state store of an app. It must have an input and an output:</p>
 
 <ul>
-<li>an <code><a href="Protocols/EventHandler.html">EventHandler</a></code>: that&rsquo;s the store input, so it&rsquo;s able to receive and distribute events of type <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code>. Being an event handler means that an <code>UIViewController</code> can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>.</li>
+<li>an <code><a href="Protocols/EventHandler.html">EventHandler</a></code>: that&rsquo;s the store input, so it&rsquo;s able to receive and distribute events of type <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>. Being an event handler means that an <code>UIViewController</code> can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>.</li>
 <li>a <code><a href="Protocols/StateProvider.html">StateProvider</a></code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an <code>UIViewController</code> can subscribe to state changes and react to them.</li>
 </ul>
 
-<p>The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="Store (contracts).html#/Store">Store</a></code> is the single point of contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code><a href="Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code> -, both eventually pointing to the same instance.</p>
+<p>The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> is the single point of contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code><a href="Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code> -, both eventually pointing to the same instance.</p>
 
 <p><a href="https://www.youtube.com/watch?v=oBR94I2p2BA"><img src="https://swiftrex.github.io/SwiftRex/markdown/img/Redux1.gif" alt="ViewController and Store"></a></p>
 
@@ -213,7 +213,7 @@
 <p>The <code><a href="Classes/StoreBase.html">StoreBase</a></code> implementation also is:</p>
 
 <ul>
-<li>an <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code>: be able to receive and distribute actions of type <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code></li>
+<li>an <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code>: be able to receive and distribute actions of type <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code></li>
 </ul>
 
 <p>A <code><a href="Classes/StoreBase.html">StoreBase</a></code> uses <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline and <code><a href="Structs/Reducer.html">Reducer</a></code> pipeline. It creates a queue of incoming events that is handled to the middleware pipeline, which triggers actions back to the store. These actions are put in a queue that again are handled to the middleware pipeline, usually for logging or analytics purposes. The actions are them forwarded to the <code><a href="Structs/Reducer.html">Reducer</a></code> pipeline, together with the current state. One by one, the reducers will handle the action and incrementally change a copy of the app state. When this process is done, the store takes the resulting state, sets it as the current state and notifies all subscribers.</p>
@@ -221,11 +221,11 @@
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png" alt="Store internals"></p>
 <h2 id='eventprotocol' class='heading'>🕹 EventProtocol</h2>
 
-<p><code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> represents an event, usually created in response to an user&rsquo;s input, such as tap, swipe, pinch, scroll.</p>
+<p><code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> represents an event, usually created in response to an user&rsquo;s input, such as tap, swipe, pinch, scroll.</p>
 
-<p>An <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> is usually a request from your user to which the app should respond, for example the tab bar icon was tapped, a menu item was selected, a swipe gesture from left to right on cell number <code>3</code> or a new character was pressed in a search bar. Other events can be generated by other actors, such as timers or <code>CoreLocation</code> updates, but let&rsquo;s skip that for a moment and thing exclusively about the main actor of most use cases: the user. Because the user interaction is given mainly throughout an <code>UIViewController</code>, we should agree that View Controllers will create and dispatch most events to the <code><a href="Store (contracts).html#/Store">Store</a></code>, where the <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline will handle it to decide whether or not act on each.</p>
+<p>An <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> is usually a request from your user to which the app should respond, for example the tab bar icon was tapped, a menu item was selected, a swipe gesture from left to right on cell number <code>3</code> or a new character was pressed in a search bar. Other events can be generated by other actors, such as timers or <code>CoreLocation</code> updates, but let&rsquo;s skip that for a moment and thing exclusively about the main actor of most use cases: the user. Because the user interaction is given mainly throughout an <code>UIViewController</code>, we should agree that View Controllers will create and dispatch most events to the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>, where the <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline will handle it to decide whether or not act on each.</p>
 
-<p><code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> is a marker protocol and usually you want to keep events as tiny value-type structures: struct or enum. Having associated values is completely optional, but please keep in mind that you should pass as minimum information as necessary, and avoid passing value that&rsquo;s already in the state.</p>
+<p><code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> is a marker protocol and usually you want to keep events as tiny value-type structures: struct or enum. Having associated values is completely optional, but please keep in mind that you should pass as minimum information as necessary, and avoid passing value that&rsquo;s already in the state.</p>
 
 <p>For example, if there&rsquo;s a table view showing a list of movies, for each cell you may have a <q>Mark as Watched</q> (or Unwatched) button and a <q>Show Details</q> button, while the navigation bar has a button to mark all as watched. In that case, event enum could be:</p>
 <pre class="highlight swift"><code> <span class="kd">enum</span> <span class="kt">MovieListEvent</span><span class="p">:</span> <span class="kt">EventProtocol</span> <span class="p">{</span>
@@ -238,9 +238,9 @@
 <p>Because your <code>State</code> already knows whether or not the movie was watched, you just need to offer a single <q>toggle</q> event instead of two events for watch or unwatch, and also there&rsquo;s no need for an extra boolean parameter. Moreover, you could pass the <code>IndexPath.row</code> instead of <code>movieId</code> so your enum becomes essentially a generic control event and your cells don&rsquo;t have to maintain IDs or any other model information.</p>
 <h2 id='actionprotocol' class='heading'>🏄‍ ActionProtocol</h2>
 
-<p><code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code> represents an action, usually created by a <code><a href="Protocols/Middleware.html">Middleware</a></code> in response to an event.</p>
+<p><code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> represents an action, usually created by a <code><a href="Protocols/Middleware.html">Middleware</a></code> in response to an event.</p>
 
-<p>Like events, <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code> is also a marker protocol which concrete implementation is a value-type structure holding the associated value that is necessary to request a change in the state. Differently from events, although, actions have more meaningful values and are driven by business logic. While an <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> represents taps in the interface and usually has associated values like <code>3</code> or <code>true</code>, an <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code> is expected to hold the information required to mutate the state, such as: <q>got a new list of movies</q> with an associated values of <code>[Movie]</code>, or <q>delete invoice</q> and the associated value being the Invoice object. That way, we should not expect actions to be triggered by an <code>UIViewController</code>, only by a <code><a href="Protocols/Middleware.html">Middleware</a></code> running in the <code><a href="Store (contracts).html#/Store">Store</a></code>. Some middlewares can create one or multiple actions out of an event, collecting the proper state information from the indexes passed with the event, and then finally composing a very meaningful action that contains exactly the metadata for the change.</p>
+<p>Like events, <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> is also a marker protocol which concrete implementation is a value-type structure holding the associated value that is necessary to request a change in the state. Differently from events, although, actions have more meaningful values and are driven by business logic. While an <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> represents taps in the interface and usually has associated values like <code>3</code> or <code>true</code>, an <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> is expected to hold the information required to mutate the state, such as: <q>got a new list of movies</q> with an associated values of <code>[Movie]</code>, or <q>delete invoice</q> and the associated value being the Invoice object. That way, we should not expect actions to be triggered by an <code>UIViewController</code>, only by a <code><a href="Protocols/Middleware.html">Middleware</a></code> running in the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>. Some middlewares can create one or multiple actions out of an event, collecting the proper state information from the indexes passed with the event, and then finally composing a very meaningful action that contains exactly the metadata for the change.</p>
 
 <p>An event may end up not changing the state, but an action necessarily implies that the state will be mutated accordingly; for example the event <code>viewDidLoad</code> may not change your state, having the only purpose of logging or tracking analytics events (let&rsquo;s talk about side-effects later), and in that case don&rsquo;t change anything in the app; while an action <code>userHasLoggedIn</code> will necessarily change something on the state.</p>
 <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">MovieListAction</span><span class="p">:</span> <span class="kt">ActionProtocol</span> <span class="p">{</span>
@@ -252,11 +252,11 @@
 </code></pre>
 <h2 id='middleware' class='heading'>⛓ Middleware</h2>
 
-<p><code><a href="Protocols/Middleware.html">Middleware</a></code> is a plugin, or a composition of several plugins, that are assigned to the <code><a href="Store (contracts).html#/Store">Store</a></code> pipeline in order to handle each <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> dispatched and to create <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code> in response. It&rsquo;s also capable of handling each <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code> before the <code><a href="Structs/Reducer.html">Reducer</a></code> to do its job.</p>
+<p><code><a href="Protocols/Middleware.html">Middleware</a></code> is a plugin, or a composition of several plugins, that are assigned to the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> pipeline in order to handle each <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> dispatched and to create <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> in response. It&rsquo;s also capable of handling each <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> before the <code><a href="Structs/Reducer.html">Reducer</a></code> to do its job.</p>
 
-<p>We already know what <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> and <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code> are: both are lightweight structures that are dispatched (event) or triggered (action) into the <code><a href="Store (contracts).html#/Store">Store</a></code>. The store enqueues a new item that arrives and submits it to a pipeline of middlewares. So, in other words, a <code><a href="Protocols/Middleware.html">Middleware</a></code> is class that handles actions and events, and has the power to trigger more actions to the <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> chain. A very simple <code><a href="Protocols/Middleware.html">Middleware</a></code> will receive an <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> and current state, and trigger an equivalent <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code> to the <code><a href="Store (contracts).html#/Store">Store</a></code>.</p>
+<p>We already know what <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> are: both are lightweight structures that are dispatched (event) or triggered (action) into the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>. The store enqueues a new item that arrives and submits it to a pipeline of middlewares. So, in other words, a <code><a href="Protocols/Middleware.html">Middleware</a></code> is class that handles actions and events, and has the power to trigger more actions to the <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> chain. A very simple <code><a href="Protocols/Middleware.html">Middleware</a></code> will receive an <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and current state, and trigger an equivalent <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> to the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
 
-<p>For example, a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event would be handled by a <code><a href="Protocols/Middleware.html">Middleware</a></code> that checks the state and finds that current list has certain movie at the given row index, and this movie has been already marked as watched before. That <code><a href="Protocols/Middleware.html">Middleware</a></code> was able to learn that thanks to the <code>getState: @escaping () -&gt; StateType</code> closure received together with the <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code>, and which can be checked at any point to read an updated state. Our example <code><a href="Protocols/Middleware.html">Middleware</a></code> then will trigger a <code>MovieListAction.setMovieAsUnwatched(movieId:)</code> action to be handled by itself, other middlewares or the <code><a href="Structs/Reducer.html">Reducer</a></code> chain.</p>
+<p>For example, a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event would be handled by a <code><a href="Protocols/Middleware.html">Middleware</a></code> that checks the state and finds that current list has certain movie at the given row index, and this movie has been already marked as watched before. That <code><a href="Protocols/Middleware.html">Middleware</a></code> was able to learn that thanks to the <code>getState: @escaping () -&gt; StateType</code> closure received together with the <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>, and which can be checked at any point to read an updated state. Our example <code><a href="Protocols/Middleware.html">Middleware</a></code> then will trigger a <code>MovieListAction.setMovieAsUnwatched(movieId:)</code> action to be handled by itself, other middlewares or the <code><a href="Structs/Reducer.html">Reducer</a></code> chain.</p>
 
 <p>However, this would be a very naive implementation. Most of the times we handle data that must be persisted in a database or through a REST API. State only lives in memory, but before changing the memory we should at least start Side-Effects. Let&rsquo;s revisit the example above and say that we got a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event. Yes, we still should check what movie is at that row and whether or not it&rsquo;s watched. Now, we can trigger a <code>URLSession</code> task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:</p>
 
@@ -291,7 +291,7 @@
 </ul>
 <h2 id='sideeffectproducer' class='heading'>🌍 SideEffectProducer</h2>
 
-<p><code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code> defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> that started the side-effect, you can pass it in the <code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
+<p><code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code> defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
 
 <p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift users we bring a <code><a href="Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable pipelines. The Middleware requires the implementation of only one method:</p>
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sideEffect</span><span class="p">(</span><span class="k">for</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnySideEffectProducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">?</span>
@@ -306,7 +306,7 @@
 
 <p><code><a href="Structs/Reducer.html">Reducer</a></code> is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.</p>
 
-<p>The <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline can trigger <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code>, and handles both <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code> and <code><a href="Reducer.html#/ActionProtocol">ActionProtocol</a></code>. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code><a href="Structs/Reducer.html">Reducer</a></code> function. Actually, it&rsquo;s a protocol that requires only one method:</p>
+<p>The <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline can trigger <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, and handles both <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> and <code><a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code><a href="Structs/Reducer.html">Reducer</a></code> function. Actually, it&rsquo;s a protocol that requires only one method:</p>
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">currentState</span><span class="p">:</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
 </code></pre>
 
@@ -320,7 +320,7 @@
         </section>
         <section id="footer">
           <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-05-10)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

@@ -57,7 +57,7 @@ GEM
     fuzzy_match (2.0.4)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
-    jazzy (0.9.1)
+    jazzy (0.9.3)
       cocoapods (~> 1.0)
       mustache (~> 0.99)
       open4
@@ -109,12 +109,12 @@ GEM
       thread_safe (~> 0.1)
     xcinvoke (0.3.0)
       liferaft (~> 0.0.6)
-    xcodeproj (1.5.7)
+    xcodeproj (1.5.8)
       CFPropertyList (>= 2.3.3, < 4.0)
       atomos (~> 0.1.2)
       claide (>= 1.0.2, < 2.0)
       colored2 (~> 3.1)
-      nanaimo (~> 0.2.4)
+      nanaimo (~> 0.2.5)
     xcpretty (0.2.8)
       rouge (~> 2.0.7)
 
