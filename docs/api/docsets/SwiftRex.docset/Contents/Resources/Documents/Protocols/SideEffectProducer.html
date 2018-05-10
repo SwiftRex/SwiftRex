@@ -14,8 +14,8 @@
     <a title="SideEffectProducer Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
-        <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+        <p><a href="../index.html">SwiftRex Docs</a> (0% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -32,10 +32,10 @@
             <a href="../Store (contracts).html">Store (contracts)</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
+                <a href="../Store (contracts).html#/Store">Store</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+                <a href="../Store (contracts).html#/EventProtocol">EventProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/EventHandler.html">EventHandler</a>
@@ -63,7 +63,7 @@
                 <a href="../Structs/Reducer.html">Reducer</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+                <a href="../Reducer.html#/ActionProtocol">ActionProtocol</a>
               </li>
             </ul>
           </li>
@@ -83,7 +83,7 @@
                 <a href="../Classes/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Middleware (basics).html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="../Middleware (basics).html#/&lt;&gt;(_:_:)">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a>
@@ -122,19 +122,19 @@
             <a href="../Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+                <a href="../Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
+                <a href="../Closure type-aliases.html#/GetState">GetState</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+                <a href="../Closure type-aliases.html#/NextActionHandler">NextActionHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+                <a href="../Closure type-aliases.html#/NextEventHandler">NextEventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+                <a href="../Closure type-aliases.html#/ReduceFunction">ReduceFunction</a>
               </li>
             </ul>
           </li>
@@ -144,13 +144,7 @@
         <section>
           <section class="section">
             <h1>SideEffectProducer</h1>
-              <div class="declaration">
-                <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SideEffectProducer</span></code></pre>
-
-                </div>
-              </div>
-            <p>🌍 <code>SideEffectProducer</code> defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
+            <p>🌍 <code>SideEffectProducer</code> defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="../Store (contracts).html#/EventProtocol">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
 
 <p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift users we bring a <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable pipelines. The Middleware requires the implementation of only one method:</p>
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sideEffect</span><span class="p">(</span><span class="k">for</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnySideEffectProducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">?</span>
@@ -169,9 +163,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex18SideEffectProducerP9StateType"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Alias/StateType" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex18SideEffectProducerP9StateType">StateType</a>
+                    <a class="token" href="#/">StateType</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -182,23 +176,15 @@
                         <p>State type that is handled by our <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code></p>
 
                       </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">associatedtype</span> <span class="kt">StateType</span></code></pre>
-
-                        </div>
-                      </div>
                     </section>
                   </div>
                 </li>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex18SideEffectProducerP7execute02RxA010ObservableCyAA14ActionProtocol_pG9StateTypeQzyc03getK0_tF"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Method/execute(getState:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex18SideEffectProducerP7execute02RxA010ObservableCyAA14ActionProtocol_pG9StateTypeQzyc03getK0_tF">execute(getState:)</a>
+                    <a class="token" href="#/">execute(getState:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -206,39 +192,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Method called when the middleware receives an event that is known by this <code>SideEffectProducer</code>, the place for starting the side-effects and returning a sequece of <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> triggered by all stages of it.</p>
+                        <p>Method called when the middleware receives an event that is known by this <code>SideEffectProducer</code>, the place for starting the side-effects and returning a sequece of <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code> triggered by all stages of it.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">execute</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/SideEffectProducer.html#/s:8SwiftRex18SideEffectProducerP9StateType">StateType</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt"><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>getState</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>a closure to fetch the current state at any moment in time</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an <code>Observable</code> for all the possible <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> that might be triggered by this producer. This <code>Observable</code> must complete or error to free resources.</p>
                       </div>
                     </section>
                   </div>
@@ -248,7 +203,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-28)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-05-10)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
