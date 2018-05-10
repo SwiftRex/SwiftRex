@@ -14,8 +14,8 @@
     <a title="DirectLineMiddleware Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
-        <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+        <p><a href="../index.html">SwiftRex Docs</a> (0% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -32,10 +32,10 @@
             <a href="../Store (contracts).html">Store (contracts)</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
+                <a href="../Store (contracts).html#/Store">Store</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+                <a href="../Store (contracts).html#/EventProtocol">EventProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/EventHandler.html">EventHandler</a>
@@ -63,7 +63,7 @@
                 <a href="../Structs/Reducer.html">Reducer</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+                <a href="../Reducer.html#/ActionProtocol">ActionProtocol</a>
               </li>
             </ul>
           </li>
@@ -83,7 +83,7 @@
                 <a href="../Classes/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Middleware (basics).html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="../Middleware (basics).html#/&lt;&gt;(_:_:)">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a>
@@ -122,19 +122,19 @@
             <a href="../Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+                <a href="../Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
+                <a href="../Closure type-aliases.html#/GetState">GetState</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+                <a href="../Closure type-aliases.html#/NextActionHandler">NextActionHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+                <a href="../Closure type-aliases.html#/NextEventHandler">NextEventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+                <a href="../Closure type-aliases.html#/ReduceFunction">ReduceFunction</a>
               </li>
             </ul>
           </li>
@@ -144,15 +144,9 @@
         <section>
           <section class="section">
             <h1>DirectLineMiddleware</h1>
-              <div class="declaration">
-                <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">DirectLineMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Middleware.html">Middleware</a></span></code></pre>
+            <p>The <code>DirectLineMiddleware</code> is a useful tool when you have a very simple <code><a href="../Store (contracts).html#/EventProtocol">EventProtocol</a></code> that is also an <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code> and no decision has to be made other than forwarding the event as it is to the action queue.</p>
 
-                </div>
-              </div>
-            <p>The <code>DirectLineMiddleware</code> is a useful tool when you have a very simple <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that is also an <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> and no decision has to be made other than forwarding the event as it is to the action queue.</p>
-
-<p>If the incoming <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> is not an <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, this middleware will act like <code><a href="../Classes/BypassMiddleware.html">BypassMiddleware</a></code>, simply forwarding it to the next middleware in the chain.</p>
+<p>If the incoming <code><a href="../Store (contracts).html#/EventProtocol">EventProtocol</a></code> is not an <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code>, this middleware will act like <code><a href="../Classes/BypassMiddleware.html">BypassMiddleware</a></code>, simply forwarding it to the next middleware in the chain.</p>
 
 <p>For example:</p>
 <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">CounterEvent</span><span class="p">:</span> <span class="kt">EventProtocol</span><span class="p">,</span> <span class="kt">ActionProtocol</span> <span class="p">{</span>
@@ -171,9 +165,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex20DirectLineMiddlewareC13actionHandlerAA06ActionG0_pSgXwvp"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Property/actionHandler" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20DirectLineMiddlewareC13actionHandlerAA06ActionG0_pSgXwvp">actionHandler</a>
+                    <a class="token" href="#/">actionHandler</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -181,16 +175,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A <code><a href="../Protocols/Middleware.html">Middleware</a></code> is capable of triggering <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> to the <code><a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>. This property is a nullable <code><a href="../Protocols/ActionHandler.html">ActionHandler</a></code> used for the middleware to trigger the actions. It&rsquo;s gonna be injected by the <code><a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> or by a parent <code><a href="../Protocols/Middleware.html">Middleware</a></code>, so don&rsquo;t worry about it, just use it whenever you need to trigger something.</p>
+                        <p>A <code><a href="../Protocols/Middleware.html">Middleware</a></code> is capable of triggering <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code> to the <code><a href="../Store (contracts).html#/Store">Store</a></code>. This property is a nullable <code><a href="../Protocols/ActionHandler.html">ActionHandler</a></code> used for the middleware to trigger the actions. It&rsquo;s gonna be injected by the <code><a href="../Store (contracts).html#/Store">Store</a></code> or by a parent <code><a href="../Protocols/Middleware.html">Middleware</a></code>, so don&rsquo;t worry about it, just use it whenever you need to trigger something.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">actionHandler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ActionHandler.html">ActionHandler</a></span><span class="p">?</span></code></pre>
-
-                        </div>
                       </div>
                     </section>
                   </div>
@@ -198,9 +184,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex20DirectLineMiddlewareCACyxGycfc"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Method/init()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20DirectLineMiddlewareCACyxGycfc">init()</a>
+                    <a class="token" href="#/">init()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -211,23 +197,15 @@
                         <p>Default initializer for <code>DirectLineMiddleware</code></p>
 
                       </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">()</span></code></pre>
-
-                        </div>
-                      </div>
                     </section>
                   </div>
                 </li>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex20DirectLineMiddlewareC6handleyAA13EventProtocol_p5event_xyc8getStateyAaE_p_xyctc4nexttF"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Method/handle(event:getState:next:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20DirectLineMiddlewareC6handleyAA13EventProtocol_p5event_xyc8getStateyAaE_p_xyctc4nexttF">handle(event:getState:next:)</a>
+                    <a class="token" href="#/">handle(event:getState:next:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -235,61 +213,10 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Handles the incoming events. The <code>DirectLineMiddleware</code> is a useful tool when you have a very simple <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that is also an <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> and no decision has to be made other than forwarding the event as it is to the action queue.</p>
+                        <p>Handles the incoming events. The <code>DirectLineMiddleware</code> is a useful tool when you have a very simple <code><a href="../Store (contracts).html#/EventProtocol">EventProtocol</a></code> that is also an <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code> and no decision has to be made other than forwarding the event as it is to the action queue.</p>
 
-<p>If the incoming <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> is not an <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, this middleware will act like <code><a href="../Classes/BypassMiddleware.html">BypassMiddleware</a></code>, simply forwarding it to the next middleware in the chain.</p>
+<p>If the incoming <code><a href="../Store (contracts).html#/EventProtocol">EventProtocol</a></code> is not an <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code>, this middleware will act like <code><a href="../Classes/BypassMiddleware.html">BypassMiddleware</a></code>, simply forwarding it to the next middleware in the chain.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">event</span><span class="p">:</span> <span class="kt"><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></span><span class="p">,</span> <span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">next</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a></span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>event</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the event to be handled</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>getState</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>a function that can be used to get the current state at any point in time</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>next</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -297,9 +224,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex20DirectLineMiddlewareC6handleyAA14ActionProtocol_p6action_xyc8getStateyAaE_p_xyctc4nexttF"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Method/handle(action:getState:next:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20DirectLineMiddlewareC6handleyAA14ActionProtocol_p6action_xyc8getStateyAaE_p_xyctc4nexttF">handle(action:getState:next:)</a>
+                    <a class="token" href="#/">handle(action:getState:next:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -307,59 +234,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Handles the incoming actions. The <code>DirectLineMiddleware</code> won&rsquo;t do anything with the <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code>, simply forwards it to the next middleware in the chain.</p>
+                        <p>Handles the incoming actions. The <code>DirectLineMiddleware</code> won&rsquo;t do anything with the <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code>, simply forwards it to the next middleware in the chain.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt"><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span><span class="p">,</span> <span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">next</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a></span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>action</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the action to be handled</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>getState</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>a function that can be used to get the current state at any point in time</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>next</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the next <code><a href="../Protocols/Middleware.html">Middleware</a></code> in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the <code><a href="../Structs/Reducer.html">Reducer</a></code> pipeline.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -369,7 +245,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-28)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-05-10)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

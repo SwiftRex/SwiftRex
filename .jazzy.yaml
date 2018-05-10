@@ -4,8 +4,8 @@ xcodebuild_arguments:
   - -scheme
   - SwiftRex macOS
 author: SwiftRex
-author_url: https://github.com/luizmb/SwiftRex
-github_url: https://github.com/luizmb/SwiftRex
+author_url: https://github.com/SwiftRex/SwiftRex
+github_url: https://github.com/SwiftRex/SwiftRex
 module: SwiftRex
 output: docs/api
 

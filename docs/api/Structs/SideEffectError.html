@@ -14,8 +14,8 @@
     <a title="SideEffectError Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
-        <p class="header-right"><a href="https://github.com/luizmb/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+        <p><a href="../index.html">SwiftRex Docs</a> (0% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -32,10 +32,10 @@
             <a href="../Store (contracts).html">Store (contracts)</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
+                <a href="../Store (contracts).html#/Store">Store</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+                <a href="../Store (contracts).html#/EventProtocol">EventProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/EventHandler.html">EventHandler</a>
@@ -63,7 +63,7 @@
                 <a href="../Structs/Reducer.html">Reducer</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+                <a href="../Reducer.html#/ActionProtocol">ActionProtocol</a>
               </li>
             </ul>
           </li>
@@ -83,7 +83,7 @@
                 <a href="../Classes/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Middleware (basics).html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="../Middleware (basics).html#/&lt;&gt;(_:_:)">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a>
@@ -122,19 +122,19 @@
             <a href="../Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+                <a href="../Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
+                <a href="../Closure type-aliases.html#/GetState">GetState</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+                <a href="../Closure type-aliases.html#/NextActionHandler">NextActionHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+                <a href="../Closure type-aliases.html#/NextEventHandler">NextEventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+                <a href="../Closure type-aliases.html#/ReduceFunction">ReduceFunction</a>
               </li>
             </ul>
           </li>
@@ -144,13 +144,7 @@
         <section>
           <section class="section">
             <h1>SideEffectError</h1>
-              <div class="declaration">
-                <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SideEffectError</span><span class="p">:</span> <span class="kt"><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span></code></pre>
-
-                </div>
-              </div>
-            <p>When the <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> starts a <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code> which throws an error, the middleware will wrap the error in a <code><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></code> of type <code>SideEffectError</code>, which contains details about the error, the date and time when it happened and the original event that was being handled by the middleware.</p>
+            <p>When the <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> starts a <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code> which throws an error, the middleware will wrap the error in a <code><a href="../Reducer.html#/ActionProtocol">ActionProtocol</a></code> of type <code>SideEffectError</code>, which contains details about the error, the date and time when it happened and the original event that was being handled by the middleware.</p>
 
           </section>
           <section class="section task-group-section">
@@ -159,9 +153,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex15SideEffectErrorV4date10Foundation4DateVvp"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Property/date" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex15SideEffectErrorV4date10Foundation4DateVvp">date</a>
+                    <a class="token" href="#/">date</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -172,23 +166,15 @@
                         <p>Date and time when the error happened</p>
 
                       </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">date</span><span class="p">:</span> <span class="kt">Date</span></code></pre>
-
-                        </div>
-                      </div>
                     </section>
                   </div>
                 </li>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex15SideEffectErrorV13originalEventAA0G8Protocol_pvp"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Property/originalEvent" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex15SideEffectErrorV13originalEventAA0G8Protocol_pvp">originalEvent</a>
+                    <a class="token" href="#/">originalEvent</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -199,23 +185,15 @@
                         <p>The original event that was being handled by the middleware when the error was thrown</p>
 
                       </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">originalEvent</span><span class="p">:</span> <span class="kt"><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></span></code></pre>
-
-                        </div>
-                      </div>
                     </section>
                   </div>
                 </li>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex15SideEffectErrorV5errors0E0_pvp"></a>
+                    <a name="/"></a>
                     <a name="//apple_ref/swift/Property/error" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex15SideEffectErrorV5errors0E0_pvp">error</a>
+                    <a class="token" href="#/">error</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -226,14 +204,6 @@
                         <p>The error thrown by the <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code> to the <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code></p>
 
                       </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">Error</span></code></pre>
-
-                        </div>
-                      </div>
                     </section>
                   </div>
                 </li>
@@ -242,7 +212,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/luizmb/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-04-28)</p>
+          <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-05-10)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -111,7 +111,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0930;
-				ORGANIZATIONNAME = "Luiz Rodrigo Martins Barbosa";
+				ORGANIZATIONNAME = "SwiftRex";
 				TargetAttributes = {
 					D5B841B72083CD46006BAB69 = {
 						CreatedOnToolsVersion = 9.3;
