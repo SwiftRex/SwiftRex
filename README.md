@@ -1,14 +1,14 @@
 # SwiftRex
 
-[![Build Status](https://img.shields.io/travis/luizmb/SwiftRex.svg?branch=master&maxAge=600)](https://travis-ci.org/luizmb/SwiftRex)
-[![Coverage Status](https://img.shields.io/coveralls/github/luizmb/SwiftRex.svg?branch=master&maxAge=600)](https://coveralls.io/github/luizmb/SwiftRex?branch=master)
-[![Jazzy Documentation](https://luizmb.github.io/SwiftRex/api/badge.svg)](https://luizmb.github.io/SwiftRex/api/index.html)
+[![Build Status](https://img.shields.io/travis/SwiftRex/SwiftRex.svg?branch=master&maxAge=600)](https://travis-ci.org/SwiftRex/SwiftRex)
+[![Coverage Status](https://img.shields.io/coveralls/github/SwiftRex/SwiftRex.svg?branch=master&maxAge=600)](https://coveralls.io/github/SwiftRex/SwiftRex?branch=master)
+[![Jazzy Documentation](https://swiftrex.github.io/SwiftRex/api/badge.svg)](https://swiftrex.github.io/SwiftRex/api/index.html)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-orange.svg)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://github.com/apple/swift-package-manager)
 ![Swift](https://img.shields.io/badge/Swift-4.1-orange.svg)
-[![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-252532.svg)](https://github.com/luizmb/SwiftRex)
-[![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/luizmb/SwiftRex/blob/master/LICENSE)
+[![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-252532.svg)](https://github.com/SwiftRex/SwiftRex)
+[![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/SwiftRex/SwiftRex/blob/master/LICENSE)
 
 # Introduction
 
@@ -16,7 +16,7 @@ SwiftRex is a framework that combines [event-sourcing pattern](https://docs.micr
 
 This pattern is also known as "Unidirectional Dataflow" or ["Redux"](https://redux.js.org/basics/data-flow).
 
-[API documentation can be found here](https://luizmb.github.io/SwiftRex/api/index.html).
+[API documentation can be found here](https://swiftrex.github.io/SwiftRex/api/index.html).
 
 # Goals
 
@@ -50,11 +50,11 @@ I'm not gonna lie, it's a completely different way of writing apps, as most reac
 
  The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `Store` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
 
-[![ViewController and Store](https://luizmb.github.io/SwiftRex/markdown/img/Redux1.gif)](https://www.youtube.com/watch?v=oBR94I2p2BA)
+[![ViewController and Store](https://swiftrex.github.io/SwiftRex/markdown/img/Redux1.gif)](https://www.youtube.com/watch?v=oBR94I2p2BA)
 
  In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
 
- ![iOS MVC](https://luizmb.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
+ ![iOS MVC](https://swiftrex.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
 
  You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
 
@@ -65,7 +65,7 @@ I'm not gonna lie, it's a completely different way of writing apps, as most reac
 
  A `StoreBase` uses `Middleware` pipeline and `Reducer` pipeline. It creates a queue of incoming events that is handled to the middleware pipeline, which triggers actions back to the store. These actions are put in a queue that again are handled to the middleware pipeline, usually for logging or analytics purposes. The actions are them forwarded to the `Reducer` pipeline, together with the current state. One by one, the reducers will handle the action and incrementally change a copy of the app state. When this process is done, the store takes the resulting state, sets it as the current state and notifies all subscribers.
 
- ![Store internals](https://luizmb.github.io/SwiftRex/markdown/img/StoreInternals.png)
+ ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
 
 ## 🕹 EventProtocol
 

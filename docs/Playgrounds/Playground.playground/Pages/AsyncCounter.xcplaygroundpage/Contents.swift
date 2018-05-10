@@ -355,4 +355,3 @@ func delay<T>(_ time: Double) -> (Observable<T>) -> Observable<T> {
         observable.asObservable().delay(RxTimeInterval(time), scheduler: MainScheduler.instance)
     }
 }
-

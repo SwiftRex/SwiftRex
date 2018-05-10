@@ -8,11 +8,11 @@ import RxSwift
 
  The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `Store` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
 
- ![Store and ViewController](https://luizmb.github.io/SwiftRex/markdown/img/StoreBase.png)
+ ![Store and ViewController](https://swiftrex.github.io/SwiftRex/markdown/img/StoreBase.png)
 
  In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
 
- ![iOS MVC](https://luizmb.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
+ ![iOS MVC](https://swiftrex.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
 
  You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
 
@@ -23,7 +23,7 @@ import RxSwift
 
  A `StoreBase` uses `Middleware` pipeline and `Reducer` pipeline. It creates a queue of incoming events that is handled to the middleware pipeline, which triggers actions back to the store. These actions are put in a queue that again are handled to the middleware pipeline, usually for logging or analytics purposes. The actions are them forwarded to the `Reducer` pipeline, together with the current state. One by one, the reducers will handle the action and incrementally change a copy of the app state. When this process is done, the store takes the resulting state, sets it as the current state and notifies all subscribers.
 
- ![Store internals](https://luizmb.github.io/SwiftRex/markdown/img/StoreInternals.png)
+ ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
  */
 open class StoreBase<E>: Store, ActionHandler {
     private let middleware: AnyMiddleware<E>
