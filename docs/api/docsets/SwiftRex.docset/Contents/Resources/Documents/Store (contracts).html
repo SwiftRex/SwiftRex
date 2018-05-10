@@ -10,10 +10,11 @@
     
   </head>
   <body>
+    <a name="//apple_ref/swift/Section/Store (contracts)" class="dashAnchor"></a>
     <a title="Store (contracts)  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (0% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -31,10 +32,10 @@
             <a href="Store (contracts).html">Store (contracts)</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Store (contracts).html#/Store">Store</a>
+                <a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
               </li>
               <li class="nav-group-task">
-                <a href="Store (contracts).html#/EventProtocol">EventProtocol</a>
+                <a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="Protocols/EventHandler.html">EventHandler</a>
@@ -62,7 +63,7 @@
                 <a href="Structs/Reducer.html">Reducer</a>
               </li>
               <li class="nav-group-task">
-                <a href="Reducer.html#/ActionProtocol">ActionProtocol</a>
+                <a href="Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
               </li>
             </ul>
           </li>
@@ -82,7 +83,7 @@
                 <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Middleware (basics).html#/&lt;&gt;(_:_:)">&lt;&gt;(_:_:)</a>
+                <a href="Middleware (basics).html#/s:8SwiftRex2lgoiAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/SubstateMiddleware.html">SubstateMiddleware</a>
@@ -121,19 +122,19 @@
             <a href="Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/GetState">GetState</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/NextActionHandler">NextActionHandler</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/NextEventHandler">NextEventHandler</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/ReduceFunction">ReduceFunction</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
               </li>
             </ul>
           </li>
@@ -151,9 +152,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/"></a>
+                    <a name="/s:8SwiftRex5StoreP"></a>
                     <a name="//apple_ref/swift/Protocol/Store" class="dashAnchor"></a>
-                    <a class="token" href="#/">Store</a>
+                    <a class="token" href="#/s:8SwiftRex5StoreP">Store</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -164,7 +165,7 @@
                         <p>🏪 <code>Store</code> defines a protocol for the state store of an app. It must have an input and an output:</p>
 
 <ul>
-<li>an <code><a href="Protocols/EventHandler.html">EventHandler</a></code>: that&rsquo;s the store input, so it&rsquo;s able to receive and distribute events of type <code><a href="Store (contracts).html#/EventProtocol">EventProtocol</a></code>. Being an event handler means that an <code>UIViewController</code> can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>.</li>
+<li>an <code><a href="Protocols/EventHandler.html">EventHandler</a></code>: that&rsquo;s the store input, so it&rsquo;s able to receive and distribute events of type <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>. Being an event handler means that an <code>UIViewController</code> can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>.</li>
 <li>a <code><a href="Protocols/StateProvider.html">StateProvider</a></code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an <code>UIViewController</code> can subscribe to state changes and react to them.</li>
 </ul>
 
@@ -185,6 +186,14 @@
 <p>Please check (and inherit from) <code><a href="Classes/StoreBase.html">StoreBase</a></code> for a standard implementation.</p>
 
                       </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Store</span> <span class="p">:</span> <span class="kt"><a href="Protocols/EventHandler.html">EventHandler</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/StateProvider.html">StateProvider</a></span></code></pre>
+
+                        </div>
+                      </div>
                     </section>
                   </div>
                 </li>
@@ -195,9 +204,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/"></a>
+                    <a name="/s:8SwiftRex13EventProtocolP"></a>
                     <a name="//apple_ref/swift/Protocol/EventProtocol" class="dashAnchor"></a>
-                    <a class="token" href="#/">EventProtocol</a>
+                    <a class="token" href="#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -207,7 +216,7 @@
                       <div class="abstract">
                         <p>🕹 <code>EventProtocol</code> represents an event, usually created in response to an user&rsquo;s input, such as tap, swipe, pinch, scroll.</p>
 
-<p>An <code>EventProtocol</code> is usually a request from your user to which the app should respond, for example the tab bar icon was tapped, a menu item was selected, a swipe gesture from left to right on cell number <code>3</code> or a new character was pressed in a search bar. Other events can be generated by other actors, such as timers or <code>CoreLocation</code> updates, but let&rsquo;s skip that for a moment and thing exclusively about the main actor of most use cases: the user. Because the user interaction is given mainly throughout an <code>UIViewController</code>, we should agree that View Controllers will create and dispatch most events to the <code><a href="Store (contracts).html#/Store">Store</a></code>, where the <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline will handle it to decide whether or not act on each.</p>
+<p>An <code>EventProtocol</code> is usually a request from your user to which the app should respond, for example the tab bar icon was tapped, a menu item was selected, a swipe gesture from left to right on cell number <code>3</code> or a new character was pressed in a search bar. Other events can be generated by other actors, such as timers or <code>CoreLocation</code> updates, but let&rsquo;s skip that for a moment and thing exclusively about the main actor of most use cases: the user. Because the user interaction is given mainly throughout an <code>UIViewController</code>, we should agree that View Controllers will create and dispatch most events to the <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>, where the <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline will handle it to decide whether or not act on each.</p>
 
 <p><code>EventProtocol</code> is a marker protocol and usually you want to keep events as tiny value-type structures: struct or enum. Having associated values is completely optional, but please keep in mind that you should pass as minimum information as necessary, and avoid passing value that&rsquo;s already in the state.</p>
 
@@ -222,29 +231,13 @@
 <p>Because your <code>State</code> already knows whether or not the movie was watched, you just need to offer a single <q>toggle</q> event instead of two events for watch or unwatch, and also there&rsquo;s no need for an extra boolean parameter. Moreover, you could pass the <code>IndexPath.row</code> instead of <code>movieId</code> so your enum becomes essentially a generic control event and your cells don&rsquo;t have to maintain IDs or any other model information.</p>
 
                       </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/"></a>
-                    <a name="//apple_ref/swift/Protocol/EventHandler" class="dashAnchor"></a>
-                    <a class="token" href="#/">EventHandler</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p><code>EventHandler</code> defines a protocol for something able to receive and distribute events. Usually a <code><a href="Store (contracts).html#/Store">Store</a></code>.</p>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">EventProtocol</span></code></pre>
 
-                        <a href="Protocols/EventHandler.html" class="slightly-smaller">See more</a>
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -256,9 +249,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/"></a>
-                    <a name="//apple_ref/swift/Protocol/StateProvider" class="dashAnchor"></a>
-                    <a class="token" href="#/">StateProvider</a>
+                    <a name="/s:8SwiftRex12EventHandlerP"></a>
+                    <a name="//apple_ref/swift/Protocol/EventHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex12EventHandlerP">EventHandler</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -266,9 +259,49 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p><code>StateProvider</code> defines a protocol for an <code>ObservableType</code> of <code>StateType</code>, so everybody can observe the global state changes through this container. Usually a <code><a href="Store (contracts).html#/Store">Store</a></code>.</p>
+                        <p><code>EventHandler</code> defines a protocol for something able to receive and distribute events. Usually a <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
+
+                        <a href="Protocols/EventHandler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">EventHandler</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13StateProviderP"></a>
+                    <a name="//apple_ref/swift/Protocol/StateProvider" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13StateProviderP">StateProvider</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>StateProvider</code> defines a protocol for an <code>ObservableType</code> of <code>StateType</code>, so everybody can observe the global state changes through this container. Usually a <code><a href="Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code>.</p>
 
                         <a href="Protocols/StateProvider.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">StateProvider</span> <span class="p">:</span> <span class="kt">ObservableType</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -279,7 +312,7 @@
         </section>
         <section id="footer">
           <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-05-10)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

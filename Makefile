@@ -90,7 +90,7 @@ carthage-copy-tvos: carthage-copy
 # Jazzy
 
 jazzy:
-	bundle exec jazzy
+	bundle exec jazzy -x -target,SwiftRex\ macOS
 
 # Pre-Build
 
