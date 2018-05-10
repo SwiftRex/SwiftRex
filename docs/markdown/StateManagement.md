@@ -9,6 +9,6 @@ As a system grows, some of these pieces may start to get shared by multiple part
 
 Let's see how's the suggested approach from Apple to deal with the MVC layers:
 
-![iOS MVC](https://luizmb.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
+![iOS MVC](https://swiftrex.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
 
 According to this diagram, the Model should be updated and notify the controllers about the new state. If we share this Model with two controllers, the model should notify both, right? So in that case neither Delegation pattern or Completion Handler would work, as they are not meant to be multicast notifiers. Possible solutions are `NotificationCenter` or KVO, the first has no type-safety and the second has no consistency across frameworks. `RxSwift` brings us `Observable` structures that allow multiple observers to be notified in a consistent and type-safe way. Moreover, `Observables` are very flexible, allowing us to compose transformations and filters, to combine multiple `Observable` sources into one, to throttle, debounce and buffer multiple results and much more.

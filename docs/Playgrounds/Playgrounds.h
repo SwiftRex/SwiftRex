@@ -1,11 +1,3 @@
-//
-//  Playgrounds.h
-//  Playgrounds
-//
-//  Created by Luiz Rodrigo Martins Barbosa on 15.04.18.
-//  Copyright © 2018 Luiz Rodrigo Martins Barbosa. All rights reserved.
-//
-
 #import <Cocoa/Cocoa.h>
 
 //! Project version number for Playgrounds.
