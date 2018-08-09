@@ -1,4 +1,4 @@
-// Generated using Sourcery 0.11.2 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.13.1 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 import Foundation
@@ -36,7 +36,7 @@ class SideEffectProducerMock: SideEffectProducer {
     var executeGetStateCalled: Bool {
         return executeGetStateCallsCount > 0
     }
-    var executeGetStateReceivedGetState: GetState<StateType>?
+    var executeGetStateReceivedGetState: (GetState<StateType>)?
     var executeGetStateReturnValue: Observable<ActionProtocol>!
     var executeGetStateClosure: ((@escaping GetState<StateType>) -> Observable<ActionProtocol>)?
 
