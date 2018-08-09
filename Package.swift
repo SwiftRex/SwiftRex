@@ -7,8 +7,8 @@ let package = Package(
         .library(name: "SwiftRex", targets: ["SwiftRex"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "4.1.0")),
-        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "7.1.1"))
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "4.2.0")),
+        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "7.1.3"))
     ],
     targets: [
         .target(name: "SwiftRex", dependencies: ["RxSwift"], path: "Sources"),
