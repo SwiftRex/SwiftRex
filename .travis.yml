@@ -4,7 +4,9 @@ xcode_project: SwiftRex.xcodeproj
 xcode_scheme: SwiftRex macOS
 cache:
   directories:
-    - Carthage
+    - bundler
+    - cocoapods
+    - Pods
     - vendor/bundle
 env:
   global:
@@ -13,11 +15,8 @@ env:
     - FRAMEWORK_NAME="SwiftRex"
 before_install:
   - brew update
-  - brew install carthage || brew outdated carthage || brew upgrade carthage
   - brew install swiftlint || brew outdated swiftlint || brew upgrade swiftlint
   - brew install sourcery || brew outdated sourcery || brew upgrade sourcery
-  - curl -L -O https://github.com/YPlan/CartfileDiff/releases/download/0.1/CartfileDiff.pkg
-  - sudo installer -pkg CartfileDiff.pkg -target /
 install:
   - bundle install --path vendor/bundle
   - scripts/bootstrap-if-needed
