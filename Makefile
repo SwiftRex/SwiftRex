@@ -94,13 +94,13 @@ jazzy:
 
 # Pre-Build
 
-prebuild-mac: sourcery lint-autocorrect lint-check carthage-copy-mac
+prebuild-mac: sourcery lint-autocorrect lint-check
 
-prebuild-ios: sourcery lint-autocorrect lint-check carthage-copy-ios
+prebuild-ios: sourcery lint-autocorrect lint-check
 
-prebuild-watchos: sourcery lint-autocorrect lint-check carthage-copy-watchos
+prebuild-watchos: sourcery lint-autocorrect lint-check
 
-prebuild-tvos: sourcery lint-autocorrect lint-check carthage-copy-tvos
+prebuild-tvos: sourcery lint-autocorrect lint-check
 
 # Validate pre-reqs
 

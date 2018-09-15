@@ -1,0 +1,30 @@
+PODS:
+  - Nimble (7.3.0)
+  - RxSwift (4.2.0)
+
+DEPENDENCIES:
+  - Nimble (from `https://github.com/Quick/Nimble.git`)
+  - RxSwift (from `https://github.com/ReactiveX/RxSwift.git`, branch `develop`)
+
+EXTERNAL SOURCES:
+  Nimble:
+    :git: https://github.com/Quick/Nimble.git
+  RxSwift:
+    :branch: develop
+    :git: https://github.com/ReactiveX/RxSwift.git
+
+CHECKOUT OPTIONS:
+  Nimble:
+    :commit: eb6130b9884d41c185b5a07cfe2181b3f9593f08
+    :git: https://github.com/Quick/Nimble.git
+  RxSwift:
+    :commit: 1b184f32da451e5fb419ec8a1f3e7603948de331
+    :git: https://github.com/ReactiveX/RxSwift.git
+
+SPEC CHECKSUMS:
+  Nimble: 82af0668c540ed36dbf0c75c55716d0d7de41006
+  RxSwift: 99e10317ddfcc7fbe01356aafd118fde4a0be104
+
+PODFILE CHECKSUM: e3d7272d6a7ddb9d20f7f0591371fbcaec059f59
+
+COCOAPODS: 1.5.2
