@@ -99,8 +99,7 @@ extension Middleware {
      - Returns: a `SubstateMiddleware``<Whole, Self>` that knows how to translate `Whole` to `Part` and vice-versa, by using the key path.
      */
     public func lift<Whole>(_ substatePath: WritableKeyPath<Whole, StateType>) -> SubstateMiddleware<Whole, Self> {
-        return SubstateMiddleware<Whole, Self>(middleware: self) { getWholeState in
-            return {
+        return SubstateMiddleware<Whole, Self>(middleware: self) { getWholeState in {
                 let wholeState = getWholeState()
                 return wholeState[keyPath: substatePath]
             }

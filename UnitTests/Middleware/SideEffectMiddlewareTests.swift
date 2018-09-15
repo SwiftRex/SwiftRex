@@ -93,7 +93,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
         let sideEffect = SideEffectProducerMock()
         sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2(), Action3())
-        sut.sideEffectForClosure = { event in return nil }
+        sut.sideEffectForClosure = { event in nil }
 
         // Then
         sut.handle(event: event, getState: getState, next: lastInChain)
