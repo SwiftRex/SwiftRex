@@ -20,10 +20,11 @@ xcodeproj:
 
 # Unit Test
 
+test-macos: pod-install
 test-macos:
 	set -o pipefail && \
 		xcodebuild clean test \
-		-project SwiftRex.xcodeproj \
+		-workspace SwiftRex.xcworkspace \
 		-scheme SwiftRex\ macOS \
 		-destination platform="macOS" \
 		CODE_SIGN_IDENTITY="" \
@@ -35,7 +36,7 @@ test-macos:
 test-ios:
 	set -o pipefail && \
 		xcodebuild clean test \
-		-project SwiftRex.xcodeproj \
+		-workspace SwiftRex.xcworkspace \
 		-scheme SwiftRex\ iOS \
 		-destination platform="iOS Simulator,name=iPhone 8,OS=11.3" \
 		CODE_SIGN_IDENTITY="" \
@@ -64,6 +65,10 @@ lint-autocorrect:
 sourcery: check-sourcery
 sourcery:
 	sourcery
+
+# CocoaPods
+pod-install:
+	bundle exec pod install
 
 # Carthage Copy
 
