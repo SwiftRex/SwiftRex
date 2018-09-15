@@ -29,6 +29,8 @@ target 'UnitTests' do
   platform :macos, '10.10'
   shared_pods
   pod 'Nimble', :git => 'https://github.com/Quick/Nimble.git'
+  pod 'RxBlocking', :git => 'https://github.com/ReactiveX/RxSwift.git'
+  pod 'RxTest', :git => 'https://github.com/ReactiveX/RxSwift.git'
 end
 
 post_install do |installer|
