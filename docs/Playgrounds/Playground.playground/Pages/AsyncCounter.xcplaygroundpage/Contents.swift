@@ -50,7 +50,7 @@ enum CounterEvent: EventProtocol, Equatable {
 enum CounterAction: ActionProtocol, Equatable {
     case successfullyIncreased
     case successfullyDecreased
-    case didStartRequest(CounterEvent) // swiftlint:disable:this identifier_name
+    case didStartRequest(CounterEvent)
 }
 
 // SideEffectError is a struct that implements ActionProtocol and
