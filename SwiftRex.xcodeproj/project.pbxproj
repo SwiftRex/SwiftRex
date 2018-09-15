@@ -7,10 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D51638F8206F426800469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F7206F426800469F96 /* RxSwift.framework */; };
-		D51638FA206F429300469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638F9206F429300469F96 /* RxSwift.framework */; };
-		D51638FC206F42AD00469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FB206F42AD00469F96 /* RxSwift.framework */; };
-		D51638FE206F42C200469F96 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FD206F42C200469F96 /* RxSwift.framework */; };
+		32A92EE6012C206DC731719F /* Pods_SwiftRex_macOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98B2863A6C7701CD12E02E8F /* Pods_SwiftRex_macOS.framework */; };
+		7411AAB04FDDF86E7DB1B6FC /* Pods_SwiftRex_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ADB3D6C0F9738E93B7BBB0D7 /* Pods_SwiftRex_iOS.framework */; };
+		85ADBD75C919AD4D656E4814 /* Pods_SwiftRex_watchOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C648DB1FD734BEA58F16A6 /* Pods_SwiftRex_watchOS.framework */; };
+		8A6F48C6B546B1EB59AB16A7 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8047440BB8CEDA98B6CE64A /* Pods_UnitTests.framework */; };
+		98109AE70ACDD5F97E1DDD44 /* Pods_SwiftRex_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1394293AEC65F50E9D2F621 /* Pods_SwiftRex_tvOS.framework */; };
+		D51638F8206F426800469F96 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		D51638FA206F429300469F96 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		D51638FC206F42AD00469F96 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		D51638FE206F42C200469F96 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		D51C8ACF207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
@@ -50,10 +55,10 @@
 		D578B2B0208A6AE50035AE9C /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
 		D578B2B1208A6AE50035AE9C /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607162071287900D682EF /* TestState.swift */; };
 		D578B2B2208A6AE50035AE9C /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607172071287900D682EF /* TestStore.swift */; };
-		D578B2B3208A6BCA0035AE9C /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D51638FD206F42C200469F96 /* RxSwift.framework */; };
-		D578B2B7208A6BCA0035AE9C /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D578B2B4208A6BCA0035AE9C /* Nimble.framework */; };
-		D578B2B8208A6BCA0035AE9C /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D578B2B5208A6BCA0035AE9C /* RxBlocking.framework */; };
-		D578B2B9208A6BCA0035AE9C /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D578B2B6208A6BCA0035AE9C /* RxTest.framework */; };
+		D578B2B3208A6BCA0035AE9C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		D578B2B7208A6BCA0035AE9C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		D578B2B8208A6BCA0035AE9C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		D578B2B9208A6BCA0035AE9C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		D5866FC7208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5866FC8208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5866FC9208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -143,16 +148,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D51638F7206F426800469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
-		D51638F9206F429300469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/watchOS/RxSwift.framework; sourceTree = "<group>"; };
-		D51638FB206F42AD00469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/tvOS/RxSwift.framework; sourceTree = "<group>"; };
-		D51638FD206F42C200469F96 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
-		D5163901206F528A00469F96 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
+		97C648DB1FD734BEA58F16A6 /* Pods_SwiftRex_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		98B2863A6C7701CD12E02E8F /* Pods_SwiftRex_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1394293AEC65F50E9D2F621 /* Pods_SwiftRex_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		ADB3D6C0F9738E93B7BBB0D7 /* Pods_SwiftRex_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
 		D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
 		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
-		D55EFB0A207E9ECA00BC8822 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
+		D54AEE09214D896E009D9B6B /* UnitTests-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-Debug.xcconfig"; sourceTree = "<group>"; };
+		D54AEE0A214D89AC009D9B6B /* UnitTests-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Release.xcconfig"; sourceTree = "<group>"; };
 		D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeErase.generated.abstract.swift; sourceTree = "<group>"; };
 		D5623F7320939F2C00C70F60 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		D5623F742093A18200C70F60 /* SwiftRex-Common-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-Common-iOS.xcconfig"; sourceTree = "<group>"; };
@@ -175,11 +180,7 @@
 		D56449272082F1F500453ABB /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		D578B289208A690C0035AE9C /* UnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D578B28D208A690C0035AE9C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D578B2B4208A6BCA0035AE9C /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/Mac/Nimble.framework; sourceTree = "<group>"; };
-		D578B2B5208A6BCA0035AE9C /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/Mac/RxBlocking.framework; sourceTree = "<group>"; };
-		D578B2B6208A6BCA0035AE9C /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/Mac/RxTest.framework; sourceTree = "<group>"; };
 		D5866FC6208AD53B00507523 /* Monoid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monoid.swift; sourceTree = "<group>"; };
-		D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6DA206E81AE00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6E7206E81B900E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -239,6 +240,7 @@
 		D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5A6071F2071287A00D682EF /* ReducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
 		D5A607212071287A00D682EF /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
+		D8047440BB8CEDA98B6CE64A /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -246,11 +248,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D578B2B7208A6BCA0035AE9C /* Nimble.framework in Frameworks */,
-				D578B2B8208A6BCA0035AE9C /* RxBlocking.framework in Frameworks */,
-				D578B2B9208A6BCA0035AE9C /* RxTest.framework in Frameworks */,
-				D578B2B3208A6BCA0035AE9C /* RxSwift.framework in Frameworks */,
+				D578B2B7208A6BCA0035AE9C /* BuildFile in Frameworks */,
+				D578B2B8208A6BCA0035AE9C /* BuildFile in Frameworks */,
+				D578B2B9208A6BCA0035AE9C /* BuildFile in Frameworks */,
+				D578B2B3208A6BCA0035AE9C /* BuildFile in Frameworks */,
 				D578B28E208A690C0035AE9C /* SwiftRex.framework in Frameworks */,
+				8A6F48C6B546B1EB59AB16A7 /* Pods_UnitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,7 +261,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D51638F8206F426800469F96 /* RxSwift.framework in Frameworks */,
+				D51638F8206F426800469F96 /* BuildFile in Frameworks */,
+				7411AAB04FDDF86E7DB1B6FC /* Pods_SwiftRex_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,7 +270,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D51638FA206F429300469F96 /* RxSwift.framework in Frameworks */,
+				D51638FA206F429300469F96 /* BuildFile in Frameworks */,
+				85ADBD75C919AD4D656E4814 /* Pods_SwiftRex_watchOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,7 +279,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D51638FC206F42AD00469F96 /* RxSwift.framework in Frameworks */,
+				D51638FC206F42AD00469F96 /* BuildFile in Frameworks */,
+				98109AE70ACDD5F97E1DDD44 /* Pods_SwiftRex_tvOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,26 +288,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D51638FE206F42C200469F96 /* RxSwift.framework in Frameworks */,
+				D51638FE206F42C200469F96 /* BuildFile in Frameworks */,
+				32A92EE6012C206DC731719F /* Pods_SwiftRex_macOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7FEA0617F275B21B8BA60D3C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		D51638F6206F426700469F96 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D55EFB0A207E9ECA00BC8822 /* Nimble.framework */,
-				D5946F9C206FE1A600D8F4D2 /* RxBlocking.framework */,
-				D5163901206F528A00469F96 /* RxTest.framework */,
-				D578B2B4208A6BCA0035AE9C /* Nimble.framework */,
-				D578B2B5208A6BCA0035AE9C /* RxBlocking.framework */,
-				D578B2B6208A6BCA0035AE9C /* RxTest.framework */,
-				D51638FD206F42C200469F96 /* RxSwift.framework */,
-				D51638FB206F42AD00469F96 /* RxSwift.framework */,
-				D51638F9206F429300469F96 /* RxSwift.framework */,
-				D51638F7206F426800469F96 /* RxSwift.framework */,
+				ADB3D6C0F9738E93B7BBB0D7 /* Pods_SwiftRex_iOS.framework */,
+				98B2863A6C7701CD12E02E8F /* Pods_SwiftRex_macOS.framework */,
+				A1394293AEC65F50E9D2F621 /* Pods_SwiftRex_tvOS.framework */,
+				97C648DB1FD734BEA58F16A6 /* Pods_SwiftRex_watchOS.framework */,
+				D8047440BB8CEDA98B6CE64A /* Pods_UnitTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -326,6 +335,8 @@
 				D5623F7E2093A6A400C70F60 /* SwiftRex-Debug-watchOS.xcconfig */,
 				D5623F7D2093A69400C70F60 /* SwiftRex-Release-watchOS.xcconfig */,
 				D5623F832093AACF00C70F60 /* UnitTests.xcconfig */,
+				D54AEE09214D896E009D9B6B /* UnitTests-Debug.xcconfig */,
+				D54AEE0A214D89AC009D9B6B /* UnitTests-Release.xcconfig */,
 				D5623F842093D49100C70F60 /* XcodeWarnings.xcconfig */,
 			);
 			path = Configuration;
@@ -353,6 +364,7 @@
 				D578B28A208A690C0035AE9C /* UnitTests */,
 				D595F6CD206E818C00E02733 /* Products */,
 				D51638F6206F426700469F96 /* Frameworks */,
+				7FEA0617F275B21B8BA60D3C /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -601,10 +613,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D578B293208A690C0035AE9C /* Build configuration list for PBXNativeTarget "UnitTests" */;
 			buildPhases = (
+				3FBA1FE5A98674E7B5E11D34 /* [CP] Check Pods Manifest.lock */,
 				D578B285208A690C0035AE9C /* Sources */,
 				D578B286208A690C0035AE9C /* Frameworks */,
 				D578B287208A690C0035AE9C /* Resources */,
-				D578B294208A69E40035AE9C /* Carthage */,
+				065B89F228A8D90BE5C1C500 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -620,6 +633,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6D4206E818C00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex iOS" */;
 			buildPhases = (
+				6ABFAC641740416B657B3E6B /* [CP] Check Pods Manifest.lock */,
 				D595F770206EBC4B00E02733 /* Make script */,
 				D595F6C7206E818C00E02733 /* Sources */,
 				D595F6C8206E818C00E02733 /* Frameworks */,
@@ -639,6 +653,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6DF206E81AE00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex watchOS" */;
 			buildPhases = (
+				9CAF06E4567E6CD7058CDC37 /* [CP] Check Pods Manifest.lock */,
 				D578B2BA208A6E300035AE9C /* Make script */,
 				D595F6D5206E81AE00E02733 /* Sources */,
 				D595F6D6206E81AE00E02733 /* Frameworks */,
@@ -658,6 +673,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6EC206E81BA00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex tvOS" */;
 			buildPhases = (
+				8D854981132E741736C63CBB /* [CP] Check Pods Manifest.lock */,
 				D578B2BB208A6E350035AE9C /* Make script */,
 				D595F6E2206E81B900E02733 /* Sources */,
 				D595F6E3206E81B900E02733 /* Frameworks */,
@@ -677,6 +693,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6F9206E81C900E02733 /* Build configuration list for PBXNativeTarget "SwiftRex macOS" */;
 			buildPhases = (
+				0761C206249DFAA20E56C015 /* [CP] Check Pods Manifest.lock */,
 				D51638F5206F418700469F96 /* Make script */,
 				D595F6EF206E81C900E02733 /* Sources */,
 				D595F6F0206E81C900E02733 /* Frameworks */,
@@ -783,6 +800,117 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		065B89F228A8D90BE5C1C500 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/RxSwift-macOS10.10/RxSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift-macOS10.9/RxSwift.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		0761C206249DFAA20E56C015 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex macOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3FBA1FE5A98674E7B5E11D34 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-UnitTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6ABFAC641740416B657B3E6B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex iOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8D854981132E741736C63CBB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex tvOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9CAF06E4567E6CD7058CDC37 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex watchOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		D51638F5206F418700469F96 /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -795,29 +923,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make prebuild-mac";
-		};
-		D578B294208A69E40035AE9C /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/Mac/RxSwift.framework",
-				"$(SRCROOT)/Carthage/Build/Mac/RxBlocking.framework",
-				"$(SRCROOT)/Carthage/Build/Mac/RxTest.framework",
-				"$(SRCROOT)/Carthage/Build/Mac/Nimble.framework",
-			);
-			name = Carthage;
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxBlocking.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxTest.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Nimble.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which carthage >/dev/null; then\n    carthage copy-frameworks\nelse\n    echo \"warning: Carthage not installed, please run `brew install carthage`\"\nfi";
+			shellScript = "make prebuild-mac\n";
 		};
 		D578B2BA208A6E300035AE9C /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1024,6 +1130,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D5623F782093A31700C70F60 /* Debug.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 			};
 			name = Debug;
 		};
@@ -1031,19 +1138,20 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D5623F792093A31F00C70F60 /* Release.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 			};
 			name = Release;
 		};
 		D578B291208A690C0035AE9C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5623F832093AACF00C70F60 /* UnitTests.xcconfig */;
+			baseConfigurationReference = D54AEE09214D896E009D9B6B /* UnitTests-Debug.xcconfig */;
 			buildSettings = {
 			};
 			name = Debug;
 		};
 		D578B292208A690C0035AE9C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5623F832093AACF00C70F60 /* UnitTests.xcconfig */;
+			baseConfigurationReference = D54AEE0A214D89AC009D9B6B /* UnitTests-Release.xcconfig */;
 			buildSettings = {
 			};
 			name = Release;
