@@ -148,6 +148,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		122F379C7F5E241BBCFD234D /* Pods-SwiftRex tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex tvOS/Pods-SwiftRex tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		19DAB9D39E4EE4C8ED879CF6 /* Pods-SwiftRex iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex iOS/Pods-SwiftRex iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		1A1625D8F614E92517CDE93F /* Pods-SwiftRex iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex iOS/Pods-SwiftRex iOS.release.xcconfig"; sourceTree = "<group>"; };
+		3AC3E75DCAEDBBD5B09ED774 /* Pods-UnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.release.xcconfig"; sourceTree = "<group>"; };
+		4DE657A6500982E727B6F4E5 /* Pods-SwiftRex macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex macOS/Pods-SwiftRex macOS.release.xcconfig"; sourceTree = "<group>"; };
+		6CB09BF082CAFC2E2D52EFF8 /* Pods-SwiftRex watchOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex watchOS/Pods-SwiftRex watchOS.release.xcconfig"; sourceTree = "<group>"; };
+		7D8129FEAD877B252B321CDC /* Pods-SwiftRex tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex tvOS/Pods-SwiftRex tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		94412D24F499AA3A5C708B51 /* Pods-SwiftRex macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex macOS/Pods-SwiftRex macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		97C648DB1FD734BEA58F16A6 /* Pods_SwiftRex_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		98B2863A6C7701CD12E02E8F /* Pods_SwiftRex_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1394293AEC65F50E9D2F621 /* Pods_SwiftRex_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -241,6 +249,8 @@
 		D5A6071F2071287A00D682EF /* ReducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
 		D5A607212071287A00D682EF /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D8047440BB8CEDA98B6CE64A /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DEE55B222D5E2DFCF90E9A4A /* Pods-SwiftRex watchOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftRex watchOS/Pods-SwiftRex watchOS.debug.xcconfig"; sourceTree = "<group>"; };
+		FD6E31BB11D9F908DF3E416B /* Pods-UnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -299,6 +309,16 @@
 		7FEA0617F275B21B8BA60D3C /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				19DAB9D39E4EE4C8ED879CF6 /* Pods-SwiftRex iOS.debug.xcconfig */,
+				1A1625D8F614E92517CDE93F /* Pods-SwiftRex iOS.release.xcconfig */,
+				94412D24F499AA3A5C708B51 /* Pods-SwiftRex macOS.debug.xcconfig */,
+				4DE657A6500982E727B6F4E5 /* Pods-SwiftRex macOS.release.xcconfig */,
+				122F379C7F5E241BBCFD234D /* Pods-SwiftRex tvOS.debug.xcconfig */,
+				7D8129FEAD877B252B321CDC /* Pods-SwiftRex tvOS.release.xcconfig */,
+				DEE55B222D5E2DFCF90E9A4A /* Pods-SwiftRex watchOS.debug.xcconfig */,
+				6CB09BF082CAFC2E2D52EFF8 /* Pods-SwiftRex watchOS.release.xcconfig */,
+				FD6E31BB11D9F908DF3E416B /* Pods-UnitTests.debug.xcconfig */,
+				3AC3E75DCAEDBBD5B09ED774 /* Pods-UnitTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -806,7 +826,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/RxSwift-macOS10.10/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework",
@@ -822,7 +842,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		0761C206249DFAA20E56C015 /* [CP] Check Pods Manifest.lock */ = {
