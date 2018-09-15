@@ -1,3 +1,0 @@
-#!/bin/bash
-
-carthage bootstrap $@ --verbose --platform Mac --no-use-binaries --cache-builds | xcpretty -c

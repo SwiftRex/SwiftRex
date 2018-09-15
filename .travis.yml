@@ -19,7 +19,6 @@ before_install:
   - brew install sourcery || brew outdated sourcery || brew upgrade sourcery
 install:
   - bundle install --path vendor/bundle
-  - scripts/bootstrap-if-needed
 script:
   - make test-macos
 after_success:
