@@ -1,15 +1,15 @@
 PODS:
-  - Nimble (7.3.0)
-  - RxBlocking (4.2.0):
+  - Nimble (7.3.1)
+  - RxBlocking (4.3.1):
     - RxSwift (~> 4.0)
-  - RxSwift (4.2.0)
-  - RxTest (4.2.0):
+  - RxSwift (4.3.1)
+  - RxTest (4.3.1):
     - RxSwift (~> 4.0)
 
 DEPENDENCIES:
   - Nimble (from `https://github.com/Quick/Nimble.git`)
   - RxBlocking (from `https://github.com/ReactiveX/RxSwift.git`)
-  - RxSwift (from `https://github.com/ReactiveX/RxSwift.git`, branch `develop`)
+  - RxSwift (from `https://github.com/ReactiveX/RxSwift.git`)
   - RxTest (from `https://github.com/ReactiveX/RxSwift.git`)
 
 EXTERNAL SOURCES:
@@ -18,31 +18,30 @@ EXTERNAL SOURCES:
   RxBlocking:
     :git: https://github.com/ReactiveX/RxSwift.git
   RxSwift:
-    :branch: develop
     :git: https://github.com/ReactiveX/RxSwift.git
   RxTest:
     :git: https://github.com/ReactiveX/RxSwift.git
 
 CHECKOUT OPTIONS:
   Nimble:
-    :commit: eb6130b9884d41c185b5a07cfe2181b3f9593f08
+    :commit: c68f5fd88997ab93a53cab07434349621882c817
     :git: https://github.com/Quick/Nimble.git
   RxBlocking:
-    :commit: d158e7700655114e990313948d2de561d50e1115
+    :commit: 0df62b4d562f8620d4b795b18e4adf0b631527a1
     :git: https://github.com/ReactiveX/RxSwift.git
   RxSwift:
-    :commit: 1b184f32da451e5fb419ec8a1f3e7603948de331
+    :commit: 0df62b4d562f8620d4b795b18e4adf0b631527a1
     :git: https://github.com/ReactiveX/RxSwift.git
   RxTest:
-    :commit: d158e7700655114e990313948d2de561d50e1115
+    :commit: 0df62b4d562f8620d4b795b18e4adf0b631527a1
     :git: https://github.com/ReactiveX/RxSwift.git
 
 SPEC CHECKSUMS:
-  Nimble: 82af0668c540ed36dbf0c75c55716d0d7de41006
-  RxBlocking: e339d8a6e752e25ade95ff858466c55436668f59
-  RxSwift: 99e10317ddfcc7fbe01356aafd118fde4a0be104
-  RxTest: 8da864c0ee47534f586ff18fb0c7e5b2f1fe5023
+  Nimble: 6e4123b6d882a0f8c7f950236a3251d678cf12a2
+  RxBlocking: 64c051285261ca2339481e91b5f70eb06b03660a
+  RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
+  RxTest: ea97a208826906f3904c0debdd09575ebcbfe216
 
-PODFILE CHECKSUM: 6bf6bdd2ad165be1a6a760f079b5eb34b9066e5d
+PODFILE CHECKSUM: b1ccc5fd1b369378530af3b7de8c352ea3c2a985
 
-COCOAPODS: 1.6.0.beta.1
+COCOAPODS: 1.6.0.beta.2

@@ -66,6 +66,7 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
             { (chainEvent: EventProtocol, chainGetState: @escaping GetState<GlobalState>) in
                 middleware.handle(event: chainEvent, getState: chainGetState, next: nextHandler)
             }
+        }
         chain(event, getState)
     }
 
@@ -83,6 +84,7 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
             { (chainAction: ActionProtocol, chainGetState: @escaping GetState<GlobalState>) in
                 middleware.handle(action: chainAction, getState: chainGetState, next: nextHandler)
             }
+        }
         chain(action, getState)
     }
 }
