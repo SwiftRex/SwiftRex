@@ -3,7 +3,7 @@ import RxSwift
 import XCTest
 
 let createNameReducer: () -> Reducer<TestState> = {
-    return Reducer { (state: TestState, action) in
+    Reducer { (state: TestState, action) in
         switch action {
         case _ as Action1:
             var state = state

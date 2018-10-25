@@ -1,3 +1,5 @@
+// swiftlint:disable opening_brace
+
 /**
  The `ComposedMiddleware` is a container of inner middlewares that are chained together in the order as they were composed. Whenever an `EventProtocol` or an `ActionProtocol` arrives to be handled by this `ComposedMiddleware`, it will delegate to its internal chain of middlewares.
 
@@ -60,11 +62,11 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
        - next: the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.
      */
     public func handle(event: EventProtocol, getState: @escaping GetState<GlobalState>, next: @escaping NextEventHandler<GlobalState>) {
-        let chain = middlewares
-            .reduce(next) { nextHandler, middleware in { (chainEvent: EventProtocol, chainGetState: @escaping GetState<GlobalState>) in
-                    middleware.handle(event: chainEvent, getState: chainGetState, next: nextHandler)
-                }
+        let chain = middlewares.reduce(next) { nextHandler, middleware in
+            { (chainEvent: EventProtocol, chainGetState: @escaping GetState<GlobalState>) in
+                middleware.handle(event: chainEvent, getState: chainGetState, next: nextHandler)
             }
+        }
         chain(event, getState)
     }
 
@@ -78,11 +80,11 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
     public func handle(action: ActionProtocol, getState: @escaping GetState<GlobalState>, next: @escaping NextActionHandler<GlobalState>) {
-        let chain = middlewares
-            .reduce(next) { nextHandler, middleware in { (chainAction: ActionProtocol, chainGetState: @escaping GetState<GlobalState>) in
-                    middleware.handle(action: chainAction, getState: chainGetState, next: nextHandler)
-                }
+        let chain = middlewares.reduce(next) { nextHandler, middleware in
+            { (chainAction: ActionProtocol, chainGetState: @escaping GetState<GlobalState>) in
+                middleware.handle(action: chainAction, getState: chainGetState, next: nextHandler)
             }
+        }
         chain(action, getState)
     }
 }
