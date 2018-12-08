@@ -1,0 +1,6 @@
+framework module Pods_SwiftRex_iOS {
+  umbrella header "Pods-SwiftRex iOS-umbrella.h"
+
+  export *
+  module * { export * }
+}

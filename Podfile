@@ -2,7 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 def shared_pods
-  pod 'RxSwift'
+  pod 'RxSwift', '4.4.0', :inhibit_warnings => true
 end
 
 target 'SwiftRex iOS' do
@@ -28,8 +28,8 @@ end
 target 'UnitTests' do
   platform :macos, '10.10'
   shared_pods
-  pod 'RxBlocking'
-  pod 'RxTest'
+  pod 'RxBlocking', '4.4.0'
+  pod 'RxTest', '4.4.0'
 end
 
 post_install do |installer|
