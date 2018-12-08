@@ -1,4 +1,3 @@
-import Nimble
 @testable import SwiftRex
 import XCTest
 
