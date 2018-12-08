@@ -1,47 +1,32 @@
 PODS:
-  - Nimble (7.3.1)
-  - RxBlocking (4.3.1):
+  - RxAtomic (4.4.0)
+  - RxBlocking (4.4.0):
+    - RxAtomic (~> 4.4)
     - RxSwift (~> 4.0)
-  - RxSwift (4.3.1)
-  - RxTest (4.3.1):
+  - RxSwift (4.4.0):
+    - RxAtomic (~> 4.4)
+  - RxTest (4.4.0):
+    - RxAtomic (~> 4.4)
     - RxSwift (~> 4.0)
 
 DEPENDENCIES:
-  - Nimble (from `https://github.com/Quick/Nimble.git`)
-  - RxBlocking (from `https://github.com/ReactiveX/RxSwift.git`)
-  - RxSwift (from `https://github.com/ReactiveX/RxSwift.git`)
-  - RxTest (from `https://github.com/ReactiveX/RxSwift.git`)
+  - RxBlocking
+  - RxSwift (~> 4.4.0)
+  - RxTest
 
-EXTERNAL SOURCES:
-  Nimble:
-    :git: https://github.com/Quick/Nimble.git
-  RxBlocking:
-    :git: https://github.com/ReactiveX/RxSwift.git
-  RxSwift:
-    :git: https://github.com/ReactiveX/RxSwift.git
-  RxTest:
-    :git: https://github.com/ReactiveX/RxSwift.git
-
-CHECKOUT OPTIONS:
-  Nimble:
-    :commit: c68f5fd88997ab93a53cab07434349621882c817
-    :git: https://github.com/Quick/Nimble.git
-  RxBlocking:
-    :commit: 0df62b4d562f8620d4b795b18e4adf0b631527a1
-    :git: https://github.com/ReactiveX/RxSwift.git
-  RxSwift:
-    :commit: 0df62b4d562f8620d4b795b18e4adf0b631527a1
-    :git: https://github.com/ReactiveX/RxSwift.git
-  RxTest:
-    :commit: 0df62b4d562f8620d4b795b18e4adf0b631527a1
-    :git: https://github.com/ReactiveX/RxSwift.git
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - RxAtomic
+    - RxBlocking
+    - RxSwift
+    - RxTest
 
 SPEC CHECKSUMS:
-  Nimble: 6e4123b6d882a0f8c7f950236a3251d678cf12a2
-  RxBlocking: 64c051285261ca2339481e91b5f70eb06b03660a
-  RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
-  RxTest: ea97a208826906f3904c0debdd09575ebcbfe216
+  RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
+  RxBlocking: 138ad53217434444d6eeeb4fb406a45431d92e31
+  RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
+  RxTest: 19d03286bdc0a3aaea5d61d4cde31fdf4bb8a5ba
 
-PODFILE CHECKSUM: b1ccc5fd1b369378530af3b7de8c352ea3c2a985
+PODFILE CHECKSUM: 1fa0320dd34d6d492b9e15bbb36d11a28491fd2e
 
 COCOAPODS: 1.6.0.beta.2

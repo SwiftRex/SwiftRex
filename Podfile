@@ -2,21 +2,21 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 def shared_pods
-  pod 'RxSwift', :git => 'https://github.com/ReactiveX/RxSwift.git'
+  pod 'RxSwift',    '~> 4.4.0'
 end
 
 target 'SwiftRex iOS' do
-  platform :ios, '9.0'
+  platform :ios, '8.0'
   shared_pods
 end
 
 target 'SwiftRex watchOS' do
-  platform :watchos, '2.0'
+  platform :watchos, '3.0'
   shared_pods
 end
 
 target 'SwiftRex macOS' do
-  platform :macos, '10.9'
+  platform :macos, '10.10'
   shared_pods
 end
 
@@ -28,9 +28,8 @@ end
 target 'UnitTests' do
   platform :macos, '10.10'
   shared_pods
-  pod 'Nimble', :git => 'https://github.com/Quick/Nimble.git'
-  pod 'RxBlocking', :git => 'https://github.com/ReactiveX/RxSwift.git'
-  pod 'RxTest', :git => 'https://github.com/ReactiveX/RxSwift.git'
+  pod 'RxBlocking'
+  pod 'RxTest'
 end
 
 post_install do |installer|
