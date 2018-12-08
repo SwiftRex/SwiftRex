@@ -20,7 +20,6 @@ xcodeproj:
 
 # Unit Test
 
-test-macos: pod-install
 test-macos:
 	set -o pipefail && \
 		xcodebuild clean test \
