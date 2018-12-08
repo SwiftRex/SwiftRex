@@ -6,7 +6,6 @@ cache:
   directories:
     - bundler
     - cocoapods
-    - Pods
     - vendor/bundle
 env:
   global:
