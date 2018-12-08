@@ -2,7 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 def shared_pods
-  pod 'RxSwift',    '~> 4.4.0'
+  pod 'RxSwift'
 end
 
 target 'SwiftRex iOS' do
