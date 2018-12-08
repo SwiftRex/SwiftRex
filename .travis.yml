@@ -18,7 +18,6 @@ before_install:
   - brew install sourcery || brew outdated sourcery || brew upgrade sourcery
 install:
   - bundle install --path vendor/bundle
-  - bundle exec pod install
 script:
   - make test-macos
 after_success:
