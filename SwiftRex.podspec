@@ -19,7 +19,17 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target   = '3.0'
   s.tvos.deployment_target      = '9.0'
 
-  s.source_files  = 'Sources/**/*.{swift,h,m}'
+  s.source_files  = 'Sources/Common/**/*.{swift,h,m}'
   s.frameworks    = 'Foundation'
-  s.dependency 'RxSwift'
+  s.default_subspec   = 'UsingRxSwift'
+
+  s.subspec 'UsingRxSwift' do |ss|
+    ss.dependency 'RxSwift'
+    ss.source_files  = 'Sources/RxSwift/**/*.{swift,h,m}'
+  end
+
+  s.subspec 'UsingReactiveSwift' do |ss|
+    ss.dependency 'ReactiveSwift'
+    ss.source_files  = 'Sources/ReactiveSwift/**/*.{swift,h,m}'
+  end
 end

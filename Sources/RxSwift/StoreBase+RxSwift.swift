@@ -1,30 +1,5 @@
 import RxSwift
 
-public typealias ObservableSignal<T> = Observable<T>
-public typealias FailableObservableSignal<T> = Observable<T>
-public typealias ObservableSignalProducer<T> = Observable<T>
-public typealias FailableObservableSignalProducer<T> = Observable<T>
-public typealias SubscriptionOwner = DisposeBag
-public typealias ObservableProperty = ObservableType
-public typealias ReactiveProperty<T> = BehaviorSubject<T>
-
-func reactiveProperty<T>(initialValue: T) -> ReactiveProperty<T> {
-    return BehaviorSubject(value: initialValue)
-}
-
-extension Observable {
-    func subscribe(onSuccess: @escaping (Element) -> Void,
-                   onFailure: @escaping (Error) -> Void,
-                   disposeBy subscriptionOwner: SubscriptionOwner) {
-        subscribe(onNext: onSuccess, onError: onFailure).disposed(by: subscriptionOwner)
-    }
-}
-
-extension StateProvider {
-    /// The elements in the ObservableType sequence, which is expected to be the `StateType` (the app global state)
-    public typealias StateType = E
-}
-
 extension StoreBase {
     public typealias E = State // swiftlint:disable:this type_name
 
