@@ -83,28 +83,22 @@ extension StoreBase {
         let ignore: (EventProtocol, GetState<State>) -> Void = { _, _ in }
         middleware.handle(
             event: event,
-            getState: { [unowned self] in try! self.state.value() },
+            getState: { [unowned self] in self.state.currentValue },
             next: ignore)
     }
 
     private func middlewarePipeline(for action: ActionProtocol) {
         middleware.handle(
             action: action,
-            getState: { [unowned self] in try! self.state.value() },
+            getState: { [unowned self] in self.state.currentValue },
             next: { [weak self] action, _ in
-                let reducer = { self?.reduce(action: action) }
-
-                if Thread.isMainThread {
-                    reducer()
-                } else {
-                    DispatchQueue.main.sync(execute: reducer)
-                }
+                self?.reduce(action: action)
             })
     }
 
     private func reduce(action: ActionProtocol) {
-        let oldState = try! state.value()
-        let newState = reducer.reduce(oldState, action)
-        state.onNext(newState)
+        state.modify { value in
+            value = reducer.reduce(value, action)
+        }
     }
 }

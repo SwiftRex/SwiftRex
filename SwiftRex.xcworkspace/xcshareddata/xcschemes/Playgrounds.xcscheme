@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "206A58F36E1E03A332DA10054B5D9C03"
+               BlueprintIdentifier = "FBBE4D960E430E4C7F2FFF3249050875"
                BuildableName = "RxSwift.framework"
                BlueprintName = "RxSwift-iOS"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -30,7 +30,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D595F6CB206E818C00E02733"
                BuildableName = "SwiftRex.framework"
-               BlueprintName = "SwiftRex iOS"
+               BlueprintName = "SwiftRex iOS ReactiveSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -59,7 +59,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "206A58F36E1E03A332DA10054B5D9C03"
+            BlueprintIdentifier = "FBBE4D960E430E4C7F2FFF3249050875"
             BuildableName = "RxSwift.framework"
             BlueprintName = "RxSwift-iOS"
             ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -77,7 +77,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "206A58F36E1E03A332DA10054B5D9C03"
+            BlueprintIdentifier = "FBBE4D960E430E4C7F2FFF3249050875"
             BuildableName = "RxSwift.framework"
             BlueprintName = "RxSwift-iOS"
             ReferencedContainer = "container:Pods/Pods.xcodeproj">

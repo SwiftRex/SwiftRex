@@ -1,4 +1,5 @@
 import ReactiveSwift
+import enum Result.NoError
 
 extension StoreBase {
     public typealias Value = State
