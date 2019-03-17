@@ -38,7 +38,7 @@ disabled_rules:
 excluded:
   - Carthage
   - Crashlytics.framework
-  - Sources/CodeGeneration
+  - Sources/Common/CodeGeneration
   - Pods
   - .build
   - DerivedData
