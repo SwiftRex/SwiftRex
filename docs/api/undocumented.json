@@ -1,6 +1,61 @@
 {
   "warnings": [
-
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/StoreBase+RxSwift.swift",
+      "line": 4,
+      "symbol": "StoreBase.E",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/Typealias+RxSwift.swift",
+      "line": 3,
+      "symbol": "ObservableSignal",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/Typealias+RxSwift.swift",
+      "line": 4,
+      "symbol": "FailableObservableSignal",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/Typealias+RxSwift.swift",
+      "line": 5,
+      "symbol": "ObservableSignalProducer",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/Typealias+RxSwift.swift",
+      "line": 6,
+      "symbol": "FailableObservableSignalProducer",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/Typealias+RxSwift.swift",
+      "line": 7,
+      "symbol": "SubscriptionOwner",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/Typealias+RxSwift.swift",
+      "line": 8,
+      "symbol": "ObservableProperty",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/RxSwift/Typealias+RxSwift.swift",
+      "line": 9,
+      "symbol": "ReactiveProperty",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    }
   ],
   "source_directory": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex"
 }
