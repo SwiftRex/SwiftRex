@@ -1,6 +1,4 @@
-import RxSwift
-@testable import SwiftRex
-import XCTest
+import SwiftRex
 
 struct Action3: ActionProtocol, Equatable {
     var value = UUID()

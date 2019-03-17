@@ -1,6 +1,5 @@
 import RxSwift
-@testable import SwiftRex
-import XCTest
+import SwiftRex
 
 class TimelySideEffect: SideEffectProducer {
     private var event: EventProtocol

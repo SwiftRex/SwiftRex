@@ -1,4 +1,3 @@
-import RxSwift
 import SwiftRex
 
 class SideEffectMiddlewareMock: SideEffectMiddleware {
