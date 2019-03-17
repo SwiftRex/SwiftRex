@@ -1,4 +1,7 @@
 PODS:
+  - ReactiveSwift (4.0.0):
+    - Result (~> 4.0)
+  - Result (4.0.0)
   - RxAtomic (4.4.0)
   - RxBlocking (4.4.0):
     - RxAtomic (~> 4.4)
@@ -10,23 +13,28 @@ PODS:
     - RxSwift (~> 4.0)
 
 DEPENDENCIES:
+  - ReactiveSwift
   - RxBlocking (= 4.4.0)
   - RxSwift (= 4.4.0)
   - RxTest (= 4.4.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - ReactiveSwift
+    - Result
     - RxAtomic
     - RxBlocking
     - RxSwift
     - RxTest
 
 SPEC CHECKSUMS:
+  ReactiveSwift: a2bb9ace428a109e9c0209615645d9d286c8c433
+  Result: 7645bb3f50c2ce726dd0ff2fa7b6f42bbe6c3713
   RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
   RxBlocking: 138ad53217434444d6eeeb4fb406a45431d92e31
   RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
   RxTest: 19d03286bdc0a3aaea5d61d4cde31fdf4bb8a5ba
 
-PODFILE CHECKSUM: 2479bc7e1a8840379c8ff85384e23523d293f511
+PODFILE CHECKSUM: a01ce33ca77e86ceec8abf96a1823597d79d249d
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.0.beta.2

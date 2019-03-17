@@ -8,10 +8,6 @@ public typealias SubscriptionOwner = DisposeBag
 public typealias ObservableProperty = ObservableType
 public typealias ReactiveProperty<T> = BehaviorSubject<T>
 
-func reactiveProperty<T>(initialValue: T) -> ReactiveProperty<T> {
-    return BehaviorSubject(value: initialValue)
-}
-
 extension StateProvider {
     /// The elements in the ObservableType sequence, which is expected to be the `StateType` (the app global state)
     public typealias StateType = E
