@@ -13,7 +13,7 @@ PODS:
     - RxSwift (~> 4.0)
 
 DEPENDENCIES:
-  - ReactiveSwift
+  - ReactiveSwift (= 4.0.0)
   - RxBlocking (= 4.4.0)
   - RxSwift (= 4.4.0)
   - RxTest (= 4.4.0)
@@ -35,6 +35,6 @@ SPEC CHECKSUMS:
   RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
   RxTest: 19d03286bdc0a3aaea5d61d4cde31fdf4bb8a5ba
 
-PODFILE CHECKSUM: a01ce33ca77e86ceec8abf96a1823597d79d249d
+PODFILE CHECKSUM: dcd3aafde4c54490143d78ca0fbe63091d183ffa
 
 COCOAPODS: 1.6.0.beta.2

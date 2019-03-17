@@ -1,1 +1,2 @@
 github "ReactiveX/RxSwift" ~> 4.4.0
+github "ReactiveCocoa/ReactiveSwift" ~> 4.0.0
