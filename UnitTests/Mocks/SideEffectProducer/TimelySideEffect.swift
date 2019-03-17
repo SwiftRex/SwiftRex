@@ -1,4 +1,3 @@
-import RxSwift
 import SwiftRex
 
 class TimelySideEffect: SideEffectProducer {
@@ -10,55 +9,94 @@ class TimelySideEffect: SideEffectProducer {
         self.name = name
     }
 
-    func execute(getState: @escaping () -> TestState) -> Observable<ActionProtocol> {
-        let actionChain: [ActionProtocol]
+    func execute(getState: @escaping () -> TestState) -> FailableObservableSignalProducer<ActionProtocol> {
+        let actions: [ActionProtocol]
         switch event {
         case _ as Event1:
-            actionChain = [
+            actions = [
                 Action1(value: UUID(), name: "\(name)-a1")
             ]
         case _ as Event2:
-            actionChain = [
+            actions = [
                 Action2(value: UUID(), name: "\(name)-a2"),
                 Action3(value: UUID(), name: "\(name)-a3")
             ]
         case _ as Event3:
-            actionChain = [
+            actions = [
                 Action3(value: UUID(), name: "\(name)-a3"),
                 Action1(value: UUID(), name: "\(name)-a1"),
                 Action2(value: UUID(), name: "\(name)-a2")
             ]
         default:
-            return Observable.error(AnyError())
+            return observable(of: ActionProtocol.self, error: SomeError())
         }
 
-        return Observable.create { observer in
-            var actions = actionChain.makeIterator()
+        let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+        timer.schedule(deadline: DispatchTime.now() + 0.3, repeating: 0.3)
 
-            let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-            timer.schedule(deadline: DispatchTime.now() + 0.3, repeating: 0.3)
-
-            let cancel = Disposables.create {
-                timer.cancel()
-            }
-
-            timer.setEventHandler {
-                if cancel.isDisposed {
-                    return
-                }
-
-                guard let next = actions.next() else {
-                    timer.cancel()
-                    observer.onCompleted()
-                    return
-                }
-
-                observer.on(.next(next))
-            }
-
-            timer.resume()
-
-            return cancel
-        }
+        return timelyObservableOf(actions: actions, timer: timer)
     }
 }
+
+#if canImport(RxSwift)
+import RxSwift
+
+private func timelyObservableOf(actions: [ActionProtocol],
+                                timer: DispatchSourceTimer) -> FailableObservableSignalProducer<ActionProtocol> {
+    var actions = actions.makeIterator()
+    return Observable.create { observer in
+        let cancel = Disposables.create {
+            timer.cancel()
+        }
+
+        timer.setEventHandler {
+            if cancel.isDisposed {
+                return
+            }
+
+            guard let next = actions.next() else {
+                timer.cancel()
+                observer.onCompleted()
+                return
+            }
+
+            observer.on(.next(next))
+        }
+
+        timer.resume()
+
+        return cancel
+    }
+}
+#endif
+
+#if canImport(ReactiveSwift)
+import struct ReactiveSwift.SignalProducer
+import struct Result.AnyError
+
+private func timelyObservableOf(actions: [ActionProtocol],
+                                timer: DispatchSourceTimer) -> FailableObservableSignalProducer<ActionProtocol> {
+    var actions = actions.makeIterator()
+    return .init { observer, dispose in
+        dispose.observeEnded {
+            timer.cancel()
+        }
+
+        timer.setEventHandler {
+            if dispose.hasEnded {
+                return
+            }
+
+            guard let next = actions.next() else {
+                timer.cancel()
+                observer.sendCompleted()
+                return
+            }
+
+            observer.send(value: next)
+        }
+
+        timer.resume()
+    }
+}
+#endif

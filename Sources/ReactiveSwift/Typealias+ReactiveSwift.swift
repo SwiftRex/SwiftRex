@@ -1,4 +1,9 @@
-import ReactiveSwift
+import struct ReactiveSwift.SignalProducer
+import class ReactiveSwift.Signal
+import protocol ReactiveSwift.PropertyProtocol
+import class ReactiveSwift.ScopedDisposable
+import class ReactiveSwift.CompositeDisposable
+import class ReactiveSwift.MutableProperty
 import enum Result.NoError
 import struct Result.AnyError
 
