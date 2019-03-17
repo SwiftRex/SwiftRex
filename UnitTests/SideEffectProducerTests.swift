@@ -1,6 +1,8 @@
+#if canImport(RxSwift)
 import RxBlocking
 import RxSwift
-import RxTest
+#endif
+
 @testable import SwiftRex
 import XCTest
 
@@ -14,7 +16,7 @@ class SideEffectProducerTests: XCTestCase {
         let action1 = Action1()
         let action2 = Action2()
         let action3 = Action3()
-        sepMock.executeGetStateReturnValue = Observable.of(action1, action2, action3)
+        sepMock.executeGetStateReturnValue = observable(of: action1, action2, action3)
 
         // Then
         let result = try! sut.execute(getState: getState)
