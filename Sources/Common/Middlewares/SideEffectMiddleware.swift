@@ -16,7 +16,7 @@ public struct SideEffectError: ActionProtocol {
 }
 
 /**
- Defines a protocol for implementing a middleware that executes `RxSwift` side-effects. Instead of implementing the regular `handle(event:getState:next:)` and `handle(action:getState:next:)` methods, this protocol only requires a mapping from `EventProtocol` to `SideEffectProducer`.
+ Defines a protocol for implementing a middleware that executes `RxSwift` or `ReactiveSwift` side-effects. Instead of implementing the regular `handle(event:getState:next:)` and `handle(action:getState:next:)` methods, this protocol only requires a mapping from `EventProtocol` to `SideEffectProducer`.
  */
 public protocol SideEffectMiddleware: Middleware {
 

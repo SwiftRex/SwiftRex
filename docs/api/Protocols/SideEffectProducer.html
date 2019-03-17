@@ -14,7 +14,7 @@
     <a title="SideEffectProducer Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (91% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -138,6 +138,32 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="../Other Typealiases.html">Other Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/FailableObservableSignal">FailableObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/FailableObservableSignalProducer">FailableObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableProperty">ObservableProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableSignal">ObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableSignalProducer">ObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ReactiveProperty">ReactiveProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/SubscriptionOwner">SubscriptionOwner</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -150,9 +176,9 @@
 
                 </div>
               </div>
-            <p>🌍 <code>SideEffectProducer</code> defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
+            <p>🌍 <code>SideEffectProducer</code> defines a protocol for implementing a <code>RxSwift</code> or <code>ReactiveSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
 
-<p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift users we bring a <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable pipelines. The Middleware requires the implementation of only one method:</p>
+<p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift or ReactiveSwift users we bring a <code><a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable / SignalProducer pipelines. The Middleware requires the implementation of only one method:</p>
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sideEffect</span><span class="p">(</span><span class="k">for</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnySideEffectProducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">?</span>
 </code></pre>
 
@@ -213,7 +239,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">execute</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/SideEffectProducer.html#/s:8SwiftRex18SideEffectProducerP9StateTypeQa">StateType</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt"><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">execute</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/SideEffectProducer.html#/s:8SwiftRex18SideEffectProducerP9StateTypeQa">StateType</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Other Typealiases.html#/FailableObservableSignalProducer">FailableObservableSignalProducer</a></span><span class="o">&lt;</span><span class="kt"><a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a></span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -248,7 +274,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-12-08)</p>
+          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-03-18)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

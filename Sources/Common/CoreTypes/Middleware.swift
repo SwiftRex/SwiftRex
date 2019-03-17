@@ -31,7 +31,7 @@
  - Reachability
  - Navigation through the app (Redux Coordinator pattern)
  - `NotificationCenter` and other delegates
- - `RxSwift` observables
+ - `RxSwift` observables or `ReactiveSwift` signal producers
  */
 public protocol Middleware: class {
 
