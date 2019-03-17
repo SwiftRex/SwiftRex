@@ -1,5 +1,4 @@
 import Foundation
-import RxSwift
 
 /**
  When the `SideEffectMiddleware` starts a `SideEffectProducer` which throws an error, the middleware will wrap the error in a `ActionProtocol` of type `SideEffectError`, which contains details about the error, the date and time when it happened and the original event that was being handled by the middleware.
@@ -24,8 +23,8 @@ public protocol SideEffectMiddleware: Middleware {
     /// Allows the following middlewares in the chain to have a chance of handling the same events already handled
     var allowEventToPropagate: Bool { get }
 
-    /// A dispose bag that owns the lifetime of each `SideEffectProducer` observation, usually this `DisposeBag` will be a stored property in the `SideEffectMiddleware` instance
-    var disposeBag: DisposeBag { get }
+    /// A bag that owns the lifetime of each `SideEffectProducer` observation, usually this `SubscriptionOwner` will be a stored property in the `SideEffectMiddleware` instance
+    var subscriptionOwner: SubscriptionOwner { get }
 
     /// Maps the incoming event to the proper `SideEffectProducer`, wrapped in a type-eraser `AnySideEffectProducer`
     func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<StateType>?
@@ -45,15 +44,15 @@ extension SideEffectMiddleware {
             return
         }
 
-        sideEffect.execute(getState: getState).subscribe(
-            onNext: { [weak self] action in
-                self?.actionHandler?.trigger(action)
-            },
-            onError: { [weak self] error in
-                let action = SideEffectError(date: Date(), originalEvent: event, error: error)
-                self?.actionHandler?.trigger(action)
-            }
-        ).disposed(by: disposeBag)
+        sideEffect
+            .execute(getState: getState)
+            .subscribe(
+                onSuccess: { [weak self] (action: ActionProtocol) in
+                    self?.actionHandler?.trigger(action)
+                }, onFailure: { [weak self] (error: Error) in
+                    let action = SideEffectError(date: Date(), originalEvent: event, error: error)
+                    self?.actionHandler?.trigger(action)
+                }, disposeBy: subscriptionOwner)
 
         guard allowEventToPropagate else { return }
 

@@ -15,6 +15,10 @@
 		D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD2207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D532C9BA223E981800AB13EF /* RxSwift+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D532C9B9223E981800AB13EF /* RxSwift+Extensions.swift */; };
+		D532C9BB223E981800AB13EF /* RxSwift+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D532C9B9223E981800AB13EF /* RxSwift+Extensions.swift */; };
+		D532C9BC223E981800AB13EF /* RxSwift+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D532C9B9223E981800AB13EF /* RxSwift+Extensions.swift */; };
+		D532C9BD223E981800AB13EF /* RxSwift+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D532C9B9223E981800AB13EF /* RxSwift+Extensions.swift */; };
 		D55EFB0D207EBAA300BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB0E207EBB0100BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB0F207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
@@ -147,6 +151,8 @@
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
 		D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
 		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
+		D532C9B9223E981800AB13EF /* RxSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RxSwift+Extensions.swift"; sourceTree = "<group>"; };
+		D532C9BE223E983200AB13EF /* ReactiveSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReactiveSwift+Extensions.swift"; sourceTree = "<group>"; };
 		D54AEE09214D896E009D9B6B /* UnitTests-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-Debug.xcconfig"; sourceTree = "<group>"; };
 		D54AEE0A214D89AC009D9B6B /* UnitTests-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Release.xcconfig"; sourceTree = "<group>"; };
 		D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeErase.generated.abstract.swift; sourceTree = "<group>"; };
@@ -365,6 +371,8 @@
 			children = (
 				D5866FC6208AD53B00507523 /* Monoid.swift */,
 				D59D57E9207AA1B40010412E /* Operator.swift */,
+				D532C9BE223E983200AB13EF /* ReactiveSwift+Extensions.swift */,
+				D532C9B9223E981800AB13EF /* RxSwift+Extensions.swift */,
 				D59D57F6207AA1B40010412E /* TypeAlias.swift */,
 			);
 			path = Foundation;
@@ -1023,6 +1031,7 @@
 				D59D580B207AA1B40010412E /* Reducer.swift in Sources */,
 				D5866FC7208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5827207AA1B40010412E /* EventHandler.swift in Sources */,
+				D532C9BA223E981800AB13EF /* RxSwift+Extensions.swift in Sources */,
 				D59D5818207AA1B40010412E /* TypeAlias.swift in Sources */,
 				D59D580F207AA1B40010412E /* TypeErase.generated.swift in Sources */,
 				D59D581A207AA1B40010412E /* BypassMiddleware.swift in Sources */,
@@ -1050,6 +1059,7 @@
 				D59D5836207AA1E70010412E /* EventHandler.swift in Sources */,
 				D5866FC8208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5838207AA1E70010412E /* StoreBase.swift in Sources */,
+				D532C9BB223E981800AB13EF /* RxSwift+Extensions.swift in Sources */,
 				D59D584C207AA1F90010412E /* SideEffectProducer.swift in Sources */,
 				D59D5847207AA1F90010412E /* BypassMiddleware.swift in Sources */,
 				D59D584E207AA2080010412E /* Reducer.swift in Sources */,
@@ -1077,6 +1087,7 @@
 				D59D5831207AA1E60010412E /* EventHandler.swift in Sources */,
 				D5866FC9208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5833207AA1E60010412E /* StoreBase.swift in Sources */,
+				D532C9BC223E981800AB13EF /* RxSwift+Extensions.swift in Sources */,
 				D59D5845207AA1F80010412E /* SideEffectProducer.swift in Sources */,
 				D59D5840207AA1F80010412E /* BypassMiddleware.swift in Sources */,
 				D59D5851207AA2080010412E /* Reducer.swift in Sources */,
@@ -1104,6 +1115,7 @@
 				D59D582C207AA1E50010412E /* EventHandler.swift in Sources */,
 				D5866FCA208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D582E207AA1E50010412E /* StoreBase.swift in Sources */,
+				D532C9BD223E981800AB13EF /* RxSwift+Extensions.swift in Sources */,
 				D59D583E207AA1F70010412E /* SideEffectProducer.swift in Sources */,
 				D59D5839207AA1F70010412E /* BypassMiddleware.swift in Sources */,
 				D59D5854207AA2090010412E /* Reducer.swift in Sources */,

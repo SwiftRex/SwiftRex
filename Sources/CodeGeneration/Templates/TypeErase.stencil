@@ -1,6 +1,4 @@
 // sourcery:file:TypeErase.generated.abstract.swift
-import RxSwift
-
 @inline(never)
 private func _abstract(file: StaticString = #file, line: UInt = #line) -> Never {
     fatalError("Method must be overridden", file: file, line: line)
@@ -31,7 +29,6 @@ internal class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.nam
 }
 {% endfor %}
 // sourcery:end
-import RxSwift
 {% for type in types.protocols|annotated:"TypeErase" %}
 
 // MARK: - Type Eraser for {{type.name}}

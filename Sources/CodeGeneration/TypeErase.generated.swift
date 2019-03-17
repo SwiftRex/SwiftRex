@@ -2,7 +2,6 @@
 // DO NOT EDIT
 
 
-import RxSwift
 
 // MARK: - Type Eraser for Middleware
 
@@ -75,7 +74,7 @@ private final class _AnySideEffectProducerBox<Concrete: SideEffectProducer>: _An
         self.concrete = concrete
     }
 
-    override func execute(getState: @escaping GetState<StateType>) -> Observable<ActionProtocol> {
+    override func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol> {
         return concrete.execute(getState: getState)
     }
 
@@ -99,7 +98,7 @@ public final class AnySideEffectProducer<StateType>: SideEffectProducer {
     /**
      Proxy method for `SideEffectProducer.execute(getState:)`
      */
-    public func execute(getState: @escaping GetState<StateType>) -> Observable<ActionProtocol> {
+    public func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol> {
         return box.execute(getState: getState)
     }
 

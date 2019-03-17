@@ -7,11 +7,11 @@ class SideEffectMiddlewareMock: SideEffectMiddleware {
         set(value) { underlyingAllowEventToPropagate = value }
     }
     var underlyingAllowEventToPropagate: Bool!
-    var disposeBag: DisposeBag {
-        get { return underlyingDisposeBag }
-        set(value) { underlyingDisposeBag = value }
+    var subscriptionOwner: SubscriptionOwner {
+        get { return underlyingSubscriptionOwner }
+        set(value) { underlyingSubscriptionOwner = value }
     }
-    var underlyingDisposeBag: DisposeBag!
+    var underlyingSubscriptionOwner: SubscriptionOwner!
     var actionHandler: ActionHandler?
 
     // MARK: - sideEffect

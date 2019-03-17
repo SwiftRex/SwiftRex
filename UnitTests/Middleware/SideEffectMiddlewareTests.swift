@@ -37,7 +37,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let sideEffect = SideEffectProducerMock()
         sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2(), Action3())
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
-        sut.underlyingDisposeBag = DisposeBag()
+        sut.underlyingSubscriptionOwner = SubscriptionOwner()
         sut.underlyingAllowEventToPropagate = true
         var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
@@ -65,7 +65,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let sideEffect = SideEffectProducerMock()
         sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2(), Action3())
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
-        sut.underlyingDisposeBag = DisposeBag()
+        sut.underlyingSubscriptionOwner = SubscriptionOwner()
         sut.underlyingAllowEventToPropagate = false
         var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
@@ -117,7 +117,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let sideEffect = SideEffectProducerMock()
         sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2()).concat(Observable.error(AnyError()))
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
-        sut.underlyingDisposeBag = DisposeBag()
+        sut.underlyingSubscriptionOwner = SubscriptionOwner()
         sut.underlyingAllowEventToPropagate = true
         var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
