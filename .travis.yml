@@ -1,7 +1,7 @@
-osx_image: xcode9.3
+osx_image: xcode10.1
 language: objective-c
 xcode_project: SwiftRex.xcodeproj
-xcode_scheme: SwiftRex macOS
+xcode_scheme: SwiftRex macOS RxSwift
 cache:
   directories:
     - bundler
@@ -19,6 +19,6 @@ before_install:
 install:
   - bundle install --path vendor/bundle
 script:
-  - make test-macos
+  - make test-all
 after_success:
   - bundle exec slather
