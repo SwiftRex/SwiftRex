@@ -69,28 +69,6 @@ sourcery:
 pod-install:
 	bundle exec pod install
 
-# Carthage Copy
-
-carthage-copy: check-carthage
-carthage-copy:
-	export SCRIPT_INPUT_FILE_0=$(SRCROOT)/Carthage/Build/${PLATFORM}/RxSwift.framework \
-	export SCRIPT_INPUT_FILE_COUNT=1 \
-	export SCRIPT_OUTPUT_FILE_0=$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework \
-	export SCRIPT_OUTPUT_FILE_COUNT=1; \
-	carthage copy-frameworks
-
-carthage-copy-mac: PLATFORM = Mac
-carthage-copy-mac: carthage-copy
-
-carthage-copy-ios: PLATFORM = iOS
-carthage-copy-ios: carthage-copy
-
-carthage-copy-watchos: PLATFORM = watchOS
-carthage-copy-watchos: carthage-copy
-
-carthage-copy-tvos: PLATFORM = tvOS
-carthage-copy-tvos: carthage-copy
-
 # Jazzy
 
 jazzy:
@@ -110,7 +88,6 @@ prebuild-tvos: sourcery lint-autocorrect lint-check
 
 LINT := $(shell command -v swiftlint 2> /dev/null)
 SOURCERY := $(shell command -v sourcery 2> /dev/null)
-CARTHAGE := $(shell command -v carthage 2> /dev/null)
 
 check-lint:
 ifndef LINT
@@ -120,11 +97,6 @@ endif
 check-sourcery:
 ifndef SOURCERY
     $(error "Sourcery not installed, please run `brew install sourcery`")
-endif
-
-check-carthage:
-ifndef CARTHAGE
-    $(error "Carthage not installed, please run `brew install carthage`")
 endif
 
 # Help
@@ -163,22 +135,6 @@ help:
 	@echo make sourcery
 	@echo -- code generation
 	@echo
-	@echo make carthage-copy PLATFORM=Mac
-	@echo -- runs the Carthage Framework copy for a given platform
-	@echo -- param1: PLATFORM = required, Carthage build platform
-	@echo
-	@echo make carthage-copy-mac
-	@echo -- runs the Carthage Framework copy for macOS target
-	@echo
-	@echo make carthage-copy-ios
-	@echo -- runs the Carthage Framework copy for iOS target
-	@echo
-	@echo make carthage-copy-watchos
-	@echo -- runs the Carthage Framework copy for watchOS target
-	@echo
-	@echo make carthage-copy-tvos
-	@echo -- runs the Carthage Framework copy for tvOS target
-	@echo
 	@echo make jazzy
 	@echo -- generates documentation
 	@echo
@@ -199,7 +155,4 @@ help:
 	@echo
 	@echo make check-sourcery
 	@echo -- checks if Sourcery is installed
-	@echo
-	@echo make check-carthage
-	@echo -- checks if Carthage is installed
 	@echo
