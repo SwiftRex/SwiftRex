@@ -1,6 +1,4 @@
-import RxSwift
-@testable import SwiftRex
-import XCTest
+import SwiftRex
 
 final class TestStore: StoreBase<TestState> {
     override init<M>(initialState: E, reducer: Reducer<E>, middleware: M) where E == M.StateType, M: Middleware {

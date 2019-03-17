@@ -1,5 +1,4 @@
-@testable import SwiftRex
-import XCTest
+import SwiftRex
 
 let createReducerMock: () -> (Reducer<TestState>, ReducerMock) = {
     let mock = ReducerMock()

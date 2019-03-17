@@ -2,7 +2,6 @@
 // DO NOT EDIT
 
 import Foundation
-import RxSwift
 @testable import SwiftRex
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit

@@ -1,6 +1,4 @@
-import RxSwift
-@testable import SwiftRex
-import XCTest
+import SwiftRex
 
 let createNameReducer: () -> Reducer<TestState> = {
     Reducer { (state: TestState, action) in
