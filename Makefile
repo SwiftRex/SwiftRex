@@ -20,11 +20,11 @@ xcodeproj:
 
 # Unit Test
 
-test-macos:
+test-reactiveswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS \
+		-scheme SwiftRex\ macOS\ ReactiveSwift \
 		-destination platform="macOS" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
@@ -32,22 +32,19 @@ test-macos:
 		VALID_ARCHS=x86_64 \
 		| xcpretty
 
-test-ios:
+test-rxswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ iOS \
-		-destination platform="iOS Simulator,name=iPhone 8,OS=11.3" \
+		-scheme SwiftRex\ macOS\ RxSwift \
+		-destination platform="macOS" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
 		VALID_ARCHS=x86_64 \
 		| xcpretty
 
-test-swift:
-	swift test
-
-test-all: test-mac test-ios
+test-all: test-reactiveswift test-rxswift
 
 # Lint
 
@@ -72,7 +69,7 @@ pod-install:
 # Jazzy
 
 jazzy:
-	bundle exec jazzy -x -target,SwiftRex\ macOS
+	bundle exec jazzy -x -target,SwiftRex\ macOS\ RxSwift
 
 # Pre-Build
 
@@ -114,17 +111,14 @@ help:
 	@echo make xcodeproj
 	@echo -- creates xcodeproj for those using Swift Package Manager
 	@echo
-	@echo make test-macos
-	@echo -- runs the unit tests for the macOS target
+	@echo make test-reactiveswift
+	@echo -- runs the unit tests for the macOS target using ReactiveSwift dependency
 	@echo
-	@echo make test-ios
-	@echo -- runs the unit tests for the iOS target
-	@echo
-	@echo make test-swift
-	@echo -- runs the unit tests using Swift Package Manager
+	@echo make test-rxswift
+	@echo -- runs the unit tests for the macOS target using RxSwift dependency
 	@echo
 	@echo make test-all
-	@echo -- runs the unit tests for macOS and iOS targets
+	@echo -- runs all the unit tests
 	@echo
 	@echo make lint-check
 	@echo -- validates the code style
