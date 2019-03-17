@@ -11,7 +11,7 @@ def rxswift
 end
 
 def reactiveswift
-  pod 'ReactiveSwift', :inhibit_warnings => true
+  pod 'ReactiveSwift', '4.0.0', :inhibit_warnings => true
 end
 
 ###################
