@@ -1,5 +1,4 @@
 import Foundation
-import RxSwift
 
 /**
  🏪 `Store` defines a protocol for the state store of an app. It must have an input and an output:
@@ -25,10 +24,10 @@ import RxSwift
 
  ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
  */
-open class StoreBase<E>: Store, ActionHandler {
-    private let middleware: AnyMiddleware<E>
-    private let reducer: Reducer<E>
-    private let state: BehaviorSubject<E>
+open class StoreBase<State>: Store, ActionHandler {
+    private let middleware: AnyMiddleware<State>
+    private let reducer: Reducer<State>
+    let state: ReactiveProperty<State>
     private let dispatchEventQueue = DispatchQueue.main
     private let triggerActionQueue = DispatchQueue.main
 
@@ -40,8 +39,8 @@ open class StoreBase<E>: Store, ActionHandler {
        - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the same type as the `initialState` property. For `reducer` composition, please use the diamond operator (`<>`) and for reducers that understand only a sub-state part, use the `Reducer.lift(_:)` method
        - middleware: a middleware pipeline, that can be any flat middleware or a `ComposedMiddleware`, as long as it's able to handle the state of the same type as the `initialState` property. For `middleware` composition, please use the diamond operator (`<>`) and for middlewares that understand only a sub-state part, use the `Middleware.lift(_:)` method
      */
-    public init<M: Middleware>(initialState: E, reducer: Reducer<E>, middleware: M) where M.StateType == E {
-        self.state = BehaviorSubject<E>(value: initialState)
+    public init<M: Middleware>(initialState: State, reducer: Reducer<State>, middleware: M) where M.StateType == State {
+        self.state = reactiveProperty(initialValue: initialState)
         self.reducer = reducer
         self.middleware = AnyMiddleware(middleware)
         self.middleware.actionHandler = self
@@ -54,7 +53,7 @@ open class StoreBase<E>: Store, ActionHandler {
      - initialState: when an app is starting, how should be its state struct? Initialize the state and set it before creating the `Store`
      - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the same type as the `initialState` property. For `reducer` composition, please use the diamond operator (`<>`) and for reducers that understand only a sub-state part, use the `Reducer.lift(_:)` method
      */
-    public convenience init(initialState: E, reducer: Reducer<E>) {
+    public convenience init(initialState: State, reducer: Reducer<State>) {
         self.init(initialState: initialState, reducer: reducer, middleware: BypassMiddleware())
     }
 
@@ -77,32 +76,11 @@ open class StoreBase<E>: Store, ActionHandler {
             self.middlewarePipeline(for: action)
         }
     }
-
-    /**
-     Because `StoreBase` is a `StateProvider`, it exposes a way for an `UIViewController` or other interested classes to subscribe to `State` changes.
-
-     By default, this observation will have the following characteristics:
-     - Hot observable, no observation side-effect
-     - Replays the last (or initial) state
-     - Never completes
-     - Never fails
-     - Observes on the `MainScheduler`
-
-     Internally it maps to a `BehaviorSubject<StateType>`.
-
-     - Parameter observer: the action to be managed by this store and handled by its middlewares and reducers
-     - Returns: Subscription for `observer` that should be kept in a `disposeBag` for the same lifetime as its observer.
-     */
-    public func subscribe<O>(_ observer: O) -> Disposable where O: ObserverType, O.E == StateType {
-        return state
-            .observeOn(MainScheduler.instance)
-            .subscribe(observer)
-    }
 }
 
 extension StoreBase {
     private func middlewarePipeline(for event: EventProtocol) {
-        let ignore: (EventProtocol, GetState<E>) -> Void = { _, _ in }
+        let ignore: (EventProtocol, GetState<State>) -> Void = { _, _ in }
         middleware.handle(
             event: event,
             getState: { [unowned self] in try! self.state.value() },

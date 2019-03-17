@@ -1,8 +1,6 @@
 // Generated using Sourcery 0.13.1 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
-import RxSwift
-
 @inline(never)
 private func _abstract(file: StaticString = #file, line: UInt = #line) -> Never {
     fatalError("Method must be overridden", file: file, line: line)
@@ -40,7 +38,7 @@ internal class _AnySideEffectProducerBase<StateType>: SideEffectProducer {
         }
     }
 
-    func execute(getState: @escaping GetState<StateType>) -> Observable<ActionProtocol> {
+    func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol> {
         _abstract()
     }
 

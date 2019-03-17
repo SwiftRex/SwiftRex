@@ -1,5 +1,3 @@
-import RxSwift
-
 /**
  Zero-argument function that returns the current state. <br/>
  `() -> StateType`
@@ -16,7 +14,7 @@ public typealias ReduceFunction<StateType> = (StateType, ActionProtocol) -> Stat
  Evaluation of an incoming Event, returning an sequence of Actions. <br/>
  `(EventProtocol, () -> StateType) -> Observable<ActionProtocol>`
  */
-public typealias EventEvaluation<StateType> = (EventProtocol, @escaping GetState<StateType>) -> Observable<ActionProtocol>
+public typealias EventEvaluation<StateType> = (EventProtocol, @escaping GetState<StateType>) -> ObservableSignal<ActionProtocol>
 
 /**
  A function that calls the next event handler in the chain. <br/>
