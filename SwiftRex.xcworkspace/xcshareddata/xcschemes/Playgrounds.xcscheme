@@ -14,23 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FBBE4D960E430E4C7F2FFF3249050875"
-               BuildableName = "RxSwift.framework"
-               BlueprintName = "RxSwift-iOS"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D595F6CB206E818C00E02733"
+               BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
                BuildableName = "SwiftRex.framework"
-               BlueprintName = "SwiftRex iOS ReactiveSwift"
+               BlueprintName = "SwiftRex iOS RxSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -59,10 +45,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBBE4D960E430E4C7F2FFF3249050875"
-            BuildableName = "RxSwift.framework"
-            BlueprintName = "RxSwift-iOS"
-            ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
+            BuildableName = "SwiftRex.framework"
+            BlueprintName = "SwiftRex iOS RxSwift"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -77,10 +63,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBBE4D960E430E4C7F2FFF3249050875"
-            BuildableName = "RxSwift.framework"
-            BlueprintName = "RxSwift-iOS"
-            ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
+            BuildableName = "SwiftRex.framework"
+            BlueprintName = "SwiftRex iOS RxSwift"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

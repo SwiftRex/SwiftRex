@@ -118,7 +118,7 @@ final class CounterMiddleware: SideEffectMiddleware {
     typealias StateType = GlobalState
     var actionHandler: ActionHandler?
     var allowEventToPropagate = false
-    var disposeBag = DisposeBag()
+    var subscriptionOwner = DisposeBag()
 
     func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<GlobalState>? {
         return (event as? CounterEvent)
