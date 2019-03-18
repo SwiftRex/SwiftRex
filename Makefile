@@ -30,7 +30,7 @@ test-reactiveswift:
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
 		VALID_ARCHS=x86_64 \
-		| xcpretty
+		| bundle exec xcpretty
 
 test-rxswift:
 	set -o pipefail && \
@@ -42,7 +42,7 @@ test-rxswift:
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
 		VALID_ARCHS=x86_64 \
-		| xcpretty
+		| bundle exec xcpretty
 
 test-all: test-reactiveswift test-rxswift
 
