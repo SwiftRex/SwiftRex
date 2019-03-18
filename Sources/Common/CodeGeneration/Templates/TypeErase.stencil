@@ -43,7 +43,7 @@ private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.na
 
     {% for m in type.methods|!definedInExtension %}
     override func {{m.name}} -> {{m.returnTypeName}} {
-        return concrete.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %}, {% endif %}{% endfor %})
+        return concrete.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel != nil %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %}, {% endif %}{% endfor %})
     }
     {% endfor %}
 
@@ -75,7 +75,7 @@ public final class Any{{type.name}}<{{ type.annotations.TypeErase }}>: {{type.na
      Proxy method for `{{type.name}}.{{m.selectorName}}`
      */
     public func {{m.name}} -> {{m.returnTypeName}} {
-        return box.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel.length > 0 %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %},{% endif %}{% endfor %})
+        return box.{{m.callName}}({% for p in m.parameters %}{% if p.argumentLabel != nil %}{{p.argumentLabel}}: {% endif %}{{p.name}}{% if not forloop.last %},{% endif %}{% endfor %})
     }
 
     {% endfor %}
