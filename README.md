@@ -1,7 +1,7 @@
 # SwiftRex
 
-[![Build Status](https://img.shields.io/travis/SwiftRex/SwiftRex.svg?branch=master&maxAge=600)](https://travis-ci.org/SwiftRex/SwiftRex)
-[![Coverage Status](https://img.shields.io/coveralls/github/SwiftRex/SwiftRex.svg?branch=master&maxAge=600)](https://coveralls.io/github/SwiftRex/SwiftRex?branch=master)
+[![Build Status](https://img.shields.io/travis/SwiftRex/SwiftRex.svg?branch=develop&maxAge=600)](https://travis-ci.org/SwiftRex/SwiftRex)
+[![Coverage Status](https://img.shields.io/coveralls/github/SwiftRex/SwiftRex.svg?branch=develop&maxAge=600)](https://coveralls.io/github/SwiftRex/SwiftRex?branch=develop)
 [![Jazzy Documentation](https://swiftrex.github.io/SwiftRex/api/badge.svg)](https://swiftrex.github.io/SwiftRex/api/index.html)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-orange.svg)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
