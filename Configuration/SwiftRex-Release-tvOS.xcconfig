@@ -1,2 +1,0 @@
-#include "SwiftRex-Common-tvOS.xcconfig"
-#include "Pods/Target Support Files/Pods-SwiftRex tvOS/Pods-SwiftRex tvOS.release.xcconfig"

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SwiftRex'
-  s.version          = '0.3.1'
+  s.version          = '0.4.0'
   s.summary          = 'SwiftRex is a Redux implementation on top of RxSwift'
   s.description      = <<-DESC
                         SwiftRex is a framework that combines event-sourcing pattern and reactive programming (RxSwift), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.
@@ -18,8 +18,19 @@ Pod::Spec.new do |s|
   s.osx.deployment_target       = '10.10'
   s.watchos.deployment_target   = '3.0'
   s.tvos.deployment_target      = '9.0'
+  s.swift_version = '5.0'
 
-  s.source_files  = 'Sources/**/*.{swift,h,m}'
+  s.source_files  = 'Sources/Common/**/*.{swift,h,m}'
   s.frameworks    = 'Foundation'
-  s.dependency 'RxSwift'
+  s.default_subspec   = 'UsingRxSwift'
+
+  s.subspec 'UsingRxSwift' do |ss|
+    ss.dependency 'RxSwift'
+    ss.source_files  = 'Sources/RxSwift/**/*.{swift,h,m}'
+  end
+
+  s.subspec 'UsingReactiveSwift' do |ss|
+    ss.dependency 'ReactiveSwift'
+    ss.source_files  = 'Sources/ReactiveSwift/**/*.{swift,h,m}'
+  end
 end

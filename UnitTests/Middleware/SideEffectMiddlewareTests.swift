@@ -1,4 +1,3 @@
-import RxSwift
 @testable import SwiftRex
 import XCTest
 
@@ -35,9 +34,9 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
         let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
         let sideEffect = SideEffectProducerMock()
-        sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2(), Action3())
+        sideEffect.executeGetStateReturnValue = observable(of: Action1(), Action2(), Action3())
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
-        sut.underlyingDisposeBag = DisposeBag()
+        sut.underlyingSubscriptionOwner = SubscriptionOwner.new()
         sut.underlyingAllowEventToPropagate = true
         var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
@@ -63,9 +62,9 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let getState = { state }
         let event = EventReference()
         let sideEffect = SideEffectProducerMock()
-        sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2(), Action3())
+        sideEffect.executeGetStateReturnValue = observable(of: Action1(), Action2(), Action3())
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
-        sut.underlyingDisposeBag = DisposeBag()
+        sut.underlyingSubscriptionOwner = SubscriptionOwner.new()
         sut.underlyingAllowEventToPropagate = false
         var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
@@ -92,7 +91,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
         let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
         let sideEffect = SideEffectProducerMock()
-        sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2(), Action3())
+        sideEffect.executeGetStateReturnValue = observable(of: Action1(), Action2(), Action3())
         sut.sideEffectForClosure = { event in nil }
 
         // Then
@@ -115,9 +114,11 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
         let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
         let sideEffect = SideEffectProducerMock()
-        sideEffect.executeGetStateReturnValue = Observable.of(Action1(), Action2()).concat(Observable.error(AnyError()))
+        sideEffect.executeGetStateReturnValue =
+            observable(of: Action1(), Action2())
+                .concat(observable(of: ActionProtocol.self, error: SomeError()))
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)
-        sut.underlyingDisposeBag = DisposeBag()
+        sut.underlyingSubscriptionOwner = SubscriptionOwner.new()
         sut.underlyingAllowEventToPropagate = true
         var actionsCalled: [ActionProtocol] = []
         actionHandler.triggerClosure = { action in actionsCalled.append(action) }
@@ -131,7 +132,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         XCTAssertEqual("a1", (actionsCalled[0] as! Action1).name)
         XCTAssertEqual("a2", (actionsCalled[1] as! Action2).name)
         XCTAssertNotNil(actionsCalled[2] as? SideEffectError)
-        XCTAssertNotNil((actionsCalled[2] as! SideEffectError).error as? AnyError)
+        XCTAssertNotNil((actionsCalled[2] as! SideEffectError).error)
         XCTAssertEqual(event, (actionsCalled[2] as! SideEffectError).originalEvent as! EventReference)
     }
 }

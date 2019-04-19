@@ -41,7 +41,10 @@
                 <a href="../Protocols/EventHandler.html">EventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Protocols/StateProvider.html">StateProvider</a>
+                <a href="../Store (contracts).html#/s:8SwiftRex13StateProviderP">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StateProvider.html">StateProvider</a>
               </li>
             </ul>
           </li>
@@ -50,6 +53,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StoreBase.html">StoreBase</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/ActionHandler.html">ActionHandler</a>
@@ -122,7 +128,7 @@
             <a href="../Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
+                <a href="../Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
@@ -138,6 +144,32 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="../Other Typealiases.html">Other Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/FailableObservableSignal">FailableObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/FailableObservableSignalProducer">FailableObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableProperty">ObservableProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableSignal">ObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableSignalProducer">ObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ReactiveProperty">ReactiveProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/SubscriptionOwner">SubscriptionOwner</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -150,7 +182,7 @@
 
                 </div>
               </div>
-            <p>Defines a protocol for implementing a middleware that executes <code>RxSwift</code> side-effects. Instead of implementing the regular <code>handle(event:getState:next:)</code> and <code>handle(action:getState:next:)</code> methods, this protocol only requires a mapping from <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> to <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code>.</p>
+            <p>Defines a protocol for implementing a middleware that executes <code>RxSwift</code> or <code>ReactiveSwift</code> side-effects. Instead of implementing the regular <code>handle(event:getState:next:)</code> and <code>handle(action:getState:next:)</code> methods, this protocol only requires a mapping from <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> to <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code>.</p>
 
           </section>
           <section class="section task-group-section">
@@ -186,9 +218,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/"></a>
-                    <a name="//apple_ref/swift/Property/disposeBag" class="dashAnchor"></a>
-                    <a class="token" href="#/">disposeBag</a>
+                    <a name="/s:8SwiftRex20SideEffectMiddlewareP17subscriptionOwnerXevp"></a>
+                    <a name="//apple_ref/swift/Property/subscriptionOwner" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex20SideEffectMiddlewareP17subscriptionOwnerXevp">subscriptionOwner</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -196,14 +228,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A dispose bag that owns the lifetime of each <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code> observation, usually this <code>DisposeBag</code> will be a stored property in the <code>SideEffectMiddleware</code> instance</p>
+                        <p>A bag that owns the lifetime of each <code><a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a></code> observation, usually this <code><a href="../Other Typealiases.html#/SubscriptionOwner">SubscriptionOwner</a></code> will be a stored property in the <code>SideEffectMiddleware</code> instance</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">disposeBag</span><span class="p">:</span> <span class="kt">DisposeBag</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">subscriptionOwner</span><span class="p">:</span> <span class="kt"><a href="../Other Typealiases.html#/SubscriptionOwner">SubscriptionOwner</a></span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -392,7 +424,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-12-08)</p>
+          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-04-19)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

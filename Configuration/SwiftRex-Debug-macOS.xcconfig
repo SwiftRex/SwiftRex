@@ -1,3 +1,0 @@
-#include "SwiftRex-Common-macOS.xcconfig"
-#include? "Developer.xcconfig"
-#include "Pods/Target Support Files/Pods-SwiftRex macOS/Pods-SwiftRex macOS.debug.xcconfig"

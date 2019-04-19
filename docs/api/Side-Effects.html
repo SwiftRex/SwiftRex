@@ -41,7 +41,10 @@
                 <a href="Protocols/EventHandler.html">EventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="Protocols/StateProvider.html">StateProvider</a>
+                <a href="Store (contracts).html#/s:8SwiftRex13StateProviderP">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/StateProvider.html">StateProvider</a>
               </li>
             </ul>
           </li>
@@ -50,6 +53,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/StoreBase.html">StoreBase</a>
               </li>
               <li class="nav-group-task">
                 <a href="Protocols/ActionHandler.html">ActionHandler</a>
@@ -122,7 +128,7 @@
             <a href="Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
+                <a href="Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
                 <a href="Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
@@ -135,6 +141,32 @@
               </li>
               <li class="nav-group-task">
                 <a href="Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other Typealiases.html">Other Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Other Typealiases.html#/FailableObservableSignal">FailableObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other Typealiases.html#/FailableObservableSignalProducer">FailableObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other Typealiases.html#/ObservableProperty">ObservableProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other Typealiases.html#/ObservableSignal">ObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other Typealiases.html#/ObservableSignalProducer">ObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other Typealiases.html#/ReactiveProperty">ReactiveProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other Typealiases.html#/SubscriptionOwner">SubscriptionOwner</a>
               </li>
             </ul>
           </li>
@@ -162,7 +194,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Defines a protocol for implementing a middleware that executes <code>RxSwift</code> side-effects. Instead of implementing the regular <code>handle(event:getState:next:)</code> and <code>handle(action:getState:next:)</code> methods, this protocol only requires a mapping from <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> to <code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code>.</p>
+                        <p>Defines a protocol for implementing a middleware that executes <code>RxSwift</code> or <code>ReactiveSwift</code> side-effects. Instead of implementing the regular <code>handle(event:getState:next:)</code> and <code>handle(action:getState:next:)</code> methods, this protocol only requires a mapping from <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> to <code><a href="Protocols/SideEffectProducer.html">SideEffectProducer</a></code>.</p>
 
                         <a href="Protocols/SideEffectMiddleware.html" class="slightly-smaller">See more</a>
                       </div>
@@ -222,9 +254,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>🌍 <code>SideEffectProducer</code> defines a protocol for implementing a <code>RxSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
+                        <p>🌍 <code>SideEffectProducer</code> defines a protocol for implementing a <code>RxSwift</code> or <code>ReactiveSwift</code> side-effect producer, that will warms up a cold observation once it&rsquo;s executed. If your producer needs the <code><a href="Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code> that started the side-effect, you can pass it in the <code>SideEffectProducer</code> initializer and save it in a property. Please keep in mind that for every event, a new instance of a <code>SideEffectProducer</code> will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.</p>
 
-<p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift users we bring a <code><a href="Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable pipelines. The Middleware requires the implementation of only one method:</p>
+<p>Some Middlewares are shipped with SwiftRex. While you&rsquo;re still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift or ReactiveSwift users we bring a <code><a href="Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a></code> that is a quick way to reuse your existing Observable / SignalProducer pipelines. The Middleware requires the implementation of only one method:</p>
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sideEffect</span><span class="p">(</span><span class="k">for</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnySideEffectProducer</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">?</span>
 </code></pre>
 
@@ -291,7 +323,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2018-12-08)</p>
+          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-04-19)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

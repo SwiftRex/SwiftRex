@@ -1,6 +1,4 @@
-import RxSwift
-@testable import SwiftRex
-import XCTest
+import SwiftRex
 
 extension SideEffectProducerMock {
     typealias StateType = TestState

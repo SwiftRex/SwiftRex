@@ -1,35 +1,80 @@
 source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
-def shared_pods
-  pod 'RxSwift', '4.4.0', :inhibit_warnings => true
+ios_version = '8.0'
+macos_version = '10.10'
+tvos_version = '9.0'
+watchos_version = '3.0'
+
+pod 'SwiftLint'
+pod 'Sourcery'
+
+def rxswift
+  pod 'RxSwift', '4.5.0', :inhibit_warnings => true
 end
 
-target 'SwiftRex iOS' do
-  platform :ios, '8.0'
-  shared_pods
+def reactiveswift
+  pod 'ReactiveSwift', '6.0.0', :inhibit_warnings => true
 end
 
-target 'SwiftRex watchOS' do
-  platform :watchos, '3.0'
-  shared_pods
+###################
+# RxSwift Targets #
+###################
+
+target 'SwiftRex iOS RxSwift' do
+  platform :ios, ios_version
+  rxswift
 end
 
-target 'SwiftRex macOS' do
-  platform :macos, '10.10'
-  shared_pods
+target 'SwiftRex watchOS RxSwift' do
+  platform :watchos, watchos_version
+  rxswift
 end
 
-target 'SwiftRex tvOS' do
-  platform :tvos, '9.0'
-  shared_pods
+target 'SwiftRex macOS RxSwift' do
+  platform :macos, macos_version
+  rxswift
 end
 
-target 'UnitTests' do
-  platform :macos, '10.10'
-  shared_pods
-  pod 'RxBlocking', '4.4.0'
-  pod 'RxTest', '4.4.0'
+target 'SwiftRex tvOS RxSwift' do
+  platform :tvos, tvos_version
+  rxswift
+end
+
+target 'UnitTests RxSwift' do
+  platform :macos, macos_version
+  rxswift
+  pod 'RxBlocking', '4.5.0'
+  pod 'RxTest', '4.5.0'
+end
+
+#########################
+# ReactiveSwift Targets #
+#########################
+
+target 'SwiftRex iOS ReactiveSwift' do
+  platform :ios, ios_version
+  reactiveswift
+end
+
+target 'SwiftRex watchOS ReactiveSwift' do
+  platform :watchos, watchos_version
+  reactiveswift
+end
+
+target 'SwiftRex macOS ReactiveSwift' do
+  platform :macos, macos_version
+  reactiveswift
+end
+
+target 'SwiftRex tvOS ReactiveSwift' do
+  platform :tvos, tvos_version
+  reactiveswift
+end
+
+target 'UnitTests ReactiveSwift' do
+  platform :macos, macos_version
+  reactiveswift
 end
 
 post_install do |installer|
@@ -37,7 +82,7 @@ post_install do |installer|
         target.build_configurations.each do |config|
             config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
             config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
-            config.build_settings['SWIFT_VERSION'] = "4.2"
+            config.build_settings['SWIFT_VERSION'] = "5.0"
             config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = "YES"
 
             if target.name == 'RxSwift' && config.name == 'Debug'

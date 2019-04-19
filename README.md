@@ -1,18 +1,18 @@
 # SwiftRex
 
-[![Build Status](https://img.shields.io/travis/SwiftRex/SwiftRex.svg?branch=master&maxAge=600)](https://travis-ci.org/SwiftRex/SwiftRex)
-[![Coverage Status](https://img.shields.io/coveralls/github/SwiftRex/SwiftRex.svg?branch=master&maxAge=600)](https://coveralls.io/github/SwiftRex/SwiftRex?branch=master)
+[![Build Status](https://img.shields.io/travis/SwiftRex/SwiftRex.svg?branch=develop&maxAge=600)](https://travis-ci.org/SwiftRex/SwiftRex)
+[![Coverage Status](https://img.shields.io/coveralls/github/SwiftRex/SwiftRex.svg?branch=develop&maxAge=600)](https://coveralls.io/github/SwiftRex/SwiftRex?branch=develop)
 [![Jazzy Documentation](https://swiftrex.github.io/SwiftRex/api/badge.svg)](https://swiftrex.github.io/SwiftRex/api/index.html)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-orange.svg)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://github.com/apple/swift-package-manager)
-![Swift](https://img.shields.io/badge/Swift-4.1-orange.svg)
+![Swift](https://img.shields.io/badge/Swift-5.0-orange.svg)
 [![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-252532.svg)](https://github.com/SwiftRex/SwiftRex)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/SwiftRex/SwiftRex/blob/master/LICENSE)
 
 # Introduction
 
-SwiftRex is a framework that combines [event-sourcing pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing) and reactive programming ([RxSwift](https://github.com/ReactiveX/RxSwift)), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.
+SwiftRex is a framework that combines [event-sourcing pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing) and reactive programming ([RxSwift](https://github.com/ReactiveX/RxSwift) or [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift)), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.
 
 This pattern is also known as "Unidirectional Dataflow" or ["Redux"](https://redux.js.org/basics/data-flow).
 
@@ -138,13 +138,13 @@ Because the `Middleware` accesses all events and the state of the app at any poi
 - Reachability
 - Navigation through the app (Redux Coordinator pattern)
 - `NotificationCenter` and other delegates
-- `RxSwift` observables
+- `RxSwift` observables / `ReactiveSwift` signal producers
 
 ## 🌍 SideEffectProducer
 
-`SideEffectProducer` defines a protocol for implementing a `RxSwift` side-effect producer, that will warms up a cold observation once it's executed. If your producer needs the `EventProtocol` that started the side-effect, you can pass it in the `SideEffectProducer` initializer and save it in a property. Please keep in mind that for every event, a new instance of a `SideEffectProducer` will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.
+`SideEffectProducer` defines a protocol for implementing a `RxSwift` or `ReactiveSwift` side-effect producer, that will warms up a cold observation once it's executed. If your producer needs the `EventProtocol` that started the side-effect, you can pass it in the `SideEffectProducer` initializer and save it in a property. Please keep in mind that for every event, a new instance of a `SideEffectProducer` will be created, which means that every execution is completely isolated from each other and if you need to access a shared resource or cancel previous operations you must be careful implementing such things.
 
-Some Middlewares are shipped with SwiftRex. While you're still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift users we bring a `SideEffectMiddleware` that is a quick way to reuse your existing Observable pipelines. The Middleware requires the implementation of only one method:
+Some Middlewares are shipped with SwiftRex. While you're still welcome to create your own Middlewares from the scratch, some of the stock ones can offer you a shortcut. For RxSwift or ReactiveSwift users we bring a `SideEffectMiddleware` that is a quick way to reuse your existing Observable/SignalProducer pipelines. The Middleware requires the implementation of only one method:
 
 ```swift
 func sideEffect(for event: Event) -> AnySideEffectProducer<StateType>?

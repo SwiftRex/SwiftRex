@@ -1,6 +1,5 @@
-import RxSwift
-@testable import SwiftRex
-import XCTest
+import Foundation
+import SwiftRex
 
 struct Event3: EventProtocol, Equatable {
     var value = UUID()

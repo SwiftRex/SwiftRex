@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>StoreBase Extension Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Extension/StoreBase" class="dashAnchor"></a>
+    <a title="StoreBase Extension Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">SwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        StoreBase Extension Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Store (contracts).html">Store (contracts)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/EventHandler.html">EventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Store (contracts).html#/s:8SwiftRex13StateProviderP">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StateProvider.html">StateProvider</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Store (basic implementation).html">Store (basic implementation)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Reducer.html">Reducer</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Reducer.html">Reducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Reducer.html#/s:8SwiftRex14ActionProtocolP">ActionProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Middleware (basics).html">Middleware (basics)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/BypassMiddleware.html">BypassMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DirectLineMiddleware.html">DirectLineMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Middleware (basics).html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareCy9StateTypeQzGx_q_tAA0E0RzAaHR_AEQy_AFRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SubstateMiddleware.html">SubstateMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Side-Effects.html">Side-Effects</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/SideEffectMiddleware.html">SideEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SideEffectProducer.html">SideEffectProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SideEffectError.html">SideEffectError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/AnySideEffectProducer.html">AnySideEffectProducer</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Composition helpers.html">Composition helpers</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/Monoid.html">Monoid</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Closure type-aliases.html">Closure type-aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex17NextActionHandlera">NextActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex16NextEventHandlera">NextEventHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Other Typealiases.html">Other Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/FailableObservableSignal">FailableObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/FailableObservableSignalProducer">FailableObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableProperty">ObservableProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableSignal">ObservableSignal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ObservableSignalProducer">ObservableSignalProducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/ReactiveProperty">ReactiveProperty</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other Typealiases.html#/SubscriptionOwner">SubscriptionOwner</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>StoreBase</h1>
+            
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/"></a>
+                    <a name="//apple_ref/swift/Alias/E" class="dashAnchor"></a>
+                    <a class="token" href="#/">E</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/"></a>
+                    <a name="//apple_ref/swift/Method/subscribe(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/">subscribe(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Because <code><a href="../Classes/StoreBase.html">StoreBase</a></code> is a <code><a href="../Store (contracts).html#/s:8SwiftRex13StateProviderP">StateProvider</a></code>, it exposes a way for an <code>UIViewController</code> or other interested classes to subscribe to <code>State</code> changes.</p>
+
+<p>By default, this observation will have the following characteristics:</p>
+
+<ul>
+<li>Hot observable, no observation side-effect</li>
+<li>Replays the last (or initial) state</li>
+<li>Never completes</li>
+<li>Never fails</li>
+<li>Observes on the <code>MainScheduler</code></li>
+</ul>
+
+<p>Internally it maps to a <code>BehaviorSubject&lt;StateType&gt;</code>.</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-04-19)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

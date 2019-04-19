@@ -1,8 +1,7 @@
-// Generated using Sourcery 0.13.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.16.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 import Foundation
-import RxSwift
 @testable import SwiftRex
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
@@ -11,7 +10,6 @@ import AppKit
 #endif
 
 class ActionHandlerMock: ActionHandler {
-
     // MARK: - trigger
 
     var triggerCallsCount = 0
@@ -26,10 +24,8 @@ class ActionHandlerMock: ActionHandler {
         triggerReceivedAction = action
         triggerClosure?(action)
     }
-
 }
 class SideEffectProducerMock: SideEffectProducer {
-
     // MARK: - execute
 
     var executeGetStateCallsCount = 0
@@ -37,13 +33,12 @@ class SideEffectProducerMock: SideEffectProducer {
         return executeGetStateCallsCount > 0
     }
     var executeGetStateReceivedGetState: (GetState<StateType>)?
-    var executeGetStateReturnValue: Observable<ActionProtocol>!
-    var executeGetStateClosure: ((@escaping GetState<StateType>) -> Observable<ActionProtocol>)?
+    var executeGetStateReturnValue: FailableObservableSignalProducer<ActionProtocol>!
+    var executeGetStateClosure: ((@escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol>)?
 
-    func execute(getState: @escaping GetState<StateType>) -> Observable<ActionProtocol> {
+    func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol> {
         executeGetStateCallsCount += 1
         executeGetStateReceivedGetState = getState
         return executeGetStateClosure.map({ $0(getState) }) ?? executeGetStateReturnValue
     }
-
 }

@@ -1,32 +1,38 @@
 PODS:
-  - RxAtomic (4.4.0)
-  - RxBlocking (4.4.0):
-    - RxAtomic (~> 4.4)
-    - RxSwift (~> 4.0)
-  - RxSwift (4.4.0):
-    - RxAtomic (~> 4.4)
-  - RxTest (4.4.0):
-    - RxAtomic (~> 4.4)
-    - RxSwift (~> 4.0)
+  - ReactiveSwift (6.0.0)
+  - RxBlocking (4.5.0):
+    - RxSwift (>= 4.4.2, ~> 4.4)
+  - RxSwift (4.5.0)
+  - RxTest (4.5.0):
+    - RxSwift (>= 4.4.2, ~> 4.4)
+  - Sourcery (0.16.0)
+  - SwiftLint (0.31.0)
 
 DEPENDENCIES:
-  - RxBlocking (= 4.4.0)
-  - RxSwift (= 4.4.0)
-  - RxTest (= 4.4.0)
+  - ReactiveSwift (= 6.0.0)
+  - RxBlocking (= 4.5.0)
+  - RxSwift (= 4.5.0)
+  - RxTest (= 4.5.0)
+  - Sourcery
+  - SwiftLint
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - RxAtomic
+    - ReactiveSwift
     - RxBlocking
     - RxSwift
     - RxTest
+    - Sourcery
+    - SwiftLint
 
 SPEC CHECKSUMS:
-  RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
-  RxBlocking: 138ad53217434444d6eeeb4fb406a45431d92e31
-  RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
-  RxTest: 19d03286bdc0a3aaea5d61d4cde31fdf4bb8a5ba
+  ReactiveSwift: 24b7ed245617bbfd30ee0c87779b6c64ac1b4518
+  RxBlocking: 79413e4d916f44bb3e113c5b2cc059e36fe58910
+  RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
+  RxTest: 3ccb66bfbace0bf7df1c43a7c75d046f8ce60372
+  Sourcery: 3e55aad9719ee5782ab81eb16addd44d272e4d13
+  SwiftLint: 7a0227733d786395817373b2d0ca799fd0093ff3
 
-PODFILE CHECKSUM: 2479bc7e1a8840379c8ff85384e23523d293f511
+PODFILE CHECKSUM: 1b0fc39337af5854c24df01ed7f30793156a2986
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1
