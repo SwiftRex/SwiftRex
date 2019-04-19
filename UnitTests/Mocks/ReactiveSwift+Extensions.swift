@@ -1,3 +1,4 @@
+#if canImport(ReactiveSwift)
 import struct ReactiveSwift.SignalProducer
 import class ReactiveSwift.ScopedDisposable
 import class ReactiveSwift.CompositeDisposable
@@ -37,3 +38,4 @@ extension ScopedDisposable where Inner == CompositeDisposable {
         return .init(.init())
     }
 }
+#endif

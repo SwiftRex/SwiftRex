@@ -1,3 +1,5 @@
+#if canImport(RxSwift)
+import Foundation
 import RxSwift
 @testable import SwiftRex
 import XCTest
@@ -342,3 +344,4 @@ class StoreBaseTests: XCTestCase {
         wait(for: [shouldDispose], timeout: 0)
     }
 }
+#endif

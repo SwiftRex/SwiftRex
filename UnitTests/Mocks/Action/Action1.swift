@@ -1,3 +1,4 @@
+import Foundation
 import SwiftRex
 
 struct Action1: ActionProtocol, Equatable {

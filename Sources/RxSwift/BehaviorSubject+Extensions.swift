@@ -1,3 +1,5 @@
+#if canImport(RxSwift)
+import Foundation
 import RxSwift
 
 extension BehaviorSubject {
@@ -25,3 +27,4 @@ extension BehaviorSubject {
 func reactiveProperty<T>(initialValue: T) -> ReactiveProperty<T> {
     return BehaviorSubject(value: initialValue)
 }
+#endif

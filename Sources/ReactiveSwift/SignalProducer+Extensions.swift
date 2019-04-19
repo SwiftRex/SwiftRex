@@ -1,3 +1,4 @@
+#if canImport(ReactiveSwift)
 import ReactiveSwift
 
 extension SignalProducer {
@@ -12,3 +13,4 @@ extension SignalProducer {
         }
     }
 }
+#endif

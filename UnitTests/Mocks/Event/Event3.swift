@@ -1,3 +1,4 @@
+import Foundation
 import SwiftRex
 
 struct Event3: EventProtocol, Equatable {
