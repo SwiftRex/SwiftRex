@@ -10,7 +10,6 @@ import AppKit
 #endif
 
 class ActionHandlerMock: ActionHandler {
-
     // MARK: - trigger
 
     var triggerCallsCount = 0
@@ -25,10 +24,8 @@ class ActionHandlerMock: ActionHandler {
         triggerReceivedAction = action
         triggerClosure?(action)
     }
-
 }
 class SideEffectProducerMock: SideEffectProducer {
-
     // MARK: - execute
 
     var executeGetStateCallsCount = 0
@@ -44,5 +41,4 @@ class SideEffectProducerMock: SideEffectProducer {
         executeGetStateReceivedGetState = getState
         return executeGetStateClosure.map({ $0(getState) }) ?? executeGetStateReturnValue
     }
-
 }

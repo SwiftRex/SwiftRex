@@ -11,7 +11,6 @@ let createReducerMock: () -> (Reducer<TestState>, ReducerMock) = {
 }
 
 class ReducerMock {
-
     // MARK: - reduce
 
     var reduceActionCallsCount = 0

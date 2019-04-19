@@ -72,7 +72,6 @@ private func timelyObservableOf(actions: [ActionProtocol],
 
 #if canImport(ReactiveSwift)
 import struct ReactiveSwift.SignalProducer
-import struct Result.AnyError
 
 private func timelyObservableOf(actions: [ActionProtocol],
                                 timer: DispatchSourceTimer) -> FailableObservableSignalProducer<ActionProtocol> {

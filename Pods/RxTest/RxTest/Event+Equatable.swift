@@ -12,7 +12,7 @@ import class Foundation.NSError
 internal func equals<Element: Equatable>(lhs: Event<Element>, rhs: Event<Element>) -> Bool {
     switch (lhs, rhs) {
     case (.completed, .completed): return true
-    case (.error(let e1), .error(let e2)):
+    case let (.error(e1), .error(e2)):
         #if os(Linux)
         return  "\(e1)" == "\(e2)"
         #else
@@ -23,7 +23,7 @@ internal func equals<Element: Equatable>(lhs: Event<Element>, rhs: Event<Element
             && error1.code == error2.code
             && "\(e1)" == "\(e2)"
         #endif
-    case (.next(let v1), .next(let v2)): return v1 == v2
+    case let (.next(v1), .next(v2)): return v1 == v2
     default: return false
     }
 }
@@ -31,7 +31,7 @@ internal func equals<Element: Equatable>(lhs: Event<Element>, rhs: Event<Element
 internal func equals<Element: Equatable>(lhs: Event<Element?>, rhs: Event<Element?>) -> Bool {
     switch (lhs, rhs) {
     case (.completed, .completed): return true
-    case (.error(let e1), .error(let e2)):
+    case let (.error(e1), .error(e2)):
         #if os(Linux)
         return  "\(e1)" == "\(e2)"
         #else
@@ -42,14 +42,14 @@ internal func equals<Element: Equatable>(lhs: Event<Element?>, rhs: Event<Elemen
             && error1.code == error2.code
             && "\(e1)" == "\(e2)"
         #endif
-    case (.next(let v1), .next(let v2)): return v1 == v2
+    case let (.next(v1), .next(v2)): return v1 == v2
     default: return false
     }
 }
 
 internal func equals<Element: Equatable>(lhs: SingleEvent<Element>, rhs: SingleEvent<Element>) -> Bool {
     switch (lhs, rhs) {
-    case (.error(let e1), .error(let e2)):
+    case let (.error(e1), .error(e2)):
         #if os(Linux)
         return  "\(e1)" == "\(e2)"
         #else
@@ -60,7 +60,7 @@ internal func equals<Element: Equatable>(lhs: SingleEvent<Element>, rhs: SingleE
             && error1.code == error2.code
             && "\(e1)" == "\(e2)"
         #endif
-    case (.success(let v1), .success(let v2)): return v1 == v2
+    case let (.success(v1), .success(v2)): return v1 == v2
     default: return false
     }
 }
@@ -68,7 +68,7 @@ internal func equals<Element: Equatable>(lhs: SingleEvent<Element>, rhs: SingleE
 internal func equals<Element: Equatable>(lhs: MaybeEvent<Element>, rhs: MaybeEvent<Element>) -> Bool {
     switch (lhs, rhs) {
     case (.completed, .completed): return true
-    case (.error(let e1), .error(let e2)):
+    case let (.error(e1), .error(e2)):
         #if os(Linux)
         return  "\(e1)" == "\(e2)"
         #else
@@ -79,7 +79,7 @@ internal func equals<Element: Equatable>(lhs: MaybeEvent<Element>, rhs: MaybeEve
             && error1.code == error2.code
             && "\(e1)" == "\(e2)"
         #endif
-    case (.success(let v1), .success(let v2)): return v1 == v2
+    case let (.success(v1), .success(v2)): return v1 == v2
     default: return false
     }
 }
@@ -92,7 +92,7 @@ extension CompletableEvent: Equatable {
     public static func == (lhs: CompletableEvent, rhs: CompletableEvent) -> Bool {
         switch (lhs, rhs) {
         case (.completed, .completed): return true
-        case (.error(let e1), .error(let e2)):
+        case let (.error(e1), .error(e2)):
             #if os(Linux)
             return  "\(e1)" == "\(e2)"
             #else
