@@ -41,8 +41,8 @@ end
 target 'UnitTests RxSwift' do
   platform :macos, macos_version
   rxswift
-  pod 'RxBlocking', '4.4.0'
-  pod 'RxTest', '4.4.0'
+  pod 'RxBlocking', '4.5.0'
+  pod 'RxTest', '4.5.0'
 end
 
 #########################
