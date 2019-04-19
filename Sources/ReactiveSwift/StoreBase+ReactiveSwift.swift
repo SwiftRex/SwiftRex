@@ -1,5 +1,4 @@
 import ReactiveSwift
-import enum Result.NoError
 
 extension StoreBase {
     public typealias Value = State
@@ -17,7 +16,7 @@ extension StoreBase {
     ///
     /// - note: If `self` is a composed property, the producer would be
     ///         bound to the lifetime of its sources.
-    public var producer: SignalProducer<Value, NoError> {
+    public var producer: SignalProducer<Value, Never> {
         return state.producer
     }
 
@@ -27,7 +26,7 @@ extension StoreBase {
     ///
     /// - note: If `self` is a composed property, the signal would be
     ///         bound to the lifetime of its sources.
-    public var signal: Signal<Value, NoError> {
+    public var signal: Signal<Value, Never> {
         return state.signal
     }
 }
