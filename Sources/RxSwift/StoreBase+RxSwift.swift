@@ -1,3 +1,4 @@
+#if canImport(RxSwift)
 import RxSwift
 
 extension StoreBase {
@@ -24,3 +25,4 @@ extension StoreBase {
             .subscribe(observer)
     }
 }
+#endif

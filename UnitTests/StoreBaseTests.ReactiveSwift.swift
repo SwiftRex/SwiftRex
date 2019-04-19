@@ -1,3 +1,5 @@
+#if canImport(ReactiveSwift)
+import Foundation
 import ReactiveSwift
 @testable import SwiftRex
 import XCTest
@@ -425,3 +427,4 @@ class StoreBaseTests: XCTestCase {
         XCTAssertEqual(sut.value.name, "action1")
     }
 }
+#endif

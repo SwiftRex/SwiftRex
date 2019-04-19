@@ -1,3 +1,4 @@
+#if canImport(RxSwift)
 import RxSwift
 import SwiftRex
 
@@ -18,3 +19,4 @@ extension SubscriptionOwner {
         return DisposeBag()
     }
 }
+#endif

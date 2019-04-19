@@ -1,3 +1,4 @@
+#if canImport(RxSwift)
 import RxSwift
 
 extension Observable {
@@ -7,3 +8,4 @@ extension Observable {
         subscribe(onNext: onSuccess, onError: onFailure).disposed(by: subscriptionOwner)
     }
 }
+#endif

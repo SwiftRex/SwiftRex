@@ -1,3 +1,4 @@
+#if canImport(ReactiveSwift)
 import struct ReactiveSwift.SignalProducer
 import class ReactiveSwift.Signal
 import protocol ReactiveSwift.PropertyProtocol
@@ -17,3 +18,4 @@ extension StateProvider {
     /// The elements in the ObservableType sequence, which is expected to be the `StateType` (the app global state)
     public typealias StateType = Value
 }
+#endif

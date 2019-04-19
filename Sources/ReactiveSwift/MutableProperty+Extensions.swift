@@ -1,3 +1,4 @@
+#if canImport(ReactiveSwift)
 import ReactiveSwift
 
 extension MutableProperty {
@@ -9,3 +10,4 @@ extension MutableProperty {
 func reactiveProperty<T>(initialValue: T) -> ReactiveProperty<T> {
     return MutableProperty(initialValue)
 }
+#endif

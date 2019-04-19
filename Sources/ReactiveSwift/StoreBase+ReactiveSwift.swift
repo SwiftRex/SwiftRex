@@ -1,3 +1,4 @@
+#if canImport(ReactiveSwift)
 import ReactiveSwift
 
 extension StoreBase {
@@ -30,3 +31,4 @@ extension StoreBase {
         return state.signal
     }
 }
+#endif
