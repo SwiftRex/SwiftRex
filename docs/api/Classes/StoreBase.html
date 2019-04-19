@@ -14,7 +14,7 @@
     <a title="StoreBase Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (91% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -41,7 +41,10 @@
                 <a href="../Protocols/EventHandler.html">EventHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Protocols/StateProvider.html">StateProvider</a>
+                <a href="../Store (contracts).html#/s:8SwiftRex13StateProviderP">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StateProvider.html">StateProvider</a>
               </li>
             </ul>
           </li>
@@ -50,6 +53,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Classes/StoreBase.html">StoreBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StoreBase.html">StoreBase</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/ActionHandler.html">ActionHandler</a>
@@ -122,7 +128,7 @@
             <a href="../Closure type-aliases.html">Closure type-aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Closure type-aliases.html#/EventEvaluation">EventEvaluation</a>
+                <a href="../Closure type-aliases.html#/s:8SwiftRex15EventEvaluationa">EventEvaluation</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Closure type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
@@ -180,10 +186,10 @@
 
 <ul>
 <li>an <code><a href="../Protocols/EventHandler.html">EventHandler</a></code>: that&rsquo;s the store input, so it&rsquo;s able to receive and distribute events of type <code><a href="../Store (contracts).html#/s:8SwiftRex13EventProtocolP">EventProtocol</a></code>. Being an event handler means that an <code>UIViewController</code> can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>.</li>
-<li>a <code><a href="../Protocols/StateProvider.html">StateProvider</a></code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an <code>UIViewController</code> can subscribe to state changes and react to them.</li>
+<li>a <code><a href="../Store (contracts).html#/s:8SwiftRex13StateProviderP">StateProvider</a></code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an <code>UIViewController</code> can subscribe to state changes and react to them.</li>
 </ul>
 
-<p>The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> is the single point of contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code><a href="../Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="../Protocols/StateProvider.html">StateProvider</a></code> -, both eventually pointing to the same instance.</p>
+<p>The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="../Store (contracts).html#/s:8SwiftRex5StoreP">Store</a></code> is the single point of contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code><a href="../Protocols/EventHandler.html">EventHandler</a></code> and <code><a href="../Store (contracts).html#/s:8SwiftRex13StateProviderP">StateProvider</a></code> -, both eventually pointing to the same instance.</p>
 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreBase.png" alt="Store and ViewController"></p>
 
@@ -405,103 +411,10 @@
                 </li>
               </ul>
             </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex9StoreBaseC1Ea"></a>
-                    <a name="//apple_ref/swift/Alias/E" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex9StoreBaseC1Ea">E</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">E</span> <span class="o">=</span> <span class="kt">State</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/"></a>
-                    <a name="//apple_ref/swift/Method/subscribe(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/">subscribe(_:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Because <code>StoreBase</code> is a <code><a href="../Protocols/StateProvider.html">StateProvider</a></code>, it exposes a way for an <code>UIViewController</code> or other interested classes to subscribe to <code>State</code> changes.</p>
-
-<p>By default, this observation will have the following characteristics:</p>
-
-<ul>
-<li>Hot observable, no observation side-effect</li>
-<li>Replays the last (or initial) state</li>
-<li>Never completes</li>
-<li>Never fails</li>
-<li>Observes on the <code>MainScheduler</code></li>
-</ul>
-
-<p>Internally it maps to a <code>BehaviorSubject&lt;StateType&gt;</code>.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">subscribe</span><span class="o">&lt;</span><span class="kt">O</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">observer</span><span class="p">:</span> <span class="kt">O</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Disposable</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>observer</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the action to be managed by this store and handled by its middlewares and reducers</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>Subscription for <code>observer</code> that should be kept in a <code>disposeBag</code> for the same lifetime as its observer.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-03-18)</p>
+          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-04-19)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
