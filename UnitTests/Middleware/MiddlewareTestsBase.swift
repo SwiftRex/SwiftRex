@@ -2,7 +2,6 @@
 import XCTest
 
 class MiddlewareTestsBase: XCTestCase {
-
     func lastActionInChain<A: ActionProtocol & Equatable>(_ action: A,
                                                           state: TestState,
                                                           expectation: XCTestExpectation)

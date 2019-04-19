@@ -2,7 +2,6 @@
 import XCTest
 
 class BypassMiddlewareTests: MiddlewareTestsBase {
-
     func testBypassMiddlewareAction() {
         // Given
         let sut = BypassMiddleware<TestState>()
