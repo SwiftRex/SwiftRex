@@ -5,7 +5,7 @@ import SwiftRex
 
 func observable<T>(of type: T.Type, error: Error) -> SignalProducer<T, Error> {
     return SignalProducer<T, Error> { observer, _ in
-        observer.send(error: .init(error))
+        observer.send(error: error)
     }
 }
 
@@ -24,8 +24,11 @@ extension SignalProducer {
 
 extension SignalProducer where Value: Collection {
     func toArray() throws -> [Value.Element] {
-        let collection = try self.single()?.dematerialize()
-        return collection.map(Array.init) ?? []
+        switch single() {
+        case let .some(.success(collection)): return Array(collection)
+        case let .some(.failure(error)): throw error
+        case .none: return []
+        }
     }
 }
 
