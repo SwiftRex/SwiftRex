@@ -4,7 +4,6 @@ import Foundation
  When the `SideEffectMiddleware` starts a `SideEffectProducer` which throws an error, the middleware will wrap the error in a `ActionProtocol` of type `SideEffectError`, which contains details about the error, the date and time when it happened and the original event that was being handled by the middleware.
  */
 public struct SideEffectError: ActionProtocol {
-
     /// Date and time when the error happened
     public var date: Date
 
@@ -19,7 +18,6 @@ public struct SideEffectError: ActionProtocol {
  Defines a protocol for implementing a middleware that executes `RxSwift` or `ReactiveSwift` side-effects. Instead of implementing the regular `handle(event:getState:next:)` and `handle(action:getState:next:)` methods, this protocol only requires a mapping from `EventProtocol` to `SideEffectProducer`.
  */
 public protocol SideEffectMiddleware: Middleware {
-
     /// Allows the following middlewares in the chain to have a chance of handling the same events already handled
     var allowEventToPropagate: Bool { get }
 

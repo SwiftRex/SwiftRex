@@ -16,7 +16,6 @@
  Given the current state (that can be checked consistently at any point), return an Observable sequence of `Action`. In your Rx pipeline you can trigger as many side-effects as you want, and every time an Action occurs you can easily notify the observer, that forwards it to the Store.
  */
 public protocol SideEffectProducer {
-
     /// State type that is handled by our `SideEffectMiddleware`
     associatedtype StateType
 

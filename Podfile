@@ -6,6 +6,9 @@ macos_version = '10.10'
 tvos_version = '9.0'
 watchos_version = '3.0'
 
+pod 'SwiftLint'
+pod 'Sourcery'
+
 def rxswift
   pod 'RxSwift', '4.5.0', :inhibit_warnings => true
 end

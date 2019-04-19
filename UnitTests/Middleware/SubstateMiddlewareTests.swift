@@ -2,7 +2,6 @@
 import XCTest
 
 class SubstateMiddlewareTests: MiddlewareTestsBase {
-
     func testSubstateMiddlewareAction() {
         // Given
         let nameMiddleware = MiddlewareMock<String>()

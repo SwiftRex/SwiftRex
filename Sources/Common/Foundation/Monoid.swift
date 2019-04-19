@@ -4,7 +4,6 @@
  For example, having a `f(x) -> x` and a `g(x) -> x`, one would be able to compose `h = f <> g` in a way that the new function `h(x)` will be similar to `g(f(x))`
  */
 public protocol Monoid {
-
     /**
      Neutral monoidal container. Composing any monoid with an empty monoid should result in a function unchanged, regardless if the empty element is on the left-hand side or the right-hand side.
 

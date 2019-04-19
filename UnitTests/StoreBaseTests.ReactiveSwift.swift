@@ -3,7 +3,6 @@ import ReactiveSwift
 import XCTest
 
 class StoreBaseTests: XCTestCase {
-
     func testStoreDispatchEvent() {
         // Given
         let event = Event1()
