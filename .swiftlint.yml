@@ -36,9 +36,9 @@ disabled_rules:
   - force_try
   - force_cast
 excluded:
-  - Carthage
-  - Crashlytics.framework
   - Sources/Common/CodeGeneration
+  - Sources/SwiftRex RxSwift
+  - Sources/SwiftRex ReactiveSwift
   - Pods
   - .build
   - DerivedData
