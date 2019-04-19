@@ -5,7 +5,10 @@ extension SignalProducer {
                    onFailure: @escaping (Error) -> Void,
                    disposeBy subscriptionOwner: SubscriptionOwner) {
         subscriptionOwner.inner += startWithResult { result in
-            result.analysis(ifSuccess: onSuccess, ifFailure: onFailure)
+            switch result {
+            case let .success(value): onSuccess(value)
+            case let .failure(error): onFailure(error)
+            }
         }
     }
 }

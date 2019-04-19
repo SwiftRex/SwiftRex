@@ -116,7 +116,6 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
  - Returns: A `ComposedMiddleware` that calls the `lhs` methods before the `rhs` ones. If `lhs` is already a `ComposedMiddleware`, we will return the same instance after mutating it to have the `rhs` in the end of its chain.
  */
 public func <> <M1: Middleware, M2: Middleware> (lhs: M1, rhs: M2) -> ComposedMiddleware<M1.StateType> where M1.StateType == M2.StateType {
-
     let container = lhs as? ComposedMiddleware<M1.StateType> ?? {
         let newContainer: ComposedMiddleware<M1.StateType> = .init()
         newContainer.append(middleware: lhs)

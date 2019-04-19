@@ -34,7 +34,6 @@
  - `RxSwift` observables or `ReactiveSwift` signal producers
  */
 public protocol Middleware: class {
-
     /**
      The State that this `Middleware` knowns how to handle. Thanks to lenses, this state can be a sub-state lifted to a global state. Please check `lift(_:)` for more details.
      */

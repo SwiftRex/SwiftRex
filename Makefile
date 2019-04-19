@@ -48,19 +48,16 @@ test-all: test-reactiveswift test-rxswift
 
 # Lint
 
-lint-check: check-lint
 lint-check:
-	swiftlint
+	Pods/SwiftLint/swiftlint
 
-lint-autocorrect: check-lint
 lint-autocorrect:
-	swiftlint autocorrect
+	Pods/SwiftLint/swiftlint autocorrect
 
 # Sourcery
 
-sourcery: check-sourcery
 sourcery:
-	sourcery
+	Pods/Sourcery/bin/sourcery
 
 # CocoaPods
 pod-install:
@@ -80,21 +77,6 @@ prebuild-ios: sourcery lint-autocorrect lint-check
 prebuild-watchos: sourcery lint-autocorrect lint-check
 
 prebuild-tvos: sourcery lint-autocorrect lint-check
-
-# Validate pre-reqs
-
-LINT := $(shell command -v swiftlint 2> /dev/null)
-SOURCERY := $(shell command -v sourcery 2> /dev/null)
-
-check-lint:
-ifndef LINT
-    $(error "Swiftlint not installed, please run `brew install swiftlint`")
-endif
-
-check-sourcery:
-ifndef SOURCERY
-    $(error "Sourcery not installed, please run `brew install sourcery`")
-endif
 
 # Help
 
@@ -143,10 +125,4 @@ help:
 	@echo
 	@echo make prebuild-tvos
 	@echo -- runs the pre-build phases on tvOS target
-	@echo
-	@echo make check-lint
-	@echo -- checks if Swiftlint is installed
-	@echo
-	@echo make check-sourcery
-	@echo -- checks if Sourcery is installed
 	@echo

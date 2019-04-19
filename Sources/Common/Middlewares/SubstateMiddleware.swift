@@ -16,7 +16,7 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
 
      For `SubstateMiddleware` this property is only a proxy call to the inner middleware's `ActionHandler`, and once actions don't care about `StateType` there's no lifting involved.
      */
-    public weak var actionHandler: ActionHandler? {
+    public var actionHandler: ActionHandler? {
         get {
             return partMiddleware.actionHandler
         }
