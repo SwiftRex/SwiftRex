@@ -7,11 +7,11 @@ tvos_version = '9.0'
 watchos_version = '3.0'
 
 def rxswift
-  pod 'RxSwift', '4.4.0', :inhibit_warnings => true
+  pod 'RxSwift', '4.5.0', :inhibit_warnings => true
 end
 
 def reactiveswift
-  pod 'ReactiveSwift', '4.0.0', :inhibit_warnings => true
+  pod 'ReactiveSwift', '6.0.0', :inhibit_warnings => true
 end
 
 ###################
