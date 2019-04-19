@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SwiftRex'
-  s.version          = '0.3.1'
+  s.version          = '0.4.0'
   s.summary          = 'SwiftRex is a Redux implementation on top of RxSwift'
   s.description      = <<-DESC
                         SwiftRex is a framework that combines event-sourcing pattern and reactive programming (RxSwift), providing a central state Store of which your ViewControllers can observe and react to, as well as dispatching events coming from the user interaction.
