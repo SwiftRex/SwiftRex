@@ -78,17 +78,6 @@ prebuild-watchos: sourcery lint-autocorrect lint-check
 
 prebuild-tvos: sourcery lint-autocorrect lint-check
 
-# SPM Symlinks
-
-recreate-symlinks:
-	rm -rf Sources/SwiftRex\ RxSwift
-	mkdir Sources/SwiftRex\ RxSwift
-	cd Sources/SwiftRex\ RxSwift && ln -s ../Common/**/* . && ln -s ../RxSwift/* .
-
-	rm -rf Sources/SwiftRex\ ReactiveSwift
-	mkdir Sources/SwiftRex\ ReactiveSwift
-	cd Sources/SwiftRex\ ReactiveSwift && ln -s ../Common/**/* . && ln -s ../ReactiveSwift/* .
-
 # Help
 
 help:
@@ -136,7 +125,4 @@ help:
 	@echo
 	@echo make prebuild-tvos
 	@echo -- runs the pre-build phases on tvOS target
-	@echo
-	@echo make recreate-symlinks
-	@echo -- deletes folders "Sources/SwiftRex RxSwift" and "Sources/SwiftRex ReactiveSwift" and recreates them by linking all the other source folders
 	@echo
