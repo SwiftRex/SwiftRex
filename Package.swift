@@ -7,7 +7,7 @@ let package = Package(
         .library(name: "SwiftRex", targets: ["SwiftRex"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("4.5.0"))
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("5.0.0"))
     ],
     targets: [
         .target(name: "SwiftRex", dependencies: ["RxSwift"], path: "Sources")
