@@ -2,7 +2,7 @@
 import RxSwift
 
 extension StoreBase {
-    public typealias Element = State // swiftlint:disable:this type_name
+    public typealias Element = State
 
     /**
      Because `StoreBase` is a `StateProvider`, it exposes a way for an `UIViewController` or other interested classes to subscribe to `State` changes.
