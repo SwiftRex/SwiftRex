@@ -5,8 +5,8 @@ PODS:
   - RxSwift (5.0.0)
   - RxTest (5.0.0):
     - RxSwift (~> 5)
-  - Sourcery (0.16.0)
-  - SwiftLint (0.31.0)
+  - Sourcery (0.16.1)
+  - SwiftLint (0.32.0)
 
 DEPENDENCIES:
   - ReactiveSwift (= 6.0.0)
@@ -30,8 +30,8 @@ SPEC CHECKSUMS:
   RxBlocking: c67185d26498ea3cbe3e121917c3c16739e43123
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
   RxTest: 4349afe98f564e0a9bc19063368904622d17d49a
-  Sourcery: 3e55aad9719ee5782ab81eb16addd44d272e4d13
-  SwiftLint: 7a0227733d786395817373b2d0ca799fd0093ff3
+  Sourcery: 16779170d35ee204666843b09031f36721a84bcc
+  SwiftLint: 009a898ef2a1c851f45e1b59349bf6ff2ddc990d
 
 PODFILE CHECKSUM: 12b737af7713d1e5b2f94f8aeff289d6cf6dcb4c
 
