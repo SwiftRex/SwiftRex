@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>18D109</string>
+	<string>18E226</string>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>SwiftTryCatch</string>
+	<string>TryCatch</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.cocoapods.SwiftTryCatch</string>
+	<string>Pixle.TryCatch</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>SwiftTryCatch</string>
+	<string>TryCatch</string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>1.0</string>
 	<key>CFBundleSupportedPlatforms</key>
 	<array>
 		<string>MacOSX</string>
@@ -40,5 +38,7 @@
 	<string>1010</string>
 	<key>DTXcodeBuild</key>
 	<string>10B61</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2019 Pixle. All rights reserved.</string>
 </dict>
 </plist>
