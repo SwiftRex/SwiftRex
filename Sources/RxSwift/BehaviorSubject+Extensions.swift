@@ -3,12 +3,12 @@ import Foundation
 import RxSwift
 
 extension BehaviorSubject {
-    var currentValue: E {
+    var currentValue: Element {
         return try! value()
     }
 
-    func modify(_ action: (inout E) -> Void) {
-        let mutation: ((inout E) -> Void) -> Void = { [unowned self] action in
+    func modify(_ action: (inout Element) -> Void) {
+        let mutation: ((inout Element) -> Void) -> Void = { [unowned self] action in
             var mutableState = self.currentValue
             action(&mutableState)
             self.onNext(mutableState)

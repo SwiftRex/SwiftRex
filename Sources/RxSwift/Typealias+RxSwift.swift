@@ -11,6 +11,6 @@ public typealias ReactiveProperty<T> = BehaviorSubject<T>
 
 extension StateProvider {
     /// The elements in the ObservableType sequence, which is expected to be the `StateType` (the app global state)
-    public typealias StateType = E
+    public typealias StateType = Element
 }
 #endif
