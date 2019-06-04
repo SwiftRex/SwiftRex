@@ -404,6 +404,22 @@
 		D636584622A702220073FCD7 /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
 		D636584822A702220073FCD7 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRex.framework */; };
 		D636584922A702220073FCD7 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AF54AEF9772F2D57D3CABB /* Pods_UnitTests_ReactiveSwift.framework */; };
+		D636586122A70C9F0073FCD7 /* Typealias+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585F22A70C060073FCD7 /* Typealias+Combine.swift */; };
+		D636586222A70CA10073FCD7 /* Typealias+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585F22A70C060073FCD7 /* Typealias+Combine.swift */; };
+		D636586322A70CA20073FCD7 /* Typealias+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585F22A70C060073FCD7 /* Typealias+Combine.swift */; };
+		D636586422A70CA30073FCD7 /* Typealias+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585F22A70C060073FCD7 /* Typealias+Combine.swift */; };
+		D636586522A70F000073FCD7 /* StoreBase+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636586022A70C060073FCD7 /* StoreBase+Combine.swift */; };
+		D636586622A70F010073FCD7 /* StoreBase+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636586022A70C060073FCD7 /* StoreBase+Combine.swift */; };
+		D636586722A70F020073FCD7 /* StoreBase+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636586022A70C060073FCD7 /* StoreBase+Combine.swift */; };
+		D636586822A70F040073FCD7 /* StoreBase+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636586022A70C060073FCD7 /* StoreBase+Combine.swift */; };
+		D636586922A710CD0073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585D22A70C060073FCD7 /* CurrentValueSubject+Extensions.swift */; };
+		D636586A22A710CF0073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585D22A70C060073FCD7 /* CurrentValueSubject+Extensions.swift */; };
+		D636586B22A710D00073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585D22A70C060073FCD7 /* CurrentValueSubject+Extensions.swift */; };
+		D636586C22A710D10073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585D22A70C060073FCD7 /* CurrentValueSubject+Extensions.swift */; };
+		D636586D22A711210073FCD7 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585E22A70C060073FCD7 /* Publisher+Extensions.swift */; };
+		D636586E22A711220073FCD7 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585E22A70C060073FCD7 /* Publisher+Extensions.swift */; };
+		D636586F22A711240073FCD7 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585E22A70C060073FCD7 /* Publisher+Extensions.swift */; };
+		D636587022A711250073FCD7 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636585E22A70C060073FCD7 /* Publisher+Extensions.swift */; };
 		F052B59FA1FB75CA6C28D623 /* Pods_SwiftRex_tvOS_Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 532854077C3F3A02FEF3F38E /* Pods_SwiftRex_tvOS_Combine.framework */; };
 /* End PBXBuildFile section */
 
@@ -596,6 +612,10 @@
 		D636585922A7027F0073FCD7 /* SwiftRex-Combine-Debug-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Debug-iOS.xcconfig"; sourceTree = "<group>"; };
 		D636585A22A7027F0073FCD7 /* SwiftRex-Combine-Release-macOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Release-macOS.xcconfig"; sourceTree = "<group>"; };
 		D636585B22A7027F0073FCD7 /* UnitTests-Combine-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-Combine-Release.xcconfig"; sourceTree = "<group>"; };
+		D636585D22A70C060073FCD7 /* CurrentValueSubject+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CurrentValueSubject+Extensions.swift"; sourceTree = "<group>"; };
+		D636585E22A70C060073FCD7 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
+		D636585F22A70C060073FCD7 /* Typealias+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Typealias+Combine.swift"; sourceTree = "<group>"; };
+		D636586022A70C060073FCD7 /* StoreBase+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StoreBase+Combine.swift"; sourceTree = "<group>"; };
 		D87AB87EFFE942DE1685549E /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8C5F1F8C73CE0B19BE73744 /* Pods-UnitTests ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		DA47F065AD194614B56E2ADC /* Pods_SwiftRex_iOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1126,6 +1146,10 @@
 		D636585C22A707650073FCD7 /* Combine */ = {
 			isa = PBXGroup;
 			children = (
+				D636585D22A70C060073FCD7 /* CurrentValueSubject+Extensions.swift */,
+				D636585E22A70C060073FCD7 /* Publisher+Extensions.swift */,
+				D636586022A70C060073FCD7 /* StoreBase+Combine.swift */,
+				D636585F22A70C060073FCD7 /* Typealias+Combine.swift */,
 			);
 			path = Combine;
 			sourceTree = "<group>";
@@ -2609,18 +2633,22 @@
 				D636579322A701C90073FCD7 /* SideEffectProducer.swift in Sources */,
 				D636579522A701C90073FCD7 /* EventProtocol.swift in Sources */,
 				D636579622A701C90073FCD7 /* SubstateMiddleware.swift in Sources */,
+				D636586D22A711210073FCD7 /* Publisher+Extensions.swift in Sources */,
 				D636579822A701C90073FCD7 /* TypeErase.generated.abstract.swift in Sources */,
 				D636579A22A701C90073FCD7 /* Reducer.swift in Sources */,
 				D636579B22A701C90073FCD7 /* Monoid.swift in Sources */,
 				D636579C22A701C90073FCD7 /* EventHandler.swift in Sources */,
 				D636579D22A701C90073FCD7 /* TypeAlias.swift in Sources */,
 				D636579F22A701C90073FCD7 /* TypeErase.generated.swift in Sources */,
+				D636586922A710CD0073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */,
 				D63657A022A701C90073FCD7 /* BypassMiddleware.swift in Sources */,
+				D636586122A70C9F0073FCD7 /* Typealias+Combine.swift in Sources */,
 				D63657A122A701C90073FCD7 /* StoreBase.swift in Sources */,
 				D63657A222A701C90073FCD7 /* DirectLineMiddleware.swift in Sources */,
 				D63657A322A701C90073FCD7 /* StateProvider.swift in Sources */,
 				D63657A422A701C90073FCD7 /* ComposedMiddleware.swift in Sources */,
 				D63657A522A701C90073FCD7 /* Store.swift in Sources */,
+				D636586522A70F000073FCD7 /* StoreBase+Combine.swift in Sources */,
 				D63657A622A701C90073FCD7 /* ActionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2636,18 +2664,22 @@
 				D63657B922A702020073FCD7 /* Middleware.swift in Sources */,
 				D63657BB22A702020073FCD7 /* SideEffectMiddleware.swift in Sources */,
 				D63657BC22A702020073FCD7 /* SubstateMiddleware.swift in Sources */,
+				D636586E22A711220073FCD7 /* Publisher+Extensions.swift in Sources */,
 				D63657BE22A702020073FCD7 /* TypeErase.generated.abstract.swift in Sources */,
 				D63657C022A702020073FCD7 /* EventHandler.swift in Sources */,
 				D63657C122A702020073FCD7 /* Monoid.swift in Sources */,
 				D63657C222A702020073FCD7 /* StoreBase.swift in Sources */,
 				D63657C322A702020073FCD7 /* SideEffectProducer.swift in Sources */,
 				D63657C522A702020073FCD7 /* BypassMiddleware.swift in Sources */,
+				D636586A22A710CF0073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */,
 				D63657C622A702020073FCD7 /* Reducer.swift in Sources */,
+				D636586222A70CA10073FCD7 /* Typealias+Combine.swift in Sources */,
 				D63657C722A702020073FCD7 /* ActionHandler.swift in Sources */,
 				D63657C822A702020073FCD7 /* TypeAlias.swift in Sources */,
 				D63657C922A702020073FCD7 /* EventProtocol.swift in Sources */,
 				D63657CA22A702020073FCD7 /* ActionProtocol.swift in Sources */,
 				D63657CB22A702020073FCD7 /* Store.swift in Sources */,
+				D636586622A70F010073FCD7 /* StoreBase+Combine.swift in Sources */,
 				D63657CC22A702020073FCD7 /* Operator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2663,18 +2695,22 @@
 				D63657DF22A7020F0073FCD7 /* Middleware.swift in Sources */,
 				D63657E122A7020F0073FCD7 /* SideEffectMiddleware.swift in Sources */,
 				D63657E222A7020F0073FCD7 /* SubstateMiddleware.swift in Sources */,
+				D636586F22A711240073FCD7 /* Publisher+Extensions.swift in Sources */,
 				D63657E422A7020F0073FCD7 /* TypeErase.generated.abstract.swift in Sources */,
 				D63657E622A7020F0073FCD7 /* EventHandler.swift in Sources */,
 				D63657E722A7020F0073FCD7 /* Monoid.swift in Sources */,
 				D63657E822A7020F0073FCD7 /* StoreBase.swift in Sources */,
 				D63657E922A7020F0073FCD7 /* SideEffectProducer.swift in Sources */,
 				D63657EB22A7020F0073FCD7 /* BypassMiddleware.swift in Sources */,
+				D636586B22A710D00073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */,
 				D63657EC22A7020F0073FCD7 /* Reducer.swift in Sources */,
+				D636586322A70CA20073FCD7 /* Typealias+Combine.swift in Sources */,
 				D63657ED22A7020F0073FCD7 /* ActionHandler.swift in Sources */,
 				D63657EE22A7020F0073FCD7 /* TypeAlias.swift in Sources */,
 				D63657EF22A7020F0073FCD7 /* EventProtocol.swift in Sources */,
 				D63657F022A7020F0073FCD7 /* ActionProtocol.swift in Sources */,
 				D63657F122A7020F0073FCD7 /* Store.swift in Sources */,
+				D636586722A70F020073FCD7 /* StoreBase+Combine.swift in Sources */,
 				D63657F222A7020F0073FCD7 /* Operator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2690,18 +2726,22 @@
 				D636580522A7021A0073FCD7 /* Middleware.swift in Sources */,
 				D636580722A7021A0073FCD7 /* SideEffectMiddleware.swift in Sources */,
 				D636580822A7021A0073FCD7 /* SubstateMiddleware.swift in Sources */,
+				D636587022A711250073FCD7 /* Publisher+Extensions.swift in Sources */,
 				D636580A22A7021A0073FCD7 /* TypeErase.generated.abstract.swift in Sources */,
 				D636580C22A7021A0073FCD7 /* EventHandler.swift in Sources */,
 				D636580D22A7021A0073FCD7 /* Monoid.swift in Sources */,
 				D636580E22A7021A0073FCD7 /* StoreBase.swift in Sources */,
 				D636580F22A7021A0073FCD7 /* SideEffectProducer.swift in Sources */,
 				D636581122A7021A0073FCD7 /* BypassMiddleware.swift in Sources */,
+				D636586C22A710D10073FCD7 /* CurrentValueSubject+Extensions.swift in Sources */,
 				D636581222A7021A0073FCD7 /* Reducer.swift in Sources */,
+				D636586422A70CA30073FCD7 /* Typealias+Combine.swift in Sources */,
 				D636581322A7021A0073FCD7 /* ActionHandler.swift in Sources */,
 				D636581422A7021A0073FCD7 /* TypeAlias.swift in Sources */,
 				D636581522A7021A0073FCD7 /* EventProtocol.swift in Sources */,
 				D636581622A7021A0073FCD7 /* ActionProtocol.swift in Sources */,
 				D636581722A7021A0073FCD7 /* Store.swift in Sources */,
+				D636586822A70F040073FCD7 /* StoreBase+Combine.swift in Sources */,
 				D636581822A7021A0073FCD7 /* Operator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
