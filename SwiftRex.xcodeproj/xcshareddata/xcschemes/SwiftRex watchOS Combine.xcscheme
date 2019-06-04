@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D63657B122A702020073FCD7"
-               BuildableName = "SwiftRex watchOS Combine.framework"
+               BuildableName = "SwiftRex.framework"
                BlueprintName = "SwiftRex watchOS Combine"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>

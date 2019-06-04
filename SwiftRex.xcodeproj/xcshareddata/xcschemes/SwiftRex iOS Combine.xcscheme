@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D636578B22A701C90073FCD7"
-               BuildableName = "SwiftRex iOS Combine.framework"
+               BuildableName = "SwiftRex.framework"
                BlueprintName = "SwiftRex iOS Combine"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
