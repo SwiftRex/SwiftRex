@@ -1,0 +1,4 @@
+#include "SwiftRex-Common-macOS.xcconfig"
+#include "CombineOverrides.xcconfig"
+#include? "Developer.xcconfig"
+#include "Pods/Target Support Files/Pods-SwiftRex macOS Combine/Pods-SwiftRex macOS Combine.debug.xcconfig"

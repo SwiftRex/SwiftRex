@@ -1,0 +1,4 @@
+#include "SwiftRex-Common-watchOS.xcconfig"
+#include "CombineOverrides.xcconfig"
+#include? "Developer.xcconfig"
+#include "Pods/Target Support Files/Pods-SwiftRex watchOS Combine/Pods-SwiftRex watchOS Combine.debug.xcconfig"
