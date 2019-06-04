@@ -36,16 +36,16 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D595F6F3206E81C900E02733"
             BuildableName = "SwiftRex.framework"
-            BlueprintName = "SwiftRex macOS ReactiveSwift"
+            BlueprintName = "SwiftRex macOS Combine"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6F3206E81C900E02733"
+            BlueprintIdentifier = "D63657FD22A7021A0073FCD7"
             BuildableName = "SwiftRex.framework"
-            BlueprintName = "SwiftRex macOS ReactiveSwift"
+            BlueprintName = "SwiftRex macOS Combine"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
