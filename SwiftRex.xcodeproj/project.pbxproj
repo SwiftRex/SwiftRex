@@ -2767,7 +2767,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D532CAB2223ECA5A00AB13EF /* UnitTests-RxSwift-Debug.xcconfig */;
 			buildSettings = {
-				INFOPLIST_FILE = UnitTests/Info.plist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -2776,7 +2775,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D532CAB6223ECA5B00AB13EF /* UnitTests-RxSwift-Release.xcconfig */;
 			buildSettings = {
-				INFOPLIST_FILE = UnitTests/Info.plist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -2786,7 +2784,6 @@
 			baseConfigurationReference = D532CAAF223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-iOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-iOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -2796,7 +2793,6 @@
 			baseConfigurationReference = D532CAB1223ECA5A00AB13EF /* SwiftRex-RxSwift-Release-iOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-iOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -2806,7 +2802,6 @@
 			baseConfigurationReference = D532CAAE223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-watchOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-watchOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -2816,7 +2811,6 @@
 			baseConfigurationReference = D532CAB0223ECA5900AB13EF /* SwiftRex-RxSwift-Release-watchOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-watchOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -2826,7 +2820,6 @@
 			baseConfigurationReference = D532CAB4223ECA5A00AB13EF /* SwiftRex-RxSwift-Debug-tvOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-tvOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -2836,7 +2829,6 @@
 			baseConfigurationReference = D532CAB3223ECA5A00AB13EF /* SwiftRex-RxSwift-Release-tvOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-tvOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -2846,7 +2838,6 @@
 			baseConfigurationReference = D532CAB5223ECA5A00AB13EF /* SwiftRex-RxSwift-Debug-macOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-macOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -2856,7 +2847,6 @@
 			baseConfigurationReference = D532CAAD223ECA5900AB13EF /* SwiftRex-RxSwift-Release-macOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Sources/Metadata/Info-macOS.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -2968,7 +2958,6 @@
 			baseConfigurationReference = D636585922A7027F0073FCD7 /* SwiftRex-Combine-Debug-iOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex iOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -2978,7 +2967,6 @@
 			baseConfigurationReference = D636585822A7027F0073FCD7 /* SwiftRex-Combine-Release-iOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex iOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -2988,7 +2976,6 @@
 			baseConfigurationReference = D636585622A7027F0073FCD7 /* SwiftRex-Combine-Debug-watchOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex watchOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -2998,7 +2985,6 @@
 			baseConfigurationReference = D636585722A7027F0073FCD7 /* SwiftRex-Combine-Release-watchOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex watchOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -3008,7 +2994,6 @@
 			baseConfigurationReference = D636585322A7027E0073FCD7 /* SwiftRex-Combine-Debug-tvOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex tvOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -3018,7 +3003,6 @@
 			baseConfigurationReference = D636585222A7027E0073FCD7 /* SwiftRex-Combine-Release-tvOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex tvOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -3028,7 +3012,6 @@
 			baseConfigurationReference = D636585522A7027E0073FCD7 /* SwiftRex-Combine-Debug-macOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex macOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Debug;
@@ -3038,7 +3021,6 @@
 			baseConfigurationReference = D636585A22A7027F0073FCD7 /* SwiftRex-Combine-Release-macOS.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				INFOPLIST_FILE = "SwiftRex macOS ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = SwiftRex;
 			};
 			name = Release;
@@ -3047,7 +3029,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D636585122A7027E0073FCD7 /* UnitTests-Combine-Debug.xcconfig */;
 			buildSettings = {
-				INFOPLIST_FILE = "UnitTests ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -3056,7 +3037,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D636585B22A7027F0073FCD7 /* UnitTests-Combine-Release.xcconfig */;
 			buildSettings = {
-				INFOPLIST_FILE = "UnitTests ReactiveSwift copy-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
