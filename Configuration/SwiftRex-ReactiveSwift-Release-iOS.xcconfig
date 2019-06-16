@@ -1,2 +1,2 @@
-#include "SwiftRex-Common-iOS.xcconfig"
+#include "SwiftRex-Release-iOS.xcconfig"
 #include "Pods/Target Support Files/Pods-SwiftRex iOS ReactiveSwift/Pods-SwiftRex iOS ReactiveSwift.release.xcconfig"

@@ -20,9 +20,9 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
         return concrete.handle(action: action, getState: getState, next: next)
     }
 
-    override var actionHandler: ActionHandler? {
-        get { return concrete.actionHandler }
-        set { concrete.actionHandler = newValue }
+    override var handlers: MessageHandler! {
+        get { return concrete.handlers }
+        set { concrete.handlers = newValue }
     }
 }
 
@@ -56,11 +56,11 @@ public final class AnyMiddleware<StateType>: Middleware {
     }
 
     /**
-     Proxy property for `Middleware.actionHandler`
+     Proxy property for `Middleware.handlers`
      */
-    public var actionHandler: ActionHandler? {
-        get { return box.actionHandler }
-        set { box.actionHandler = newValue }
+    public var handlers: MessageHandler! {
+        get { return box.handlers }
+        set { box.handlers = newValue }
     }
 }
 
@@ -74,7 +74,7 @@ private final class _AnySideEffectProducerBox<Concrete: SideEffectProducer>: _An
         self.concrete = concrete
     }
 
-    override func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol> {
+    override func execute(getState: @escaping GetState<StateType>) -> PublisherType<ActionProtocol, Error> {
         return concrete.execute(getState: getState)
     }
 
@@ -98,7 +98,7 @@ public final class AnySideEffectProducer<StateType>: SideEffectProducer {
     /**
      Proxy method for `SideEffectProducer.execute(getState:)`
      */
-    public func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol> {
+    public func execute(getState: @escaping GetState<StateType>) -> PublisherType<ActionProtocol, Error> {
         return box.execute(getState: getState)
     }
 

@@ -5,7 +5,7 @@ public final class BypassMiddleware<GlobalState>: Middleware {
     /**
      A `Middleware` is capable of triggering `ActionProtocol` to the `Store`. This property is a nullable `ActionHandler` used for the middleware to trigger the actions. It's gonna be injected by the `Store` or by a parent `Middleware`, so don't worry about it, just use it whenever you need to trigger something.
      */
-    public weak var actionHandler: ActionHandler?
+    public var handlers: MessageHandler!
 
     /**
      Default initializer for `BypassMiddleware`

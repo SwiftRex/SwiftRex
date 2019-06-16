@@ -19,5 +19,5 @@
 
  Please check (and inherit from) `StoreBase` for a standard implementation.
  */
-public protocol Store: EventHandler, StateProvider {
+public protocol Store: StateProvider {
 }

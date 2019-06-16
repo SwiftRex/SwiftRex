@@ -1,13 +1,13 @@
 /**
- `ActionHandler` defines a protocol for something able to receive and distribute actions. A `Store` doesn't need to be `ActionHandler`, because this would expose the inner working of it. The `StoreBase`, on the other hand, is a default implementation of a `Store` that happens to use middlewares and `ActionHandler`.
+ `ActionHandler` is a data structure that wraps a closuse which represents a way to trigger actions - defined by the type `ActionProtocol`. The entity responsible for receiving and distributing these actions (usually the Store) will offer this closure to the entities that want to trigger new actions (usually the Middlewares).
  */
-public protocol ActionHandler: class {
+public typealias ActionHandler = UnfailableSubscriberType<ActionProtocol>
+
+extension ActionHandler {
     /**
      A way for a `Middleware` to trigger their actions, usually in response to events or async operations.
-     - Parameter action: the action to be managed by this store and handled by its middlewares and reducers
      */
-    func trigger(_ action: ActionProtocol)
+    public func trigger(_ action: ActionProtocol) {
+        onValue(action)
+    }
 }
-
-// sourcery: AutoMockable
-extension ActionHandler { }

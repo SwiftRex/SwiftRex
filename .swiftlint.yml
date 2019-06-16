@@ -35,6 +35,7 @@ cyclomatic_complexity:
 disabled_rules:
   - force_try
   - force_cast
+  - large_tuple
 excluded:
   - Sources/Common/CodeGeneration
   - Sources/SwiftRex RxSwift

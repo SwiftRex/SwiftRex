@@ -1,2 +1,2 @@
-#include "SwiftRex-Common-watchOS.xcconfig"
+#include "SwiftRex-Release-watchOS.xcconfig"
 #include "Pods/Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.release.xcconfig"

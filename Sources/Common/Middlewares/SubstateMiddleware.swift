@@ -16,12 +16,12 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
 
      For `SubstateMiddleware` this property is only a proxy call to the inner middleware's `ActionHandler`, and once actions don't care about `StateType` there's no lifting involved.
      */
-    public var actionHandler: ActionHandler? {
+    public var handlers: MessageHandler! {
         get {
-            return partMiddleware.actionHandler
+            return partMiddleware.handlers
         }
         set {
-            partMiddleware.actionHandler = newValue
+            partMiddleware.handlers = newValue
         }
     }
 

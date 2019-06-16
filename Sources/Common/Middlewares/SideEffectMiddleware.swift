@@ -22,7 +22,7 @@ public protocol SideEffectMiddleware: Middleware {
     var allowEventToPropagate: Bool { get }
 
     /// A bag that owns the lifetime of each `SideEffectProducer` observation, usually this `SubscriptionOwner` will be a stored property in the `SideEffectMiddleware` instance
-    var subscriptionOwner: SubscriptionOwner { get }
+    var subscription: Subscription { get set }
 
     /// Maps the incoming event to the proper `SideEffectProducer`, wrapped in a type-eraser `AnySideEffectProducer`
     func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<StateType>?
@@ -42,15 +42,18 @@ extension SideEffectMiddleware {
             return
         }
 
-        sideEffect
+        self.subscription = sideEffect
             .execute(getState: getState)
             .subscribe(
-                onSuccess: { [weak self] (action: ActionProtocol) in
-                    self?.actionHandler?.trigger(action)
-                }, onFailure: { [weak self] (error: Error) in
-                    let action = SideEffectError(date: Date(), originalEvent: event, error: error)
-                    self?.actionHandler?.trigger(action)
-                }, disposeBy: subscriptionOwner)
+                SubscriberType(
+                    onValue: { [weak self] action in
+                        self?.handlers?.actionHandler.trigger(action)
+                    }, onError: { [weak self] error in
+                        let action = SideEffectError(date: Date(), originalEvent: event, error: error)
+                        self?.handlers?.actionHandler.trigger(action)
+                    }
+                )
+            )
 
         guard allowEventToPropagate else { return }
 
