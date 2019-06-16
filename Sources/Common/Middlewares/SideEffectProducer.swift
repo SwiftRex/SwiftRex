@@ -25,7 +25,7 @@ public protocol SideEffectProducer {
      - Parameter getState: a closure to fetch the current state at any moment in time
      - Returns: an `Observable` for all the possible `ActionProtocol` that might be triggered by this producer. This `Observable` must complete or error to free resources.
     */
-    func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol>
+    func execute(getState: @escaping GetState<StateType>) -> PublisherType<ActionProtocol, Error>
 }
 
 // sourcery: AutoMockable

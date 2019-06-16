@@ -1,2 +1,2 @@
-#include "SwiftRex-Common-tvOS.xcconfig"
+#include "SwiftRex-Release-tvOS.xcconfig"
 #include "Pods/Target Support Files/Pods-SwiftRex tvOS ReactiveSwift/Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig"

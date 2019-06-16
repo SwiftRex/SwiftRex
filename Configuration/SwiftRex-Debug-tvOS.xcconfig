@@ -1,0 +1,2 @@
+#include "SwiftRex-Common-tvOS.xcconfig"
+#include? "Developer.xcconfig"

@@ -24,12 +24,12 @@ import Foundation
 
  ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
  */
-open class StoreBase<State>: Store, ActionHandler {
+open class StoreBase<State> {
     private let middleware: AnyMiddleware<State>
     private let reducer: Reducer<State>
-    let state: ReactiveProperty<State>
     private let dispatchEventQueue = DispatchQueue.main
     private let triggerActionQueue = DispatchQueue.main
+    private let subject: UnfailableReplayLastSubjectType<State>
 
     /**
      Required initializer that takes all the expected pipelines
@@ -39,43 +39,29 @@ open class StoreBase<State>: Store, ActionHandler {
        - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the same type as the `initialState` property. For `reducer` composition, please use the diamond operator (`<>`) and for reducers that understand only a sub-state part, use the `Reducer.lift(_:)` method
        - middleware: a middleware pipeline, that can be any flat middleware or a `ComposedMiddleware`, as long as it's able to handle the state of the same type as the `initialState` property. For `middleware` composition, please use the diamond operator (`<>`) and for middlewares that understand only a sub-state part, use the `Middleware.lift(_:)` method
      */
-    public init<M: Middleware>(initialState: State, reducer: Reducer<State>, middleware: M) where M.StateType == State {
-        self.state = reactiveProperty(initialValue: initialState)
+    public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<State>,
+                               reducer: Reducer<State>,
+                               middleware: M) where M.StateType == State {
+        self.subject = subject
         self.reducer = reducer
         self.middleware = AnyMiddleware(middleware)
-        self.middleware.actionHandler = self
+        self.middleware.handlers = MessageHandler (
+            actionHandler: ActionHandler(onValue: { [unowned self] action in
+                self.triggerActionQueue.async {
+                    self.middlewarePipeline(for: action)
+                }
+            }),
+            eventHandler: EventHandler(onValue: { [unowned self] event in
+                self.dispatchEventQueue.async {
+                    self.middlewarePipeline(for: event)
+                }
+            })
+        )
     }
+}
 
-    /**
-     Convenience initializer that takes all the expected pipelines expect the `Middleware`, that points to the neutral case of a middleware, the `BypassMiddleware` class.
-
-     - Parameters:
-     - initialState: when an app is starting, how should be its state struct? Initialize the state and set it before creating the `Store`
-     - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the same type as the `initialState` property. For `reducer` composition, please use the diamond operator (`<>`) and for reducers that understand only a sub-state part, use the `Reducer.lift(_:)` method
-     */
-    public convenience init(initialState: State, reducer: Reducer<State>) {
-        self.init(initialState: initialState, reducer: reducer, middleware: BypassMiddleware())
-    }
-
-    /**
-     Because `StoreBase` is an `EventHandler`, it provides a way for an `UIViewController` or other classes in the boundaries of the device sensors to communicate and dispatch their events.
-     - Parameter event: the event to be managed by this store and handled by its middlewares
-     */
-    open func dispatch(_ event: EventProtocol) {
-        dispatchEventQueue.async {
-            self.middlewarePipeline(for: event)
-        }
-    }
-
-    /**
-     Because `StoreBase` is an `ActionHandler`, it provides a way for a `Middleware` to trigger their actions, usually in response to events or async operations.
-     - Parameter action: the action to be managed by this store and handled by its middlewares and reducers
-     */
-    open func trigger(_ action: ActionProtocol) {
-        triggerActionQueue.async {
-            self.middlewarePipeline(for: action)
-        }
-    }
+extension StoreBase: Store {
+    public var state: UnfailablePublisherType<State> { return subject.publisher }
 }
 
 extension StoreBase {
@@ -83,21 +69,21 @@ extension StoreBase {
         let ignore: (EventProtocol, GetState<State>) -> Void = { _, _ in }
         middleware.handle(
             event: event,
-            getState: { [unowned self] in self.state.currentValue },
+            getState: { [unowned self] in self.subject.value() },
             next: ignore)
     }
 
     private func middlewarePipeline(for action: ActionProtocol) {
         middleware.handle(
             action: action,
-            getState: { [unowned self] in self.state.currentValue },
+            getState: { [unowned self] in self.subject.value() },
             next: { [weak self] action, _ in
                 self?.reduce(action: action)
             })
     }
 
     private func reduce(action: ActionProtocol) {
-        state.modify { value in
+        subject.mutate { value in
             value = reducer.reduce(value, action)
         }
     }
