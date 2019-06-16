@@ -41,13 +41,23 @@
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D5888B4222B6F2630028B0E1"
+               BuildableName = "UnitTests SwiftRex.xctest"
+               BlueprintName = "UnitTests SwiftRex"
+               ReferencedContainer = "container:SwiftRex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6F3206E81C900E02733"
+            BlueprintIdentifier = "D5888ADA22B6E9300028B0E1"
             BuildableName = "SwiftRex.framework"
-            BlueprintName = "SwiftRex macOS ReactiveSwift"
+            BlueprintName = "SwiftRex macOS"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -64,6 +74,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D5888ADA22B6E9300028B0E1"
+            BuildableName = "SwiftRex.framework"
+            BlueprintName = "SwiftRex macOS"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -73,6 +92,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D5888ADA22B6E9300028B0E1"
+            BuildableName = "SwiftRex.framework"
+            BlueprintName = "SwiftRex macOS"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

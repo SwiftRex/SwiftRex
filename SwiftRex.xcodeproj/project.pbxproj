@@ -7,19 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		141E1D7CE57F1A64C67D0956 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAFC5F22A5046B152AA7A01A /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */; };
-		1F5405020360D1A96FF9DA40 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10EB0AC407DCB38DDFBCF62B /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */; };
-		222A18528696FED77323C4F9 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA47F065AD194614B56E2ADC /* Pods_SwiftRex_iOS_ReactiveSwift.framework */; };
-		349516892263C6DD890F6462 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE020F930E692CB43B11F470 /* Pods_SwiftRex_macOS_RxSwift.framework */; };
-		354D819DDC5BFE29A9684B6C /* Pods_UnitTests_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8970F8D3A4CC22E67549539 /* Pods_UnitTests_RxSwift.framework */; };
-		35C4360823C6FAA9BB1B8C93 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C00AC3B96BD5BAD2E4AF81C /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
-		46E97226A3E520B2D292BCB4 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD13676967FD048BF3D80D37 /* Pods_SwiftRex_iOS_RxSwift.framework */; };
-		5CF368E2D061CDCB06F6233C /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EBC5ABE5AE5285EBEDB20A /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
-		6E9AADDE7922C39B9E4F3447 /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49AC730E9CFDD5C73C1607D2 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
-		89DC088D101A28009D187F20 /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EBC5ABE5AE5285EBEDB20A /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
-		B1A2001FF5D7F03A0DE77218 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AF54AEF9772F2D57D3CABB /* Pods_UnitTests_ReactiveSwift.framework */; };
-		BCF8500D375ABF6B2ECFD574 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C00AC3B96BD5BAD2E4AF81C /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
-		C17C7C1D614CD1CB72C721FE /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE020F930E692CB43B11F470 /* Pods_SwiftRex_macOS_RxSwift.framework */; };
+		01DFA16BBA37FEBB0130E608 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24EC064A511125F9D5D66907 /* Pods_SwiftRex_iOS_RxSwift.framework */; };
+		3E424096541BD3F7EE0CC8B3 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */; };
+		8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */; };
+		83E9670EC5996AC3D61D1365 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */; };
+		9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */; };
+		CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
+		D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
 		D51C8ACF207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
@@ -320,6 +314,7 @@
 		D5888AF522B6E9300028B0E1 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D5888AF722B6E9300028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D5888AFB22B6E9300028B0E1 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5888B6722B6F2630028B0E1 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRex.framework */; };
 		D59D580B207AA1B40010412E /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D59D580C207AA1B40010412E /* EventProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E7207AA1B40010412E /* EventProtocol.swift */; };
 		D59D580D207AA1B40010412E /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
@@ -392,7 +387,9 @@
 		D59D5867207AA2840010412E /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D59D5868207AA2840010412E /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D59D5869207AA2840010412E /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
-		DEF93C82776E70E503F4D454 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD13676967FD048BF3D80D37 /* Pods_SwiftRex_iOS_RxSwift.framework */; };
+		DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
+		E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */; };
+		FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -410,36 +407,41 @@
 			remoteGlobalIDString = D595F6F3206E81C900E02733;
 			remoteInfo = "SwiftRex macOS";
 		};
+		D5937B4E22B6F86F00FAB773 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888ADA22B6E9300028B0E1;
+			remoteInfo = "SwiftRex macOS";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		08E9613EFADAC5A81D0F37C4 /* Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS ReactiveSwift/Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
-		0CFC3738B1428D2D4CB2DA66 /* Pods-SwiftRex macOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS RxSwift/Pods-SwiftRex macOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
-		10EB0AC407DCB38DDFBCF62B /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_tvOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1BA0221F40D2EF5222AB5525 /* Pods-SwiftRex tvOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		24636081D9848A8CEA4A1D32 /* Pods-UnitTests ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
-		277BE81F644EFC8D07E5D7A4 /* Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS ReactiveSwift/Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		2799FD50146506EA66D8F41A /* Pods-SwiftRex macOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
-		294980F17414F159577D99C5 /* Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS ReactiveSwift/Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		3A03A5E60187144146F3438A /* Pods-UnitTests RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		425551BF31F44A66860E5880 /* Pods_SwiftRex_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		46F798EDA238DB51AAD4373C /* Pods-SwiftRex iOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS RxSwift/Pods-SwiftRex iOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
-		49AC730E9CFDD5C73C1607D2 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5D995DFBF14639994CEF3B6D /* Pods-UnitTests RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.release.xcconfig"; sourceTree = "<group>"; };
-		5FC547439D8499286EA50ABF /* Pods_SwiftRex_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		625E19AA3D63A534A95594E2 /* Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS ReactiveSwift/Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
-		667CE50432D840089EC0F58F /* Pods-SwiftRex watchOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
-		66EBC5ABE5AE5285EBEDB20A /* Pods_SwiftRex_watchOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		76087F2AB9EFCDE9CB522A2B /* Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS ReactiveSwift/Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		7C00AC3B96BD5BAD2E4AF81C /* Pods_SwiftRex_tvOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_tvOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		86B1ACD85AFDFE55BC577419 /* Pods-SwiftRex macOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS RxSwift/Pods-SwiftRex macOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		94AA0AC1E577E03F73AB4CF6 /* Pods_SwiftRex_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A96965FC139D6848D6171E4F /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
-		B5FA0CDF89FF21B614FF240D /* Pods-SwiftRex watchOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		BD13676967FD048BF3D80D37 /* Pods_SwiftRex_iOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9AF54AEF9772F2D57D3CABB /* Pods_UnitTests_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE020F930E692CB43B11F470 /* Pods_SwiftRex_macOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D318985FA8C9632F67262B28 /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1532B9960256EF8074D7E357 /* Pods-SwiftRex watchOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		1E6BA6D67D789361A5FC9FFD /* Pods-SwiftRex watchOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		24EC064A511125F9D5D66907 /* Pods_SwiftRex_iOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		292A43653EE28C6178187219 /* Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS ReactiveSwift/Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		3C46F044BFCA99479F410776 /* Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS ReactiveSwift/Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
+		3E9CB63753700126A512FE7D /* Pods-SwiftRex iOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS RxSwift/Pods-SwiftRex iOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BF87DA6A7659752C52FD626 /* Pods-UnitTests ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		51940C22F4809B487B635F16 /* Pods-SwiftRex macOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS RxSwift/Pods-SwiftRex macOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		627584682F32D8C32B03C0C3 /* Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS ReactiveSwift/Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
+		8A08A1F6E17EC74CB1BCB916 /* Pods-SwiftRex iOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS ReactiveSwift/Pods-SwiftRex iOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
+		8DB2ECA4A6C3433BAA1BC572 /* Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS ReactiveSwift/Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_tvOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F0A7AFDA597AF304A71BE26 /* Pods-UnitTests ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
+		A66B2AE80350948C72446E5B /* Pods-SwiftRex iOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS RxSwift/Pods-SwiftRex iOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		A904FE7C970C4745378E8AE4 /* Pods-UnitTests RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB81A3F869D135FB62D378E2 /* Pods-SwiftRex macOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
+		CE9D29705E944EE894E29827 /* Pods-SwiftRex macOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS RxSwift/Pods-SwiftRex macOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4627F2CA5E907B890648113 /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
 		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
 		D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
@@ -509,6 +511,9 @@
 		D5888B2722B6EB800028B0E1 /* SwiftRex-Release-macOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Release-macOS.xcconfig"; sourceTree = "<group>"; };
 		D5888B3022B6EB890028B0E1 /* SwiftRex-Release-tvOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Release-tvOS.xcconfig"; sourceTree = "<group>"; };
 		D5888B3922B6EBAB0028B0E1 /* SwiftRex-Release-watchOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Release-watchOS.xcconfig"; sourceTree = "<group>"; };
+		D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests SwiftRex.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5888B7022B6F2D80028B0E1 /* UnitTests-SwiftRex-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Debug.xcconfig"; sourceTree = "<group>"; };
+		D5888B7122B6F2EA0028B0E1 /* UnitTests-SwiftRex-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Release.xcconfig"; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6DA206E81AE00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6E7206E81B900E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -563,14 +568,11 @@
 		D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5A6071F2071287A00D682EF /* ReducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
 		D5A607212071287A00D682EF /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
-		D87AB87EFFE942DE1685549E /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D8C5F1F8C73CE0B19BE73744 /* Pods-UnitTests ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		DA47F065AD194614B56E2ADC /* Pods_SwiftRex_iOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DAFC5F22A5046B152AA7A01A /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DAFF6FE894B6E833F0A3CA7A /* Pods-SwiftRex iOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS ReactiveSwift/Pods-SwiftRex iOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
-		E8970F8D3A4CC22E67549539 /* Pods_UnitTests_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		ECABB12BF1594A4642A14C10 /* Pods-SwiftRex iOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS RxSwift/Pods-SwiftRex iOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		FB0521F929764E5776215006 /* Pods_SwiftRex_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1EA4C435F50A56023B2C78A /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		E73F580A516D50E27F25B048 /* Pods-SwiftRex tvOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_tvOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD99D9EFC8F303AA6D612BA4 /* Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS ReactiveSwift/Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -579,7 +581,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D547DAFC223ED027006EAAC4 /* SwiftRex.framework in Frameworks */,
-				354D819DDC5BFE29A9684B6C /* Pods_UnitTests_RxSwift.framework in Frameworks */,
+				9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,8 +589,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46E97226A3E520B2D292BCB4 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */,
-				DEF93C82776E70E503F4D454 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */,
+				01DFA16BBA37FEBB0130E608 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -596,8 +597,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				89DC088D101A28009D187F20 /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */,
-				5CF368E2D061CDCB06F6233C /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */,
+				DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -605,8 +605,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				35C4360823C6FAA9BB1B8C93 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */,
-				BCF8500D375ABF6B2ECFD574 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */,
+				CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -614,8 +613,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				349516892263C6DD890F6462 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */,
-				C17C7C1D614CD1CB72C721FE /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */,
+				83E9670EC5996AC3D61D1365 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -624,7 +622,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D568E644223ED11800F0FECA /* SwiftRex.framework in Frameworks */,
-				B1A2001FF5D7F03A0DE77218 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */,
+				8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -656,11 +654,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5888B6622B6F2630028B0E1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5888B6722B6F2630028B0E1 /* SwiftRex.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D595F6C8206E818C00E02733 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				222A18528696FED77323C4F9 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */,
+				3E424096541BD3F7EE0CC8B3 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -668,7 +674,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				141E1D7CE57F1A64C67D0956 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */,
+				E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -676,7 +682,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F5405020360D1A96FF9DA40 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */,
+				FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,60 +690,55 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6E9AADDE7922C39B9E4F3447 /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */,
+				D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1296F92595BD3A651DE9072D /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				425551BF31F44A66860E5880 /* Pods_SwiftRex_iOS.framework */,
-				FB0521F929764E5776215006 /* Pods_SwiftRex_macOS.framework */,
-				94AA0AC1E577E03F73AB4CF6 /* Pods_SwiftRex_tvOS.framework */,
-				5FC547439D8499286EA50ABF /* Pods_SwiftRex_watchOS.framework */,
-				D87AB87EFFE942DE1685549E /* Pods_UnitTests.framework */,
-				DA47F065AD194614B56E2ADC /* Pods_SwiftRex_iOS_ReactiveSwift.framework */,
-				BD13676967FD048BF3D80D37 /* Pods_SwiftRex_iOS_RxSwift.framework */,
-				49AC730E9CFDD5C73C1607D2 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */,
-				CE020F930E692CB43B11F470 /* Pods_SwiftRex_macOS_RxSwift.framework */,
-				10EB0AC407DCB38DDFBCF62B /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */,
-				7C00AC3B96BD5BAD2E4AF81C /* Pods_SwiftRex_tvOS_RxSwift.framework */,
-				DAFC5F22A5046B152AA7A01A /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */,
-				66EBC5ABE5AE5285EBEDB20A /* Pods_SwiftRex_watchOS_RxSwift.framework */,
-				C9AF54AEF9772F2D57D3CABB /* Pods_UnitTests_ReactiveSwift.framework */,
-				E8970F8D3A4CC22E67549539 /* Pods_UnitTests_RxSwift.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		1C65E074A644BAF203DDD813 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				294980F17414F159577D99C5 /* Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig */,
-				DAFF6FE894B6E833F0A3CA7A /* Pods-SwiftRex iOS ReactiveSwift.release.xcconfig */,
-				ECABB12BF1594A4642A14C10 /* Pods-SwiftRex iOS RxSwift.debug.xcconfig */,
-				46F798EDA238DB51AAD4373C /* Pods-SwiftRex iOS RxSwift.release.xcconfig */,
-				D318985FA8C9632F67262B28 /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */,
-				2799FD50146506EA66D8F41A /* Pods-SwiftRex macOS ReactiveSwift.release.xcconfig */,
-				86B1ACD85AFDFE55BC577419 /* Pods-SwiftRex macOS RxSwift.debug.xcconfig */,
-				0CFC3738B1428D2D4CB2DA66 /* Pods-SwiftRex macOS RxSwift.release.xcconfig */,
-				76087F2AB9EFCDE9CB522A2B /* Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig */,
-				625E19AA3D63A534A95594E2 /* Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig */,
-				1BA0221F40D2EF5222AB5525 /* Pods-SwiftRex tvOS RxSwift.debug.xcconfig */,
-				A96965FC139D6848D6171E4F /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */,
-				277BE81F644EFC8D07E5D7A4 /* Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig */,
-				08E9613EFADAC5A81D0F37C4 /* Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig */,
-				B5FA0CDF89FF21B614FF240D /* Pods-SwiftRex watchOS RxSwift.debug.xcconfig */,
-				667CE50432D840089EC0F58F /* Pods-SwiftRex watchOS RxSwift.release.xcconfig */,
-				D8C5F1F8C73CE0B19BE73744 /* Pods-UnitTests ReactiveSwift.debug.xcconfig */,
-				24636081D9848A8CEA4A1D32 /* Pods-UnitTests ReactiveSwift.release.xcconfig */,
-				3A03A5E60187144146F3438A /* Pods-UnitTests RxSwift.debug.xcconfig */,
-				5D995DFBF14639994CEF3B6D /* Pods-UnitTests RxSwift.release.xcconfig */,
+				8DB2ECA4A6C3433BAA1BC572 /* Pods-SwiftRex iOS ReactiveSwift.debug.xcconfig */,
+				8A08A1F6E17EC74CB1BCB916 /* Pods-SwiftRex iOS ReactiveSwift.release.xcconfig */,
+				A66B2AE80350948C72446E5B /* Pods-SwiftRex iOS RxSwift.debug.xcconfig */,
+				3E9CB63753700126A512FE7D /* Pods-SwiftRex iOS RxSwift.release.xcconfig */,
+				E1EA4C435F50A56023B2C78A /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */,
+				CB81A3F869D135FB62D378E2 /* Pods-SwiftRex macOS ReactiveSwift.release.xcconfig */,
+				CE9D29705E944EE894E29827 /* Pods-SwiftRex macOS RxSwift.debug.xcconfig */,
+				51940C22F4809B487B635F16 /* Pods-SwiftRex macOS RxSwift.release.xcconfig */,
+				292A43653EE28C6178187219 /* Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig */,
+				3C46F044BFCA99479F410776 /* Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig */,
+				E73F580A516D50E27F25B048 /* Pods-SwiftRex tvOS RxSwift.debug.xcconfig */,
+				D4627F2CA5E907B890648113 /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */,
+				FD99D9EFC8F303AA6D612BA4 /* Pods-SwiftRex watchOS ReactiveSwift.debug.xcconfig */,
+				627584682F32D8C32B03C0C3 /* Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig */,
+				1E6BA6D67D789361A5FC9FFD /* Pods-SwiftRex watchOS RxSwift.debug.xcconfig */,
+				1532B9960256EF8074D7E357 /* Pods-SwiftRex watchOS RxSwift.release.xcconfig */,
+				4BF87DA6A7659752C52FD626 /* Pods-UnitTests ReactiveSwift.debug.xcconfig */,
+				9F0A7AFDA597AF304A71BE26 /* Pods-UnitTests ReactiveSwift.release.xcconfig */,
+				A904FE7C970C4745378E8AE4 /* Pods-UnitTests RxSwift.debug.xcconfig */,
+				E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		4A58DE22223B79578162021E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */,
+				24EC064A511125F9D5D66907 /* Pods_SwiftRex_iOS_RxSwift.framework */,
+				B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */,
+				5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */,
+				E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */,
+				9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */,
+				D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */,
+				21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */,
+				CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */,
+				4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		D532C9C4223EBCE100AB13EF /* Common */ = {
@@ -813,6 +814,8 @@
 				D54AEE0A214D89AC009D9B6B /* UnitTests-ReactiveSwift-Release.xcconfig */,
 				D532CAB2223ECA5A00AB13EF /* UnitTests-RxSwift-Debug.xcconfig */,
 				D532CAB6223ECA5B00AB13EF /* UnitTests-RxSwift-Release.xcconfig */,
+				D5888B7022B6F2D80028B0E1 /* UnitTests-SwiftRex-Debug.xcconfig */,
+				D5888B7122B6F2EA0028B0E1 /* UnitTests-SwiftRex-Release.xcconfig */,
 				D5623F832093AACF00C70F60 /* UnitTests.xcconfig */,
 				D5623F842093D49100C70F60 /* XcodeWarnings.xcconfig */,
 			);
@@ -839,7 +842,7 @@
 				D578B28A208A690C0035AE9C /* UnitTests */,
 				D595F6CD206E818C00E02733 /* Products */,
 				1C65E074A644BAF203DDD813 /* Pods */,
-				1296F92595BD3A651DE9072D /* Frameworks */,
+				4A58DE22223B79578162021E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -847,12 +850,10 @@
 			isa = PBXGroup;
 			children = (
 				D578B28D208A690C0035AE9C /* Info.plist */,
-				D5A6071F2071287A00D682EF /* ReducerTests.swift */,
-				D5A607212071287A00D682EF /* SideEffectProducerTests.swift */,
-				D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */,
-				D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */,
-				D5A607182071287A00D682EF /* Middleware */,
+				D5888B7222B6F6720028B0E1 /* Common */,
 				D5A606FD2071287900D682EF /* Mocks */,
+				D5888B7322B6F6790028B0E1 /* ReactiveSwift */,
+				D5888B7422B6F6800028B0E1 /* RxSwift */,
 			);
 			path = UnitTests;
 			sourceTree = "<group>";
@@ -866,6 +867,34 @@
 				D59D57F6207AA1B40010412E /* TypeAlias.swift */,
 			);
 			path = Foundation;
+			sourceTree = "<group>";
+		};
+		D5888B7222B6F6720028B0E1 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				D5A607182071287A00D682EF /* Middleware */,
+				D5A6071F2071287A00D682EF /* ReducerTests.swift */,
+				D5A607212071287A00D682EF /* SideEffectProducerTests.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		D5888B7322B6F6790028B0E1 /* ReactiveSwift */ = {
+			isa = PBXGroup;
+			children = (
+				D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */,
+				D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */,
+			);
+			path = ReactiveSwift;
+			sourceTree = "<group>";
+		};
+		D5888B7422B6F6800028B0E1 /* RxSwift */ = {
+			isa = PBXGroup;
+			children = (
+				D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */,
+				D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */,
+			);
+			path = RxSwift;
 			sourceTree = "<group>";
 		};
 		D595F6CD206E818C00E02733 /* Products */ = {
@@ -885,6 +914,7 @@
 				D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */,
 				D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */,
 				D5888B0022B6E9300028B0E1 /* SwiftRex.framework */,
+				D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -960,8 +990,6 @@
 			isa = PBXGroup;
 			children = (
 				D56449272082F1F500453ABB /* AutoMockable.generated.swift */,
-				D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */,
-				D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */,
 				D5A607082071287900D682EF /* Action */,
 				D5A6070F2071287900D682EF /* Event */,
 				D5A6070D2071287900D682EF /* Helper */,
@@ -1161,11 +1189,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D532CA00223EC29500AB13EF /* Build configuration list for PBXNativeTarget "UnitTests RxSwift" */;
 			buildPhases = (
-				D532C9DB223EC29500AB13EF /* [CP] Check Pods Manifest.lock */,
+				9E112C91667DE19926D3EF26 /* [CP] Check Pods Manifest.lock */,
 				D532C9DC223EC29500AB13EF /* Sources */,
 				D532C9FB223EC29500AB13EF /* Frameworks */,
 				D532C9FE223EC29500AB13EF /* Resources */,
-				D532C9FF223EC29500AB13EF /* [CP] Embed Pods Frameworks */,
+				E15ABA6A9B2AD633293322EE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1181,7 +1209,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D532CA25223EC2C900AB13EF /* Build configuration list for PBXNativeTarget "SwiftRex iOS RxSwift" */;
 			buildPhases = (
-				D532CA06223EC2C900AB13EF /* [CP] Check Pods Manifest.lock */,
+				69D4D3193A55F5B97C336BF0 /* [CP] Check Pods Manifest.lock */,
 				D532CA07223EC2C900AB13EF /* Make script */,
 				D532CA08223EC2C900AB13EF /* Sources */,
 				D532CA20223EC2C900AB13EF /* Frameworks */,
@@ -1201,7 +1229,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D532CA4A223EC2DF00AB13EF /* Build configuration list for PBXNativeTarget "SwiftRex watchOS RxSwift" */;
 			buildPhases = (
-				D532CA2B223EC2DF00AB13EF /* [CP] Check Pods Manifest.lock */,
+				9D3ADBFA10FCC75C9BDE331E /* [CP] Check Pods Manifest.lock */,
 				D532CA2C223EC2DF00AB13EF /* Make script */,
 				D532CA2D223EC2DF00AB13EF /* Sources */,
 				D532CA45223EC2DF00AB13EF /* Frameworks */,
@@ -1221,7 +1249,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D532CA6F223EC2F500AB13EF /* Build configuration list for PBXNativeTarget "SwiftRex tvOS RxSwift" */;
 			buildPhases = (
-				D532CA50223EC2F500AB13EF /* [CP] Check Pods Manifest.lock */,
+				72A7611C3E3AFDF8ECB2FC6D /* [CP] Check Pods Manifest.lock */,
 				D532CA51223EC2F500AB13EF /* Make script */,
 				D532CA52223EC2F500AB13EF /* Sources */,
 				D532CA6A223EC2F500AB13EF /* Frameworks */,
@@ -1241,7 +1269,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D532CA94223EC30700AB13EF /* Build configuration list for PBXNativeTarget "SwiftRex macOS RxSwift" */;
 			buildPhases = (
-				D532CA75223EC30700AB13EF /* [CP] Check Pods Manifest.lock */,
+				51B7E3DD7A3FE4BBBE49B281 /* [CP] Check Pods Manifest.lock */,
 				D532CA76223EC30700AB13EF /* Make script */,
 				D532CA77223EC30700AB13EF /* Sources */,
 				D532CA8F223EC30700AB13EF /* Frameworks */,
@@ -1261,11 +1289,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D578B293208A690C0035AE9C /* Build configuration list for PBXNativeTarget "UnitTests ReactiveSwift" */;
 			buildPhases = (
-				3A484829B49CCFED866A2C12 /* [CP] Check Pods Manifest.lock */,
+				F0BA155D6B2D8C24CF367254 /* [CP] Check Pods Manifest.lock */,
 				D578B285208A690C0035AE9C /* Sources */,
 				D578B286208A690C0035AE9C /* Frameworks */,
 				D578B287208A690C0035AE9C /* Resources */,
-				308254F1EC6CB00681354629 /* [CP] Embed Pods Frameworks */,
+				074EF8DF24CAEE673D207CD5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1353,11 +1381,29 @@
 			productReference = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		D5888B4222B6F2630028B0E1 /* UnitTests SwiftRex */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D5888B6B22B6F2630028B0E1 /* Build configuration list for PBXNativeTarget "UnitTests SwiftRex" */;
+			buildPhases = (
+				D5888B4622B6F2630028B0E1 /* Sources */,
+				D5888B6622B6F2630028B0E1 /* Frameworks */,
+				D5888B6922B6F2630028B0E1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D5937B4F22B6F86F00FAB773 /* PBXTargetDependency */,
+			);
+			name = "UnitTests SwiftRex";
+			productName = UnitTests;
+			productReference = D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		D595F6CB206E818C00E02733 /* SwiftRex iOS ReactiveSwift */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6D4206E818C00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex iOS ReactiveSwift" */;
 			buildPhases = (
-				DAF51DED4652D69A4EF0D590 /* [CP] Check Pods Manifest.lock */,
+				96018FFF7D85D7549FF06026 /* [CP] Check Pods Manifest.lock */,
 				D595F770206EBC4B00E02733 /* Make script */,
 				D595F6C7206E818C00E02733 /* Sources */,
 				D595F6C8206E818C00E02733 /* Frameworks */,
@@ -1377,7 +1423,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6DF206E81AE00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex watchOS ReactiveSwift" */;
 			buildPhases = (
-				B17974B65F71550813B3DE70 /* [CP] Check Pods Manifest.lock */,
+				BFA319A9829320C6B19D651D /* [CP] Check Pods Manifest.lock */,
 				D578B2BA208A6E300035AE9C /* Make script */,
 				D595F6D5206E81AE00E02733 /* Sources */,
 				D595F6D6206E81AE00E02733 /* Frameworks */,
@@ -1397,7 +1443,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6EC206E81BA00E02733 /* Build configuration list for PBXNativeTarget "SwiftRex tvOS ReactiveSwift" */;
 			buildPhases = (
-				24DBB9300606D5E4684D82BC /* [CP] Check Pods Manifest.lock */,
+				534F30D48368C9999773BED3 /* [CP] Check Pods Manifest.lock */,
 				D578B2BB208A6E350035AE9C /* Make script */,
 				D595F6E2206E81B900E02733 /* Sources */,
 				D595F6E3206E81B900E02733 /* Frameworks */,
@@ -1417,7 +1463,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D595F6F9206E81C900E02733 /* Build configuration list for PBXNativeTarget "SwiftRex macOS ReactiveSwift" */;
 			buildPhases = (
-				E79B177D18AE8C1C1513EB8C /* [CP] Check Pods Manifest.lock */,
+				324BB47581C7F68506D6EC4D /* [CP] Check Pods Manifest.lock */,
 				D51638F5206F418700469F96 /* Make script */,
 				D595F6EF206E81C900E02733 /* Sources */,
 				D595F6F0206E81C900E02733 /* Frameworks */,
@@ -1480,15 +1526,16 @@
 				D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */,
 				D5888AB222B6E92D0028B0E1 /* SwiftRex tvOS */,
 				D5888A8A22B6E92A0028B0E1 /* SwiftRex watchOS */,
+				D5888B4222B6F2630028B0E1 /* UnitTests SwiftRex */,
 				D595F6CB206E818C00E02733 /* SwiftRex iOS ReactiveSwift */,
 				D595F6F3206E81C900E02733 /* SwiftRex macOS ReactiveSwift */,
 				D595F6E6206E81B900E02733 /* SwiftRex tvOS ReactiveSwift */,
 				D595F6D9206E81AE00E02733 /* SwiftRex watchOS ReactiveSwift */,
+				D578B288208A690C0035AE9C /* UnitTests ReactiveSwift */,
 				D532CA05223EC2C900AB13EF /* SwiftRex iOS RxSwift */,
 				D532CA74223EC30700AB13EF /* SwiftRex macOS RxSwift */,
 				D532CA4F223EC2F500AB13EF /* SwiftRex tvOS RxSwift */,
 				D532CA2A223EC2DF00AB13EF /* SwiftRex watchOS RxSwift */,
-				D578B288208A690C0035AE9C /* UnitTests ReactiveSwift */,
 				D532C9D8223EC29500AB13EF /* UnitTests RxSwift */,
 			);
 		};
@@ -1565,6 +1612,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5888B6922B6F2630028B0E1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D595F6CA206E818C00E02733 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1596,29 +1650,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		24DBB9300606D5E4684D82BC /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftRex tvOS ReactiveSwift-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		308254F1EC6CB00681354629 /* [CP] Embed Pods Frameworks */ = {
+		074EF8DF24CAEE673D207CD5 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1640,7 +1672,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		3A484829B49CCFED866A2C12 /* [CP] Check Pods Manifest.lock */ = {
+		324BB47581C7F68506D6EC4D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1655,14 +1687,168 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-UnitTests ReactiveSwift-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex macOS ReactiveSwift-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B17974B65F71550813B3DE70 /* [CP] Check Pods Manifest.lock */ = {
+		51B7E3DD7A3FE4BBBE49B281 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex macOS RxSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		534F30D48368C9999773BED3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex tvOS ReactiveSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		69D4D3193A55F5B97C336BF0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex iOS RxSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		72A7611C3E3AFDF8ECB2FC6D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex tvOS RxSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		96018FFF7D85D7549FF06026 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex iOS ReactiveSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9D3ADBFA10FCC75C9BDE331E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftRex watchOS RxSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9E112C91667DE19926D3EF26 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-UnitTests RxSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BFA319A9829320C6B19D651D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1698,76 +1884,6 @@
 			shellPath = /bin/sh;
 			shellScript = "make prebuild-mac\n";
 		};
-		D532C9DB223EC29500AB13EF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-UnitTests RxSwift-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D532C9FF223EC29500AB13EF /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/RxSwift-macOS/RxSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework",
-				"${BUILT_PRODUCTS_DIR}/RxTest/RxTest.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxTest.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D532CA06223EC2C900AB13EF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftRex iOS RxSwift-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		D532CA07223EC2C900AB13EF /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1781,28 +1897,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "make prebuild-ios\n";
-		};
-		D532CA2B223EC2DF00AB13EF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftRex watchOS RxSwift-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		D532CA2C223EC2DF00AB13EF /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1818,28 +1912,6 @@
 			shellPath = /bin/sh;
 			shellScript = "make prebuild-watchos";
 		};
-		D532CA50223EC2F500AB13EF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftRex tvOS RxSwift-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		D532CA51223EC2F500AB13EF /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1853,28 +1925,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "make prebuild-tvos";
-		};
-		D532CA75223EC30700AB13EF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftRex macOS RxSwift-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		D532CA76223EC30700AB13EF /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1988,7 +2038,7 @@
 			shellPath = /bin/sh;
 			shellScript = "make prebuild-ios\n";
 		};
-		DAF51DED4652D69A4EF0D590 /* [CP] Check Pods Manifest.lock */ = {
+		E15ABA6A9B2AD633293322EE /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1996,21 +2046,25 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/RxSwift-macOS/RxSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework",
+				"${BUILT_PRODUCTS_DIR}/RxTest/RxTest.framework",
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftRex iOS ReactiveSwift-checkManifestLockResult.txt",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxTest.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E79B177D18AE8C1C1513EB8C /* [CP] Check Pods Manifest.lock */ = {
+		F0BA155D6B2D8C24CF367254 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2025,7 +2079,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftRex macOS ReactiveSwift-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-UnitTests ReactiveSwift-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2359,6 +2413,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5888B4622B6F2630028B0E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D595F6C7206E818C00E02733 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2503,6 +2564,11 @@
 			isa = PBXTargetDependency;
 			target = D595F6F3206E81C900E02733 /* SwiftRex macOS ReactiveSwift */;
 			targetProxy = D578B28F208A690C0035AE9C /* PBXContainerItemProxy */;
+		};
+		D5937B4F22B6F86F00FAB773 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */;
+			targetProxy = D5937B4E22B6F86F00FAB773 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2661,6 +2727,20 @@
 			};
 			name = Release;
 		};
+		D5888B6C22B6F2630028B0E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5888B7022B6F2D80028B0E1 /* UnitTests-SwiftRex-Debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		D5888B6D22B6F2630028B0E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5888B7122B6F2EA0028B0E1 /* UnitTests-SwiftRex-Release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		D595F6D2206E818C00E02733 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D5623F7C2093A68400C70F60 /* SwiftRex-ReactiveSwift-Debug-iOS.xcconfig */;
@@ -2815,6 +2895,15 @@
 			buildConfigurations = (
 				D5888AFE22B6E9300028B0E1 /* Debug */,
 				D5888AFF22B6E9300028B0E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D5888B6B22B6F2630028B0E1 /* Build configuration list for PBXNativeTarget "UnitTests SwiftRex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5888B6C22B6F2630028B0E1 /* Debug */,
+				D5888B6D22B6F2630028B0E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
