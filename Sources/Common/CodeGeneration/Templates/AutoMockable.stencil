@@ -1,4 +1,4 @@
-// sourcery:file:../../../UnitTests/Mocks/AutoMockable.generated.swift
+// sourcery:file:../../../UnitTests/Common/CodeGeneration/AutoMockable.generated.swift
 import Foundation
 @testable import SwiftRex
 #if os(iOS) || os(tvOS) || os(watchOS)
