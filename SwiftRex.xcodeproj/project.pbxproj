@@ -387,6 +387,20 @@
 		D59D5867207AA2840010412E /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D59D5868207AA2840010412E /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D59D5869207AA2840010412E /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
+		D5FDCB3E22B70E690012D2E7 /* ReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071F2071287A00D682EF /* ReducerTests.swift */; };
+		D5FDCB3F22B70E8F0012D2E7 /* Action1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070C2071287900D682EF /* Action1.swift */; };
+		D5FDCB4022B70E8F0012D2E7 /* Action2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070A2071287900D682EF /* Action2.swift */; };
+		D5FDCB4122B70E8F0012D2E7 /* Action3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070B2071287900D682EF /* Action3.swift */; };
+		D5FDCB4222B70E8F0012D2E7 /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607092071287900D682EF /* ActionReference.swift */; };
+		D5FDCB4322B70E980012D2E7 /* Event1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607122071287900D682EF /* Event1.swift */; };
+		D5FDCB4422B70E980012D2E7 /* Event2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607142071287900D682EF /* Event2.swift */; };
+		D5FDCB4522B70E980012D2E7 /* Event3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607112071287900D682EF /* Event3.swift */; };
+		D5FDCB4622B70E980012D2E7 /* EventAndActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607102071287900D682EF /* EventAndActionReference.swift */; };
+		D5FDCB4722B70E980012D2E7 /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607132071287900D682EF /* EventReference.swift */; };
+		D5FDCB4822B70E9F0012D2E7 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070E2071287900D682EF /* SomeError.swift */; };
+		D5FDCB4922B70EA70012D2E7 /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607072071287900D682EF /* NameReducer.swift */; };
+		D5FDCB4A22B70EAB0012D2E7 /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52E2162207A6CEC00A88E39 /* ReducerMock.swift */; };
+		D5FDCB4B22B70ECF0012D2E7 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607162071287900D682EF /* TestState.swift */; };
 		DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
 		E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */; };
 		FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */; };
@@ -2433,6 +2447,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5FDCB4322B70E980012D2E7 /* Event1.swift in Sources */,
+				D5FDCB4A22B70EAB0012D2E7 /* ReducerMock.swift in Sources */,
+				D5FDCB4422B70E980012D2E7 /* Event2.swift in Sources */,
+				D5FDCB4822B70E9F0012D2E7 /* SomeError.swift in Sources */,
+				D5FDCB4922B70EA70012D2E7 /* NameReducer.swift in Sources */,
+				D5FDCB4B22B70ECF0012D2E7 /* TestState.swift in Sources */,
+				D5FDCB4022B70E8F0012D2E7 /* Action2.swift in Sources */,
+				D5FDCB4122B70E8F0012D2E7 /* Action3.swift in Sources */,
+				D5FDCB4522B70E980012D2E7 /* Event3.swift in Sources */,
+				D5FDCB4622B70E980012D2E7 /* EventAndActionReference.swift in Sources */,
+				D5FDCB4722B70E980012D2E7 /* EventReference.swift in Sources */,
+				D5FDCB3E22B70E690012D2E7 /* ReducerTests.swift in Sources */,
+				D5FDCB3F22B70E8F0012D2E7 /* Action1.swift in Sources */,
+				D5FDCB4222B70E8F0012D2E7 /* ActionReference.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
