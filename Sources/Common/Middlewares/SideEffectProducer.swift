@@ -29,6 +29,7 @@ public protocol SideEffectProducer {
 }
 
 // sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
 // sourcery: TypeErase = StateType
 extension SideEffectProducer {
 }

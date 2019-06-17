@@ -17,6 +17,8 @@ public struct SideEffectError: ActionProtocol {
 /**
  Defines a protocol for implementing a middleware that executes `RxSwift` or `ReactiveSwift` side-effects. Instead of implementing the regular `handle(event:getState:next:)` and `handle(action:getState:next:)` methods, this protocol only requires a mapping from `EventProtocol` to `SideEffectProducer`.
  */
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
 public protocol SideEffectMiddleware: Middleware {
     /// Allows the following middlewares in the chain to have a chance of handling the same events already handled
     var allowEventToPropagate: Bool { get }
