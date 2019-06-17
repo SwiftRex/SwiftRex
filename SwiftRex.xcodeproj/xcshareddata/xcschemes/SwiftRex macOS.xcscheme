@@ -34,9 +34,9 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6F3206E81C900E02733"
+            BlueprintIdentifier = "D5888ADA22B6E9300028B0E1"
             BuildableName = "SwiftRex.framework"
-            BlueprintName = "SwiftRex macOS ReactiveSwift"
+            BlueprintName = "SwiftRex macOS"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>

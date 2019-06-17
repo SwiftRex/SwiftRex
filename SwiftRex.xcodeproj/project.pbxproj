@@ -35,7 +35,7 @@
 		D532C9E6223EC29500AB13EF /* ReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071F2071287A00D682EF /* ReducerTests.swift */; };
 		D532C9E7223EC29500AB13EF /* GeneralMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071C2071287A00D682EF /* GeneralMiddlewareTests.swift */; };
 		D532C9E8223EC29500AB13EF /* RotationMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607012071287900D682EF /* RotationMiddleware.swift */; };
-		D532C9E9223EC29500AB13EF /* MiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */; };
+		D532C9E9223EC29500AB13EF /* MocksAssociatedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD5207ACDA300EAC486 /* MocksAssociatedTypes.swift */; };
 		D532C9EA223EC29500AB13EF /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */; };
 		D532C9EB223EC29500AB13EF /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52E2162207A6CEC00A88E39 /* ReducerMock.swift */; };
 		D532C9EC223EC29500AB13EF /* SideEffectProducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607032071287900D682EF /* SideEffectProducerMock.swift */; };
@@ -193,7 +193,7 @@
 		D578B2A7208A6AE50035AE9C /* EventAndActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607102071287900D682EF /* EventAndActionReference.swift */; };
 		D578B2A8208A6AE50035AE9C /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607132071287900D682EF /* EventReference.swift */; };
 		D578B2A9208A6AE50035AE9C /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070E2071287900D682EF /* SomeError.swift */; };
-		D578B2AA208A6AE50035AE9C /* MiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */; };
+		D578B2AA208A6AE50035AE9C /* MocksAssociatedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD5207ACDA300EAC486 /* MocksAssociatedTypes.swift */; };
 		D578B2AB208A6AE50035AE9C /* RotationMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607012071287900D682EF /* RotationMiddleware.swift */; };
 		D578B2AC208A6AE50035AE9C /* SideEffectMiddlewareMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A606FF2071287900D682EF /* SideEffectMiddlewareMock.swift */; };
 		D578B2AD208A6AE50035AE9C /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607072071287900D682EF /* NameReducer.swift */; };
@@ -401,6 +401,17 @@
 		D5FDCB4922B70EA70012D2E7 /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607072071287900D682EF /* NameReducer.swift */; };
 		D5FDCB4A22B70EAB0012D2E7 /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52E2162207A6CEC00A88E39 /* ReducerMock.swift */; };
 		D5FDCB4B22B70ECF0012D2E7 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607162071287900D682EF /* TestState.swift */; };
+		D5FDCB4E22B710F40012D2E7 /* MocksAssociatedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD5207ACDA300EAC486 /* MocksAssociatedTypes.swift */; };
+		D5FDCB4F22B711800012D2E7 /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56449272082F1F500453ABB /* AutoMockable.generated.swift */; };
+		D5FDCB5022B711B40012D2E7 /* RotationMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607012071287900D682EF /* RotationMiddleware.swift */; };
+		D5FDCB5322B712630012D2E7 /* ActionHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */; };
+		D5FDCB5422B713610012D2E7 /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071A2071287A00D682EF /* MiddlewareTestsBase.swift */; };
+		D5FDCB5522B7137B0012D2E7 /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */; };
+		D5FDCB5722B713B90012D2E7 /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */; };
+		D5FDCB5922B713D90012D2E7 /* MessageHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5822B713D90012D2E7 /* MessageHandlerMock.swift */; };
+		D5FDCB5A22B718A10012D2E7 /* GeneralMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071C2071287A00D682EF /* GeneralMiddlewareTests.swift */; };
+		D5FDCB5B22B719000012D2E7 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607172071287900D682EF /* TestStore.swift */; };
+		D5FDCB5D22B7195C0012D2E7 /* CurrentValueSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */; };
 		DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
 		E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */; };
 		FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */; };
@@ -458,7 +469,7 @@
 		D4627F2CA5E907B890648113 /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
 		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
-		D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareMock.swift; sourceTree = "<group>"; };
+		D51C8AD5207ACDA300EAC486 /* MocksAssociatedTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MocksAssociatedTypes.swift; sourceTree = "<group>"; };
 		D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RxSwift+Extensions.swift"; sourceTree = "<group>"; };
 		D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReactiveSwift+Extensions.swift"; sourceTree = "<group>"; };
 		D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.ReactiveSwift.swift; sourceTree = "<group>"; };
@@ -582,6 +593,10 @@
 		D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5A6071F2071287A00D682EF /* ReducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
 		D5A607212071287A00D682EF /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
+		D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandlerMock.swift; sourceTree = "<group>"; };
+		D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandlerMock.swift; sourceTree = "<group>"; };
+		D5FDCB5822B713D90012D2E7 /* MessageHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageHandlerMock.swift; sourceTree = "<group>"; };
+		D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentValueSubject.swift; sourceTree = "<group>"; };
 		E1EA4C435F50A56023B2C78A /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.release.xcconfig"; sourceTree = "<group>"; };
 		E73F580A516D50E27F25B048 /* Pods-SwiftRex tvOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1018,7 +1033,6 @@
 		D5A606FE2071287900D682EF /* Middleware */ = {
 			isa = PBXGroup;
 			children = (
-				D51C8AD5207ACDA300EAC486 /* MiddlewareMock.swift */,
 				D5A607012071287900D682EF /* RotationMiddleware.swift */,
 				D5A606FF2071287900D682EF /* SideEffectMiddlewareMock.swift */,
 			);
@@ -1057,6 +1071,7 @@
 		D5A6070D2071287900D682EF /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				D51C8AD5207ACDA300EAC486 /* MocksAssociatedTypes.swift */,
 				D5A6070E2071287900D682EF /* SomeError.swift */,
 			);
 			path = Helper;
@@ -1077,6 +1092,10 @@
 		D5A607152071287900D682EF /* Store */ = {
 			isa = PBXGroup;
 			children = (
+				D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */,
+				D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */,
+				D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */,
+				D5FDCB5822B713D90012D2E7 /* MessageHandlerMock.swift */,
 				D5A607162071287900D682EF /* TestState.swift */,
 				D5A607172071287900D682EF /* TestStore.swift */,
 			);
@@ -2135,7 +2154,7 @@
 				D532C9E6223EC29500AB13EF /* ReducerTests.swift in Sources */,
 				D532C9E7223EC29500AB13EF /* GeneralMiddlewareTests.swift in Sources */,
 				D532C9E8223EC29500AB13EF /* RotationMiddleware.swift in Sources */,
-				D532C9E9223EC29500AB13EF /* MiddlewareMock.swift in Sources */,
+				D532C9E9223EC29500AB13EF /* MocksAssociatedTypes.swift in Sources */,
 				D532C9EA223EC29500AB13EF /* BypassMiddlewareTests.swift in Sources */,
 				D532C9EB223EC29500AB13EF /* ReducerMock.swift in Sources */,
 				D532C9EC223EC29500AB13EF /* SideEffectProducerMock.swift in Sources */,
@@ -2306,7 +2325,7 @@
 				D578B295208A6AC00035AE9C /* ReducerTests.swift in Sources */,
 				D578B29B208A6AC70035AE9C /* GeneralMiddlewareTests.swift in Sources */,
 				D578B2AB208A6AE50035AE9C /* RotationMiddleware.swift in Sources */,
-				D578B2AA208A6AE50035AE9C /* MiddlewareMock.swift in Sources */,
+				D578B2AA208A6AE50035AE9C /* MocksAssociatedTypes.swift in Sources */,
 				D578B298208A6AC70035AE9C /* BypassMiddlewareTests.swift in Sources */,
 				D578B2AE208A6AE50035AE9C /* ReducerMock.swift in Sources */,
 				D5279C8D223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift in Sources */,
@@ -2452,15 +2471,26 @@
 				D5FDCB4422B70E980012D2E7 /* Event2.swift in Sources */,
 				D5FDCB4822B70E9F0012D2E7 /* SomeError.swift in Sources */,
 				D5FDCB4922B70EA70012D2E7 /* NameReducer.swift in Sources */,
+				D5FDCB5D22B7195C0012D2E7 /* CurrentValueSubject.swift in Sources */,
+				D5FDCB5522B7137B0012D2E7 /* BypassMiddlewareTests.swift in Sources */,
+				D5FDCB5322B712630012D2E7 /* ActionHandlerMock.swift in Sources */,
+				D5FDCB5B22B719000012D2E7 /* TestStore.swift in Sources */,
+				D5FDCB4E22B710F40012D2E7 /* MocksAssociatedTypes.swift in Sources */,
+				D5FDCB5922B713D90012D2E7 /* MessageHandlerMock.swift in Sources */,
 				D5FDCB4B22B70ECF0012D2E7 /* TestState.swift in Sources */,
 				D5FDCB4022B70E8F0012D2E7 /* Action2.swift in Sources */,
 				D5FDCB4122B70E8F0012D2E7 /* Action3.swift in Sources */,
+				D5FDCB5022B711B40012D2E7 /* RotationMiddleware.swift in Sources */,
 				D5FDCB4522B70E980012D2E7 /* Event3.swift in Sources */,
 				D5FDCB4622B70E980012D2E7 /* EventAndActionReference.swift in Sources */,
+				D5FDCB4F22B711800012D2E7 /* AutoMockable.generated.swift in Sources */,
 				D5FDCB4722B70E980012D2E7 /* EventReference.swift in Sources */,
 				D5FDCB3E22B70E690012D2E7 /* ReducerTests.swift in Sources */,
+				D5FDCB5A22B718A10012D2E7 /* GeneralMiddlewareTests.swift in Sources */,
 				D5FDCB3F22B70E8F0012D2E7 /* Action1.swift in Sources */,
+				D5FDCB5722B713B90012D2E7 /* EventHandlerMock.swift in Sources */,
 				D5FDCB4222B70E8F0012D2E7 /* ActionReference.swift in Sources */,
+				D5FDCB5422B713610012D2E7 /* MiddlewareTestsBase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

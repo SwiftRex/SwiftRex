@@ -5,10 +5,15 @@ public struct MessageHandler {
     /**
      A way for Middlewares to trigger new actions.
      */
-    let actionHandler: ActionHandler
+    public let actionHandler: ActionHandler
 
     /**
      A way for Middlewares to dispatch new events.
      */
-    let eventHandler: EventHandler
+    public let eventHandler: EventHandler
+
+    public init(actionHandler: ActionHandler, eventHandler: EventHandler) {
+        self.actionHandler = actionHandler
+        self.eventHandler = eventHandler
+    }
 }

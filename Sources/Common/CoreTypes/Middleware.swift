@@ -63,5 +63,6 @@ public protocol Middleware: class {
     func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>)
 }
 
+// sourcery: AutoMockable
 // sourcery: TypeErase = StateType
 extension Middleware { }
