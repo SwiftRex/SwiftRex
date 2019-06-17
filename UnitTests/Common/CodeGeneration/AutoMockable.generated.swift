@@ -1,6 +1,7 @@
 // Generated using Sourcery 0.16.1 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
+// swiftlint:disable all
 import Foundation
 @testable import SwiftRex
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -9,10 +10,22 @@ import UIKit
 import AppKit
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
 class MiddlewareMock: Middleware {
     var handlers: MessageHandler!
 
-    // MARK: - handle
+    //MARK: - handle
 
     var handleEventGetStateNextCallsCount = 0
     var handleEventGetStateNextCalled: Bool {
@@ -27,7 +40,7 @@ class MiddlewareMock: Middleware {
         handleEventGetStateNextClosure?(event, getState, next)
     }
 
-    // MARK: - handle
+    //MARK: - handle
 
     var handleActionGetStateNextCallsCount = 0
     var handleActionGetStateNextCalled: Bool {
@@ -41,9 +54,11 @@ class MiddlewareMock: Middleware {
         handleActionGetStateNextReceivedArguments = (action: action, getState: getState, next: next)
         handleActionGetStateNextClosure?(action, getState, next)
     }
+
 }
 class SideEffectProducerMock: SideEffectProducer {
-    // MARK: - execute
+
+    //MARK: - execute
 
     var executeGetStateCallsCount = 0
     var executeGetStateCalled: Bool {
@@ -58,4 +73,5 @@ class SideEffectProducerMock: SideEffectProducer {
         executeGetStateReceivedGetState = getState
         return executeGetStateClosure.map({ $0(getState) }) ?? executeGetStateReturnValue
     }
+
 }
