@@ -97,26 +97,37 @@ class ComposedMiddlewareTests: MiddlewareTestsBase {
     func testMiddlewareActionHandlerPropagationOnInit() {
         let middlewares = ["m1", "m2", "m3", "m4"]
             .map(RotationMiddleware.init)
-        (0..<4).forEach { XCTAssertNil(middlewares[$0].actionHandler) }
+        (0..<4).forEach { XCTAssertNil(middlewares[$0].handlers) }
 
         let composedMiddlewares = middlewares[0] <> middlewares[1] <> middlewares[2] <> middlewares[3]
-        XCTAssertNil(composedMiddlewares.actionHandler)
+        XCTAssertNil(composedMiddlewares.handlers)
 
-        let store = TestStore(initialState: TestState(),
+        let subjectMock = CurrentValueSubject(currentValue: TestState())
+        let store = TestStore(subject: subjectMock.subject,
                               reducer: createReducerMock().0,
                               middleware: composedMiddlewares)
-        (0..<4).forEach { XCTAssert(middlewares[$0].actionHandler === store) }
+
+        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers) }
+        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers.actionHandler.onValue) }
+        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers.eventHandler.onValue) }
+
+        XCTAssertNotNil(store)
     }
 
     func testMiddlewareActionHandlerPropagationOnAppend() {
         let container: ComposedMiddleware<TestState> = .init()
-        let store = TestStore(initialState: TestState(), reducer: createReducerMock().0, middleware: container)
+        let subjectMock = CurrentValueSubject(currentValue: TestState())
+        let store = TestStore(subject: subjectMock.subject,
+                              reducer: createReducerMock().0,
+                              middleware: container)
 
         let middlewares = ["m1", "m2", "m3", "m4"]
             .map(RotationMiddleware.init)
 
-        (0..<4).forEach { XCTAssertNil(middlewares[$0].actionHandler) }
+        (0..<4).forEach { XCTAssertNil(middlewares[$0].handlers) }
         (0..<4).map { middlewares[$0] }.forEach(container.append)
-        (0..<4).forEach { XCTAssert(middlewares[$0].actionHandler === store) }
+        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers) }
+
+        XCTAssertNotNil(store)
     }
 }
