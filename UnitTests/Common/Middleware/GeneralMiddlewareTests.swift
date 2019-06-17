@@ -88,15 +88,75 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
     }
 
-//    func testActionHandler() {
-//        let rotationMiddleware = RotationMiddleware(name: "m1")
-//        let subjectMock = CurrentValueSubject(currentValue: TestState())
-//        let actionHandler = TestStore(subject: subjectMock.subject,
-//                                      reducer: createReducerMock().0,
-//                                      middleware: rotationMiddleware)
-//        let sut = AnyMiddleware(rotationMiddleware)
-//
-//        XCTAssert(actionHandler === sut.handlers.actionHandler)
-//        XCTAssert(actionHandler === rotationMiddleware.actionHandler)
-//    }
+    func testMessageHandlerAction() {
+        // Given
+        let actions: [ActionProtocol] = [Action1(), Action3(), Action1(), Action2()]
+        let middlewareMock = MiddlewareMock()
+        let rotationMiddleware = RotationMiddleware(name: "m1")
+        let subjectMock = CurrentValueSubject(currentValue: TestState())
+        let store = TestStore(subject: subjectMock.subject,
+                              reducer: createReducerMock().0,
+                              middleware: middlewareMock <> rotationMiddleware)
+
+        var count = 0
+        let shouldBeCalled4Times = expectation(description: "it should be called 4 times")
+        middlewareMock.handleActionGetStateNextClosure = { action, _, _ in
+            switch count {
+            case 0:
+                XCTAssertEqual(action as? Action1, actions[count] as? Action1)
+            case 1:
+                XCTAssertEqual(action as? Action3, actions[count] as? Action3)
+            case 2:
+                XCTAssertEqual(action as? Action1, actions[count] as? Action1)
+            case 3:
+                XCTAssertEqual(action as? Action2, actions[count] as? Action2)
+                shouldBeCalled4Times.fulfill()
+            default: XCTFail("Called more times than expected")
+            }
+            count += 1
+        }
+
+        // Then
+        actions.forEach(rotationMiddleware.handlers.actionHandler.trigger)
+
+        // Expect
+        XCTAssertNotNil(store)
+        wait(for: [shouldBeCalled4Times], timeout: 0.5)
+    }
+
+    func testMessageHandlerEvent() {
+        // Given
+        let events: [EventProtocol] = [Event1(), Event3(), Event1(), Event2()]
+        let middlewareMock = MiddlewareMock()
+        let rotationMiddleware = RotationMiddleware(name: "m1")
+        let subjectMock = CurrentValueSubject(currentValue: TestState())
+        let store = TestStore(subject: subjectMock.subject,
+                              reducer: createReducerMock().0,
+                              middleware: middlewareMock <> rotationMiddleware)
+
+        var count = 0
+        let shouldBeCalled4Times = expectation(description: "it should be called 4 times")
+        middlewareMock.handleEventGetStateNextClosure = { event, _, _ in
+            switch count {
+            case 0:
+                XCTAssertEqual(event as? Action1, events[count] as? Action1)
+            case 1:
+                XCTAssertEqual(event as? Action3, events[count] as? Action3)
+            case 2:
+                XCTAssertEqual(event as? Action1, events[count] as? Action1)
+            case 3:
+                XCTAssertEqual(event as? Action2, events[count] as? Action2)
+                shouldBeCalled4Times.fulfill()
+            default: XCTFail("Called more times than expected")
+            }
+            count += 1
+        }
+
+        // Then
+        events.forEach(rotationMiddleware.handlers.eventHandler.dispatch)
+
+        // Expect
+        XCTAssertNotNil(store)
+        wait(for: [shouldBeCalled4Times], timeout: 0.5)
+    }
 }
