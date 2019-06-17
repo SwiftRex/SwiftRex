@@ -64,5 +64,6 @@ public protocol Middleware: class {
 }
 
 // sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
 // sourcery: TypeErase = StateType
 extension Middleware { }
