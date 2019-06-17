@@ -413,6 +413,7 @@
 		D5FDCB5B22B719000012D2E7 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607172071287900D682EF /* TestStore.swift */; };
 		D5FDCB5D22B7195C0012D2E7 /* CurrentValueSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */; };
 		D5FDCB5E22B830AD0012D2E7 /* ComposedMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */; };
+		D5FDCB5F22B834390012D2E7 /* DirectLineMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */; };
 		DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
 		E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */; };
 		FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */; };
@@ -2474,6 +2475,7 @@
 				D5FDCB4922B70EA70012D2E7 /* NameReducer.swift in Sources */,
 				D5FDCB5D22B7195C0012D2E7 /* CurrentValueSubject.swift in Sources */,
 				D5FDCB5522B7137B0012D2E7 /* BypassMiddlewareTests.swift in Sources */,
+				D5FDCB5F22B834390012D2E7 /* DirectLineMiddlewareTests.swift in Sources */,
 				D5FDCB5322B712630012D2E7 /* ActionHandlerMock.swift in Sources */,
 				D5FDCB5B22B719000012D2E7 /* TestStore.swift in Sources */,
 				D5FDCB4E22B710F40012D2E7 /* MocksAssociatedTypes.swift in Sources */,
