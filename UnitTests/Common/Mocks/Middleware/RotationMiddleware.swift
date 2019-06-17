@@ -1,7 +1,7 @@
 import SwiftRex
 
 class RotationMiddleware: Middleware {
-    weak var actionHandler: ActionHandler?
+    var handlers: MessageHandler!
     private var name: String
 
     init(name: String) {
