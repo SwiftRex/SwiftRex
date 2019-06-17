@@ -4,7 +4,7 @@ import XCTest
 class GeneralMiddlewareTests: MiddlewareTestsBase {
     func testAnyMiddlewareEvent() {
         // Given
-        let middlewareMock = MiddlewareMock()
+        let middlewareMock = MiddlewareMock<TestState>()
         let sut = AnyMiddleware(middlewareMock)
         let event = Event1()
         let state = TestState()
@@ -28,7 +28,7 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
 
     func testAnyMiddlewareAction() {
         // Given
-        let middlewareMock = MiddlewareMock()
+        let middlewareMock = MiddlewareMock<TestState>()
         let sut = AnyMiddleware(middlewareMock)
         let action = Action1()
         let state = TestState()
@@ -91,7 +91,7 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
     func testMessageHandlerAction() {
         // Given
         let actions: [ActionProtocol] = [Action1(), Action3(), Action1(), Action2()]
-        let middlewareMock = MiddlewareMock()
+        let middlewareMock = MiddlewareMock<TestState>()
         let rotationMiddleware = RotationMiddleware(name: "m1")
         let subjectMock = CurrentValueSubject(currentValue: TestState())
         let store = TestStore(subject: subjectMock.subject,
@@ -127,7 +127,7 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
     func testMessageHandlerEvent() {
         // Given
         let events: [EventProtocol] = [Event1(), Event3(), Event1(), Event2()]
-        let middlewareMock = MiddlewareMock()
+        let middlewareMock = MiddlewareMock<TestState>()
         let rotationMiddleware = RotationMiddleware(name: "m1")
         let subjectMock = CurrentValueSubject(currentValue: TestState())
         let store = TestStore(subject: subjectMock.subject,

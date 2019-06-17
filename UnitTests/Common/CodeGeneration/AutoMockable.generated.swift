@@ -22,7 +22,7 @@ import AppKit
 
 
 
-class MiddlewareMock: Middleware {
+class MiddlewareMock<StateType>: Middleware {
     var handlers: MessageHandler!
 
     //MARK: - handle
@@ -56,7 +56,7 @@ class MiddlewareMock: Middleware {
     }
 
 }
-class SideEffectProducerMock: SideEffectProducer {
+class SideEffectProducerMock<StateType>: SideEffectProducer {
 
     //MARK: - execute
 
