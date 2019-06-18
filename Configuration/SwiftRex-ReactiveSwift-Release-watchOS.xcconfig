@@ -1,2 +1,5 @@
 #include "SwiftRex-Release-watchOS.xcconfig"
+#include "SwiftRex-ReactiveSwift.xcconfig"
 #include "Pods/Target Support Files/Pods-SwiftRex watchOS ReactiveSwift/Pods-SwiftRex watchOS ReactiveSwift.release.xcconfig"
+
+PRODUCT_NAME = SwiftRexForRac
