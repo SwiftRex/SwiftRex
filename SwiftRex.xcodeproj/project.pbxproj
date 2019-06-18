@@ -43,7 +43,6 @@
 		D532CA1C223EC2C900AB13EF /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D532CA1D223EC2C900AB13EF /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D532CA1F223EC2C900AB13EF /* ActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5806207AA1B40010412E /* ActionHandler.swift */; };
-		D532CA23223EC2C900AB13EF /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D532CA2E223EC2DF00AB13EF /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */; };
 		D532CA2F223EC2DF00AB13EF /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D532CA30223EC2DF00AB13EF /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
@@ -64,7 +63,6 @@
 		D532CA41223EC2DF00AB13EF /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D532CA42223EC2DF00AB13EF /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D532CA44223EC2DF00AB13EF /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
-		D532CA48223EC2DF00AB13EF /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D532CA53223EC2F500AB13EF /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */; };
 		D532CA54223EC2F500AB13EF /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D532CA55223EC2F500AB13EF /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
@@ -85,7 +83,6 @@
 		D532CA66223EC2F500AB13EF /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D532CA67223EC2F500AB13EF /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D532CA69223EC2F500AB13EF /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
-		D532CA6D223EC2F500AB13EF /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D532CA78223EC30700AB13EF /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */; };
 		D532CA79223EC30700AB13EF /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D532CA7A223EC30700AB13EF /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
@@ -106,13 +103,12 @@
 		D532CA8B223EC30700AB13EF /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D532CA8C223EC30700AB13EF /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D532CA8E223EC30700AB13EF /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
-		D532CA92223EC30700AB13EF /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D547DAFC223ED027006EAAC4 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D532CA97223EC30700AB13EF /* SwiftRex.framework */; };
+		D547DAFC223ED027006EAAC4 /* SwiftRexForRx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */; };
 		D55EFB0D207EBAA300BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB0E207EBB0100BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB0F207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB10207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
-		D568E644223ED11800F0FECA /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRex.framework */; };
+		D568E644223ED11800F0FECA /* SwiftRexForRac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */; };
 		D578B2B0208A6AE50035AE9C /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
 		D5866FC7208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5866FC8208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -226,14 +222,13 @@
 		D5888AF522B6E9300028B0E1 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D5888AF722B6E9300028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D5888AFB22B6E9300028B0E1 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5888B6722B6F2630028B0E1 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRex.framework */; };
+		D5888B6722B6F2630028B0E1 /* SwiftRexForRac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */; };
 		D59D580B207AA1B40010412E /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D59D580C207AA1B40010412E /* EventProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E7207AA1B40010412E /* EventProtocol.swift */; };
 		D59D580D207AA1B40010412E /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D59D580E207AA1B40010412E /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D59D580F207AA1B40010412E /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
 		D59D5818207AA1B40010412E /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
-		D59D5819207AA1B40010412E /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D59D581A207AA1B40010412E /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* BypassMiddleware.swift */; };
 		D59D581B207AA1B40010412E /* SideEffectMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* SideEffectMiddleware.swift */; };
 		D59D581C207AA1B40010412E /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
@@ -290,15 +285,28 @@
 		D59D5858207AA2680010412E /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
 		D59D585B207AA2690010412E /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
 		D59D585E207AA26A0010412E /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
-		D59D5861207AA2820010412E /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D59D5862207AA2820010412E /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D59D5863207AA2820010412E /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
-		D59D5864207AA2830010412E /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D59D5865207AA2830010412E /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D59D5866207AA2830010412E /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
-		D59D5867207AA2840010412E /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D59D5868207AA2840010412E /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D59D5869207AA2840010412E /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
+		D5A2EAEA22B9A02800CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAEB22B9A02900CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAEC22B9A02A00CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAED22B9A02B00CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAEF22B9A06700CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAF022B9A06700CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAF122B9A06800CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAF222B9A06800CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAF322B9A1F100CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888A8822B6E9250028B0E1 /* SwiftRex.framework */; };
+		D5A2EAF422B9A1F900CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
+		D5A2EAF522B9A20300CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */; };
+		D5A2EAF622B9A20B00CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */; };
+		D5A2EAF722B9A21700CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888A8822B6E9250028B0E1 /* SwiftRex.framework */; };
+		D5A2EAF822B9A21E00CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
+		D5A2EAF922B9A22500CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */; };
+		D5A2EAFA22B9A22D00CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */; };
 		D5C3943522B970B400ABCA90 /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */; };
 		D5C3943622B970B400ABCA90 /* ComposedMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */; };
 		D5C3943722B970B400ABCA90 /* DirectLineMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */; };
@@ -395,10 +403,10 @@
 		D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.ReactiveSwift.swift; sourceTree = "<group>"; };
 		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
 		D532CA03223EC29500AB13EF /* UnitTests RxSwift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests RxSwift.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA28223EC2C900AB13EF /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA4D223EC2DF00AB13EF /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA72223EC2F500AB13EF /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA97223EC30700AB13EF /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA28223EC2C900AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA4D223EC2DF00AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA72223EC2F500AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D532CAAD223ECA5900AB13EF /* SwiftRex-RxSwift-Release-macOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift-Release-macOS.xcconfig"; sourceTree = "<group>"; };
 		D532CAAE223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-watchOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift-Debug-watchOS.xcconfig"; sourceTree = "<group>"; };
 		D532CAAF223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift-Debug-iOS.xcconfig"; sourceTree = "<group>"; };
@@ -451,10 +459,10 @@
 		D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests SwiftRex.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5888B7022B6F2D80028B0E1 /* UnitTests-SwiftRex-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Debug.xcconfig"; sourceTree = "<group>"; };
 		D5888B7122B6F2EA0028B0E1 /* UnitTests-SwiftRex-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Release.xcconfig"; sourceTree = "<group>"; };
-		D595F6CC206E818C00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D595F6DA206E81AE00E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D595F6E7206E81B900E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D595F6F4206E81C900E02733 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6CC206E818C00E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6DA206E81AE00E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6E7206E81B900E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D59D57E6207AA1B40010412E /* Reducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reducer.swift; sourceTree = "<group>"; };
 		D59D57E7207AA1B40010412E /* EventProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventProtocol.swift; sourceTree = "<group>"; };
 		D59D57E8207AA1B40010412E /* ActionProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionProtocol.swift; sourceTree = "<group>"; };
@@ -479,6 +487,10 @@
 		D59D5808207AA1B40010412E /* EventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandler.swift; sourceTree = "<group>"; };
 		D59D5809207AA1B40010412E /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		D59D580A207AA1B40010412E /* StoreBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreBase.swift; sourceTree = "<group>"; };
+		D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRexForRac.h; sourceTree = "<group>"; };
+		D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRexForRx.h; sourceTree = "<group>"; };
+		D5A2EAFB22B9A27D00CA10B8 /* SwiftRex-ReactiveSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-ReactiveSwift.xcconfig"; sourceTree = "<group>"; };
+		D5A2EAFC22B9A2F300CA10B8 /* SwiftRex-RxSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift.xcconfig"; sourceTree = "<group>"; };
 		D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.RxSwift.swift; sourceTree = "<group>"; };
 		D5A607012071287900D682EF /* RotationMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationMiddleware.swift; sourceTree = "<group>"; };
 		D5A607042071287900D682EF /* TimelySideEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelySideEffect.swift; sourceTree = "<group>"; };
@@ -523,7 +535,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D547DAFC223ED027006EAAC4 /* SwiftRex.framework in Frameworks */,
+				D547DAFC223ED027006EAAC4 /* SwiftRexForRx.framework in Frameworks */,
 				9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -532,6 +544,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAF722B9A21700CA10B8 /* SwiftRex.framework in Frameworks */,
 				01DFA16BBA37FEBB0130E608 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -540,6 +553,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAFA22B9A22D00CA10B8 /* SwiftRex.framework in Frameworks */,
 				DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -548,6 +562,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAF922B9A22500CA10B8 /* SwiftRex.framework in Frameworks */,
 				CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -556,6 +571,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAF822B9A21E00CA10B8 /* SwiftRex.framework in Frameworks */,
 				83E9670EC5996AC3D61D1365 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -564,7 +580,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D568E644223ED11800F0FECA /* SwiftRex.framework in Frameworks */,
+				D568E644223ED11800F0FECA /* SwiftRexForRac.framework in Frameworks */,
 				8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -601,7 +617,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5888B6722B6F2630028B0E1 /* SwiftRex.framework in Frameworks */,
+				D5888B6722B6F2630028B0E1 /* SwiftRexForRac.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -609,6 +625,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAF322B9A1F100CA10B8 /* SwiftRex.framework in Frameworks */,
 				3E424096541BD3F7EE0CC8B3 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -617,6 +634,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAF622B9A20B00CA10B8 /* SwiftRex.framework in Frameworks */,
 				E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -625,6 +643,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAF522B9A20300CA10B8 /* SwiftRex.framework in Frameworks */,
 				FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -633,6 +652,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A2EAF422B9A1F900CA10B8 /* SwiftRex.framework in Frameworks */,
 				D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -715,6 +735,7 @@
 				D5888B2722B6EB800028B0E1 /* SwiftRex-Release-macOS.xcconfig */,
 				D5888B3022B6EB890028B0E1 /* SwiftRex-Release-tvOS.xcconfig */,
 				D5888B3922B6EBAB0028B0E1 /* SwiftRex-Release-watchOS.xcconfig */,
+				D5A2EAFB22B9A27D00CA10B8 /* SwiftRex-ReactiveSwift.xcconfig */,
 				D5623F7C2093A68400C70F60 /* SwiftRex-ReactiveSwift-Debug-iOS.xcconfig */,
 				D5623F822093A6D600C70F60 /* SwiftRex-ReactiveSwift-Debug-macOS.xcconfig */,
 				D5623F802093A6C300C70F60 /* SwiftRex-ReactiveSwift-Debug-tvOS.xcconfig */,
@@ -723,6 +744,7 @@
 				D5623F812093A6CD00C70F60 /* SwiftRex-ReactiveSwift-Release-macOS.xcconfig */,
 				D5623F7F2093A6B800C70F60 /* SwiftRex-ReactiveSwift-Release-tvOS.xcconfig */,
 				D5623F7D2093A69400C70F60 /* SwiftRex-ReactiveSwift-Release-watchOS.xcconfig */,
+				D5A2EAFC22B9A2F300CA10B8 /* SwiftRex-RxSwift.xcconfig */,
 				D532CAAF223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-iOS.xcconfig */,
 				D532CAB5223ECA5A00AB13EF /* SwiftRex-RxSwift-Debug-macOS.xcconfig */,
 				D532CAB4223ECA5A00AB13EF /* SwiftRex-RxSwift-Debug-tvOS.xcconfig */,
@@ -746,9 +768,13 @@
 		D56C3E402082E991002E914C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				D59D57F7207AA1B40010412E /* SwiftRex.h */,
 				D532C9C4223EBCE100AB13EF /* Common */,
 				D59D5800207AA1B40010412E /* Metadata */,
+				D5A2EAE822B99FBB00CA10B8 /* ReactiveSwift */,
+				D5A2EAE722B99FB100CA10B8 /* RxSwift */,
+				D59D57F7207AA1B40010412E /* SwiftRex.h */,
+				D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */,
+				D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -822,16 +848,16 @@
 		D595F6CD206E818C00E02733 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D595F6CC206E818C00E02733 /* SwiftRex.framework */,
-				D595F6DA206E81AE00E02733 /* SwiftRex.framework */,
-				D595F6E7206E81B900E02733 /* SwiftRex.framework */,
-				D595F6F4206E81C900E02733 /* SwiftRex.framework */,
+				D595F6CC206E818C00E02733 /* SwiftRexForRac.framework */,
+				D595F6DA206E81AE00E02733 /* SwiftRexForRac.framework */,
+				D595F6E7206E81B900E02733 /* SwiftRexForRac.framework */,
+				D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */,
 				D578B289208A690C0035AE9C /* UnitTests ReactiveSwift.xctest */,
 				D532CA03223EC29500AB13EF /* UnitTests RxSwift.xctest */,
-				D532CA28223EC2C900AB13EF /* SwiftRex.framework */,
-				D532CA4D223EC2DF00AB13EF /* SwiftRex.framework */,
-				D532CA72223EC2F500AB13EF /* SwiftRex.framework */,
-				D532CA97223EC30700AB13EF /* SwiftRex.framework */,
+				D532CA28223EC2C900AB13EF /* SwiftRexForRx.framework */,
+				D532CA4D223EC2DF00AB13EF /* SwiftRexForRx.framework */,
+				D532CA72223EC2F500AB13EF /* SwiftRexForRx.framework */,
+				D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */,
 				D5888A8822B6E9250028B0E1 /* SwiftRex.framework */,
 				D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */,
 				D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */,
@@ -906,6 +932,20 @@
 				D59D580A207AA1B40010412E /* StoreBase.swift */,
 			);
 			path = Store;
+			sourceTree = "<group>";
+		};
+		D5A2EAE722B99FB100CA10B8 /* RxSwift */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = RxSwift;
+			sourceTree = "<group>";
+		};
+		D5A2EAE822B99FBB00CA10B8 /* ReactiveSwift */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ReactiveSwift;
 			sourceTree = "<group>";
 		};
 		D5A606FD2071287900D682EF /* Mocks */ = {
@@ -1054,7 +1094,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D532CA23223EC2C900AB13EF /* SwiftRex.h in Headers */,
+				D5A2EAEF22B9A06700CA10B8 /* SwiftRexForRx.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1062,7 +1102,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D532CA48223EC2DF00AB13EF /* SwiftRex.h in Headers */,
+				D5A2EAF222B9A06800CA10B8 /* SwiftRexForRx.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1070,7 +1110,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D532CA6D223EC2F500AB13EF /* SwiftRex.h in Headers */,
+				D5A2EAF122B9A06800CA10B8 /* SwiftRexForRx.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1078,7 +1118,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D532CA92223EC30700AB13EF /* SwiftRex.h in Headers */,
+				D5A2EAF022B9A06700CA10B8 /* SwiftRexForRx.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1118,7 +1158,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D59D5819207AA1B40010412E /* SwiftRex.h in Headers */,
+				D5A2EAEA22B9A02800CA10B8 /* SwiftRexForRac.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1126,7 +1166,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D59D5867207AA2840010412E /* SwiftRex.h in Headers */,
+				D5A2EAED22B9A02B00CA10B8 /* SwiftRexForRac.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1134,7 +1174,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D59D5864207AA2830010412E /* SwiftRex.h in Headers */,
+				D5A2EAEC22B9A02A00CA10B8 /* SwiftRexForRac.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1142,7 +1182,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D59D5861207AA2820010412E /* SwiftRex.h in Headers */,
+				D5A2EAEB22B9A02900CA10B8 /* SwiftRexForRac.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1186,7 +1226,7 @@
 			);
 			name = "SwiftRex iOS RxSwift";
 			productName = "SwiftRex iOS";
-			productReference = D532CA28223EC2C900AB13EF /* SwiftRex.framework */;
+			productReference = D532CA28223EC2C900AB13EF /* SwiftRexForRx.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D532CA2A223EC2DF00AB13EF /* SwiftRex watchOS RxSwift */ = {
@@ -1206,7 +1246,7 @@
 			);
 			name = "SwiftRex watchOS RxSwift";
 			productName = "SwiftRex watchOS";
-			productReference = D532CA4D223EC2DF00AB13EF /* SwiftRex.framework */;
+			productReference = D532CA4D223EC2DF00AB13EF /* SwiftRexForRx.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D532CA4F223EC2F500AB13EF /* SwiftRex tvOS RxSwift */ = {
@@ -1226,7 +1266,7 @@
 			);
 			name = "SwiftRex tvOS RxSwift";
 			productName = "SwiftRex tvOS";
-			productReference = D532CA72223EC2F500AB13EF /* SwiftRex.framework */;
+			productReference = D532CA72223EC2F500AB13EF /* SwiftRexForRx.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D532CA74223EC30700AB13EF /* SwiftRex macOS RxSwift */ = {
@@ -1246,7 +1286,7 @@
 			);
 			name = "SwiftRex macOS RxSwift";
 			productName = "SwiftRex macOS";
-			productReference = D532CA97223EC30700AB13EF /* SwiftRex.framework */;
+			productReference = D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D578B288208A690C0035AE9C /* UnitTests ReactiveSwift */ = {
@@ -1380,7 +1420,7 @@
 			);
 			name = "SwiftRex iOS ReactiveSwift";
 			productName = "SwiftRex iOS";
-			productReference = D595F6CC206E818C00E02733 /* SwiftRex.framework */;
+			productReference = D595F6CC206E818C00E02733 /* SwiftRexForRac.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D595F6D9206E81AE00E02733 /* SwiftRex watchOS ReactiveSwift */ = {
@@ -1400,7 +1440,7 @@
 			);
 			name = "SwiftRex watchOS ReactiveSwift";
 			productName = "SwiftRex watchOS";
-			productReference = D595F6DA206E81AE00E02733 /* SwiftRex.framework */;
+			productReference = D595F6DA206E81AE00E02733 /* SwiftRexForRac.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D595F6E6206E81B900E02733 /* SwiftRex tvOS ReactiveSwift */ = {
@@ -1420,7 +1460,7 @@
 			);
 			name = "SwiftRex tvOS ReactiveSwift";
 			productName = "SwiftRex tvOS";
-			productReference = D595F6E7206E81B900E02733 /* SwiftRex.framework */;
+			productReference = D595F6E7206E81B900E02733 /* SwiftRexForRac.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D595F6F3206E81C900E02733 /* SwiftRex macOS ReactiveSwift */ = {
@@ -1440,7 +1480,7 @@
 			);
 			name = "SwiftRex macOS ReactiveSwift";
 			productName = "SwiftRex macOS";
-			productReference = D595F6F4206E81C900E02733 /* SwiftRex.framework */;
+			productReference = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */

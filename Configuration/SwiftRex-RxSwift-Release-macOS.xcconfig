@@ -1,2 +1,3 @@
 #include "SwiftRex-Release-macOS.xcconfig"
+#include "SwiftRex-RxSwift.xcconfig"
 #include "Pods/Target Support Files/Pods-SwiftRex macOS RxSwift/Pods-SwiftRex macOS RxSwift.release.xcconfig"
