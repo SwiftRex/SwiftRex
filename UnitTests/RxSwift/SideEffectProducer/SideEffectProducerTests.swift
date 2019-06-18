@@ -1,38 +1,7 @@
-#if canImport(RxSwift)
-import RxBlocking
-import RxSwift
-#endif
-
 @testable import SwiftRex
 import XCTest
 
 class SideEffectProducerTests: XCTestCase {
-    func testAnySideEffectProducerEvent() {
-        // Given
-        let sepMock = SideEffectProducerMock()
-        let sut = AnySideEffectProducer(sepMock)
-        let state = TestState()
-        let getState = { state }
-        let action1 = Action1()
-        let action2 = Action2()
-        let action3 = Action3()
-        sepMock.executeGetStateReturnValue = observable(of: action1, action2, action3)
-
-        // Then
-        let result = try! sut.execute(getState: getState)
-            .toBlocking()
-            .toArray()
-
-        // Expect
-        XCTAssertEqual(1, sepMock.executeGetStateCallsCount)
-        XCTAssertEqual(state, sepMock.executeGetStateReceivedGetState!())
-        let expectedResult: [ActionProtocol] = [action1, action2, action3]
-        XCTAssertEqual(3, result.count)
-        XCTAssertEqual(expectedResult[0] as! Action1, result[0] as! Action1)
-        XCTAssertEqual(expectedResult[1] as! Action2, result[1] as! Action2)
-        XCTAssertEqual(expectedResult[2] as! Action3, result[2] as! Action3)
-    }
-
     func testTimelySideEffectEventOneAction() {
         // Given
         let event = Event1()

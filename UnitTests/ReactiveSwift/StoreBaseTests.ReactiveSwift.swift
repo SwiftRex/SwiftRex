@@ -396,10 +396,7 @@ class StoreBaseTests: XCTestCase {
 
         sut.trigger(Action1())
         sut.trigger(Action2())
-        print("start wait \(Date())")
         wait(for: [action2DispatchedWithoutSubscribers], timeout: 10)
-        print(sut.value.name)
-        print("end wait \(Date())")
 
         var action = 2
         var dispose2: ScopedDisposable? = ScopedDisposable(sut.producer.on(

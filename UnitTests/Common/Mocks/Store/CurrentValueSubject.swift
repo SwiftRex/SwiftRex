@@ -34,7 +34,13 @@ class CurrentValueSubject {
             return subscription
         }
         let subscriber = SubscriberType<TestState, Never>(
-            onValue: { [weak self] state in self?.subscribers.values.forEach { $0.onValue(state) } }
+            onValue: { [weak self] state in
+                guard let strongSelf = self else { return }
+                strongSelf.currentValue = state
+                strongSelf.subscribers.values.forEach {
+                    $0.onValue(state)
+                }
+            }
         )
         self.subject = .init(publisher: publisher, subscriber: subscriber, value: {
             [unowned self] in
