@@ -3,9 +3,9 @@ import Foundation
 public struct SubscriberType<Element, ErrorType: Error> {
     public let onValue: (Element) -> Void
     public let onError: (ErrorType) -> Void
-    public init(onValue: @escaping (Element) -> Void = { _ in }, onError: @escaping (ErrorType) -> Void = { _ in }) {
-        self.onValue = onValue
-        self.onError = onError
+    public init(onValue: ((Element) -> Void)? = nil, onError: ((ErrorType) -> Void)? = nil) {
+        self.onValue = onValue ?? { _ in }
+        self.onError = onError ?? { _ in }
     }
 }
 
