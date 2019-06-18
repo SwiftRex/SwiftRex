@@ -19,6 +19,8 @@ public struct SideEffectError: ActionProtocol {
  */
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
+// sourcery: AutoMockableSkip = "handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>)"
+// sourcery: AutoMockableSkip = "handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>)"
 public protocol SideEffectMiddleware: Middleware {
     /// Allows the following middlewares in the chain to have a chance of handling the same events already handled
     var allowEventToPropagate: Bool { get }
