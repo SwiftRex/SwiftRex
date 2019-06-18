@@ -108,7 +108,9 @@ class {{ type.name }}Mock{% if type|annotated:"AutoMockableGeneric" %}<{{type.an
 {% endfor %}
 
 {% for method in type.allMethods|!definedInExtension %}
+    {% if not type.annotations.AutoMockableSkip|join:"\"|default:""|contains:method.name %}
     {% call mockMethod method %}
+    {% endif %}
 {% endfor %}
 }
 {% endif %}{% endfor %}
