@@ -9,3 +9,11 @@ extension ReplayLastSubjectType where ErrorType == Error {
         self.value = { try! behaviorSubject.value() }
     }
 }
+
+extension ReplayLastSubjectType where ErrorType == Never {
+    public init(behaviorSubject: BehaviorSubject<Element>) {
+        self.publisher = behaviorSubject.asPublisher().assertNoFailure()
+        self.subscriber = behaviorSubject.asSubscriber().assertNoFailure()
+        self.value = { try! behaviorSubject.value() }
+    }
+}
