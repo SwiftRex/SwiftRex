@@ -110,6 +110,26 @@
 		D55EFB10207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D568E644223ED11800F0FECA /* SwiftRexForRac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */; };
 		D578209822BAB9970065E44D /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
+		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
+		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
+		D578209C22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
+		D578209D22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
+		D57820A022BADFC60065E44D /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209F22BADFC60065E44D /* Subscription+Disposable.swift */; };
+		D57820A122BADFC60065E44D /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209F22BADFC60065E44D /* Subscription+Disposable.swift */; };
+		D57820A222BADFC60065E44D /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209F22BADFC60065E44D /* Subscription+Disposable.swift */; };
+		D57820A322BADFC60065E44D /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209F22BADFC60065E44D /* Subscription+Disposable.swift */; };
+		D57820A522BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */; };
+		D57820A622BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */; };
+		D57820A722BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */; };
+		D57820A822BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */; };
+		D57820AA22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */; };
+		D57820AB22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */; };
+		D57820AC22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */; };
+		D57820AD22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */; };
+		D57820AF22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */; };
+		D57820B022BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */; };
+		D57820B122BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */; };
+		D57820B222BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */; };
 		D578B2B0208A6AE50035AE9C /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
 		D5866FC7208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5866FC8208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -439,6 +459,11 @@
 		D5623F832093AACF00C70F60 /* UnitTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UnitTests.xcconfig; sourceTree = "<group>"; };
 		D5623F842093D49100C70F60 /* XcodeWarnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = XcodeWarnings.xcconfig; sourceTree = "<group>"; };
 		D56449272082F1F500453ABB /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
+		D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+ObservableType.swift"; sourceTree = "<group>"; };
+		D578209F22BADFC60065E44D /* Subscription+Disposable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subscription+Disposable.swift"; sourceTree = "<group>"; };
+		D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+ObserverType.swift"; sourceTree = "<group>"; };
+		D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubjectType+PublishSubject.swift"; sourceTree = "<group>"; };
+		D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReplayLastSubjectType+BehaviorSubject.swift"; sourceTree = "<group>"; };
 		D578B289208A690C0035AE9C /* UnitTests ReactiveSwift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests ReactiveSwift.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D578B28D208A690C0035AE9C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D5866FC6208AD53B00507523 /* Monoid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monoid.swift; sourceTree = "<group>"; };
@@ -791,6 +816,18 @@
 			);
 			sourceTree = "<group>";
 		};
+		D578209E22BADFA00065E44D /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */,
+				D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */,
+				D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */,
+				D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */,
+				D578209F22BADFC60065E44D /* Subscription+Disposable.swift */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
 		D578B28A208A690C0035AE9C /* UnitTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -937,6 +974,7 @@
 		D5A2EAE722B99FB100CA10B8 /* RxSwift */ = {
 			isa = PBXGroup;
 			children = (
+				D578209E22BADFA00065E44D /* Bridge */,
 			);
 			path = RxSwift;
 			sourceTree = "<group>";
@@ -2111,6 +2149,7 @@
 				D532CA09223EC2C900AB13EF /* SideEffectMiddleware.swift in Sources */,
 				D532CA0A223EC2C900AB13EF /* ActionProtocol.swift in Sources */,
 				D532CA0B223EC2C900AB13EF /* Middleware.swift in Sources */,
+				D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */,
 				D532CA0C223EC2C900AB13EF /* Operator.swift in Sources */,
 				D532CA0D223EC2C900AB13EF /* SideEffectProducer.swift in Sources */,
 				D5888A5222B6A4690028B0E1 /* MessageHandler.swift in Sources */,
@@ -2120,9 +2159,13 @@
 				D532CA12223EC2C900AB13EF /* Reducer.swift in Sources */,
 				D532CA13223EC2C900AB13EF /* Monoid.swift in Sources */,
 				D532CA14223EC2C900AB13EF /* EventHandler.swift in Sources */,
+				D57820AF22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */,
 				D5888A5B22B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D57820AA22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */,
 				D532CA16223EC2C900AB13EF /* TypeAlias.swift in Sources */,
+				D57820A522BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */,
 				D532CA17223EC2C900AB13EF /* TypeErase.generated.swift in Sources */,
+				D57820A022BADFC60065E44D /* Subscription+Disposable.swift in Sources */,
 				D532CA18223EC2C900AB13EF /* BypassMiddleware.swift in Sources */,
 				D532CA19223EC2C900AB13EF /* StoreBase.swift in Sources */,
 				D532CA1A223EC2C900AB13EF /* DirectLineMiddleware.swift in Sources */,
@@ -2140,6 +2183,7 @@
 				D532CA2E223EC2DF00AB13EF /* DirectLineMiddleware.swift in Sources */,
 				D532CA2F223EC2DF00AB13EF /* ComposedMiddleware.swift in Sources */,
 				D532CA30223EC2DF00AB13EF /* StateProvider.swift in Sources */,
+				D578209D22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */,
 				D532CA31223EC2DF00AB13EF /* TypeErase.generated.swift in Sources */,
 				D532CA32223EC2DF00AB13EF /* Middleware.swift in Sources */,
 				D532CA33223EC2DF00AB13EF /* SideEffectMiddleware.swift in Sources */,
@@ -2149,9 +2193,13 @@
 				D532CA37223EC2DF00AB13EF /* EventHandler.swift in Sources */,
 				D532CA38223EC2DF00AB13EF /* Monoid.swift in Sources */,
 				D532CA39223EC2DF00AB13EF /* StoreBase.swift in Sources */,
+				D57820B222BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */,
 				D532CA3B223EC2DF00AB13EF /* SideEffectProducer.swift in Sources */,
+				D57820AD22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */,
 				D5888A5D22B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D57820A822BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */,
 				D532CA3C223EC2DF00AB13EF /* BypassMiddleware.swift in Sources */,
+				D57820A322BADFC60065E44D /* Subscription+Disposable.swift in Sources */,
 				D532CA3D223EC2DF00AB13EF /* Reducer.swift in Sources */,
 				D532CA3E223EC2DF00AB13EF /* ActionHandler.swift in Sources */,
 				D532CA3F223EC2DF00AB13EF /* TypeAlias.swift in Sources */,
@@ -2169,6 +2217,7 @@
 				D532CA53223EC2F500AB13EF /* DirectLineMiddleware.swift in Sources */,
 				D532CA54223EC2F500AB13EF /* ComposedMiddleware.swift in Sources */,
 				D532CA55223EC2F500AB13EF /* StateProvider.swift in Sources */,
+				D578209C22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */,
 				D532CA56223EC2F500AB13EF /* TypeErase.generated.swift in Sources */,
 				D532CA57223EC2F500AB13EF /* Middleware.swift in Sources */,
 				D532CA58223EC2F500AB13EF /* SideEffectMiddleware.swift in Sources */,
@@ -2178,9 +2227,13 @@
 				D532CA5C223EC2F500AB13EF /* EventHandler.swift in Sources */,
 				D532CA5D223EC2F500AB13EF /* Monoid.swift in Sources */,
 				D532CA5E223EC2F500AB13EF /* StoreBase.swift in Sources */,
+				D57820B122BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */,
 				D532CA60223EC2F500AB13EF /* SideEffectProducer.swift in Sources */,
+				D57820AC22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */,
 				D5888A5F22B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D57820A722BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */,
 				D532CA61223EC2F500AB13EF /* BypassMiddleware.swift in Sources */,
+				D57820A222BADFC60065E44D /* Subscription+Disposable.swift in Sources */,
 				D532CA62223EC2F500AB13EF /* Reducer.swift in Sources */,
 				D532CA63223EC2F500AB13EF /* ActionHandler.swift in Sources */,
 				D532CA64223EC2F500AB13EF /* TypeAlias.swift in Sources */,
@@ -2198,6 +2251,7 @@
 				D532CA78223EC30700AB13EF /* DirectLineMiddleware.swift in Sources */,
 				D532CA79223EC30700AB13EF /* ComposedMiddleware.swift in Sources */,
 				D532CA7A223EC30700AB13EF /* StateProvider.swift in Sources */,
+				D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */,
 				D532CA7B223EC30700AB13EF /* TypeErase.generated.swift in Sources */,
 				D532CA7C223EC30700AB13EF /* Middleware.swift in Sources */,
 				D532CA7D223EC30700AB13EF /* SideEffectMiddleware.swift in Sources */,
@@ -2207,9 +2261,13 @@
 				D532CA81223EC30700AB13EF /* EventHandler.swift in Sources */,
 				D532CA82223EC30700AB13EF /* Monoid.swift in Sources */,
 				D532CA83223EC30700AB13EF /* StoreBase.swift in Sources */,
+				D57820B022BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */,
 				D532CA85223EC30700AB13EF /* SideEffectProducer.swift in Sources */,
+				D57820AB22BAE8690065E44D /* SubjectType+PublishSubject.swift in Sources */,
 				D5888A6122B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D57820A622BAE72E0065E44D /* SubscriberType+ObserverType.swift in Sources */,
 				D532CA86223EC30700AB13EF /* BypassMiddleware.swift in Sources */,
+				D57820A122BADFC60065E44D /* Subscription+Disposable.swift in Sources */,
 				D532CA87223EC30700AB13EF /* Reducer.swift in Sources */,
 				D532CA88223EC30700AB13EF /* ActionHandler.swift in Sources */,
 				D532CA89223EC30700AB13EF /* TypeAlias.swift in Sources */,

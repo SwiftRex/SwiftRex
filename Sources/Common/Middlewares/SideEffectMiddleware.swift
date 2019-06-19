@@ -52,7 +52,8 @@ extension SideEffectMiddleware {
                 SubscriberType(
                     onValue: { [weak self] action in
                         self?.handlers?.actionHandler.trigger(action)
-                    }, onError: { [weak self] error in
+                    }, onCompleted: { [weak self] error in
+                        guard let error = error else { return }
                         let action = SideEffectError(date: Date(), originalEvent: event, error: error)
                         self?.handlers?.actionHandler.trigger(action)
                     }
