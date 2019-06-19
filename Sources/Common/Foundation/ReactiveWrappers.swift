@@ -2,10 +2,10 @@ import Foundation
 
 public struct SubscriberType<Element, ErrorType: Error> {
     public let onValue: (Element) -> Void
-    public let onError: (ErrorType) -> Void
-    public init(onValue: ((Element) -> Void)? = nil, onError: ((ErrorType) -> Void)? = nil) {
+    public let onCompleted: (ErrorType?) -> Void
+    public init(onValue: ((Element) -> Void)? = nil, onCompleted: ((ErrorType?) -> Void)? = nil) {
         self.onValue = onValue ?? { _ in }
-        self.onError = onError ?? { _ in }
+        self.onCompleted = onCompleted ?? { _ in }
     }
 }
 
@@ -39,7 +39,10 @@ public struct ReplayLastSubjectType<Element, ErrorType: Error> {
     public let publisher: PublisherType<Element, ErrorType>
     public let subscriber: SubscriberType<Element, ErrorType>
     public var value: () -> Element
-    public init(publisher: PublisherType<Element, ErrorType>, subscriber: SubscriberType<Element, ErrorType>, value: @escaping () -> Element) {
+    public init(
+        publisher: PublisherType<Element, ErrorType>,
+        subscriber: SubscriberType<Element, ErrorType>,
+        value: @escaping () -> Element) {
         self.publisher = publisher
         self.subscriber = subscriber
         self.value = value
