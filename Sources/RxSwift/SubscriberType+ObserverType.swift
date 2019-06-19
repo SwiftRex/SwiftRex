@@ -2,13 +2,18 @@ import Foundation
 import RxSwift
 import SwiftRex
 
-extension SubscriberType: ObserverType where ErrorType == Error {
+extension SubscriberType: ObserverType {
     public func on(_ event: Event<Element>) {
         switch event {
         case let .next(value):
             onValue(value)
         case let .error(error):
-            onCompleted(error)
+            switch error {
+            case let error as ErrorType:
+                onCompleted(error)
+            default:
+                fatalError(error.localizedDescription)
+            }
         case .completed:
             onCompleted(nil)
         }

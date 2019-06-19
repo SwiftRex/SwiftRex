@@ -8,3 +8,10 @@ extension SubjectType where ErrorType == Error {
         self.subscriber = publishSubject.asSubscriber()
     }
 }
+
+extension SubjectType where ErrorType == Never {
+    public init(publishSubject: PublishSubject<Element>) {
+        self.publisher = publishSubject.asPublisher().assertNoFailure()
+        self.subscriber = publishSubject.asSubscriber().assertNoFailure()
+    }
+}

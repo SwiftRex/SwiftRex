@@ -816,18 +816,6 @@
 			);
 			sourceTree = "<group>";
 		};
-		D578209E22BADFA00065E44D /* Bridge */ = {
-			isa = PBXGroup;
-			children = (
-				D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */,
-				D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */,
-				D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */,
-				D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */,
-				D578209F22BADFC60065E44D /* Subscription+Disposable.swift */,
-			);
-			path = Bridge;
-			sourceTree = "<group>";
-		};
 		D578B28A208A690C0035AE9C /* UnitTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -974,7 +962,11 @@
 		D5A2EAE722B99FB100CA10B8 /* RxSwift */ = {
 			isa = PBXGroup;
 			children = (
-				D578209E22BADFA00065E44D /* Bridge */,
+				D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */,
+				D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */,
+				D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */,
+				D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */,
+				D578209F22BADFC60065E44D /* Subscription+Disposable.swift */,
 			);
 			path = RxSwift;
 			sourceTree = "<group>";
