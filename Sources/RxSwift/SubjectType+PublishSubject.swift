@@ -2,20 +2,24 @@ import Foundation
 import RxSwift
 import SwiftRex
 
-extension SubjectType where ErrorType == Error {
+extension SwiftRex.SubjectType where ErrorType == Error {
     public init(publishSubject: PublishSubject<Element>) {
-        self.publisher = publishSubject.asPublisher()
-        self.subscriber = publishSubject.asSubscriber()
+        self.init(
+            publisher: publishSubject.asPublisher(),
+            subscriber: publishSubject.asSubscriber()
+        )
     }
 }
 
-extension SubjectType where ErrorType == Never {
+extension SwiftRex.SubjectType where ErrorType == Never {
     public init(publishSubject: PublishSubject<Element>) {
-        self.publisher = publishSubject.asPublisher().assertNoFailure()
-        self.subscriber = publishSubject.asSubscriber().assertNoFailure()
+        self.init(
+            publisher: publishSubject.asPublisher().assertNoFailure(),
+            subscriber: publishSubject.asSubscriber().assertNoFailure()
+        )
     }
 
-    public static func rx() -> SubjectType {
+    public static func rx() -> SwiftRex.SubjectType<Element, Error> {
         let publishSubject = PublishSubject<Element>()
         return .init(publishSubject: publishSubject)
     }
