@@ -2,6 +2,30 @@
 import XCTest
 
 class GeneralMiddlewareTests: MiddlewareTestsBase {
+    func testAnyMiddlewareHandlersGet() {
+        // Given
+        let middlewareMock = MiddlewareMock<TestState>()
+        let sut = AnyMiddleware(middlewareMock)
+
+        // When
+        middlewareMock.handlers = .init(actionHandler: .init(), eventHandler: .init())
+
+        // Then
+        XCTAssertNotNil(sut.handlers)
+    }
+
+    func testAnyMiddlewareHandlersSet() {
+        // Given
+        let middlewareMock = MiddlewareMock<TestState>()
+        let sut = AnyMiddleware(middlewareMock)
+
+        // When
+        sut.handlers = .init(actionHandler: .init(), eventHandler: .init())
+
+        // Then
+        XCTAssertNotNil(middlewareMock.handlers)
+    }
+
     func testAnyMiddlewareEvent() {
         // Given
         let middlewareMock = MiddlewareMock<TestState>()

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01DFA16BBA37FEBB0130E608 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24EC064A511125F9D5D66907 /* Pods_SwiftRex_iOS_RxSwift.framework */; };
+		0F296A48751190D5FF6F943B /* Pods_UnitTests_SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */; };
 		3E424096541BD3F7EE0CC8B3 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */; };
 		8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */; };
 		83E9670EC5996AC3D61D1365 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */; };
@@ -363,6 +364,7 @@
 		D5C3944022B9882400ABCA90 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */; };
 		D5C3944122B9882400ABCA90 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */; };
 		D5C3944622B9897000ABCA90 /* ReactiveWrappersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */; };
+		D5D586CA22BE63E90013A81D /* TypeErasureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D586C522BE62B60013A81D /* TypeErasureTests.swift */; };
 		D5E66D5222B962F3003BF88B /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E66D5022B962B5003BF88B /* FooSubscription.swift */; };
 		D5FDCB3E22B70E690012D2E7 /* ReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071F2071287A00D682EF /* ReducerTests.swift */; };
 		D5FDCB3F22B70E8F0012D2E7 /* Action1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070C2071287900D682EF /* Action1.swift */; };
@@ -417,12 +419,15 @@
 /* Begin PBXFileReference section */
 		07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1532B9960256EF8074D7E357 /* Pods-SwiftRex watchOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		1E1BB63350E1895E090458BF /* Pods-UnitTests SwiftRex.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests SwiftRex.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex.debug.xcconfig"; sourceTree = "<group>"; };
 		1E6BA6D67D789361A5FC9FFD /* Pods-SwiftRex watchOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24EC064A511125F9D5D66907 /* Pods_SwiftRex_iOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		292A43653EE28C6178187219 /* Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS ReactiveSwift/Pods-SwiftRex tvOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		3C46F044BFCA99479F410776 /* Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS ReactiveSwift/Pods-SwiftRex tvOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
+		3CBCAE05026A57EEAB58F97E /* Pods-UnitTests SwiftRex.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests SwiftRex.release.xcconfig"; path = "Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex.release.xcconfig"; sourceTree = "<group>"; };
 		3E9CB63753700126A512FE7D /* Pods-SwiftRex iOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS RxSwift/Pods-SwiftRex iOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BF87DA6A7659752C52FD626 /* Pods-UnitTests ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS_RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -573,6 +578,7 @@
 		D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
 		D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappersTests.swift; sourceTree = "<group>"; };
+		D5D586C522BE62B60013A81D /* TypeErasureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeErasureTests.swift; sourceTree = "<group>"; };
 		D5E66D5022B962B5003BF88B /* FooSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooSubscription.swift; sourceTree = "<group>"; };
 		D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandlerMock.swift; sourceTree = "<group>"; };
 		D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandlerMock.swift; sourceTree = "<group>"; };
@@ -673,6 +679,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D578209822BAB9970065E44D /* SwiftRex.framework in Frameworks */,
+				0F296A48751190D5FF6F943B /* Pods_UnitTests_SwiftRex.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,6 +745,8 @@
 				9F0A7AFDA597AF304A71BE26 /* Pods-UnitTests ReactiveSwift.release.xcconfig */,
 				A904FE7C970C4745378E8AE4 /* Pods-UnitTests RxSwift.debug.xcconfig */,
 				E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */,
+				1E1BB63350E1895E090458BF /* Pods-UnitTests SwiftRex.debug.xcconfig */,
+				3CBCAE05026A57EEAB58F97E /* Pods-UnitTests SwiftRex.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -755,6 +764,7 @@
 				21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */,
 				CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */,
 				4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */,
+				3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1141,6 +1151,7 @@
 			isa = PBXGroup;
 			children = (
 				D56449272082F1F500453ABB /* AutoMockable.generated.swift */,
+				D5D586C522BE62B60013A81D /* TypeErasureTests.swift */,
 			);
 			path = CodeGeneration;
 			sourceTree = "<group>";
@@ -1455,9 +1466,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D5888B6B22B6F2630028B0E1 /* Build configuration list for PBXNativeTarget "UnitTests SwiftRex" */;
 			buildPhases = (
+				490C989F1659FE1BD54AA096 /* [CP] Check Pods Manifest.lock */,
 				D5888B4622B6F2630028B0E1 /* Sources */,
 				D5888B6622B6F2630028B0E1 /* Frameworks */,
 				D5888B6922B6F2630028B0E1 /* Resources */,
+				C389553BAA926B74595BFE90 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1726,16 +1739,11 @@
 			files = (
 			);
 			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/ReactiveSwift-macOS/ReactiveSwift.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactiveSwift.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1758,6 +1766,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-SwiftRex macOS ReactiveSwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		490C989F1659FE1BD54AA096 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-UnitTests SwiftRex-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1940,6 +1970,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C389553BAA926B74595BFE90 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		D51638F5206F418700469F96 /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2114,20 +2161,11 @@
 			files = (
 			);
 			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/RxSwift-macOS/RxSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework",
-				"${BUILT_PRODUCTS_DIR}/RxTest/RxTest.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxTest.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2455,6 +2493,7 @@
 				D5C3943D22B9845C00ABCA90 /* StoreBaseTests.swift in Sources */,
 				D5C3944622B9897000ABCA90 /* ReactiveWrappersTests.swift in Sources */,
 				D5FDCB4022B70E8F0012D2E7 /* Action2.swift in Sources */,
+				D5D586CA22BE63E90013A81D /* TypeErasureTests.swift in Sources */,
 				D5C3943822B970B400ABCA90 /* GeneralMiddlewareTests.swift in Sources */,
 				D5FDCB4122B70E8F0012D2E7 /* Action3.swift in Sources */,
 				D5FDCB5022B711B40012D2E7 /* RotationMiddleware.swift in Sources */,
