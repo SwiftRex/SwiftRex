@@ -14,8 +14,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "SwiftRex", dependencies: [], path: "Sources/Common"),
-        .target(name: "SwiftRexForRac", dependencies: ["SwiftRex", "ReactiveSwift"], path: "Sources/Common"),
-        .target(name: "SwiftRexForRx", dependencies: ["SwiftRex", "RxSwift"], path: "Sources/Common")
+        .target(name: "SwiftRexForRac", dependencies: ["SwiftRex", "ReactiveSwift"], path: "Sources/ReactiveSwift"),
+        .target(name: "SwiftRexForRx", dependencies: ["SwiftRex", "RxSwift"], path: "Sources/RxSwift")
     ],
     swiftLanguageVersions: [.v5]
 )
