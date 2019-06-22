@@ -9,7 +9,10 @@ class ReactiveWrappersTests: XCTestCase {
             XCTAssertEqual("test", string)
             shouldCallClosure.fulfill()
         }
-        let subscriberType = SubscriberType<String, Error>(onValue: onValue, onError: { XCTFail("Unexpected error \($0)") })
+        let subscriberType = SubscriberType<String, Error>(
+            onValue: onValue,
+            onCompleted: { XCTFail("Unexpected completion. Error? \(String(describing: $0))") }
+        )
         subscriberType.onValue("test")
 
         wait(for: [shouldCallClosure], timeout: 0.1)
@@ -18,12 +21,15 @@ class ReactiveWrappersTests: XCTestCase {
     func testSubscriberTypeOnError() {
         let shouldCallClosure = expectation(description: "Closure should be called")
         let someError = SomeError()
-        let onError: (Error) -> Void = { error in
+        let onError: (Error?) -> Void = { error in
             XCTAssertEqual(someError, error as! SomeError)
             shouldCallClosure.fulfill()
         }
-        let subscriberType = SubscriberType<String, Error>(onValue: { XCTFail("Unexpected value \($0)") }, onError: onError)
-        subscriberType.onError(someError)
+        let subscriberType = SubscriberType<String, Error>(
+            onValue: { XCTFail("Unexpected value \($0)") },
+            onCompleted: onError
+        )
+        subscriberType.onCompleted(someError)
 
         wait(for: [shouldCallClosure], timeout: 0.1)
     }
@@ -48,13 +54,15 @@ class ReactiveWrappersTests: XCTestCase {
     func testPublisherTypeOnError() {
         let shouldCallClosure = expectation(description: "Closure should be called")
         let someError = SomeError()
-        let subscriberType = SubscriberType<String, Error>(onError: { error in
-            XCTAssertEqual(someError, error as! SomeError)
-            shouldCallClosure.fulfill()
-        })
+        let subscriberType = SubscriberType<String, Error>(
+            onCompleted: { error in
+                XCTAssertEqual(someError, error as! SomeError)
+                shouldCallClosure.fulfill()
+            }
+        )
 
         let publisherType = PublisherType<String, Error> { subscriber in
-            subscriber.onError(someError)
+            subscriber.onCompleted(someError)
             return FooSubscription()
         }
 
@@ -85,13 +93,13 @@ class ReactiveWrappersTests: XCTestCase {
     func testSubjectTypeOnError() {
         let shouldCallClosure = expectation(description: "Closure should be called")
         let someError = SomeError()
-        let subscriberType = SubscriberType<String, Error>(onError: { error in
+        let subscriberType = SubscriberType<String, Error>(onCompleted: { error in
             XCTAssertEqual(someError, error as! SomeError)
             shouldCallClosure.fulfill()
         })
 
         let publisherType = PublisherType<String, Error> { subscriber in
-            subscriber.onError(someError)
+            subscriber.onCompleted(someError)
             return FooSubscription()
         }
 
