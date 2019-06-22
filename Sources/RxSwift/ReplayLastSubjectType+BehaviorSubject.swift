@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import SwiftRex
 
-extension SwiftRex.ReplayLastSubjectType where ErrorType == Error {
+extension ReplayLastSubjectType where ErrorType == Error {
     public init(behaviorSubject: BehaviorSubject<Element>) {
         self.init(
             publisher: behaviorSubject.asPublisher(),
@@ -12,7 +12,7 @@ extension SwiftRex.ReplayLastSubjectType where ErrorType == Error {
     }
 }
 
-extension SwiftRex.ReplayLastSubjectType where ErrorType == Never {
+extension ReplayLastSubjectType where ErrorType == Never {
     public init(behaviorSubject: BehaviorSubject<Element>) {
         self.init(
             publisher: behaviorSubject.asPublisher().assertNoFailure(),
@@ -21,7 +21,7 @@ extension SwiftRex.ReplayLastSubjectType where ErrorType == Never {
         )
     }
 
-    public static func rx(initialValue: Element) -> SwiftRex.ReplayLastSubjectType<Element, Error> {
+    public static func rx(initialValue: Element) -> ReplayLastSubjectType<Element, Error> {
         let behaviorSubject = BehaviorSubject<Element>(value: initialValue)
         return .init(behaviorSubject: behaviorSubject)
     }
