@@ -17,6 +17,11 @@ def reactiveswift
   pod 'ReactiveSwift', '6.0.0', :inhibit_warnings => true
 end
 
+target 'UnitTests SwiftRex' do
+  platform :macos, macos_version
+  pod 'Nimble', '8.0.2'
+end
+
 ###################
 # RxSwift Targets #
 ###################
