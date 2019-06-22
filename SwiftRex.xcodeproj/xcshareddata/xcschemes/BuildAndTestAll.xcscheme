@@ -244,6 +244,20 @@
             BlueprintName = "SwiftRex macOS"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D595F6F3206E81C900E02733"
+            BuildableName = "SwiftRexForRac.framework"
+            BlueprintName = "SwiftRex macOS ReactiveSwift"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D532CA74223EC30700AB13EF"
+            BuildableName = "SwiftRexForRx.framework"
+            BlueprintName = "SwiftRex macOS RxSwift"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
+         </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
          <TestableReference
