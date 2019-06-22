@@ -4,8 +4,10 @@ import SwiftRex
 
 extension SubjectType {
     public init(input: Signal<Element, ErrorType>.Observer, output: Signal<Element, ErrorType>) {
-        self.publisher = output.asPublisher()
-        self.subscriber = input.asSubscriber()
+        self.init(
+            publisher: output.asPublisher(),
+            subscriber: input.asSubscriber()
+        )
     }
 
     public static func reactive() -> SubjectType {
