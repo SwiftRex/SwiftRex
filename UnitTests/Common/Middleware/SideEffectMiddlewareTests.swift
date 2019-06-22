@@ -127,7 +127,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
         sideEffect.executeGetStateReturnValue = PublisherType(subscribe: { subscriber in
             subscriber.onValue(Action1())
             subscriber.onValue(Action2())
-            subscriber.onError(SomeError())
+            subscriber.onCompleted(SomeError())
             return FooSubscription()
         })
         sut.sideEffectForReturnValue = AnySideEffectProducer(sideEffect)

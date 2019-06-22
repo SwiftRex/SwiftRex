@@ -21,7 +21,8 @@ class SideEffectProducerTests: XCTestCase {
         // Then
         var actions: [ActionProtocol] = []
         _ = sut.execute(getState: getState).subscribe(SubscriberType(
-            onValue: { actions.append($0) }, onError: { error in XCTFail("Unexpected error: \(error)") }
+            onValue: { actions.append($0) },
+            onCompleted: { error in XCTFail("Unexpected completion. Error? \(String(describing: error))") }
         ))
 
         // Expect

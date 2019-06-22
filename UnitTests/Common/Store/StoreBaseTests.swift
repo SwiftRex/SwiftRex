@@ -52,7 +52,7 @@ class StoreBaseTests: XCTestCase {
             default: XCTFail("Called more times than expected")
             }
             count += 1
-        }, onError: { error in XCTFail("Unexpected error \(error)") }))
+        }, onCompleted: { error in XCTFail("Unexpected completion. Error? \(String(describing: error))") }))
 
         // Then
         events.forEach(store.eventHandler.dispatch)
