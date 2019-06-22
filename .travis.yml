@@ -1,7 +1,7 @@
 osx_image: xcode10.2
 language: objective-c
 xcode_project: SwiftRex.xcodeproj
-xcode_scheme: SwiftRex macOS RxSwift
+xcode_scheme: BuildAndTestAll
 cache:
   directories:
     - bundler
