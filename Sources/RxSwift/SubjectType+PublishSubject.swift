@@ -14,4 +14,9 @@ extension SubjectType where ErrorType == Never {
         self.publisher = publishSubject.asPublisher().assertNoFailure()
         self.subscriber = publishSubject.asSubscriber().assertNoFailure()
     }
+
+    public static func rx() -> SubjectType {
+        let publishSubject = PublishSubject<Element>()
+        return .init(publishSubject: publishSubject)
+    }
 }

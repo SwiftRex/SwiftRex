@@ -130,6 +130,10 @@
 		D57820B022BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */; };
 		D57820B122BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */; };
 		D57820B222BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */; };
+		D57820BD22BAFB5F0065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
+		D57820C222BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
+		D57820C722BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
+		D57820CC22BAFB610065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
 		D578B2B0208A6AE50035AE9C /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
 		D5866FC7208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5866FC8208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -327,6 +331,26 @@
 		D5A2EAF822B9A21E00CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
 		D5A2EAF922B9A22500CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */; };
 		D5A2EAFA22B9A22D00CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */; };
+		D5A6EF1A22BE472100AD794A /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BB22BAFB480065E44D /* Subscription+Disposable.swift */; };
+		D5A6EF1B22BE472100AD794A /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BB22BAFB480065E44D /* Subscription+Disposable.swift */; };
+		D5A6EF1C22BE472200AD794A /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BB22BAFB480065E44D /* Subscription+Disposable.swift */; };
+		D5A6EF1D22BE472300AD794A /* Subscription+Disposable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BB22BAFB480065E44D /* Subscription+Disposable.swift */; };
+		D5A6EF1E22BE486A00AD794A /* SubscriberType+SignalObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BA22BAFB480065E44D /* SubscriberType+SignalObserver.swift */; };
+		D5A6EF1F22BE486B00AD794A /* SubscriberType+SignalObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BA22BAFB480065E44D /* SubscriberType+SignalObserver.swift */; };
+		D5A6EF2022BE486C00AD794A /* SubscriberType+SignalObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BA22BAFB480065E44D /* SubscriberType+SignalObserver.swift */; };
+		D5A6EF2122BE486D00AD794A /* SubscriberType+SignalObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BA22BAFB480065E44D /* SubscriberType+SignalObserver.swift */; };
+		D5A6EF2222BE49FE00AD794A /* SubjectType+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B822BAFB480065E44D /* SubjectType+Signal.swift */; };
+		D5A6EF2322BE49FF00AD794A /* SubjectType+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B822BAFB480065E44D /* SubjectType+Signal.swift */; };
+		D5A6EF2422BE4A0000AD794A /* SubjectType+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B822BAFB480065E44D /* SubjectType+Signal.swift */; };
+		D5A6EF2522BE4A0100AD794A /* SubjectType+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B822BAFB480065E44D /* SubjectType+Signal.swift */; };
+		D5A6EF2722BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6EF2622BE4C9700AD794A /* PublisherType+SignalProtocol.swift */; };
+		D5A6EF2822BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6EF2622BE4C9700AD794A /* PublisherType+SignalProtocol.swift */; };
+		D5A6EF2922BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6EF2622BE4C9700AD794A /* PublisherType+SignalProtocol.swift */; };
+		D5A6EF2A22BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6EF2622BE4C9700AD794A /* PublisherType+SignalProtocol.swift */; };
+		D5A6EF2B22BE500100AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */; };
+		D5A6EF2C22BE500200AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */; };
+		D5A6EF2D22BE500300AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */; };
+		D5A6EF2E22BE500400AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */; };
 		D5C3943522B970B400ABCA90 /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */; };
 		D5C3943622B970B400ABCA90 /* ComposedMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */; };
 		D5C3943722B970B400ABCA90 /* DirectLineMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */; };
@@ -464,6 +488,11 @@
 		D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+ObserverType.swift"; sourceTree = "<group>"; };
 		D57820A922BAE8690065E44D /* SubjectType+PublishSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubjectType+PublishSubject.swift"; sourceTree = "<group>"; };
 		D57820AE22BAE8900065E44D /* ReplayLastSubjectType+BehaviorSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReplayLastSubjectType+BehaviorSubject.swift"; sourceTree = "<group>"; };
+		D57820B822BAFB480065E44D /* SubjectType+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubjectType+Signal.swift"; sourceTree = "<group>"; };
+		D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+SignalProducerProtocol.swift"; sourceTree = "<group>"; };
+		D57820BA22BAFB480065E44D /* SubscriberType+SignalObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+SignalObserver.swift"; sourceTree = "<group>"; };
+		D57820BB22BAFB480065E44D /* Subscription+Disposable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Subscription+Disposable.swift"; sourceTree = "<group>"; };
+		D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReplayLastSubjectType+MutableProperty.swift"; sourceTree = "<group>"; };
 		D578B289208A690C0035AE9C /* UnitTests ReactiveSwift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests ReactiveSwift.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D578B28D208A690C0035AE9C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D5866FC6208AD53B00507523 /* Monoid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monoid.swift; sourceTree = "<group>"; };
@@ -540,6 +569,7 @@
 		D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5A6071F2071287A00D682EF /* ReducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
 		D5A607212071287A00D682EF /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
+		D5A6EF2622BE4C9700AD794A /* PublisherType+SignalProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PublisherType+SignalProtocol.swift"; sourceTree = "<group>"; };
 		D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
 		D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappersTests.swift; sourceTree = "<group>"; };
@@ -974,6 +1004,12 @@
 		D5A2EAE822B99FBB00CA10B8 /* ReactiveSwift */ = {
 			isa = PBXGroup;
 			children = (
+				D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */,
+				D5A6EF2622BE4C9700AD794A /* PublisherType+SignalProtocol.swift */,
+				D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */,
+				D57820B822BAFB480065E44D /* SubjectType+Signal.swift */,
+				D57820BA22BAFB480065E44D /* SubscriberType+SignalObserver.swift */,
+				D57820BB22BAFB480065E44D /* Subscription+Disposable.swift */,
 			);
 			path = ReactiveSwift;
 			sourceTree = "<group>";
@@ -2448,12 +2484,16 @@
 				D59D580C207AA1B40010412E /* EventProtocol.swift in Sources */,
 				D5888A5122B6A4690028B0E1 /* MessageHandler.swift in Sources */,
 				D51C8ACF207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
+				D57820BD22BAFB5F0065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */,
 				D55EFB0D207EBAA300BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D580B207AA1B40010412E /* Reducer.swift in Sources */,
 				D5866FC7208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5827207AA1B40010412E /* EventHandler.swift in Sources */,
 				D5888A5A22B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D5A6EF2222BE49FE00AD794A /* SubjectType+Signal.swift in Sources */,
 				D59D5818207AA1B40010412E /* TypeAlias.swift in Sources */,
+				D5A6EF2B22BE500100AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */,
+				D5A6EF1E22BE486A00AD794A /* SubscriberType+SignalObserver.swift in Sources */,
 				D59D580F207AA1B40010412E /* TypeErase.generated.swift in Sources */,
 				D59D581A207AA1B40010412E /* BypassMiddleware.swift in Sources */,
 				D59D5829207AA1B40010412E /* StoreBase.swift in Sources */,
@@ -2461,6 +2501,8 @@
 				D59D5826207AA1B40010412E /* StateProvider.swift in Sources */,
 				D59D581E207AA1B40010412E /* ComposedMiddleware.swift in Sources */,
 				D59D5828207AA1B40010412E /* Store.swift in Sources */,
+				D5A6EF2722BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */,
+				D5A6EF1A22BE472100AD794A /* Subscription+Disposable.swift in Sources */,
 				D59D5825207AA1B40010412E /* ActionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2477,12 +2519,16 @@
 				D59D5848207AA1F90010412E /* SideEffectMiddleware.swift in Sources */,
 				D5888A5322B6A4690028B0E1 /* MessageHandler.swift in Sources */,
 				D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
+				D57820CC22BAFB610065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */,
 				D55EFB10207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D5836207AA1E70010412E /* EventHandler.swift in Sources */,
 				D5866FC8208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5838207AA1E70010412E /* StoreBase.swift in Sources */,
 				D5888A5C22B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D5A6EF2522BE4A0100AD794A /* SubjectType+Signal.swift in Sources */,
 				D59D584C207AA1F90010412E /* SideEffectProducer.swift in Sources */,
+				D5A6EF2E22BE500400AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */,
+				D5A6EF2122BE486D00AD794A /* SubscriberType+SignalObserver.swift in Sources */,
 				D59D5847207AA1F90010412E /* BypassMiddleware.swift in Sources */,
 				D59D584E207AA2080010412E /* Reducer.swift in Sources */,
 				D59D5834207AA1E70010412E /* ActionHandler.swift in Sources */,
@@ -2490,6 +2536,8 @@
 				D59D584F207AA2080010412E /* EventProtocol.swift in Sources */,
 				D59D5850207AA2080010412E /* ActionProtocol.swift in Sources */,
 				D59D5837207AA1E70010412E /* Store.swift in Sources */,
+				D5A6EF2A22BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */,
+				D5A6EF1D22BE472300AD794A /* Subscription+Disposable.swift in Sources */,
 				D59D5868207AA2840010412E /* Operator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2506,12 +2554,16 @@
 				D59D5841207AA1F80010412E /* SideEffectMiddleware.swift in Sources */,
 				D5888A5522B6A4690028B0E1 /* MessageHandler.swift in Sources */,
 				D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
+				D57820C722BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */,
 				D55EFB0F207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D5831207AA1E60010412E /* EventHandler.swift in Sources */,
 				D5866FC9208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D5833207AA1E60010412E /* StoreBase.swift in Sources */,
 				D5888A5E22B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D5A6EF2422BE4A0000AD794A /* SubjectType+Signal.swift in Sources */,
 				D59D5845207AA1F80010412E /* SideEffectProducer.swift in Sources */,
+				D5A6EF2D22BE500300AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */,
+				D5A6EF2022BE486C00AD794A /* SubscriberType+SignalObserver.swift in Sources */,
 				D59D5840207AA1F80010412E /* BypassMiddleware.swift in Sources */,
 				D59D5851207AA2080010412E /* Reducer.swift in Sources */,
 				D59D582F207AA1E60010412E /* ActionHandler.swift in Sources */,
@@ -2519,6 +2571,8 @@
 				D59D5852207AA2080010412E /* EventProtocol.swift in Sources */,
 				D59D5853207AA2080010412E /* ActionProtocol.swift in Sources */,
 				D59D5832207AA1E60010412E /* Store.swift in Sources */,
+				D5A6EF2922BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */,
+				D5A6EF1C22BE472200AD794A /* Subscription+Disposable.swift in Sources */,
 				D59D5865207AA2830010412E /* Operator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2535,12 +2589,16 @@
 				D59D583A207AA1F70010412E /* SideEffectMiddleware.swift in Sources */,
 				D5888A5722B6A4690028B0E1 /* MessageHandler.swift in Sources */,
 				D51C8AD2207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */,
+				D57820C222BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */,
 				D55EFB0E207EBB0100BC8822 /* TypeErase.generated.abstract.swift in Sources */,
 				D59D582C207AA1E50010412E /* EventHandler.swift in Sources */,
 				D5866FCA208AD53B00507523 /* Monoid.swift in Sources */,
 				D59D582E207AA1E50010412E /* StoreBase.swift in Sources */,
 				D5888A6022B6BF7D0028B0E1 /* ReactiveWrappers.swift in Sources */,
+				D5A6EF2322BE49FF00AD794A /* SubjectType+Signal.swift in Sources */,
 				D59D583E207AA1F70010412E /* SideEffectProducer.swift in Sources */,
+				D5A6EF2C22BE500200AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */,
+				D5A6EF1F22BE486B00AD794A /* SubscriberType+SignalObserver.swift in Sources */,
 				D59D5839207AA1F70010412E /* BypassMiddleware.swift in Sources */,
 				D59D5854207AA2090010412E /* Reducer.swift in Sources */,
 				D59D582A207AA1E50010412E /* ActionHandler.swift in Sources */,
@@ -2548,6 +2606,8 @@
 				D59D5855207AA2090010412E /* EventProtocol.swift in Sources */,
 				D59D5856207AA2090010412E /* ActionProtocol.swift in Sources */,
 				D59D582D207AA1E50010412E /* Store.swift in Sources */,
+				D5A6EF2822BE4C9700AD794A /* PublisherType+SignalProtocol.swift in Sources */,
+				D5A6EF1B22BE472100AD794A /* Subscription+Disposable.swift in Sources */,
 				D59D5862207AA2820010412E /* Operator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
