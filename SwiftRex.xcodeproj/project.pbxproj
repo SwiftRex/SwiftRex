@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,15 +15,17 @@
 		9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */; };
 		CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
 		D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
+		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
+		D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
+		D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACE22BE922600BE6679 /* FooSubscription.swift */; };
+		D507CAD022BE967B00BE6679 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
+		D507CAD122BE967B00BE6679 /* SwiftRexForRx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */; };
+		D507CAD222BE969600BE6679 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
+		D507CAD322BE969600BE6679 /* SwiftRexForRac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */; };
 		D51C8ACF207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD0207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD1207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D51C8AD2207AC95E00EAC486 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
-		D5279C87223EEFE200164682 /* RxSwift+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */; };
-		D5279C89223EEFF300164682 /* ReactiveSwift+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */; };
-		D5279C8D223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */; };
-		D532C9F2223EC29500AB13EF /* StoreBaseTests.RxSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */; };
-		D532C9FA223EC29500AB13EF /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
 		D532CA09223EC2C900AB13EF /* SideEffectMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* SideEffectMiddleware.swift */; };
 		D532CA0A223EC2C900AB13EF /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D532CA0B223EC2C900AB13EF /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
@@ -104,12 +106,10 @@
 		D532CA8B223EC30700AB13EF /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D532CA8C223EC30700AB13EF /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D532CA8E223EC30700AB13EF /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
-		D547DAFC223ED027006EAAC4 /* SwiftRexForRx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */; };
 		D55EFB0D207EBAA300BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB0E207EBB0100BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB0F207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D55EFB10207EBB0200BC8822 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
-		D568E644223ED11800F0FECA /* SwiftRexForRac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */; };
 		D578209822BAB9970065E44D /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -135,7 +135,6 @@
 		D57820C222BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
 		D57820C722BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
 		D57820CC22BAFB610065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
-		D578B2B0208A6AE50035AE9C /* TimelySideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607042071287900D682EF /* TimelySideEffect.swift */; };
 		D5866FC7208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5866FC8208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5866FC9208AD53B00507523 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -361,8 +360,6 @@
 		D5C3943B22B970B400ABCA90 /* SubstateMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */; };
 		D5C3943D22B9845C00ABCA90 /* StoreBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */; };
 		D5C3943E22B9855800ABCA90 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607212071287A00D682EF /* SideEffectProducerTests.swift */; };
-		D5C3944022B9882400ABCA90 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */; };
-		D5C3944122B9882400ABCA90 /* SideEffectProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */; };
 		D5C3944622B9897000ABCA90 /* ReactiveWrappersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */; };
 		D5D586CA22BE63E90013A81D /* TypeErasureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D586C522BE62B60013A81D /* TypeErasureTests.swift */; };
 		D5E66D5222B962F3003BF88B /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E66D5022B962B5003BF88B /* FooSubscription.swift */; };
@@ -393,6 +390,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D507CAD422BE9B0600BE6679 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888ADA22B6E9300028B0E1;
+			remoteInfo = "SwiftRex macOS";
+		};
 		D532CA99223EC33200AB13EF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
@@ -445,6 +449,9 @@
 		CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4627F2CA5E907B890648113 /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherTypeBridgeTests.swift; sourceTree = "<group>"; };
+		D507CACB22BE909B00BE6679 /* SomeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeError.swift; sourceTree = "<group>"; };
+		D507CACE22BE922600BE6679 /* FooSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooSubscription.swift; sourceTree = "<group>"; };
 		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RxSwift+Extensions.swift"; sourceTree = "<group>"; };
@@ -596,7 +603,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D547DAFC223ED027006EAAC4 /* SwiftRexForRx.framework in Frameworks */,
+				D507CAD022BE967B00BE6679 /* SwiftRex.framework in Frameworks */,
+				D507CAD122BE967B00BE6679 /* SwiftRexForRx.framework in Frameworks */,
 				9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -641,7 +649,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D568E644223ED11800F0FECA /* SwiftRexForRac.framework in Frameworks */,
+				D507CAD222BE969600BE6679 /* SwiftRex.framework in Frameworks */,
+				D507CAD322BE969600BE6679 /* SwiftRexForRac.framework in Frameworks */,
 				8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -767,6 +776,23 @@
 				3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D507CAC822BE8E6F00BE6679 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		D507CACD22BE921D00BE6679 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				D507CACE22BE922600BE6679 /* FooSubscription.swift */,
+				D507CACB22BE909B00BE6679 /* SomeError.swift */,
+			);
+			path = Helper;
 			sourceTree = "<group>";
 		};
 		D532C9C4223EBCE100AB13EF /* Common */ = {
@@ -903,6 +929,8 @@
 		D5888B7422B6F6800028B0E1 /* RxSwift */ = {
 			isa = PBXGroup;
 			children = (
+				D507CACD22BE921D00BE6679 /* Helper */,
+				D507CAC822BE8E6F00BE6679 /* Bridge */,
 				D5A607022071287900D682EF /* SideEffectProducer */,
 				D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */,
 				D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */,
@@ -1279,6 +1307,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D507CAD522BE9B0600BE6679 /* PBXTargetDependency */,
 				D532CA9A223EC33200AB13EF /* PBXTargetDependency */,
 			);
 			name = "UnitTests RxSwift";
@@ -2201,10 +2230,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D532C9F2223EC29500AB13EF /* StoreBaseTests.RxSwift.swift in Sources */,
-				D5C3944122B9882400ABCA90 /* SideEffectProducerTests.swift in Sources */,
-				D5279C87223EEFE200164682 /* RxSwift+Extensions.swift in Sources */,
-				D532C9FA223EC29500AB13EF /* TimelySideEffect.swift in Sources */,
+				D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */,
+				D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */,
+				D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2348,10 +2376,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5279C89223EEFF300164682 /* ReactiveSwift+Extensions.swift in Sources */,
-				D5C3944022B9882400ABCA90 /* SideEffectProducerTests.swift in Sources */,
-				D5279C8D223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift in Sources */,
-				D578B2B0208A6AE50035AE9C /* TimelySideEffect.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2654,6 +2678,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D507CAD522BE9B0600BE6679 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */;
+			targetProxy = D507CAD422BE9B0600BE6679 /* PBXContainerItemProxy */;
+		};
 		D532CA9A223EC33200AB13EF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D532CA74223EC30700AB13EF /* SwiftRex macOS RxSwift */;

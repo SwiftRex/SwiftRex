@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import SwiftRex
 
-extension Subscription {
+extension SwiftRex.Subscription {
     public func asDisposable() -> DisposableSubscription {
         return DisposableSubscription(subscription: self)
     }
@@ -13,14 +13,14 @@ extension Subscription {
     }
 }
 
-public class DisposableSubscription: Disposable, Subscription {
+public class DisposableSubscription: Disposable, SwiftRex.Subscription {
     let disposable: Disposable
 
     public init(disposable: Disposable) {
         self.disposable = disposable
     }
 
-    public init(subscription: Subscription) {
+    public init(subscription: SwiftRex.Subscription) {
         self.disposable = Disposables.create {
             subscription.unsubscribe()
         }
