@@ -4,9 +4,11 @@ import SwiftRex
 
 extension ReplayLastSubjectType where ErrorType == Never {
     public init<P: MutablePropertyProtocol>(property: P) where P.Value == Element {
-        self.publisher = property.producer.asPublisher()
-        self.subscriber = SubscriberType(onValue: { property.value = $0 })
-        self.value = { property.value }
+        self.init(
+            publisher: property.producer.asPublisher(),
+            subscriber: SubscriberType(onValue: { property.value = $0 }),
+            value: { property.value }
+        )
     }
 
     public static func reactive(initialValue: Element) -> ReplayLastSubjectType {
