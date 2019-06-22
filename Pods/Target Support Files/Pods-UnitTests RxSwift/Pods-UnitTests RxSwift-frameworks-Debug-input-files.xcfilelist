@@ -1,4 +1,5 @@
 ${PODS_ROOT}/Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/RxSwift-macOS/RxSwift.framework
+${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework
 ${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework
 ${BUILT_PRODUCTS_DIR}/RxTest/RxTest.framework

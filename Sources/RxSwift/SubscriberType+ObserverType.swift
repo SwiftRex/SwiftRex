@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import SwiftRex
 
-extension SwiftRex.SubscriberType: ObserverType {
+extension SubscriberType: ObserverType {
     public func on(_ event: Event<Element>) {
         switch event {
         case let .next(value):
@@ -21,8 +21,8 @@ extension SwiftRex.SubscriberType: ObserverType {
 }
 
 extension ObserverType {
-    public func asSubscriber() -> SwiftRex.SubscriberType<Element, Error> {
-        return SwiftRex.SubscriberType<Element, Error>(
+    public func asSubscriber() -> SubscriberType<Element, Error> {
+        return SubscriberType<Element, Error>(
             onValue: { value in
                 self.onNext(value)
             },

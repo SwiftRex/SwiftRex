@@ -8,7 +8,7 @@ class PublisherTypeBridgeTests: XCTestCase {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureCompleted = expectation(description: "Closure should be called")
 
-        let publisherType = SwiftRex.PublisherType<String, Error> { subscriber in
+        let publisherType = PublisherType<String, Error> { subscriber in
             subscriber.onValue("test")
             subscriber.onCompleted()
             return FooSubscription()
@@ -34,7 +34,7 @@ class PublisherTypeBridgeTests: XCTestCase {
         let shouldCallClosureError = expectation(description: "Closure should be called")
         let someError = SomeError()
 
-        let publisherType = SwiftRex.PublisherType<String, Error> { subscriber in
+        let publisherType = PublisherType<String, Error> { subscriber in
             subscriber.onValue("test")
             subscriber.onError(someError)
             return FooSubscription()
