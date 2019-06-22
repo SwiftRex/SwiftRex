@@ -16,4 +16,9 @@ extension ReplayLastSubjectType where ErrorType == Never {
         self.subscriber = behaviorSubject.asSubscriber().assertNoFailure()
         self.value = { try! behaviorSubject.value() }
     }
+
+    public static func rx(initialValue: Element) -> ReplayLastSubjectType {
+        let behaviorSubject = BehaviorSubject<Element>(value: initialValue)
+        return .init(behaviorSubject: behaviorSubject)
+    }
 }

@@ -1,5 +1,5 @@
 import Foundation
-import RxSwift
+import ReactiveSwift
 import SwiftRex
 
 extension Subscription {
@@ -7,21 +7,22 @@ extension Subscription {
         return DisposableSubscription(subscription: self)
     }
 
-    public func disposed(by disposeBag: DisposeBag) {
+    public func disposed(by disposeBag: inout Lifetime) {
         let disposable: Disposable = self.asDisposable()
-        disposable.disposed(by: disposeBag)
+        disposeBag += disposable
     }
 }
 
 public class DisposableSubscription: Disposable, Subscription {
     let disposable: Disposable
+    public var isDisposed: Bool { return disposable.isDisposed }
 
     public init(disposable: Disposable) {
         self.disposable = disposable
     }
 
     public init(subscription: Subscription) {
-        self.disposable = Disposables.create {
+        self.disposable = AnyDisposable {
             subscription.unsubscribe()
         }
     }
