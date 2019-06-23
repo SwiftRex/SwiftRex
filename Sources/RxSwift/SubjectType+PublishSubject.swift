@@ -12,13 +12,15 @@ extension SwiftRex.SubjectType where ErrorType == Error {
 }
 
 extension SwiftRex.SubjectType where ErrorType == Never {
-    public init(publishSubject: PublishSubject<Element>) {
+    public init(unfailablePublishSubject: PublishSubject<Element>) {
         self.init(
-            publisher: publishSubject.asPublisher().assertNoFailure(),
-            subscriber: publishSubject.asSubscriber().assertNoFailure()
+            publisher: unfailablePublishSubject.asPublisher().assertNoFailure(),
+            subscriber: unfailablePublishSubject.asSubscriber().assertNoFailure()
         )
     }
+}
 
+extension SwiftRex.SubjectType {
     public static func rx() -> SwiftRex.SubjectType<Element, Error> {
         let publishSubject = PublishSubject<Element>()
         return .init(publishSubject: publishSubject)

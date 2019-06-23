@@ -30,7 +30,7 @@ class PublisherTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
     }
 
-    func testPublisherTypeToObservableOnError() {
+    func testPublisherTypeToSignalProducerOnError() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureError = expectation(description: "Closure should be called")
         let someError = SomeError()
@@ -106,6 +106,60 @@ class PublisherTypeBridgeTests: XCTestCase {
                 XCTAssertEqual(someError, error)
                 shouldCallClosureError.fulfill()
             }))
+
+        wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
+    }
+
+    func testSignalToPublisherTypeOnValue() {
+        let shouldCallClosureValue = expectation(description: "Closure should be called")
+        let shouldCallClosureCompleted = expectation(description: "Closure should be called")
+
+        let (signal, input) = Signal<String, SomeError>.pipe()
+        input.send(value: "no one cares")
+
+        _ = signal.asPublisher().subscribe(SubscriberType(
+            onValue: { string in
+                XCTAssertEqual("test", string)
+                shouldCallClosureValue.fulfill()
+            },
+            onCompleted: { error in
+                if let error = error {
+                    XCTFail("Unexpected error: \(error)")
+                }
+                shouldCallClosureCompleted.fulfill()
+            }))
+
+        input.send(value: "test")
+        input.sendCompleted()
+
+        wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
+    }
+
+    func testSignalToPublisherTypeOnError() {
+        let shouldCallClosureValue = expectation(description: "Closure should be called")
+        let shouldCallClosureError = expectation(description: "Closure should be called")
+        let someError = SomeError()
+
+        let (signal, input) = Signal<String, SomeError>.pipe()
+        input.send(value: "no one cares")
+
+        _ = signal.asPublisher().subscribe(SubscriberType(
+            onValue: { string in
+                XCTAssertEqual("test", string)
+                shouldCallClosureValue.fulfill()
+            },
+            onCompleted: { error in
+                guard let error = error else {
+                    XCTFail("Unexpected completion")
+                    return
+                }
+
+                XCTAssertEqual(someError, error)
+                shouldCallClosureError.fulfill()
+            }))
+
+        input.send(value: "test")
+        input.send(error: someError)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
     }

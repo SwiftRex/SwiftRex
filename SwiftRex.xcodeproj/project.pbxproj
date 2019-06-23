@@ -182,6 +182,8 @@
 		D5A6EF2C22BE500200AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */; };
 		D5A6EF2D22BE500300AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */; };
 		D5A6EF2E22BE500400AD794A /* ReplayLastSubjectType+MutableProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */; };
+		D5C1C5F022BFD35400532BCF /* SubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C1C5EF22BFD35400532BCF /* SubjectTypeBridgeTests.swift */; };
+		D5C1C5F222BFD56E00532BCF /* SubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C1C5F122BFD56E00532BCF /* SubjectTypeBridgeTests.swift */; };
 		D5C3943522B970B400ABCA90 /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */; };
 		D5C3943622B970B400ABCA90 /* ComposedMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */; };
 		D5C3943722B970B400ABCA90 /* DirectLineMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */; };
@@ -420,6 +422,8 @@
 		D5A6071F2071287A00D682EF /* ReducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
 		D5A607212071287A00D682EF /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D5A6EF2622BE4C9700AD794A /* PublisherType+SignalProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PublisherType+SignalProtocol.swift"; sourceTree = "<group>"; };
+		D5C1C5EF22BFD35400532BCF /* SubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
+		D5C1C5F122BFD56E00532BCF /* SubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
 		D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappersTests.swift; sourceTree = "<group>"; };
@@ -620,6 +624,7 @@
 			isa = PBXGroup;
 			children = (
 				D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */,
+				D5C1C5F122BFD56E00532BCF /* SubjectTypeBridgeTests.swift */,
 				D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */,
 				D5626D6B22BF19B7000422AA /* SubscriptionBridgeTests.swift */,
 			);
@@ -660,6 +665,7 @@
 			isa = PBXGroup;
 			children = (
 				D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */,
+				D5C1C5EF22BFD35400532BCF /* SubjectTypeBridgeTests.swift */,
 				D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */,
 				D5626D6D22BF1CB1000422AA /* SubscriptionBridgeTests.swift */,
 			);
@@ -2094,6 +2100,7 @@
 				D5A022B022BED5C600797438 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */,
 				D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */,
+				D5C1C5F222BFD56E00532BCF /* SubjectTypeBridgeTests.swift in Sources */,
 				D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */,
 				D5626D6C22BF19B7000422AA /* SubscriptionBridgeTests.swift in Sources */,
 			);
@@ -2154,6 +2161,7 @@
 				D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */,
 				D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */,
+				D5C1C5F022BFD35400532BCF /* SubjectTypeBridgeTests.swift in Sources */,
 				D5626D6E22BF1CB1000422AA /* SubscriptionBridgeTests.swift in Sources */,
 				D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */,
 			);
