@@ -1,0 +1,2 @@
+#include "SwiftRex-Release-tvOS.xcconfig"
+#include "SwiftRex-Combine.xcconfig"

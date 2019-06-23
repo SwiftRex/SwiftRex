@@ -83,6 +83,15 @@ target 'UnitTests ReactiveSwift' do
   tests
 end
 
+###################
+# Combine Targets #
+###################
+
+target 'UnitTests Combine' do
+  platform :macos, macos_version
+  tests
+end
+
 ##################
 # Common Targets #
 ##################

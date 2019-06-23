@@ -13,6 +13,7 @@
 		8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */; };
 		83E9670EC5996AC3D61D1365 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */; };
 		9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */; };
+		A7044E35603B910F5388C5C5 /* Pods_UnitTests_Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF80B0AE49B9915CE88A36D8 /* Pods_UnitTests_Combine.framework */; };
 		CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
 		D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
 		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
@@ -143,6 +144,7 @@
 		D5888AF522B6E9300028B0E1 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D5888AF722B6E9300028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D5888AFB22B6E9300028B0E1 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D599F5EB22BFECEF00295090 /* SwiftRexForCombine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */; };
 		D5A022B022BED5C600797438 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */; };
 		D5A022BA22BED8B000797438 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5A022BB22BED8B000797438 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
@@ -186,6 +188,15 @@
 		D5C1C5F222BFD56E00532BCF /* SubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C1C5F122BFD56E00532BCF /* SubjectTypeBridgeTests.swift */; };
 		D5C1C5F422BFDBBD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C1C5F322BFDBBD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */; };
 		D5C1C5F622BFDFAD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C1C5F522BFDFAD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */; };
+		D5C1C60122BFE6AA00532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888A8822B6E9250028B0E1 /* SwiftRex.framework */; };
+		D5C1C61522BFE6B300532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
+		D5C1C62922BFE6BA00532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */; };
+		D5C1C63D22BFE6C300532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */; };
+		D5C1C65622BFE6CB00532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
+		D5C1C66122BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C1C66222BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C1C66322BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C1C66422BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5C3943522B970B400ABCA90 /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */; };
 		D5C3943622B970B400ABCA90 /* ComposedMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */; };
 		D5C3943722B970B400ABCA90 /* DirectLineMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */; };
@@ -253,10 +264,32 @@
 			remoteGlobalIDString = D5888ADA22B6E9300028B0E1;
 			remoteInfo = "SwiftRex macOS";
 		};
+		D599F5EC22BFECFC00295090 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5C1C60B22BFE6B300532BCF;
+			remoteInfo = "SwiftRex macOS Combine";
+		};
+		D599F5EE22BFED1300295090 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888ADA22B6E9300028B0E1;
+			remoteInfo = "SwiftRex macOS";
+		};
+		D5C1C64922BFE6CB00532BCF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888ADA22B6E9300028B0E1;
+			remoteInfo = "SwiftRex macOS";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_iOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		080737BE17C1A4D320BA3EE9 /* Pods-UnitTests Combine.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests Combine.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests Combine/Pods-UnitTests Combine.debug.xcconfig"; sourceTree = "<group>"; };
 		1532B9960256EF8074D7E357 /* Pods-SwiftRex watchOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
 		1E1BB63350E1895E090458BF /* Pods-UnitTests SwiftRex.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests SwiftRex.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex.debug.xcconfig"; sourceTree = "<group>"; };
 		1E6BA6D67D789361A5FC9FFD /* Pods-SwiftRex watchOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex watchOS RxSwift/Pods-SwiftRex watchOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
@@ -278,6 +311,7 @@
 		9F0A7AFDA597AF304A71BE26 /* Pods-UnitTests ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
 		A66B2AE80350948C72446E5B /* Pods-SwiftRex iOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex iOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex iOS RxSwift/Pods-SwiftRex iOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		A904FE7C970C4745378E8AE4 /* Pods-UnitTests RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
+		AFBBB5ABB038416BFA2EC2AC /* Pods-UnitTests Combine.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests Combine.release.xcconfig"; path = "Target Support Files/Pods-UnitTests Combine/Pods-UnitTests Combine.release.xcconfig"; sourceTree = "<group>"; };
 		B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_macOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB81A3F869D135FB62D378E2 /* Pods-SwiftRex macOS ReactiveSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.release.xcconfig"; sourceTree = "<group>"; };
 		CE9D29705E944EE894E29827 /* Pods-SwiftRex macOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS RxSwift/Pods-SwiftRex macOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
@@ -428,6 +462,23 @@
 		D5C1C5F122BFD56E00532BCF /* SubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5C1C5F322BFDBBD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplayLastSubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5C1C5F522BFDFAD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayLastSubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
+		D5C1C60922BFE6AA00532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C63122BFE6BA00532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C64522BFE6C300532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C65E22BFE6CB00532BCF /* UnitTests Combine.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests Combine.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftRexForCombine.h; sourceTree = "<group>"; };
+		D5C1C66A22BFE93B00532BCF /* SwiftRex-Combine.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine.xcconfig"; sourceTree = "<group>"; };
+		D5C1C66B22BFE94D00532BCF /* SwiftRex-Combine-Debug-iOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Debug-iOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C67022BFE95F00532BCF /* SwiftRex-Combine-Debug-macOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Debug-macOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C67522BFE96C00532BCF /* SwiftRex-Combine-Debug-tvOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Debug-tvOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C67A22BFE97F00532BCF /* SwiftRex-Combine-Debug-watchOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Debug-watchOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C67F22BFE99100532BCF /* SwiftRex-Combine-Release-iOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Release-iOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C68422BFE9A100532BCF /* SwiftRex-Combine-Release-macOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Release-macOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C68922BFE9B200532BCF /* SwiftRex-Combine-Release-tvOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Release-tvOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C68E22BFE9C400532BCF /* SwiftRex-Combine-Release-watchOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Release-watchOS.xcconfig"; sourceTree = "<group>"; };
+		D5C1C69322BFE9D800532BCF /* UnitTests-Combine-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Combine-Debug.xcconfig"; sourceTree = "<group>"; };
+		D5C1C69822BFE9E200532BCF /* UnitTests-Combine-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Combine-Release.xcconfig"; sourceTree = "<group>"; };
 		D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
 		D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappersTests.swift; sourceTree = "<group>"; };
@@ -437,6 +488,7 @@
 		D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandlerMock.swift; sourceTree = "<group>"; };
 		D5FDCB5822B713D90012D2E7 /* MessageHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageHandlerMock.swift; sourceTree = "<group>"; };
 		D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentValueSubject.swift; sourceTree = "<group>"; };
+		DF80B0AE49B9915CE88A36D8 /* Pods_UnitTests_Combine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests_Combine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1EA4C435F50A56023B2C78A /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.release.xcconfig"; sourceTree = "<group>"; };
 		E73F580A516D50E27F25B048 /* Pods-SwiftRex tvOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
@@ -574,6 +626,48 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5C1C60022BFE6AA00532BCF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C60122BFE6AA00532BCF /* SwiftRex.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C61422BFE6B300532BCF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C61522BFE6B300532BCF /* SwiftRex.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C62822BFE6BA00532BCF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C62922BFE6BA00532BCF /* SwiftRex.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C63C22BFE6C300532BCF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C63D22BFE6C300532BCF /* SwiftRex.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C65522BFE6CB00532BCF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D599F5EB22BFECEF00295090 /* SwiftRexForCombine.framework in Frameworks */,
+				D5C1C65622BFE6CB00532BCF /* SwiftRex.framework in Frameworks */,
+				A7044E35603B910F5388C5C5 /* Pods_UnitTests_Combine.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -602,6 +696,8 @@
 				E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */,
 				1E1BB63350E1895E090458BF /* Pods-UnitTests SwiftRex.debug.xcconfig */,
 				3CBCAE05026A57EEAB58F97E /* Pods-UnitTests SwiftRex.release.xcconfig */,
+				080737BE17C1A4D320BA3EE9 /* Pods-UnitTests Combine.debug.xcconfig */,
+				AFBBB5ABB038416BFA2EC2AC /* Pods-UnitTests Combine.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -620,6 +716,7 @@
 				CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */,
 				4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */,
 				3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */,
+				DF80B0AE49B9915CE88A36D8 /* Pods_UnitTests_Combine.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -684,20 +781,24 @@
 				D5623F7320939F2C00C70F60 /* Common.xcconfig */,
 				D5623F782093A31700C70F60 /* Debug.xcconfig */,
 				D5623F792093A31F00C70F60 /* Release.xcconfig */,
-				D5623F7A2093A4E900C70F60 /* SwiftRex-Common.xcconfig */,
+				D5C1C66B22BFE94D00532BCF /* SwiftRex-Combine-Debug-iOS.xcconfig */,
+				D5C1C67022BFE95F00532BCF /* SwiftRex-Combine-Debug-macOS.xcconfig */,
+				D5C1C67522BFE96C00532BCF /* SwiftRex-Combine-Debug-tvOS.xcconfig */,
+				D5C1C67A22BFE97F00532BCF /* SwiftRex-Combine-Debug-watchOS.xcconfig */,
+				D5C1C67F22BFE99100532BCF /* SwiftRex-Combine-Release-iOS.xcconfig */,
+				D5C1C68422BFE9A100532BCF /* SwiftRex-Combine-Release-macOS.xcconfig */,
+				D5C1C68922BFE9B200532BCF /* SwiftRex-Combine-Release-tvOS.xcconfig */,
+				D5C1C68E22BFE9C400532BCF /* SwiftRex-Combine-Release-watchOS.xcconfig */,
+				D5C1C66A22BFE93B00532BCF /* SwiftRex-Combine.xcconfig */,
 				D5623F742093A18200C70F60 /* SwiftRex-Common-iOS.xcconfig */,
 				D5623F772093A1AB00C70F60 /* SwiftRex-Common-macOS.xcconfig */,
 				D5623F762093A1A100C70F60 /* SwiftRex-Common-tvOS.xcconfig */,
 				D5623F752093A19800C70F60 /* SwiftRex-Common-watchOS.xcconfig */,
+				D5623F7A2093A4E900C70F60 /* SwiftRex-Common.xcconfig */,
 				D5888B0222B6EA860028B0E1 /* SwiftRex-Debug-iOS.xcconfig */,
 				D5888B0322B6EA9C0028B0E1 /* SwiftRex-Debug-macOS.xcconfig */,
 				D5888B0C22B6EAA90028B0E1 /* SwiftRex-Debug-tvOS.xcconfig */,
 				D5888B1522B6EAB40028B0E1 /* SwiftRex-Debug-watchOS.xcconfig */,
-				D5888B1E22B6EB760028B0E1 /* SwiftRex-Release-iOS.xcconfig */,
-				D5888B2722B6EB800028B0E1 /* SwiftRex-Release-macOS.xcconfig */,
-				D5888B3022B6EB890028B0E1 /* SwiftRex-Release-tvOS.xcconfig */,
-				D5888B3922B6EBAB0028B0E1 /* SwiftRex-Release-watchOS.xcconfig */,
-				D5A2EAFB22B9A27D00CA10B8 /* SwiftRex-ReactiveSwift.xcconfig */,
 				D5623F7C2093A68400C70F60 /* SwiftRex-ReactiveSwift-Debug-iOS.xcconfig */,
 				D5623F822093A6D600C70F60 /* SwiftRex-ReactiveSwift-Debug-macOS.xcconfig */,
 				D5623F802093A6C300C70F60 /* SwiftRex-ReactiveSwift-Debug-tvOS.xcconfig */,
@@ -706,7 +807,11 @@
 				D5623F812093A6CD00C70F60 /* SwiftRex-ReactiveSwift-Release-macOS.xcconfig */,
 				D5623F7F2093A6B800C70F60 /* SwiftRex-ReactiveSwift-Release-tvOS.xcconfig */,
 				D5623F7D2093A69400C70F60 /* SwiftRex-ReactiveSwift-Release-watchOS.xcconfig */,
-				D5A2EAFC22B9A2F300CA10B8 /* SwiftRex-RxSwift.xcconfig */,
+				D5A2EAFB22B9A27D00CA10B8 /* SwiftRex-ReactiveSwift.xcconfig */,
+				D5888B1E22B6EB760028B0E1 /* SwiftRex-Release-iOS.xcconfig */,
+				D5888B2722B6EB800028B0E1 /* SwiftRex-Release-macOS.xcconfig */,
+				D5888B3022B6EB890028B0E1 /* SwiftRex-Release-tvOS.xcconfig */,
+				D5888B3922B6EBAB0028B0E1 /* SwiftRex-Release-watchOS.xcconfig */,
 				D532CAAF223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-iOS.xcconfig */,
 				D532CAB5223ECA5A00AB13EF /* SwiftRex-RxSwift-Debug-macOS.xcconfig */,
 				D532CAB4223ECA5A00AB13EF /* SwiftRex-RxSwift-Debug-tvOS.xcconfig */,
@@ -715,6 +820,9 @@
 				D532CAAD223ECA5900AB13EF /* SwiftRex-RxSwift-Release-macOS.xcconfig */,
 				D532CAB3223ECA5A00AB13EF /* SwiftRex-RxSwift-Release-tvOS.xcconfig */,
 				D532CAB0223ECA5900AB13EF /* SwiftRex-RxSwift-Release-watchOS.xcconfig */,
+				D5A2EAFC22B9A2F300CA10B8 /* SwiftRex-RxSwift.xcconfig */,
+				D5C1C69322BFE9D800532BCF /* UnitTests-Combine-Debug.xcconfig */,
+				D5C1C69822BFE9E200532BCF /* UnitTests-Combine-Release.xcconfig */,
 				D54AEE09214D896E009D9B6B /* UnitTests-ReactiveSwift-Debug.xcconfig */,
 				D54AEE0A214D89AC009D9B6B /* UnitTests-ReactiveSwift-Release.xcconfig */,
 				D532CAB2223ECA5A00AB13EF /* UnitTests-RxSwift-Debug.xcconfig */,
@@ -735,6 +843,7 @@
 				D5A2EAE822B99FBB00CA10B8 /* ReactiveSwift */,
 				D5A2EAE722B99FB100CA10B8 /* RxSwift */,
 				D59D57F7207AA1B40010412E /* SwiftRex.h */,
+				D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */,
 				D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */,
 				D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */,
 			);
@@ -829,6 +938,11 @@
 				D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */,
 				D5888B0022B6E9300028B0E1 /* SwiftRex.framework */,
 				D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */,
+				D5C1C60922BFE6AA00532BCF /* SwiftRexForCombine.framework */,
+				D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */,
+				D5C1C63122BFE6BA00532BCF /* SwiftRexForCombine.framework */,
+				D5C1C64522BFE6C300532BCF /* SwiftRexForCombine.framework */,
+				D5C1C65E22BFE6CB00532BCF /* UnitTests Combine.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1164,6 +1278,38 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5C1C60322BFE6AA00532BCF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C66122BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C61722BFE6B300532BCF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C66222BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C62B22BFE6BA00532BCF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C66322BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C63F22BFE6C300532BCF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5C1C66422BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1281,6 +1427,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D599F5EF22BFED1300295090 /* PBXTargetDependency */,
 				D578B290208A690C0035AE9C /* PBXTargetDependency */,
 			);
 			name = "UnitTests ReactiveSwift";
@@ -1464,6 +1611,103 @@
 			productReference = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		D5C1C5F722BFE6AA00532BCF /* SwiftRex iOS Combine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D5C1C60622BFE6AA00532BCF /* Build configuration list for PBXNativeTarget "SwiftRex iOS Combine" */;
+			buildPhases = (
+				D5C1C5F922BFE6AA00532BCF /* Make script */,
+				D5C1C5FA22BFE6AA00532BCF /* Sources */,
+				D5C1C60022BFE6AA00532BCF /* Frameworks */,
+				D5C1C60322BFE6AA00532BCF /* Headers */,
+				D5C1C60522BFE6AA00532BCF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SwiftRex iOS Combine";
+			productName = "SwiftRex iOS";
+			productReference = D5C1C60922BFE6AA00532BCF /* SwiftRexForCombine.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D5C1C60B22BFE6B300532BCF /* SwiftRex macOS Combine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D5C1C61A22BFE6B300532BCF /* Build configuration list for PBXNativeTarget "SwiftRex macOS Combine" */;
+			buildPhases = (
+				D5C1C60D22BFE6B300532BCF /* Make script */,
+				D5C1C60E22BFE6B300532BCF /* Sources */,
+				D5C1C61422BFE6B300532BCF /* Frameworks */,
+				D5C1C61722BFE6B300532BCF /* Headers */,
+				D5C1C61922BFE6B300532BCF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SwiftRex macOS Combine";
+			productName = "SwiftRex macOS";
+			productReference = D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D5C1C61F22BFE6BA00532BCF /* SwiftRex tvOS Combine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D5C1C62E22BFE6BA00532BCF /* Build configuration list for PBXNativeTarget "SwiftRex tvOS Combine" */;
+			buildPhases = (
+				D5C1C62122BFE6BA00532BCF /* Make script */,
+				D5C1C62222BFE6BA00532BCF /* Sources */,
+				D5C1C62822BFE6BA00532BCF /* Frameworks */,
+				D5C1C62B22BFE6BA00532BCF /* Headers */,
+				D5C1C62D22BFE6BA00532BCF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SwiftRex tvOS Combine";
+			productName = "SwiftRex tvOS";
+			productReference = D5C1C63122BFE6BA00532BCF /* SwiftRexForCombine.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D5C1C63322BFE6C300532BCF /* SwiftRex watchOS Combine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D5C1C64222BFE6C300532BCF /* Build configuration list for PBXNativeTarget "SwiftRex watchOS Combine" */;
+			buildPhases = (
+				D5C1C63522BFE6C300532BCF /* Make script */,
+				D5C1C63622BFE6C300532BCF /* Sources */,
+				D5C1C63C22BFE6C300532BCF /* Frameworks */,
+				D5C1C63F22BFE6C300532BCF /* Headers */,
+				D5C1C64122BFE6C300532BCF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SwiftRex watchOS Combine";
+			productName = "SwiftRex watchOS";
+			productReference = D5C1C64522BFE6C300532BCF /* SwiftRexForCombine.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D5C1C64722BFE6CB00532BCF /* UnitTests Combine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D5C1C65B22BFE6CB00532BCF /* Build configuration list for PBXNativeTarget "UnitTests Combine" */;
+			buildPhases = (
+				C1C3CF2CF10923D7AC8AC747 /* [CP] Check Pods Manifest.lock */,
+				D5C1C64D22BFE6CB00532BCF /* Sources */,
+				D5C1C65522BFE6CB00532BCF /* Frameworks */,
+				D5C1C65922BFE6CB00532BCF /* Resources */,
+				DA9713D6754BEA609CCA724D /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D5C1C64822BFE6CB00532BCF /* PBXTargetDependency */,
+				D599F5ED22BFECFC00295090 /* PBXTargetDependency */,
+			);
+			name = "UnitTests Combine";
+			productName = UnitTests;
+			productReference = D5C1C65E22BFE6CB00532BCF /* UnitTests Combine.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1512,6 +1756,11 @@
 				D5888AB222B6E92D0028B0E1 /* SwiftRex tvOS */,
 				D5888A8A22B6E92A0028B0E1 /* SwiftRex watchOS */,
 				D5888B4222B6F2630028B0E1 /* UnitTests SwiftRex */,
+				D5C1C5F722BFE6AA00532BCF /* SwiftRex iOS Combine */,
+				D5C1C60B22BFE6B300532BCF /* SwiftRex macOS Combine */,
+				D5C1C61F22BFE6BA00532BCF /* SwiftRex tvOS Combine */,
+				D5C1C63322BFE6C300532BCF /* SwiftRex watchOS Combine */,
+				D5C1C64722BFE6CB00532BCF /* UnitTests Combine */,
 				D595F6CB206E818C00E02733 /* SwiftRex iOS ReactiveSwift */,
 				D595F6F3206E81C900E02733 /* SwiftRex macOS ReactiveSwift */,
 				D595F6E6206E81B900E02733 /* SwiftRex tvOS ReactiveSwift */,
@@ -1626,6 +1875,41 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D595F6F2206E81C900E02733 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C60522BFE6AA00532BCF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C61922BFE6B300532BCF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C62D22BFE6BA00532BCF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C64122BFE6C300532BCF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C65922BFE6CB00532BCF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1872,6 +2156,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C1C3CF2CF10923D7AC8AC747 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-UnitTests Combine-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		C389553BAA926B74595BFE90 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2056,6 +2362,79 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "make prebuild-ios\n";
+		};
+		D5C1C5F922BFE6AA00532BCF /* Make script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Make script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make prebuild-ios\n";
+		};
+		D5C1C60D22BFE6B300532BCF /* Make script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Make script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make prebuild-mac\n";
+		};
+		D5C1C62122BFE6BA00532BCF /* Make script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Make script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make prebuild-tvos";
+		};
+		D5C1C63522BFE6C300532BCF /* Make script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Make script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make prebuild-watchos";
+		};
+		DA9713D6754BEA609CCA724D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests Combine/Pods-UnitTests Combine-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests Combine/Pods-UnitTests Combine-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests Combine/Pods-UnitTests Combine-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		E15ABA6A9B2AD633293322EE /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2383,6 +2762,41 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5C1C5FA22BFE6AA00532BCF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C60E22BFE6B300532BCF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C62222BFE6BA00532BCF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C63622BFE6C300532BCF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C1C64D22BFE6CB00532BCF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -2405,6 +2819,21 @@
 			isa = PBXTargetDependency;
 			target = D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */;
 			targetProxy = D5937B4E22B6F86F00FAB773 /* PBXContainerItemProxy */;
+		};
+		D599F5ED22BFECFC00295090 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5C1C60B22BFE6B300532BCF /* SwiftRex macOS Combine */;
+			targetProxy = D599F5EC22BFECFC00295090 /* PBXContainerItemProxy */;
+		};
+		D599F5EF22BFED1300295090 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */;
+			targetProxy = D599F5EE22BFED1300295090 /* PBXContainerItemProxy */;
+		};
+		D5C1C64822BFE6CB00532BCF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */;
+			targetProxy = D5C1C64922BFE6CB00532BCF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2633,6 +3062,76 @@
 			};
 			name = Release;
 		};
+		D5C1C60722BFE6AA00532BCF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C66B22BFE94D00532BCF /* SwiftRex-Combine-Debug-iOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		D5C1C60822BFE6AA00532BCF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C67F22BFE99100532BCF /* SwiftRex-Combine-Release-iOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		D5C1C61B22BFE6B300532BCF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C67022BFE95F00532BCF /* SwiftRex-Combine-Debug-macOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		D5C1C61C22BFE6B300532BCF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C68422BFE9A100532BCF /* SwiftRex-Combine-Release-macOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		D5C1C62F22BFE6BA00532BCF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C67522BFE96C00532BCF /* SwiftRex-Combine-Debug-tvOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		D5C1C63022BFE6BA00532BCF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C68922BFE9B200532BCF /* SwiftRex-Combine-Release-tvOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		D5C1C64322BFE6C300532BCF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C67A22BFE97F00532BCF /* SwiftRex-Combine-Debug-watchOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		D5C1C64422BFE6C300532BCF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C68E22BFE9C400532BCF /* SwiftRex-Combine-Release-watchOS.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		D5C1C65C22BFE6CB00532BCF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C69322BFE9D800532BCF /* UnitTests-Combine-Debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		D5C1C65D22BFE6CB00532BCF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5C1C69822BFE9E200532BCF /* UnitTests-Combine-Release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2776,6 +3275,51 @@
 			buildConfigurations = (
 				D595F6FA206E81C900E02733 /* Debug */,
 				D595F6FB206E81C900E02733 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D5C1C60622BFE6AA00532BCF /* Build configuration list for PBXNativeTarget "SwiftRex iOS Combine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5C1C60722BFE6AA00532BCF /* Debug */,
+				D5C1C60822BFE6AA00532BCF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D5C1C61A22BFE6B300532BCF /* Build configuration list for PBXNativeTarget "SwiftRex macOS Combine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5C1C61B22BFE6B300532BCF /* Debug */,
+				D5C1C61C22BFE6B300532BCF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D5C1C62E22BFE6BA00532BCF /* Build configuration list for PBXNativeTarget "SwiftRex tvOS Combine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5C1C62F22BFE6BA00532BCF /* Debug */,
+				D5C1C63022BFE6BA00532BCF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D5C1C64222BFE6C300532BCF /* Build configuration list for PBXNativeTarget "SwiftRex watchOS Combine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5C1C64322BFE6C300532BCF /* Debug */,
+				D5C1C64422BFE6C300532BCF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D5C1C65B22BFE6CB00532BCF /* Build configuration list for PBXNativeTarget "UnitTests Combine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5C1C65C22BFE6CB00532BCF /* Debug */,
+				D5C1C65D22BFE6CB00532BCF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

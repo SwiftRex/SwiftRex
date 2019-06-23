@@ -1,0 +1,2 @@
+#include "SwiftRex-Release-watchOS.xcconfig"
+#include "SwiftRex-Combine.xcconfig"
