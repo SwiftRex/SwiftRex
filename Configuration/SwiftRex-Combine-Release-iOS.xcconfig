@@ -1,0 +1,2 @@
+#include "SwiftRex-Release-iOS.xcconfig"
+#include "SwiftRex-Combine.xcconfig"
