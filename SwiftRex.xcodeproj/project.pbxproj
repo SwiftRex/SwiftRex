@@ -22,6 +22,10 @@
 		D507CAD122BE967B00BE6679 /* SwiftRexForRx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */; };
 		D507CAD222BE969600BE6679 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
 		D507CAD322BE969600BE6679 /* SwiftRexForRac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */; };
+		D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3522BEF116008EF537 /* FooSubscription.swift */; };
+		D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3622BEF116008EF537 /* SomeError.swift */; };
+		D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */; };
+		D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */; };
 		D578209822BAB9970065E44D /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -300,6 +304,10 @@
 		D532CAB6223ECA5B00AB13EF /* UnitTests-RxSwift-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-RxSwift-Release.xcconfig"; sourceTree = "<group>"; };
 		D54AEE09214D896E009D9B6B /* UnitTests-ReactiveSwift-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-ReactiveSwift-Debug.xcconfig"; sourceTree = "<group>"; };
 		D54AEE0A214D89AC009D9B6B /* UnitTests-ReactiveSwift-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-ReactiveSwift-Release.xcconfig"; sourceTree = "<group>"; };
+		D552CC3522BEF116008EF537 /* FooSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooSubscription.swift; sourceTree = "<group>"; };
+		D552CC3622BEF116008EF537 /* SomeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeError.swift; sourceTree = "<group>"; };
+		D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherTypeBridgeTests.swift; sourceTree = "<group>"; };
+		D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriberTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeErase.generated.abstract.swift; sourceTree = "<group>"; };
 		D5623F7320939F2C00C70F60 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		D5623F742093A18200C70F60 /* SwiftRex-Common-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-Common-iOS.xcconfig"; sourceTree = "<group>"; };
@@ -634,6 +642,24 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
+		D552CC3422BEF116008EF537 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				D552CC3522BEF116008EF537 /* FooSubscription.swift */,
+				D552CC3622BEF116008EF537 /* SomeError.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		D552CC3922BEF150008EF537 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */,
+				D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
 		D5623F7220939DF500C70F60 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
@@ -747,6 +773,8 @@
 		D5888B7322B6F6790028B0E1 /* ReactiveSwift */ = {
 			isa = PBXGroup;
 			children = (
+				D552CC3922BEF150008EF537 /* Bridge */,
+				D552CC3422BEF116008EF537 /* Helper */,
 				D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */,
 				D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */,
 			);
@@ -756,8 +784,8 @@
 		D5888B7422B6F6800028B0E1 /* RxSwift */ = {
 			isa = PBXGroup;
 			children = (
-				D507CACD22BE921D00BE6679 /* Helper */,
 				D507CAC822BE8E6F00BE6679 /* Bridge */,
+				D507CACD22BE921D00BE6679 /* Helper */,
 				D5A607022071287900D682EF /* SideEffectProducer */,
 				D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */,
 				D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */,
@@ -2116,6 +2144,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */,
+				D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */,
+				D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */,
+				D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
