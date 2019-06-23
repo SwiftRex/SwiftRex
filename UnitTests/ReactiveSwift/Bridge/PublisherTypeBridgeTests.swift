@@ -1,10 +1,10 @@
-import RxSwift
+import ReactiveSwift
 import SwiftRex
-import SwiftRexForRx
+import SwiftRexForRac
 import XCTest
 
 class PublisherTypeBridgeTests: XCTestCase {
-    func testPublisherTypeToObservableOnValue() {
+    func testPublisherTypeToSignalProducerOnValue() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureCompleted = expectation(description: "Closure should be called")
 
@@ -14,17 +14,18 @@ class PublisherTypeBridgeTests: XCTestCase {
             return FooSubscription()
         }
 
-        _ = publisherType.subscribe(
-            onNext: { string in
+        _ = publisherType.producer.start(.init(
+            value: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
             },
-            onError: { error in
+            failed: { error in
                 XCTFail("Unexpected error: \(error)")
             },
-            onCompleted: {
+            completed: {
                 shouldCallClosureCompleted.fulfill()
-            })
+            }
+        ))
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
     }
@@ -40,33 +41,33 @@ class PublisherTypeBridgeTests: XCTestCase {
             return FooSubscription()
         }
 
-        _ = publisherType.subscribe(
-            onNext: { string in
+        _ = publisherType.producer.start(.init(
+            value: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
             },
-            onError: { error in
+            failed: { error in
                 XCTAssertEqual(someError, error as! SomeError)
                 shouldCallClosureError.fulfill()
             },
-            onCompleted: {
+            completed: {
                 XCTFail("Unexpected completion")
-            })
+            }
+        ))
 
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
     }
 
-    func testObservableToPublisherTypeOnValue() {
+    func testSignalProducerToPublisherTypeOnValue() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureCompleted = expectation(description: "Closure should be called")
 
-        let observable = Observable<String>.create { observer in
-            observer.onNext("test")
-            observer.onCompleted()
-            return Disposables.create()
+        let signalProducer = SignalProducer<String, SomeError> { observer, _ in
+            observer.send(value: "test")
+            observer.sendCompleted()
         }
 
-        _ = observable.asPublisher().subscribe(SubscriberType(
+        _ = signalProducer.asPublisher().subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -81,18 +82,17 @@ class PublisherTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
     }
 
-    func testObservableToPublisherTypeOnError() {
+    func testSignalProducerToPublisherTypeOnError() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureError = expectation(description: "Closure should be called")
         let someError = SomeError()
 
-        let observable = Observable<String>.create { observer in
-            observer.onNext("test")
-            observer.onError(someError)
-            return Disposables.create()
+        let signalProducer = SignalProducer<String, SomeError> { observer, _ in
+            observer.send(value: "test")
+            observer.send(error: someError)
         }
 
-        _ = observable.asPublisher().subscribe(SubscriberType(
+        _ = signalProducer.asPublisher().subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -103,7 +103,7 @@ class PublisherTypeBridgeTests: XCTestCase {
                     return
                 }
 
-                XCTAssertEqual(someError, error as! SomeError)
+                XCTAssertEqual(someError, error)
                 shouldCallClosureError.fulfill()
             }))
 
