@@ -7,9 +7,9 @@ extension Subscription {
         return DisposableSubscription(subscription: self)
     }
 
-    public func disposed(by disposeBag: inout Lifetime) {
+    public func disposed(by lifetime: Lifetime) {
         let disposable: Disposable = self.asDisposable()
-        disposeBag += disposable
+        lifetime += disposable
     }
 }
 
