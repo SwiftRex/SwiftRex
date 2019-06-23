@@ -1,11 +1,10 @@
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
-CODE_SIGN_IDENTITY =
-FRAMEWORK_SEARCH_PATHS = $(inherited) "$(PLATFORM_DIR)/Developer/Library/Frameworks" "${PODS_CONFIGURATION_BUILD_DIR}/RxBlocking" "${PODS_CONFIGURATION_BUILD_DIR}/RxSwift-macOS" "${PODS_CONFIGURATION_BUILD_DIR}/RxTest"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "$(PLATFORM_DIR)/Developer/Library/Frameworks" "${PODS_CONFIGURATION_BUILD_DIR}/Nimble" "${PODS_CONFIGURATION_BUILD_DIR}/RxBlocking" "${PODS_CONFIGURATION_BUILD_DIR}/RxSwift-macOS" "${PODS_CONFIGURATION_BUILD_DIR}/RxTest"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/RxBlocking/RxBlocking.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/RxSwift-macOS/RxSwift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/RxTest/RxTest.framework/Headers"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Nimble/Nimble.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/RxBlocking/RxBlocking.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/RxSwift-macOS/RxSwift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/RxTest/RxTest.framework/Headers"
 LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/../Frameworks' '@loader_path/../Frameworks'
 OTHER_CFLAGS = $(inherited) -isystem "${PODS_CONFIGURATION_BUILD_DIR}/RxSwift-macOS/RxSwift.framework/Headers" -iframework "${PODS_CONFIGURATION_BUILD_DIR}/RxSwift-macOS"
-OTHER_LDFLAGS = $(inherited) -framework "RxBlocking" -framework "RxSwift" -framework "RxTest" -framework "XCTest"
+OTHER_LDFLAGS = $(inherited) -framework "Nimble" -framework "RxBlocking" -framework "RxSwift" -framework "RxTest" -framework "XCTest" -weak_framework "XCTest"
 OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)

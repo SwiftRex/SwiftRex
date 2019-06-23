@@ -25,9 +25,9 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
 
      A `ComposedMiddleware` also sets its child middlewares to the same `ActionHandler` whenever this property is set.
      */
-    public weak var actionHandler: ActionHandler? {
+    public var handlers: MessageHandler! {
         didSet {
-            middlewares.forEach { $0.actionHandler = actionHandler }
+            middlewares.forEach { $0.handlers = handlers }
         }
     }
 
@@ -45,7 +45,7 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
      */
     public func append<M: Middleware>(middleware: M) where M.StateType == GlobalState {
         // Add in reverse order because we reduce from top to bottom and trigger from the last
-        middleware.actionHandler = middleware.actionHandler ?? actionHandler
+        middleware.handlers = middleware.handlers ?? handlers
         // Inserts into the first position because the forward methods will work in the reverse order.
         // So the result for the user will be the expected, FIFO regardless the way we store the inner middlewares.
         middlewares.insert(AnyMiddleware(middleware), at: 0)

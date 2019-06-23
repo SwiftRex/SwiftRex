@@ -1,6 +1,8 @@
 coverage_service: coveralls
+workspace: SwiftRex.xcworkspace
 xcodeproj: SwiftRex.xcodeproj
-scheme: SwiftRex macOS
+scheme: BuildAndTestAll
+arch: x86_64
+configuration: Debug
 ignore:
-  - "**/CodeGeneration/*.abstract.swift"
   - UnitTests/*

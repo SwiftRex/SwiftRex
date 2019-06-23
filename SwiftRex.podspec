@@ -20,16 +20,23 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target      = '9.0'
   s.swift_version = '5.0'
 
-  s.frameworks    = 'Foundation'
-  s.default_subspec   = 'UsingRxSwift'
+  s.frameworks       = 'Foundation'
+  s.default_subspec  = 'Core'
 
-  s.subspec 'UsingRxSwift' do |ss|
-    ss.dependency 'RxSwift'
-    ss.source_files  = 'Sources/{Common,RxSwift}/**/*.{swift,h,m}'
+  s.subspec "Core" do |ss|
+    ss.source_files  = "Sources/Common/"
+    ss.framework  = "Foundation"
   end
 
-  s.subspec 'UsingReactiveSwift' do |ss|
+  s.subspec "UsingRxSwift" do |ss|
+    ss.source_files = "Sources/RxSwift/"
+    ss.dependency "SwiftRex/Core"
+    ss.dependency 'RxSwift'
+  end
+
+  s.subspec "UsingReactiveSwift" do |ss|
+    ss.source_files = "Sources/ReactiveSwift/"
+    ss.dependency "SwiftRex/Core"
     ss.dependency 'ReactiveSwift'
-    ss.source_files  = 'Sources/{Common,ReactiveSwift}/**/*.{swift,h,m}'
   end
 end

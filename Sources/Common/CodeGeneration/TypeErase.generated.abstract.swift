@@ -23,7 +23,7 @@ internal class _AnyMiddlewareBase<StateType>: Middleware {
         _abstract()
     }
 
-    var actionHandler: ActionHandler? {
+    var handlers: MessageHandler! {
         get { _abstract() }
         set { _abstract() }
     }
@@ -38,7 +38,7 @@ internal class _AnySideEffectProducerBase<StateType>: SideEffectProducer {
         }
     }
 
-    func execute(getState: @escaping GetState<StateType>) -> FailableObservableSignalProducer<ActionProtocol> {
+    func execute(getState: @escaping GetState<StateType>) -> PublisherType<ActionProtocol, Error> {
         _abstract()
     }
 

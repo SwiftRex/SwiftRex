@@ -1,0 +1,2 @@
+#include "SwiftRex-Common-macOS.xcconfig"
+#include? "Developer.xcconfig"
