@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
-               BuildableName = "SwiftRexForRx.framework"
-               BlueprintName = "SwiftRex iOS RxSwift"
+               BlueprintIdentifier = "D5C1C60B22BFE6B300532BCF"
+               BuildableName = "SwiftRexForCombine.framework"
+               BlueprintName = "SwiftRex macOS Combine"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,17 +28,38 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       systemAttachmentLifetime = "keepNever"
+      userAttachmentLifetime = "keepAlways"
+      codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D595F6F3206E81C900E02733"
+            BuildableName = "SwiftRexForRac.framework"
+            BlueprintName = "SwiftRex macOS ReactiveSwift"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6CB206E818C00E02733"
-            BuildableName = "SwiftRexForRac.framework"
-            BlueprintName = "SwiftRex iOS ReactiveSwift"
+            BlueprintIdentifier = "D5C1C60B22BFE6B300532BCF"
+            BuildableName = "SwiftRexForCombine.framework"
+            BlueprintName = "SwiftRex macOS Combine"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D5C1C64722BFE6CB00532BCF"
+               BuildableName = "UnitTests Combine.xctest"
+               BlueprintName = "UnitTests Combine"
+               ReferencedContainer = "container:SwiftRex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -51,15 +72,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
-            BuildableName = "SwiftRexForRx.framework"
-            BlueprintName = "SwiftRex iOS RxSwift"
-            ReferencedContainer = "container:SwiftRex.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -70,9 +82,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
-            BuildableName = "SwiftRexForRx.framework"
-            BlueprintName = "SwiftRex iOS RxSwift"
+            BlueprintIdentifier = "D5C1C60B22BFE6B300532BCF"
+            BuildableName = "SwiftRexForCombine.framework"
+            BlueprintName = "SwiftRex macOS Combine"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
