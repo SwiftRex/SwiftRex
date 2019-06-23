@@ -92,7 +92,10 @@ class SubscriptionBridgeTests: XCTestCase {
         let subscription = FooSubscription {
             shouldBeDisposed.fulfill()
         }
-        var (lifetime, token): (Lifetime, Lifetime.Token?) = Lifetime.make()
+        var (lifetime, token) = { () -> (Lifetime, Lifetime.Token?) in
+            let (lifetime, token) = Lifetime.make()
+            return (lifetime, .some(token))
+        }()
 
         subscription.disposed(by: lifetime)
 
