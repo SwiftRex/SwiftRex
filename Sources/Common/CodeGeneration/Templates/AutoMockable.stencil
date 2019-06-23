@@ -1,4 +1,5 @@
-// sourcery:file:../../../UnitTests/Mocks/AutoMockable.generated.swift
+// sourcery:file:../../../UnitTests/Common/CodeGeneration/AutoMockable.generated.swift
+// swiftlint:disable all
 import Foundation
 @testable import SwiftRex
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -101,13 +102,15 @@ import AppKit
 {% macro mockedVariableName variable %}{{ variable.name }}{% endmacro %}
 
 {% for type in types.protocols where type.based.AutoMockable or type|annotated:"AutoMockable" %}{% if type.name != "AutoMockable" %}
-class {{ type.name }}Mock: {{ type.name }} {
+class {{ type.name }}Mock{% if type|annotated:"AutoMockableGeneric" %}<{{type.annotations.AutoMockableGeneric|join:", "}}>{% endif %}: {{ type.name }} {
 {% for variable in type.allVariables|!definedInExtension %}
     {% if variable.isOptional %}{% call mockOptionalVariable variable %}{% elif variable.isArray or variable.isDictionary %}{% call mockNonOptionalArrayOrDictionaryVariable variable %}{% else %}{% call mockNonOptionalVariable variable %}{% endif %}
 {% endfor %}
 
 {% for method in type.allMethods|!definedInExtension %}
+    {% if not type.annotations.AutoMockableSkip|join:"\"|default:""|contains:method.name %}
     {% call mockMethod method %}
+    {% endif %}
 {% endfor %}
 }
 {% endif %}{% endfor %}

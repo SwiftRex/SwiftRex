@@ -17,12 +17,16 @@ public struct SideEffectError: ActionProtocol {
 /**
  Defines a protocol for implementing a middleware that executes `RxSwift` or `ReactiveSwift` side-effects. Instead of implementing the regular `handle(event:getState:next:)` and `handle(action:getState:next:)` methods, this protocol only requires a mapping from `EventProtocol` to `SideEffectProducer`.
  */
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
+// sourcery: AutoMockableSkip = "handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>)"
+// sourcery: AutoMockableSkip = "handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>)"
 public protocol SideEffectMiddleware: Middleware {
     /// Allows the following middlewares in the chain to have a chance of handling the same events already handled
     var allowEventToPropagate: Bool { get }
 
     /// A bag that owns the lifetime of each `SideEffectProducer` observation, usually this `SubscriptionOwner` will be a stored property in the `SideEffectMiddleware` instance
-    var subscriptionOwner: SubscriptionOwner { get }
+    var subscription: Subscription { get set }
 
     /// Maps the incoming event to the proper `SideEffectProducer`, wrapped in a type-eraser `AnySideEffectProducer`
     func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<StateType>?
@@ -42,15 +46,19 @@ extension SideEffectMiddleware {
             return
         }
 
-        sideEffect
+        self.subscription = sideEffect
             .execute(getState: getState)
             .subscribe(
-                onSuccess: { [weak self] (action: ActionProtocol) in
-                    self?.actionHandler?.trigger(action)
-                }, onFailure: { [weak self] (error: Error) in
-                    let action = SideEffectError(date: Date(), originalEvent: event, error: error)
-                    self?.actionHandler?.trigger(action)
-                }, disposeBy: subscriptionOwner)
+                SubscriberType(
+                    onValue: { [weak self] action in
+                        self?.handlers?.actionHandler.trigger(action)
+                    }, onCompleted: { [weak self] error in
+                        guard let error = error else { return }
+                        let action = SideEffectError(date: Date(), originalEvent: event, error: error)
+                        self?.handlers?.actionHandler.trigger(action)
+                    }
+                )
+            )
 
         guard allowEventToPropagate else { return }
 

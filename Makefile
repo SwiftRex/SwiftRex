@@ -20,6 +20,30 @@ xcodeproj:
 
 # Unit Test
 
+test-all:
+	set -o pipefail && \
+		xcodebuild clean test \
+		-workspace SwiftRex.xcworkspace \
+		-scheme BuildAndTestAll \
+		-destination platform="macOS" \
+		CODE_SIGN_IDENTITY="" \
+		CODE_SIGNING_REQUIRED=NO \
+		ONLY_ACTIVE_ARCH=YES \
+		VALID_ARCHS=x86_64 \
+		| bundle exec xcpretty
+
+test-common:
+	set -o pipefail && \
+		xcodebuild clean test \
+		-workspace SwiftRex.xcworkspace \
+		-scheme SwiftRex\ macOS \
+		-destination platform="macOS" \
+		CODE_SIGN_IDENTITY="" \
+		CODE_SIGNING_REQUIRED=NO \
+		ONLY_ACTIVE_ARCH=YES \
+		VALID_ARCHS=x86_64 \
+		| bundle exec xcpretty
+
 test-reactiveswift:
 	set -o pipefail && \
 		xcodebuild clean test \
@@ -43,8 +67,6 @@ test-rxswift:
 		ONLY_ACTIVE_ARCH=YES \
 		VALID_ARCHS=x86_64 \
 		| bundle exec xcpretty
-
-test-all: test-reactiveswift test-rxswift
 
 # Lint
 
@@ -92,6 +114,9 @@ help:
 	@echo
 	@echo make xcodeproj
 	@echo -- creates xcodeproj for those using Swift Package Manager
+	@echo
+	@echo make test-common
+	@echo -- runs the unit tests for the macOS target common for any framework
 	@echo
 	@echo make test-reactiveswift
 	@echo -- runs the unit tests for the macOS target using ReactiveSwift dependency
