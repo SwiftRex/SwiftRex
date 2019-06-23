@@ -26,6 +26,8 @@
 		D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3622BEF116008EF537 /* SomeError.swift */; };
 		D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */; };
 		D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */; };
+		D5626D6C22BF19B7000422AA /* SubscriptionBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5626D6B22BF19B7000422AA /* SubscriptionBridgeTests.swift */; };
+		D5626D6E22BF1CB1000422AA /* SubscriptionBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5626D6D22BF1CB1000422AA /* SubscriptionBridgeTests.swift */; };
 		D578209822BAB9970065E44D /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -327,6 +329,8 @@
 		D5623F822093A6D600C70F60 /* SwiftRex-ReactiveSwift-Debug-macOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-ReactiveSwift-Debug-macOS.xcconfig"; sourceTree = "<group>"; };
 		D5623F832093AACF00C70F60 /* UnitTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UnitTests.xcconfig; sourceTree = "<group>"; };
 		D5623F842093D49100C70F60 /* XcodeWarnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = XcodeWarnings.xcconfig; sourceTree = "<group>"; };
+		D5626D6B22BF19B7000422AA /* SubscriptionBridgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionBridgeTests.swift; sourceTree = "<group>"; };
+		D5626D6D22BF1CB1000422AA /* SubscriptionBridgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionBridgeTests.swift; sourceTree = "<group>"; };
 		D56449272082F1F500453ABB /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+ObservableType.swift"; sourceTree = "<group>"; };
 		D578209F22BADFC60065E44D /* Subscription+Disposable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subscription+Disposable.swift"; sourceTree = "<group>"; };
@@ -617,6 +621,7 @@
 			children = (
 				D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */,
 				D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */,
+				D5626D6B22BF19B7000422AA /* SubscriptionBridgeTests.swift */,
 			);
 			path = Bridge;
 			sourceTree = "<group>";
@@ -656,6 +661,7 @@
 			children = (
 				D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */,
 				D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */,
+				D5626D6D22BF1CB1000422AA /* SubscriptionBridgeTests.swift */,
 			);
 			path = Bridge;
 			sourceTree = "<group>";
@@ -2089,6 +2095,7 @@
 				D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */,
 				D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */,
 				D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */,
+				D5626D6C22BF19B7000422AA /* SubscriptionBridgeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2147,6 +2154,7 @@
 				D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */,
 				D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */,
+				D5626D6E22BF1CB1000422AA /* SubscriptionBridgeTests.swift in Sources */,
 				D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
