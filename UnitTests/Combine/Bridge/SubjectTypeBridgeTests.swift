@@ -1,17 +1,17 @@
-import ReactiveSwift
+import Combine
 import SwiftRex
-import SwiftRexForRac
+import SwiftRexForCombine
 import XCTest
 
 class SubjectTypeBridgeTests: XCTestCase {
-    func testSignalToSubjectTypeOnValue() {
+    func testPassthroughSubjectToSubjectTypeOnValue() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureCompleted = expectation(description: "Closure should be called")
 
-        let (signal, input) = Signal<String, SomeError>.pipe()
-        input.send(value: "no one cares")
+        let passthroughSubject = PassthroughSubject<String, SomeError>()
+        passthroughSubject.send("no one cares")
 
-        let sut = SubjectType(input: input, output: signal)
+        let sut = SubjectType(passthroughSubject: passthroughSubject)
 
         _ = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
@@ -31,15 +31,16 @@ class SubjectTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
     }
 
-    func testSignalToSubjectTypeOnError() {
+    func testPassthroughSubjectToSubjectTypeOnError() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureError = expectation(description: "Closure should be called")
         let someError = SomeError()
 
-        let (signal, input) = Signal<String, SomeError>.pipe()
-        input.send(value: "no one cares")
+        let passthroughSubject = PassthroughSubject<String, SomeError>()
+        passthroughSubject.send("no one cares")
 
-        let sut = SubjectType(input: input, output: signal)
+        let sut = SubjectType(passthroughSubject: passthroughSubject)
+
         _ = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
@@ -65,7 +66,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureCompleted = expectation(description: "Closure should be called")
 
-        let sut = SubjectType<String, SomeError>.reactive()
+        let sut = SubjectType<String, SomeError>.combine()
         sut.subscriber.onValue("no one cares")
 
         _ = sut.publisher.subscribe(SubscriberType(
@@ -91,7 +92,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         let shouldCallClosureError = expectation(description: "Closure should be called")
         let someError = SomeError()
 
-        let sut = SubjectType<String, SomeError>.reactive()
+        let sut = SubjectType<String, SomeError>.combine()
         sut.subscriber.onValue("no one cares")
 
         _ = sut.publisher.subscribe(SubscriberType(

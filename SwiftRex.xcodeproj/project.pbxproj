@@ -241,6 +241,8 @@
 		D5E734B222C15F8D00B0E284 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A622C15AA500B0E284 /* SubscriberTypeBridgeTests.swift */; };
 		D5E734B322C17DDA00B0E284 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A322C15AA300B0E284 /* PublisherTypeBridgeTests.swift */; };
 		D5E734B422C17DDB00B0E284 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A322C15AA300B0E284 /* PublisherTypeBridgeTests.swift */; };
+		D5E734B722C1810C00B0E284 /* SubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */; };
+		D5E734B822C1810D00B0E284 /* SubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */; };
 		D5FDCB3E22B70E690012D2E7 /* ReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071F2071287A00D682EF /* ReducerTests.swift */; };
 		D5FDCB3F22B70E8F0012D2E7 /* Action1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070C2071287900D682EF /* Action1.swift */; };
 		D5FDCB4022B70E8F0012D2E7 /* Action2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070A2071287900D682EF /* Action2.swift */; };
@@ -2675,6 +2677,7 @@
 				D5E734B222C15F8D00B0E284 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D5E734B322C17DDA00B0E284 /* PublisherTypeBridgeTests.swift in Sources */,
 				D5E7349F22C15A1B00B0E284 /* SomeError.swift in Sources */,
+				D5E734B722C1810C00B0E284 /* SubjectTypeBridgeTests.swift in Sources */,
 				D5E7349E22C15A1B00B0E284 /* FooSubscription.swift in Sources */,
 				D5E734B022C15AB700B0E284 /* SubscriptionBridgeTests.swift in Sources */,
 			);
@@ -3019,6 +3022,7 @@
 				D5E734B122C15F8C00B0E284 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D5E734B422C17DDB00B0E284 /* PublisherTypeBridgeTests.swift in Sources */,
 				D5E734A122C15A1C00B0E284 /* SomeError.swift in Sources */,
+				D5E734B822C1810D00B0E284 /* SubjectTypeBridgeTests.swift in Sources */,
 				D5E734A022C15A1C00B0E284 /* FooSubscription.swift in Sources */,
 				D5E734AB22C15AB600B0E284 /* SubscriptionBridgeTests.swift in Sources */,
 			);
