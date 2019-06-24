@@ -1,17 +1,17 @@
-import ReactiveSwift
+import Combine
 import SwiftRex
-import SwiftRexForRac
+import SwiftRexForCombine
 import XCTest
 
 class ReplayLastSubjectTypeBridgeTests: XCTestCase {
-    func testMutablePropertyToReplayLastSubjectTypeOnValue() {
+    func testCurrentValueSubjectToReplayLastSubjectTypeOnValue() {
         let shouldCallClosureValue = expectation(description: "Closure value should be called")
 
-        let property = MutableProperty<String>("no one cares 1")
-        property.value = "no one cares 2"
-        property.value = "current value"
+        let currentValueSubject = CurrentValueSubject<String, SomeError>("no one cares 1")
+        currentValueSubject.value = "no one cares 2"
+        currentValueSubject.value = "current value"
 
-        let sut = ReplayLastSubjectType(property: property)
+        let sut = ReplayLastSubjectType(currentValueSubject: currentValueSubject)
 
         var round = 1
         _ = sut.publisher.subscribe(SubscriberType(
@@ -36,10 +36,43 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue], timeout: 0.1)
     }
 
+    func testCurrentValueSubjectToReplayLastSubjectTypeOnErrorDoesAlwaysFinishSuccessfully() {
+        let shouldCallClosureValue = expectation(description: "Closure value should be called")
+        let shouldCallClosureCompletion = expectation(description: "Closure completion should be called")
+        let someError = SomeError()
+        let currentValueSubject = CurrentValueSubject<String, SomeError>("no one cares 1")
+        currentValueSubject.value = "no one cares 2"
+        currentValueSubject.value = "current value"
+
+        let sut = ReplayLastSubjectType<String, SomeError>(currentValueSubject: currentValueSubject)
+
+        _ = sut.publisher.subscribe(SubscriberType<String, SomeError>(
+            onValue: { string in
+                XCTAssertEqual("current value", string)
+                shouldCallClosureValue.fulfill()
+            },
+            onCompleted: { error in
+                // Different from other Reactive frameworks, Combine allows CurrentValueSubject to have an Error
+                // generic parameter different than Never, which can receive error. However, it does never propagates
+                // the error, finishing the stream successfully. It's not clear if this is a bug or it's by design,
+                // the same way it's not clear whether or not these Subjects should complete at all. Anyway, this test
+                // will be here to continuously observe this behaviour on Combine Framework and, eventually, adapt
+                // SwiftRex behaviour to possible changes.
+                XCTAssertNil(error)
+                shouldCallClosureCompletion.fulfill()
+            }
+        ))
+
+        XCTAssertEqual(sut.value(), "current value")
+        sut.subscriber.onCompleted(someError)
+
+        wait(for: [shouldCallClosureValue, shouldCallClosureCompletion], timeout: 0.1)
+    }
+
     func testDefaultReplayLastSubjectTypeOnValue() {
         let shouldCallClosureValue = expectation(description: "Closure value should be called")
 
-        let sut = ReplayLastSubjectType.reactive(initialValue: "no one cares 1")
+        let sut = ReplayLastSubjectType<String, SomeError>.combine(initialValue: "no one cares 1")
         sut.subscriber.onValue("no one cares 2")
         sut.subscriber.onValue("current value")
 
@@ -69,7 +102,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
     func testDefaultReplayLastSubjectTypeMutate() {
         let shouldCallClosureValue = expectation(description: "Closure value should be called")
 
-        let sut = ReplayLastSubjectType.reactive(initialValue: "no one cares 1")
+        let sut = ReplayLastSubjectType<String, SomeError>.combine(initialValue: "no one cares 1")
         sut.subscriber.onValue("no one cares 2")
         sut.subscriber.onValue("current value")
 
