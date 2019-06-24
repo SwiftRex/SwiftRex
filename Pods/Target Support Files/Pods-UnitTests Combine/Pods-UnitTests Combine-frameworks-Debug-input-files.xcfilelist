@@ -1,2 +1,2 @@
 ${PODS_ROOT}/Target Support Files/Pods-UnitTests Combine/Pods-UnitTests Combine-frameworks.sh
-${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework
+${BUILT_PRODUCTS_DIR}/Nimble-macOS10.15/Nimble.framework

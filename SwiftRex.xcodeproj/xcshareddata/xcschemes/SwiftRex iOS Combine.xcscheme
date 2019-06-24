@@ -28,6 +28,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       systemAttachmentLifetime = "keepNever"
+      codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES">
       <MacroExpansion>
          <BuildableReference
@@ -41,13 +42,23 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6CB206E818C00E02733"
-            BuildableName = "SwiftRexForRac.framework"
-            BlueprintName = "SwiftRex iOS ReactiveSwift"
+            BlueprintIdentifier = "D5C1C5F722BFE6AA00532BCF"
+            BuildableName = "SwiftRexForCombine.framework"
+            BlueprintName = "SwiftRex iOS Combine"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D504D31D22C1548C00B47427"
+               BuildableName = "UnitTests Combine iOS.xctest"
+               BlueprintName = "UnitTests Combine iOS"
+               ReferencedContainer = "container:SwiftRex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -67,6 +78,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D5C1C5F722BFE6AA00532BCF"
+            BuildableName = "SwiftRexForCombine.framework"
+            BlueprintName = "SwiftRex iOS Combine"
+            ReferencedContainer = "container:SwiftRex.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

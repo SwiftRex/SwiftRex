@@ -1,2 +1,2 @@
 ${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks.sh
-${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework
+${BUILT_PRODUCTS_DIR}/Nimble-macOS10.10/Nimble.framework
