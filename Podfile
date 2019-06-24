@@ -88,7 +88,12 @@ end
 ###################
 
 target 'UnitTests Combine' do
-  platform :macos, macos_version
+  platform :macos, '10.15'
+  tests
+end
+
+target 'UnitTests Combine iOS' do
+  platform :ios, '13.0'
   tests
 end
 
