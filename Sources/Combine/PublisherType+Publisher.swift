@@ -3,6 +3,7 @@ import Combine
 import Foundation
 import SwiftRex
 
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension PublisherType: Publisher {
     public typealias Output = Element
     public typealias Failure = ErrorType
@@ -23,6 +24,7 @@ extension PublisherType: Publisher {
     }
 }
 
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension Publisher {
     public func asPublisherType() -> PublisherType<Output, Failure> {
         return .init { (subscriber: SubscriberType<Output, Failure>) -> SwiftRex.Subscription in
