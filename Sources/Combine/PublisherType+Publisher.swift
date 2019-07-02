@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import Foundation
 import SwiftRex
@@ -43,3 +44,4 @@ extension Publisher {
         }
     }
 }
+#endif

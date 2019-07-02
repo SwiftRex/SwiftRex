@@ -328,6 +328,34 @@
 			remoteGlobalIDString = D5888ADA22B6E9300028B0E1;
 			remoteInfo = "SwiftRex macOS";
 		};
+		D5DDB15122CBD38D00172A99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888A6222B6E9250028B0E1;
+			remoteInfo = "SwiftRex iOS";
+		};
+		D5DDB15322CBD3CE00172A99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888ADA22B6E9300028B0E1;
+			remoteInfo = "SwiftRex macOS";
+		};
+		D5DDB15522CBD3DA00172A99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888AB222B6E92D0028B0E1;
+			remoteInfo = "SwiftRex tvOS";
+		};
+		D5DDB15722CBD3E200172A99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D5888A8A22B6E92A0028B0E1;
+			remoteInfo = "SwiftRex watchOS";
+		};
 		D5E7349C22C1598D00B0E284 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D56C6BC5206E80D0007FA63E /* Project object */;
@@ -1768,6 +1796,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D5DDB15222CBD38D00172A99 /* PBXTargetDependency */,
 			);
 			name = "SwiftRex iOS Combine";
 			productName = "SwiftRex iOS";
@@ -1787,6 +1816,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D5DDB15422CBD3CE00172A99 /* PBXTargetDependency */,
 			);
 			name = "SwiftRex macOS Combine";
 			productName = "SwiftRex macOS";
@@ -1806,6 +1836,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D5DDB15622CBD3DA00172A99 /* PBXTargetDependency */,
 			);
 			name = "SwiftRex tvOS Combine";
 			productName = "SwiftRex tvOS";
@@ -1825,6 +1856,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D5DDB15822CBD3E200172A99 /* PBXTargetDependency */,
 			);
 			name = "SwiftRex watchOS Combine";
 			productName = "SwiftRex watchOS";
@@ -3074,6 +3106,26 @@
 			isa = PBXTargetDependency;
 			target = D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */;
 			targetProxy = D5C1C64922BFE6CB00532BCF /* PBXContainerItemProxy */;
+		};
+		D5DDB15222CBD38D00172A99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888A6222B6E9250028B0E1 /* SwiftRex iOS */;
+			targetProxy = D5DDB15122CBD38D00172A99 /* PBXContainerItemProxy */;
+		};
+		D5DDB15422CBD3CE00172A99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888ADA22B6E9300028B0E1 /* SwiftRex macOS */;
+			targetProxy = D5DDB15322CBD3CE00172A99 /* PBXContainerItemProxy */;
+		};
+		D5DDB15622CBD3DA00172A99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888AB222B6E92D0028B0E1 /* SwiftRex tvOS */;
+			targetProxy = D5DDB15522CBD3DA00172A99 /* PBXContainerItemProxy */;
+		};
+		D5DDB15822CBD3E200172A99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D5888A8A22B6E92A0028B0E1 /* SwiftRex watchOS */;
+			targetProxy = D5DDB15722CBD3E200172A99 /* PBXContainerItemProxy */;
 		};
 		D5E7349D22C1598D00B0E284 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
