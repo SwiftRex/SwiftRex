@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import Foundation
 import SwiftRex
@@ -21,3 +22,4 @@ extension ReplayLastSubjectType {
         return .init(currentValueSubject: currentValueSubject)
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import Foundation
 import SwiftRex
@@ -22,3 +23,4 @@ extension SwiftRex.SubjectType {
         return .init(passthroughSubject: passthroughSubject)
     }
 }
+#endif

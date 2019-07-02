@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import Foundation
 import SwiftRex
@@ -39,3 +40,4 @@ public class CancellableSubscription: Cancellable, SwiftRex.Subscription, Combin
         cancellable.cancel()
     }
 }
+#endif
