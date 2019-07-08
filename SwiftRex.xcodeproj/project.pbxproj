@@ -17,14 +17,14 @@
 		CC4D494F5F3BC1DC3CB39DEB /* Pods_UnitTests_Combine_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E1290710B43E58E0A33DE4F /* Pods_UnitTests_Combine_iOS.framework */; };
 		CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
 		D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
-		D504D32322C1548D00B47427 /* SwiftRexForCombine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5C1C60922BFE6AA00532BCF /* SwiftRexForCombine.framework */; };
+		D504D32322C1548D00B47427 /* CombineRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5C1C60922BFE6AA00532BCF /* CombineRex.framework */; };
 		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
 		D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
 		D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACE22BE922600BE6679 /* FooSubscription.swift */; };
 		D507CAD022BE967B00BE6679 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
-		D507CAD122BE967B00BE6679 /* SwiftRexForRx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */; };
+		D507CAD122BE967B00BE6679 /* RxSwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D532CA97223EC30700AB13EF /* RxSwiftRex.framework */; };
 		D507CAD222BE969600BE6679 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
-		D507CAD322BE969600BE6679 /* SwiftRexForRac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */; };
+		D507CAD322BE969600BE6679 /* ReactiveSwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D595F6F4206E81C900E02733 /* ReactiveSwiftRex.framework */; };
 		D51A223D22BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224222BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224722BFFC2600194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
@@ -68,6 +68,8 @@
 		D57820C222BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
 		D57820C722BAFB600065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
 		D57820CC22BAFB610065E44D /* PublisherType+SignalProducerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57820B922BAFB480065E44D /* PublisherType+SignalProducerProtocol.swift */; };
+		D582133822D3F20000BF4BE2 /* BlockPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D582133722D3F20000BF4BE2 /* BlockPublisher.swift */; };
+		D582133922D3F20000BF4BE2 /* BlockPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D582133722D3F20000BF4BE2 /* BlockPublisher.swift */; };
 		D5888A6622B6E9250028B0E1 /* SideEffectMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* SideEffectMiddleware.swift */; };
 		D5888A6822B6E9250028B0E1 /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D5888A6922B6E9250028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
@@ -166,7 +168,7 @@
 		D598492E22C023CD00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223422BFF1EA00194408 /* ReplayLastSubjectType+BehaviorSubject.swift */; };
 		D598492F22C023CE00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223422BFF1EA00194408 /* ReplayLastSubjectType+BehaviorSubject.swift */; };
 		D598493022C023CF00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223422BFF1EA00194408 /* ReplayLastSubjectType+BehaviorSubject.swift */; };
-		D599F5EB22BFECEF00295090 /* SwiftRexForCombine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */; };
+		D599F5EB22BFECEF00295090 /* CombineRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5C1C61D22BFE6B300532BCF /* CombineRex.framework */; };
 		D5A022B022BED5C600797438 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */; };
 		D5A022BA22BED8B000797438 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5A022BB22BED8B000797438 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
@@ -414,10 +416,10 @@
 		D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.ReactiveSwift.swift; sourceTree = "<group>"; };
 		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
 		D532CA03223EC29500AB13EF /* UnitTests RxSwift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests RxSwift.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA28223EC2C900AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA4D223EC2DF00AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA72223EC2F500AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA28223EC2C900AB13EF /* RxSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA4D223EC2DF00AB13EF /* RxSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA72223EC2F500AB13EF /* RxSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D532CA97223EC30700AB13EF /* RxSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D532CAAD223ECA5900AB13EF /* SwiftRex-RxSwift-Release-macOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift-Release-macOS.xcconfig"; sourceTree = "<group>"; };
 		D532CAAE223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-watchOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift-Debug-watchOS.xcconfig"; sourceTree = "<group>"; };
 		D532CAAF223ECA5900AB13EF /* SwiftRex-RxSwift-Debug-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift-Debug-iOS.xcconfig"; sourceTree = "<group>"; };
@@ -468,6 +470,7 @@
 		D57820BC22BAFB490065E44D /* ReplayLastSubjectType+MutableProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReplayLastSubjectType+MutableProperty.swift"; sourceTree = "<group>"; };
 		D578B289208A690C0035AE9C /* UnitTests ReactiveSwift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests ReactiveSwift.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D578B28D208A690C0035AE9C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D582133722D3F20000BF4BE2 /* BlockPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockPublisher.swift; sourceTree = "<group>"; };
 		D5866FC6208AD53B00507523 /* Monoid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monoid.swift; sourceTree = "<group>"; };
 		D5888A5022B6A4690028B0E1 /* MessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageHandler.swift; sourceTree = "<group>"; };
 		D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappers.swift; sourceTree = "<group>"; };
@@ -486,10 +489,10 @@
 		D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests SwiftRex.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5888B7022B6F2D80028B0E1 /* UnitTests-SwiftRex-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Debug.xcconfig"; sourceTree = "<group>"; };
 		D5888B7122B6F2EA0028B0E1 /* UnitTests-SwiftRex-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Release.xcconfig"; sourceTree = "<group>"; };
-		D595F6CC206E818C00E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D595F6DA206E81AE00E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D595F6E7206E81B900E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForRac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6CC206E818C00E02733 /* ReactiveSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6DA206E81AE00E02733 /* ReactiveSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6E7206E81B900E02733 /* ReactiveSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D595F6F4206E81C900E02733 /* ReactiveSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D59D57E6207AA1B40010412E /* Reducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reducer.swift; sourceTree = "<group>"; };
 		D59D57E7207AA1B40010412E /* EventProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventProtocol.swift; sourceTree = "<group>"; };
 		D59D57E8207AA1B40010412E /* ActionProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionProtocol.swift; sourceTree = "<group>"; };
@@ -548,10 +551,10 @@
 		D5C1C5F122BFD56E00532BCF /* SubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5C1C5F322BFDBBD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplayLastSubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5C1C5F522BFDFAD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayLastSubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
-		D5C1C60922BFE6AA00532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D5C1C63122BFE6BA00532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D5C1C64522BFE6C300532BCF /* SwiftRexForCombine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRexForCombine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C60922BFE6AA00532BCF /* CombineRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CombineRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C61D22BFE6B300532BCF /* CombineRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CombineRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C63122BFE6BA00532BCF /* CombineRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CombineRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5C1C64522BFE6C300532BCF /* CombineRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CombineRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C1C65E22BFE6CB00532BCF /* UnitTests Combine.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests Combine.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftRexForCombine.h; sourceTree = "<group>"; };
 		D5C1C66A22BFE93B00532BCF /* SwiftRex-Combine.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine.xcconfig"; sourceTree = "<group>"; };
@@ -595,7 +598,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D504D32322C1548D00B47427 /* SwiftRexForCombine.framework in Frameworks */,
+				D504D32322C1548D00B47427 /* CombineRex.framework in Frameworks */,
 				CC4D494F5F3BC1DC3CB39DEB /* Pods_UnitTests_Combine_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -605,7 +608,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D507CAD022BE967B00BE6679 /* SwiftRex.framework in Frameworks */,
-				D507CAD122BE967B00BE6679 /* SwiftRexForRx.framework in Frameworks */,
+				D507CAD122BE967B00BE6679 /* RxSwiftRex.framework in Frameworks */,
 				9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -651,7 +654,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D507CAD222BE969600BE6679 /* SwiftRex.framework in Frameworks */,
-				D507CAD322BE969600BE6679 /* SwiftRexForRac.framework in Frameworks */,
+				D507CAD322BE969600BE6679 /* ReactiveSwiftRex.framework in Frameworks */,
 				8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -765,7 +768,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D599F5EB22BFECEF00295090 /* SwiftRexForCombine.framework in Frameworks */,
+				D599F5EB22BFECEF00295090 /* CombineRex.framework in Frameworks */,
 				D5C1C65622BFE6CB00532BCF /* SwiftRex.framework in Frameworks */,
 				A7044E35603B910F5388C5C5 /* Pods_UnitTests_Combine.framework in Frameworks */,
 			);
@@ -1052,25 +1055,25 @@
 		D595F6CD206E818C00E02733 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D595F6CC206E818C00E02733 /* SwiftRexForRac.framework */,
-				D595F6DA206E81AE00E02733 /* SwiftRexForRac.framework */,
-				D595F6E7206E81B900E02733 /* SwiftRexForRac.framework */,
-				D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */,
+				D595F6CC206E818C00E02733 /* ReactiveSwiftRex.framework */,
+				D595F6DA206E81AE00E02733 /* ReactiveSwiftRex.framework */,
+				D595F6E7206E81B900E02733 /* ReactiveSwiftRex.framework */,
+				D595F6F4206E81C900E02733 /* ReactiveSwiftRex.framework */,
 				D578B289208A690C0035AE9C /* UnitTests ReactiveSwift.xctest */,
 				D532CA03223EC29500AB13EF /* UnitTests RxSwift.xctest */,
-				D532CA28223EC2C900AB13EF /* SwiftRexForRx.framework */,
-				D532CA4D223EC2DF00AB13EF /* SwiftRexForRx.framework */,
-				D532CA72223EC2F500AB13EF /* SwiftRexForRx.framework */,
-				D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */,
+				D532CA28223EC2C900AB13EF /* RxSwiftRex.framework */,
+				D532CA4D223EC2DF00AB13EF /* RxSwiftRex.framework */,
+				D532CA72223EC2F500AB13EF /* RxSwiftRex.framework */,
+				D532CA97223EC30700AB13EF /* RxSwiftRex.framework */,
 				D5888A8822B6E9250028B0E1 /* SwiftRex.framework */,
 				D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */,
 				D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */,
 				D5888B0022B6E9300028B0E1 /* SwiftRex.framework */,
 				D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */,
-				D5C1C60922BFE6AA00532BCF /* SwiftRexForCombine.framework */,
-				D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */,
-				D5C1C63122BFE6BA00532BCF /* SwiftRexForCombine.framework */,
-				D5C1C64522BFE6C300532BCF /* SwiftRexForCombine.framework */,
+				D5C1C60922BFE6AA00532BCF /* CombineRex.framework */,
+				D5C1C61D22BFE6B300532BCF /* CombineRex.framework */,
+				D5C1C63122BFE6BA00532BCF /* CombineRex.framework */,
+				D5C1C64522BFE6C300532BCF /* CombineRex.framework */,
 				D5C1C65E22BFE6CB00532BCF /* UnitTests Combine.xctest */,
 				D504D31E22C1548C00B47427 /* UnitTests Combine iOS.xctest */,
 			);
@@ -1295,6 +1298,7 @@
 		D5E7349822C1567200B0E284 /* Bridge */ = {
 			isa = PBXGroup;
 			children = (
+				D582133722D3F20000BF4BE2 /* BlockPublisher.swift */,
 				D5E734A322C15AA300B0E284 /* PublisherTypeBridgeTests.swift */,
 				D5E734A422C15AA400B0E284 /* ReplayLastSubjectTypeBridgeTests.swift */,
 				D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */,
@@ -1523,7 +1527,7 @@
 			);
 			name = "SwiftRex iOS RxSwift";
 			productName = "SwiftRex iOS";
-			productReference = D532CA28223EC2C900AB13EF /* SwiftRexForRx.framework */;
+			productReference = D532CA28223EC2C900AB13EF /* RxSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D532CA2A223EC2DF00AB13EF /* SwiftRex watchOS RxSwift */ = {
@@ -1543,7 +1547,7 @@
 			);
 			name = "SwiftRex watchOS RxSwift";
 			productName = "SwiftRex watchOS";
-			productReference = D532CA4D223EC2DF00AB13EF /* SwiftRexForRx.framework */;
+			productReference = D532CA4D223EC2DF00AB13EF /* RxSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D532CA4F223EC2F500AB13EF /* SwiftRex tvOS RxSwift */ = {
@@ -1563,7 +1567,7 @@
 			);
 			name = "SwiftRex tvOS RxSwift";
 			productName = "SwiftRex tvOS";
-			productReference = D532CA72223EC2F500AB13EF /* SwiftRexForRx.framework */;
+			productReference = D532CA72223EC2F500AB13EF /* RxSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D532CA74223EC30700AB13EF /* SwiftRex macOS RxSwift */ = {
@@ -1583,7 +1587,7 @@
 			);
 			name = "SwiftRex macOS RxSwift";
 			productName = "SwiftRex macOS";
-			productReference = D532CA97223EC30700AB13EF /* SwiftRexForRx.framework */;
+			productReference = D532CA97223EC30700AB13EF /* RxSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D578B288208A690C0035AE9C /* UnitTests ReactiveSwift */ = {
@@ -1720,7 +1724,7 @@
 			);
 			name = "SwiftRex iOS ReactiveSwift";
 			productName = "SwiftRex iOS";
-			productReference = D595F6CC206E818C00E02733 /* SwiftRexForRac.framework */;
+			productReference = D595F6CC206E818C00E02733 /* ReactiveSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D595F6D9206E81AE00E02733 /* SwiftRex watchOS ReactiveSwift */ = {
@@ -1740,7 +1744,7 @@
 			);
 			name = "SwiftRex watchOS ReactiveSwift";
 			productName = "SwiftRex watchOS";
-			productReference = D595F6DA206E81AE00E02733 /* SwiftRexForRac.framework */;
+			productReference = D595F6DA206E81AE00E02733 /* ReactiveSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D595F6E6206E81B900E02733 /* SwiftRex tvOS ReactiveSwift */ = {
@@ -1760,7 +1764,7 @@
 			);
 			name = "SwiftRex tvOS ReactiveSwift";
 			productName = "SwiftRex tvOS";
-			productReference = D595F6E7206E81B900E02733 /* SwiftRexForRac.framework */;
+			productReference = D595F6E7206E81B900E02733 /* ReactiveSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D595F6F3206E81C900E02733 /* SwiftRex macOS ReactiveSwift */ = {
@@ -1780,7 +1784,7 @@
 			);
 			name = "SwiftRex macOS ReactiveSwift";
 			productName = "SwiftRex macOS";
-			productReference = D595F6F4206E81C900E02733 /* SwiftRexForRac.framework */;
+			productReference = D595F6F4206E81C900E02733 /* ReactiveSwiftRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D5C1C5F722BFE6AA00532BCF /* SwiftRex iOS Combine */ = {
@@ -1800,7 +1804,7 @@
 			);
 			name = "SwiftRex iOS Combine";
 			productName = "SwiftRex iOS";
-			productReference = D5C1C60922BFE6AA00532BCF /* SwiftRexForCombine.framework */;
+			productReference = D5C1C60922BFE6AA00532BCF /* CombineRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D5C1C60B22BFE6B300532BCF /* SwiftRex macOS Combine */ = {
@@ -1820,7 +1824,7 @@
 			);
 			name = "SwiftRex macOS Combine";
 			productName = "SwiftRex macOS";
-			productReference = D5C1C61D22BFE6B300532BCF /* SwiftRexForCombine.framework */;
+			productReference = D5C1C61D22BFE6B300532BCF /* CombineRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D5C1C61F22BFE6BA00532BCF /* SwiftRex tvOS Combine */ = {
@@ -1840,7 +1844,7 @@
 			);
 			name = "SwiftRex tvOS Combine";
 			productName = "SwiftRex tvOS";
-			productReference = D5C1C63122BFE6BA00532BCF /* SwiftRexForCombine.framework */;
+			productReference = D5C1C63122BFE6BA00532BCF /* CombineRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D5C1C63322BFE6C300532BCF /* SwiftRex watchOS Combine */ = {
@@ -1860,7 +1864,7 @@
 			);
 			name = "SwiftRex watchOS Combine";
 			productName = "SwiftRex watchOS";
-			productReference = D5C1C64522BFE6C300532BCF /* SwiftRexForCombine.framework */;
+			productReference = D5C1C64522BFE6C300532BCF /* CombineRex.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D5C1C64722BFE6CB00532BCF /* UnitTests Combine */ = {
@@ -2708,6 +2712,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D582133922D3F20000BF4BE2 /* BlockPublisher.swift in Sources */,
 				D5E734B222C15F8D00B0E284 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D5E734B322C17DDA00B0E284 /* PublisherTypeBridgeTests.swift in Sources */,
 				D5E7349F22C15A1B00B0E284 /* SomeError.swift in Sources */,
@@ -3054,6 +3059,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D582133822D3F20000BF4BE2 /* BlockPublisher.swift in Sources */,
 				D5E734B122C15F8C00B0E284 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D5E734B422C17DDB00B0E284 /* PublisherTypeBridgeTests.swift in Sources */,
 				D5E734A122C15A1C00B0E284 /* SomeError.swift in Sources */,

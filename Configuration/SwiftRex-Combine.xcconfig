@@ -1,5 +1,5 @@
-PRODUCT_NAME = SwiftRexForCombine
-PRODUCT_BUNDLE_IDENTIFIER = de.developercity.SwiftRex.Combine
+PRODUCT_NAME = CombineRex
+PRODUCT_BUNDLE_IDENTIFIER = de.developercity.SwiftRex.CombineRex
 
 // Minimum OS Version
 IPHONEOS_DEPLOYMENT_TARGET = 13.0

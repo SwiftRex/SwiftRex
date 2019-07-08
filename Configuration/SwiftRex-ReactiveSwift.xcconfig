@@ -1,2 +1,2 @@
-PRODUCT_NAME = SwiftRexForRac
-PRODUCT_BUNDLE_IDENTIFIER = de.developercity.SwiftRex.ReactiveSwift
+PRODUCT_NAME = ReactiveSwiftRex
+PRODUCT_BUNDLE_IDENTIFIER = de.developercity.SwiftRex.ReactiveSwiftRex

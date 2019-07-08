@@ -1,10 +1,3 @@
-//
-//  TypeErasureTests.swift
-//  SwiftRex
-//
-//  Created by Luiz Rodrigo Martins Barbosa on 22.06.19.
-//
-
 import Foundation
 import Nimble
 @testable import SwiftRex

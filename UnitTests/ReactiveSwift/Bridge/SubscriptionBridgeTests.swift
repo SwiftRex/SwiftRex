@@ -1,6 +1,6 @@
 import ReactiveSwift
+import ReactiveSwiftRex
 import SwiftRex
-import SwiftRexForRac
 import XCTest
 
 class SubscriptionBridgeTests: XCTestCase {

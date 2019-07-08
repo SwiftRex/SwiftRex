@@ -1,6 +1,6 @@
 import Combine
+import CombineRex
 import SwiftRex
-import SwiftRexForCombine
 import XCTest
 
 class ReplayLastSubjectTypeBridgeTests: XCTestCase {
@@ -58,7 +58,12 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
                 // the same way it's not clear whether or not these Subjects should complete at all. Anyway, this test
                 // will be here to continuously observe this behaviour on Combine Framework and, eventually, adapt
                 // SwiftRex behaviour to possible changes.
-                XCTAssertNil(error)
+                // XCTAssertNil(error)
+
+                // Update 08/July/2019: Yes, it was a bug. Will keep this comment here until the official release
+
+                XCTAssertEqual(someError, error)
+
                 shouldCallClosureCompletion.fulfill()
             }
         ))

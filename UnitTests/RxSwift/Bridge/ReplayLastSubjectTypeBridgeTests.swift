@@ -1,6 +1,6 @@
 import RxSwift
+import RxSwiftRex
 import SwiftRex
-import SwiftRexForRx
 import XCTest
 
 class ReplayLastSubjectTypeBridgeTests: XCTestCase {
