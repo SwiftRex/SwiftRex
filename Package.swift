@@ -4,10 +4,9 @@ import PackageDescription
 let package = Package(
     name: "SwiftRex",
     products: [
-        .library(name: "SwiftRex", targets: ["SwiftRex"]),
-        .library(name: "SwiftRexForCombine", targets: ["SwiftRexForCombine"]),
-        .library(name: "SwiftRexForRac", targets: ["SwiftRexForRac"]),
-        .library(name: "SwiftRexForRx", targets: ["SwiftRexForRx"])
+        .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"]),
+        .library(name: "ReactiveSwiftRex", targets: ["SwiftRex", "ReactiveSwiftRex"]),
+        .library(name: "RxSwiftRex", targets: ["SwiftRex", "RxSwiftRex"])
     ],
     dependencies: [
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", .exact("6.0.0")),
@@ -15,9 +14,9 @@ let package = Package(
     ],
     targets: [
         .target(name: "SwiftRex", dependencies: [], path: "Sources/Common"),
-        .target(name: "SwiftRexForCombine", dependencies: ["SwiftRex"], path: "Sources/Combine"),
-        .target(name: "SwiftRexForRac", dependencies: ["SwiftRex", "ReactiveSwift"], path: "Sources/ReactiveSwift"),
-        .target(name: "SwiftRexForRx", dependencies: ["SwiftRex", "RxSwift"], path: "Sources/RxSwift")
+        .target(name: "CombineRex", dependencies: ["SwiftRex"], path: "Sources/Combine"),
+        .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"], path: "Sources/ReactiveSwift"),
+        .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"], path: "Sources/RxSwift")
     ],
     swiftLanguageVersions: [.v5]
 )
