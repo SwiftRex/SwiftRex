@@ -1,6 +1,6 @@
 import Combine
+import CombineRex
 import SwiftRex
-import SwiftRexForCombine
 import XCTest
 
 class SubscriptionBridgeTests: XCTestCase {

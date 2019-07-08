@@ -1,7 +1,7 @@
 import Nimble
 import ReactiveSwift
+import ReactiveSwiftRex
 import SwiftRex
-import SwiftRexForRac
 import XCTest
 
 class SubscriberTypeBridgeTests: XCTestCase {

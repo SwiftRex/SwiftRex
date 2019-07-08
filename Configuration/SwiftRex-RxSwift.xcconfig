@@ -1,2 +1,2 @@
-PRODUCT_NAME = SwiftRexForRx
-PRODUCT_BUNDLE_IDENTIFIER = de.developercity.SwiftRex.RxSwift
+PRODUCT_NAME = RxSwiftRex
+PRODUCT_BUNDLE_IDENTIFIER = de.developercity.SwiftRex.RxSwiftRex

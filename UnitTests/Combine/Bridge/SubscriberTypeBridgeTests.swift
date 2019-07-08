@@ -1,7 +1,7 @@
 import Combine
+import CombineRex
 import Nimble
 import SwiftRex
-import SwiftRexForCombine
 import XCTest
 
 class SubscriberTypeBridgeTests: XCTestCase {
@@ -9,7 +9,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureCompleted = expectation(description: "Closure should be called")
 
-        let publisher = AnyPublisher<String, SomeError> { subscriber in
+        let publisher = BlockPublisher<String, SomeError> { subscriber in
             _ = subscriber.receive("test")
             subscriber.receive(completion: .finished)
         }
@@ -37,7 +37,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
         let shouldCallClosureError = expectation(description: "Closure should be called")
         let someError = SomeError()
 
-        let publisher = AnyPublisher<String, SomeError> { subscriber in
+        let publisher = BlockPublisher<String, SomeError> { subscriber in
             _ = subscriber.receive("test")
             subscriber.receive(completion: .failure(someError))
         }
