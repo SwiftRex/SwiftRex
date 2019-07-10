@@ -27,7 +27,7 @@ extension PublisherType: SignalProducerProtocol, SignalProducerConvertible {
 extension SignalProducerProtocol {
     public func asPublisher() -> PublisherType<Value, Self.Error> {
         return PublisherType<Value, Self.Error> { subscriber in
-            DisposableSubscription(disposable: self.producer.start(subscriber.asObserver()))
+            self.producer.start(subscriber.asObserver()).asSubscription()
         }
     }
 }

@@ -3,35 +3,45 @@ import ReactiveSwift
 import SwiftRex
 
 extension Subscription {
-    public func asDisposable() -> DisposableSubscription {
+    public func asDisposable() -> Disposable {
+        if let disposable = self as? Disposable { return disposable }
         return DisposableSubscription(subscription: self)
-    }
-
-    public func disposed(by lifetime: Lifetime) {
-        let disposable: Disposable = self.asDisposable()
-        lifetime += disposable
     }
 }
 
-public class DisposableSubscription: Disposable, Subscription {
-    let disposable: Disposable
-    public var isDisposed: Bool { return disposable.isDisposed }
+extension Disposable {
+    public func asSubscription() -> Subscription {
+        if let subscription = self as? Subscription { return subscription }
+        return DisposableSubscription(disposable: self)
+    }
+}
 
-    public init(disposable: Disposable) {
+private class DisposableSubscription: Disposable, Subscription {
+    let disposable: Disposable
+    var isDisposed: Bool { return disposable.isDisposed }
+
+    init(disposable: Disposable) {
         self.disposable = disposable
     }
 
-    public init(subscription: Subscription) {
+    init(subscription: Subscription) {
         self.disposable = AnyDisposable {
             subscription.unsubscribe()
         }
     }
 
-    public func unsubscribe() {
+    func unsubscribe() {
         disposable.dispose()
     }
 
-    public func dispose() {
+    func dispose() {
         disposable.dispose()
+    }
+}
+
+extension Lifetime: SubscriptionCollection {
+    public func append(subscription: Subscription) {
+        let disposable = subscription.asDisposable()
+        self += disposable
     }
 }

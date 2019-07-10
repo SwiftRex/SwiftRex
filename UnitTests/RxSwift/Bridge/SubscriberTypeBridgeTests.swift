@@ -71,7 +71,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
         let publisherType = PublisherType<String, Error> { subscriber in
             subscriber.onValue("test")
             subscriber.onCompleted()
-            return FooSubscription()
+            return FooSubscription { }
         }
 
         _ = publisherType.subscribe(AnyObserver<String> { event in
@@ -97,7 +97,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
         let publisherType = PublisherType<String, Error> { subscriber in
             subscriber.onValue("test")
             subscriber.onCompleted(someError)
-            return FooSubscription()
+            return FooSubscription { }
         }
 
         _ = publisherType.subscribe(AnyObserver<String> { event in

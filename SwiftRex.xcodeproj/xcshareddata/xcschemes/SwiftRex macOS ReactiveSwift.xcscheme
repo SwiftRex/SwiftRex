@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D595F6F3206E81C900E02733"
-               BuildableName = "SwiftRexForRac.framework"
+               BuildableName = "ReactiveSwiftRex.framework"
                BlueprintName = "SwiftRex macOS ReactiveSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -35,7 +35,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D595F6F3206E81C900E02733"
-            BuildableName = "SwiftRexForRac.framework"
+            BuildableName = "ReactiveSwiftRex.framework"
             BlueprintName = "SwiftRex macOS ReactiveSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
@@ -44,7 +44,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D595F6F3206E81C900E02733"
-            BuildableName = "SwiftRexForRac.framework"
+            BuildableName = "ReactiveSwiftRex.framework"
             BlueprintName = "SwiftRex macOS ReactiveSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
@@ -76,7 +76,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D595F6F3206E81C900E02733"
-            BuildableName = "SwiftRexForRac.framework"
+            BuildableName = "ReactiveSwiftRex.framework"
             BlueprintName = "SwiftRex macOS ReactiveSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
@@ -92,7 +92,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D595F6F3206E81C900E02733"
-            BuildableName = "SwiftRexForRac.framework"
+            BuildableName = "ReactiveSwiftRex.framework"
             BlueprintName = "SwiftRex macOS ReactiveSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>

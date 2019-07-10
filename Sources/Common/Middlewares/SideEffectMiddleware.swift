@@ -26,7 +26,7 @@ public protocol SideEffectMiddleware: Middleware {
     var allowEventToPropagate: Bool { get }
 
     /// A bag that owns the lifetime of each `SideEffectProducer` observation, usually this `SubscriptionOwner` will be a stored property in the `SideEffectMiddleware` instance
-    var subscription: Subscription { get set }
+    var subscriptionCollection: SubscriptionCollection { get set }
 
     /// Maps the incoming event to the proper `SideEffectProducer`, wrapped in a type-eraser `AnySideEffectProducer`
     func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<StateType>?
@@ -46,7 +46,7 @@ extension SideEffectMiddleware {
             return
         }
 
-        self.subscription = sideEffect
+        sideEffect
             .execute(getState: getState)
             .subscribe(
                 SubscriberType(
@@ -59,6 +59,7 @@ extension SideEffectMiddleware {
                     }
                 )
             )
+            .cancelled(by: &subscriptionCollection)
 
         guard allowEventToPropagate else { return }
 

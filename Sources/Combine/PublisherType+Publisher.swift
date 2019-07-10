@@ -42,7 +42,7 @@ extension Publisher {
                 }
             )
 
-            return CancellableSubscription(cancellable: cancellable)
+            return cancellable.asSubscription()
         }
     }
 }

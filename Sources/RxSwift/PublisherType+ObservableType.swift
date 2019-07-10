@@ -23,7 +23,7 @@ extension PublisherType: ObservableConvertibleType, ObservableType {
 extension ObservableType {
     public func asPublisher() -> PublisherType<Element, Error> {
         return .init { (subscriber: SubscriberType<Element, Error>) -> Subscription in
-            DisposableSubscription(disposable: self.subscribe(subscriber.asObserver()))
+            self.subscribe(subscriber.asObserver()).asSubscription()
         }
     }
 }

@@ -42,6 +42,20 @@ public protocol Subscription {
     func unsubscribe()
 }
 
+extension Subscription {
+    public func cancelled<SC: SubscriptionCollection>(by subscriptionCollection: inout SC) {
+        subscriptionCollection.append(subscription: self)
+    }
+
+    public func cancelled(by subscriptionCollection: inout SubscriptionCollection) {
+        subscriptionCollection.append(subscription: self)
+    }
+}
+
+public protocol SubscriptionCollection {
+    mutating func append(subscription: Subscription)
+}
+
 public struct SubjectType<Element, ErrorType: Error> {
     public let publisher: PublisherType<Element, ErrorType>
     public let subscriber: SubscriberType<Element, ErrorType>

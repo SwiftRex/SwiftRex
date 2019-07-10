@@ -28,6 +28,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
 
         let messageHandler = MessageHandlerMock()
         sut.handlers = messageHandler.value
+        sut.underlyingSubscriptionCollection = FooSubscriptionCollection()
         let state = TestState()
         let getState = { state }
         let event = EventReference()
@@ -61,6 +62,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
 
         let messageHandler = MessageHandlerMock()
         sut.handlers = messageHandler.value
+        sut.underlyingSubscriptionCollection = FooSubscriptionCollection()
         let state = TestState()
         let getState = { state }
         let event = EventReference()
@@ -90,6 +92,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
 
         let messageHandler = MessageHandlerMock()
         sut.handlers = messageHandler.value
+        sut.underlyingSubscriptionCollection = FooSubscriptionCollection()
         let state = TestState()
         let getState = { state }
         let event = EventReference()
@@ -118,6 +121,7 @@ class SideEffectMiddlewareTests: MiddlewareTestsBase {
 
         let messageHandler = MessageHandlerMock()
         sut.handlers = messageHandler.value
+        sut.underlyingSubscriptionCollection = FooSubscriptionCollection()
         let state = TestState()
         let getState = { state }
         let event = EventReference()

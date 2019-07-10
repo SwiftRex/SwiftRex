@@ -278,4 +278,21 @@ class ReactiveWrappersTests: XCTestCase {
         XCTAssertEqual("*constant*", oldValueDecorated)
         wait(for: [shouldCallClosure], timeout: 0.1)
     }
+
+    func testSubscriptionCollectionAppend() {
+        let mockSubscriptionCollection = FooSubscriptionCollection()
+        var subscriptionCollection: SubscriptionCollection = mockSubscriptionCollection
+        let subscription = FooSubscription()
+        subscription.cancelled(by: &subscriptionCollection)
+        XCTAssertEqual(1, mockSubscriptionCollection.appendCalls)
+        XCTAssert(subscription === mockSubscriptionCollection.appendSubscriptionSubscription as? FooSubscription)
+    }
+
+    func testGenericSubscriptionCollectionAppend() {
+        var mockSubscriptionCollection = FooSubscriptionCollection()
+        let subscription = FooSubscription()
+        subscription.cancelled(by: &mockSubscriptionCollection)
+        XCTAssertEqual(1, mockSubscriptionCollection.appendCalls)
+        XCTAssert(subscription === mockSubscriptionCollection.appendSubscriptionSubscription as? FooSubscription)
+    }
 }

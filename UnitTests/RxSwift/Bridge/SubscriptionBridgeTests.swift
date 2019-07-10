@@ -4,54 +4,14 @@ import SwiftRex
 import XCTest
 
 class SubscriptionBridgeTests: XCTestCase {
-    struct FooSubscription: Subscription {
-        let onUnsubscribe: () -> Void
-        func unsubscribe() { onUnsubscribe() }
-    }
-
-    func testDisposableSubscriptionInitFromDisposableDispose() {
+    func testDisposableToSubscriptionUnsubscribe() {
         let shouldBeDisposed = expectation(description: "should be disposed")
+
         let disposable = Disposables.create {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = DisposableSubscription(disposable: disposable)
-        sut.dispose()
-
-        wait(for: [shouldBeDisposed], timeout: 0.1)
-    }
-
-    func testDisposableSubscriptionInitFromDisposableUnsubscribe() {
-        let shouldBeDisposed = expectation(description: "should be disposed")
-        let disposable = Disposables.create {
-            shouldBeDisposed.fulfill()
-        }
-
-        let sut = DisposableSubscription(disposable: disposable)
-        sut.unsubscribe()
-
-        wait(for: [shouldBeDisposed], timeout: 0.1)
-    }
-
-    func testDisposableSubscriptionInitFromSubscriptionDispose() {
-        let shouldBeDisposed = expectation(description: "should be disposed")
-        let subscription = FooSubscription {
-            shouldBeDisposed.fulfill()
-        }
-
-        let sut = DisposableSubscription(subscription: subscription)
-        sut.dispose()
-
-        wait(for: [shouldBeDisposed], timeout: 0.1)
-    }
-
-    func testDisposableSubscriptionInitFromSubscriptionUnsubscribe() {
-        let shouldBeDisposed = expectation(description: "should be disposed")
-        let subscription = FooSubscription {
-            shouldBeDisposed.fulfill()
-        }
-
-        let sut = DisposableSubscription(subscription: subscription)
+        let sut = disposable.asSubscription()
         sut.unsubscribe()
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
@@ -69,27 +29,43 @@ class SubscriptionBridgeTests: XCTestCase {
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
 
-    func testSubscriptionToDisposableUnsubscribe() {
+    func testDisposableToSubscriptionToDisposableDispose() {
+        let shouldBeDisposed = expectation(description: "should be disposed")
+
+        let disposable = Disposables.create {
+            shouldBeDisposed.fulfill()
+        }
+
+        let sut = disposable.asSubscription().asDisposable()
+        sut.dispose()
+
+        wait(for: [shouldBeDisposed], timeout: 0.1)
+    }
+
+    func testSubscriptionToDisposableToSubscriptionUnsubscribe() {
         let shouldBeDisposed = expectation(description: "should be disposed")
         let subscription = FooSubscription {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = subscription.asDisposable()
+        let sut = subscription.asDisposable().asSubscription()
         sut.unsubscribe()
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
 
-    func testSubscriptionDisposedByDisposeBag() {
+    func testSubscriptionCollectionAppend() {
         let shouldBeDisposed = expectation(description: "should be disposed")
-        let subscription = FooSubscription {
+
+        let disposable = Disposables.create {
             shouldBeDisposed.fulfill()
         }
-        var disposeBag: DisposeBag? = .init()
 
-        subscription.disposed(by: disposeBag!)
-        disposeBag = nil
+        let subscription = disposable.asSubscription()
+        var sut: DisposeBag? = DisposeBag()
+        subscription.cancelled(by: &sut!)
+
+        sut = nil
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
