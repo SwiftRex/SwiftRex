@@ -22,6 +22,6 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target      = '13.0'
   s.swift_version               = '5.1'
 
-  s.source_files = "Sources/Combine/"
+  s.source_files = "Sources/Combine/**/*.swift"
   s.dependency 'SwiftRex'
 end
