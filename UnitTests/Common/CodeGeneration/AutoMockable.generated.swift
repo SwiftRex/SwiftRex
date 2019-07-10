@@ -62,11 +62,11 @@ class SideEffectMiddlewareMock<StateType>: SideEffectMiddleware {
         set(value) { underlyingAllowEventToPropagate = value }
     }
     var underlyingAllowEventToPropagate: Bool!
-    var subscription: Subscription {
-        get { return underlyingSubscription }
-        set(value) { underlyingSubscription = value }
+    var subscriptionCollection: SubscriptionCollection {
+        get { return underlyingSubscriptionCollection }
+        set(value) { underlyingSubscriptionCollection = value }
     }
-    var underlyingSubscription: Subscription!
+    var underlyingSubscriptionCollection: SubscriptionCollection!
     var handlers: MessageHandler!
 
     //MARK: - sideEffect

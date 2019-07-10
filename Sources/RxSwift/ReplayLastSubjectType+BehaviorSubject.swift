@@ -2,16 +2,6 @@ import Foundation
 import RxSwift
 import SwiftRex
 
-extension ReplayLastSubjectType where ErrorType == Error {
-    public init(behaviorSubject: BehaviorSubject<Element>) {
-        self.init(
-            publisher: behaviorSubject.asPublisher(),
-            subscriber: behaviorSubject.asSubscriber(),
-            value: { try! behaviorSubject.value() }
-        )
-    }
-}
-
 extension ReplayLastSubjectType where ErrorType == Never {
     public init(behaviorSubject: BehaviorSubject<Element>) {
         self.init(

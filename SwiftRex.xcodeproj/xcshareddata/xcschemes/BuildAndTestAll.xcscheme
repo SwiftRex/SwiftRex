@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D595F6CB206E818C00E02733"
-               BuildableName = "SwiftRexForRac.framework"
+               BuildableName = "ReactiveSwiftRex.framework"
                BlueprintName = "SwiftRex iOS ReactiveSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
-               BuildableName = "SwiftRexForRx.framework"
+               BuildableName = "RxSwiftRex.framework"
                BlueprintName = "SwiftRex iOS RxSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -71,7 +71,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D595F6F3206E81C900E02733"
-               BuildableName = "SwiftRexForRac.framework"
+               BuildableName = "ReactiveSwiftRex.framework"
                BlueprintName = "SwiftRex macOS ReactiveSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -85,7 +85,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-               BuildableName = "SwiftRexForRx.framework"
+               BuildableName = "RxSwiftRex.framework"
                BlueprintName = "SwiftRex macOS RxSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -113,7 +113,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D595F6E6206E81B900E02733"
-               BuildableName = "SwiftRexForRac.framework"
+               BuildableName = "ReactiveSwiftRex.framework"
                BlueprintName = "SwiftRex tvOS ReactiveSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -127,7 +127,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D532CA4F223EC2F500AB13EF"
-               BuildableName = "SwiftRexForRx.framework"
+               BuildableName = "RxSwiftRex.framework"
                BlueprintName = "SwiftRex tvOS RxSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -155,7 +155,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D595F6D9206E81AE00E02733"
-               BuildableName = "SwiftRexForRac.framework"
+               BuildableName = "ReactiveSwiftRex.framework"
                BlueprintName = "SwiftRex watchOS ReactiveSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -169,7 +169,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D532CA2A223EC2DF00AB13EF"
-               BuildableName = "SwiftRexForRx.framework"
+               BuildableName = "RxSwiftRex.framework"
                BlueprintName = "SwiftRex watchOS RxSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -247,14 +247,14 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D595F6F3206E81C900E02733"
-            BuildableName = "SwiftRexForRac.framework"
+            BuildableName = "ReactiveSwiftRex.framework"
             BlueprintName = "SwiftRex macOS ReactiveSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-            BuildableName = "SwiftRexForRx.framework"
+            BuildableName = "RxSwiftRex.framework"
             BlueprintName = "SwiftRex macOS RxSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>

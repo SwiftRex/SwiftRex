@@ -7,8 +7,8 @@ extension SignalProtocol {
         return PublisherType<Value, Self.Error> { subscriber in
             self.signal
                 .observe(subscriber.asObserver())
-                .map(DisposableSubscription.init)
-                ?? .init(disposable: AnyDisposable())
+                .map { $0.asSubscription() }
+                ?? AnyDisposable().asSubscription()
         }
     }
 }

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-               BuildableName = "SwiftRexForRx.framework"
+               BuildableName = "RxSwiftRex.framework"
                BlueprintName = "SwiftRex macOS RxSwift"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
@@ -35,7 +35,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-            BuildableName = "SwiftRexForRx.framework"
+            BuildableName = "RxSwiftRex.framework"
             BlueprintName = "SwiftRex macOS RxSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
@@ -44,7 +44,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-            BuildableName = "SwiftRexForRx.framework"
+            BuildableName = "RxSwiftRex.framework"
             BlueprintName = "SwiftRex macOS RxSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
@@ -76,7 +76,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-            BuildableName = "SwiftRexForRx.framework"
+            BuildableName = "RxSwiftRex.framework"
             BlueprintName = "SwiftRex macOS RxSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
@@ -92,7 +92,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-            BuildableName = "SwiftRexForRx.framework"
+            BuildableName = "RxSwiftRex.framework"
             BlueprintName = "SwiftRex macOS RxSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>

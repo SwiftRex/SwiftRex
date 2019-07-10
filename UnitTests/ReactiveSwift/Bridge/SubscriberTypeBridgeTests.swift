@@ -69,7 +69,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
         let publisherType = PublisherType<String, SomeError> { subscriber in
             subscriber.onValue("test")
             subscriber.onCompleted(nil)
-            return FooSubscription()
+            return FooSubscription { }
         }
 
         _ = publisherType.subscribe(Signal<String, SomeError>.Observer { action in
@@ -97,7 +97,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
         let publisherType = PublisherType<String, SomeError> { subscriber in
             subscriber.onValue("test")
             subscriber.onCompleted(someError)
-            return FooSubscription()
+            return FooSubscription { }
         }
 
         _ = publisherType.subscribe(Signal<String, SomeError>.Observer { action in

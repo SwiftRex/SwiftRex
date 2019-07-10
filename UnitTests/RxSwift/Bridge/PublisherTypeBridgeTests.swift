@@ -11,7 +11,7 @@ class PublisherTypeBridgeTests: XCTestCase {
         let publisherType = PublisherType<String, Error> { subscriber in
             subscriber.onValue("test")
             subscriber.onCompleted(nil)
-            return FooSubscription()
+            return FooSubscription { }
         }
 
         _ = publisherType.subscribe(
@@ -37,7 +37,7 @@ class PublisherTypeBridgeTests: XCTestCase {
         let publisherType = PublisherType<String, Error> { subscriber in
             subscriber.onValue("test")
             subscriber.onCompleted(someError)
-            return FooSubscription()
+            return FooSubscription { }
         }
 
         _ = publisherType.subscribe(

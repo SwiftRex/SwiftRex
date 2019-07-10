@@ -36,7 +36,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue], timeout: 0.1)
     }
 
-    func testCurrentValueSubjectToReplayLastSubjectTypeOnErrorDoesAlwaysFinishSuccessfully() {
+    func testCurrentValueSubjectToReplayLastSubjectTypeOnError() {
         let shouldCallClosureValue = expectation(description: "Closure value should be called")
         let shouldCallClosureCompletion = expectation(description: "Closure completion should be called")
         let someError = SomeError()
@@ -70,6 +70,32 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
 
         XCTAssertEqual(sut.value(), "current value")
         sut.subscriber.onCompleted(someError)
+
+        wait(for: [shouldCallClosureValue, shouldCallClosureCompletion], timeout: 0.1)
+    }
+
+    func testCurrentValueSubjectToReplayLastSubjectTypeOnFinish() {
+        let shouldCallClosureValue = expectation(description: "Closure value should be called")
+        let shouldCallClosureCompletion = expectation(description: "Closure completion should be called")
+        let currentValueSubject = CurrentValueSubject<String, SomeError>("no one cares 1")
+        currentValueSubject.value = "no one cares 2"
+        currentValueSubject.value = "current value"
+
+        let sut = ReplayLastSubjectType<String, SomeError>(currentValueSubject: currentValueSubject)
+
+        _ = sut.publisher.subscribe(SubscriberType<String, SomeError>(
+            onValue: { string in
+                XCTAssertEqual("current value", string)
+                shouldCallClosureValue.fulfill()
+            },
+            onCompleted: { error in
+                XCTAssertNil(error)
+                shouldCallClosureCompletion.fulfill()
+            }
+        ))
+
+        XCTAssertEqual(sut.value(), "current value")
+        sut.subscriber.onCompleted(nil)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompletion], timeout: 0.1)
     }

@@ -4,59 +4,15 @@ import SwiftRex
 import XCTest
 
 class SubscriptionBridgeTests: XCTestCase {
-    struct FooSubscription: Subscription {
-        let onUnsubscribe: () -> Void
-        func unsubscribe() { onUnsubscribe() }
-    }
-
-    func testDisposableSubscriptionInitFromDisposableDispose() {
+    func testDisposableToSubscriptionUnsubscribe() {
         let shouldBeDisposed = expectation(description: "should be disposed")
+
         let disposable = AnyDisposable {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = DisposableSubscription(disposable: disposable)
-        sut.dispose()
-        XCTAssertTrue(sut.isDisposed)
-
-        wait(for: [shouldBeDisposed], timeout: 0.1)
-    }
-
-    func testDisposableSubscriptionInitFromDisposableUnsubscribe() {
-        let shouldBeDisposed = expectation(description: "should be disposed")
-        let disposable = AnyDisposable {
-            shouldBeDisposed.fulfill()
-        }
-
-        let sut = DisposableSubscription(disposable: disposable)
+        let sut = disposable.asSubscription()
         sut.unsubscribe()
-        XCTAssertTrue(sut.isDisposed)
-
-        wait(for: [shouldBeDisposed], timeout: 0.1)
-    }
-
-    func testDisposableSubscriptionInitFromSubscriptionDispose() {
-        let shouldBeDisposed = expectation(description: "should be disposed")
-        let subscription = FooSubscription {
-            shouldBeDisposed.fulfill()
-        }
-
-        let sut = DisposableSubscription(subscription: subscription)
-        sut.dispose()
-        XCTAssertTrue(sut.isDisposed)
-
-        wait(for: [shouldBeDisposed], timeout: 0.1)
-    }
-
-    func testDisposableSubscriptionInitFromSubscriptionUnsubscribe() {
-        let shouldBeDisposed = expectation(description: "should be disposed")
-        let subscription = FooSubscription {
-            shouldBeDisposed.fulfill()
-        }
-
-        let sut = DisposableSubscription(subscription: subscription)
-        sut.unsubscribe()
-        XCTAssertTrue(sut.isDisposed)
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
@@ -69,39 +25,49 @@ class SubscriptionBridgeTests: XCTestCase {
 
         let sut = subscription.asDisposable()
         sut.dispose()
-        XCTAssertTrue(sut.isDisposed)
 
+        XCTAssertTrue(sut.isDisposed)
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
 
-    func testSubscriptionToDisposableUnsubscribe() {
+    func testDisposableToSubscriptionToDisposableDispose() {
+        let shouldBeDisposed = expectation(description: "should be disposed")
+
+        let disposable = AnyDisposable {
+            shouldBeDisposed.fulfill()
+        }
+
+        let sut = disposable.asSubscription().asDisposable()
+        sut.dispose()
+
+        XCTAssertTrue(sut.isDisposed)
+        wait(for: [shouldBeDisposed], timeout: 0.1)
+    }
+
+    func testSubscriptionToDisposableToSubscriptionUnsubscribe() {
         let shouldBeDisposed = expectation(description: "should be disposed")
         let subscription = FooSubscription {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = subscription.asDisposable()
+        let sut = subscription.asDisposable().asSubscription()
         sut.unsubscribe()
-        XCTAssertTrue(sut.isDisposed)
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
 
-    func testSubscriptionDisposedByDisposeBag() {
+    func testSubscriptionCollectionAppend() {
         let shouldBeDisposed = expectation(description: "should be disposed")
-        let subscription = FooSubscription {
+
+        let disposable = AnyDisposable {
             shouldBeDisposed.fulfill()
         }
-        var (lifetime, token) = { () -> (Lifetime, Lifetime.Token?) in
-            let (lifetime, token) = Lifetime.make()
-            return (lifetime, .some(token))
-        }()
 
-        subscription.disposed(by: lifetime)
+        let subscription = disposable.asSubscription()
+        var (sut, _): (Lifetime?, Lifetime.Token) = Lifetime.make()
+        subscription.cancelled(by: &sut!)
 
-        XCTAssertNotNil(token)
-        token = nil
-        XCTAssertTrue(lifetime.hasEnded)
+        sut = nil
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
