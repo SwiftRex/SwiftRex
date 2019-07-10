@@ -21,7 +21,7 @@ extension ReplayLastSubjectType where ErrorType == Never {
         )
     }
 
-    public static func rx(initialValue: Element) -> ReplayLastSubjectType<Element, Error> {
+    public static func rx(initialValue: Element) -> ReplayLastSubjectType<Element, Never> {
         let behaviorSubject = BehaviorSubject<Element>(value: initialValue)
         return .init(behaviorSubject: behaviorSubject)
     }
