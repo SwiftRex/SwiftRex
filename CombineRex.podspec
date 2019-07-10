@@ -23,5 +23,5 @@ Pod::Spec.new do |s|
   s.swift_version               = '5.1'
 
   s.source_files = "Sources/Combine/"
-  s.dependency 'SwiftRex', "#{s.version}"
+  s.dependency 'SwiftRex'
 end
