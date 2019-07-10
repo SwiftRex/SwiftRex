@@ -64,10 +64,15 @@ class SubscriptionBridgeTests: XCTestCase {
         }
 
         let subscription = disposable.asSubscription()
-        var (sut, _): (Lifetime?, Lifetime.Token) = Lifetime.make()
-        subscription.cancelled(by: &sut!)
+        var (lifetime, token) = { () -> (Lifetime, Lifetime.Token?) in
+            let (lifetime, token) = Lifetime.make()
+            return (lifetime, .some(token))
+        }()
+        subscription.cancelled(by: &lifetime)
 
-        sut = nil
+        XCTAssertNotNil(token)
+        token = nil
+        XCTAssertNil(token)
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
