@@ -48,10 +48,14 @@ private class CancellableSubscription: Cancellable, SwiftRex.Subscription, Combi
 }
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
-extension Array: SwiftRex.SubscriptionCollection where Element == AnyCancellable {
+extension RangeReplaceableCollection where Element == AnyCancellable {
+    @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
     public mutating func store(subscription: SwiftRex.Subscription) {
         let anyCancellable = AnyCancellable { subscription.asCancellable().cancel() }
         anyCancellable.store(in: &self)
     }
 }
+
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+extension Array: SwiftRex.SubscriptionCollection where Element == AnyCancellable { }
 #endif
