@@ -3,5 +3,5 @@
  */
 public protocol StateProvider {
     associatedtype StateType
-    var state: UnfailablePublisherType<StateType> { get }
+    var statePublisher: UnfailablePublisherType<StateType> { get }
 }
