@@ -1,8 +1,14 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.1
 import PackageDescription
 
 let package = Package(
     name: "SwiftRex",
+    platforms: [
+        .macOS(SupportedPlatform.MacOSVersion.v10_15),
+        .iOS(SupportedPlatform.IOSVersion.v13),
+        .tvOS(SupportedPlatform.TVOSVersion.v13),
+        .watchOS(SupportedPlatform.WatchOSVersion.v6),
+    ],
     products: [
         .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"]),
         .library(name: "ReactiveSwiftRex", targets: ["SwiftRex", "ReactiveSwiftRex"]),
