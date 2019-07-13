@@ -64,7 +64,7 @@ open class StoreBase<State> {
 }
 
 extension StoreBase: Store {
-    public var state: UnfailablePublisherType<State> { return subject.publisher }
+    public var statePublisher: UnfailablePublisherType<State> { return subject.publisher }
     public var eventHandler: EventHandler { return messageHandler.eventHandler }
 }
 

@@ -41,7 +41,7 @@ class StoreBaseTests: XCTestCase {
 
         var count = 0
         let shouldBeCalled4Times = expectation(description: "it should be called 4 times")
-        _ = store.state.subscribe(SubscriberType(onValue: { value in
+        _ = store.statePublisher.subscribe(SubscriberType(onValue: { value in
             switch count {
             case 0: XCTAssertEqual("a1", value.name)
             case 1: XCTAssertEqual("a1a3", value.name)

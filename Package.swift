@@ -7,7 +7,7 @@ let package = Package(
         .macOS(SupportedPlatform.MacOSVersion.v10_15),
         .iOS(SupportedPlatform.IOSVersion.v13),
         .tvOS(SupportedPlatform.TVOSVersion.v13),
-        .watchOS(SupportedPlatform.WatchOSVersion.v6),
+        .watchOS(SupportedPlatform.WatchOSVersion.v6)
     ],
     products: [
         .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"]),
