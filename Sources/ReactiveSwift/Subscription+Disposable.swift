@@ -40,7 +40,7 @@ private class DisposableSubscription: Disposable, Subscription {
 }
 
 extension Lifetime: SubscriptionCollection {
-    public func append(subscription: Subscription) {
+    public func store(subscription: Subscription) {
         let disposable = subscription.asDisposable()
         self += disposable
     }

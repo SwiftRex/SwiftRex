@@ -5,10 +5,10 @@ class FooSubscription: Subscription {
 }
 
 final class FooSubscriptionCollection: SubscriptionCollection {
-    var appendCalls = 0
-    var appendSubscriptionSubscription: Subscription?
-    func append(subscription: Subscription) {
-        appendSubscriptionSubscription = subscription
-        appendCalls += 1
+    var storeCalls = 0
+    var storeSubscriptionSubscription: Subscription?
+    func store(subscription: Subscription) {
+        storeSubscriptionSubscription = subscription
+        storeCalls += 1
     }
 }

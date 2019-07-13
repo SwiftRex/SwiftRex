@@ -39,7 +39,7 @@ private class DisposableSubscription: Disposable, Subscription {
 }
 
 extension DisposeBag: SubscriptionCollection {
-    public func append(subscription: Subscription) {
+    public func store(subscription: Subscription) {
         let disposable = subscription.asDisposable()
         disposable.disposed(by: self)
     }

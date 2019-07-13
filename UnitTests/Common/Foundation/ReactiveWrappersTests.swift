@@ -284,15 +284,15 @@ class ReactiveWrappersTests: XCTestCase {
         var subscriptionCollection: SubscriptionCollection = mockSubscriptionCollection
         let subscription = FooSubscription()
         subscription.cancelled(by: &subscriptionCollection)
-        XCTAssertEqual(1, mockSubscriptionCollection.appendCalls)
-        XCTAssert(subscription === mockSubscriptionCollection.appendSubscriptionSubscription as? FooSubscription)
+        XCTAssertEqual(1, mockSubscriptionCollection.storeCalls)
+        XCTAssert(subscription === mockSubscriptionCollection.storeSubscriptionSubscription as? FooSubscription)
     }
 
     func testGenericSubscriptionCollectionAppend() {
         var mockSubscriptionCollection = FooSubscriptionCollection()
         let subscription = FooSubscription()
         subscription.cancelled(by: &mockSubscriptionCollection)
-        XCTAssertEqual(1, mockSubscriptionCollection.appendCalls)
-        XCTAssert(subscription === mockSubscriptionCollection.appendSubscriptionSubscription as? FooSubscription)
+        XCTAssertEqual(1, mockSubscriptionCollection.storeCalls)
+        XCTAssert(subscription === mockSubscriptionCollection.storeSubscriptionSubscription as? FooSubscription)
     }
 }
