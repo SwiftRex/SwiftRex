@@ -44,16 +44,24 @@ public protocol Subscription {
 
 extension Subscription {
     public func cancelled<SC: SubscriptionCollection>(by subscriptionCollection: inout SC) {
-        subscriptionCollection.append(subscription: self)
+        subscriptionCollection += self
     }
 
     public func cancelled(by subscriptionCollection: inout SubscriptionCollection) {
-        subscriptionCollection.append(subscription: self)
+        subscriptionCollection += self
     }
 }
 
 public protocol SubscriptionCollection {
-    mutating func append(subscription: Subscription)
+    mutating func store(subscription: Subscription)
+}
+
+func += (_ lhs: inout SubscriptionCollection, _ rhs: Subscription) {
+    lhs.store(subscription: rhs)
+}
+
+func += <SC: SubscriptionCollection>(_ lhs: inout SC, _ rhs: Subscription) {
+    lhs.store(subscription: rhs)
 }
 
 public struct SubjectType<Element, ErrorType: Error> {
