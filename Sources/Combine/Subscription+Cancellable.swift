@@ -47,10 +47,7 @@ private class CancellableSubscription: Cancellable, SwiftRex.Subscription, Combi
     }
 }
 
-@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
-public typealias CancellableArray = [AnyCancellable]
-
-extension CancellableArray: SwiftRex.SubscriptionCollection {
+extension Array: SwiftRex.SubscriptionCollection where Element == AnyCancellable {
     public mutating func store(subscription: SwiftRex.Subscription) {
         guard #available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *) else { return }
         let anyCancellable = AnyCancellable { subscription.asCancellable().cancel() }
