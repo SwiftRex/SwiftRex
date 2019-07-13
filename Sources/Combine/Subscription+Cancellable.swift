@@ -57,5 +57,8 @@ extension RangeReplaceableCollection where Element == AnyCancellable {
 }
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
-extension Array: SwiftRex.SubscriptionCollection where Element == AnyCancellable { }
+public typealias CancellableArray = [AnyCancellable]
+
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+extension CancellableArray: SwiftRex.SubscriptionCollection { }
 #endif
