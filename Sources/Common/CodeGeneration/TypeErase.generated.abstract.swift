@@ -28,18 +28,3 @@ internal class _AnyMiddlewareBase<StateType>: Middleware {
         set { _abstract() }
     }
 }
-
-// MARK: - Type Eraser for SideEffectProducer
-
-internal class _AnySideEffectProducerBase<StateType>: SideEffectProducer {
-    init() {
-        guard type(of: self) != _AnySideEffectProducerBase.self else {
-            _abstract()
-        }
-    }
-
-    func execute(getState: @escaping GetState<StateType>) -> PublisherType<ActionProtocol, Error> {
-        _abstract()
-    }
-
-}

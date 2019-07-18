@@ -35,19 +35,7 @@ class TypeErasureTests: XCTestCase {
             sut.handlers = .init(actionHandler: ActionHandler(), eventHandler: EventHandler())
         }.to(throwAssertion())
     }
-
-    func testSideEffectProducerBaseInitThrows() {
-        expect { _ = _AnySideEffectProducerBase<TestState>() }.to(throwAssertion())
-    }
-
-    func testSideEffectProducerBaseExecuteThrows() {
-        let sut = SideEffectProducerAbstract<TestState>()
-        expect { _ = sut.execute(getState: { TestState() }) }.to(throwAssertion())
-    }
 }
 
 class MiddlewareAbstract<T>: _AnyMiddlewareBase<T> {
-}
-
-class SideEffectProducerAbstract<T>: _AnySideEffectProducerBase<T> {
 }

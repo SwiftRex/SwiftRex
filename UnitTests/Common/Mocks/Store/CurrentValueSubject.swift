@@ -1,18 +1,5 @@
 import SwiftRex
 
-class SubscriptionItem: Subscription {
-    let uuid = UUID()
-    var onUnsubscribe: (UUID) -> Void
-
-    init(onUnsubscribe: @escaping (UUID) -> Void) {
-        self.onUnsubscribe = onUnsubscribe
-    }
-
-    func unsubscribe() {
-        onUnsubscribe(uuid)
-    }
-}
-
 // not thread-safe, for use in test only
 class CurrentValueSubject {
     var subject: UnfailableReplayLastSubjectType<TestState>!
