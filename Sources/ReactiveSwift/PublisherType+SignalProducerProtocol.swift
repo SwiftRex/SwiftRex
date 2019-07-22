@@ -22,25 +22,6 @@ extension PublisherType: SignalProducerProtocol, SignalProducerConvertible {
             lifetime.observeEnded(subscription.unsubscribe)
         }
     }
-
-    public var signal: Signal<Element, ErrorType> {
-        return Signal<Element, ErrorType> { observer, lifetime in
-            let subscription = self.subscribe(SubscriberType(
-                onValue: { value in
-                    guard !lifetime.hasEnded else { return }
-                    observer.send(value: value)
-                }, onCompleted: { error in
-                    guard !lifetime.hasEnded else { return }
-                    if let error = error {
-                        observer.send(error: error)
-                    } else {
-                        observer.sendCompleted()
-                    }
-                }
-            ))
-            lifetime.observeEnded(subscription.unsubscribe)
-        }
-    }
 }
 
 extension SignalProducerProtocol {
