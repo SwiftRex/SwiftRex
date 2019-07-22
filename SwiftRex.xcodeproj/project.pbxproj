@@ -42,6 +42,14 @@
 		D5195E8122E130070005C3FD /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E7F22E130070005C3FD /* EventHandlerMock.swift */; };
 		D5195E8322E133820005C3FD /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8222E133820005C3FD /* ActionReference.swift */; };
 		D5195E8422E133820005C3FD /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8222E133820005C3FD /* ActionReference.swift */; };
+		D5195E8B22E1366E0005C3FD /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8922E1366D0005C3FD /* ActionReference.swift */; };
+		D5195E8C22E1366E0005C3FD /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8A22E1366E0005C3FD /* EventReference.swift */; };
+		D5195E8D22E1366E0005C3FD /* ActionHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8822E1366D0005C3FD /* ActionHandlerMock.swift */; };
+		D5195E8E22E1366E0005C3FD /* MessageHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8722E1366D0005C3FD /* MessageHandlerMock.swift */; };
+		D5195E8F22E1366E0005C3FD /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8522E1366C0005C3FD /* MiddlewareTestsBase.swift */; };
+		D5195E9022E1366E0005C3FD /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8622E1366C0005C3FD /* EventHandlerMock.swift */; };
+		D5195E9222E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E9122E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift */; };
+		D5195E9422E137390005C3FD /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E9322E137390005C3FD /* TestState.swift */; };
 		D51A223D22BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224222BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224722BFFC2600194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
@@ -443,6 +451,14 @@
 		D5195E7C22E12FDF0005C3FD /* ActionHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandlerMock.swift; sourceTree = "<group>"; };
 		D5195E7F22E130070005C3FD /* EventHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventHandlerMock.swift; sourceTree = "<group>"; };
 		D5195E8222E133820005C3FD /* ActionReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionReference.swift; sourceTree = "<group>"; };
+		D5195E8522E1366C0005C3FD /* MiddlewareTestsBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareTestsBase.swift; sourceTree = "<group>"; };
+		D5195E8622E1366C0005C3FD /* EventHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventHandlerMock.swift; sourceTree = "<group>"; };
+		D5195E8722E1366D0005C3FD /* MessageHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageHandlerMock.swift; sourceTree = "<group>"; };
+		D5195E8822E1366D0005C3FD /* ActionHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandlerMock.swift; sourceTree = "<group>"; };
+		D5195E8922E1366D0005C3FD /* ActionReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionReference.swift; sourceTree = "<group>"; };
+		D5195E8A22E1366E0005C3FD /* EventReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReference.swift; sourceTree = "<group>"; };
+		D5195E9122E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineMiddlewareReactiveSwiftTests.swift; sourceTree = "<group>"; };
+		D5195E9322E137390005C3FD /* TestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
 		D51A223422BFF1EA00194408 /* ReplayLastSubjectType+BehaviorSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReplayLastSubjectType+BehaviorSubject.swift"; sourceTree = "<group>"; };
 		D51A223522BFF1EA00194408 /* SubjectType+PassthroughSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubjectType+PassthroughSubject.swift"; sourceTree = "<group>"; };
 		D51A223622BFF1EB00194408 /* PublisherType+Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+Publisher.swift"; sourceTree = "<group>"; };
@@ -931,8 +947,15 @@
 		D552CC3422BEF116008EF537 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				D5195E8822E1366D0005C3FD /* ActionHandlerMock.swift */,
+				D5195E8922E1366D0005C3FD /* ActionReference.swift */,
+				D5195E8622E1366C0005C3FD /* EventHandlerMock.swift */,
+				D5195E8A22E1366E0005C3FD /* EventReference.swift */,
 				D552CC3522BEF116008EF537 /* FooSubscription.swift */,
+				D5195E8722E1366D0005C3FD /* MessageHandlerMock.swift */,
+				D5195E8522E1366C0005C3FD /* MiddlewareTestsBase.swift */,
 				D552CC3622BEF116008EF537 /* SomeError.swift */,
+				D5195E9322E137390005C3FD /* TestState.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -940,6 +963,7 @@
 		D552CC3922BEF150008EF537 /* Bridge */ = {
 			isa = PBXGroup;
 			children = (
+				D5195E9122E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift */,
 				D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */,
 				D5C1C5F322BFDBBD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */,
 				D5C1C5EF22BFD35400532BCF /* SubjectTypeBridgeTests.swift */,
@@ -2862,11 +2886,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5195E8D22E1366E0005C3FD /* ActionHandlerMock.swift in Sources */,
+				D5195E9222E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift in Sources */,
+				D5195E8C22E1366E0005C3FD /* EventReference.swift in Sources */,
 				D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */,
+				D5195E9422E137390005C3FD /* TestState.swift in Sources */,
 				D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */,
+				D5195E9022E1366E0005C3FD /* EventHandlerMock.swift in Sources */,
+				D5195E8F22E1366E0005C3FD /* MiddlewareTestsBase.swift in Sources */,
 				D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */,
 				D5C1C5F022BFD35400532BCF /* SubjectTypeBridgeTests.swift in Sources */,
 				D5626D6E22BF1CB1000422AA /* SubscriptionBridgeTests.swift in Sources */,
+				D5195E8B22E1366E0005C3FD /* ActionReference.swift in Sources */,
+				D5195E8E22E1366E0005C3FD /* MessageHandlerMock.swift in Sources */,
 				D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */,
 				D5C1C5F422BFDBBD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift in Sources */,
 			);
