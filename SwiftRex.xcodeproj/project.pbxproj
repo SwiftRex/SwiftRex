@@ -66,6 +66,14 @@
 		D51A442A22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
 		D51A442B22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
 		D51A442C22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
+		D529D58122E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */; };
+		D529D58322E6716B00A287D1 /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58222E6716B00A287D1 /* MiddlewareTestsBase.swift */; };
+		D529D58522E671D400A287D1 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58422E671D400A287D1 /* TestState.swift */; };
+		D529D58922E6726900A287D1 /* MessageHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58622E6726900A287D1 /* MessageHandlerMock.swift */; };
+		D529D58A22E6726900A287D1 /* ActionHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58722E6726900A287D1 /* ActionHandlerMock.swift */; };
+		D529D58B22E6726900A287D1 /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58822E6726900A287D1 /* EventHandlerMock.swift */; };
+		D529D58E22E6728100A287D1 /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58C22E6728000A287D1 /* ActionReference.swift */; };
+		D529D58F22E6728100A287D1 /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58D22E6728000A287D1 /* EventReference.swift */; };
 		D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3522BEF116008EF537 /* FooSubscription.swift */; };
 		D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3622BEF116008EF537 /* SomeError.swift */; };
 		D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */; };
@@ -470,6 +478,14 @@
 		D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RxSwift+Extensions.swift"; sourceTree = "<group>"; };
 		D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReactiveSwift+Extensions.swift"; sourceTree = "<group>"; };
 		D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.ReactiveSwift.swift; sourceTree = "<group>"; };
+		D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineMiddlewareRxSwiftTests.swift; sourceTree = "<group>"; };
+		D529D58222E6716B00A287D1 /* MiddlewareTestsBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareTestsBase.swift; sourceTree = "<group>"; };
+		D529D58422E671D400A287D1 /* TestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
+		D529D58622E6726900A287D1 /* MessageHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageHandlerMock.swift; sourceTree = "<group>"; };
+		D529D58722E6726900A287D1 /* ActionHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionHandlerMock.swift; sourceTree = "<group>"; };
+		D529D58822E6726900A287D1 /* EventHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandlerMock.swift; sourceTree = "<group>"; };
+		D529D58C22E6728000A287D1 /* ActionReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionReference.swift; sourceTree = "<group>"; };
+		D529D58D22E6728000A287D1 /* EventReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventReference.swift; sourceTree = "<group>"; };
 		D52E2162207A6CEC00A88E39 /* ReducerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerMock.swift; sourceTree = "<group>"; };
 		D532CA03223EC29500AB13EF /* UnitTests RxSwift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests RxSwift.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D532CA28223EC2C900AB13EF /* RxSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -890,6 +906,7 @@
 		D507CAC822BE8E6F00BE6679 /* Bridge */ = {
 			isa = PBXGroup;
 			children = (
+				D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */,
 				D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */,
 				D5C1C5F522BFDFAD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift */,
 				D5C1C5F122BFD56E00532BCF /* SubjectTypeBridgeTests.swift */,
@@ -902,8 +919,15 @@
 		D507CACD22BE921D00BE6679 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				D529D58722E6726900A287D1 /* ActionHandlerMock.swift */,
+				D529D58C22E6728000A287D1 /* ActionReference.swift */,
+				D529D58822E6726900A287D1 /* EventHandlerMock.swift */,
+				D529D58D22E6728000A287D1 /* EventReference.swift */,
 				D507CACE22BE922600BE6679 /* FooSubscription.swift */,
+				D529D58622E6726900A287D1 /* MessageHandlerMock.swift */,
+				D529D58222E6716B00A287D1 /* MiddlewareTestsBase.swift */,
 				D507CACB22BE909B00BE6679 /* SomeError.swift */,
+				D529D58422E671D400A287D1 /* TestState.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -2824,9 +2848,17 @@
 				D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */,
 				D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */,
 				D5C1C5F222BFD56E00532BCF /* SubjectTypeBridgeTests.swift in Sources */,
+				D529D58B22E6726900A287D1 /* EventHandlerMock.swift in Sources */,
+				D529D58322E6716B00A287D1 /* MiddlewareTestsBase.swift in Sources */,
+				D529D58F22E6728100A287D1 /* EventReference.swift in Sources */,
 				D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */,
+				D529D58122E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift in Sources */,
 				D5626D6C22BF19B7000422AA /* SubscriptionBridgeTests.swift in Sources */,
+				D529D58E22E6728100A287D1 /* ActionReference.swift in Sources */,
+				D529D58A22E6726900A287D1 /* ActionHandlerMock.swift in Sources */,
+				D529D58922E6726900A287D1 /* MessageHandlerMock.swift in Sources */,
 				D5C1C5F622BFDFAD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift in Sources */,
+				D529D58522E671D400A287D1 /* TestState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
