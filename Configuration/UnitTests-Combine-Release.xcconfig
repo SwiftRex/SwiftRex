@@ -8,3 +8,5 @@ WATCHOS_DEPLOYMENT_TARGET = 6.0
 
 // Swift Version
 SWIFT_VERSION = 5.1
+
+SDKROOT = iphoneos
