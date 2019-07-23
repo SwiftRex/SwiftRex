@@ -44,6 +44,18 @@ test-common:
 		VALID_ARCHS=x86_64 \
 		| bundle exec xcpretty
 
+test-combine:
+	set -o pipefail && \
+		xcodebuild clean test \
+		-workspace SwiftRex.xcworkspace \
+		-scheme SwiftRex\ macOS\ Combine \
+		-destination platform="macOS" \
+		CODE_SIGN_IDENTITY="" \
+		CODE_SIGNING_REQUIRED=NO \
+		ONLY_ACTIVE_ARCH=YES \
+		VALID_ARCHS=x86_64 \
+		| bundle exec xcpretty
+
 test-reactiveswift:
 	set -o pipefail && \
 		xcodebuild clean test \
@@ -117,6 +129,9 @@ help:
 	@echo
 	@echo make test-common
 	@echo -- runs the unit tests for the macOS target common for any framework
+	@echo
+	@echo make test-combine
+	@echo -- runs the unit tests for the macOS target using Combine dependency
 	@echo
 	@echo make test-reactiveswift
 	@echo -- runs the unit tests for the macOS target using ReactiveSwift dependency
