@@ -28,17 +28,28 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       systemAttachmentLifetime = "keepNever"
+      codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES">
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6CB206E818C00E02733"
-            BuildableName = "ReactiveSwiftRex.framework"
-            BlueprintName = "SwiftRex iOS ReactiveSwift"
+            BlueprintIdentifier = "D532CA05223EC2C900AB13EF"
+            BuildableName = "RxSwiftRex.framework"
+            BlueprintName = "SwiftRex iOS RxSwift"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D532C9D8223EC29500AB13EF"
+               BuildableName = "UnitTests RxSwift.xctest"
+               BlueprintName = "UnitTests RxSwift"
+               ReferencedContainer = "container:SwiftRex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

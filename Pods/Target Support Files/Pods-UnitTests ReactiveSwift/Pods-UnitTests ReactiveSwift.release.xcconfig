@@ -1,9 +1,9 @@
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Nimble-macOS10.10" "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-macOS"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Nimble" "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-iOS"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Nimble-macOS10.10/Nimble.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-macOS/ReactiveSwift.framework/Headers"
-LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/../Frameworks' '@loader_path/../Frameworks'
-OTHER_CFLAGS = $(inherited) -isystem "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-macOS/ReactiveSwift.framework/Headers" -iframework "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-macOS"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Nimble/Nimble.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-iOS/ReactiveSwift.framework/Headers"
+LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
+OTHER_CFLAGS = $(inherited) -isystem "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-iOS/ReactiveSwift.framework/Headers" -iframework "${PODS_CONFIGURATION_BUILD_DIR}/ReactiveSwift-iOS"
 OTHER_LDFLAGS = $(inherited) -framework "Nimble" -framework "ReactiveSwift" -weak_framework "XCTest"
 OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS
 PODS_BUILD_DIR = ${BUILD_DIR}
