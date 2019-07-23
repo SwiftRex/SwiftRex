@@ -29,6 +29,7 @@
 **/DerivedData/
 **/derivedData/
 **/.build/
+**/.swiftpm/
 Developer.xcconfig
 
 # OS-specific files
