@@ -46,7 +46,7 @@ target 'SwiftRex tvOS RxSwift' do
 end
 
 target 'UnitTests RxSwift' do
-  platform :macos, macos_version
+  platform :ios, ios_version
   rxswift
   tests
   pod 'RxBlocking', '5.0.0'
@@ -78,7 +78,7 @@ target 'SwiftRex tvOS ReactiveSwift' do
 end
 
 target 'UnitTests ReactiveSwift' do
-  platform :macos, macos_version
+  platform :ios, ios_version
   reactiveswift
   tests
 end
@@ -88,7 +88,7 @@ end
 ##################
 
 target 'UnitTests SwiftRex' do
-  platform :macos, macos_version
+  platform :ios, ios_version
   tests
 end
 

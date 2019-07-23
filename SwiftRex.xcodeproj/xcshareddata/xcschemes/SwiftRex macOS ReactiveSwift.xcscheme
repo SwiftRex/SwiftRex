@@ -40,26 +40,7 @@
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6F3206E81C900E02733"
-            BuildableName = "ReactiveSwiftRex.framework"
-            BlueprintName = "SwiftRex macOS ReactiveSwift"
-            ReferencedContainer = "container:SwiftRex.xcodeproj">
-         </BuildableReference>
-      </CodeCoverageTargets>
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D578B288208A690C0035AE9C"
-               BuildableName = "UnitTests ReactiveSwift.xctest"
-               BlueprintName = "UnitTests ReactiveSwift"
-               ReferencedContainer = "container:SwiftRex.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

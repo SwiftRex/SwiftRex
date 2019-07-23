@@ -25,6 +25,7 @@ test-all:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme BuildAndTestAll \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -35,8 +36,8 @@ test-common:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -48,7 +49,7 @@ test-combine:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme SwiftRex\ iOS\ Combine \
-		-destination platform="iOS" \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -59,8 +60,8 @@ test-reactiveswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS\ ReactiveSwift \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS\ ReactiveSwift \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -71,8 +72,8 @@ test-rxswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS\ RxSwift \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS\ RxSwift \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
