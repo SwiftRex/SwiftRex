@@ -25,7 +25,7 @@ test-all:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme BuildAndTestAll \
-		-destination platform="macOS" \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -36,8 +36,20 @@ test-common:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
+		CODE_SIGN_IDENTITY="" \
+		CODE_SIGNING_REQUIRED=NO \
+		ONLY_ACTIVE_ARCH=YES \
+		VALID_ARCHS=x86_64 \
+		| bundle exec xcpretty
+
+test-combine:
+	set -o pipefail && \
+		xcodebuild clean test \
+		-workspace SwiftRex.xcworkspace \
+		-scheme SwiftRex\ iOS\ Combine \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -48,8 +60,8 @@ test-reactiveswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS\ ReactiveSwift \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS\ ReactiveSwift \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -60,8 +72,8 @@ test-rxswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS\ RxSwift \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS\ RxSwift \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone XR" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -117,6 +129,9 @@ help:
 	@echo
 	@echo make test-common
 	@echo -- runs the unit tests for the macOS target common for any framework
+	@echo
+	@echo make test-combine
+	@echo -- runs the unit tests for the macOS target using Combine dependency
 	@echo
 	@echo make test-reactiveswift
 	@echo -- runs the unit tests for the macOS target using ReactiveSwift dependency

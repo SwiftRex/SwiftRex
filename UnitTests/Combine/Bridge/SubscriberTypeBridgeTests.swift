@@ -1,6 +1,5 @@
 import Combine
 import CombineRex
-import Nimble
 import SwiftRex
 import XCTest
 
