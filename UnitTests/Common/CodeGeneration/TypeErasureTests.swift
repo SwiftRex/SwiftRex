@@ -4,6 +4,7 @@ import Nimble
 import XCTest
 
 class TypeErasureTests: XCTestCase {
+    #if !SWIFT_PACKAGE
     func testMiddlewareBaseInitThrows() {
         expect { _ = _AnyMiddlewareBase<TestState>() }.to(throwAssertion())
     }
@@ -35,6 +36,7 @@ class TypeErasureTests: XCTestCase {
             sut.handlers = .init(actionHandler: ActionHandler(), eventHandler: EventHandler())
         }.to(throwAssertion())
     }
+    #endif
 }
 
 class MiddlewareAbstract<T>: _AnyMiddlewareBase<T> {

@@ -131,6 +131,7 @@ class ReactiveWrappersTests: XCTestCase {
         wait(for: [shouldCallClosure], timeout: 0.1)
     }
 
+    #if !SWIFT_PACKAGE
     func testPublisherTypeAssertNoFailureOnError() {
         let shouldCallClosure = expectation(description: "Closure should be called")
         let someError = SomeError()
@@ -151,6 +152,8 @@ class ReactiveWrappersTests: XCTestCase {
 
         wait(for: [shouldCallClosure], timeout: 0.1)
     }
+    #endif
+    
     // MARK: - Subject
     func testSubjectTypeOnValue() {
         let shouldCallClosure = expectation(description: "Closure should be called")

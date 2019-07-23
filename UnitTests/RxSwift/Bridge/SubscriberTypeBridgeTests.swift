@@ -116,6 +116,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
     }
 
+    #if !SWIFT_PACKAGE
     func testSubscriberTypeToObservableThrowingUnexpectedType() {
         struct OtherError: Error { }
 
@@ -142,4 +143,5 @@ class SubscriberTypeBridgeTests: XCTestCase {
 
         wait(for: [shouldCallClosureValue], timeout: 0.1)
     }
+    #endif
 }
