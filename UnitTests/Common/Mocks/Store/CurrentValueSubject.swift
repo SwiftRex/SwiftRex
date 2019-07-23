@@ -1,3 +1,4 @@
+import Foundation
 import SwiftRex
 
 // not thread-safe, for use in test only

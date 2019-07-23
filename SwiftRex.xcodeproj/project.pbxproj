@@ -440,9 +440,6 @@
 		D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+Combine.swift"; sourceTree = "<group>"; };
 		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
-		D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RxSwift+Extensions.swift"; sourceTree = "<group>"; };
-		D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReactiveSwift+Extensions.swift"; sourceTree = "<group>"; };
-		D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.ReactiveSwift.swift; sourceTree = "<group>"; };
 		D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineMiddlewareRxSwiftTests.swift; sourceTree = "<group>"; };
 		D529D58222E6716B00A287D1 /* MiddlewareTestsBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareTestsBase.swift; sourceTree = "<group>"; };
 		D529D58422E671D400A287D1 /* TestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
@@ -560,9 +557,7 @@
 		D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRexForRx.h; sourceTree = "<group>"; };
 		D5A2EAFB22B9A27D00CA10B8 /* SwiftRex-ReactiveSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-ReactiveSwift.xcconfig"; sourceTree = "<group>"; };
 		D5A2EAFC22B9A2F300CA10B8 /* SwiftRex-RxSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift.xcconfig"; sourceTree = "<group>"; };
-		D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.RxSwift.swift; sourceTree = "<group>"; };
 		D5A607012071287900D682EF /* RotationMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationMiddleware.swift; sourceTree = "<group>"; };
-		D5A607042071287900D682EF /* TimelySideEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelySideEffect.swift; sourceTree = "<group>"; };
 		D5A607072071287900D682EF /* NameReducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameReducer.swift; sourceTree = "<group>"; };
 		D5A607092071287900D682EF /* ActionReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionReference.swift; sourceTree = "<group>"; };
 		D5A6070A2071287900D682EF /* Action2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action2.swift; sourceTree = "<group>"; };
@@ -605,7 +600,6 @@
 		D5C1C69322BFE9D800532BCF /* UnitTests-Combine-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Combine-Debug.xcconfig"; sourceTree = "<group>"; };
 		D5C1C69822BFE9E200532BCF /* UnitTests-Combine-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Combine-Release.xcconfig"; sourceTree = "<group>"; };
 		D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
-		D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffectProducerTests.swift; sourceTree = "<group>"; };
 		D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappersTests.swift; sourceTree = "<group>"; };
 		D5C96A5C22DA1BAB00585865 /* BindableStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableStore.swift; sourceTree = "<group>"; };
 		D5C96A6222DA21A500585865 /* BindableStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableStoreTests.swift; sourceTree = "<group>"; };
@@ -1078,8 +1072,6 @@
 			children = (
 				D552CC3922BEF150008EF537 /* Bridge */,
 				D552CC3422BEF116008EF537 /* Helper */,
-				D5279C88223EEFF300164682 /* ReactiveSwift+Extensions.swift */,
-				D5279C8C223EFE5F00164682 /* StoreBaseTests.ReactiveSwift.swift */,
 			);
 			path = ReactiveSwift;
 			sourceTree = "<group>";
@@ -1089,9 +1081,6 @@
 			children = (
 				D507CAC822BE8E6F00BE6679 /* Bridge */,
 				D507CACD22BE921D00BE6679 /* Helper */,
-				D5A607022071287900D682EF /* SideEffectProducer */,
-				D5279C86223EEFE200164682 /* RxSwift+Extensions.swift */,
-				D5A606FC2071287900D682EF /* StoreBaseTests.RxSwift.swift */,
 			);
 			path = RxSwift;
 			sourceTree = "<group>";
@@ -1235,15 +1224,6 @@
 				D5A607012071287900D682EF /* RotationMiddleware.swift */,
 			);
 			path = Middleware;
-			sourceTree = "<group>";
-		};
-		D5A607022071287900D682EF /* SideEffectProducer */ = {
-			isa = PBXGroup;
-			children = (
-				D5A607042071287900D682EF /* TimelySideEffect.swift */,
-				D5C3943F22B9882400ABCA90 /* SideEffectProducerTests.swift */,
-			);
-			path = SideEffectProducer;
 			sourceTree = "<group>";
 		};
 		D5A607052071287900D682EF /* Reducer */ = {
