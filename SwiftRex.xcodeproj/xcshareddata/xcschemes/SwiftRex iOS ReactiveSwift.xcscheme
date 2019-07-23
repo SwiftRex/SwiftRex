@@ -28,6 +28,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       systemAttachmentLifetime = "keepNever"
+      codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES">
       <MacroExpansion>
          <BuildableReference
@@ -48,6 +49,16 @@
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D578B288208A690C0035AE9C"
+               BuildableName = "UnitTests ReactiveSwift.xctest"
+               BlueprintName = "UnitTests ReactiveSwift"
+               ReferencedContainer = "container:SwiftRex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

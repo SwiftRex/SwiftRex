@@ -53,9 +53,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D504D31D22C1548C00B47427"
-               BuildableName = "UnitTests Combine iOS.xctest"
-               BlueprintName = "UnitTests Combine iOS"
+               BlueprintIdentifier = "D5C1C64722BFE6CB00532BCF"
+               BuildableName = "UnitTests Combine.xctest"
+               BlueprintName = "UnitTests Combine"
                ReferencedContainer = "container:SwiftRex.xcodeproj">
             </BuildableReference>
          </TestableReference>

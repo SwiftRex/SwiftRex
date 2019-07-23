@@ -40,26 +40,7 @@
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D532CA74223EC30700AB13EF"
-            BuildableName = "RxSwiftRex.framework"
-            BlueprintName = "SwiftRex macOS RxSwift"
-            ReferencedContainer = "container:SwiftRex.xcodeproj">
-         </BuildableReference>
-      </CodeCoverageTargets>
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D532C9D8223EC29500AB13EF"
-               BuildableName = "UnitTests RxSwift.xctest"
-               BlueprintName = "UnitTests RxSwift"
-               ReferencedContainer = "container:SwiftRex.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

@@ -33,13 +33,23 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D595F6CB206E818C00E02733"
-            BuildableName = "ReactiveSwiftRex.framework"
-            BlueprintName = "SwiftRex iOS ReactiveSwift"
+            BlueprintIdentifier = "D5888A6222B6E9250028B0E1"
+            BuildableName = "SwiftRex.framework"
+            BlueprintName = "SwiftRex iOS"
             ReferencedContainer = "container:SwiftRex.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D5888B4222B6F2630028B0E1"
+               BuildableName = "UnitTests SwiftRex.xctest"
+               BlueprintName = "UnitTests SwiftRex"
+               ReferencedContainer = "container:SwiftRex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
