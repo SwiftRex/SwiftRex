@@ -25,7 +25,6 @@ test-all:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme BuildAndTestAll \
-		-destination platform="macOS" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -48,8 +47,8 @@ test-combine:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS\ Combine \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS\ Combine \
+		-destination platform="iOS" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
