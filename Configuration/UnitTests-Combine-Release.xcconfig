@@ -1,9 +1,4 @@
 #include "UnitTests.xcconfig"
-//#include "Pods/Target Support Files/Pods-UnitTests Combine/Pods-UnitTests Combine.release.xcconfig"
-
-// Temporarily testing using iOS target
-// Testing on macOS requires Catalina
-#include "Pods/Target Support Files/Pods-UnitTests Combine iOS/Pods-UnitTests Combine iOS.release.xcconfig"
 
 // Minimum OS Version
 IPHONEOS_DEPLOYMENT_TARGET = 13.0
@@ -13,7 +8,3 @@ WATCHOS_DEPLOYMENT_TARGET = 6.0
 
 // Swift Version
 SWIFT_VERSION = 5.1
-
-// Temporarily testing using iOS target
-// Testing on macOS requires Catalina
-SDKROOT = iphoneos
