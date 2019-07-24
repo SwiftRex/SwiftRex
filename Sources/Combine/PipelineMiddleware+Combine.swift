@@ -5,10 +5,10 @@ import SwiftRex
 extension PipelineMiddleware {
     public static func combine(
         eventTransformer: @escaping ((AnyPublisher<(StateType, EventProtocol), Never>) -> AnyPublisher<ActionProtocol, Never>) = { _ in
-            Publishers.Empty<ActionProtocol, Never>().eraseToAnyPublisher()
+            Empty<ActionProtocol, Never>().eraseToAnyPublisher()
         },
         actionTransformer: @escaping ((AnyPublisher<(StateType, ActionProtocol), Never>) -> AnyPublisher<ActionProtocol, Never>) = { _ in
-            Publishers.Empty<ActionProtocol, Never>().eraseToAnyPublisher()
+            Empty<ActionProtocol, Never>().eraseToAnyPublisher()
         }
     ) -> PipelineMiddleware {
         return .init(

@@ -115,7 +115,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue], timeout: 0.1)
     }
     #endif
-    
+
     func testDefaultSubjectTypeOnValue() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureCompleted = expectation(description: "Closure should be called")

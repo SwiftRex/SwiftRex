@@ -12,7 +12,7 @@ class PipelineMiddlewareCombineTests: MiddlewareTestsBase {
 
         let sut = PipelineMiddleware<TestState>.combine(
             eventTransformer: { _ in
-                Publishers.Empty<ActionProtocol, Never>()
+                Empty<ActionProtocol, Never>()
                     .handleEvents(receiveSubscription: { _ in
                         shouldCallEventPipeline.fulfill()
                     })
@@ -84,7 +84,7 @@ class PipelineMiddlewareCombineTests: MiddlewareTestsBase {
 
         let sut = PipelineMiddleware<TestState>.combine(
             actionTransformer: { _ in
-                Publishers.Empty<ActionProtocol, Never>()
+                Empty<ActionProtocol, Never>()
                     .handleEvents(receiveSubscription: { _ in
                         shouldCallActionPipeline.fulfill()
                     })

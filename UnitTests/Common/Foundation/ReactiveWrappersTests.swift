@@ -153,7 +153,7 @@ class ReactiveWrappersTests: XCTestCase {
         wait(for: [shouldCallClosure], timeout: 0.1)
     }
     #endif
-    
+
     // MARK: - Subject
     func testSubjectTypeOnValue() {
         let shouldCallClosure = expectation(description: "Closure should be called")
