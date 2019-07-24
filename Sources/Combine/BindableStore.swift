@@ -34,15 +34,19 @@ import SwiftUI
 /// Text(store.state.currentSearchText)
 /// ```
 public final class BindableStore<StateType>: StoreBase<StateType>, BindableObject {
-    public let didChange: AnyPublisher<Void, Never>
+    public let willChange: AnyPublisher<Void, Never>
     public let state: StateProxy
 
     public init<M: Middleware>(initialState: StateType, reducer: Reducer<StateType>, middleware: M)
         where M.StateType == StateType {
             let subject = CurrentValueSubject<StateType, Never>(initialState)
-            didChange = subject.map { _ in }.eraseToAnyPublisher()
+            let passthrough = PassthroughSubject<Void, Never>()
+            willChange = passthrough.eraseToAnyPublisher()
             state = StateProxy(currentValue: { subject.value })
-            super.init(subject: ReplayLastSubjectType(currentValueSubject: subject), reducer: reducer, middleware: middleware)
+            super.init(subject: ReplayLastSubjectType(currentValueSubject: subject,
+                                                      willChange: { passthrough.send() }),
+                       reducer: reducer,
+                       middleware: middleware)
     }
 
     @dynamicMemberLookup

@@ -13,7 +13,7 @@ class SubjectTypeBridgeTests: XCTestCase {
 
         let sut = SubjectType(passthroughSubject: passthroughSubject)
 
-        _ = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -29,6 +29,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onCompleted(nil)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 
     func testPassthroughSubjectToSubjectTypeOnError() {
@@ -41,7 +42,7 @@ class SubjectTypeBridgeTests: XCTestCase {
 
         let sut = SubjectType(passthroughSubject: passthroughSubject)
 
-        _ = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -60,6 +61,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onCompleted(someError)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 
     func testDefaultSubjectTypeOnValue() {
@@ -69,7 +71,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         let sut = SubjectType<String, SomeError>.combine()
         sut.subscriber.onValue("no one cares")
 
-        _ = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -85,6 +87,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onCompleted(nil)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 
     func testDefaultSubjectTypeOnError() {
@@ -95,7 +98,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         let sut = SubjectType<String, SomeError>.combine()
         sut.subscriber.onValue("no one cares")
 
-        _ = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -114,5 +117,6 @@ class SubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onCompleted(someError)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 }

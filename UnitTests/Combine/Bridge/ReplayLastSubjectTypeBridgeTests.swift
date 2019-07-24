@@ -14,7 +14,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         let sut = ReplayLastSubjectType(currentValueSubject: currentValueSubject)
 
         var round = 1
-        _ = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 switch round {
                 case 1:
@@ -34,6 +34,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         XCTAssertEqual(sut.value(), "test")
 
         wait(for: [shouldCallClosureValue], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 
     func testCurrentValueSubjectToReplayLastSubjectTypeOnError() {
@@ -46,7 +47,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
 
         let sut = ReplayLastSubjectType<String, SomeError>(currentValueSubject: currentValueSubject)
 
-        _ = sut.publisher.subscribe(SubscriberType<String, SomeError>(
+        let subscription = sut.publisher.subscribe(SubscriberType<String, SomeError>(
             onValue: { string in
                 XCTAssertEqual("current value", string)
                 shouldCallClosureValue.fulfill()
@@ -72,6 +73,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onCompleted(someError)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompletion], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 
     func testCurrentValueSubjectToReplayLastSubjectTypeOnFinish() {
@@ -83,7 +85,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
 
         let sut = ReplayLastSubjectType<String, SomeError>(currentValueSubject: currentValueSubject)
 
-        _ = sut.publisher.subscribe(SubscriberType<String, SomeError>(
+        let subscription = sut.publisher.subscribe(SubscriberType<String, SomeError>(
             onValue: { string in
                 XCTAssertEqual("current value", string)
                 shouldCallClosureValue.fulfill()
@@ -98,6 +100,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onCompleted(nil)
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompletion], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 
     func testDefaultReplayLastSubjectTypeOnValue() {
@@ -108,7 +111,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onValue("current value")
 
         var round = 1
-        _ = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 switch round {
                 case 1:
@@ -128,6 +131,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         XCTAssertEqual(sut.value(), "test")
 
         wait(for: [shouldCallClosureValue], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 
     func testDefaultReplayLastSubjectTypeMutate() {
@@ -138,7 +142,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onValue("current value")
 
         var round = 1
-        _ = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(SubscriberType(
             onValue: { string in
                 switch round {
                 case 1:
@@ -170,5 +174,6 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         XCTAssertEqual(sut.value(), "test 2")
 
         wait(for: [shouldCallClosureValue], timeout: 0.1)
+        XCTAssertNotNil(subscription)
     }
 }
