@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import SwiftRex
 
@@ -24,3 +25,4 @@ struct FooCombineSubscription: Combine.Subscription {
 
     let combineIdentifier = CombineIdentifier()
 }
+#endif

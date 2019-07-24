@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import CombineRex
 import SwiftRex
@@ -123,3 +124,4 @@ class SubscriberTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
     }
 }
+#endif

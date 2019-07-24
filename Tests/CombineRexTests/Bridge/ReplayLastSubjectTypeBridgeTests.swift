@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import CombineRex
 import SwiftRex
@@ -177,3 +178,4 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         XCTAssertNotNil(subscription)
     }
 }
+#endif

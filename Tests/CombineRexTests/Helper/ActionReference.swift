@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import SwiftRex
 
 class ActionReference: ActionProtocol, Equatable {
@@ -5,3 +6,4 @@ class ActionReference: ActionProtocol, Equatable {
         return lhs === rhs
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import Foundation
 
@@ -15,3 +16,4 @@ struct BlockPublisher<OutputType, FailureType: Error>: Publisher {
             onSubscribe(AnySubscriber(subscriber))
     }
 }
+#endif

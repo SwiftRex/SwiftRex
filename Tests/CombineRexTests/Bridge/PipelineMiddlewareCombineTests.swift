@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import CombineRex
 import SwiftRex
@@ -147,3 +148,4 @@ class PipelineMiddlewareCombineTests: MiddlewareTestsBase {
         XCTAssertFalse(originalAction === messageHandler.actionHandlerMock.actions.first as? ActionReference)
     }
 }
+#endif
