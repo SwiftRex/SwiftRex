@@ -5,4 +5,4 @@ scheme: BuildAndTestAll
 arch: x86_64
 configuration: Debug
 ignore:
-  - UnitTests/*
+  - Tests/*
