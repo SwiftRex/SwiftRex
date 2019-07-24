@@ -2,7 +2,7 @@
 import PackageDescription
 
 let combineProduct: [Product] = {
-    #if os(Linux) && canImport(Combine)
+    #if !os(Linux) && canImport(Combine)
         return [.library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"])]
     #else
         return []
@@ -10,7 +10,7 @@ let combineProduct: [Product] = {
 }()
 
 let combineTargets: [Target] = {
-    #if os(Linux) && canImport(Combine)
+    #if !os(Linux) && canImport(Combine)
         return [
             .target(name: "CombineRex", dependencies: ["SwiftRex"]),
             .testTarget(name: "CombineRexTests",
