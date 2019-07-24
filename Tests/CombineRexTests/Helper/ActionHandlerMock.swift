@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import SwiftRex
 
 class ActionHandlerMock {
@@ -10,3 +11,4 @@ class ActionHandlerMock {
         )
     }
 }
+#endif

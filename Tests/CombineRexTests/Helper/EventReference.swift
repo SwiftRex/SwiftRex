@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import SwiftRex
 
 class EventReference: EventProtocol, Equatable {
@@ -5,3 +6,4 @@ class EventReference: EventProtocol, Equatable {
         return lhs === rhs
     }
 }
+#endif

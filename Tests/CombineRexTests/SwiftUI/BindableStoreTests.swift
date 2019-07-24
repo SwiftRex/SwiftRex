@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import CombineRex
 import SwiftRex
@@ -238,3 +239,4 @@ class BindableStoreTests: XCTestCase {
         XCTAssertNotNil(subscription4)
     }
 }
+#endif

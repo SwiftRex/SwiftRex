@@ -1,3 +1,4 @@
+#if canImport(Combine)
 @testable import SwiftRex
 import XCTest
 
@@ -24,3 +25,4 @@ class MiddlewareTestsBase: XCTestCase {
             }
     }
 }
+#endif

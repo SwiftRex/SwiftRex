@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import CombineRex
 import SwiftRex
@@ -98,3 +99,4 @@ class SubscriptionBridgeTests: XCTestCase {
         wait(for: [shouldBeDisposed], timeout: 0.1)
     }
 }
+#endif

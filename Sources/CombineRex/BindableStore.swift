@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import Foundation
 import SwiftRex
@@ -62,3 +63,4 @@ public final class BindableStore<StateType>: StoreBase<StateType>, BindableObjec
         }
     }
 }
+#endif
