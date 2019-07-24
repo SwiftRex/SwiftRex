@@ -20,22 +20,18 @@ let package = Package(
         .package(url: "https://github.com/Quick/Nimble.git", .exact("8.0.2"))
     ],
     targets: [
-        .target(name: "SwiftRex", dependencies: [], path: "Sources/Common"),
-        .target(name: "CombineRex", dependencies: ["SwiftRex"], path: "Sources/Combine"),
-        .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"], path: "Sources/ReactiveSwift"),
-        .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"], path: "Sources/RxSwift"),
-        .testTarget(name: "UnitTests SwiftRex",
-                    dependencies: ["SwiftRex", "Nimble"],
-                    path: "UnitTests/Common"),
-        .testTarget(name: "UnitTests CombineRex",
-                    dependencies: ["SwiftRex", "CombineRex"],
-                    path: "UnitTests/Combine"),
-        .testTarget(name: "UnitTests ReactiveSwiftRex",
-                    dependencies: ["SwiftRex", "ReactiveSwiftRex", "Nimble"],
-                    path: "UnitTests/ReactiveSwift"),
-        .testTarget(name: "UnitTests RxSwiftRex",
-                    dependencies: ["SwiftRex", "RxSwiftRex", "Nimble", "RxBlocking", "RxTest"],
-                    path: "UnitTests/RxSwift")
+        .target(name: "SwiftRex", dependencies: []),
+        .target(name: "CombineRex", dependencies: ["SwiftRex"]),
+        .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),
+        .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"]),
+        .testTarget(name: "SwiftRexTests",
+                    dependencies: ["SwiftRex", "Nimble"]),
+        .testTarget(name: "CombineRexTests",
+                    dependencies: ["SwiftRex", "CombineRex"]),
+        .testTarget(name: "ReactiveSwiftRexTests",
+                    dependencies: ["SwiftRex", "ReactiveSwiftRex", "Nimble"]),
+        .testTarget(name: "RxSwiftRexTests",
+                    dependencies: ["SwiftRex", "RxSwiftRex", "Nimble", "RxBlocking", "RxTest"])
     ],
     swiftLanguageVersions: [.v5]
 )

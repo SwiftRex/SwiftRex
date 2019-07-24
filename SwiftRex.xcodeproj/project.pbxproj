@@ -203,14 +203,14 @@
 		D5A022B022BED5C600797438 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */; };
 		D5A022BA22BED8B000797438 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5A022BB22BED8B000797438 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
-		D5A2EAEA22B9A02800CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5A2EAEB22B9A02900CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5A2EAEC22B9A02A00CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5A2EAED22B9A02B00CA10B8 /* SwiftRexForRac.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5A2EAEF22B9A06700CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5A2EAF022B9A06700CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5A2EAF122B9A06800CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5A2EAF222B9A06800CA10B8 /* SwiftRexForRx.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAEA22B9A02800CA10B8 /* ReactiveSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAEB22B9A02900CA10B8 /* ReactiveSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAEC22B9A02A00CA10B8 /* ReactiveSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAED22B9A02B00CA10B8 /* ReactiveSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAEF22B9A06700CA10B8 /* RxSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAF022B9A06700CA10B8 /* RxSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAF122B9A06800CA10B8 /* RxSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5A2EAF222B9A06800CA10B8 /* RxSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5A2EAF322B9A1F100CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888A8822B6E9250028B0E1 /* SwiftRex.framework */; };
 		D5A2EAF422B9A1F900CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
 		D5A2EAF522B9A20300CA10B8 /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */; };
@@ -247,10 +247,10 @@
 		D5C1C61522BFE6B300532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888B0022B6E9300028B0E1 /* SwiftRex.framework */; };
 		D5C1C62922BFE6BA00532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AD822B6E92D0028B0E1 /* SwiftRex.framework */; };
 		D5C1C63D22BFE6C300532BCF /* SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */; };
-		D5C1C66122BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5C1C66222BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5C1C66322BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5C1C66422BFE7A000532BCF /* SwiftRexForCombine.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C1C66122BFE7A000532BCF /* CombineRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* CombineRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C1C66222BFE7A000532BCF /* CombineRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* CombineRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C1C66322BFE7A000532BCF /* CombineRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* CombineRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C1C66422BFE7A000532BCF /* CombineRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* CombineRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5C3943522B970B400ABCA90 /* BypassMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* BypassMiddlewareTests.swift */; };
 		D5C3943622B970B400ABCA90 /* ComposedMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */; };
 		D5C3943722B970B400ABCA90 /* DirectLineMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */; };
@@ -553,8 +553,8 @@
 		D59D5809207AA1B40010412E /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		D59D580A207AA1B40010412E /* StoreBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreBase.swift; sourceTree = "<group>"; };
 		D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriberTypeBridgeTests.swift; sourceTree = "<group>"; };
-		D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRexForRac.h; sourceTree = "<group>"; };
-		D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftRexForRx.h; sourceTree = "<group>"; };
+		D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReactiveSwiftRex.h; sourceTree = "<group>"; };
+		D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RxSwiftRex.h; sourceTree = "<group>"; };
 		D5A2EAFB22B9A27D00CA10B8 /* SwiftRex-ReactiveSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-ReactiveSwift.xcconfig"; sourceTree = "<group>"; };
 		D5A2EAFC22B9A2F300CA10B8 /* SwiftRex-RxSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift.xcconfig"; sourceTree = "<group>"; };
 		D5A607012071287900D682EF /* RotationMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationMiddleware.swift; sourceTree = "<group>"; };
@@ -587,7 +587,7 @@
 		D5C1C63122BFE6BA00532BCF /* CombineRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CombineRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C1C64522BFE6C300532BCF /* CombineRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CombineRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C1C65E22BFE6CB00532BCF /* UnitTests Combine.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests Combine.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftRexForCombine.h; sourceTree = "<group>"; };
+		D5C1C66022BFE7A000532BCF /* CombineRex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CombineRex.h; sourceTree = "<group>"; };
 		D5C1C66A22BFE93B00532BCF /* SwiftRex-Combine.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine.xcconfig"; sourceTree = "<group>"; };
 		D5C1C66B22BFE94D00532BCF /* SwiftRex-Combine-Debug-iOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Debug-iOS.xcconfig"; sourceTree = "<group>"; };
 		D5C1C67022BFE95F00532BCF /* SwiftRex-Combine-Debug-macOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Debug-macOS.xcconfig"; sourceTree = "<group>"; };
@@ -878,17 +878,17 @@
 			path = Helper;
 			sourceTree = "<group>";
 		};
-		D51A223222BFF1C200194408 /* Combine */ = {
+		D51A223222BFF1C200194408 /* CombineRexTests */ = {
 			isa = PBXGroup;
 			children = (
 				D5E7349822C1567200B0E284 /* Bridge */,
 				D5E7349922C1567300B0E284 /* Helper */,
 				D5C96A6122DA211100585865 /* SwiftUI */,
 			);
-			path = Combine;
+			path = CombineRexTests;
 			sourceTree = "<group>";
 		};
-		D51A223322BFF1DA00194408 /* Combine */ = {
+		D51A223322BFF1DA00194408 /* CombineRex */ = {
 			isa = PBXGroup;
 			children = (
 				D5C96A5C22DA1BAB00585865 /* BindableStore.swift */,
@@ -899,10 +899,10 @@
 				D51A223822BFF1EB00194408 /* SubscriberType+Subscriber.swift */,
 				D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */,
 			);
-			path = Combine;
+			path = CombineRex;
 			sourceTree = "<group>";
 		};
-		D532C9C4223EBCE100AB13EF /* Common */ = {
+		D532C9C4223EBCE100AB13EF /* SwiftRex */ = {
 			isa = PBXGroup;
 			children = (
 				D59D57EA207AA1B40010412E /* CodeGeneration */,
@@ -911,7 +911,7 @@
 				D59D57F8207AA1B40010412E /* Middlewares */,
 				D59D5805207AA1B40010412E /* Store */,
 			);
-			path = Common;
+			path = SwiftRex;
 			sourceTree = "<group>";
 		};
 		D552CC3422BEF116008EF537 /* Helper */ = {
@@ -1006,15 +1006,15 @@
 		D56C3E402082E991002E914C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				D51A223322BFF1DA00194408 /* Combine */,
-				D532C9C4223EBCE100AB13EF /* Common */,
+				D51A223322BFF1DA00194408 /* CombineRex */,
 				D59D5800207AA1B40010412E /* Metadata */,
-				D5A2EAE822B99FBB00CA10B8 /* ReactiveSwift */,
-				D5A2EAE722B99FB100CA10B8 /* RxSwift */,
+				D5A2EAE822B99FBB00CA10B8 /* ReactiveSwiftRex */,
+				D5A2EAE722B99FB100CA10B8 /* RxSwiftRex */,
+				D532C9C4223EBCE100AB13EF /* SwiftRex */,
+				D5C1C66022BFE7A000532BCF /* CombineRex.h */,
+				D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */,
+				D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */,
 				D59D57F7207AA1B40010412E /* SwiftRex.h */,
-				D5C1C66022BFE7A000532BCF /* SwiftRexForCombine.h */,
-				D5A2EAE922B9A00E00CA10B8 /* SwiftRexForRac.h */,
-				D5A2EAEE22B9A05600CA10B8 /* SwiftRexForRx.h */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -1024,23 +1024,23 @@
 			children = (
 				D5623F7220939DF500C70F60 /* Configuration */,
 				D56C3E402082E991002E914C /* Sources */,
-				D578B28A208A690C0035AE9C /* UnitTests */,
+				D578B28A208A690C0035AE9C /* Tests */,
 				D595F6CD206E818C00E02733 /* Products */,
 				1C65E074A644BAF203DDD813 /* Pods */,
 				4A58DE22223B79578162021E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		D578B28A208A690C0035AE9C /* UnitTests */ = {
+		D578B28A208A690C0035AE9C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				D51A223222BFF1C200194408 /* Combine */,
-				D5888B7222B6F6720028B0E1 /* Common */,
+				D51A223222BFF1C200194408 /* CombineRexTests */,
 				D5FDCB3A22B70D6D0012D2E7 /* Metadata */,
-				D5888B7322B6F6790028B0E1 /* ReactiveSwift */,
-				D5888B7422B6F6800028B0E1 /* RxSwift */,
+				D5888B7322B6F6790028B0E1 /* ReactiveSwiftRexTests */,
+				D5888B7422B6F6800028B0E1 /* RxSwiftRexTests */,
+				D5888B7222B6F6720028B0E1 /* SwiftRexTests */,
 			);
-			path = UnitTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		D5866FC5208AD51000507523 /* Foundation */ = {
@@ -1054,7 +1054,7 @@
 			path = Foundation;
 			sourceTree = "<group>";
 		};
-		D5888B7222B6F6720028B0E1 /* Common */ = {
+		D5888B7222B6F6720028B0E1 /* SwiftRexTests */ = {
 			isa = PBXGroup;
 			children = (
 				D5FDCB3922B70D0F0012D2E7 /* CodeGeneration */,
@@ -1064,25 +1064,25 @@
 				D5C3944222B9886400ABCA90 /* Reducer */,
 				D5C3944322B9887D00ABCA90 /* Store */,
 			);
-			path = Common;
+			path = SwiftRexTests;
 			sourceTree = "<group>";
 		};
-		D5888B7322B6F6790028B0E1 /* ReactiveSwift */ = {
+		D5888B7322B6F6790028B0E1 /* ReactiveSwiftRexTests */ = {
 			isa = PBXGroup;
 			children = (
 				D552CC3922BEF150008EF537 /* Bridge */,
 				D552CC3422BEF116008EF537 /* Helper */,
 			);
-			path = ReactiveSwift;
+			path = ReactiveSwiftRexTests;
 			sourceTree = "<group>";
 		};
-		D5888B7422B6F6800028B0E1 /* RxSwift */ = {
+		D5888B7422B6F6800028B0E1 /* RxSwiftRexTests */ = {
 			isa = PBXGroup;
 			children = (
 				D507CAC822BE8E6F00BE6679 /* Bridge */,
 				D507CACD22BE921D00BE6679 /* Helper */,
 			);
-			path = RxSwift;
+			path = RxSwiftRexTests;
 			sourceTree = "<group>";
 		};
 		D595F6CD206E818C00E02733 /* Products */ = {
@@ -1178,7 +1178,7 @@
 			path = Store;
 			sourceTree = "<group>";
 		};
-		D5A2EAE722B99FB100CA10B8 /* RxSwift */ = {
+		D5A2EAE722B99FB100CA10B8 /* RxSwiftRex */ = {
 			isa = PBXGroup;
 			children = (
 				D56C218522DAABC50096DB96 /* PipelineMiddleware+RxSwift.swift */,
@@ -1188,10 +1188,10 @@
 				D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */,
 				D578209F22BADFC60065E44D /* Subscription+Disposable.swift */,
 			);
-			path = RxSwift;
+			path = RxSwiftRex;
 			sourceTree = "<group>";
 		};
-		D5A2EAE822B99FBB00CA10B8 /* ReactiveSwift */ = {
+		D5A2EAE822B99FBB00CA10B8 /* ReactiveSwiftRex */ = {
 			isa = PBXGroup;
 			children = (
 				D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */,
@@ -1202,7 +1202,7 @@
 				D57820BA22BAFB480065E44D /* SubscriberType+SignalObserver.swift */,
 				D57820BB22BAFB480065E44D /* Subscription+Disposable.swift */,
 			);
-			path = ReactiveSwift;
+			path = ReactiveSwiftRex;
 			sourceTree = "<group>";
 		};
 		D5A606FD2071287900D682EF /* Mocks */ = {
@@ -1381,7 +1381,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAEF22B9A06700CA10B8 /* SwiftRexForRx.h in Headers */,
+				D5A2EAEF22B9A06700CA10B8 /* RxSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1389,7 +1389,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAF222B9A06800CA10B8 /* SwiftRexForRx.h in Headers */,
+				D5A2EAF222B9A06800CA10B8 /* RxSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1397,7 +1397,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAF122B9A06800CA10B8 /* SwiftRexForRx.h in Headers */,
+				D5A2EAF122B9A06800CA10B8 /* RxSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1405,7 +1405,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAF022B9A06700CA10B8 /* SwiftRexForRx.h in Headers */,
+				D5A2EAF022B9A06700CA10B8 /* RxSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1445,7 +1445,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAEA22B9A02800CA10B8 /* SwiftRexForRac.h in Headers */,
+				D5A2EAEA22B9A02800CA10B8 /* ReactiveSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1453,7 +1453,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAED22B9A02B00CA10B8 /* SwiftRexForRac.h in Headers */,
+				D5A2EAED22B9A02B00CA10B8 /* ReactiveSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1461,7 +1461,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAEC22B9A02A00CA10B8 /* SwiftRexForRac.h in Headers */,
+				D5A2EAEC22B9A02A00CA10B8 /* ReactiveSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1469,7 +1469,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A2EAEB22B9A02900CA10B8 /* SwiftRexForRac.h in Headers */,
+				D5A2EAEB22B9A02900CA10B8 /* ReactiveSwiftRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1477,7 +1477,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5C1C66122BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+				D5C1C66122BFE7A000532BCF /* CombineRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1485,7 +1485,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5C1C66222BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+				D5C1C66222BFE7A000532BCF /* CombineRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1493,7 +1493,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5C1C66322BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+				D5C1C66322BFE7A000532BCF /* CombineRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1501,7 +1501,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5C1C66422BFE7A000532BCF /* SwiftRexForCombine.h in Headers */,
+				D5C1C66422BFE7A000532BCF /* CombineRex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
