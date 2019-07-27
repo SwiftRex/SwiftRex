@@ -37,12 +37,11 @@ disabled_rules:
   - force_cast
   - large_tuple
 excluded:
-  - Sources/Common/CodeGeneration
-  - Sources/SwiftRex RxSwift
-  - Sources/SwiftRex ReactiveSwift
+  - Sources/SwiftRex/CodeGeneration
   - Pods
   - .build
   - DerivedData
+  - "Tests/*/XCTestManifests.swift"
 opt_in_rules: # some rules are only opt-in
   - array_init
   - closure_end_indentation

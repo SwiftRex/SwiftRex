@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target      = '9.0'
   s.swift_version               = '5.0'
 
-  s.source_files = "Sources/RxSwift/**/*.swift"
+  s.source_files = "Sources/RxSwiftRex/**/*.swift"
   s.dependency 'SwiftRex'
   s.dependency 'RxSwift', '~> 5'
 end
