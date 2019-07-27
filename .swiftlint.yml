@@ -41,6 +41,7 @@ excluded:
   - Pods
   - .build
   - DerivedData
+  - "Tests/*/XCTestManifests.swift"
 opt_in_rules: # some rules are only opt-in
   - array_init
   - closure_end_indentation
