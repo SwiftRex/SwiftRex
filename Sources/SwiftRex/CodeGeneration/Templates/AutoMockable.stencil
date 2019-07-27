@@ -1,4 +1,4 @@
-// sourcery:file:../../../Tests/SwiftRex/CodeGeneration/AutoMockable.generated.swift
+// sourcery:file:../../../Tests/SwiftRexTests/CodeGeneration/AutoMockable.generated.swift
 // swiftlint:disable all
 import Foundation
 @testable import SwiftRex
