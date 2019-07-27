@@ -1,4 +1,7 @@
-# SwiftRex
+<p align="center">
+	<a href="https://github.com/SwiftRex/SwiftRex/"><img src="https://swiftrex.github.io/SwiftRex/markdown/img/SwiftRexBanner.png" alt="SwiftRex" /></a><br /><br />
+	Unidirectional Dataflow for your favourite reactive framework<br /><br />
+</p>
 
 [![Build Status](https://api.travis-ci.org/SwiftRex/SwiftRex.svg?branch=develop&maxAge=600)](https://travis-ci.org/SwiftRex/SwiftRex)
 [![Coverage Status](https://img.shields.io/coveralls/github/SwiftRex/SwiftRex/develop.svg)](https://coveralls.io/github/SwiftRex/SwiftRex?branch=develop)
