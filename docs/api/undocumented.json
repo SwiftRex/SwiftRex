@@ -1,6 +1,278 @@
 {
   "warnings": [
-
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 3,
+      "symbol": "SubscriberType",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 4,
+      "symbol": "SubscriberType.onValue",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 5,
+      "symbol": "SubscriberType.onCompleted",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 6,
+      "symbol": "SubscriberType.init(onValue:onCompleted:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 11,
+      "symbol": "SubscriberType.assertNoFailure()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 19,
+      "symbol": "UnfailableSubscriberType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 21,
+      "symbol": "PublisherType",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 22,
+      "symbol": "PublisherType.subscribe",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 23,
+      "symbol": "PublisherType.init(subscribe:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 27,
+      "symbol": "PublisherType.assertNoFailure()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 39,
+      "symbol": "UnfailablePublisherType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 41,
+      "symbol": "Subscription",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 42,
+      "symbol": "Subscription.unsubscribe()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 45,
+      "symbol": "Subscription",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 46,
+      "symbol": "Subscription.cancelled(by:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 50,
+      "symbol": "Subscription.cancelled(by:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 55,
+      "symbol": "SubscriptionCollection",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 56,
+      "symbol": "SubscriptionCollection.store(subscription:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 67,
+      "symbol": "SubjectType",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 68,
+      "symbol": "SubjectType.publisher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 69,
+      "symbol": "SubjectType.subscriber",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 70,
+      "symbol": "SubjectType.init(publisher:subscriber:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 76,
+      "symbol": "UnfailableSubject",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 78,
+      "symbol": "ReplayLastSubjectType",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 79,
+      "symbol": "ReplayLastSubjectType.publisher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 80,
+      "symbol": "ReplayLastSubjectType.subscriber",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 81,
+      "symbol": "ReplayLastSubjectType.value",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 82,
+      "symbol": "ReplayLastSubjectType.init(publisher:subscriber:value:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 92,
+      "symbol": "ReplayLastSubjectType",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 94,
+      "symbol": "ReplayLastSubjectType.mutate(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
+      "line": 102,
+      "symbol": "UnfailableReplayLastSubjectType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Middlewares/PipelineMiddleware.swift",
+      "line": 3,
+      "symbol": "PipelineMiddleware",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Middlewares/PipelineMiddleware.swift",
+      "line": 9,
+      "symbol": "PipelineMiddleware.init(eventTransformer:actionTransformer:eventSubject:actionSubject:subscriptionCollection:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Store/MessageHandler.swift",
+      "line": 15,
+      "symbol": "MessageHandler.init(actionHandler:eventHandler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Store/StateProvider.swift",
+      "line": 5,
+      "symbol": "StateProvider.StateType",
+      "symbol_kind": "source.lang.swift.decl.associatedtype",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Store/StateProvider.swift",
+      "line": 6,
+      "symbol": "StateProvider.statePublisher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Store/Store.swift",
+      "line": 23,
+      "symbol": "Store.eventHandler",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Store/StoreBase.swift",
+      "line": 67,
+      "symbol": "StoreBase.statePublisher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex/Sources/SwiftRex/Store/StoreBase.swift",
+      "line": 68,
+      "symbol": "StoreBase.eventHandler",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    }
   ],
-  "source_directory": "/Users/luiz.barbosa/Code/OSS/SwiftRex/SwiftRex"
+  "source_directory": "/Users/luizguitar/Documents/code/SwiftRex/SwiftRex"
 }
