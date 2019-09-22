@@ -5,13 +5,14 @@ import SwiftRex
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension ReplayLastSubjectType {
-    public init(currentValueSubject: CurrentValueSubject<Element, ErrorType>, willChange: (() -> Void)? = nil) {
+    public init(currentValueSubject: CurrentValueSubject<Element, ErrorType>,
+                willChange: ((Element) -> Void)? = nil) {
         self.init(
             publisher: currentValueSubject.asPublisherType(),
             subscriber: SubscriberType(
-                onValue: {
-                    willChange?()
-                    currentValueSubject.value = $0
+                onValue: { newValue in
+                    willChange?(newValue)
+                    currentValueSubject.value = newValue
                 },
                 onCompleted: { error in
                     currentValueSubject.send(completion: error.map(Subscribers.Completion<ErrorType>.failure) ?? .finished)
@@ -21,7 +22,7 @@ extension ReplayLastSubjectType {
         )
     }
 
-    public static func combine(initialValue: Element, willChange: (() -> Void)? = nil) -> ReplayLastSubjectType<Element, ErrorType> {
+    public static func combine(initialValue: Element, willChange: ((Element) -> Void)? = nil) -> ReplayLastSubjectType<Element, ErrorType> {
         let currentValueSubject = CurrentValueSubject<Element, ErrorType>(initialValue)
         return .init(currentValueSubject: currentValueSubject, willChange: willChange)
     }

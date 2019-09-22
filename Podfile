@@ -97,7 +97,7 @@ post_install do |installer|
         target.build_configurations.each do |config|
             config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
             config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
-            config.build_settings['SWIFT_VERSION'] = "5.0"
+            config.build_settings['SWIFT_VERSION'] = "5.1"
             config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = "YES"
 
             if target.name == 'RxSwift' && config.name == 'Debug'

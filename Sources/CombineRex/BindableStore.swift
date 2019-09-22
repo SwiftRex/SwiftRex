@@ -2,7 +2,6 @@
 import Combine
 import Foundation
 import SwiftRex
-import SwiftUI
 
 /// A Store made to be used in SwiftUI
 ///
@@ -34,33 +33,20 @@ import SwiftUI
 /// ```
 /// Text(store.state.currentSearchText)
 /// ```
-public final class BindableStore<StateType>: StoreBase<StateType>, BindableObject {
-    public let willChange: AnyPublisher<Void, Never>
-    public let state: StateProxy
+public final class BindableStore<StateType>: StoreBase<StateType>, ObservableObject {
+    @Published public var state: StateType
+    private var cancellableBinding: AnyCancellable!
 
     public init<M: Middleware>(initialState: StateType, reducer: Reducer<StateType>, middleware: M)
         where M.StateType == StateType {
-            let subject = CurrentValueSubject<StateType, Never>(initialState)
-            let passthrough = PassthroughSubject<Void, Never>()
-            willChange = passthrough.eraseToAnyPublisher()
-            state = StateProxy(currentValue: { subject.value })
-            super.init(subject: ReplayLastSubjectType(currentValueSubject: subject,
-                                                      willChange: { passthrough.send() }),
+            _state = .init(initialValue: initialState)
+            let subject = UnfailableReplayLastSubjectType.combine(initialValue: initialState)
+            super.init(subject: subject,
                        reducer: reducer,
                        middleware: middleware)
-    }
-
-    @dynamicMemberLookup
-    public struct StateProxy {
-        private let currentValue: () -> StateType
-
-        init(currentValue: @escaping () -> StateType) {
-            self.currentValue = currentValue
-        }
-
-        public subscript<T>(dynamicMember keyPath: KeyPath<StateType, T>) -> T {
-            currentValue()[keyPath: keyPath]
-        }
+            cancellableBinding = subject.publisher.sink { [unowned self] newValue in
+                self.state = newValue
+            }
     }
 }
 #endif

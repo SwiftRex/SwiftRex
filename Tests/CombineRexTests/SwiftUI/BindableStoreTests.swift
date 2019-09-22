@@ -75,7 +75,7 @@ class BindableStoreTests: XCTestCase {
     }
 
     func testSubscribeDoNotTriggerWillChangeNotifyIntegrationTest() {
-        let subscription = store.willChange.sink { _ in
+        let subscription = store.objectWillChange.sink { _ in
             XCTFail("On subscribe this notification should never be triggered")
         }
 
@@ -84,7 +84,7 @@ class BindableStoreTests: XCTestCase {
 
     func testWillChangeNotifyOnChangeIntegrationTest() {
         let shouldBeNotifiedByWillChangePublisher = expectation(description: "should be notified by will change publisher")
-        let subscription = store.willChange.sink { [unowned self] _ in
+        let subscription = store.objectWillChange.sink { [unowned self] _ in
             XCTAssertEqual("Initial State", self.store.state.name)
             DispatchQueue.main.async {
                 XCTAssertEqual("Initial State_a1", self.store.state.name)
@@ -111,7 +111,7 @@ class BindableStoreTests: XCTestCase {
     func testStatePublisherNotifyOnChangeIntegrationTest() {
         let shouldBeNotifiedByStatePublisher = expectation(description: "should be notified by state publisher")
         var time = 0
-        _ = store.statePublisher.sink { [unowned self] value in
+        let cancellable = store.statePublisher.sink { [unowned self] value in
             switch time {
             case 0:
                 XCTAssertEqual("Initial State", self.store.state.name)
@@ -128,22 +128,23 @@ class BindableStoreTests: XCTestCase {
         store.eventHandler.dispatch(Event1())
 
         wait(for: [shouldBeNotifiedByStatePublisher], timeout: 1)
+        XCTAssertNotNil(cancellable)
     }
 
     func testWillChangePublisherCanHaveMultipleSubscriptions() {
         let shouldBeNotifiedByWillChangePublisher1 = expectation(description: "should be notified by will change publisher 1")
         let shouldBeNotifiedByWillChangePublisher2 = expectation(description: "should be notified by will change publisher 2")
-        let subscription1 = store.willChange.sink { _ in
+        let subscription1 = store.objectWillChange.sink { _ in
             XCTFail("On subscribe this notification should never be triggered")
         }
         subscription1.cancel()
 
-        let subscription2 = store.willChange.sink { _ in
+        let subscription2 = store.objectWillChange.sink { _ in
             XCTFail("On subscribe this notification should never be triggered")
         }
         subscription2.cancel()
 
-        let subscription3 = store.willChange.sink { [unowned self] _ in
+        let subscription3 = store.objectWillChange.sink { [unowned self] _ in
             XCTAssertEqual("Initial State", self.store.state.name)
             DispatchQueue.main.async {
                 XCTAssertEqual("Initial State_a1", self.store.state.name)
@@ -152,7 +153,7 @@ class BindableStoreTests: XCTestCase {
         }
 
         var time = 0
-        let subscription4 = store.willChange.sink { [unowned self] _ in
+        let subscription4 = store.objectWillChange.sink { [unowned self] _ in
             switch time {
             case 0:
                 XCTAssertEqual("Initial State", self.store.state.name)
