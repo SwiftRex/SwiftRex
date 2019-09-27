@@ -27,18 +27,16 @@ import Foundation
 open class StoreBase<State> {
     private let middleware: AnyMiddleware<State>
     private let reducer: Reducer<State>
-    private let dispatchEventQueue = DispatchQueue.main
-    private let triggerActionQueue = DispatchQueue.main
     private let subject: UnfailableReplayLastSubjectType<State>
     private lazy var messageHandler: MessageHandler = {
         MessageHandler(
             actionHandler: ActionHandler(onValue: { [unowned self] action in
-                self.triggerActionQueue.async {
+                DispatchQueue.asap {
                     self.middlewarePipeline(for: action)
                 }
             }),
             eventHandler: EventHandler(onValue: { [unowned self] event in
-                self.dispatchEventQueue.async {
+                DispatchQueue.main.async {
                     self.middlewarePipeline(for: event)
                 }
             })
@@ -60,6 +58,7 @@ open class StoreBase<State> {
         self.reducer = reducer
         self.middleware = AnyMiddleware(middleware)
         self.middleware.handlers = messageHandler
+        DispatchQueue.setMainQueueID()
     }
 }
 
