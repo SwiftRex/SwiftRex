@@ -9,7 +9,3 @@ WATCHOS_DEPLOYMENT_TARGET = 6.0
 
 // Swift Version
 SWIFT_VERSION = 5.1
-
-// Temporarily disabled while macOS Catalina is beta
-// to allow development using Mojave. Sorry, can't upgrade yet.
-SUPPORTS_UIKITFORMAC = NO
