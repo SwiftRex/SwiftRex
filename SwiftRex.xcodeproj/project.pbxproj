@@ -125,13 +125,11 @@
 		D5888A7722B6E9250028B0E1 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
 		D5888A7822B6E9250028B0E1 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* BypassMiddleware.swift */; };
 		D5888A7922B6E9250028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
-		D5888A7A22B6E9250028B0E1 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */; };
 		D5888A7B22B6E9250028B0E1 /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
 		D5888A7D22B6E9250028B0E1 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D5888A7E22B6E9250028B0E1 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D5888A7F22B6E9250028B0E1 /* ActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5806207AA1B40010412E /* ActionHandler.swift */; };
 		D5888A8322B6E9250028B0E1 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5888A8E22B6E92A0028B0E1 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */; };
 		D5888A8F22B6E92A0028B0E1 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D5888A9022B6E92A0028B0E1 /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
 		D5888A9222B6E92A0028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
@@ -148,7 +146,6 @@
 		D5888AA522B6E92A0028B0E1 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D5888AA722B6E92A0028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D5888AAB22B6E92A0028B0E1 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5888AB622B6E92D0028B0E1 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */; };
 		D5888AB722B6E92D0028B0E1 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D5888AB822B6E92D0028B0E1 /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
 		D5888AB922B6E92D0028B0E1 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
@@ -167,7 +164,6 @@
 		D5888ACD22B6E92D0028B0E1 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* Store.swift */; };
 		D5888ACF22B6E92D0028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D5888AD322B6E92D0028B0E1 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D5888ADE22B6E9300028B0E1 /* DirectLineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */; };
 		D5888ADF22B6E9300028B0E1 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D5888AE022B6E9300028B0E1 /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
 		D5888AE122B6E9300028B0E1 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
@@ -533,7 +529,6 @@
 		D59D57F9207AA1B40010412E /* BypassMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassMiddleware.swift; sourceTree = "<group>"; };
 		D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PipelineMiddleware.swift; sourceTree = "<group>"; };
 		D59D57FB207AA1B40010412E /* Middleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Middleware.swift; sourceTree = "<group>"; };
-		D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectLineMiddleware.swift; sourceTree = "<group>"; };
 		D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposedMiddleware.swift; sourceTree = "<group>"; };
 		D59D5801207AA1B40010412E /* Info-iOS.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
 		D59D5802207AA1B40010412E /* Info-watchOS.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-watchOS.plist"; sourceTree = "<group>"; };
@@ -1145,7 +1140,6 @@
 			children = (
 				D59D57F9207AA1B40010412E /* BypassMiddleware.swift */,
 				D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */,
-				D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */,
 				D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */,
 				D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */,
 			);
@@ -2729,7 +2723,6 @@
 				D5888A7722B6E9250028B0E1 /* TypeErase.generated.swift in Sources */,
 				D5888A7822B6E9250028B0E1 /* BypassMiddleware.swift in Sources */,
 				D5888A7922B6E9250028B0E1 /* StoreBase.swift in Sources */,
-				D5888A7A22B6E9250028B0E1 /* DirectLineMiddleware.swift in Sources */,
 				D5888A7B22B6E9250028B0E1 /* StateProvider.swift in Sources */,
 				D5888A7D22B6E9250028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888A7E22B6E9250028B0E1 /* Store.swift in Sources */,
@@ -2741,7 +2734,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5888A8E22B6E92A0028B0E1 /* DirectLineMiddleware.swift in Sources */,
 				D5888A8F22B6E92A0028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888A9022B6E92A0028B0E1 /* StateProvider.swift in Sources */,
 				D5A022BB22BED8B000797438 /* TypeErase.generated.swift in Sources */,
@@ -2767,7 +2759,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5888AB622B6E92D0028B0E1 /* DirectLineMiddleware.swift in Sources */,
 				D5888AB722B6E92D0028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888AB822B6E92D0028B0E1 /* StateProvider.swift in Sources */,
 				D5888AB922B6E92D0028B0E1 /* TypeErase.generated.swift in Sources */,
@@ -2793,7 +2784,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5888ADE22B6E9300028B0E1 /* DirectLineMiddleware.swift in Sources */,
 				D5888ADF22B6E9300028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888AE022B6E9300028B0E1 /* StateProvider.swift in Sources */,
 				D5888AE122B6E9300028B0E1 /* TypeErase.generated.swift in Sources */,
