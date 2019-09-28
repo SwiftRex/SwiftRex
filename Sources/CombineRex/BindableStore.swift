@@ -33,20 +33,20 @@ import SwiftRex
 /// ```
 /// Text(store.state.currentSearchText)
 /// ```
-public final class BindableStore<StateType>: StoreBase<StateType>, ObservableObject {
+public final class BindableStore<ActionType, StateType>: StoreBase<ActionType, StateType>, ObservableObject {
     @Published public var state: StateType
     private var cancellableBinding: AnyCancellable!
 
-    public init<M: Middleware>(initialState: StateType, reducer: Reducer<StateType>, middleware: M)
-        where M.StateType == StateType {
-            _state = .init(initialValue: initialState)
-            let subject = UnfailableReplayLastSubjectType.combine(initialValue: initialState)
-            super.init(subject: subject,
-                       reducer: reducer,
-                       middleware: middleware)
-            cancellableBinding = subject.publisher.sink { [unowned self] newValue in
-                self.state = newValue
-            }
+    public init<M: Middleware>(initialState: StateType, reducer: Reducer<ActionType, StateType>, middleware: M)
+        where M.ActionType == ActionType, M.StateType == StateType {
+        _state = .init(initialValue: initialState)
+        let subject = UnfailableReplayLastSubjectType.combine(initialValue: initialState)
+        super.init(subject: subject,
+                   reducer: reducer,
+                   middleware: middleware)
+        cancellableBinding = subject.publisher.sink { [unowned self] newValue in
+            self.state = newValue
+        }
     }
 }
 #endif
