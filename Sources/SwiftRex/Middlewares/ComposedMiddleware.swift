@@ -31,7 +31,7 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
 
      A `ComposedMiddleware` also sets its child middlewares to the same context whenever this property is set.
      */
-    public var context: () -> MiddlewareContext {
+    public var context: () -> MiddlewareContext<GlobalState> {
         didSet {
             middlewares.forEach {
                 $0.context = { [unowned self] in self.context() }
@@ -87,13 +87,11 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: ActionProtocol, getState: @escaping GetState<GlobalState>, next: @escaping NextActionHandler<GlobalState>) {
-        let chain = middlewares.reduce(next) { nextHandler, middleware in
-            { (chainAction: ActionProtocol, chainGetState: @escaping GetState<GlobalState>) in
-                middleware.handle(action: chainAction, getState: chainGetState, next: nextHandler)
-            }
+    public func handle(action: ActionProtocol) {
+        middlewares.forEach { middleware in
+            middleware.handle(action: action)
         }
-        chain(action, getState)
+        context().next(action)
     }
 }
 

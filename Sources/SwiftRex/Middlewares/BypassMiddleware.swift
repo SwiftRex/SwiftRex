@@ -7,7 +7,7 @@ public final class BypassMiddleware<GlobalState>: Middleware {
      This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
      the chain.
      */
-    public var context: () -> MiddlewareContext
+    public var context: () -> MiddlewareContext<GlobalState>
 
     /**
      Default initializer for `BypassMiddleware`
@@ -37,7 +37,7 @@ public final class BypassMiddleware<GlobalState>: Middleware {
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: ActionProtocol, getState: @escaping GetState<GlobalState>, next: @escaping NextActionHandler<GlobalState>) {
-        next(action, getState)
+    public func handle(action: ActionProtocol) {
+        context().next(action)
     }
 }

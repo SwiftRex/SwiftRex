@@ -17,7 +17,7 @@ class StoreBaseTests: XCTestCase {
             case is Event3: action = Action3()
             default: XCTFail("Unexpected event")
             }
-            action.map { translateMiddleware?.handlers.actionHandler.trigger($0) }
+            action.map { translateMiddleware?.context().actionHandler.trigger($0) }
         }
         translateMiddleware.handleActionGetStateNextClosure = { action, getState, next in
             next(action, getState)

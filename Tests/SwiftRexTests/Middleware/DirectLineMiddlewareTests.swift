@@ -6,8 +6,8 @@ class DirectLineMiddlewareTests: MiddlewareTestsBase {
         // Given
         let sut = DirectLineMiddleware<TestState>()
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let state = TestState()
         let getState = { state }
         let action = ActionReference()
@@ -19,15 +19,15 @@ class DirectLineMiddlewareTests: MiddlewareTestsBase {
 
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(0, messageHandler.actionHandlerMock.actions.count)
+        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
     }
 
     func testDirectLineMiddlewareEvent() {
         // Given
         let sut = DirectLineMiddleware<TestState>()
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let state = TestState()
         let getState = { state }
         let event = EventReference()
@@ -39,15 +39,15 @@ class DirectLineMiddlewareTests: MiddlewareTestsBase {
 
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(0, messageHandler.actionHandlerMock.actions.count)
+        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
     }
 
     func testDirectLineMiddlewareEventThatIsAnAction() {
         // Given
         let sut = DirectLineMiddleware<TestState>()
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let state = TestState()
         let getState = { state }
         let event = EventAndActionReference()
@@ -59,7 +59,7 @@ class DirectLineMiddlewareTests: MiddlewareTestsBase {
 
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(1, messageHandler.actionHandlerMock.actions.count)
-        XCTAssert((messageHandler.actionHandlerMock.actions.first as! EventAndActionReference) === event)
+        XCTAssertEqual(1, middlewareContext.actionHandlerMock.actions.count)
+        XCTAssert((middlewareContext.actionHandlerMock.actions.first as! EventAndActionReference) === event)
     }
 }

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		01DFA16BBA37FEBB0130E608 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24EC064A511125F9D5D66907 /* Pods_SwiftRex_iOS_RxSwift.framework */; };
-		0F296A48751190D5FF6F943B /* Pods_UnitTests_SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */; };
 		3E424096541BD3F7EE0CC8B3 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */; };
 		8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */; };
 		83E9670EC5996AC3D61D1365 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */; };
@@ -65,6 +64,8 @@
 		D529D58E22E6728100A287D1 /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58C22E6728000A287D1 /* ActionReference.swift */; };
 		D529D58F22E6728100A287D1 /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58D22E6728000A287D1 /* EventReference.swift */; };
 		D5326484233E30F800CF0589 /* IssueTrackerTests39.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5326483233E30F800CF0589 /* IssueTrackerTests39.swift */; };
+		D54E5CA7233F87A100D46DB4 /* TypeErasureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D586C522BE62B60013A81D /* TypeErasureTests.swift */; };
+		D54E5CA8233F87BA00D46DB4 /* ReactiveWrappersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */; };
 		D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3522BEF116008EF537 /* FooSubscription.swift */; };
 		D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3622BEF116008EF537 /* SomeError.swift */; };
 		D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */; };
@@ -115,7 +116,7 @@
 		D5888A6822B6E9250028B0E1 /* ActionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E8207AA1B40010412E /* ActionProtocol.swift */; };
 		D5888A6922B6E9250028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888A6A22B6E9250028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
-		D5888A6D22B6E9250028B0E1 /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MessageHandler.swift */; };
+		D5888A6D22B6E9250028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888A6E22B6E9250028B0E1 /* EventProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E7207AA1B40010412E /* EventProtocol.swift */; };
 		D5888A6F22B6E9250028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
 		D5888A7122B6E9250028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
@@ -139,7 +140,7 @@
 		D5888A9222B6E92A0028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888A9322B6E92A0028B0E1 /* PipelineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */; };
 		D5888A9422B6E92A0028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
-		D5888A9522B6E92A0028B0E1 /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MessageHandler.swift */; };
+		D5888A9522B6E92A0028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888A9822B6E92A0028B0E1 /* EventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5808207AA1B40010412E /* EventHandler.swift */; };
 		D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5888A9A22B6E92A0028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
@@ -160,7 +161,7 @@
 		D5888ABA22B6E92D0028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888ABB22B6E92D0028B0E1 /* PipelineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */; };
 		D5888ABC22B6E92D0028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
-		D5888ABD22B6E92D0028B0E1 /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MessageHandler.swift */; };
+		D5888ABD22B6E92D0028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888ABE22B6E92D0028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5888AC022B6E92D0028B0E1 /* EventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5808207AA1B40010412E /* EventHandler.swift */; };
 		D5888AC122B6E92D0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -182,7 +183,7 @@
 		D5888AE222B6E9300028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888AE322B6E9300028B0E1 /* PipelineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */; };
 		D5888AE422B6E9300028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
-		D5888AE522B6E9300028B0E1 /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MessageHandler.swift */; };
+		D5888AE522B6E9300028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888AE622B6E9300028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5888AE822B6E9300028B0E1 /* EventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5808207AA1B40010412E /* EventHandler.swift */; };
 		D5888AE922B6E9300028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -263,13 +264,11 @@
 		D5C3943922B970B400ABCA90 /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071A2071287A00D682EF /* MiddlewareTestsBase.swift */; };
 		D5C3943B22B970B400ABCA90 /* SubstateMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */; };
 		D5C3943D22B9845C00ABCA90 /* StoreBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */; };
-		D5C3944622B9897000ABCA90 /* ReactiveWrappersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */; };
 		D5C96A5D22DA1BAB00585865 /* BindableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* BindableStore.swift */; };
 		D5C96A5E22DA1BAB00585865 /* BindableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* BindableStore.swift */; };
 		D5C96A5F22DA1BAB00585865 /* BindableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* BindableStore.swift */; };
 		D5C96A6022DA1BAB00585865 /* BindableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* BindableStore.swift */; };
 		D5C96A6322DA21A500585865 /* BindableStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A6222DA21A500585865 /* BindableStoreTests.swift */; };
-		D5D586CA22BE63E90013A81D /* TypeErasureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D586C522BE62B60013A81D /* TypeErasureTests.swift */; };
 		D5E66D5222B962F3003BF88B /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E66D5022B962B5003BF88B /* FooSubscription.swift */; };
 		D5E734A022C15A1C00B0E284 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E7349A22C1595700B0E284 /* FooSubscription.swift */; };
 		D5E734A122C15A1C00B0E284 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E7349B22C1595800B0E284 /* SomeError.swift */; };
@@ -515,7 +514,7 @@
 		D578B28D208A690C0035AE9C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D582133722D3F20000BF4BE2 /* BlockPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockPublisher.swift; sourceTree = "<group>"; };
 		D5866FC6208AD53B00507523 /* Monoid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monoid.swift; sourceTree = "<group>"; };
-		D5888A5022B6A4690028B0E1 /* MessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageHandler.swift; sourceTree = "<group>"; };
+		D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContext.swift; sourceTree = "<group>"; };
 		D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappers.swift; sourceTree = "<group>"; };
 		D5888A8822B6E9250028B0E1 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5888AB022B6E92A0028B0E1 /* SwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -721,7 +720,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D57AE4BB22E7AA750038C8E9 /* SwiftRex.framework in Frameworks */,
-				0F296A48751190D5FF6F943B /* Pods_UnitTests_SwiftRex.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1187,7 +1185,7 @@
 			children = (
 				D59D5806207AA1B40010412E /* ActionHandler.swift */,
 				D59D5808207AA1B40010412E /* EventHandler.swift */,
-				D5888A5022B6A4690028B0E1 /* MessageHandler.swift */,
+				D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */,
 				D59D5807207AA1B40010412E /* StateProvider.swift */,
 				D59D5809207AA1B40010412E /* Store.swift */,
 				D59D580A207AA1B40010412E /* StoreBase.swift */,
@@ -1731,7 +1729,6 @@
 				D5888B4622B6F2630028B0E1 /* Sources */,
 				D5888B6622B6F2630028B0E1 /* Frameworks */,
 				D5888B6922B6F2630028B0E1 /* Resources */,
-				C389553BAA926B74595BFE90 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2370,23 +2367,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C389553BAA926B74595BFE90 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		D51638F5206F418700469F96 /* Make script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2757,7 +2737,7 @@
 				D5888A6822B6E9250028B0E1 /* ActionProtocol.swift in Sources */,
 				D5888A6922B6E9250028B0E1 /* Middleware.swift in Sources */,
 				D5888A6A22B6E9250028B0E1 /* Operator.swift in Sources */,
-				D5888A6D22B6E9250028B0E1 /* MessageHandler.swift in Sources */,
+				D5888A6D22B6E9250028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888A6E22B6E9250028B0E1 /* EventProtocol.swift in Sources */,
 				D5888A6F22B6E9250028B0E1 /* SubstateMiddleware.swift in Sources */,
 				D5888A7122B6E9250028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
@@ -2789,7 +2769,7 @@
 				D5888A9222B6E92A0028B0E1 /* Middleware.swift in Sources */,
 				D5888A9322B6E92A0028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888A9422B6E92A0028B0E1 /* SubstateMiddleware.swift in Sources */,
-				D5888A9522B6E92A0028B0E1 /* MessageHandler.swift in Sources */,
+				D5888A9522B6E92A0028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888A9822B6E92A0028B0E1 /* EventHandler.swift in Sources */,
 				D51A70BA233E3BC00054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */,
@@ -2818,7 +2798,7 @@
 				D5888ABA22B6E92D0028B0E1 /* Middleware.swift in Sources */,
 				D5888ABB22B6E92D0028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888ABC22B6E92D0028B0E1 /* SubstateMiddleware.swift in Sources */,
-				D5888ABD22B6E92D0028B0E1 /* MessageHandler.swift in Sources */,
+				D5888ABD22B6E92D0028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888ABE22B6E92D0028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
 				D51A70B9233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888AC022B6E92D0028B0E1 /* EventHandler.swift in Sources */,
@@ -2847,7 +2827,7 @@
 				D5888AE222B6E9300028B0E1 /* Middleware.swift in Sources */,
 				D5888AE322B6E9300028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888AE422B6E9300028B0E1 /* SubstateMiddleware.swift in Sources */,
-				D5888AE522B6E9300028B0E1 /* MessageHandler.swift in Sources */,
+				D5888AE522B6E9300028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888AE622B6E9300028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
 				D51A70B8233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888AE822B6E9300028B0E1 /* EventHandler.swift in Sources */,
@@ -2869,6 +2849,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D54E5CA8233F87BA00D46DB4 /* ReactiveWrappersTests.swift in Sources */,
 				D5FDCB4322B70E980012D2E7 /* Event1.swift in Sources */,
 				D5C3943722B970B400ABCA90 /* DirectLineMiddlewareTests.swift in Sources */,
 				D5FDCB4A22B70EAB0012D2E7 /* ReducerMock.swift in Sources */,
@@ -2883,12 +2864,11 @@
 				D5FDCB4B22B70ECF0012D2E7 /* TestState.swift in Sources */,
 				D5C3943622B970B400ABCA90 /* ComposedMiddlewareTests.swift in Sources */,
 				D5C3943D22B9845C00ABCA90 /* StoreBaseTests.swift in Sources */,
-				D5C3944622B9897000ABCA90 /* ReactiveWrappersTests.swift in Sources */,
 				D5FDCB4022B70E8F0012D2E7 /* Action2.swift in Sources */,
-				D5D586CA22BE63E90013A81D /* TypeErasureTests.swift in Sources */,
 				D5C3943822B970B400ABCA90 /* GeneralMiddlewareTests.swift in Sources */,
 				D5FDCB4122B70E8F0012D2E7 /* Action3.swift in Sources */,
 				D5FDCB5022B711B40012D2E7 /* RotationMiddleware.swift in Sources */,
+				D54E5CA7233F87A100D46DB4 /* TypeErasureTests.swift in Sources */,
 				D5FDCB4522B70E980012D2E7 /* Event3.swift in Sources */,
 				D5FDCB4622B70E980012D2E7 /* EventAndActionReference.swift in Sources */,
 				D5FDCB4F22B711800012D2E7 /* AutoMockable.generated.swift in Sources */,

@@ -18,7 +18,7 @@ public final class DirectLineMiddleware<GlobalState>: Middleware {
     /**
      A `Middleware` is capable of triggering `ActionProtocol` to the `Store`. This property is a nullable `ActionHandler` used for the middleware to trigger the actions. It's gonna be injected by the `Store` or by a parent `Middleware`, so don't worry about it, just use it whenever you need to trigger something.
      */
-    public var context: () -> MiddlewareContext
+    public var context: () -> MiddlewareContext<GlobalState>
 
     /**
      Default initializer for `DirectLineMiddleware`
@@ -54,7 +54,7 @@ public final class DirectLineMiddleware<GlobalState>: Middleware {
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: ActionProtocol, getState: @escaping GetState<GlobalState>, next: @escaping NextActionHandler<GlobalState>) {
-        next(action, getState)
+    public func handle(action: ActionProtocol) {
+        context().next(action)
     }
 }

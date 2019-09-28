@@ -1,12 +1,12 @@
 import SwiftRex
 
-class MessageHandlerMock {
+class MiddlewareContextMock {
     let actionHandlerMock = ActionHandlerMock()
     let eventHandlerMock = EventHandlerMock()
-    var value: MessageHandler!
+    var value: MiddlewareContext
 
     init() {
-        value = MessageHandler(
+        value = MiddlewareContext(
             actionHandler: actionHandlerMock.value,
             eventHandler: eventHandlerMock.value
         )

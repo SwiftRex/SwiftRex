@@ -35,19 +35,18 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", .exact("6.0.0")),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("5.0.0")),
-        .package(url: "https://github.com/Quick/Nimble.git", .exact("8.0.2"))
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("5.0.0"))
     ],
     targets: combineTargets + [
         .target(name: "SwiftRex", dependencies: []),
         .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),
         .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"]),
         .testTarget(name: "SwiftRexTests",
-                    dependencies: ["SwiftRex", "Nimble"]),
+                    dependencies: ["SwiftRex"]),
         .testTarget(name: "ReactiveSwiftRexTests",
-                    dependencies: ["SwiftRex", "ReactiveSwiftRex", "Nimble"]),
+                    dependencies: ["SwiftRex", "ReactiveSwiftRex"]),
         .testTarget(name: "RxSwiftRexTests",
-                    dependencies: ["SwiftRex", "RxSwiftRex", "Nimble", "RxBlocking", "RxTest"])
+                    dependencies: ["SwiftRex", "RxSwiftRex", "RxBlocking", "RxTest"])
     ],
     swiftLanguageVersions: [.v5]
 )

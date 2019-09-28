@@ -56,7 +56,11 @@ open class StoreBase<State> {
                         self.middlewarePipeline(for: action)
                     }
                 }),
-                eventHandler: self.eventHandler
+                eventHandler: self.eventHandler,
+                getState: { [unowned self] in self.subject.value() },
+                next: { [weak self] action in
+                    self?.reduce(action: action)
+                }
             )
         }
 
@@ -79,12 +83,7 @@ extension StoreBase {
     }
 
     private func middlewarePipeline(for action: ActionProtocol) {
-        middleware.handle(
-            action: action,
-            getState: { [unowned self] in self.subject.value() },
-            next: { [weak self] action, _ in
-                self?.reduce(action: action)
-            })
+        middleware.handle(action: action)
     }
 
     private func reduce(action: ActionProtocol) {

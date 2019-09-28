@@ -1,7 +1,7 @@
 import SwiftRex
 
 class RotationMiddleware: Middleware {
-    var handlers: MessageHandler!
+    var context: () -> MiddlewareContext = { fatalError("RotationMiddleware used before it's set") }
     private var name: String
 
     init(name: String) {

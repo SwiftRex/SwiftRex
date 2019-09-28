@@ -1,4 +1,4 @@
-// Generated using Sourcery 0.16.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.17.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 // swiftlint:disable all
@@ -23,11 +23,11 @@ import AppKit
 
 
 class MiddlewareMock<StateType>: Middleware {
-    var context: () -> MiddlewareContext {
+    var context: (() -> MiddlewareContext<StateType>) {
         get { return underlyingContext }
         set(value) { underlyingContext = value }
     }
-    var underlyingContext: () -> MiddlewareContext!
+    var underlyingContext: (() -> MiddlewareContext<StateType>)!
 
     //MARK: - handle
 
@@ -46,17 +46,17 @@ class MiddlewareMock<StateType>: Middleware {
 
     //MARK: - handle
 
-    var handleActionGetStateNextCallsCount = 0
-    var handleActionGetStateNextCalled: Bool {
-        return handleActionGetStateNextCallsCount > 0
+    var handleActionCallsCount = 0
+    var handleActionCalled: Bool {
+        return handleActionCallsCount > 0
     }
-    var handleActionGetStateNextReceivedArguments: (action: ActionProtocol, getState: GetState<StateType>, next: NextActionHandler<StateType>)?
-    var handleActionGetStateNextClosure: ((ActionProtocol, @escaping GetState<StateType>, @escaping NextActionHandler<StateType>) -> Void)?
+    var handleActionReceivedAction: ActionProtocol?
+    var handleActionClosure: ((ActionProtocol) -> Void)?
 
-    func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) {
-        handleActionGetStateNextCallsCount += 1
-        handleActionGetStateNextReceivedArguments = (action: action, getState: getState, next: next)
-        handleActionGetStateNextClosure?(action, getState, next)
+    func handle(action: ActionProtocol) {
+        handleActionCallsCount += 1
+        handleActionReceivedAction = action
+        handleActionClosure?(action)
     }
 
 }

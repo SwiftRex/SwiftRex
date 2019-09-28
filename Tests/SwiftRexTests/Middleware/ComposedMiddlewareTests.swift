@@ -97,19 +97,18 @@ class ComposedMiddlewareTests: MiddlewareTestsBase {
     func testMiddlewareActionHandlerPropagationOnInit() {
         let middlewares = ["m1", "m2", "m3", "m4"]
             .map(RotationMiddleware.init)
-        (0..<4).forEach { XCTAssertNil(middlewares[$0].handlers) }
+        (0..<4).forEach { XCTAssertNil(middlewares[$0].context) }
 
         let composedMiddlewares = middlewares[0] <> middlewares[1] <> middlewares[2] <> middlewares[3]
-        XCTAssertNil(composedMiddlewares.handlers)
+        XCTAssertNil(composedMiddlewares.context)
 
         let subjectMock = CurrentValueSubject(currentValue: TestState())
         let store = TestStore(subject: subjectMock.subject,
                               reducer: createReducerMock().0,
                               middleware: composedMiddlewares)
 
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers) }
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers.actionHandler.onValue) }
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers.eventHandler.onValue) }
+        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].context().actionHandler.onValue) }
+        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].context().eventHandler.onValue) }
 
         XCTAssertNotNil(store)
     }
@@ -124,9 +123,9 @@ class ComposedMiddlewareTests: MiddlewareTestsBase {
         let middlewares = ["m1", "m2", "m3", "m4"]
             .map(RotationMiddleware.init)
 
-        (0..<4).forEach { XCTAssertNil(middlewares[$0].handlers) }
+        (0..<4).forEach { XCTAssertNil(middlewares[$0].context) }
         (0..<4).map { middlewares[$0] }.forEach(container.append)
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers) }
+        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].context) }
 
         XCTAssertNotNil(store)
     }

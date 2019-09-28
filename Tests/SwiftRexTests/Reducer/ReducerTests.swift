@@ -142,7 +142,7 @@ class ReducerTests: XCTestCase {
 
     func testEmptyReducer() {
         let original = TestState()
-        let reducer = Reducer<TestState>.empty
+        let reducer = Reducer<TestState>.identity
         let reduced = reducer.reduce(original, Action1())
 
         XCTAssertEqual(original, reduced)

@@ -1,40 +1,41 @@
 import Foundation
-import Nimble
 @testable import SwiftRex
 import XCTest
 
 class TypeErasureTests: XCTestCase {
     #if !SWIFT_PACKAGE
     func testMiddlewareBaseInitThrows() {
-        expect { _ = _AnyMiddlewareBase<TestState>() }.to(throwAssertion())
+        XCTAssertThrowsError({ _ = _AnyMiddlewareBase<TestState>() })
     }
 
     func testMiddlewareBaseHandleEventThrows() {
         let sut = MiddlewareAbstract<TestState>()
-        expect {
+        XCTAssertThrowsError({
             sut.handle(event: Event1(), getState: { TestState() }, next: { _, _ in })
-        }.to(throwAssertion())
+        })
     }
 
     func testMiddlewareBaseHandleActionThrows() {
         let sut = MiddlewareAbstract<TestState>()
-        expect {
+        XCTAssertThrowsError({
             sut.handle(action: Action1(), getState: { TestState() }, next: { _, _ in })
-        }.to(throwAssertion())
+        })
     }
 
     func testMiddlewareBaseHandlerGetThrows() {
         let sut = MiddlewareAbstract<TestState>()
-        expect {
-            _ = sut.handlers
-        }.to(throwAssertion())
+        XCTAssertThrowsError({
+            _ = sut.context
+        })
     }
 
     func testMiddlewareBaseHandlerSetThrows() {
         let sut = MiddlewareAbstract<TestState>()
-        expect {
-            sut.handlers = .init(actionHandler: ActionHandler(), eventHandler: EventHandler())
-        }.to(throwAssertion())
+        XCTAssertThrowsError({
+            sut.context = {
+                .init(actionHandler: ActionHandler(), eventHandler: EventHandler())
+            }
+        })
     }
     #endif
 }

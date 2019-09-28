@@ -18,7 +18,6 @@ def reactiveswift
 end
 
 def tests
-  pod 'Nimble', '8.0.2'
 end
 
 ###################

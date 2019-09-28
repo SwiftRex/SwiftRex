@@ -20,4 +20,4 @@ public typealias NextEventHandler<StateType> = (EventProtocol, @escaping GetStat
  A function that calls the next action handler in the chain. <br/>
  `(ActionProtocol, () -> StateType) -> Void`
  */
-public typealias NextActionHandler<StateType> = (ActionProtocol, @escaping GetState<StateType>) -> Void
+public typealias NextActionHandler = (ActionProtocol) -> Void

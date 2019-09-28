@@ -1,4 +1,4 @@
-// Generated using Sourcery 0.16.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.17.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 @inline(never)
@@ -19,11 +19,11 @@ internal class _AnyMiddlewareBase<StateType>: Middleware {
         _abstract()
     }
 
-    func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) -> Void {
+    func handle(action: ActionProtocol) -> Void {
         _abstract()
     }
 
-    var context: () -> MiddlewareContext {
+    var context: (() -> MiddlewareContext<StateType>) {
         get { _abstract() }
         set { _abstract() }
     }

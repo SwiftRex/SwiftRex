@@ -19,21 +19,27 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
      For `SubstateMiddleware` this property is only a proxy call to the inner middleware's context, taking care of
      lifting `StateType` for all the function types inside.
      */
-    public var context: () -> MiddlewareContext {
-        get {
-            return { [unowned self] in self.partMiddleware.context() }
-        }
+    public var context: () -> MiddlewareContext<Whole> {
+        get { { [unowned self] in
+            self.partMiddleware.context().lift(stateMap: self.stateMap)
+        } }
         set {
-            partMiddleware.context = { newValue() }
+            partMiddleware.context = { [unowned self] in
+                newValue().lift(stateMap: self.stateContramap)
+            }
         }
     }
 
     private let partMiddleware: PartMiddleware
-    private let stateConverter: (@escaping GetState<Whole>) -> GetState<Part>
+    private let stateMap: (Part) -> Whole
+    private let stateContramap: (Whole) -> Part
 
-    init(middleware: PartMiddleware, stateConverter: @escaping (@escaping GetState<Whole>) -> GetState<Part>) {
+    init(middleware: PartMiddleware,
+         stateMap: @escaping (Part) -> Whole,
+         stateContramap: @escaping (Whole) -> Part) {
         self.partMiddleware = middleware
-        self.stateConverter = stateConverter
+        self.stateMap = stateMap
+        self.stateContramap = stateContramap
     }
 
     /**
@@ -44,7 +50,7 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
        - next: the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.
      */
     public func handle(event: EventProtocol, getState: @escaping GetState<Whole>, next: @escaping NextEventHandler<Whole>) {
-        let getPartState = stateConverter(getState)
+        let getPartState = { [unowned self] in self.stateContramap(getState()) }
         let getPartNext: NextEventHandler<Part> = { event, _ in
             next(event, getState)
         }
@@ -58,12 +64,8 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: ActionProtocol, getState: @escaping GetState<Whole>, next: @escaping NextActionHandler<Whole>) {
-        let getPartState = stateConverter(getState)
-        let getPartNext: NextActionHandler<Part> = { action, _ in
-            next(action, getState)
-        }
-        partMiddleware.handle(action: action, getState: getPartState, next: getPartNext)
+    public func handle(action: ActionProtocol) {
+        partMiddleware.handle(action: action)
     }
 }
 
@@ -101,11 +103,18 @@ extension Middleware {
      - Parameter substatePath: the keyPath that goes from `Whole` to `Part`
      - Returns: a `SubstateMiddleware``<Whole, Self>` that knows how to translate `Whole` to `Part` and vice-versa, by using the key path.
      */
-    public func lift<Whole>(_ substatePath: WritableKeyPath<Whole, StateType>) -> SubstateMiddleware<Whole, Self> {
-        return SubstateMiddleware<Whole, Self>(middleware: self) { getWholeState in {
-                let wholeState = getWholeState()
-                return wholeState[keyPath: substatePath]
+    public func lift<Whole>(
+        stateMap: @escaping (StateType) -> Whole,
+        stateContramap: @escaping (Whole) -> StateType
+    ) -> SubstateMiddleware<Whole, Self> {
+        .init(
+            middleware: self,
+            stateMap: { localState in
+                stateMap(localState)
+            },
+            stateContramap: { wholeState in
+                stateContramap(wholeState)
             }
-        }
+        )
     }
 }

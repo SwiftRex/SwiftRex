@@ -1,7 +1,7 @@
 import Foundation
 
 public class PipelineMiddleware<StateType>: Middleware {
-    public var context: () -> MiddlewareContext
+    public var context: () -> MiddlewareContext<StateType>
     private let eventSubject: UnfailableSubject<(StateType, EventProtocol)>
     private let actionSubject: UnfailableSubject<(StateType, ActionProtocol)>
     private var subscriptionCollection: SubscriptionCollection
@@ -44,10 +44,8 @@ public class PipelineMiddleware<StateType>: Middleware {
         next(event, getState)
     }
 
-    public func handle(action: ActionProtocol,
-                       getState: @escaping () -> StateType,
-                       next: @escaping (ActionProtocol, @escaping () -> StateType) -> Void) {
-        actionSubject.subscriber.onValue((getState(), action))
-        next(action, getState)
+    public func handle(action: ActionProtocol) {
+        actionSubject.subscriber.onValue((context().getState(), action))
+        context().next(action)
     }
 }

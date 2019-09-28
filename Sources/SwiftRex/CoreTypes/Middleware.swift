@@ -47,7 +47,7 @@ public protocol Middleware: class {
      This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
      the chain.
      */
-    var context: () -> MiddlewareContext { get set }
+    var context: (() -> MiddlewareContext<StateType>) { get set }
 
     /**
      Handles the incoming events and may trigger side-effects, may trigger actions, may start an asynchronous operation.
@@ -65,7 +65,7 @@ public protocol Middleware: class {
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>)
+    func handle(action: ActionProtocol)
 }
 
 // sourcery: AutoMockable

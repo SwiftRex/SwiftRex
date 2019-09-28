@@ -6,8 +6,8 @@ class BypassMiddlewareTests: MiddlewareTestsBase {
         // Given
         let sut = BypassMiddleware<TestState>()
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let state = TestState()
         let getState = { state }
         let action = ActionReference()
@@ -19,16 +19,16 @@ class BypassMiddlewareTests: MiddlewareTestsBase {
 
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(0, messageHandler.eventHandlerMock.events.count)
-        XCTAssertEqual(0, messageHandler.actionHandlerMock.actions.count)
+        XCTAssertEqual(0, middlewareContext.eventHandlerMock.events.count)
+        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
     }
 
     func testBypassMiddlewareEvent() {
         // Given
         let sut = BypassMiddleware<TestState>()
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let state = TestState()
         let getState = { state }
         let event = EventReference()
@@ -40,7 +40,7 @@ class BypassMiddlewareTests: MiddlewareTestsBase {
 
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(0, messageHandler.eventHandlerMock.events.count)
-        XCTAssertEqual(0, messageHandler.actionHandlerMock.actions.count)
+        XCTAssertEqual(0, middlewareContext.eventHandlerMock.events.count)
+        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
     }
 }

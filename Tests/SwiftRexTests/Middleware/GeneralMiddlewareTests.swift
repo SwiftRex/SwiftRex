@@ -8,10 +8,10 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
         let sut = AnyMiddleware(middlewareMock)
 
         // When
-        middlewareMock.handlers = .init(actionHandler: .init(), eventHandler: .init())
+        middlewareMock.context = { .init(actionHandler: .init(), eventHandler: .init()) }
 
         // Then
-        XCTAssertNotNil(sut.handlers)
+        XCTAssertNoThrow(sut.context().actionHandler)
     }
 
     func testAnyMiddlewareHandlersSet() {
@@ -20,10 +20,10 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
         let sut = AnyMiddleware(middlewareMock)
 
         // When
-        sut.handlers = .init(actionHandler: .init(), eventHandler: .init())
+        sut.context = { .init(actionHandler: .init(), eventHandler: .init()) }
 
         // Then
-        XCTAssertNotNil(middlewareMock.handlers)
+        XCTAssertNoThrow(middlewareMock.context().actionHandler)
     }
 
     func testAnyMiddlewareEvent() {
@@ -141,7 +141,7 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
         }
 
         // Then
-        actions.forEach(rotationMiddleware.handlers.actionHandler.trigger)
+        actions.forEach(rotationMiddleware.context().actionHandler.trigger)
 
         // Expect
         XCTAssertNotNil(store)
@@ -177,7 +177,7 @@ class GeneralMiddlewareTests: MiddlewareTestsBase {
         }
 
         // Then
-        events.forEach(rotationMiddleware.handlers.eventHandler.dispatch)
+        events.forEach(rotationMiddleware.context().eventHandler.dispatch)
 
         // Expect
         XCTAssertNotNil(store)
