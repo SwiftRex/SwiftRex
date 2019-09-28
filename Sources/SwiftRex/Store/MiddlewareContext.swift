@@ -27,15 +27,23 @@ public struct MiddlewareContext<ActionType, StateType> {
 }
 
 extension MiddlewareContext {
-    public func lift<GlobalStateType>(
-        stateMap: @escaping (StateType) -> GlobalStateType) -> MiddlewareContext<ActionType, GlobalStateType> {
-        MiddlewareContext<ActionType, GlobalStateType>(
-            actionHandler: actionHandler,
+    public func lift<GlobalActionType, GlobalStateType>(
+        actionContramap: @escaping (GlobalActionType) -> ActionType,
+        stateMap: @escaping (StateType) -> GlobalStateType)
+        -> MiddlewareContext<GlobalActionType, GlobalStateType> {
+        MiddlewareContext<GlobalActionType, GlobalStateType>(
+            actionHandler: .init(
+                onValue: { globalAction in
+                    let localAction = actionContramap(globalAction)
+                    self.actionHandler.onValue(localAction)
+                },
+                onCompleted: self.actionHandler.onCompleted
+            ),
             getState: { () -> GlobalStateType in
                 stateMap(self.getState())
             },
-            next: { (action: ActionType) -> Void in
-                self.next(action)
+            next: { (action: GlobalActionType) -> Void in
+                self.next(actionContramap(action))
             }
         )
     }

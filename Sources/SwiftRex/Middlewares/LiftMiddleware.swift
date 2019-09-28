@@ -5,11 +5,9 @@
 
  You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call `Middleware.lift(_:)`, passing as parameter the keyPath from whole to part.
  */
-public class SubstateMiddleware<ActionType, Whole, PartMiddleware: Middleware>: Middleware where ActionType == PartMiddleware.ActionType {
-    /**
-     The sub-state middleware's `StateType` is aliased as `Part`
-     */
-    typealias Part = PartMiddleware.StateType
+public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: Middleware>: Middleware {
+    typealias LocalActionType = PartMiddleware.ActionType
+    typealias LocalStateType = PartMiddleware.StateType
 
     /**
      Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
@@ -19,24 +17,30 @@ public class SubstateMiddleware<ActionType, Whole, PartMiddleware: Middleware>: 
      For `SubstateMiddleware` this property is only a proxy call to the inner middleware's context, taking care of
      lifting `StateType` for all the function types inside.
      */
-    public var context: () -> MiddlewareContext<ActionType, Whole> {
+    public var context: () -> MiddlewareContext<GlobalActionType, GlobalStateType> {
         get { { [unowned self] in
-            self.partMiddleware.context().lift(stateMap: self.stateMap)
+            self.partMiddleware.context().lift(actionContramap: self.actionContramap, stateMap: self.stateMap)
         } }
         set {
             partMiddleware.context = { [unowned self] in
-                newValue().lift(stateMap: self.stateContramap)
+                newValue().lift(actionContramap: self.actionMap, stateMap: self.stateContramap)
             }
         }
     }
 
     private let partMiddleware: PartMiddleware
-    private let stateMap: (Part) -> Whole
-    private let stateContramap: (Whole) -> Part
+    private let actionMap: (LocalActionType) -> GlobalActionType
+    private let actionContramap: (GlobalActionType) -> LocalActionType
+    private let stateMap: (LocalStateType) -> GlobalStateType
+    private let stateContramap: (GlobalStateType) -> LocalStateType
 
     init(middleware: PartMiddleware,
-         stateMap: @escaping (Part) -> Whole,
-         stateContramap: @escaping (Whole) -> Part) {
+         actionMap: @escaping (LocalActionType) -> GlobalActionType,
+         actionContramap: @escaping (GlobalActionType) -> LocalActionType,
+         stateMap: @escaping (LocalStateType) -> GlobalStateType,
+         stateContramap: @escaping (GlobalStateType) -> LocalStateType) {
+        self.actionMap = actionMap
+        self.actionContramap = actionContramap
         self.partMiddleware = middleware
         self.stateMap = stateMap
         self.stateContramap = stateContramap
@@ -49,8 +53,8 @@ public class SubstateMiddleware<ActionType, Whole, PartMiddleware: Middleware>: 
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: ActionType) {
-        partMiddleware.handle(action: action)
+    public func handle(action: GlobalActionType) {
+        partMiddleware.handle(action: actionContramap(action))
     }
 }
 
@@ -88,17 +92,25 @@ extension Middleware {
      - Parameter substatePath: the keyPath that goes from `Whole` to `Part`
      - Returns: a `SubstateMiddleware``<Whole, Self>` that knows how to translate `Whole` to `Part` and vice-versa, by using the key path.
      */
-    public func lift<Whole>(
-        stateMap: @escaping (StateType) -> Whole,
-        stateContramap: @escaping (Whole) -> StateType
-    ) -> SubstateMiddleware<ActionType, Whole, Self> {
+    public func lift<GlobalActionType, GlobalStateType>(
+        actionMap: @escaping (ActionType) -> GlobalActionType,
+        actionContramap: @escaping (GlobalActionType) -> ActionType,
+        stateMap: @escaping (StateType) -> GlobalStateType,
+        stateContramap: @escaping (GlobalStateType) -> StateType
+    ) -> LiftMiddleware<GlobalActionType, GlobalStateType, Self> {
         .init(
             middleware: self,
+            actionMap: { localAction in
+                actionMap(localAction)
+            },
+            actionContramap: { globalAction in
+                actionContramap(globalAction)
+            },
             stateMap: { localState in
                 stateMap(localState)
             },
-            stateContramap: { wholeState in
-                stateContramap(wholeState)
+            stateContramap: { globalState in
+                stateContramap(globalState)
             }
         )
     }

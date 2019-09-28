@@ -116,7 +116,7 @@
 		D5888A6922B6E9250028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888A6A22B6E9250028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D5888A6D22B6E9250028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
-		D5888A6F22B6E9250028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D5888A6F22B6E9250028B0E1 /* LiftMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */; };
 		D5888A7122B6E9250028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5888A7222B6E9250028B0E1 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D5888A7322B6E9250028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -136,7 +136,7 @@
 		D5888A9022B6E92A0028B0E1 /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
 		D5888A9222B6E92A0028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888A9322B6E92A0028B0E1 /* PipelineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */; };
-		D5888A9422B6E92A0028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D5888A9422B6E92A0028B0E1 /* LiftMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */; };
 		D5888A9522B6E92A0028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5888A9A22B6E92A0028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
@@ -154,7 +154,7 @@
 		D5888AB922B6E92D0028B0E1 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
 		D5888ABA22B6E92D0028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888ABB22B6E92D0028B0E1 /* PipelineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */; };
-		D5888ABC22B6E92D0028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D5888ABC22B6E92D0028B0E1 /* LiftMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */; };
 		D5888ABD22B6E92D0028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888ABE22B6E92D0028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5888AC122B6E92D0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -173,7 +173,7 @@
 		D5888AE122B6E9300028B0E1 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
 		D5888AE222B6E9300028B0E1 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FB207AA1B40010412E /* Middleware.swift */; };
 		D5888AE322B6E9300028B0E1 /* PipelineMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */; };
-		D5888AE422B6E9300028B0E1 /* SubstateMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */; };
+		D5888AE422B6E9300028B0E1 /* LiftMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */; };
 		D5888AE522B6E9300028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888AE622B6E9300028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5888AE922B6E9300028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
@@ -431,7 +431,7 @@
 		D51A223822BFF1EB00194408 /* SubscriberType+Subscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+Subscriber.swift"; sourceTree = "<group>"; };
 		D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+Combine.swift"; sourceTree = "<group>"; };
 		D51A70B6233E3BBF0054B482 /* DispatchQueue+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+Extensions.swift"; sourceTree = "<group>"; };
-		D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddleware.swift; sourceTree = "<group>"; };
+		D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
 		D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineMiddlewareRxSwiftTests.swift; sourceTree = "<group>"; };
 		D529D58222E6716B00A287D1 /* MiddlewareTestsBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareTestsBase.swift; sourceTree = "<group>"; };
@@ -1146,8 +1146,8 @@
 				D59D57F9207AA1B40010412E /* BypassMiddleware.swift */,
 				D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */,
 				D59D57FC207AA1B40010412E /* DirectLineMiddleware.swift */,
+				D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */,
 				D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */,
-				D51C8ACE207AC95E00EAC486 /* SubstateMiddleware.swift */,
 			);
 			path = Middlewares;
 			sourceTree = "<group>";
@@ -2719,7 +2719,7 @@
 				D5888A6922B6E9250028B0E1 /* Middleware.swift in Sources */,
 				D5888A6A22B6E9250028B0E1 /* Operator.swift in Sources */,
 				D5888A6D22B6E9250028B0E1 /* MiddlewareContext.swift in Sources */,
-				D5888A6F22B6E9250028B0E1 /* SubstateMiddleware.swift in Sources */,
+				D5888A6F22B6E9250028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888A7122B6E9250028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
 				D5888A7222B6E9250028B0E1 /* Reducer.swift in Sources */,
 				D51A70B7233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,
@@ -2747,7 +2747,7 @@
 				D5A022BB22BED8B000797438 /* TypeErase.generated.swift in Sources */,
 				D5888A9222B6E92A0028B0E1 /* Middleware.swift in Sources */,
 				D5888A9322B6E92A0028B0E1 /* PipelineMiddleware.swift in Sources */,
-				D5888A9422B6E92A0028B0E1 /* SubstateMiddleware.swift in Sources */,
+				D5888A9422B6E92A0028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888A9522B6E92A0028B0E1 /* MiddlewareContext.swift in Sources */,
 				D51A70BA233E3BC00054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */,
@@ -2773,7 +2773,7 @@
 				D5888AB922B6E92D0028B0E1 /* TypeErase.generated.swift in Sources */,
 				D5888ABA22B6E92D0028B0E1 /* Middleware.swift in Sources */,
 				D5888ABB22B6E92D0028B0E1 /* PipelineMiddleware.swift in Sources */,
-				D5888ABC22B6E92D0028B0E1 /* SubstateMiddleware.swift in Sources */,
+				D5888ABC22B6E92D0028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888ABD22B6E92D0028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888ABE22B6E92D0028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
 				D51A70B9233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,
@@ -2799,7 +2799,7 @@
 				D5888AE122B6E9300028B0E1 /* TypeErase.generated.swift in Sources */,
 				D5888AE222B6E9300028B0E1 /* Middleware.swift in Sources */,
 				D5888AE322B6E9300028B0E1 /* PipelineMiddleware.swift in Sources */,
-				D5888AE422B6E9300028B0E1 /* SubstateMiddleware.swift in Sources */,
+				D5888AE422B6E9300028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888AE522B6E9300028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888AE622B6E9300028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
 				D51A70B8233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,

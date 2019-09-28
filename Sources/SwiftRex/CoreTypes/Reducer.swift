@@ -85,12 +85,14 @@ extension Reducer {
      - Parameter substatePath: the keyPath that goes from `Whole` to `Part`
      - Returns: a `Reducer<Whole>` that maps `Whole` to `Part` and vice-versa, by using the key path.
      */
-    public func lift<Whole>(_ substatePath: WritableKeyPath<Whole, StateType>) -> Reducer<ActionType, Whole> {
-        return Reducer<ActionType, Whole> { wholeState, action in
-            var wholeState = wholeState
-            let substate = wholeState[keyPath: substatePath]
-            wholeState[keyPath: substatePath] = self.reduce(substate, action)
-            return wholeState
+    public func lift<GlobalActionType, GlobalStateType>(
+        actionContramap: @escaping (GlobalActionType) -> ActionType?,
+        stateMap: @escaping (StateType) -> GlobalStateType,
+        stateContramap: @escaping (GlobalStateType) -> StateType)
+        -> Reducer<GlobalActionType, GlobalStateType> {
+        return Reducer<GlobalActionType, GlobalStateType> { globalState, globalAction in
+            guard let localAction = actionContramap(globalAction) else { return globalState }
+            return stateMap(self.reduce(stateContramap(globalState), localAction))
         }
     }
 }
