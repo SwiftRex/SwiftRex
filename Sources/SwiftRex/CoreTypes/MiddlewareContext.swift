@@ -8,12 +8,12 @@ public struct MiddlewareContext<ActionType, StateType> {
     public let actionHandler: ActionHandler<ActionType>
 
     /**
-     A way for Middlewares to fetch the latest state.
+     A way for Middlewares to fetch the latest state at any point in time.
      */
     public let getState: GetState<StateType>
 
     /**
-     A way for Middlewares to fetch the latest state.
+     The next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily at its end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
     public var next: NextActionHandler<ActionType>
 

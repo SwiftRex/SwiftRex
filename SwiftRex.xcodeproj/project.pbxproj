@@ -123,7 +123,7 @@
 		D5888A7522B6E9250028B0E1 /* ReactiveWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */; };
 		D5888A7622B6E9250028B0E1 /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
 		D5888A7722B6E9250028B0E1 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
-		D5888A7822B6E9250028B0E1 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* BypassMiddleware.swift */; };
+		D5888A7822B6E9250028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
 		D5888A7922B6E9250028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
 		D5888A7B22B6E9250028B0E1 /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
 		D5888A7D22B6E9250028B0E1 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
@@ -139,7 +139,7 @@
 		D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5888A9A22B6E92A0028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
 		D5888A9D22B6E92A0028B0E1 /* ReactiveWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */; };
-		D5888A9E22B6E92A0028B0E1 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* BypassMiddleware.swift */; };
+		D5888A9E22B6E92A0028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
 		D5888A9F22B6E92A0028B0E1 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D5888AA022B6E92A0028B0E1 /* ActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5806207AA1B40010412E /* ActionHandler.swift */; };
 		D5888AA122B6E92A0028B0E1 /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
@@ -157,7 +157,7 @@
 		D5888AC122B6E92D0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5888AC222B6E92D0028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
 		D5888AC522B6E92D0028B0E1 /* ReactiveWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */; };
-		D5888AC622B6E92D0028B0E1 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* BypassMiddleware.swift */; };
+		D5888AC622B6E92D0028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
 		D5888AC722B6E92D0028B0E1 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D5888AC822B6E92D0028B0E1 /* ActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5806207AA1B40010412E /* ActionHandler.swift */; };
 		D5888AC922B6E92D0028B0E1 /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
@@ -175,7 +175,7 @@
 		D5888AE922B6E9300028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
 		D5888AEA22B6E9300028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
 		D5888AED22B6E9300028B0E1 /* ReactiveWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */; };
-		D5888AEE22B6E9300028B0E1 /* BypassMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* BypassMiddleware.swift */; };
+		D5888AEE22B6E9300028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
 		D5888AEF22B6E9300028B0E1 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
 		D5888AF022B6E9300028B0E1 /* ActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5806207AA1B40010412E /* ActionHandler.swift */; };
 		D5888AF122B6E9300028B0E1 /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
@@ -526,7 +526,7 @@
 		D59D57F0207AA1B40010412E /* AutoMockable.stencil */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AutoMockable.stencil; sourceTree = "<group>"; };
 		D59D57F6207AA1B40010412E /* TypeAlias.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeAlias.swift; sourceTree = "<group>"; };
 		D59D57F7207AA1B40010412E /* SwiftRex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftRex.h; sourceTree = "<group>"; };
-		D59D57F9207AA1B40010412E /* BypassMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BypassMiddleware.swift; sourceTree = "<group>"; };
+		D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentityMiddleware.swift; sourceTree = "<group>"; };
 		D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PipelineMiddleware.swift; sourceTree = "<group>"; };
 		D59D57FB207AA1B40010412E /* Middleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Middleware.swift; sourceTree = "<group>"; };
 		D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposedMiddleware.swift; sourceTree = "<group>"; };
@@ -1111,6 +1111,7 @@
 			isa = PBXGroup;
 			children = (
 				D59D57FB207AA1B40010412E /* Middleware.swift */,
+				D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */,
 				D59D57E6207AA1B40010412E /* Reducer.swift */,
 			);
 			path = CoreTypes;
@@ -1138,8 +1139,8 @@
 		D59D57F8207AA1B40010412E /* Middlewares */ = {
 			isa = PBXGroup;
 			children = (
-				D59D57F9207AA1B40010412E /* BypassMiddleware.swift */,
 				D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */,
+				D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */,
 				D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */,
 				D59D57FA207AA1B40010412E /* PipelineMiddleware.swift */,
 			);
@@ -1161,7 +1162,6 @@
 			isa = PBXGroup;
 			children = (
 				D59D5806207AA1B40010412E /* ActionHandler.swift */,
-				D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */,
 				D59D5807207AA1B40010412E /* StateProvider.swift */,
 				D59D5809207AA1B40010412E /* Store.swift */,
 				D59D580A207AA1B40010412E /* StoreBase.swift */,
@@ -2721,7 +2721,7 @@
 				D5888A7522B6E9250028B0E1 /* ReactiveWrappers.swift in Sources */,
 				D5888A7622B6E9250028B0E1 /* TypeAlias.swift in Sources */,
 				D5888A7722B6E9250028B0E1 /* TypeErase.generated.swift in Sources */,
-				D5888A7822B6E9250028B0E1 /* BypassMiddleware.swift in Sources */,
+				D5888A7822B6E9250028B0E1 /* IdentityMiddleware.swift in Sources */,
 				D5888A7922B6E9250028B0E1 /* StoreBase.swift in Sources */,
 				D5888A7B22B6E9250028B0E1 /* StateProvider.swift in Sources */,
 				D5888A7D22B6E9250028B0E1 /* ComposedMiddleware.swift in Sources */,
@@ -2746,7 +2746,7 @@
 				D5888A9A22B6E92A0028B0E1 /* StoreBase.swift in Sources */,
 				D5A022BA22BED8B000797438 /* TypeErase.generated.abstract.swift in Sources */,
 				D5888A9D22B6E92A0028B0E1 /* ReactiveWrappers.swift in Sources */,
-				D5888A9E22B6E92A0028B0E1 /* BypassMiddleware.swift in Sources */,
+				D5888A9E22B6E92A0028B0E1 /* IdentityMiddleware.swift in Sources */,
 				D5888A9F22B6E92A0028B0E1 /* Reducer.swift in Sources */,
 				D5888AA022B6E92A0028B0E1 /* ActionHandler.swift in Sources */,
 				D5888AA122B6E92A0028B0E1 /* TypeAlias.swift in Sources */,
@@ -2771,7 +2771,7 @@
 				D5888AC122B6E92D0028B0E1 /* Monoid.swift in Sources */,
 				D5888AC222B6E92D0028B0E1 /* StoreBase.swift in Sources */,
 				D5888AC522B6E92D0028B0E1 /* ReactiveWrappers.swift in Sources */,
-				D5888AC622B6E92D0028B0E1 /* BypassMiddleware.swift in Sources */,
+				D5888AC622B6E92D0028B0E1 /* IdentityMiddleware.swift in Sources */,
 				D5888AC722B6E92D0028B0E1 /* Reducer.swift in Sources */,
 				D5888AC822B6E92D0028B0E1 /* ActionHandler.swift in Sources */,
 				D5888AC922B6E92D0028B0E1 /* TypeAlias.swift in Sources */,
@@ -2796,7 +2796,7 @@
 				D5888AE922B6E9300028B0E1 /* Monoid.swift in Sources */,
 				D5888AEA22B6E9300028B0E1 /* StoreBase.swift in Sources */,
 				D5888AED22B6E9300028B0E1 /* ReactiveWrappers.swift in Sources */,
-				D5888AEE22B6E9300028B0E1 /* BypassMiddleware.swift in Sources */,
+				D5888AEE22B6E9300028B0E1 /* IdentityMiddleware.swift in Sources */,
 				D5888AEF22B6E9300028B0E1 /* Reducer.swift in Sources */,
 				D5888AF022B6E9300028B0E1 /* ActionHandler.swift in Sources */,
 				D5888AF122B6E9300028B0E1 /* TypeAlias.swift in Sources */,
