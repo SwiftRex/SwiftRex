@@ -7,7 +7,7 @@ private func _abstract(file: StaticString = #file, line: UInt = #line) -> Never 
 
 // MARK: - Type Eraser for {{type.name}}
 
-internal class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.name}} {
+internal class _Any{{type.name}}Base<{{type.annotations.TypeErase|join:", "}}>: {{type.name}} {
     init() {
         guard type(of: self) != _Any{{type.name}}Base.self else {
             _abstract()
@@ -33,9 +33,11 @@ internal class _Any{{type.name}}Base<{{type.annotations.TypeErase}}>: {{type.nam
 
 // MARK: - Type Eraser for {{type.name}}
 
-private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.name}}Base<Concrete.{{type.annotations.TypeErase}}> {
+private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.name}}Base<{% for genericType in type.annotations.TypeErase %}Concrete.{{ genericType }}{% if not forloop.last %}, {% endif %}{% endfor %}> {
     var concrete: Concrete
-    typealias {{type.annotations.TypeErase}} = Concrete.{{type.annotations.TypeErase}}
+    {% for genericType in type.annotations.TypeErase %}
+    typealias {{genericType}} = Concrete.{{genericType}}
+    {% endfor %}
 
     init(_ concrete: Concrete) {
         self.concrete = concrete
@@ -58,15 +60,18 @@ private final class _Any{{type.name}}Box<Concrete: {{type.name}}>: _Any{{type.na
 /**
  Type-erased `{{type.name}}`
  */
-public final class Any{{type.name}}<{{ type.annotations.TypeErase }}>: {{type.name}} {
-    private let box: _Any{{type.name}}Base<{{ type.annotations.TypeErase }}>
+public final class Any{{type.name}}<{{type.annotations.TypeErase|join:", "}}>: {{type.name}} {
+    private let box: _Any{{type.name}}Base<{{ type.annotations.TypeErase|join:", " }}>
 
     /**
      Default initializer for `Any{{type.name}}`
 
      - Parameter concrete: Concrete type that implements `{{type.name}}`
     */
-    public init<Concrete: {{type.name}}>(_ concrete: Concrete) where Concrete.{{ type.annotations.TypeErase }} == {{ type.annotations.TypeErase }} {
+    public init<Concrete: {{type.name}}>(_ concrete: Concrete) where
+        {% for genericType in type.annotations.TypeErase %}
+        Concrete.{{ genericType }} == {{ genericType }}{% if forloop.last %} { {% else %},{% endif %}
+        {% endfor %}
         self.box = _Any{{type.name}}Box(concrete)
     }
 

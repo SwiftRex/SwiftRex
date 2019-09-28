@@ -13,15 +13,15 @@
 
  Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.
  */
-public struct Reducer<StateType> {
-    let reduce: (StateType, ActionProtocol) -> StateType
+public struct Reducer<ActionType, StateType> {
+    let reduce: (StateType, ActionType) -> StateType
 
     /**
      Reducer initializer takes only the underlying function `(S, A) -> S` that is the reducer function itself.
 
      - Parameter reduce: a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from the old state and an action.
      */
-    public init(_ reduce: @escaping (StateType, ActionProtocol) -> StateType) {
+    public init(_ reduce: @escaping (StateType, ActionType) -> StateType) {
         self.reduce = reduce
     }
 }
@@ -32,7 +32,7 @@ extension Reducer: Monoid {
 
      Therefore, `Reducer<StateType> <> identity == Reducer<StateType> == identity <> Reducer<StateType>`
      */
-    public static var identity: Reducer<StateType> {
+    public static var identity: Reducer<ActionType, StateType> {
         return Reducer { state, _ in state }
     }
 
@@ -44,7 +44,7 @@ extension Reducer: Monoid {
        - rhs: Second monoid `(S, A) -> S`, let's call it `g(x)`
      - Returns: a composed monoid `(S, A) -> S` equivalent to `g(f(x))`
      */
-    public static func <> (lhs: Reducer<StateType>, rhs: Reducer<StateType>) -> Reducer<StateType> {
+    public static func <> (lhs: Reducer<ActionType, StateType>, rhs: Reducer<ActionType, StateType>) -> Reducer<ActionType, StateType> {
         return Reducer { state, action in
             rhs.reduce(lhs.reduce(state, action), action)
         }
@@ -85,8 +85,8 @@ extension Reducer {
      - Parameter substatePath: the keyPath that goes from `Whole` to `Part`
      - Returns: a `Reducer<Whole>` that maps `Whole` to `Part` and vice-versa, by using the key path.
      */
-    public func lift<Whole>(_ substatePath: WritableKeyPath<Whole, StateType>) -> Reducer<Whole> {
-        return Reducer<Whole> { wholeState, action in
+    public func lift<Whole>(_ substatePath: WritableKeyPath<Whole, StateType>) -> Reducer<ActionType, Whole> {
+        return Reducer<ActionType, Whole> { wholeState, action in
             var wholeState = wholeState
             let substate = wholeState[keyPath: substatePath]
             wholeState[keyPath: substatePath] = self.reduce(substate, action)

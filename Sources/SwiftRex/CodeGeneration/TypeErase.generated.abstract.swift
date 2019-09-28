@@ -8,22 +8,18 @@ private func _abstract(file: StaticString = #file, line: UInt = #line) -> Never 
 
 // MARK: - Type Eraser for Middleware
 
-internal class _AnyMiddlewareBase<StateType>: Middleware {
+internal class _AnyMiddlewareBase<ActionType, StateType>: Middleware {
     init() {
         guard type(of: self) != _AnyMiddlewareBase.self else {
             _abstract()
         }
     }
 
-    func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
+    func handle(action: ActionType) -> Void {
         _abstract()
     }
 
-    func handle(action: ActionProtocol) -> Void {
-        _abstract()
-    }
-
-    var context: (() -> MiddlewareContext<StateType>) {
+    var context: (() -> MiddlewareContext<ActionType, StateType>) {
         get { _abstract() }
         set { _abstract() }
     }

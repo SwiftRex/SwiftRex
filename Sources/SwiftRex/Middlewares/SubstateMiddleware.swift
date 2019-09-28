@@ -5,7 +5,7 @@
 
  You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call `Middleware.lift(_:)`, passing as parameter the keyPath from whole to part.
  */
-public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
+public class SubstateMiddleware<ActionType, Whole, PartMiddleware: Middleware>: Middleware where ActionType == PartMiddleware.ActionType {
     /**
      The sub-state middleware's `StateType` is aliased as `Part`
      */
@@ -19,7 +19,7 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
      For `SubstateMiddleware` this property is only a proxy call to the inner middleware's context, taking care of
      lifting `StateType` for all the function types inside.
      */
-    public var context: () -> MiddlewareContext<Whole> {
+    public var context: () -> MiddlewareContext<ActionType, Whole> {
         get { { [unowned self] in
             self.partMiddleware.context().lift(stateMap: self.stateMap)
         } }
@@ -43,28 +43,13 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
     }
 
     /**
-     Handles the incoming events and may trigger side-effects, may trigger actions, may start an asynchronous operation.
-     - Parameters:
-       - event: the event to be handled
-       - getState: a function that can be used to get the current state at any point in time
-       - next: the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.
-     */
-    public func handle(event: EventProtocol, getState: @escaping GetState<Whole>, next: @escaping NextEventHandler<Whole>) {
-        let getPartState = { [unowned self] in self.stateContramap(getState()) }
-        let getPartNext: NextEventHandler<Part> = { event, _ in
-            next(event, getState)
-        }
-        partMiddleware.handle(event: event, getState: getPartState, next: getPartNext)
-    }
-
-    /**
      Handles the incoming actions and may change them or trigger additional ones. Usually this is not the best place to start side-effects or trigger new actions, it should be more as an observation point for tracking, logging and telemetry.
      - Parameters:
        - action: the action to be handled
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: ActionProtocol) {
+    public func handle(action: ActionType) {
         partMiddleware.handle(action: action)
     }
 }
@@ -106,7 +91,7 @@ extension Middleware {
     public func lift<Whole>(
         stateMap: @escaping (StateType) -> Whole,
         stateContramap: @escaping (Whole) -> StateType
-    ) -> SubstateMiddleware<Whole, Self> {
+    ) -> SubstateMiddleware<ActionType, Whole, Self> {
         .init(
             middleware: self,
             stateMap: { localState in

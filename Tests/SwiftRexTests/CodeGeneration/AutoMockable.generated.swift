@@ -23,26 +23,11 @@ import AppKit
 
 
 class MiddlewareMock<StateType>: Middleware {
-    var context: (() -> MiddlewareContext<StateType>) {
+    var context: (() -> MiddlewareContext<ActionType, StateType>) {
         get { return underlyingContext }
         set(value) { underlyingContext = value }
     }
-    var underlyingContext: (() -> MiddlewareContext<StateType>)!
-
-    //MARK: - handle
-
-    var handleEventGetStateNextCallsCount = 0
-    var handleEventGetStateNextCalled: Bool {
-        return handleEventGetStateNextCallsCount > 0
-    }
-    var handleEventGetStateNextReceivedArguments: (event: EventProtocol, getState: GetState<StateType>, next: NextEventHandler<StateType>)?
-    var handleEventGetStateNextClosure: ((EventProtocol, @escaping GetState<StateType>, @escaping NextEventHandler<StateType>) -> Void)?
-
-    func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) {
-        handleEventGetStateNextCallsCount += 1
-        handleEventGetStateNextReceivedArguments = (event: event, getState: getState, next: next)
-        handleEventGetStateNextClosure?(event, getState, next)
-    }
+    var underlyingContext: (() -> MiddlewareContext<ActionType, StateType>)!
 
     //MARK: - handle
 
@@ -50,10 +35,10 @@ class MiddlewareMock<StateType>: Middleware {
     var handleActionCalled: Bool {
         return handleActionCallsCount > 0
     }
-    var handleActionReceivedAction: ActionProtocol?
-    var handleActionClosure: ((ActionProtocol) -> Void)?
+    var handleActionReceivedAction: ActionType?
+    var handleActionClosure: ((ActionType) -> Void)?
 
-    func handle(action: ActionProtocol) {
+    func handle(action: ActionType) {
         handleActionCallsCount += 1
         handleActionReceivedAction = action
         handleActionClosure?(action)

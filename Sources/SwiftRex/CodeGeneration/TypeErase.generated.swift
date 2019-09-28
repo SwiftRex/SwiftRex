@@ -5,22 +5,20 @@
 
 // MARK: - Type Eraser for Middleware
 
-private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<Concrete.StateType> {
+private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<Concrete.ActionType, Concrete.StateType> {
     var concrete: Concrete
+    typealias ActionType = Concrete.ActionType
     typealias StateType = Concrete.StateType
 
     init(_ concrete: Concrete) {
         self.concrete = concrete
     }
 
-    override func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
-        return concrete.handle(event: event, getState: getState, next: next)
-    }
-    override func handle(action: ActionProtocol) -> Void {
+    override func handle(action: ActionType) -> Void {
         return concrete.handle(action: action)
     }
 
-    override var context: (() -> MiddlewareContext<StateType>) {
+    override var context: (() -> MiddlewareContext<ActionType, StateType>) {
         get { return concrete.context }
         set { concrete.context = newValue }
     }
@@ -29,36 +27,31 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
 /**
  Type-erased `Middleware`
  */
-public final class AnyMiddleware<StateType>: Middleware {
-    private let box: _AnyMiddlewareBase<StateType>
+public final class AnyMiddleware<ActionType, StateType>: Middleware {
+    private let box: _AnyMiddlewareBase<ActionType, StateType>
 
     /**
      Default initializer for `AnyMiddleware`
 
      - Parameter concrete: Concrete type that implements `Middleware`
     */
-    public init<Concrete: Middleware>(_ concrete: Concrete) where Concrete.StateType == StateType {
+    public init<Concrete: Middleware>(_ concrete: Concrete) where
+        Concrete.ActionType == ActionType,
+        Concrete.StateType == StateType { 
         self.box = _AnyMiddlewareBox(concrete)
-    }
-
-    /**
-     Proxy method for `Middleware.handle(event:getState:next:)`
-     */
-    public func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) -> Void {
-        return box.handle(event: event,getState: getState,next: next)
     }
 
     /**
      Proxy method for `Middleware.handle(action:)`
      */
-    public func handle(action: ActionProtocol) -> Void {
+    public func handle(action: ActionType) -> Void {
         return box.handle(action: action)
     }
 
     /**
      Proxy property for `Middleware.context`
      */
-    public var context: (() -> MiddlewareContext<StateType>) {
+    public var context: (() -> MiddlewareContext<ActionType, StateType>) {
         get { return box.context }
         set { box.context = newValue }
     }

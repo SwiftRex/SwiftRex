@@ -40,6 +40,7 @@ public protocol Middleware: class {
     /**
      The State that this `Middleware` knowns how to handle. Thanks to lenses, this state can be a sub-state lifted to a global state. Please check `lift(_:)` for more details.
      */
+    associatedtype ActionType
     associatedtype StateType
 
     /**
@@ -47,16 +48,7 @@ public protocol Middleware: class {
      This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
      the chain.
      */
-    var context: (() -> MiddlewareContext<StateType>) { get set }
-
-    /**
-     Handles the incoming events and may trigger side-effects, may trigger actions, may start an asynchronous operation.
-     - Parameters:
-       - event: the event to be handled
-       - getState: a function that can be used to get the current state at any point in time
-       - next: the next `Middleware in the chain, probably we want to call this method in some point of our method (not necessarily in the end.
-     */
-    func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>)
+    var context: (() -> MiddlewareContext<ActionType, StateType>) { get set }
 
     /**
      Handles the incoming actions and may change them or trigger additional ones. Usually this is not the best place to start side-effects or trigger new actions, it should be more as an observation point for tracking, logging and telemetry.
@@ -65,10 +57,11 @@ public protocol Middleware: class {
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    func handle(action: ActionProtocol)
+    func handle(action: ActionType)
 }
 
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
 // sourcery: TypeErase = StateType
+// sourcery: TypeErase = ActionType
 extension Middleware { }

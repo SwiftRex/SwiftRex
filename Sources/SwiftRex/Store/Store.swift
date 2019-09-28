@@ -20,5 +20,6 @@
  Please check (and inherit from) `StoreBase` for a standard implementation.
  */
 public protocol Store: StateProvider {
-    var eventHandler: EventHandler { get }
+    associatedtype ActionType
+    var actionHandler: ActionHandler<ActionType> { get }
 }

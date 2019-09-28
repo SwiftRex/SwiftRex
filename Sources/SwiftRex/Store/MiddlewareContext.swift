@@ -1,16 +1,11 @@
 /**
  `MiddlewareContext` is a data structure that wraps an `EventHandler` and a `ActionHandler`, offering a way to dispatch events (`EventProtocol`) and trigger actions (`ActionProtocol`). This is usually the way how Middlewares will communicate both, actions and events, to Stores that will re-distribute them through its pipelines.
  */
-public struct MiddlewareContext<StateType> {
+public struct MiddlewareContext<ActionType, StateType> {
     /**
      A way for Middlewares to trigger new actions.
      */
-    public let actionHandler: ActionHandler
-
-    /**
-     A way for Middlewares to dispatch new events.
-     */
-    public let eventHandler: EventHandler
+    public let actionHandler: ActionHandler<ActionType>
 
     /**
      A way for Middlewares to fetch the latest state.
@@ -20,14 +15,12 @@ public struct MiddlewareContext<StateType> {
     /**
      A way for Middlewares to fetch the latest state.
      */
-    public var next: NextActionHandler
+    public var next: NextActionHandler<ActionType>
 
-    public init(actionHandler: ActionHandler,
-                eventHandler: EventHandler,
+    public init(actionHandler: ActionHandler<ActionType>,
                 getState: @escaping GetState<StateType>,
-                next: @escaping NextActionHandler) {
+                next: @escaping NextActionHandler<ActionType>) {
         self.actionHandler = actionHandler
-        self.eventHandler = eventHandler
         self.getState = getState
         self.next = next
     }
@@ -35,14 +28,13 @@ public struct MiddlewareContext<StateType> {
 
 extension MiddlewareContext {
     public func lift<GlobalStateType>(
-        stateMap: @escaping (StateType) -> GlobalStateType) -> MiddlewareContext<GlobalStateType> {
-        MiddlewareContext<GlobalStateType>(
+        stateMap: @escaping (StateType) -> GlobalStateType) -> MiddlewareContext<ActionType, GlobalStateType> {
+        MiddlewareContext<ActionType, GlobalStateType>(
             actionHandler: actionHandler,
-            eventHandler: eventHandler,
             getState: { () -> GlobalStateType in
                 stateMap(self.getState())
             },
-            next: { (action: ActionProtocol) -> Void in
+            next: { (action: ActionType) -> Void in
                 self.next(action)
             }
         )

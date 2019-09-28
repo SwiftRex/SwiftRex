@@ -24,11 +24,11 @@ import Foundation
 
  ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
  */
-open class StoreBase<State> {
-    private let middleware: AnyMiddleware<State>
-    private let reducer: Reducer<State>
+open class StoreBase<ActionType, State> {
+    private let middleware: AnyMiddleware<ActionType, State>
+    private let reducer: Reducer<ActionType, State>
     private let subject: UnfailableReplayLastSubjectType<State>
-    private var _eventHandler: EventHandler!
+    private var _actionHandler: ActionHandler<ActionType>!
 
     /**
      Required initializer that takes all the expected pipelines
@@ -39,24 +39,19 @@ open class StoreBase<State> {
        - middleware: a middleware pipeline, that can be any flat middleware or a `ComposedMiddleware`, as long as it's able to handle the state of the same type as the `initialState` property. For `middleware` composition, please use the diamond operator (`<>`) and for middlewares that understand only a sub-state part, use the `Middleware.lift(_:)` method
      */
     public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<State>,
-                               reducer: Reducer<State>,
-                               middleware: M) where M.StateType == State {
+                               reducer: Reducer<ActionType, State>,
+                               middleware: M) where M.ActionType == ActionType, M.StateType == State {
         self.subject = subject
         self.reducer = reducer
         self.middleware = AnyMiddleware(middleware)
-        self._eventHandler = EventHandler(onValue: { [unowned self] event in
+        self._actionHandler = ActionHandler(onValue: { [unowned self] action in
             DispatchQueue.main.async {
-                self.middlewarePipeline(for: event)
+                self.middlewarePipeline(for: action)
             }
         })
         self.middleware.context = { [unowned self] in
             .init(
-                actionHandler: ActionHandler(onValue: { [unowned self] action in
-                    DispatchQueue.asap {
-                        self.middlewarePipeline(for: action)
-                    }
-                }),
-                eventHandler: self.eventHandler,
+                actionHandler: self.actionHandler,
                 getState: { [unowned self] in self.subject.value() },
                 next: { [weak self] action in
                     self?.reduce(action: action)
@@ -70,23 +65,15 @@ open class StoreBase<State> {
 
 extension StoreBase: Store {
     public var statePublisher: UnfailablePublisherType<State> { return subject.publisher }
-    public var eventHandler: EventHandler { return _eventHandler }
+    public var actionHandler: ActionHandler<ActionType> { return _actionHandler }
 }
 
 extension StoreBase {
-    private func middlewarePipeline(for event: EventProtocol) {
-        let ignore: (EventProtocol, GetState<State>) -> Void = { _, _ in }
-        middleware.handle(
-            event: event,
-            getState: { [unowned self] in self.subject.value() },
-            next: ignore)
-    }
-
-    private func middlewarePipeline(for action: ActionProtocol) {
+    private func middlewarePipeline(for action: ActionType) {
         middleware.handle(action: action)
     }
 
-    private func reduce(action: ActionProtocol) {
+    private func reduce(action: ActionType) {
         subject.mutate { value in
             value = reducer.reduce(value, action)
         }
