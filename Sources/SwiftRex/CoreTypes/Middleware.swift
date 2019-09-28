@@ -43,9 +43,11 @@ public protocol Middleware: class {
     associatedtype StateType
 
     /**
-     A `Middleware` is capable of triggering `ActionProtocol` to the `Store`. This property is a nullable `ActionHandler` used for the middleware to trigger the actions. It's gonna be injected by the `Store` or by a parent `Middleware`, so don't worry about it, just use it whenever you need to trigger something.
+     Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
+     This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
+     the chain.
      */
-    var handlers: MessageHandler! { get set }
+    var context: () -> MiddlewareContext { get set }
 
     /**
      Handles the incoming events and may trigger side-effects, may trigger actions, may start an asynchronous operation.

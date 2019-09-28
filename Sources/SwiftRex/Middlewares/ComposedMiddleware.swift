@@ -18,16 +18,24 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
      let composedMiddleware = firstMiddleware <> secondMiddleware
      ```
      */
-    public init() { }
+    public init() {
+        self.context = {
+            fatalError("No context set for middleware PipelineMiddleware, please be sure to configure your middleware prior to usage")
+        }
+    }
 
     /**
-     A `Middleware` is capable of triggering `ActionProtocol` to the `Store`. This property is a nullable `ActionHandler` used for the middleware to trigger the actions. It's gonna be injected by the `Store` or by a parent `Middleware`, so don't worry about it, just use it whenever you need to trigger something.
+     Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
+     This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
+     the chain.
 
-     A `ComposedMiddleware` also sets its child middlewares to the same `ActionHandler` whenever this property is set.
+     A `ComposedMiddleware` also sets its child middlewares to the same context whenever this property is set.
      */
-    public var handlers: MessageHandler! {
+    public var context: () -> MiddlewareContext {
         didSet {
-            middlewares.forEach { $0.handlers = handlers }
+            middlewares.forEach {
+                $0.context = { [unowned self] in self.context() }
+            }
         }
     }
 
@@ -45,7 +53,7 @@ public final class ComposedMiddleware<GlobalState>: Middleware {
      */
     public func append<M: Middleware>(middleware: M) where M.StateType == GlobalState {
         // Add in reverse order because we reduce from top to bottom and trigger from the last
-        middleware.handlers = middleware.handlers ?? handlers
+        middleware.context = { [unowned self] in self.context() }
         // Inserts into the first position because the forward methods will work in the reverse order.
         // So the result for the user will be the expected, FIFO regardless the way we store the inner middlewares.
         middlewares.insert(AnyMiddleware(middleware), at: 0)

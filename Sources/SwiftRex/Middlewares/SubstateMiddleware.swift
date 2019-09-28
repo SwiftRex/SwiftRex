@@ -12,16 +12,19 @@ public class SubstateMiddleware<Whole, PartMiddleware: Middleware>: Middleware {
     typealias Part = PartMiddleware.StateType
 
     /**
-     A `Middleware` is capable of triggering `ActionProtocol` to the `Store`. This property is a nullable `ActionHandler` used for the middleware to trigger the actions. It's gonna be injected by the `Store` or by a parent `Middleware`, so don't worry about it, just use it whenever you need to trigger something.
+     Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
+     This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
+     the chain.
 
-     For `SubstateMiddleware` this property is only a proxy call to the inner middleware's `ActionHandler`, and once actions don't care about `StateType` there's no lifting involved.
+     For `SubstateMiddleware` this property is only a proxy call to the inner middleware's context, taking care of
+     lifting `StateType` for all the function types inside.
      */
-    public var handlers: MessageHandler! {
+    public var context: () -> MiddlewareContext {
         get {
-            return partMiddleware.handlers
+            return { [unowned self] in self.partMiddleware.context() }
         }
         set {
-            partMiddleware.handlers = newValue
+            partMiddleware.context = { newValue() }
         }
     }
 

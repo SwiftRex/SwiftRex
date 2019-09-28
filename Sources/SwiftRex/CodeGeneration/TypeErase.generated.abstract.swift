@@ -23,7 +23,7 @@ internal class _AnyMiddlewareBase<StateType>: Middleware {
         _abstract()
     }
 
-    var handlers: MessageHandler! {
+    var context: () -> MiddlewareContext {
         get { _abstract() }
         set { _abstract() }
     }

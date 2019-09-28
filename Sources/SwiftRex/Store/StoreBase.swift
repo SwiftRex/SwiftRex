@@ -28,20 +28,7 @@ open class StoreBase<State> {
     private let middleware: AnyMiddleware<State>
     private let reducer: Reducer<State>
     private let subject: UnfailableReplayLastSubjectType<State>
-    private lazy var messageHandler: MessageHandler = {
-        MessageHandler(
-            actionHandler: ActionHandler(onValue: { [unowned self] action in
-                DispatchQueue.asap {
-                    self.middlewarePipeline(for: action)
-                }
-            }),
-            eventHandler: EventHandler(onValue: { [unowned self] event in
-                DispatchQueue.main.async {
-                    self.middlewarePipeline(for: event)
-                }
-            })
-        )
-    }()
+    private var _eventHandler: EventHandler!
 
     /**
      Required initializer that takes all the expected pipelines
@@ -57,14 +44,29 @@ open class StoreBase<State> {
         self.subject = subject
         self.reducer = reducer
         self.middleware = AnyMiddleware(middleware)
-        self.middleware.handlers = messageHandler
+        self._eventHandler = EventHandler(onValue: { [unowned self] event in
+            DispatchQueue.main.async {
+                self.middlewarePipeline(for: event)
+            }
+        })
+        self.middleware.context = { [unowned self] in
+            .init(
+                actionHandler: ActionHandler(onValue: { [unowned self] action in
+                    DispatchQueue.asap {
+                        self.middlewarePipeline(for: action)
+                    }
+                }),
+                eventHandler: self.eventHandler
+            )
+        }
+
         DispatchQueue.setMainQueueID()
     }
 }
 
 extension StoreBase: Store {
     public var statePublisher: UnfailablePublisherType<State> { return subject.publisher }
-    public var eventHandler: EventHandler { return messageHandler.eventHandler }
+    public var eventHandler: EventHandler { return _eventHandler }
 }
 
 extension StoreBase {

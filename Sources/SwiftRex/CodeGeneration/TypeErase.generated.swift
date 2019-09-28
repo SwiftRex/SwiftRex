@@ -20,9 +20,9 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
         return concrete.handle(action: action, getState: getState, next: next)
     }
 
-    override var handlers: MessageHandler! {
-        get { return concrete.handlers }
-        set { concrete.handlers = newValue }
+    override var context: () -> MiddlewareContext {
+        get { return concrete.context }
+        set { concrete.context = newValue }
     }
 }
 
@@ -56,10 +56,10 @@ public final class AnyMiddleware<StateType>: Middleware {
     }
 
     /**
-     Proxy property for `Middleware.handlers`
+     Proxy property for `Middleware.context`
      */
-    public var handlers: MessageHandler! {
-        get { return box.handlers }
-        set { box.handlers = newValue }
+    public var context: () -> MiddlewareContext {
+        get { return box.context }
+        set { box.context = newValue }
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 public class PipelineMiddleware<StateType>: Middleware {
-    public var handlers: MessageHandler!
+    public var context: () -> MiddlewareContext
     private let eventSubject: UnfailableSubject<(StateType, EventProtocol)>
     private let actionSubject: UnfailableSubject<(StateType, ActionProtocol)>
     private var subscriptionCollection: SubscriptionCollection
@@ -16,11 +16,14 @@ public class PipelineMiddleware<StateType>: Middleware {
         self.eventSubject = eventSubject()
         self.actionSubject = actionSubject()
         self.subscriptionCollection = subscriptionCollection()
+        self.context = {
+            fatalError("No context set for middleware PipelineMiddleware, please be sure to configure your middleware prior to usage")
+        }
 
         if let eventTransformer = eventTransformer {
             eventTransformer(self.eventSubject.publisher)
                 .subscribe(.init(onValue: { [weak self] action in
-                    self?.handlers?.actionHandler.trigger(action)
+                    self?.context().actionHandler.trigger(action)
                 }))
                 .cancelled(by: &self.subscriptionCollection)
         }
@@ -28,7 +31,7 @@ public class PipelineMiddleware<StateType>: Middleware {
         if let actionTransformer = actionTransformer {
             actionTransformer(self.actionSubject.publisher)
                 .subscribe(.init(onValue: { [weak self] action in
-                    self?.handlers?.actionHandler.trigger(action)
+                    self?.context().actionHandler.trigger(action)
                 }))
                 .cancelled(by: &self.subscriptionCollection)
         }

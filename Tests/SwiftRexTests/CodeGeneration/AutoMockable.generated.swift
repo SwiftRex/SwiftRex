@@ -23,7 +23,11 @@ import AppKit
 
 
 class MiddlewareMock<StateType>: Middleware {
-    var handlers: MessageHandler!
+    var context: () -> MiddlewareContext {
+        get { return underlyingContext }
+        set(value) { underlyingContext = value }
+    }
+    var underlyingContext: () -> MiddlewareContext!
 
     //MARK: - handle
 

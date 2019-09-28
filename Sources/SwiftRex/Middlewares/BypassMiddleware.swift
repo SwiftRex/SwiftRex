@@ -3,14 +3,20 @@
  */
 public final class BypassMiddleware<GlobalState>: Middleware {
     /**
-     A `Middleware` is capable of triggering `ActionProtocol` to the `Store`. This property is a nullable `ActionHandler` used for the middleware to trigger the actions. It's gonna be injected by the `Store` or by a parent `Middleware`, so don't worry about it, just use it whenever you need to trigger something.
+     Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
+     This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
+     the chain.
      */
-    public var handlers: MessageHandler!
+    public var context: () -> MiddlewareContext
 
     /**
      Default initializer for `BypassMiddleware`
      */
-    public init() { }
+    public init() {
+        self.context = {
+            fatalError("No context set for middleware PipelineMiddleware, please be sure to configure your middleware prior to usage")
+        }
+    }
 
     /**
      Handles the incoming events. The `BypassMiddleware` won't do anything with the `EventProtocol`, simply forwards it to the next middleware in the chain.
