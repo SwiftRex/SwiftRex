@@ -34,19 +34,20 @@ let package = Package(
         .library(name: "RxSwiftRex", targets: ["SwiftRex", "RxSwiftRex"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", .exact("6.0.0")),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("5.0.0"))
+        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", .exact("6.1.0")),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("5.0.0")),
+        .package(url: "https://github.com/Quick/Nimble.git", .exact("8.0.4"))
     ],
     targets: combineTargets + [
         .target(name: "SwiftRex", dependencies: []),
         .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),
         .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"]),
         .testTarget(name: "SwiftRexTests",
-                    dependencies: ["SwiftRex"]),
+                    dependencies: ["SwiftRex", "Nimble"]),
         .testTarget(name: "ReactiveSwiftRexTests",
-                    dependencies: ["SwiftRex", "ReactiveSwiftRex"]),
+                    dependencies: ["SwiftRex", "ReactiveSwiftRex", "Nimble"]),
         .testTarget(name: "RxSwiftRexTests",
-                    dependencies: ["SwiftRex", "RxSwiftRex", "RxBlocking", "RxTest"])
+                    dependencies: ["SwiftRex", "RxSwiftRex", "Nimble", "RxBlocking", "RxTest"])
     ],
     swiftLanguageVersions: [.v5]
 )
