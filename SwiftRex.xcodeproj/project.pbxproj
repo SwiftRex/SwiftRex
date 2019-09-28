@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01DFA16BBA37FEBB0130E608 /* Pods_SwiftRex_iOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24EC064A511125F9D5D66907 /* Pods_SwiftRex_iOS_RxSwift.framework */; };
+		36EF9F5023C769E700E6FD1C /* Pods_UnitTests_SwiftRex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */; };
 		3E424096541BD3F7EE0CC8B3 /* Pods_SwiftRex_iOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07B06D0489DDCC2B4A028C31 /* Pods_SwiftRex_iOS_ReactiveSwift.framework */; };
 		8034629454680F7F10E81E06 /* Pods_UnitTests_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFA01A78223C090370572AF5 /* Pods_UnitTests_ReactiveSwift.framework */; };
 		83E9670EC5996AC3D61D1365 /* Pods_SwiftRex_macOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5056CBEF33C65072BECAE1B6 /* Pods_SwiftRex_macOS_RxSwift.framework */; };
@@ -700,6 +701,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D57AE4BB22E7AA750038C8E9 /* SwiftRex.framework in Frameworks */,
+				36EF9F5023C769E700E6FD1C /* Pods_UnitTests_SwiftRex.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1705,6 +1707,7 @@
 				D5888B4622B6F2630028B0E1 /* Sources */,
 				D5888B6622B6F2630028B0E1 /* Frameworks */,
 				D5888B6922B6F2630028B0E1 /* Resources */,
+				1F51FB674EEF910346F2DFF7 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2121,6 +2124,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1F51FB674EEF910346F2DFF7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UnitTests SwiftRex/Pods-UnitTests SwiftRex-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		324BB47581C7F68506D6EC4D /* [CP] Check Pods Manifest.lock */ = {

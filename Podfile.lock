@@ -1,5 +1,6 @@
 PODS:
-  - ReactiveSwift (6.0.0)
+  - Nimble (8.0.4)
+  - ReactiveSwift (6.1.0)
   - RxBlocking (5.0.0):
     - RxSwift (~> 5)
   - RxSwift (5.0.0)
@@ -9,7 +10,8 @@ PODS:
   - SwiftLint (0.35.0)
 
 DEPENDENCIES:
-  - ReactiveSwift (= 6.0.0)
+  - Nimble (= 8.0.4)
+  - ReactiveSwift (= 6.1.0)
   - RxBlocking (= 5.0.0)
   - RxSwift (= 5.0.0)
   - RxTest (= 5.0.0)
@@ -18,6 +20,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
+    - Nimble
     - ReactiveSwift
     - RxBlocking
     - RxSwift
@@ -26,13 +29,14 @@ SPEC REPOS:
     - SwiftLint
 
 SPEC CHECKSUMS:
-  ReactiveSwift: 24b7ed245617bbfd30ee0c87779b6c64ac1b4518
+  Nimble: 18d5360282923225d62b09d781f63abc1a0111fc
+  ReactiveSwift: b78c7259f8ca46368238c895ae33a6a3bf9f811c
   RxBlocking: c67185d26498ea3cbe3e121917c3c16739e43123
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
   RxTest: 4349afe98f564e0a9bc19063368904622d17d49a
   Sourcery: 3ed61be7c8a1218fce349266139379dba477efe0
   SwiftLint: 5553187048b900c91aa03552807681bb6b027846
 
-PODFILE CHECKSUM: ca160f2aee7b86b25864271b5be2ffff72c9174c
+PODFILE CHECKSUM: bf4aa67c249efb904077715cea9c506ae6e58c38
 
 COCOAPODS: 1.8.1
