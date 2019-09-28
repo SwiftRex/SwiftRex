@@ -30,9 +30,9 @@ extension Reducer: Monoid {
     /**
      Neutral monoidal container. Composing any monoid with an empty monoid should result in a function unchanged, regardless if the empty element is on the left-hand side or the right-hand side.
 
-     Therefore, `Reducer<StateType> <> empty == Reducer<StateType> == empty <> Reducer<StateType>`
+     Therefore, `Reducer<StateType> <> identity == Reducer<StateType> == identity <> Reducer<StateType>`
      */
-    public static var empty: Reducer<StateType> {
+    public static var identity: Reducer<StateType> {
         return Reducer { state, _ in state }
     }
 
