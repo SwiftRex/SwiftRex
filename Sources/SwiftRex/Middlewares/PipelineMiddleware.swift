@@ -9,7 +9,7 @@ public class PipelineMiddleware<ActionType, StateType>: Middleware {
         actionTransformer: ((PublisherType<(StateType, ActionType), Never>) -> PublisherType<ActionType, Never>)? = nil,
         actionSubject: () -> UnfailableSubject<(StateType, ActionType)>,
         subscriptionCollection: () -> SubscriptionCollection
-        ) {
+    ) {
         self.actionSubject = actionSubject()
         self.subscriptionCollection = subscriptionCollection()
         self.context = {
@@ -25,8 +25,8 @@ public class PipelineMiddleware<ActionType, StateType>: Middleware {
         }
     }
 
-    public func handle(action: ActionType) {
+    public func handle(action: ActionType, next: @escaping () -> Void) {
         actionSubject.subscriber.onValue((context().getState(), action))
-        context().next(action)
+        next()
     }
 }

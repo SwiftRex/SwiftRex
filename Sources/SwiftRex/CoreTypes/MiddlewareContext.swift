@@ -12,39 +12,9 @@ public struct MiddlewareContext<ActionType, StateType> {
      */
     public let getState: GetState<StateType>
 
-    /**
-     The next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily at its end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
-     */
-    public var next: NextActionHandler<ActionType>
-
     public init(actionHandler: ActionHandler<ActionType>,
-                getState: @escaping GetState<StateType>,
-                next: @escaping NextActionHandler<ActionType>) {
+                getState: @escaping GetState<StateType>) {
         self.actionHandler = actionHandler
         self.getState = getState
-        self.next = next
-    }
-}
-
-extension MiddlewareContext {
-    public func lift<GlobalActionType, GlobalStateType>(
-        actionContramap: @escaping (GlobalActionType) -> ActionType,
-        stateMap: @escaping (StateType) -> GlobalStateType)
-        -> MiddlewareContext<GlobalActionType, GlobalStateType> {
-        MiddlewareContext<GlobalActionType, GlobalStateType>(
-            actionHandler: .init(
-                onValue: { globalAction in
-                    let localAction = actionContramap(globalAction)
-                    self.actionHandler.onValue(localAction)
-                },
-                onCompleted: self.actionHandler.onCompleted
-            ),
-            getState: { () -> GlobalStateType in
-                stateMap(self.getState())
-            },
-            next: { (action: GlobalActionType) -> Void in
-                self.next(actionContramap(action))
-            }
-        )
     }
 }

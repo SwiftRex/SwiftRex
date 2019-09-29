@@ -1,6 +1,6 @@
 import SwiftRex
 
-let createReducerMock: () -> (Reducer<TestState>, ReducerMock) = {
+let createReducerMock: () -> (Reducer<ActionMock, TestState>, ReducerMock) = {
     let mock = ReducerMock()
 
     return (Reducer { state, action in
@@ -17,7 +17,7 @@ class ReducerMock {
     var reduceActionCalled: Bool {
         return reduceActionCallsCount > 0
     }
-    var reduceActionReceivedArguments: (currentState: TestState, action: ActionProtocol)?
+    var reduceActionReceivedArguments: (currentState: TestState, action: ActionMock)?
     var reduceActionReturnValue: TestState!
-    var reduceActionClosure: ((TestState, ActionProtocol) -> TestState)?
+    var reduceActionClosure: ((TestState, ActionMock) -> TestState)?
 }

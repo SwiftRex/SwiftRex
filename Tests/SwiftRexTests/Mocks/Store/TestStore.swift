@@ -1,9 +1,9 @@
 import SwiftRex
 
-final class TestStore: StoreBase<TestState> {
+final class TestStore: StoreBase<ActionMock, TestState> {
     override init<M>(subject: UnfailableReplayLastSubjectType<StateType>,
-                     reducer: Reducer<StateType>,
-                     middleware: M) where StateType == M.StateType, M: Middleware {
+                     reducer: Reducer<ActionMock, StateType>,
+                     middleware: M) where ActionType == M.ActionType, StateType == M.StateType, M: Middleware {
         super.init(subject: subject, reducer: reducer, middleware: middleware)
     }
 }

@@ -18,32 +18,31 @@ public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: M
      lifting `StateType` for all the function types inside.
      */
     public var context: () -> MiddlewareContext<GlobalActionType, GlobalStateType> {
-        get { { [unowned self] in
-            self.partMiddleware.context().lift(actionContramap: self.actionContramap, stateMap: self.stateMap)
-        } }
-        set {
-            partMiddleware.context = { [unowned self] in
-                newValue().lift(actionContramap: self.actionMap, stateMap: self.stateContramap)
-            }
+        didSet {
+            partMiddleware
+                .context = { [unowned self] in
+                    self.context()
+                        .unlift(actionZoomOut: self.actionZoomOut, stateZoomIn: self.stateZoomIn)
+                }
         }
     }
 
     private let partMiddleware: PartMiddleware
-    private let actionMap: (LocalActionType) -> GlobalActionType
-    private let actionContramap: (GlobalActionType) -> LocalActionType
-    private let stateMap: (LocalStateType) -> GlobalStateType
-    private let stateContramap: (GlobalStateType) -> LocalStateType
+    private let actionZoomIn: (GlobalActionType) -> LocalActionType?
+    private let actionZoomOut: (LocalActionType) -> GlobalActionType
+    private let stateZoomIn: (GlobalStateType) -> LocalStateType
 
     init(middleware: PartMiddleware,
-         actionMap: @escaping (LocalActionType) -> GlobalActionType,
-         actionContramap: @escaping (GlobalActionType) -> LocalActionType,
-         stateMap: @escaping (LocalStateType) -> GlobalStateType,
-         stateContramap: @escaping (GlobalStateType) -> LocalStateType) {
-        self.actionMap = actionMap
-        self.actionContramap = actionContramap
+         actionZoomIn: @escaping (GlobalActionType) -> LocalActionType?,
+         actionZoomOut: @escaping (LocalActionType) -> GlobalActionType,
+         stateZoomIn: @escaping (GlobalStateType) -> LocalStateType) {
+        self.actionZoomIn = actionZoomIn
+        self.actionZoomOut = actionZoomOut
+        self.stateZoomIn = stateZoomIn
         self.partMiddleware = middleware
-        self.stateMap = stateMap
-        self.stateContramap = stateContramap
+        self.context = {
+            fatalError("No context set for middleware LiftMiddleware, please be sure to configure your middleware prior to usage")
+        }
     }
 
     /**
@@ -53,8 +52,13 @@ public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: M
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: GlobalActionType) {
-        partMiddleware.handle(action: actionContramap(action))
+    public func handle(action: GlobalActionType, next: @escaping () -> Void) {
+        guard let actionSubpart = actionZoomIn(action) else {
+            next()
+            return
+        }
+
+        partMiddleware.handle(action: actionSubpart, next: next)
     }
 }
 
@@ -93,24 +97,51 @@ extension Middleware {
      - Returns: a `SubstateMiddleware``<Whole, Self>` that knows how to translate `Whole` to `Part` and vice-versa, by using the key path.
      */
     public func lift<GlobalActionType, GlobalStateType>(
-        actionMap: @escaping (ActionType) -> GlobalActionType,
-        actionContramap: @escaping (GlobalActionType) -> ActionType,
-        stateMap: @escaping (StateType) -> GlobalStateType,
-        stateContramap: @escaping (GlobalStateType) -> StateType
+        actionZoomIn: @escaping (GlobalActionType) -> ActionType?,
+        actionZoomOut: @escaping (ActionType) -> GlobalActionType,
+        stateZoomIn: @escaping (GlobalStateType) -> StateType
     ) -> LiftMiddleware<GlobalActionType, GlobalStateType, Self> {
+        .init(middleware: self,
+              actionZoomIn: actionZoomIn,
+              actionZoomOut: actionZoomOut,
+              stateZoomIn: stateZoomIn
+        )
+    }
+}
+
+extension MiddlewareContext {
+    public func lift<GlobalActionType, GlobalStateType>(
+        actionZoomIn: @escaping (GlobalActionType) -> ActionType?,
+        stateZoomOut: @escaping (StateType) -> GlobalStateType)
+        -> MiddlewareContext<GlobalActionType, GlobalStateType> {
         .init(
-            middleware: self,
-            actionMap: { localAction in
-                actionMap(localAction)
-            },
-            actionContramap: { globalAction in
-                actionContramap(globalAction)
-            },
-            stateMap: { localState in
-                stateMap(localState)
-            },
-            stateContramap: { globalState in
-                stateContramap(globalState)
+            actionHandler: .init(
+                onValue: { globalAction in
+                    guard let localAction = actionZoomIn(globalAction) else { return }
+                    self.actionHandler.onValue(localAction)
+                },
+                onCompleted: self.actionHandler.onCompleted
+            ),
+            getState: {
+                stateZoomOut(self.getState())
+            }
+        )
+    }
+
+    public func unlift<LocalActionType, LocalStateType>(
+        actionZoomOut: @escaping (LocalActionType) -> ActionType,
+        stateZoomIn: @escaping (StateType) -> LocalStateType)
+        -> MiddlewareContext<LocalActionType, LocalStateType> {
+        .init(
+            actionHandler: .init(
+                onValue: { localAction in
+                    let globalAction = actionZoomOut(localAction)
+                    self.actionHandler.onValue(globalAction)
+                },
+                onCompleted: self.actionHandler.onCompleted
+            ),
+            getState: {
+                stateZoomIn(self.getState())
             }
         )
     }

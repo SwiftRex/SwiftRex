@@ -31,17 +31,17 @@ class MiddlewareMock<StateType>: Middleware {
 
     //MARK: - handle
 
-    var handleActionCallsCount = 0
-    var handleActionCalled: Bool {
-        return handleActionCallsCount > 0
+    var handleActionNextCallsCount = 0
+    var handleActionNextCalled: Bool {
+        return handleActionNextCallsCount > 0
     }
-    var handleActionReceivedAction: ActionType?
-    var handleActionClosure: ((ActionType) -> Void)?
+    var handleActionNextReceivedArguments: (action: ActionType, next: () -> Void)?
+    var handleActionNextClosure: ((ActionType, @escaping () -> Void) -> Void)?
 
-    func handle(action: ActionType) {
-        handleActionCallsCount += 1
-        handleActionReceivedAction = action
-        handleActionClosure?(action)
+    func handle(action: ActionType, next: @escaping () -> Void) {
+        handleActionNextCallsCount += 1
+        handleActionNextReceivedArguments = (action: action, next: next)
+        handleActionNextClosure?(action, next)
     }
 
 }

@@ -1,8 +1,8 @@
 import SwiftRex
 
 class ActionHandlerMock {
-    var actions: [ActionProtocol] = []
-    var value: ActionHandler!
+    var actions: [ActionMock] = []
+    var value: ActionHandler<ActionMock>!
 
     init() {
         value = ActionHandler(

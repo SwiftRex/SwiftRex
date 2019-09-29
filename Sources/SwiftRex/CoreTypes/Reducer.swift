@@ -86,13 +86,15 @@ extension Reducer {
      - Returns: a `Reducer<Whole>` that maps `Whole` to `Part` and vice-versa, by using the key path.
      */
     public func lift<GlobalActionType, GlobalStateType>(
-        actionContramap: @escaping (GlobalActionType) -> ActionType?,
-        stateMap: @escaping (StateType) -> GlobalStateType,
-        stateContramap: @escaping (GlobalStateType) -> StateType)
+        actionPrismGetter: @escaping (GlobalActionType) -> ActionType?,
+        stateLensGetter: @escaping (GlobalStateType) -> StateType,
+        stateLensSetter: @escaping (GlobalStateType, StateType) -> GlobalStateType)
         -> Reducer<GlobalActionType, GlobalStateType> {
         return Reducer<GlobalActionType, GlobalStateType> { globalState, globalAction in
-            guard let localAction = actionContramap(globalAction) else { return globalState }
-            return stateMap(self.reduce(stateContramap(globalState), localAction))
+            guard let localAction = actionPrismGetter(globalAction) else { return globalState }
+            let localStatePrevious = stateLensGetter(globalState)
+            let localStateAfter = self.reduce(localStatePrevious, localAction)
+            return stateLensSetter(globalState, localStateAfter)
         }
     }
 }

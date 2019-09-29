@@ -63,13 +63,13 @@ class ReducerTests: XCTestCase {
     }
 
     func testComposeTwoReducers() {
-        let reducer1: Reducer<TestState> = Reducer { state, _ in
+        let reducer1: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "1"
             return state
         }
 
-        let reducer2: Reducer<TestState> = Reducer { state, _ in
+        let reducer2: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "2"
             return state
@@ -83,19 +83,19 @@ class ReducerTests: XCTestCase {
     }
 
     func testComposeThreeReducers() {
-        let reducer1: Reducer<TestState> = Reducer { state, _ in
+        let reducer1: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "1"
             return state
         }
 
-        let reducer2: Reducer<TestState> = Reducer { state, _ in
+        let reducer2: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "2"
             return state
         }
 
-        let reducer3: Reducer<TestState> = Reducer { state, _ in
+        let reducer3: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "3"
             return state
@@ -109,25 +109,25 @@ class ReducerTests: XCTestCase {
     }
 
     func testComposeTwoGroupsOfReducers() {
-        let reducer1: Reducer<TestState> = Reducer { state, _ in
+        let reducer1: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "1"
             return state
         }
 
-        let reducer2: Reducer<TestState> = Reducer { state, _ in
+        let reducer2: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "2"
             return state
         }
 
-        let reducer3: Reducer<TestState> = Reducer { state, _ in
+        let reducer3: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "3"
             return state
         }
 
-        let reducer4: Reducer<TestState> = Reducer { state, _ in
+        let reducer4: Reducer<ActionMock, TestState> = Reducer { state, _ in
             var state = state
             state.name += "4"
             return state
@@ -142,7 +142,7 @@ class ReducerTests: XCTestCase {
 
     func testEmptyReducer() {
         let original = TestState()
-        let reducer = Reducer<TestState>.identity
+        let reducer = Reducer<ActionMock, TestState>.identity
         let reduced = reducer.reduce(original, Action1())
 
         XCTAssertEqual(original, reduced)
@@ -150,11 +150,16 @@ class ReducerTests: XCTestCase {
 
     func testLiftReducer() {
         let original = TestState(value: UUID(), name: "a")
-        let reducer = Reducer<String> { state, _ in
+        let reducer = Reducer<ActionMock, String> { state, _ in
             state + "b"
         }
 
-        let reduced = reducer.lift(\TestState.name).reduce(original, Action1())
+        let reduced = reducer
+            .lift(
+                actionContramap: { $0 },
+                stateMap: { string in TestState(value: UUID(), name: string) },
+                stateContramap: { $0.name }
+            ).reduce(original, Action1())
 
         XCTAssertEqual(original.value, reduced.value)
         XCTAssertEqual("ab", reduced.name)
@@ -166,12 +171,12 @@ class ReducerTests: XCTestCase {
 
         let original = TestState(value: uuidBefore, name: "a")
 
-        let reducerValue = Reducer<UUID> { state, _ in
+        let reducerValue = Reducer<ActionMock, UUID> { state, _ in
             XCTAssertEqual(uuidBefore, state)
             return uuidAfter
         }
 
-        let reducerName = Reducer<String> { state, _ in
+        let reducerName = Reducer<ActionMock, String> { state, _ in
             state + "b"
         }
 

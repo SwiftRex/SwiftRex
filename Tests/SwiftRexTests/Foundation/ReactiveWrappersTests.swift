@@ -1,4 +1,5 @@
 import Foundation
+import Nimble
 @testable import SwiftRex
 import XCTest
 
@@ -131,26 +132,26 @@ class ReactiveWrappersTests: XCTestCase {
     }
 
     #if !SWIFT_PACKAGE
-//    func testPublisherTypeAssertNoFailureOnError() {
-//        let shouldCallClosure = expectation(description: "Closure should be called")
-//        let someError = SomeError()
-//        let subscriberType = SubscriberType<String, Never>(onValue: { string in
-//            XCTAssertEqual("test", string)
-//            shouldCallClosure.fulfill()
-//        })
-//
-//        let publisherType = PublisherType<String, Error> { subscriber in
-//            XCTAssertThrowsError({
-//                subscriber.onValue("test")
-//                return subscriber.onCompleted(someError)
-//            })
-//            return FooSubscription()
-//        }.assertNoFailure()
-//
-//        _ = publisherType.subscribe(subscriberType)
-//
-//        wait(for: [shouldCallClosure], timeout: 0.1)
-//    }
+    func testPublisherTypeAssertNoFailureOnError() {
+        let shouldCallClosure = expectation(description: "Closure should be called")
+        let someError = SomeError()
+        let subscriberType = SubscriberType<String, Never>(onValue: { string in
+            XCTAssertEqual("test", string)
+            shouldCallClosure.fulfill()
+        })
+
+        let publisherType = PublisherType<String, Error> { subscriber in
+            expect {
+                subscriber.onValue("test")
+                return subscriber.onCompleted(someError)
+            }.to(throwAssertion())
+            return FooSubscription()
+        }.assertNoFailure()
+
+        _ = publisherType.subscribe(subscriberType)
+
+        wait(for: [shouldCallClosure], timeout: 0.1)
+    }
     #endif
 
     // MARK: - Subject

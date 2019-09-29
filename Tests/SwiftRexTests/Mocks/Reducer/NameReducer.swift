@@ -1,6 +1,6 @@
 import SwiftRex
 
-let createNameReducer: () -> Reducer<TestState> = {
+let createNameReducer: () -> Reducer<ActionMock, TestState> = {
     Reducer { (state: TestState, action) in
         switch action {
         case _ as Action1:

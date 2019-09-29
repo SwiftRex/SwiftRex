@@ -25,7 +25,7 @@ public final class IdentityMiddleware<ActionType, GlobalState>: Middleware {
      - Parameters:
        - action: the action to be handled
      */
-    public func handle(action: ActionType) {
-        context().next(action)
+    public func handle(action: ActionType, next: @escaping () -> Void) {
+        next()
     }
 }

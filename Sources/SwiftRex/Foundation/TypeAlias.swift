@@ -9,9 +9,3 @@ public typealias GetState<StateType> = () -> StateType
  `(StateType, ActionProtocol) -> StateType`
  */
 public typealias ReduceFunction<ActionType, StateType> = (StateType, ActionType) -> StateType
-
-/**
- A function that calls the next action handler in the chain. <br/>
- `(ActionProtocol, () -> StateType) -> Void`
- */
-public typealias NextActionHandler<ActionType> = (ActionType) -> Void

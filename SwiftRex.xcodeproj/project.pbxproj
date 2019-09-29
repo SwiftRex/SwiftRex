@@ -15,6 +15,7 @@
 		9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */; };
 		CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
 		D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
+		D501C1B323401E96005B0327 /* ActionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D501C1B223401E96005B0327 /* ActionMock.swift */; };
 		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
 		D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
 		D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACE22BE922600BE6679 /* FooSubscription.swift */; };
@@ -267,11 +268,6 @@
 		D5FDCB4022B70E8F0012D2E7 /* Action2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070A2071287900D682EF /* Action2.swift */; };
 		D5FDCB4122B70E8F0012D2E7 /* Action3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070B2071287900D682EF /* Action3.swift */; };
 		D5FDCB4222B70E8F0012D2E7 /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607092071287900D682EF /* ActionReference.swift */; };
-		D5FDCB4322B70E980012D2E7 /* Event1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607122071287900D682EF /* Event1.swift */; };
-		D5FDCB4422B70E980012D2E7 /* Event2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607142071287900D682EF /* Event2.swift */; };
-		D5FDCB4522B70E980012D2E7 /* Event3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607112071287900D682EF /* Event3.swift */; };
-		D5FDCB4622B70E980012D2E7 /* EventAndActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607102071287900D682EF /* EventAndActionReference.swift */; };
-		D5FDCB4722B70E980012D2E7 /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607132071287900D682EF /* EventReference.swift */; };
 		D5FDCB4822B70E9F0012D2E7 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070E2071287900D682EF /* SomeError.swift */; };
 		D5FDCB4922B70EA70012D2E7 /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607072071287900D682EF /* NameReducer.swift */; };
 		D5FDCB4A22B70EAB0012D2E7 /* ReducerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52E2162207A6CEC00A88E39 /* ReducerMock.swift */; };
@@ -279,8 +275,6 @@
 		D5FDCB4F22B711800012D2E7 /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56449272082F1F500453ABB /* AutoMockable.generated.swift */; };
 		D5FDCB5022B711B40012D2E7 /* RotationMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607012071287900D682EF /* RotationMiddleware.swift */; };
 		D5FDCB5322B712630012D2E7 /* ActionHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */; };
-		D5FDCB5722B713B90012D2E7 /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */; };
-		D5FDCB5922B713D90012D2E7 /* MessageHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5822B713D90012D2E7 /* MessageHandlerMock.swift */; };
 		D5FDCB5B22B719000012D2E7 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607172071287900D682EF /* TestStore.swift */; };
 		D5FDCB5D22B7195C0012D2E7 /* CurrentValueSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */; };
 		DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
@@ -400,6 +394,7 @@
 		D2B97539EC6A492985FB407F /* Pods-UnitTests Combine iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests Combine iOS.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests Combine iOS/Pods-UnitTests Combine iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4627F2CA5E907B890648113 /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		D501C1B223401E96005B0327 /* ActionMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMock.swift; sourceTree = "<group>"; };
 		D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D507CACB22BE909B00BE6679 /* SomeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeError.swift; sourceTree = "<group>"; };
 		D507CACE22BE922600BE6679 /* FooSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooSubscription.swift; sourceTree = "<group>"; };
@@ -551,11 +546,6 @@
 		D5A6070B2071287900D682EF /* Action3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action3.swift; sourceTree = "<group>"; };
 		D5A6070C2071287900D682EF /* Action1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action1.swift; sourceTree = "<group>"; };
 		D5A6070E2071287900D682EF /* SomeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SomeError.swift; sourceTree = "<group>"; };
-		D5A607102071287900D682EF /* EventAndActionReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventAndActionReference.swift; sourceTree = "<group>"; };
-		D5A607112071287900D682EF /* Event3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event3.swift; sourceTree = "<group>"; };
-		D5A607122071287900D682EF /* Event1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event1.swift; sourceTree = "<group>"; };
-		D5A607132071287900D682EF /* EventReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventReference.swift; sourceTree = "<group>"; };
-		D5A607142071287900D682EF /* Event2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event2.swift; sourceTree = "<group>"; };
 		D5A607162071287900D682EF /* TestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
 		D5A607172071287900D682EF /* TestStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestStore.swift; sourceTree = "<group>"; };
 		D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectLineMiddlewareTests.swift; sourceTree = "<group>"; };
@@ -600,8 +590,6 @@
 		D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5E734A622C15AA500B0E284 /* SubscriberTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriberTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandlerMock.swift; sourceTree = "<group>"; };
-		D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandlerMock.swift; sourceTree = "<group>"; };
-		D5FDCB5822B713D90012D2E7 /* MessageHandlerMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageHandlerMock.swift; sourceTree = "<group>"; };
 		D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentValueSubject.swift; sourceTree = "<group>"; };
 		E1EA4C435F50A56023B2C78A /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.release.xcconfig"; sourceTree = "<group>"; };
@@ -1202,7 +1190,6 @@
 			isa = PBXGroup;
 			children = (
 				D5A607082071287900D682EF /* Action */,
-				D5A6070F2071287900D682EF /* Event */,
 				D5A6070D2071287900D682EF /* Helper */,
 				D5A606FE2071287900D682EF /* Middleware */,
 				D5A607052071287900D682EF /* Reducer */,
@@ -1234,6 +1221,7 @@
 				D5A6070C2071287900D682EF /* Action1.swift */,
 				D5A6070A2071287900D682EF /* Action2.swift */,
 				D5A6070B2071287900D682EF /* Action3.swift */,
+				D501C1B223401E96005B0327 /* ActionMock.swift */,
 				D5A607092071287900D682EF /* ActionReference.swift */,
 			);
 			path = Action;
@@ -1248,25 +1236,11 @@
 			path = Helper;
 			sourceTree = "<group>";
 		};
-		D5A6070F2071287900D682EF /* Event */ = {
-			isa = PBXGroup;
-			children = (
-				D5A607122071287900D682EF /* Event1.swift */,
-				D5A607142071287900D682EF /* Event2.swift */,
-				D5A607112071287900D682EF /* Event3.swift */,
-				D5A607102071287900D682EF /* EventAndActionReference.swift */,
-				D5A607132071287900D682EF /* EventReference.swift */,
-			);
-			path = Event;
-			sourceTree = "<group>";
-		};
 		D5A607152071287900D682EF /* Store */ = {
 			isa = PBXGroup;
 			children = (
 				D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */,
 				D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */,
-				D5FDCB5622B713B90012D2E7 /* EventHandlerMock.swift */,
-				D5FDCB5822B713D90012D2E7 /* MessageHandlerMock.swift */,
 				D5195E6E22E12CED0005C3FD /* PassthroughSubject.swift */,
 				D5195E6C22E12CCF0005C3FD /* SubscriptionItem.swift */,
 				D5A607162071287900D682EF /* TestState.swift */,
@@ -2830,16 +2804,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D54E5CA8233F87BA00D46DB4 /* ReactiveWrappersTests.swift in Sources */,
-				D5FDCB4322B70E980012D2E7 /* Event1.swift in Sources */,
 				D5C3943722B970B400ABCA90 /* DirectLineMiddlewareTests.swift in Sources */,
 				D5FDCB4A22B70EAB0012D2E7 /* ReducerMock.swift in Sources */,
-				D5FDCB4422B70E980012D2E7 /* Event2.swift in Sources */,
 				D5FDCB4822B70E9F0012D2E7 /* SomeError.swift in Sources */,
 				D5FDCB4922B70EA70012D2E7 /* NameReducer.swift in Sources */,
 				D5FDCB5D22B7195C0012D2E7 /* CurrentValueSubject.swift in Sources */,
 				D5FDCB5322B712630012D2E7 /* ActionHandlerMock.swift in Sources */,
 				D5FDCB5B22B719000012D2E7 /* TestStore.swift in Sources */,
-				D5FDCB5922B713D90012D2E7 /* MessageHandlerMock.swift in Sources */,
+				D501C1B323401E96005B0327 /* ActionMock.swift in Sources */,
 				D5C3943522B970B400ABCA90 /* BypassMiddlewareTests.swift in Sources */,
 				D5FDCB4B22B70ECF0012D2E7 /* TestState.swift in Sources */,
 				D5C3943622B970B400ABCA90 /* ComposedMiddlewareTests.swift in Sources */,
@@ -2849,15 +2821,11 @@
 				D5FDCB4122B70E8F0012D2E7 /* Action3.swift in Sources */,
 				D5FDCB5022B711B40012D2E7 /* RotationMiddleware.swift in Sources */,
 				D54E5CA7233F87A100D46DB4 /* TypeErasureTests.swift in Sources */,
-				D5FDCB4522B70E980012D2E7 /* Event3.swift in Sources */,
-				D5FDCB4622B70E980012D2E7 /* EventAndActionReference.swift in Sources */,
 				D5FDCB4F22B711800012D2E7 /* AutoMockable.generated.swift in Sources */,
-				D5FDCB4722B70E980012D2E7 /* EventReference.swift in Sources */,
 				D5FDCB3E22B70E690012D2E7 /* ReducerTests.swift in Sources */,
 				D5C3943922B970B400ABCA90 /* MiddlewareTestsBase.swift in Sources */,
 				D5E66D5222B962F3003BF88B /* FooSubscription.swift in Sources */,
 				D5FDCB3F22B70E8F0012D2E7 /* Action1.swift in Sources */,
-				D5FDCB5722B713B90012D2E7 /* EventHandlerMock.swift in Sources */,
 				D5195E6D22E12CCF0005C3FD /* SubscriptionItem.swift in Sources */,
 				D5C3943B22B970B400ABCA90 /* SubstateMiddlewareTests.swift in Sources */,
 				D5FDCB4222B70E8F0012D2E7 /* ActionReference.swift in Sources */,

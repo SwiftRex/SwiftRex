@@ -52,10 +52,7 @@ open class StoreBase<ActionType, State> {
         self.middleware.context = { [unowned self] in
             .init(
                 actionHandler: self.actionHandler,
-                getState: { [unowned self] in self.subject.value() },
-                next: { [weak self] action in
-                    self?.reduce(action: action)
-                }
+                getState: { [unowned self] in self.subject.value() }
             )
         }
 
@@ -70,7 +67,9 @@ extension StoreBase: Store {
 
 extension StoreBase {
     private func middlewarePipeline(for action: ActionType) {
-        middleware.handle(action: action)
+        middleware.handle(action: action) { [weak self] in
+            self?.reduce(action: action)
+        }
     }
 
     private func reduce(action: ActionType) {

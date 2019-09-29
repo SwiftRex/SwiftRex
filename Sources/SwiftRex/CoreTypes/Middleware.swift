@@ -102,8 +102,10 @@ public protocol Middleware: class {
      additional actions. This is also a good place for analytics, tracking, logging and telemetry.
      - Parameters:
        - action: the action to be handled
+       - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
+               only once, not more or less than once.
      */
-    func handle(action: ActionType)
+    func handle(action: ActionType, next: @escaping () -> Void)
 }
 
 // sourcery: AutoMockable
