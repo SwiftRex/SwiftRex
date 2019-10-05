@@ -19,13 +19,4 @@ public final class IdentityMiddleware<ActionType, GlobalState>: Middleware {
             fatalError("No context set for middleware PipelineMiddleware, please be sure to configure your middleware prior to usage")
         }
     }
-
-    /**
-     Handles the incoming actions. The `IdentityMiddleware` won't do anything with the `ActionProtocol`, simply forwards it to the next middleware in the chain.
-     - Parameters:
-       - action: the action to be handled
-     */
-    public func handle(action: ActionType, next: @escaping Next) {
-        next()
-    }
 }

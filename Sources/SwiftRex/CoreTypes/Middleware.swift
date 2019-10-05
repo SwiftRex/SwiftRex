@@ -108,6 +108,20 @@ public protocol Middleware: class {
     func handle(action: ActionType, next: @escaping Next)
 }
 
+extension Middleware {
+    /**
+     Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
+     additional actions. This is also a good place for analytics, tracking, logging and telemetry.
+     - Parameters:
+       - action: the action to be handled
+       - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
+               only once, not more or less than once.
+     */
+    public func handle(action: ActionType, next: @escaping Next) {
+        next()
+    }
+}
+
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
 // sourcery: AutoMockableGeneric = ActionType
