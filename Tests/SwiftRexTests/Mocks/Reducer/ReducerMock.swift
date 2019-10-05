@@ -1,23 +1,23 @@
 import SwiftRex
 
-let createReducerMock: () -> (Reducer<ActionMock, TestState>, ReducerMock) = {
-    let mock = ReducerMock()
+let createReducerMock: () -> (Reducer<AppAction, TestState>, ReducerMock<AppAction, TestState>) = {
+    let mock = ReducerMock<AppAction, TestState>()
 
-    return (Reducer { state, action in
-        mock.reduceActionCallsCount += 1
-        mock.reduceActionReceivedArguments = (currentState: state, action: action)
-        return mock.reduceActionClosure.map { $0(state, action) } ?? mock.reduceActionReturnValue
+    return (Reducer { action, state in
+        mock.reduceCallsCount += 1
+        mock.reduceReceivedArguments = (currentState: state, action: action)
+        return mock.reduceClosure.map { $0(state, action) } ?? mock.reduceReturnValue
     }, mock)
 }
 
-class ReducerMock {
+class ReducerMock<ActionType, StateType> {
     // MARK: - reduce
 
-    var reduceActionCallsCount = 0
-    var reduceActionCalled: Bool {
-        return reduceActionCallsCount > 0
+    var reduceCallsCount = 0
+    var reduceCalled: Bool {
+        return reduceCallsCount > 0
     }
-    var reduceActionReceivedArguments: (currentState: TestState, action: ActionMock)?
-    var reduceActionReturnValue: TestState!
-    var reduceActionClosure: ((TestState, ActionMock) -> TestState)?
+    var reduceReceivedArguments: (action: ActionType, currentState: StateType)?
+    var reduceReturnValue: StateType!
+    var reduceClosure: ((StateType, ActionType) -> StateType)?
 }

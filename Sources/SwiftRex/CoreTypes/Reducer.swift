@@ -14,14 +14,14 @@
  Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.
  */
 public struct Reducer<ActionType, StateType> {
-    let reduce: (StateType, ActionType) -> StateType
+    let reduce: (ActionType, StateType) -> StateType
 
     /**
      Reducer initializer takes only the underlying function `(S, A) -> S` that is the reducer function itself.
 
      - Parameter reduce: a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from the old state and an action.
      */
-    public init(_ reduce: @escaping (StateType, ActionType) -> StateType) {
+    public init(_ reduce: @escaping (ActionType, StateType) -> StateType) {
         self.reduce = reduce
     }
 }
@@ -33,7 +33,7 @@ extension Reducer: Monoid {
      Therefore, `Reducer<StateType> <> identity == Reducer<StateType> == identity <> Reducer<StateType>`
      */
     public static var identity: Reducer<ActionType, StateType> {
-        return Reducer { state, _ in state }
+        return Reducer { _, state in state }
     }
 
     /**
@@ -45,8 +45,8 @@ extension Reducer: Monoid {
      - Returns: a composed monoid `(S, A) -> S` equivalent to `g(f(x))`
      */
     public static func <> (lhs: Reducer<ActionType, StateType>, rhs: Reducer<ActionType, StateType>) -> Reducer<ActionType, StateType> {
-        return Reducer { state, action in
-            rhs.reduce(lhs.reduce(state, action), action)
+        return Reducer { action, state in
+            rhs.reduce(action, lhs.reduce(action, state))
         }
     }
 }
@@ -88,13 +88,46 @@ extension Reducer {
     public func lift<GlobalActionType, GlobalStateType>(
         actionPrismGetter: @escaping (GlobalActionType) -> ActionType?,
         stateLensGetter: @escaping (GlobalStateType) -> StateType,
-        stateLensSetter: @escaping (GlobalStateType, StateType) -> GlobalStateType)
+        stateLensSetter: @escaping (inout GlobalStateType, StateType) -> Void)
         -> Reducer<GlobalActionType, GlobalStateType> {
-        return Reducer<GlobalActionType, GlobalStateType> { globalState, globalAction in
+        .init { globalAction, globalState in
             guard let localAction = actionPrismGetter(globalAction) else { return globalState }
             let localStatePrevious = stateLensGetter(globalState)
-            let localStateAfter = self.reduce(localStatePrevious, localAction)
-            return stateLensSetter(globalState, localStateAfter)
+            let localStateAfter = self.reduce(localAction, localStatePrevious)
+            var globalState = globalState
+            stateLensSetter(&globalState, localStateAfter)
+            return globalState
         }
+    }
+
+    public func lift<GlobalActionType, GlobalStateType>(
+        action: KeyPath<GlobalActionType, ActionType?>,
+        state: WritableKeyPath<GlobalStateType, StateType>)
+        -> Reducer<GlobalActionType, GlobalStateType> {
+        lift(
+            actionPrismGetter: { $0[keyPath: action] },
+            stateLensGetter: { $0[keyPath: state] },
+            stateLensSetter: { $0[keyPath: state] = $1 }
+        )
+    }
+
+    public func lift<GlobalStateType>(
+        state: WritableKeyPath<GlobalStateType, StateType>)
+        -> Reducer<ActionType, GlobalStateType> {
+        lift(
+            actionPrismGetter: { $0 },
+            stateLensGetter: { $0[keyPath: state] },
+            stateLensSetter: { $0[keyPath: state] = $1 }
+        )
+    }
+
+    public func lift<GlobalActionType>(
+        action: KeyPath<GlobalActionType, ActionType?>)
+        -> Reducer<GlobalActionType, StateType> {
+        lift(
+            actionPrismGetter: { $0[keyPath: action] },
+            stateLensGetter: { $0 },
+            stateLensSetter: { $0 = $1 }
+        )
     }
 }

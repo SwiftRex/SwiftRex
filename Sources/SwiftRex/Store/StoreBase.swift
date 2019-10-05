@@ -74,7 +74,7 @@ extension StoreBase {
 
     private func reduce(action: ActionType) {
         subject.mutate { value in
-            value = reducer.reduce(value, action)
+            value = reducer.reduce(action, value)
         }
     }
 }
