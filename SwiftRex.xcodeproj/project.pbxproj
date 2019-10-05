@@ -72,6 +72,8 @@
 		D56C218C22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
 		D56C218D22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
 		D56C218E22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
+		D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */; };
+		D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CAB2349297200E58D89 /* MiddlewareTests.swift */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209C22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -456,6 +458,8 @@
 		D56449272082F1F500453ABB /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		D56C218522DAABC50096DB96 /* PipelineMiddleware+RxSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+RxSwift.swift"; sourceTree = "<group>"; };
 		D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+ReactiveSwift.swift"; sourceTree = "<group>"; };
+		D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContextTests.swift; sourceTree = "<group>"; };
+		D5741CAB2349297200E58D89 /* MiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareTests.swift; sourceTree = "<group>"; };
 		D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+ObservableType.swift"; sourceTree = "<group>"; };
 		D578209F22BADFC60065E44D /* Subscription+Disposable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subscription+Disposable.swift"; sourceTree = "<group>"; };
 		D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+ObserverType.swift"; sourceTree = "<group>"; };
@@ -1258,6 +1262,8 @@
 		D5D06C5D2348A785008DD2C7 /* CoreTypes */ = {
 			isa = PBXGroup;
 			children = (
+				D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */,
+				D5741CAB2349297200E58D89 /* MiddlewareTests.swift */,
 				D5A6071F2071287A00D682EF /* ReducerTests.swift */,
 			);
 			path = CoreTypes;
@@ -2776,6 +2782,8 @@
 				D5D06C5623489EA7008DD2C7 /* TypeErasureTests.swift in Sources */,
 				D5C306752348D7510098BC59 /* SomeError.swift in Sources */,
 				D5D06C5823489EF5008DD2C7 /* AppAction.swift in Sources */,
+				D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */,
+				D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */,
 				D5C306762348D7560098BC59 /* FooSubscription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
