@@ -1,7 +1,7 @@
 @testable import SwiftRex
 import XCTest
 
-class BypassMiddlewareTests: MiddlewareTestsBase {
+class IdentityMiddlewareTests: MiddlewareTestsBase {
     func testBypassMiddlewareAction() {
         // Given
         let sut = BypassMiddleware<TestState>()

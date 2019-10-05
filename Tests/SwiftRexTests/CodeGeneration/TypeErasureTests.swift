@@ -4,40 +4,70 @@ import Nimble
 import XCTest
 
 class TypeErasureTests: XCTestCase {
-    #if !SWIFT_PACKAGE
     func testMiddlewareBaseInitThrows() {
-        expect { _ = _AnyMiddlewareBase<TestState>() }.to(throwAssertion())
-    }
-
-    func testMiddlewareBaseHandleEventThrows() {
-        let sut = MiddlewareAbstract<TestState>()
-        expect {
-            sut.handle(event: Event1(), getState: { TestState() }, next: { _, _ in })
-        }.to(throwAssertion())
+        expect { _ = _AnyMiddlewareBase<AppAction, TestState>() }.to(throwAssertion())
     }
 
     func testMiddlewareBaseHandleActionThrows() {
-        let sut = MiddlewareAbstract<TestState>()
+        let sut = MiddlewareAbstract<AppAction, TestState>()
         expect {
-            sut.handle(action: Action1(), getState: { TestState() }, next: { _, _ in })
+            sut.handle(action: AppAction.foo, next: { })
         }.to(throwAssertion())
     }
 
-    func testMiddlewareBaseHandlerGetThrows() {
-        let sut = MiddlewareAbstract<TestState>()
+    func testMiddlewareBaseContextGetThrows() {
+        let sut = MiddlewareAbstract<AppAction, TestState>()
         expect {
-            _ = sut.handlers
+            _ = sut.context
         }.to(throwAssertion())
     }
 
-    func testMiddlewareBaseHandlerSetThrows() {
-        let sut = MiddlewareAbstract<TestState>()
+    func testMiddlewareBaseContextSetThrows() {
+        let sut = MiddlewareAbstract<AppAction, TestState>()
+        let context = MiddlewareContext<AppAction, TestState>(actionHandler: .init(), getState: { TestState() })
         expect {
-            sut.handlers = .init(actionHandler: ActionHandler(), eventHandler: EventHandler())
+            sut.context = { context }
         }.to(throwAssertion())
     }
-    #endif
+
+    func testAnyMiddlewareInit() {
+        let middleware = MiddlewareMock<AppAction, TestState>()
+        expect {
+            _ = AnyMiddleware(middleware)
+        }.toNot(throwError())
+    }
+
+    func testAnyMiddlewareHandleAction() {
+        let middleware = MiddlewareMock<AppAction, TestState>()
+        let sut = AnyMiddleware(middleware)
+        sut.handle(action: .foo, next: { })
+        XCTAssertTrue(middleware.handleActionNextCalled)
+    }
+
+    func testAnyMiddlewareContextGetsFromWrapped() {
+        let middleware = MiddlewareMock<AppAction, TestState>()
+        let state = TestState(value: UUID(), name: "")
+        let context = MiddlewareContext<AppAction, TestState>(actionHandler: .init(), getState: { state })
+
+        middleware.context = { context }
+        let typeErased = AnyMiddleware(middleware)
+        let typeErasedContext = typeErased.context()
+
+        XCTAssertEqual(state.value, typeErasedContext.getState().value)
+    }
+
+    func testAnyMiddlewareContextSetsIntoWrapped() {
+        let middleware = MiddlewareMock<AppAction, TestState>()
+        let state = TestState(value: UUID(), name: "")
+        let context = MiddlewareContext<AppAction, TestState>(actionHandler: .init(), getState: { state })
+
+        let typeErased = AnyMiddleware(middleware)
+        typeErased.context = { context }
+        let wrappedMiddlewareContext = middleware.context()
+
+        XCTAssertEqual(state.value, wrappedMiddlewareContext.getState().value)
+    }
 }
 
-class MiddlewareAbstract<T>: _AnyMiddlewareBase<T> {
+private class MiddlewareAbstract<A, S>: _AnyMiddlewareBase<A, S> {
 }

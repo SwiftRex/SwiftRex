@@ -22,7 +22,7 @@ import AppKit
 
 
 
-class MiddlewareMock<StateType>: Middleware {
+class MiddlewareMock<ActionType, StateType>: Middleware {
     var context: (() -> MiddlewareContext<ActionType, StateType>) {
         get { return underlyingContext }
         set(value) { underlyingContext = value }
