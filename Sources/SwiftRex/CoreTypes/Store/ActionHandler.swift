@@ -10,3 +10,7 @@ public protocol ActionHandler {
      */
     func dispatch(_ action: ActionType)
 }
+
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = ActionType
+extension ActionHandler { }

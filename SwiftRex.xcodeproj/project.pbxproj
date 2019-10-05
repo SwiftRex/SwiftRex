@@ -74,6 +74,7 @@
 		D56C218E22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
 		D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */; };
 		D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CAB2349297200E58D89 /* MiddlewareTests.swift */; };
+		D5741CAD23492E2000E58D89 /* StoreBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209C22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -566,7 +567,6 @@
 		D5E734A422C15AA400B0E284 /* ReplayLastSubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayLastSubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5E734A622C15AA500B0E284 /* SubscriberTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriberTypeBridgeTests.swift; sourceTree = "<group>"; };
-		D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandlerMock.swift; sourceTree = "<group>"; };
 		D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentValueSubject.swift; sourceTree = "<group>"; };
 		E1EA4C435F50A56023B2C78A /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.release.xcconfig"; sourceTree = "<group>"; };
@@ -1022,7 +1022,6 @@
 				D5C3944422B988AE00ABCA90 /* Foundation */,
 				D5A607182071287A00D682EF /* Middleware */,
 				D5A606FD2071287900D682EF /* Mocks */,
-				D5C3944322B9887D00ABCA90 /* Store */,
 			);
 			path = SwiftRexTests;
 			sourceTree = "<group>";
@@ -1211,7 +1210,6 @@
 		D5A607152071287900D682EF /* Store */ = {
 			isa = PBXGroup;
 			children = (
-				D5FDCB5222B712630012D2E7 /* ActionHandlerMock.swift */,
 				D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */,
 				D5195E6E22E12CED0005C3FD /* PassthroughSubject.swift */,
 				D5195E6C22E12CCF0005C3FD /* SubscriptionItem.swift */,
@@ -1262,6 +1260,7 @@
 		D5D06C5D2348A785008DD2C7 /* CoreTypes */ = {
 			isa = PBXGroup;
 			children = (
+				D5C3944322B9887D00ABCA90 /* Store */,
 				D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */,
 				D5741CAB2349297200E58D89 /* MiddlewareTests.swift */,
 				D5A6071F2071287A00D682EF /* ReducerTests.swift */,
@@ -2781,6 +2780,7 @@
 				D5D06C5F2348A8A7008DD2C7 /* ReducerMock.swift in Sources */,
 				D5D06C5623489EA7008DD2C7 /* TypeErasureTests.swift in Sources */,
 				D5C306752348D7510098BC59 /* SomeError.swift in Sources */,
+				D5741CAD23492E2000E58D89 /* StoreBaseTests.swift in Sources */,
 				D5D06C5823489EF5008DD2C7 /* AppAction.swift in Sources */,
 				D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */,
 				D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */,

@@ -21,3 +21,8 @@
  */
 public protocol StoreType: StateProvider, ActionHandler {
 }
+
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = ActionType
+// sourcery: AutoMockableGeneric = StateType
+extension StoreType { }

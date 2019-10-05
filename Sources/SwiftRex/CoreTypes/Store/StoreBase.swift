@@ -28,7 +28,7 @@ open class StoreBase<ActionType, State> {
     private let middleware: AnyMiddleware<ActionType, State>
     private let reducer: Reducer<ActionType, State>
     private let subject: UnfailableReplayLastSubjectType<State>
-    private var onAction: ((ActionType) -> Void) = { _ in }
+    private var actionSubscriber: UnfailableSubscriberType<ActionType> = .init()
 
     /**
      Required initializer that takes all the expected pipelines
@@ -44,14 +44,14 @@ open class StoreBase<ActionType, State> {
         self.subject = subject
         self.reducer = reducer
         self.middleware = AnyMiddleware(middleware)
-        self.onAction = { [unowned self] action in
+        self.actionSubscriber = .init(onValue: { [unowned self] action in
             DispatchQueue.main.async {
                 self.middlewarePipeline(for: action)
             }
-        }
+        })
         self.middleware.context = {
             .init(
-                onAction: { [unowned self] in self.onAction($0) },
+                onAction: { [unowned self] in self.actionSubscriber.onValue($0) },
                 getState: { [unowned self] in self.subject.value() }
             )
         }
@@ -61,7 +61,7 @@ open class StoreBase<ActionType, State> {
 extension StoreBase: StoreType {
     public var statePublisher: UnfailablePublisherType<State> { return subject.publisher }
     public func dispatch(_ action: ActionType) {
-        onAction(action)
+        actionSubscriber.onValue(action)
     }
 }
 

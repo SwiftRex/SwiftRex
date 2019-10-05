@@ -22,6 +22,24 @@ import AppKit
 
 
 
+class ActionHandlerMock<ActionType>: ActionHandler {
+
+    //MARK: - dispatch
+
+    var dispatchCallsCount = 0
+    var dispatchCalled: Bool {
+        return dispatchCallsCount > 0
+    }
+    var dispatchReceivedAction: ActionType?
+    var dispatchClosure: ((ActionType) -> Void)?
+
+    func dispatch(_ action: ActionType) {
+        dispatchCallsCount += 1
+        dispatchReceivedAction = action
+        dispatchClosure?(action)
+    }
+
+}
 class MiddlewareMock<ActionType, StateType>: Middleware {
     var context: (() -> MiddlewareContext<ActionType, StateType>) {
         get { return underlyingContext }
@@ -42,6 +60,37 @@ class MiddlewareMock<ActionType, StateType>: Middleware {
         handleActionNextCallsCount += 1
         handleActionNextReceivedArguments = (action: action, next: next)
         handleActionNextClosure?(action, next)
+    }
+
+}
+class StateProviderMock<StateType>: StateProvider {
+    var statePublisher: UnfailablePublisherType<StateType> {
+        get { return underlyingStatePublisher }
+        set(value) { underlyingStatePublisher = value }
+    }
+    var underlyingStatePublisher: UnfailablePublisherType<StateType>!
+
+}
+class StoreTypeMock<StateType, ActionType>: StoreType {
+    var statePublisher: UnfailablePublisherType<StateType> {
+        get { return underlyingStatePublisher }
+        set(value) { underlyingStatePublisher = value }
+    }
+    var underlyingStatePublisher: UnfailablePublisherType<StateType>!
+
+    //MARK: - dispatch
+
+    var dispatchCallsCount = 0
+    var dispatchCalled: Bool {
+        return dispatchCallsCount > 0
+    }
+    var dispatchReceivedAction: ActionType?
+    var dispatchClosure: ((ActionType) -> Void)?
+
+    func dispatch(_ action: ActionType) {
+        dispatchCallsCount += 1
+        dispatchReceivedAction = action
+        dispatchClosure?(action)
     }
 
 }

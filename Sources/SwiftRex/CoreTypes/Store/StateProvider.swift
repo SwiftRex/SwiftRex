@@ -5,3 +5,7 @@ public protocol StateProvider {
     associatedtype StateType
     var statePublisher: UnfailablePublisherType<StateType> { get }
 }
+
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
+extension StateProvider { }
