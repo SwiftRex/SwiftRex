@@ -1075,6 +1075,7 @@
 				D59D57FB207AA1B40010412E /* Middleware.swift */,
 				D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */,
 				D59D57E6207AA1B40010412E /* Reducer.swift */,
+				D59D5809207AA1B40010412E /* Store.swift */,
 			);
 			path = CoreTypes;
 			sourceTree = "<group>";
@@ -1125,7 +1126,6 @@
 			children = (
 				D59D5806207AA1B40010412E /* ActionHandler.swift */,
 				D59D5807207AA1B40010412E /* StateProvider.swift */,
-				D59D5809207AA1B40010412E /* Store.swift */,
 				D59D580A207AA1B40010412E /* StoreBase.swift */,
 			);
 			path = Store;

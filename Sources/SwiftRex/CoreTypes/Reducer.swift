@@ -86,16 +86,16 @@ extension Reducer {
      - Returns: a `Reducer<Whole>` that maps `Whole` to `Part` and vice-versa, by using the key path.
      */
     public func lift<GlobalActionType, GlobalStateType>(
-        actionPrismGetter: @escaping (GlobalActionType) -> ActionType?,
-        stateLensGetter: @escaping (GlobalStateType) -> StateType,
-        stateLensSetter: @escaping (inout GlobalStateType, StateType) -> Void)
+        actionGetter: @escaping (GlobalActionType) -> ActionType?,
+        stateGetter: @escaping (GlobalStateType) -> StateType,
+        stateSetter: @escaping (inout GlobalStateType, StateType) -> Void)
         -> Reducer<GlobalActionType, GlobalStateType> {
         .init { globalAction, globalState in
-            guard let localAction = actionPrismGetter(globalAction) else { return globalState }
-            let localStatePrevious = stateLensGetter(globalState)
+            guard let localAction = actionGetter(globalAction) else { return globalState }
+            let localStatePrevious = stateGetter(globalState)
             let localStateAfter = self.reduce(localAction, localStatePrevious)
             var globalState = globalState
-            stateLensSetter(&globalState, localStateAfter)
+            stateSetter(&globalState, localStateAfter)
             return globalState
         }
     }
@@ -105,9 +105,9 @@ extension Reducer {
         state: WritableKeyPath<GlobalStateType, StateType>)
         -> Reducer<GlobalActionType, GlobalStateType> {
         lift(
-            actionPrismGetter: { $0[keyPath: action] },
-            stateLensGetter: { $0[keyPath: state] },
-            stateLensSetter: { $0[keyPath: state] = $1 }
+            actionGetter: { $0[keyPath: action] },
+            stateGetter: { $0[keyPath: state] },
+            stateSetter: { $0[keyPath: state] = $1 }
         )
     }
 
@@ -115,9 +115,9 @@ extension Reducer {
         state: WritableKeyPath<GlobalStateType, StateType>)
         -> Reducer<ActionType, GlobalStateType> {
         lift(
-            actionPrismGetter: { $0 },
-            stateLensGetter: { $0[keyPath: state] },
-            stateLensSetter: { $0[keyPath: state] = $1 }
+            actionGetter: { $0 },
+            stateGetter: { $0[keyPath: state] },
+            stateSetter: { $0[keyPath: state] = $1 }
         )
     }
 

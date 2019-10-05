@@ -143,9 +143,9 @@ class ReducerTests: XCTestCase {
 
         let liftedReducer: Reducer<AppAction, TestState> = reducer
             .lift(
-                actionPrismGetter: { $0.bar },
-                stateLensGetter: { $0.name },
-                stateLensSetter: { global, string in
+                actionGetter: { $0.bar },
+                stateGetter: { $0.name },
+                stateSetter: { global, string in
                     global.name = string
                 }
         )
@@ -165,9 +165,9 @@ class ReducerTests: XCTestCase {
 
         let liftedReducer: Reducer<AppAction, TestState> = reducer
             .lift(
-                actionPrismGetter: { $0.bar },
-                stateLensGetter: { $0.name },
-                stateLensSetter: { global, string in
+                actionGetter: { $0.bar },
+                stateGetter: { $0.name },
+                stateSetter: { global, string in
                     global.name = string
                 }
         )
