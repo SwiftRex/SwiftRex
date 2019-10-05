@@ -19,7 +19,7 @@ public class PipelineMiddleware<ActionType, StateType>: Middleware {
         if let actionTransformer = actionTransformer {
             actionTransformer(self.actionSubject.publisher)
                 .subscribe(.init(onValue: { [weak self] action in
-                    self?.context().actionHandler.dispatch(action)
+                    self?.context().dispatch(action)
                 }))
                 .cancelled(by: &self.subscriptionCollection)
         }

@@ -24,7 +24,7 @@ class TypeErasureTests: XCTestCase {
 
     func testMiddlewareBaseContextSetThrows() {
         let sut = MiddlewareAbstract<AppAction, TestState>()
-        let context = MiddlewareContext<AppAction, TestState>(actionHandler: .init(), getState: { TestState() })
+        let context = MiddlewareContext<AppAction, TestState>(onAction: { _ in }, getState: { TestState() })
         expect {
             sut.context = { context }
         }.to(throwAssertion())
@@ -47,7 +47,7 @@ class TypeErasureTests: XCTestCase {
     func testAnyMiddlewareContextGetsFromWrapped() {
         let middleware = MiddlewareMock<AppAction, TestState>()
         let state = TestState(value: UUID(), name: "")
-        let context = MiddlewareContext<AppAction, TestState>(actionHandler: .init(), getState: { state })
+        let context = MiddlewareContext<AppAction, TestState>(onAction: { _ in }, getState: { state })
 
         middleware.context = { context }
         let typeErased = AnyMiddleware(middleware)
@@ -59,7 +59,7 @@ class TypeErasureTests: XCTestCase {
     func testAnyMiddlewareContextSetsIntoWrapped() {
         let middleware = MiddlewareMock<AppAction, TestState>()
         let state = TestState(value: UUID(), name: "")
-        let context = MiddlewareContext<AppAction, TestState>(actionHandler: .init(), getState: { state })
+        let context = MiddlewareContext<AppAction, TestState>(onAction: { _ in }, getState: { state })
 
         let typeErased = AnyMiddleware(middleware)
         typeErased.context = { context }

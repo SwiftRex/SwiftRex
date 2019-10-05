@@ -1,9 +1,9 @@
 /**
- 🏪 `Store` defines a protocol for the state store of an app. It must have an input and an output:
+ 🏪 `StoreType` defines a protocol for the state store of an app. It must have an input and an output:
  - an `EventHandler`: that's the store input, so it's able to receive and distribute events of type `EventProtocol`. Being an event handler means that an `UIViewController` can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`.
  - a `StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an `UIViewController` can subscribe to state changes and react to them.
 
- The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `Store` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
+ The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `StoreType` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
 
  ![Store and ViewController](https://swiftrex.github.io/SwiftRex/markdown/img/StoreBase.png)
 
@@ -19,7 +19,5 @@
 
  Please check (and inherit from) `StoreBase` for a standard implementation.
  */
-public protocol Store: StateProvider {
-    associatedtype ActionType
-    var actionHandler: ActionHandler<ActionType> { get }
+public protocol StoreType: StateProvider, ActionHandler {
 }

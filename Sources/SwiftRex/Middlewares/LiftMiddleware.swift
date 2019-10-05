@@ -115,13 +115,10 @@ extension MiddlewareContext {
         stateZoomOut: @escaping (StateType) -> GlobalStateType)
         -> MiddlewareContext<GlobalActionType, GlobalStateType> {
         .init(
-            actionHandler: .init(
-                onValue: { globalAction in
-                    guard let localAction = actionZoomIn(globalAction) else { return }
-                    self.actionHandler.onValue(localAction)
-                },
-                onCompleted: self.actionHandler.onCompleted
-            ),
+            onAction: { globalAction in
+                guard let localAction = actionZoomIn(globalAction) else { return }
+                self.dispatch(localAction)
+            },
             getState: {
                 stateZoomOut(self.getState())
             }
@@ -133,13 +130,10 @@ extension MiddlewareContext {
         stateZoomIn: @escaping (StateType) -> LocalStateType)
         -> MiddlewareContext<LocalActionType, LocalStateType> {
         .init(
-            actionHandler: .init(
-                onValue: { localAction in
-                    let globalAction = actionZoomOut(localAction)
-                    self.actionHandler.onValue(globalAction)
-                },
-                onCompleted: self.actionHandler.onCompleted
-            ),
+            onAction: { localAction in
+                let globalAction = actionZoomOut(localAction)
+                self.dispatch(globalAction)
+            },
             getState: {
                 stateZoomIn(self.getState())
             }
