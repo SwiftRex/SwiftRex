@@ -74,7 +74,8 @@
 		D56C218E22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
 		D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */; };
 		D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CAB2349297200E58D89 /* MiddlewareTests.swift */; };
-		D5741CAD23492E2000E58D89 /* StoreBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */; };
+		D5741CAE234942D100E58D89 /* IdentityMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* IdentityMiddlewareTests.swift */; };
+		D5741CB1234944C000E58D89 /* MiddlewareContextMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CB0234944C000E58D89 /* MiddlewareContextMock.swift */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209C22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -461,6 +462,7 @@
 		D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+ReactiveSwift.swift"; sourceTree = "<group>"; };
 		D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContextTests.swift; sourceTree = "<group>"; };
 		D5741CAB2349297200E58D89 /* MiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareTests.swift; sourceTree = "<group>"; };
+		D5741CB0234944C000E58D89 /* MiddlewareContextMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContextMock.swift; sourceTree = "<group>"; };
 		D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+ObservableType.swift"; sourceTree = "<group>"; };
 		D578209F22BADFC60065E44D /* Subscription+Disposable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subscription+Disposable.swift"; sourceTree = "<group>"; };
 		D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+ObserverType.swift"; sourceTree = "<group>"; };
@@ -526,9 +528,6 @@
 		D5A6070E2071287900D682EF /* SomeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SomeError.swift; sourceTree = "<group>"; };
 		D5A607162071287900D682EF /* TestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
 		D5A607172071287900D682EF /* TestStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestStore.swift; sourceTree = "<group>"; };
-		D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectLineMiddlewareTests.swift; sourceTree = "<group>"; };
-		D5A6071A2071287A00D682EF /* MiddlewareTestsBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareTestsBase.swift; sourceTree = "<group>"; };
-		D5A6071C2071287A00D682EF /* GeneralMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposedMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5A6071E2071287A00D682EF /* IdentityMiddlewareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentityMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5A6071F2071287A00D682EF /* ReducerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReducerTests.swift; sourceTree = "<group>"; };
@@ -1176,6 +1175,7 @@
 		D5A606FE2071287900D682EF /* Middleware */ = {
 			isa = PBXGroup;
 			children = (
+				D5741CB0234944C000E58D89 /* MiddlewareContextMock.swift */,
 				D5A607012071287900D682EF /* RotationMiddleware.swift */,
 			);
 			path = Middleware;
@@ -1223,10 +1223,7 @@
 			isa = PBXGroup;
 			children = (
 				D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */,
-				D5A607192071287A00D682EF /* DirectLineMiddlewareTests.swift */,
-				D5A6071C2071287A00D682EF /* GeneralMiddlewareTests.swift */,
 				D5A6071E2071287A00D682EF /* IdentityMiddlewareTests.swift */,
-				D5A6071A2071287A00D682EF /* MiddlewareTestsBase.swift */,
 				D5195E6A22E110620005C3FD /* PipelineMiddlewareTests.swift */,
 				D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */,
 			);
@@ -2775,14 +2772,15 @@
 				D5C306742348D7240098BC59 /* ReactiveWrappersTests.swift in Sources */,
 				D5D06C5523489E98008DD2C7 /* AutoMockable.generated.swift in Sources */,
 				D5D06C5C2348A776008DD2C7 /* ReducerTests.swift in Sources */,
+				D5741CB1234944C000E58D89 /* MiddlewareContextMock.swift in Sources */,
 				D5D06C5723489ED8008DD2C7 /* TestState.swift in Sources */,
 				D5D06C5E2348A8A7008DD2C7 /* NameReducer.swift in Sources */,
 				D5D06C5F2348A8A7008DD2C7 /* ReducerMock.swift in Sources */,
 				D5D06C5623489EA7008DD2C7 /* TypeErasureTests.swift in Sources */,
 				D5C306752348D7510098BC59 /* SomeError.swift in Sources */,
-				D5741CAD23492E2000E58D89 /* StoreBaseTests.swift in Sources */,
 				D5D06C5823489EF5008DD2C7 /* AppAction.swift in Sources */,
 				D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */,
+				D5741CAE234942D100E58D89 /* IdentityMiddlewareTests.swift in Sources */,
 				D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */,
 				D5C306762348D7560098BC59 /* FooSubscription.swift in Sources */,
 			);

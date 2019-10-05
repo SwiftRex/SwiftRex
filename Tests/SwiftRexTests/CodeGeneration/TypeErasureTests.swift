@@ -44,6 +44,29 @@ class TypeErasureTests: XCTestCase {
         XCTAssertTrue(middleware.handleActionNextCalled)
     }
 
+    func testAnyMiddlewareHandleActionCallsNext() {
+        // Given
+        let middleware = MiddlewareMock<AppAction, TestState>()
+        let sut = AnyMiddleware(middleware)
+        let action = AppAction.foo
+        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
+        middleware.handleActionNextClosure = { actionParameter, next in
+            XCTAssertEqual(action, actionParameter)
+            next()
+        }
+
+        // Then
+        sut.handle(action: action, next: {
+            lastInChainWasCalledExpectation.fulfill()
+        })
+
+        // Expect
+        wait(for: [lastInChainWasCalledExpectation], timeout: 3)
+
+        XCTAssertEqual(1, middleware.handleActionNextCallsCount)
+        XCTAssertEqual(action, middleware.handleActionNextReceivedArguments!.action)
+    }
+
     func testAnyMiddlewareContextGetsFromWrapped() {
         let middleware = MiddlewareMock<AppAction, TestState>()
         let state = TestState(value: UUID(), name: "")

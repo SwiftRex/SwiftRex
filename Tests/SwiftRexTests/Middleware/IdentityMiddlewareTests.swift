@@ -1,46 +1,24 @@
 @testable import SwiftRex
 import XCTest
 
-class IdentityMiddlewareTests: MiddlewareTestsBase {
-    func testBypassMiddlewareAction() {
+class IdentityMiddlewareTests: XCTestCase {
+    func testIdentityMiddlewareAction() {
         // Given
-        let sut = BypassMiddleware<TestState>()
+        let sut = IdentityMiddleware<AppAction, TestState>()
 
-        let middlewareContext = MiddlewareContextMock()
+        let middlewareContext = MiddlewareContextMock<AppAction, TestState>()
         sut.context = { middlewareContext.value }
-        let state = TestState()
-        let getState = { state }
-        let action = ActionReference()
+        let action = AppAction.bar(.delta)
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
-        let lastInChain = lastActionInChain(action, state: state, expectation: lastInChainWasCalledExpectation)
 
         // Then
-        sut.handle(action: action, getState: getState, next: lastInChain)
+        sut.handle(action: action) {
+            lastInChainWasCalledExpectation.fulfill()
+        }
 
         // Expect
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(0, middlewareContext.eventHandlerMock.events.count)
-        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
-    }
-
-    func testBypassMiddlewareEvent() {
-        // Given
-        let sut = BypassMiddleware<TestState>()
-
-        let middlewareContext = MiddlewareContextMock()
-        sut.context = { middlewareContext.value }
-        let state = TestState()
-        let getState = { state }
-        let event = EventReference()
-        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
-        let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
-
-        // Then
-        sut.handle(event: event, getState: getState, next: lastInChain)
-
-        // Expect
-        wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(0, middlewareContext.eventHandlerMock.events.count)
-        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
+        XCTAssertEqual(0, middlewareContext.onActionCount)
+        XCTAssertEqual(0, middlewareContext.getStateCount)
     }
 }
