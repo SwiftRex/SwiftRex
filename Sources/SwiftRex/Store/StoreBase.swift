@@ -55,8 +55,6 @@ open class StoreBase<ActionType, State> {
                 getState: { [unowned self] in self.subject.value() }
             )
         }
-
-        DispatchQueue.setMainQueueID()
     }
 }
 

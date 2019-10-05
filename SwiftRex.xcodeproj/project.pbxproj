@@ -49,10 +49,6 @@
 		D51A442A22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
 		D51A442B22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
 		D51A442C22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
-		D51A70B7233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A70B6233E3BBF0054B482 /* DispatchQueue+Extensions.swift */; };
-		D51A70B8233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A70B6233E3BBF0054B482 /* DispatchQueue+Extensions.swift */; };
-		D51A70B9233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A70B6233E3BBF0054B482 /* DispatchQueue+Extensions.swift */; };
-		D51A70BA233E3BC00054B482 /* DispatchQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A70B6233E3BBF0054B482 /* DispatchQueue+Extensions.swift */; };
 		D529D58122E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */; };
 		D529D58322E6716B00A287D1 /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58222E6716B00A287D1 /* MiddlewareTestsBase.swift */; };
 		D529D58522E671D400A287D1 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58422E671D400A287D1 /* TestState.swift */; };
@@ -400,7 +396,6 @@
 		D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Subscription+Cancellable.swift"; sourceTree = "<group>"; };
 		D51A223822BFF1EB00194408 /* SubscriberType+Subscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+Subscriber.swift"; sourceTree = "<group>"; };
 		D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+Combine.swift"; sourceTree = "<group>"; };
-		D51A70B6233E3BBF0054B482 /* DispatchQueue+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+Extensions.swift"; sourceTree = "<group>"; };
 		D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftMiddleware.swift; sourceTree = "<group>"; };
 		D51C8AD3207ACAD900EAC486 /* SubstateMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstateMiddlewareTests.swift; sourceTree = "<group>"; };
 		D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineMiddlewareRxSwiftTests.swift; sourceTree = "<group>"; };
@@ -1005,7 +1000,6 @@
 		D5866FC5208AD51000507523 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
-				D51A70B6233E3BBF0054B482 /* DispatchQueue+Extensions.swift */,
 				D5866FC6208AD53B00507523 /* Monoid.swift */,
 				D59D57E9207AA1B40010412E /* Operator.swift */,
 				D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */,
@@ -2681,7 +2675,6 @@
 				D5888A6F22B6E9250028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888A7122B6E9250028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
 				D5888A7222B6E9250028B0E1 /* Reducer.swift in Sources */,
-				D51A70B7233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888A7322B6E9250028B0E1 /* Monoid.swift in Sources */,
 				D5888A7522B6E9250028B0E1 /* ReactiveWrappers.swift in Sources */,
 				D5888A7622B6E9250028B0E1 /* TypeAlias.swift in Sources */,
@@ -2706,7 +2699,6 @@
 				D5888A9322B6E92A0028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888A9422B6E92A0028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888A9522B6E92A0028B0E1 /* MiddlewareContext.swift in Sources */,
-				D51A70BA233E3BC00054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */,
 				D5888A9A22B6E92A0028B0E1 /* StoreBase.swift in Sources */,
 				D5A022BA22BED8B000797438 /* TypeErase.generated.abstract.swift in Sources */,
@@ -2732,7 +2724,6 @@
 				D5888ABC22B6E92D0028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888ABD22B6E92D0028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888ABE22B6E92D0028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
-				D51A70B9233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888AC122B6E92D0028B0E1 /* Monoid.swift in Sources */,
 				D5888AC222B6E92D0028B0E1 /* StoreBase.swift in Sources */,
 				D5888AC522B6E92D0028B0E1 /* ReactiveWrappers.swift in Sources */,
@@ -2757,7 +2748,6 @@
 				D5888AE422B6E9300028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888AE522B6E9300028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888AE622B6E9300028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
-				D51A70B8233E3BBF0054B482 /* DispatchQueue+Extensions.swift in Sources */,
 				D5888AE922B6E9300028B0E1 /* Monoid.swift in Sources */,
 				D5888AEA22B6E9300028B0E1 /* StoreBase.swift in Sources */,
 				D5888AED22B6E9300028B0E1 /* ReactiveWrappers.swift in Sources */,

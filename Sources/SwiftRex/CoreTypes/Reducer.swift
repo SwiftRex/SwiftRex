@@ -33,7 +33,7 @@ extension Reducer: Monoid {
      Therefore, `Reducer<StateType> <> identity == Reducer<StateType> == identity <> Reducer<StateType>`
      */
     public static var identity: Reducer<ActionType, StateType> {
-        return Reducer { _, state in state }
+        .init { _, state in state }
     }
 
     /**
@@ -45,7 +45,7 @@ extension Reducer: Monoid {
      - Returns: a composed monoid `(S, A) -> S` equivalent to `g(f(x))`
      */
     public static func <> (lhs: Reducer<ActionType, StateType>, rhs: Reducer<ActionType, StateType>) -> Reducer<ActionType, StateType> {
-        return Reducer { action, state in
+        .init { action, state in
             rhs.reduce(action, lhs.reduce(action, state))
         }
     }
@@ -124,10 +124,6 @@ extension Reducer {
     public func lift<GlobalActionType>(
         action: KeyPath<GlobalActionType, ActionType?>)
         -> Reducer<GlobalActionType, StateType> {
-        lift(
-            actionPrismGetter: { $0[keyPath: action] },
-            stateLensGetter: { $0 },
-            stateLensSetter: { $0 = $1 }
-        )
+        lift(action: action, state: \.self)
     }
 }
