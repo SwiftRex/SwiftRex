@@ -15,7 +15,7 @@ internal class _AnyMiddlewareBase<ActionType, StateType>: Middleware {
         }
     }
 
-    func handle(action: ActionType, next: @escaping () -> Void) -> Void {
+    func handle(action: ActionType, next: @escaping Next) -> Void {
         _abstract()
     }
 

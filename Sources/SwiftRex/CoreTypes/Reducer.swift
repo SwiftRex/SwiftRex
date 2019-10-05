@@ -14,14 +14,14 @@
  Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.
  */
 public struct Reducer<ActionType, StateType> {
-    let reduce: (ActionType, StateType) -> StateType
+    let reduce: ReduceFunction<ActionType, StateType>
 
     /**
      Reducer initializer takes only the underlying function `(S, A) -> S` that is the reducer function itself.
 
      - Parameter reduce: a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from the old state and an action.
      */
-    public init(_ reduce: @escaping (ActionType, StateType) -> StateType) {
+    public init(_ reduce: @escaping ReduceFunction<ActionType, StateType>) {
         self.reduce = reduce
     }
 }

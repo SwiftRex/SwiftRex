@@ -25,7 +25,7 @@ public class PipelineMiddleware<ActionType, StateType>: Middleware {
         }
     }
 
-    public func handle(action: ActionType, next: @escaping () -> Void) {
+    public func handle(action: ActionType, next: @escaping Next) {
         actionSubject.subscriber.onValue((context().getState(), action))
         next()
     }

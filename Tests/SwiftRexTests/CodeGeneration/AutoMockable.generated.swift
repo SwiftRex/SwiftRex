@@ -35,10 +35,10 @@ class MiddlewareMock<ActionType, StateType>: Middleware {
     var handleActionNextCalled: Bool {
         return handleActionNextCallsCount > 0
     }
-    var handleActionNextReceivedArguments: (action: ActionType, next: () -> Void)?
-    var handleActionNextClosure: ((ActionType, @escaping () -> Void) -> Void)?
+    var handleActionNextReceivedArguments: (action: ActionType, next: Next)?
+    var handleActionNextClosure: ((ActionType, @escaping Next) -> Void)?
 
-    func handle(action: ActionType, next: @escaping () -> Void) {
+    func handle(action: ActionType, next: @escaping Next) {
         handleActionNextCallsCount += 1
         handleActionNextReceivedArguments = (action: action, next: next)
         handleActionNextClosure?(action, next)

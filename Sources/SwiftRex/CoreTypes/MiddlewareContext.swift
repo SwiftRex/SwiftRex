@@ -12,8 +12,7 @@ public struct MiddlewareContext<ActionType, StateType> {
      */
     public let getState: GetState<StateType>
 
-    public init(actionHandler: ActionHandler<ActionType>,
-                getState: @escaping GetState<StateType>) {
+    public init(actionHandler: ActionHandler<ActionType>, getState: @escaping GetState<StateType>) {
         self.actionHandler = actionHandler
         self.getState = getState
     }

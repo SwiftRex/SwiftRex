@@ -66,10 +66,10 @@ public final class ComposedMiddleware<ActionType, GlobalState>: Middleware {
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: ActionType, next: @escaping () -> Void) {
+    public func handle(action: ActionType, next: @escaping Next) {
         let firstNode = middlewares
             .reversed()
-            .reduce(next) { chain, middleware -> (() -> Void) in {
+            .reduce(next) { chain, middleware -> Next in {
                 middleware.handle(action: action, next: chain)
             }
             }

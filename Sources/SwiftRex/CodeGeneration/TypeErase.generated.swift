@@ -14,7 +14,7 @@ private final class _AnyMiddlewareBox<Concrete: Middleware>: _AnyMiddlewareBase<
         self.concrete = concrete
     }
 
-    override func handle(action: ActionType, next: @escaping () -> Void) -> Void {
+    override func handle(action: ActionType, next: @escaping Next) -> Void {
         return concrete.handle(action: action, next: next)
     }
 
@@ -44,7 +44,7 @@ public final class AnyMiddleware<ActionType, StateType>: Middleware {
     /**
      Proxy method for `Middleware.handle(action:next:)`
      */
-    public func handle(action: ActionType, next: @escaping () -> Void) -> Void {
+    public func handle(action: ActionType, next: @escaping Next) -> Void {
         return box.handle(action: action,next: next)
     }
 

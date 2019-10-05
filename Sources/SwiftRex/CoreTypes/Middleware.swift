@@ -105,7 +105,7 @@ public protocol Middleware: class {
        - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
                only once, not more or less than once.
      */
-    func handle(action: ActionType, next: @escaping () -> Void)
+    func handle(action: ActionType, next: @escaping Next)
 }
 
 // sourcery: AutoMockable

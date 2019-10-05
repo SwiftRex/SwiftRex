@@ -233,6 +233,9 @@
 		D5C1C66222BFE7A000532BCF /* CombineRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* CombineRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5C1C66322BFE7A000532BCF /* CombineRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* CombineRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5C1C66422BFE7A000532BCF /* CombineRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C1C66022BFE7A000532BCF /* CombineRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5C306742348D7240098BC59 /* ReactiveWrappersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */; };
+		D5C306752348D7510098BC59 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070E2071287900D682EF /* SomeError.swift */; };
+		D5C306762348D7560098BC59 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E66D5022B962B5003BF88B /* FooSubscription.swift */; };
 		D5C96A5D22DA1BAB00585865 /* BindableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* BindableStore.swift */; };
 		D5C96A5E22DA1BAB00585865 /* BindableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* BindableStore.swift */; };
 		D5C96A5F22DA1BAB00585865 /* BindableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* BindableStore.swift */; };
@@ -2764,13 +2767,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5C306742348D7240098BC59 /* ReactiveWrappersTests.swift in Sources */,
 				D5D06C5523489E98008DD2C7 /* AutoMockable.generated.swift in Sources */,
 				D5D06C5C2348A776008DD2C7 /* ReducerTests.swift in Sources */,
 				D5D06C5723489ED8008DD2C7 /* TestState.swift in Sources */,
 				D5D06C5E2348A8A7008DD2C7 /* NameReducer.swift in Sources */,
 				D5D06C5F2348A8A7008DD2C7 /* ReducerMock.swift in Sources */,
 				D5D06C5623489EA7008DD2C7 /* TypeErasureTests.swift in Sources */,
+				D5C306752348D7510098BC59 /* SomeError.swift in Sources */,
 				D5D06C5823489EF5008DD2C7 /* AppAction.swift in Sources */,
+				D5C306762348D7560098BC59 /* FooSubscription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

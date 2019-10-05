@@ -52,7 +52,7 @@ public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: M
        - getState: a function that can be used to get the current state at any point in time
        - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
      */
-    public func handle(action: GlobalActionType, next: @escaping () -> Void) {
+    public func handle(action: GlobalActionType, next: @escaping Next) {
         guard let actionSubpart = actionZoomIn(action) else {
             next()
             return
