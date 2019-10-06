@@ -101,30 +101,16 @@ extension Middleware {
         actionZoomOut: @escaping (ActionType) -> GlobalActionType,
         stateZoomIn: @escaping (GlobalStateType) -> StateType
     ) -> LiftMiddleware<GlobalActionType, GlobalStateType, Self> {
-        .init(middleware: self,
-              actionZoomIn: actionZoomIn,
-              actionZoomOut: actionZoomOut,
-              stateZoomIn: stateZoomIn
+        .init(
+            middleware: self,
+            actionZoomIn: actionZoomIn,
+            actionZoomOut: actionZoomOut,
+            stateZoomIn: stateZoomIn
         )
     }
 }
 
 extension MiddlewareContext {
-    public func lift<GlobalActionType, GlobalStateType>(
-        actionZoomIn: @escaping (GlobalActionType) -> ActionType?,
-        stateZoomOut: @escaping (StateType) -> GlobalStateType)
-        -> MiddlewareContext<GlobalActionType, GlobalStateType> {
-        .init(
-            onAction: { globalAction in
-                guard let localAction = actionZoomIn(globalAction) else { return }
-                self.dispatch(localAction)
-            },
-            getState: {
-                stateZoomOut(self.getState())
-            }
-        )
-    }
-
     public func unlift<LocalActionType, LocalStateType>(
         actionZoomOut: @escaping (LocalActionType) -> ActionType,
         stateZoomIn: @escaping (StateType) -> LocalStateType)
