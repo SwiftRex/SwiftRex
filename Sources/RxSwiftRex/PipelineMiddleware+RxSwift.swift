@@ -4,7 +4,7 @@ import SwiftRex
 
 extension PipelineMiddleware {
     public static func rx(
-        actionTransformer: @escaping ((Observable<(StateType, ActionType)>) -> Observable<ActionType>) = { _ in
+        actionTransformer: @escaping ((Observable<(ActionType, StateType)>) -> Observable<ActionType>) = { _ in
             .empty()
         }
     ) -> PipelineMiddleware {

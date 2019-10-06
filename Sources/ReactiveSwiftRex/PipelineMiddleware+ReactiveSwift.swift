@@ -5,7 +5,7 @@ import SwiftRex
 extension PipelineMiddleware {
     public static func reactive(
         actionTransformer: @escaping
-            ((SignalProducer<(StateType, ActionType), Never>) ->
+            ((SignalProducer<(ActionType, StateType), Never>) ->
             SignalProducer<ActionType, Never>) = { _ in
             .empty
         },
