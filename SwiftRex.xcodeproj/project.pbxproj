@@ -76,6 +76,7 @@
 		D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CAB2349297200E58D89 /* MiddlewareTests.swift */; };
 		D5741CAE234942D100E58D89 /* IdentityMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* IdentityMiddlewareTests.swift */; };
 		D5741CB1234944C000E58D89 /* MiddlewareContextMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CB0234944C000E58D89 /* MiddlewareContextMock.swift */; };
+		D5741CB22349543700E58D89 /* ComposedMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071D2071287A00D682EF /* ComposedMiddlewareTests.swift */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209C22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -522,7 +523,6 @@
 		D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RxSwiftRex.h; sourceTree = "<group>"; };
 		D5A2EAFB22B9A27D00CA10B8 /* SwiftRex-ReactiveSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-ReactiveSwift.xcconfig"; sourceTree = "<group>"; };
 		D5A2EAFC22B9A2F300CA10B8 /* SwiftRex-RxSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SwiftRex-RxSwift.xcconfig"; sourceTree = "<group>"; };
-		D5A607012071287900D682EF /* RotationMiddleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationMiddleware.swift; sourceTree = "<group>"; };
 		D5A607072071287900D682EF /* NameReducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameReducer.swift; sourceTree = "<group>"; };
 		D5A6070C2071287900D682EF /* AppAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppAction.swift; sourceTree = "<group>"; };
 		D5A6070E2071287900D682EF /* SomeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SomeError.swift; sourceTree = "<group>"; };
@@ -1176,7 +1176,6 @@
 			isa = PBXGroup;
 			children = (
 				D5741CB0234944C000E58D89 /* MiddlewareContextMock.swift */,
-				D5A607012071287900D682EF /* RotationMiddleware.swift */,
 			);
 			path = Middleware;
 			sourceTree = "<group>";
@@ -2783,6 +2782,7 @@
 				D5741CAE234942D100E58D89 /* IdentityMiddlewareTests.swift in Sources */,
 				D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */,
 				D5C306762348D7560098BC59 /* FooSubscription.swift in Sources */,
+				D5741CB22349543700E58D89 /* ComposedMiddlewareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
