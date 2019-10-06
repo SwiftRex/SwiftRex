@@ -2,12 +2,12 @@ import Foundation
 
 public class PipelineMiddleware<ActionType, StateType>: Middleware {
     public var context: () -> MiddlewareContext<ActionType, StateType>
-    private let actionSubject: UnfailableSubject<(StateType, ActionType)>
+    private let actionSubject: UnfailableSubject<(ActionType, StateType)>
     private var subscriptionCollection: SubscriptionCollection
 
     public init(
-        actionTransformer: ((PublisherType<(StateType, ActionType), Never>) -> PublisherType<ActionType, Never>)? = nil,
-        actionSubject: () -> UnfailableSubject<(StateType, ActionType)>,
+        actionTransformer: ((UnfailablePublisherType<(ActionType, StateType)>) -> UnfailablePublisherType<ActionType>)? = nil,
+        actionSubject: () -> UnfailableSubject<(ActionType, StateType)>,
         subscriptionCollection: () -> SubscriptionCollection
     ) {
         self.actionSubject = actionSubject()
@@ -26,7 +26,7 @@ public class PipelineMiddleware<ActionType, StateType>: Middleware {
     }
 
     public func handle(action: ActionType, next: @escaping Next) {
-        actionSubject.subscriber.onValue((context().getState(), action))
+        actionSubject.subscriber.onValue((action, context().getState()))
         next()
     }
 }
