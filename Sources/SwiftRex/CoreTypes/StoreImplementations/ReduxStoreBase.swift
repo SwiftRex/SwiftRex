@@ -24,11 +24,10 @@ import Foundation
 
  ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
  */
-open class StoreBase<ActionType, State> {
-    private let middleware: AnyMiddleware<ActionType, State>
-    private let reducer: Reducer<ActionType, State>
-    private let subject: UnfailableReplayLastSubjectType<State>
-    private var actionSubscriber: UnfailableSubscriberType<ActionType> = .init()
+open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
+    private let subject: UnfailableReplayLastSubjectType<StateType>
+    public let pipeline: ReduxPipelineWrapper<AnyMiddleware<ActionType, StateType>>
+    public var statePublisher: UnfailablePublisherType<StateType> { return subject.publisher }
 
     /**
      Required initializer that takes all the expected pipelines
@@ -38,43 +37,10 @@ open class StoreBase<ActionType, State> {
        - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the same type as the `initialState` property. For `reducer` composition, please use the diamond operator (`<>`) and for reducers that understand only a sub-state part, use the `Reducer.lift(_:)` method
        - middleware: a middleware pipeline, that can be any flat middleware or a `ComposedMiddleware`, as long as it's able to handle the state of the same type as the `initialState` property. For `middleware` composition, please use the diamond operator (`<>`) and for middlewares that understand only a sub-state part, use the `Middleware.lift(_:)` method
      */
-    public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<State>,
-                               reducer: Reducer<ActionType, State>,
-                               middleware: M) where M.ActionType == ActionType, M.StateType == State {
+    public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<StateType>,
+                               reducer: Reducer<ActionType, StateType>,
+                               middleware: M) where M.ActionType == ActionType, M.StateType == StateType {
         self.subject = subject
-        self.reducer = reducer
-        self.middleware = AnyMiddleware(middleware)
-        self.actionSubscriber = .init(onValue: { [unowned self] action in
-            DispatchQueue.main.async {
-                self.middlewarePipeline(for: action)
-            }
-        })
-        self.middleware.context = {
-            .init(
-                onAction: { [unowned self] in self.actionSubscriber.onValue($0) },
-                getState: { [unowned self] in self.subject.value() }
-            )
-        }
-    }
-}
-
-extension StoreBase: StoreType {
-    public var statePublisher: UnfailablePublisherType<State> { return subject.publisher }
-    public func dispatch(_ action: ActionType) {
-        actionSubscriber.onValue(action)
-    }
-}
-
-extension StoreBase {
-    private func middlewarePipeline(for action: ActionType) {
-        middleware.handle(action: action) { [weak self] in
-            self?.reduce(action: action)
-        }
-    }
-
-    private func reduce(action: ActionType) {
-        subject.mutate { value in
-            value = reducer.reduce(action, value)
-        }
+        self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware))
     }
 }

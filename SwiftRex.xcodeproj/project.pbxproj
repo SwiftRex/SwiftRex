@@ -82,6 +82,10 @@
 		D5741CB7234A612A00E58D89 /* CurrentValueSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */; };
 		D5741CB8234A613800E58D89 /* SubscriptionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E6C22E12CCF0005C3FD /* SubscriptionItem.swift */; };
 		D5741CBA234A61D300E58D89 /* PipelineMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E6A22E110620005C3FD /* PipelineMiddlewareTests.swift */; };
+		D5741CBC234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CBB234A717700E58D89 /* ReduxStoreProtocol.swift */; };
+		D5741CBD234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CBB234A717700E58D89 /* ReduxStoreProtocol.swift */; };
+		D5741CBE234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CBB234A717700E58D89 /* ReduxStoreProtocol.swift */; };
+		D5741CBF234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CBB234A717700E58D89 /* ReduxStoreProtocol.swift */; };
 		D578209A22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209B22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
 		D578209C22BABF2B0065E44D /* PublisherType+ObservableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */; };
@@ -126,7 +130,7 @@
 		D5888A7622B6E9250028B0E1 /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F6207AA1B40010412E /* TypeAlias.swift */; };
 		D5888A7722B6E9250028B0E1 /* TypeErase.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57EB207AA1B40010412E /* TypeErase.generated.swift */; };
 		D5888A7822B6E9250028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
-		D5888A7922B6E9250028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
+		D5888A7922B6E9250028B0E1 /* ReduxStoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* ReduxStoreBase.swift */; };
 		D5888A7B22B6E9250028B0E1 /* StateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5807207AA1B40010412E /* StateProvider.swift */; };
 		D5888A7D22B6E9250028B0E1 /* ComposedMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57FD207AA1B40010412E /* ComposedMiddleware.swift */; };
 		D5888A7E22B6E9250028B0E1 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* StoreType.swift */; };
@@ -139,7 +143,7 @@
 		D5888A9422B6E92A0028B0E1 /* LiftMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C8ACE207AC95E00EAC486 /* LiftMiddleware.swift */; };
 		D5888A9522B6E92A0028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
-		D5888A9A22B6E92A0028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
+		D5888A9A22B6E92A0028B0E1 /* ReduxStoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* ReduxStoreBase.swift */; };
 		D5888A9D22B6E92A0028B0E1 /* ReactiveWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */; };
 		D5888A9E22B6E92A0028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
 		D5888A9F22B6E92A0028B0E1 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
@@ -157,7 +161,7 @@
 		D5888ABD22B6E92D0028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888ABE22B6E92D0028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5888AC122B6E92D0028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
-		D5888AC222B6E92D0028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
+		D5888AC222B6E92D0028B0E1 /* ReduxStoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* ReduxStoreBase.swift */; };
 		D5888AC522B6E92D0028B0E1 /* ReactiveWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */; };
 		D5888AC622B6E92D0028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
 		D5888AC722B6E92D0028B0E1 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
@@ -175,7 +179,7 @@
 		D5888AE522B6E9300028B0E1 /* MiddlewareContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */; };
 		D5888AE622B6E9300028B0E1 /* TypeErase.generated.abstract.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55EFB0C207EBAA300BC8822 /* TypeErase.generated.abstract.swift */; };
 		D5888AE922B6E9300028B0E1 /* Monoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5866FC6208AD53B00507523 /* Monoid.swift */; };
-		D5888AEA22B6E9300028B0E1 /* StoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* StoreBase.swift */; };
+		D5888AEA22B6E9300028B0E1 /* ReduxStoreBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D580A207AA1B40010412E /* ReduxStoreBase.swift */; };
 		D5888AED22B6E9300028B0E1 /* ReactiveWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5888A5922B6BF7D0028B0E1 /* ReactiveWrappers.swift */; };
 		D5888AEE22B6E9300028B0E1 /* IdentityMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57F9207AA1B40010412E /* IdentityMiddleware.swift */; };
 		D5888AEF22B6E9300028B0E1 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E6207AA1B40010412E /* Reducer.swift */; };
@@ -184,6 +188,14 @@
 		D5888AF522B6E9300028B0E1 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D5809207AA1B40010412E /* StoreType.swift */; };
 		D5888AF722B6E9300028B0E1 /* Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59D57E9207AA1B40010412E /* Operator.swift */; };
 		D5888AFB22B6E9300028B0E1 /* SwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D59D57F7207AA1B40010412E /* SwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D59305A3234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A2234ADE310045CBBC /* ReduxPipelineWrapper.swift */; };
+		D59305A4234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A2234ADE310045CBBC /* ReduxPipelineWrapper.swift */; };
+		D59305A5234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A2234ADE310045CBBC /* ReduxPipelineWrapper.swift */; };
+		D59305A6234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A2234ADE310045CBBC /* ReduxPipelineWrapper.swift */; };
+		D59305A8234AE1150045CBBC /* ViewStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A7234AE1150045CBBC /* ViewStore.swift */; };
+		D59305A9234AE1150045CBBC /* ViewStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A7234AE1150045CBBC /* ViewStore.swift */; };
+		D59305AA234AE1150045CBBC /* ViewStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A7234AE1150045CBBC /* ViewStore.swift */; };
+		D59305AB234AE1150045CBBC /* ViewStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59305A7234AE1150045CBBC /* ViewStore.swift */; };
 		D598492922C021AB00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223522BFF1EA00194408 /* SubjectType+PassthroughSubject.swift */; };
 		D598492A22C021AB00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223522BFF1EA00194408 /* SubjectType+PassthroughSubject.swift */; };
 		D598492B22C021AD00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223522BFF1EA00194408 /* SubjectType+PassthroughSubject.swift */; };
@@ -469,6 +481,7 @@
 		D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContextTests.swift; sourceTree = "<group>"; };
 		D5741CAB2349297200E58D89 /* MiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareTests.swift; sourceTree = "<group>"; };
 		D5741CB0234944C000E58D89 /* MiddlewareContextMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContextMock.swift; sourceTree = "<group>"; };
+		D5741CBB234A717700E58D89 /* ReduxStoreProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduxStoreProtocol.swift; sourceTree = "<group>"; };
 		D578209922BABF2B0065E44D /* PublisherType+ObservableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+ObservableType.swift"; sourceTree = "<group>"; };
 		D578209F22BADFC60065E44D /* Subscription+Disposable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subscription+Disposable.swift"; sourceTree = "<group>"; };
 		D57820A422BAE72E0065E44D /* SubscriberType+ObserverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriberType+ObserverType.swift"; sourceTree = "<group>"; };
@@ -500,6 +513,8 @@
 		D5888B6E22B6F2630028B0E1 /* UnitTests SwiftRex.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UnitTests SwiftRex.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5888B7022B6F2D80028B0E1 /* UnitTests-SwiftRex-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Debug.xcconfig"; sourceTree = "<group>"; };
 		D5888B7122B6F2EA0028B0E1 /* UnitTests-SwiftRex-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "UnitTests-SwiftRex-Release.xcconfig"; sourceTree = "<group>"; };
+		D59305A2234ADE310045CBBC /* ReduxPipelineWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduxPipelineWrapper.swift; sourceTree = "<group>"; };
+		D59305A7234AE1150045CBBC /* ViewStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStore.swift; sourceTree = "<group>"; };
 		D595F6CC206E818C00E02733 /* ReactiveSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6DA206E81AE00E02733 /* ReactiveSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D595F6E7206E81B900E02733 /* ReactiveSwiftRex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -522,7 +537,7 @@
 		D59D5806207AA1B40010412E /* ActionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionHandler.swift; sourceTree = "<group>"; };
 		D59D5807207AA1B40010412E /* StateProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateProvider.swift; sourceTree = "<group>"; };
 		D59D5809207AA1B40010412E /* StoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreType.swift; sourceTree = "<group>"; };
-		D59D580A207AA1B40010412E /* StoreBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreBase.swift; sourceTree = "<group>"; };
+		D59D580A207AA1B40010412E /* ReduxStoreBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReduxStoreBase.swift; sourceTree = "<group>"; };
 		D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriberTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReactiveSwiftRex.h; sourceTree = "<group>"; };
 		D5A2EAEE22B9A05600CA10B8 /* RxSwiftRex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RxSwiftRex.h; sourceTree = "<group>"; };
@@ -1059,6 +1074,26 @@
 			path = RxSwiftRexTests;
 			sourceTree = "<group>";
 		};
+		D59305AC234AE13D0045CBBC /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				D59D5806207AA1B40010412E /* ActionHandler.swift */,
+				D59D5807207AA1B40010412E /* StateProvider.swift */,
+				D59D5809207AA1B40010412E /* StoreType.swift */,
+			);
+			path = Store;
+			sourceTree = "<group>";
+		};
+		D59305AD234AE14D0045CBBC /* Pipeline */ = {
+			isa = PBXGroup;
+			children = (
+				D59D57FB207AA1B40010412E /* Middleware.swift */,
+				D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */,
+				D59D57E6207AA1B40010412E /* Reducer.swift */,
+			);
+			path = Pipeline;
+			sourceTree = "<group>";
+		};
 		D595F6CD206E818C00E02733 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1089,10 +1124,9 @@
 		D59D57E5207AA1B40010412E /* CoreTypes */ = {
 			isa = PBXGroup;
 			children = (
-				D59D5805207AA1B40010412E /* Store */,
-				D59D57FB207AA1B40010412E /* Middleware.swift */,
-				D5888A5022B6A4690028B0E1 /* MiddlewareContext.swift */,
-				D59D57E6207AA1B40010412E /* Reducer.swift */,
+				D59305AD234AE14D0045CBBC /* Pipeline */,
+				D59305AC234AE13D0045CBBC /* Store */,
+				D59D5805207AA1B40010412E /* StoreImplementations */,
 			);
 			path = CoreTypes;
 			sourceTree = "<group>";
@@ -1138,15 +1172,15 @@
 			path = Metadata;
 			sourceTree = "<group>";
 		};
-		D59D5805207AA1B40010412E /* Store */ = {
+		D59D5805207AA1B40010412E /* StoreImplementations */ = {
 			isa = PBXGroup;
 			children = (
-				D59D5806207AA1B40010412E /* ActionHandler.swift */,
-				D59D5807207AA1B40010412E /* StateProvider.swift */,
-				D59D580A207AA1B40010412E /* StoreBase.swift */,
-				D59D5809207AA1B40010412E /* StoreType.swift */,
+				D59305A2234ADE310045CBBC /* ReduxPipelineWrapper.swift */,
+				D59D580A207AA1B40010412E /* ReduxStoreBase.swift */,
+				D5741CBB234A717700E58D89 /* ReduxStoreProtocol.swift */,
+				D59305A7234AE1150045CBBC /* ViewStore.swift */,
 			);
-			path = Store;
+			path = StoreImplementations;
 			sourceTree = "<group>";
 		};
 		D5A2EAE722B99FB100CA10B8 /* RxSwiftRex */ = {
@@ -2687,17 +2721,20 @@
 			files = (
 				D5888A6622B6E9250028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888A6922B6E9250028B0E1 /* Middleware.swift in Sources */,
+				D59305A8234AE1150045CBBC /* ViewStore.swift in Sources */,
+				D59305A3234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */,
 				D5888A6A22B6E9250028B0E1 /* Operator.swift in Sources */,
 				D5888A6D22B6E9250028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888A6F22B6E9250028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888A7122B6E9250028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
 				D5888A7222B6E9250028B0E1 /* Reducer.swift in Sources */,
 				D5888A7322B6E9250028B0E1 /* Monoid.swift in Sources */,
+				D5741CBC234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */,
 				D5888A7522B6E9250028B0E1 /* ReactiveWrappers.swift in Sources */,
 				D5888A7622B6E9250028B0E1 /* TypeAlias.swift in Sources */,
 				D5888A7722B6E9250028B0E1 /* TypeErase.generated.swift in Sources */,
 				D5888A7822B6E9250028B0E1 /* IdentityMiddleware.swift in Sources */,
-				D5888A7922B6E9250028B0E1 /* StoreBase.swift in Sources */,
+				D5888A7922B6E9250028B0E1 /* ReduxStoreBase.swift in Sources */,
 				D5888A7B22B6E9250028B0E1 /* StateProvider.swift in Sources */,
 				D5888A7D22B6E9250028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888A7E22B6E9250028B0E1 /* StoreType.swift in Sources */,
@@ -2711,13 +2748,16 @@
 			files = (
 				D5888A8F22B6E92A0028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888A9022B6E92A0028B0E1 /* StateProvider.swift in Sources */,
+				D59305AB234AE1150045CBBC /* ViewStore.swift in Sources */,
+				D59305A6234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */,
 				D5A022BB22BED8B000797438 /* TypeErase.generated.swift in Sources */,
 				D5888A9222B6E92A0028B0E1 /* Middleware.swift in Sources */,
 				D5888A9322B6E92A0028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888A9422B6E92A0028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888A9522B6E92A0028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888A9922B6E92A0028B0E1 /* Monoid.swift in Sources */,
-				D5888A9A22B6E92A0028B0E1 /* StoreBase.swift in Sources */,
+				D5741CBF234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */,
+				D5888A9A22B6E92A0028B0E1 /* ReduxStoreBase.swift in Sources */,
 				D5A022BA22BED8B000797438 /* TypeErase.generated.abstract.swift in Sources */,
 				D5888A9D22B6E92A0028B0E1 /* ReactiveWrappers.swift in Sources */,
 				D5888A9E22B6E92A0028B0E1 /* IdentityMiddleware.swift in Sources */,
@@ -2735,14 +2775,17 @@
 			files = (
 				D5888AB722B6E92D0028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888AB822B6E92D0028B0E1 /* StateProvider.swift in Sources */,
+				D59305AA234AE1150045CBBC /* ViewStore.swift in Sources */,
+				D59305A5234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */,
 				D5888AB922B6E92D0028B0E1 /* TypeErase.generated.swift in Sources */,
 				D5888ABA22B6E92D0028B0E1 /* Middleware.swift in Sources */,
 				D5888ABB22B6E92D0028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888ABC22B6E92D0028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888ABD22B6E92D0028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888ABE22B6E92D0028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
+				D5741CBE234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */,
 				D5888AC122B6E92D0028B0E1 /* Monoid.swift in Sources */,
-				D5888AC222B6E92D0028B0E1 /* StoreBase.swift in Sources */,
+				D5888AC222B6E92D0028B0E1 /* ReduxStoreBase.swift in Sources */,
 				D5888AC522B6E92D0028B0E1 /* ReactiveWrappers.swift in Sources */,
 				D5888AC622B6E92D0028B0E1 /* IdentityMiddleware.swift in Sources */,
 				D5888AC722B6E92D0028B0E1 /* Reducer.swift in Sources */,
@@ -2759,14 +2802,17 @@
 			files = (
 				D5888ADF22B6E9300028B0E1 /* ComposedMiddleware.swift in Sources */,
 				D5888AE022B6E9300028B0E1 /* StateProvider.swift in Sources */,
+				D59305A9234AE1150045CBBC /* ViewStore.swift in Sources */,
+				D59305A4234ADE310045CBBC /* ReduxPipelineWrapper.swift in Sources */,
 				D5888AE122B6E9300028B0E1 /* TypeErase.generated.swift in Sources */,
 				D5888AE222B6E9300028B0E1 /* Middleware.swift in Sources */,
 				D5888AE322B6E9300028B0E1 /* PipelineMiddleware.swift in Sources */,
 				D5888AE422B6E9300028B0E1 /* LiftMiddleware.swift in Sources */,
 				D5888AE522B6E9300028B0E1 /* MiddlewareContext.swift in Sources */,
 				D5888AE622B6E9300028B0E1 /* TypeErase.generated.abstract.swift in Sources */,
+				D5741CBD234A717700E58D89 /* ReduxStoreProtocol.swift in Sources */,
 				D5888AE922B6E9300028B0E1 /* Monoid.swift in Sources */,
-				D5888AEA22B6E9300028B0E1 /* StoreBase.swift in Sources */,
+				D5888AEA22B6E9300028B0E1 /* ReduxStoreBase.swift in Sources */,
 				D5888AED22B6E9300028B0E1 /* ReactiveWrappers.swift in Sources */,
 				D5888AEE22B6E9300028B0E1 /* IdentityMiddleware.swift in Sources */,
 				D5888AEF22B6E9300028B0E1 /* Reducer.swift in Sources */,
