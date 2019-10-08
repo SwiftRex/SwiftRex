@@ -63,6 +63,19 @@ class MiddlewareMock<ActionType, StateType>: Middleware {
     }
 
 }
+class ReduxStoreProtocolMock<ActionType, StateType>: ReduxStoreProtocol {
+    var pipeline: ReduxPipelineWrapper<MiddlewareType> {
+        get { return underlyingPipeline }
+        set(value) { underlyingPipeline = value }
+    }
+    var underlyingPipeline: ReduxPipelineWrapper<MiddlewareType>!
+    var statePublisher: UnfailablePublisherType<StateType> {
+        get { return underlyingStatePublisher }
+        set(value) { underlyingStatePublisher = value }
+    }
+    var underlyingStatePublisher: UnfailablePublisherType<StateType>!
+
+}
 class StateProviderMock<StateType>: StateProvider {
     var statePublisher: UnfailablePublisherType<StateType> {
         get { return underlyingStatePublisher }

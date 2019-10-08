@@ -15,6 +15,9 @@
 		9CC2DC6D07F8FEE0C81A8FC7 /* Pods_UnitTests_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4003B5DC54F2856E37A59E4B /* Pods_UnitTests_RxSwift.framework */; };
 		CE524B8D9DBCECAF328359E4 /* Pods_SwiftRex_tvOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD121248E136423621658BC /* Pods_SwiftRex_tvOS_RxSwift.framework */; };
 		D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
+		D500524A234C019F00951F2B /* ReduxPipelineWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5005249234C019F00951F2B /* ReduxPipelineWrapperTests.swift */; };
+		D500524C234C022400951F2B /* ReduxStoreProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D500524B234C022400951F2B /* ReduxStoreProtocolTests.swift */; };
+		D500524E234C024D00951F2B /* ViewStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D500524D234C024D00951F2B /* ViewStoreTests.swift */; };
 		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
 		D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
 		D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACE22BE922600BE6679 /* FooSubscription.swift */; };
@@ -277,6 +280,7 @@
 		D5E734B422C17DDB00B0E284 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A322C15AA300B0E284 /* PublisherTypeBridgeTests.swift */; };
 		D5E734B822C1810D00B0E284 /* SubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */; };
 		D5E734BA22C1827000B0E284 /* ReplayLastSubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A422C15AA400B0E284 /* ReplayLastSubjectTypeBridgeTests.swift */; };
+		D5FEA87B234CCF63003486A7 /* ReduxStoreProtocolMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FEA87A234CCF63003486A7 /* ReduxStoreProtocolMock.swift */; };
 		DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
 		E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */; };
 		FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */; };
@@ -394,6 +398,9 @@
 		D2B97539EC6A492985FB407F /* Pods-UnitTests Combine iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests Combine iOS.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests Combine iOS/Pods-UnitTests Combine iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftRex_watchOS_ReactiveSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4627F2CA5E907B890648113 /* Pods-SwiftRex tvOS RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.release.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.release.xcconfig"; sourceTree = "<group>"; };
+		D5005249234C019F00951F2B /* ReduxPipelineWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduxPipelineWrapperTests.swift; sourceTree = "<group>"; };
+		D500524B234C022400951F2B /* ReduxStoreProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduxStoreProtocolTests.swift; sourceTree = "<group>"; };
+		D500524D234C024D00951F2B /* ViewStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStoreTests.swift; sourceTree = "<group>"; };
 		D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D507CACB22BE909B00BE6679 /* SomeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeError.swift; sourceTree = "<group>"; };
 		D507CACE22BE922600BE6679 /* FooSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooSubscription.swift; sourceTree = "<group>"; };
@@ -573,7 +580,7 @@
 		D5C1C68E22BFE9C400532BCF /* SwiftRex-Combine-Release-watchOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "SwiftRex-Combine-Release-watchOS.xcconfig"; sourceTree = "<group>"; };
 		D5C1C69322BFE9D800532BCF /* UnitTests-Combine-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Combine-Debug.xcconfig"; sourceTree = "<group>"; };
 		D5C1C69822BFE9E200532BCF /* UnitTests-Combine-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "UnitTests-Combine-Release.xcconfig"; sourceTree = "<group>"; };
-		D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBaseTests.swift; sourceTree = "<group>"; };
+		D5C3943C22B9845C00ABCA90 /* ReduxStoreBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduxStoreBaseTests.swift; sourceTree = "<group>"; };
 		D5C3944522B9897000ABCA90 /* ReactiveWrappersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveWrappersTests.swift; sourceTree = "<group>"; };
 		D5C96A5C22DA1BAB00585865 /* BindableStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableStore.swift; sourceTree = "<group>"; };
 		D5C96A6222DA21A500585865 /* BindableStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableStoreTests.swift; sourceTree = "<group>"; };
@@ -587,6 +594,7 @@
 		D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5E734A622C15AA500B0E284 /* SubscriberTypeBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriberTypeBridgeTests.swift; sourceTree = "<group>"; };
 		D5FDCB5C22B7195C0012D2E7 /* CurrentValueSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentValueSubject.swift; sourceTree = "<group>"; };
+		D5FEA87A234CCF63003486A7 /* ReduxStoreProtocolMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduxStoreProtocolMock.swift; sourceTree = "<group>"; };
 		E1EA4C435F50A56023B2C78A /* Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		E5C3CE43C0B49212F59EFEED /* Pods-UnitTests RxSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests RxSwift.release.xcconfig"; path = "Target Support Files/Pods-UnitTests RxSwift/Pods-UnitTests RxSwift.release.xcconfig"; sourceTree = "<group>"; };
 		E73F580A516D50E27F25B048 /* Pods-SwiftRex tvOS RxSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; path = "Target Support Files/Pods-SwiftRex tvOS RxSwift/Pods-SwiftRex tvOS RxSwift.debug.xcconfig"; sourceTree = "<group>"; };
@@ -818,6 +826,27 @@
 				3F1B09E0F6BFF0A6A84897C6 /* Pods_UnitTests_SwiftRex.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D5005247234BFF2300951F2B /* Pipeline */ = {
+			isa = PBXGroup;
+			children = (
+				D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */,
+				D5741CAB2349297200E58D89 /* MiddlewareTests.swift */,
+				D5A6071F2071287A00D682EF /* ReducerTests.swift */,
+			);
+			path = Pipeline;
+			sourceTree = "<group>";
+		};
+		D5005248234BFF8000951F2B /* StoreImplementations */ = {
+			isa = PBXGroup;
+			children = (
+				D5005249234C019F00951F2B /* ReduxPipelineWrapperTests.swift */,
+				D5C3943C22B9845C00ABCA90 /* ReduxStoreBaseTests.swift */,
+				D500524B234C022400951F2B /* ReduxStoreProtocolTests.swift */,
+				D500524D234C024D00951F2B /* ViewStoreTests.swift */,
+			);
+			path = StoreImplementations;
 			sourceTree = "<group>";
 		};
 		D507CAC822BE8E6F00BE6679 /* Bridge */ = {
@@ -1259,6 +1288,7 @@
 		D5A607152071287900D682EF /* Store */ = {
 			isa = PBXGroup;
 			children = (
+				D5FEA87A234CCF63003486A7 /* ReduxStoreProtocolMock.swift */,
 				D5A607162071287900D682EF /* TestState.swift */,
 				D5A607172071287900D682EF /* TestStore.swift */,
 			);
@@ -1274,14 +1304,6 @@
 				D5195E6A22E110620005C3FD /* PipelineMiddlewareTests.swift */,
 			);
 			path = Middleware;
-			sourceTree = "<group>";
-		};
-		D5C3944322B9887D00ABCA90 /* Store */ = {
-			isa = PBXGroup;
-			children = (
-				D5C3943C22B9845C00ABCA90 /* StoreBaseTests.swift */,
-			);
-			path = Store;
 			sourceTree = "<group>";
 		};
 		D5C3944422B988AE00ABCA90 /* Foundation */ = {
@@ -1303,10 +1325,8 @@
 		D5D06C5D2348A785008DD2C7 /* CoreTypes */ = {
 			isa = PBXGroup;
 			children = (
-				D5C3944322B9887D00ABCA90 /* Store */,
-				D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */,
-				D5741CAB2349297200E58D89 /* MiddlewareTests.swift */,
-				D5A6071F2071287A00D682EF /* ReducerTests.swift */,
+				D5005247234BFF2300951F2B /* Pipeline */,
+				D5005248234BFF8000951F2B /* StoreImplementations */,
 			);
 			path = CoreTypes;
 			sourceTree = "<group>";
@@ -2827,6 +2847,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5FEA87B234CCF63003486A7 /* ReduxStoreProtocolMock.swift in Sources */,
 				D5C306742348D7240098BC59 /* ReactiveWrappersTests.swift in Sources */,
 				D5D06C5523489E98008DD2C7 /* AutoMockable.generated.swift in Sources */,
 				D5D06C5C2348A776008DD2C7 /* ReducerTests.swift in Sources */,
@@ -2837,7 +2858,9 @@
 				D5741CBA234A61D300E58D89 /* PipelineMiddlewareTests.swift in Sources */,
 				D5741CB8234A613800E58D89 /* SubscriptionItem.swift in Sources */,
 				D5D06C5E2348A8A7008DD2C7 /* NameReducer.swift in Sources */,
+				D500524C234C022400951F2B /* ReduxStoreProtocolTests.swift in Sources */,
 				D5D06C5F2348A8A7008DD2C7 /* ReducerMock.swift in Sources */,
+				D500524E234C024D00951F2B /* ViewStoreTests.swift in Sources */,
 				D5D06C5623489EA7008DD2C7 /* TypeErasureTests.swift in Sources */,
 				D5C306752348D7510098BC59 /* SomeError.swift in Sources */,
 				D5D06C5823489EF5008DD2C7 /* AppAction.swift in Sources */,
@@ -2847,6 +2870,7 @@
 				D5C306762348D7560098BC59 /* FooSubscription.swift in Sources */,
 				D5741CB22349543700E58D89 /* ComposedMiddlewareTests.swift in Sources */,
 				D5741CB6234A612200E58D89 /* PassthroughSubject.swift in Sources */,
+				D500524A234C019F00951F2B /* ReduxPipelineWrapperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

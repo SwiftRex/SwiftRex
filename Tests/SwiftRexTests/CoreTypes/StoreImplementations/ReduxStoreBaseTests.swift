@@ -2,7 +2,7 @@ import Foundation
 @testable import SwiftRex
 import XCTest
 
-class StoreBaseTests: XCTestCase {
+class ReduxStoreBaseTests: XCTestCase {
     func testStoreFullWorkflow() { // swiftlint:disable:this function_body_length
         let events: [EventProtocol] = [Event1(), Event3(), Event1(), Event2()]
         let initialState = TestState()
