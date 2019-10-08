@@ -4,7 +4,7 @@ public struct ViewStore<ViewAction, ViewState>: StoreType {
     public var statePublisher: UnfailablePublisherType<ViewState>
     private var onAction: (ViewAction) -> Void
 
-    fileprivate init(action: @escaping (ViewAction) -> Void, state: UnfailablePublisherType<ViewState>) {
+    init(action: @escaping (ViewAction) -> Void, state: UnfailablePublisherType<ViewState>) {
         self.onAction = action
         self.statePublisher = state
     }
