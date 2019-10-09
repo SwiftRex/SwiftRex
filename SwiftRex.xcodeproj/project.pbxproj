@@ -21,14 +21,6 @@
 		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
 		D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
 		D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACE22BE922600BE6679 /* FooSubscription.swift */; };
-		D5195E8B22E1366E0005C3FD /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8922E1366D0005C3FD /* ActionReference.swift */; };
-		D5195E8C22E1366E0005C3FD /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8A22E1366E0005C3FD /* EventReference.swift */; };
-		D5195E8D22E1366E0005C3FD /* ActionHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8822E1366D0005C3FD /* ActionHandlerMock.swift */; };
-		D5195E8E22E1366E0005C3FD /* MessageHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8722E1366D0005C3FD /* MessageHandlerMock.swift */; };
-		D5195E8F22E1366E0005C3FD /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8522E1366C0005C3FD /* MiddlewareTestsBase.swift */; };
-		D5195E9022E1366E0005C3FD /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E8622E1366C0005C3FD /* EventHandlerMock.swift */; };
-		D5195E9222E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E9122E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift */; };
-		D5195E9422E137390005C3FD /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E9322E137390005C3FD /* TestState.swift */; };
 		D51A223D22BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224222BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224722BFFC2600194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
@@ -53,8 +45,6 @@
 		D529D58B22E6726900A287D1 /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58822E6726900A287D1 /* EventHandlerMock.swift */; };
 		D529D58E22E6728100A287D1 /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58C22E6728000A287D1 /* ActionReference.swift */; };
 		D529D58F22E6728100A287D1 /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58D22E6728000A287D1 /* EventReference.swift */; };
-		D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3522BEF116008EF537 /* FooSubscription.swift */; };
-		D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3622BEF116008EF537 /* SomeError.swift */; };
 		D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */; };
 		D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */; };
 		D5626D6C22BF19B7000422AA /* SubscriptionBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5626D6B22BF19B7000422AA /* SubscriptionBridgeTests.swift */; };
@@ -273,6 +263,9 @@
 		D5FEA884234D7EE1003486A7 /* SubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A522C15AA400B0E284 /* SubjectTypeBridgeTests.swift */; };
 		D5FEA885234D7F1D003486A7 /* ReplayLastSubjectTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A422C15AA400B0E284 /* ReplayLastSubjectTypeBridgeTests.swift */; };
 		D5FEA886234D7F35003486A7 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E734A322C15AA300B0E284 /* PublisherTypeBridgeTests.swift */; };
+		D5FEA887234D81FD003486A7 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3522BEF116008EF537 /* FooSubscription.swift */; };
+		D5FEA888234D81FD003486A7 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3622BEF116008EF537 /* SomeError.swift */; };
+		D5FEA889234D81FD003486A7 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5195E9322E137390005C3FD /* TestState.swift */; };
 		DF8CEBF34FDB1F680AE8B74D /* Pods_SwiftRex_watchOS_RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21C63B60FB8C179F874B9D1B /* Pods_SwiftRex_watchOS_RxSwift.framework */; };
 		E08BEF74F829CE29BFAA7E65 /* Pods_SwiftRex_watchOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2BE61E7EC2FC57A95C1ABEA /* Pods_SwiftRex_watchOS_ReactiveSwift.framework */; };
 		FA6FF125E61745BA10C19D58 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9B0055375E5868D0F208677 /* Pods_SwiftRex_tvOS_ReactiveSwift.framework */; };
@@ -2707,21 +2700,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5195E8D22E1366E0005C3FD /* ActionHandlerMock.swift in Sources */,
-				D5195E9222E136940005C3FD /* PipelineMiddlewareReactiveSwiftTests.swift in Sources */,
-				D5195E8C22E1366E0005C3FD /* EventReference.swift in Sources */,
+				D5FEA888234D81FD003486A7 /* SomeError.swift in Sources */,
 				D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */,
-				D5195E9422E137390005C3FD /* TestState.swift in Sources */,
-				D552CC3822BEF13D008EF537 /* SomeError.swift in Sources */,
-				D5195E9022E1366E0005C3FD /* EventHandlerMock.swift in Sources */,
-				D5195E8F22E1366E0005C3FD /* MiddlewareTestsBase.swift in Sources */,
 				D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */,
 				D5C1C5F022BFD35400532BCF /* SubjectTypeBridgeTests.swift in Sources */,
 				D5626D6E22BF1CB1000422AA /* SubscriptionBridgeTests.swift in Sources */,
-				D5195E8B22E1366E0005C3FD /* ActionReference.swift in Sources */,
-				D5195E8E22E1366E0005C3FD /* MessageHandlerMock.swift in Sources */,
-				D552CC3722BEF13D008EF537 /* FooSubscription.swift in Sources */,
 				D5C1C5F422BFDBBD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift in Sources */,
+				D5FEA889234D81FD003486A7 /* TestState.swift in Sources */,
+				D5FEA887234D81FD003486A7 /* FooSubscription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
