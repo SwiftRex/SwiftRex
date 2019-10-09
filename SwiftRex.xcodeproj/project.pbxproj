@@ -19,8 +19,6 @@
 		D500524C234C022400951F2B /* ReduxStoreProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D500524B234C022400951F2B /* ReduxStoreProtocolTests.swift */; };
 		D500524E234C024D00951F2B /* ViewStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D500524D234C024D00951F2B /* ViewStoreTests.swift */; };
 		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
-		D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
-		D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACE22BE922600BE6679 /* FooSubscription.swift */; };
 		D51A223D22BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224222BFFC2500194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
 		D51A224722BFFC2600194408 /* Subscription+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* Subscription+Cancellable.swift */; };
@@ -37,14 +35,6 @@
 		D51A442A22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
 		D51A442B22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
 		D51A442C22DA9BCE00DE350A /* PipelineMiddleware+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A442822DA9BCE00DE350A /* PipelineMiddleware+Combine.swift */; };
-		D529D58122E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58022E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift */; };
-		D529D58322E6716B00A287D1 /* MiddlewareTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58222E6716B00A287D1 /* MiddlewareTestsBase.swift */; };
-		D529D58522E671D400A287D1 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58422E671D400A287D1 /* TestState.swift */; };
-		D529D58922E6726900A287D1 /* MessageHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58622E6726900A287D1 /* MessageHandlerMock.swift */; };
-		D529D58A22E6726900A287D1 /* ActionHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58722E6726900A287D1 /* ActionHandlerMock.swift */; };
-		D529D58B22E6726900A287D1 /* EventHandlerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58822E6726900A287D1 /* EventHandlerMock.swift */; };
-		D529D58E22E6728100A287D1 /* ActionReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58C22E6728000A287D1 /* ActionReference.swift */; };
-		D529D58F22E6728100A287D1 /* EventReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58D22E6728000A287D1 /* EventReference.swift */; };
 		D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */; };
 		D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */; };
 		D5626D6C22BF19B7000422AA /* SubscriptionBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5626D6B22BF19B7000422AA /* SubscriptionBridgeTests.swift */; };
@@ -57,6 +47,9 @@
 		D56C218C22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
 		D56C218D22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
 		D56C218E22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */; };
+		D56D3009234D887800678381 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACE22BE922600BE6679 /* FooSubscription.swift */; };
+		D56D300A234D887900678381 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
+		D56D300B234D887900678381 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58422E671D400A287D1 /* TestState.swift */; };
 		D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */; };
 		D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CAB2349297200E58D89 /* MiddlewareTests.swift */; };
 		D5741CAE234942D100E58D89 /* IdentityMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* IdentityMiddlewareTests.swift */; };
@@ -2626,21 +2619,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D56D300A234D887900678381 /* SomeError.swift in Sources */,
 				D5A022B022BED5C600797438 /* SubscriberTypeBridgeTests.swift in Sources */,
-				D507CACC22BE909B00BE6679 /* SomeError.swift in Sources */,
-				D507CACF22BE923500BE6679 /* FooSubscription.swift in Sources */,
 				D5C1C5F222BFD56E00532BCF /* SubjectTypeBridgeTests.swift in Sources */,
-				D529D58B22E6726900A287D1 /* EventHandlerMock.swift in Sources */,
-				D529D58322E6716B00A287D1 /* MiddlewareTestsBase.swift in Sources */,
-				D529D58F22E6728100A287D1 /* EventReference.swift in Sources */,
 				D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */,
-				D529D58122E670E100A287D1 /* PipelineMiddlewareRxSwiftTests.swift in Sources */,
 				D5626D6C22BF19B7000422AA /* SubscriptionBridgeTests.swift in Sources */,
-				D529D58E22E6728100A287D1 /* ActionReference.swift in Sources */,
-				D529D58A22E6726900A287D1 /* ActionHandlerMock.swift in Sources */,
-				D529D58922E6726900A287D1 /* MessageHandlerMock.swift in Sources */,
 				D5C1C5F622BFDFAD00532BCF /* ReplayLastSubjectTypeBridgeTests.swift in Sources */,
-				D529D58522E671D400A287D1 /* TestState.swift in Sources */,
+				D56D300B234D887900678381 /* TestState.swift in Sources */,
+				D56D3009234D887800678381 /* FooSubscription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
