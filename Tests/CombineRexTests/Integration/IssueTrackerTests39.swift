@@ -1,10 +1,3 @@
-//
-//  IssueTrackerTests39.swift
-//  UnitTests Combine
-//
-//  Created by Luiz Rodrigo Martins Barbosa on 27.09.19.
-//
-
 #if canImport(Combine)
 import Combine
 import CombineRex

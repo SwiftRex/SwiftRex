@@ -9,7 +9,7 @@ public struct SubscriberType<Element, ErrorType: Error> {
     }
 
     public func assertNoFailure() -> SubscriberType<Element, Never> {
-        return SubscriberType<Element, Never>(
+        .init(
             onValue: { value in self.onValue(value) },
             onCompleted: { _ in self.onCompleted(nil) }
         )
@@ -25,13 +25,14 @@ public struct PublisherType<Element, ErrorType: Error> {
     }
 
     public func assertNoFailure() -> PublisherType<Element, Never> {
-        return PublisherType<Element, Never> { subscriber in
+        .init { subscriber in
             self.subscribe(SubscriberType<Element, ErrorType>(
-                onValue: subscriber.onValue, onCompleted: { error in
+                onValue: subscriber.onValue,
+                onCompleted: { error in
                     if let error = error { fatalError(error.localizedDescription) }
                     subscriber.onCompleted(nil)
-                })
-            )
+                }
+            ))
         }
     }
 }

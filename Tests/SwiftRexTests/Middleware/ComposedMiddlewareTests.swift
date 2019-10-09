@@ -1,133 +1,122 @@
+import Nimble
 @testable import SwiftRex
 import XCTest
 
-class ComposedMiddlewareTests: MiddlewareTestsBase {
+class ComposedMiddlewareTests: XCTestCase {
     func testComposedMiddlewareAction() {
-        // Given
-        let sut = ComposedMiddleware<TestState>()
+        let sut = ComposedMiddleware<AppAction, TestState>()
+        var newActions = [AppAction]()
+        let originalActions: [AppAction] = [.foo, .bar(.alpha), .bar(.alpha), .bar(.bravo), .bar(.echo), .foo]
+        var originalActionsReceived: [(middlewareName: String, action: AppAction)] = []
+
         ["m1", "m2"]
             .lazy
-            .map(RotationMiddleware.init)
-            .forEach(sut.append)
-        let state = TestState()
-        let getState = { state }
-        let originalAction = Action1()
-        var action3 = Action3()
-        action3.value = originalAction.value
-        action3.name = "a1m1m2"
-        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
-        let lastInChain = lastActionInChain(action3, state: state, expectation: lastInChainWasCalledExpectation)
+            .map { name in
+                let middleware = MiddlewareMock<AppAction, TestState>()
+                middleware.handleActionNextClosure = { [unowned middleware] action, next in
+                    originalActionsReceived.append((middlewareName: name, action: action))
+                    middleware.context().dispatch(action)
+                    next()
+                }
+                return middleware
+            }
+            .forEach { sut.append(middleware: $0 as MiddlewareMock<AppAction, TestState>) }
 
-        // Then
-        sut.handle(action: originalAction, getState: getState, next: lastInChain)
+        sut.context = { .init(onAction: { action in
+            newActions.append(action)
+        }, getState: { TestState() }) }
 
-        // Expect
+        let expectedNewActions: [AppAction] = [
+            .foo, .foo, .bar(.alpha), .bar(.alpha), .bar(.alpha), .bar(.alpha),
+            .bar(.bravo), .bar(.bravo), .bar(.echo), .bar(.echo), .foo, .foo
+        ]
+        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain should have been called")
+        lastInChainWasCalledExpectation.expectedFulfillmentCount = originalActions.count
+
+        originalActions.forEach { originalAction in
+            sut.handle(action: originalAction, next: {
+                lastInChainWasCalledExpectation.fulfill()
+            })
+        }
+
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-    }
 
-    func testComposedMiddlewareEvent() {
-        // Given
-        let sut = ComposedMiddleware<TestState>()
-        ["m1", "m2"]
-            .lazy
-            .map(RotationMiddleware.init)
-            .forEach(sut.append)
-        let state = TestState()
-        let getState = { state }
-        let originalEvent = Event1()
-        var event3 = Event3()
-        event3.value = originalEvent.value
-        event3.name = "e1m1m2"
-        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
-        let lastInChain = lastEventInChain(event3, state: state, expectation: lastInChainWasCalledExpectation)
-
-        // Then
-        sut.handle(event: originalEvent, getState: getState, next: lastInChain)
-
-        // Expect
-        wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-    }
-
-    func testComposedMiddlewareOrderAction() {
-        // Given
-        let sut = ComposedMiddleware<TestState>()
-        ["m1", "m2", "m3", "m4"]
-            .lazy
-            .map(RotationMiddleware.init)
-            .forEach(sut.append)
-        let state = TestState()
-        let getState = { state }
-        let originalAction = Action1()
-        var action2 = Action2()
-        action2.value = originalAction.value
-        action2.name = "a1m1m2m3m4"
-        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
-        let lastInChain = lastActionInChain(action2, state: state, expectation: lastInChainWasCalledExpectation)
-
-        // Then
-        sut.handle(action: originalAction, getState: getState, next: lastInChain)
-
-        // Expect
-        wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-    }
-
-    func testComposedMiddlewareOrderEvent() {
-        // Given
-        let sut = ComposedMiddleware<TestState>()
-        ["m1", "m2", "m3", "m4"]
-            .lazy
-            .map(RotationMiddleware.init)
-            .forEach(sut.append)
-        let state = TestState()
-        let getState = { state }
-        let originalEvent = Event1()
-        var event2 = Event2()
-        event2.value = originalEvent.value
-        event2.name = "e1m1m2m3m4"
-        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
-        let lastInChain = lastEventInChain(event2, state: state, expectation: lastInChainWasCalledExpectation)
-
-        // Then
-        sut.handle(event: originalEvent, getState: getState, next: lastInChain)
-
-        // Expect
-        wait(for: [lastInChainWasCalledExpectation], timeout: 3)
+        XCTAssertEqual(newActions, expectedNewActions)
+        XCTAssertEqual(originalActionsReceived.filter { $0.middlewareName == "m1" }.map { $0.action }, originalActions)
+        XCTAssertEqual(originalActionsReceived.filter { $0.middlewareName == "m2" }.map { $0.action }, originalActions)
     }
 
     func testMiddlewareActionHandlerPropagationOnInit() {
         let middlewares = ["m1", "m2", "m3", "m4"]
-            .map(RotationMiddleware.init)
-        (0..<4).forEach { XCTAssertNil(middlewares[$0].handlers) }
+            .map { _ -> MiddlewareMock<AppAction, TestState> in
+                let middleware = MiddlewareMock<AppAction, TestState>()
+                middleware.handleActionNextClosure = { [unowned middleware] action, next in
+                    XCTAssertNoThrow(middleware.context().getState())
+                    next()
+                }
+                return middleware
+            }
+
+        (0..<4).forEach { index in
+            expect {
+                _ = middlewares[index].context()
+            }.to(throwAssertion())
+        }
 
         let composedMiddlewares = middlewares[0] <> middlewares[1] <> middlewares[2] <> middlewares[3]
-        XCTAssertNil(composedMiddlewares.handlers)
+        expect {
+            _ = composedMiddlewares.context()
+        }.to(throwAssertion())
 
-        let subjectMock = CurrentValueSubject(currentValue: TestState())
-        let store = TestStore(subject: subjectMock.subject,
-                              reducer: createReducerMock().0,
-                              middleware: composedMiddlewares)
+        composedMiddlewares.context = { .init(onAction: { _ in }, getState: { TestState() }) }
 
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers) }
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers.actionHandler.onValue) }
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers.eventHandler.onValue) }
+        (0..<4).forEach { index in
+            expect {
+                _ = middlewares[index].context()
+            }.toNot(throwAssertion())
+        }
 
-        XCTAssertNotNil(store)
+        expect {
+            _ = composedMiddlewares.context()
+        }.toNot(throwAssertion())
     }
 
     func testMiddlewareActionHandlerPropagationOnAppend() {
-        let container: ComposedMiddleware<TestState> = .init()
-        let subjectMock = CurrentValueSubject(currentValue: TestState())
-        let store = TestStore(subject: subjectMock.subject,
-                              reducer: createReducerMock().0,
-                              middleware: container)
-
         let middlewares = ["m1", "m2", "m3", "m4"]
-            .map(RotationMiddleware.init)
+            .map { _ -> MiddlewareMock<AppAction, TestState> in
+                let middleware = MiddlewareMock<AppAction, TestState>()
+                middleware.handleActionNextClosure = { [unowned middleware] action, next in
+                    XCTAssertNoThrow(middleware.context().getState())
+                    next()
+                }
+                return middleware
+            }
 
-        (0..<4).forEach { XCTAssertNil(middlewares[$0].handlers) }
-        (0..<4).map { middlewares[$0] }.forEach(container.append)
-        (0..<4).forEach { XCTAssertNotNil(middlewares[$0].handlers) }
+        (0..<4).forEach { index in
+            expect {
+                _ = middlewares[index].context()
+            }.to(throwAssertion())
+        }
 
-        XCTAssertNotNil(store)
+        let composedMiddlewares = ComposedMiddleware<AppAction, TestState>()
+        expect {
+            _ = composedMiddlewares.context()
+        }.to(throwAssertion())
+
+        composedMiddlewares.context = { .init(onAction: { _ in }, getState: { TestState() }) }
+
+        expect {
+            _ = composedMiddlewares.context()
+        }.toNot(throwAssertion())
+
+        middlewares.forEach { middleware in
+            composedMiddlewares.append(middleware: middleware)
+        }
+
+        (0..<4).forEach { index in
+            expect {
+                _ = middlewares[index].context()
+            }.toNot(throwAssertion())
+        }
     }
 }

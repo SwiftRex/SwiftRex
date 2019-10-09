@@ -14,11 +14,11 @@ def rxswift
 end
 
 def reactiveswift
-  pod 'ReactiveSwift', '6.0.0', :inhibit_warnings => true
+  pod 'ReactiveSwift', '6.1.0', :inhibit_warnings => true
 end
 
 def tests
-  pod 'Nimble', '8.0.2'
+  pod 'Nimble', '8.0.4'
 end
 
 ###################

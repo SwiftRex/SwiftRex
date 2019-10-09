@@ -3,15 +3,15 @@ import Combine
 import SwiftRex
 
 struct FooSubscription: SwiftRex.Subscription {
-    let onUnsubscribe: () -> Void
+    let onUnsubscribe: Next
     func unsubscribe() { onUnsubscribe() }
 }
 
 struct FooCombineSubscription: Combine.Subscription {
-    let onUnsubscribe: () -> Void
+    let onUnsubscribe: Next
     var onRequest: ((Subscribers.Demand) -> Void)?
 
-    init(onUnsubscribe: @escaping () -> Void) {
+    init(onUnsubscribe: @escaping Next) {
         self.onUnsubscribe = onUnsubscribe
     }
 

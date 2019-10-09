@@ -1,4 +1,4 @@
-// Generated using Sourcery 0.16.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.17.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 // swiftlint:disable all
@@ -22,37 +22,88 @@ import AppKit
 
 
 
-class MiddlewareMock<StateType>: Middleware {
-    var handlers: MessageHandler!
+class ActionHandlerMock<ActionType>: ActionHandler {
+
+    //MARK: - dispatch
+
+    var dispatchCallsCount = 0
+    var dispatchCalled: Bool {
+        return dispatchCallsCount > 0
+    }
+    var dispatchReceivedAction: ActionType?
+    var dispatchClosure: ((ActionType) -> Void)?
+
+    func dispatch(_ action: ActionType) {
+        dispatchCallsCount += 1
+        dispatchReceivedAction = action
+        dispatchClosure?(action)
+    }
+
+}
+class MiddlewareMock<ActionType, StateType>: Middleware {
+    var context: (() -> MiddlewareContext<ActionType, StateType>) {
+        get { return underlyingContext }
+        set(value) { underlyingContext = value }
+    }
+    var underlyingContext: (() -> MiddlewareContext<ActionType, StateType>)!
 
     //MARK: - handle
 
-    var handleEventGetStateNextCallsCount = 0
-    var handleEventGetStateNextCalled: Bool {
-        return handleEventGetStateNextCallsCount > 0
+    var handleActionNextCallsCount = 0
+    var handleActionNextCalled: Bool {
+        return handleActionNextCallsCount > 0
     }
-    var handleEventGetStateNextReceivedArguments: (event: EventProtocol, getState: GetState<StateType>, next: NextEventHandler<StateType>)?
-    var handleEventGetStateNextClosure: ((EventProtocol, @escaping GetState<StateType>, @escaping NextEventHandler<StateType>) -> Void)?
+    var handleActionNextReceivedArguments: (action: ActionType, next: Next)?
+    var handleActionNextClosure: ((ActionType, @escaping Next) -> Void)?
 
-    func handle(event: EventProtocol, getState: @escaping GetState<StateType>, next: @escaping NextEventHandler<StateType>) {
-        handleEventGetStateNextCallsCount += 1
-        handleEventGetStateNextReceivedArguments = (event: event, getState: getState, next: next)
-        handleEventGetStateNextClosure?(event, getState, next)
+    func handle(action: ActionType, next: @escaping Next) {
+        handleActionNextCallsCount += 1
+        handleActionNextReceivedArguments = (action: action, next: next)
+        handleActionNextClosure?(action, next)
     }
 
-    //MARK: - handle
-
-    var handleActionGetStateNextCallsCount = 0
-    var handleActionGetStateNextCalled: Bool {
-        return handleActionGetStateNextCallsCount > 0
+}
+class ReduxStoreProtocolMock<ActionType, StateType>: ReduxStoreProtocol {
+    var pipeline: ReduxPipelineWrapper<MiddlewareType> {
+        get { return underlyingPipeline }
+        set(value) { underlyingPipeline = value }
     }
-    var handleActionGetStateNextReceivedArguments: (action: ActionProtocol, getState: GetState<StateType>, next: NextActionHandler<StateType>)?
-    var handleActionGetStateNextClosure: ((ActionProtocol, @escaping GetState<StateType>, @escaping NextActionHandler<StateType>) -> Void)?
+    var underlyingPipeline: ReduxPipelineWrapper<MiddlewareType>!
+    var statePublisher: UnfailablePublisherType<StateType> {
+        get { return underlyingStatePublisher }
+        set(value) { underlyingStatePublisher = value }
+    }
+    var underlyingStatePublisher: UnfailablePublisherType<StateType>!
 
-    func handle(action: ActionProtocol, getState: @escaping GetState<StateType>, next: @escaping NextActionHandler<StateType>) {
-        handleActionGetStateNextCallsCount += 1
-        handleActionGetStateNextReceivedArguments = (action: action, getState: getState, next: next)
-        handleActionGetStateNextClosure?(action, getState, next)
+}
+class StateProviderMock<StateType>: StateProvider {
+    var statePublisher: UnfailablePublisherType<StateType> {
+        get { return underlyingStatePublisher }
+        set(value) { underlyingStatePublisher = value }
+    }
+    var underlyingStatePublisher: UnfailablePublisherType<StateType>!
+
+}
+class StoreTypeMock<StateType, ActionType>: StoreType {
+    var statePublisher: UnfailablePublisherType<StateType> {
+        get { return underlyingStatePublisher }
+        set(value) { underlyingStatePublisher = value }
+    }
+    var underlyingStatePublisher: UnfailablePublisherType<StateType>!
+
+    //MARK: - dispatch
+
+    var dispatchCallsCount = 0
+    var dispatchCalled: Bool {
+        return dispatchCallsCount > 0
+    }
+    var dispatchReceivedAction: ActionType?
+    var dispatchClosure: ((ActionType) -> Void)?
+
+    func dispatch(_ action: ActionType) {
+        dispatchCallsCount += 1
+        dispatchReceivedAction = action
+        dispatchClosure?(action)
     }
 
 }

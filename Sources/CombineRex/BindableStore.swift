@@ -33,20 +33,36 @@ import SwiftRex
 /// ```
 /// Text(store.state.currentSearchText)
 /// ```
-public final class BindableStore<StateType>: StoreBase<StateType>, ObservableObject {
-    @Published public var state: StateType
+public final class BindableStore<ViewAction, ViewState>: StoreType, ObservableObject {
+    @Published public var state: ViewState
+    public var statePublisher: UnfailablePublisherType<ViewState> { viewStore.statePublisher }
     private var cancellableBinding: AnyCancellable!
+    private var viewStore: ViewStore<ViewAction, ViewState>
 
-    public init<M: Middleware>(initialState: StateType, reducer: Reducer<StateType>, middleware: M)
-        where M.StateType == StateType {
-            _state = .init(initialValue: initialState)
-            let subject = UnfailableReplayLastSubjectType.combine(initialValue: initialState)
-            super.init(subject: subject,
-                       reducer: reducer,
-                       middleware: middleware)
-            cancellableBinding = subject.publisher.sink { [unowned self] newValue in
-                self.state = newValue
+    public func dispatch(_ action: ViewAction) {
+        viewStore.dispatch(action)
+    }
+
+    public init(initialState: ViewState, viewStore: ViewStore<ViewAction, ViewState>) {
+        self.state = initialState
+        self.viewStore = viewStore
+        cancellableBinding = statePublisher.assign(to: \.state, on: self)
+    }
+}
+
+extension StoreType {
+    public func view<ViewAction, ViewState>(
+        action viewActionToGlobalAction: @escaping (ViewAction) -> ActionType?,
+        state globalStateToViewState: @escaping (StateType) -> ViewState,
+        initialState: ViewState) -> BindableStore<ViewAction, ViewState> {
+        let viewStore = self.view(
+            action: viewActionToGlobalAction,
+            state: { (globalStatePublisher: UnfailablePublisherType<StateType>) -> UnfailablePublisherType<ViewState> in
+                globalStatePublisher.map(globalStateToViewState).asPublisherType()
             }
+        )
+
+        return .init(initialState: initialState, viewStore: viewStore)
     }
 }
 #endif

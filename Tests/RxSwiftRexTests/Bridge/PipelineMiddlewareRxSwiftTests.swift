@@ -20,8 +20,8 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
             }
         )
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let event = EventReference()
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
         let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
@@ -32,7 +32,7 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
         // Expect
         wait(for: [shouldCallEventPipeline, lastInChainWasCalledExpectation], timeout: 3)
 
-        XCTAssertEqual(0, messageHandler.actionHandlerMock.actions.count)
+        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
     }
 
     func testPipelineMiddlewareEventTransformPipeline() {
@@ -59,8 +59,8 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
             }
         )
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
         let lastInChain = lastEventInChain(event, state: state, expectation: lastInChainWasCalledExpectation)
 
@@ -70,8 +70,8 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
         // Expect
         wait(for: [shouldCallEventPipeline, shouldCallEventPipelineOnValue, lastInChainWasCalledExpectation], timeout: 3)
 
-        XCTAssertEqual(1, messageHandler.actionHandlerMock.actions.count)
-        XCTAssertTrue(action === messageHandler.actionHandlerMock.actions.first as? ActionReference)
+        XCTAssertEqual(1, middlewareContext.actionHandlerMock.actions.count)
+        XCTAssertTrue(action === middlewareContext.actionHandlerMock.actions.first as? ActionReference)
     }
 
     func testPipelineMiddlewareActionIgnore() {
@@ -91,8 +91,8 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
             }
         )
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
         let lastInChain = lastActionInChain(action, state: state, expectation: lastInChainWasCalledExpectation)
 
@@ -102,7 +102,7 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
         // Expect
         wait(for: [shouldCallActionPipeline, lastInChainWasCalledExpectation], timeout: 3)
 
-        XCTAssertEqual(0, messageHandler.actionHandlerMock.actions.count)
+        XCTAssertEqual(0, middlewareContext.actionHandlerMock.actions.count)
     }
 
     func testPipelineMiddlewareActionTransformPipeline() {
@@ -129,8 +129,8 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
             }
         )
 
-        let messageHandler = MessageHandlerMock()
-        sut.handlers = messageHandler.value
+        let middlewareContext = MiddlewareContextMock()
+        sut.context = { middlewareContext.value }
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
         let lastInChain = lastActionInChain(originalAction, state: state, expectation: lastInChainWasCalledExpectation)
 
@@ -140,8 +140,8 @@ class PipelineMiddlewareRxSwiftTests: MiddlewareTestsBase {
         // Expect
         wait(for: [shouldCallActionPipeline, shouldCallActionPipelineOnValue, lastInChainWasCalledExpectation], timeout: 3)
 
-        XCTAssertEqual(1, messageHandler.actionHandlerMock.actions.count)
-        XCTAssertTrue(derivedAction === messageHandler.actionHandlerMock.actions.first as? ActionReference)
-        XCTAssertFalse(originalAction === messageHandler.actionHandlerMock.actions.first as? ActionReference)
+        XCTAssertEqual(1, middlewareContext.actionHandlerMock.actions.count)
+        XCTAssertTrue(derivedAction === middlewareContext.actionHandlerMock.actions.first as? ActionReference)
+        XCTAssertFalse(originalAction === middlewareContext.actionHandlerMock.actions.first as? ActionReference)
     }
 }

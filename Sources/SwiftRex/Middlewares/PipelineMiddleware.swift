@@ -1,50 +1,32 @@
 import Foundation
 
-public class PipelineMiddleware<StateType>: Middleware {
-    public var handlers: MessageHandler!
-    private let eventSubject: UnfailableSubject<(StateType, EventProtocol)>
-    private let actionSubject: UnfailableSubject<(StateType, ActionProtocol)>
+public class PipelineMiddleware<ActionType, StateType>: Middleware {
+    public var context: () -> MiddlewareContext<ActionType, StateType>
+    private let actionSubject: UnfailableSubject<(ActionType, StateType)>
     private var subscriptionCollection: SubscriptionCollection
 
     public init(
-        eventTransformer: ((PublisherType<(StateType, EventProtocol), Never>) -> PublisherType<ActionProtocol, Never>)? = nil,
-        actionTransformer: ((PublisherType<(StateType, ActionProtocol), Never>) -> PublisherType<ActionProtocol, Never>)? = nil,
-        eventSubject: () -> UnfailableSubject<(StateType, EventProtocol)>,
-        actionSubject: () -> UnfailableSubject<(StateType, ActionProtocol)>,
+        actionTransformer: ((UnfailablePublisherType<(ActionType, StateType)>) -> UnfailablePublisherType<ActionType>)? = nil,
+        actionSubject: () -> UnfailableSubject<(ActionType, StateType)>,
         subscriptionCollection: () -> SubscriptionCollection
-        ) {
-        self.eventSubject = eventSubject()
+    ) {
         self.actionSubject = actionSubject()
         self.subscriptionCollection = subscriptionCollection()
-
-        if let eventTransformer = eventTransformer {
-            eventTransformer(self.eventSubject.publisher)
-                .subscribe(.init(onValue: { [weak self] action in
-                    self?.handlers?.actionHandler.trigger(action)
-                }))
-                .cancelled(by: &self.subscriptionCollection)
+        self.context = {
+            fatalError("No context set for middleware PipelineMiddleware, please be sure to configure your middleware prior to usage")
         }
 
         if let actionTransformer = actionTransformer {
             actionTransformer(self.actionSubject.publisher)
                 .subscribe(.init(onValue: { [weak self] action in
-                    self?.handlers?.actionHandler.trigger(action)
+                    self?.context().dispatch(action)
                 }))
                 .cancelled(by: &self.subscriptionCollection)
         }
     }
 
-    public func handle(event: EventProtocol,
-                       getState: @escaping () -> StateType,
-                       next: @escaping (EventProtocol, @escaping () -> StateType) -> Void) {
-        eventSubject.subscriber.onValue((getState(), event))
-        next(event, getState)
-    }
-
-    public func handle(action: ActionProtocol,
-                       getState: @escaping () -> StateType,
-                       next: @escaping (ActionProtocol, @escaping () -> StateType) -> Void) {
-        actionSubject.subscriber.onValue((getState(), action))
-        next(action, getState)
+    public func handle(action: ActionType, next: @escaping Next) {
+        actionSubject.subscriber.onValue((action, context().getState()))
+        next()
     }
 }

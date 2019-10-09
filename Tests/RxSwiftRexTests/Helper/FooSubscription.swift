@@ -1,6 +1,6 @@
 import SwiftRex
 
 struct FooSubscription: SwiftRex.Subscription {
-    let onUnsubscribe: () -> Void
+    let onUnsubscribe: Next
     func unsubscribe() { onUnsubscribe() }
 }
