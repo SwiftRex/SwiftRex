@@ -58,13 +58,20 @@ public final class ComposedMiddleware<ActionType, GlobalState>: Middleware {
     }
 
     /**
-     Handles the incoming actions. The `ComposedMiddleware` will call `handle(action:getState:next:)` for all its internal middlewares, in the order as they were composed and when all of them are done, the `ActionProtocol` will be forwarded to the next middleware in the chain.
+     Handles the incoming actions. The `ComposedMiddleware` will forward each action to all its internal middlewares, in
+     the order as they were composed together, and when all of them are done, the `ActionType` will be forwarded to the
+     next middleware in the chain, or to the reducer pipeline in case this is the last middleware.
 
-     The internal middlewares in this `ComposedMiddleware` container may change the `ActionProtocol` or trigger additional ones. Usually this is not the best place to start side-effects or trigger new actions, it should be more as an observation point for tracking, logging and telemetry.
+     The internal middlewares in this `ComposedMiddleware` container may trigger additional actions, as any middleware,
+     and in this case the actions will be forwarded to the store by using the `context` property or the parent composed
+     middleware object.
      - Parameters:
        - action: the action to be handled
-       - getState: a function that can be used to get the current state at any point in time
-       - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
+       - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
+               only once, not more or less than once. Call it from the same thread and runloop where the handle function
+               is executed, never from a completion handler or dispatch queue block. In case you don't need to compare
+               state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
+               on it, at the beginning of `handle` function.
      */
     public func handle(action: ActionType, next: @escaping Next) {
         let firstNode = middlewares

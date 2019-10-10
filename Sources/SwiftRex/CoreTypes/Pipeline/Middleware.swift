@@ -1,11 +1,11 @@
 /**
  ⛓ `Middleware` is a plugin, or a composition of several plugins, that are assigned to the `Store` pipeline in order
- to handle each `ActionType` dispatched and to execute side-effects in response, and eventually dispatch more
- `ActionType` in the process. This happens before the `Reducer` to do its job. So in other words, we can think of
- a Middleware as an object that transforms `ActionType` into sync or async tasks and create more actions as these
- side-effects complete, also being able to check the current state at any point.
+ to handle each `ActionType` dispatched, to execute side-effects in response, and eventually dispatch more  `ActionType`
+ in the process. This happens before the `Reducer` to do its job. So in other words, we can think of a Middleware as an
+ object that transforms `ActionType` into sync or async tasks and create more actions as these side-effects complete,
+ also being able to check the current state at any point.
 
- An `ActionType` is a lightweight structure that is dispatched into the `Store`. The store enqueues a new item that
+ An `ActionType` is a lightweight structure that is dispatched into the `Store`. The store enqueues a new element that
  arrives and submits it to a pipeline of middlewares. So, in other words, a `Middleware` is class that handles actions,
  and has the power to dispatch more actions to the `ActionHandler` chain. The `Middleware` can ignore the action and
  simply delegate to the next node in the chain of middlewares, or it can execute side-effects in response, such as
@@ -16,7 +16,7 @@
 
  Because we control when the next node will be called, we can for example collect the state before and after reducers
  have changed the state, which can be very interesting for logging, auditing, analytics tracking, telemetry or state
- synchronization with external devices, such as Apple Watches or debugging tools over the network.
+ synchronization with external devices, such as Apple Watches or for debugging tools over the network.
 
  So let's imagine a movie catalog app where a `MovieListAction.didTapWatchToggle(rowIndex:)` action would be handled by
  a `Middleware` that checks the state and finds that current list has certain movie at the given row index, and this
@@ -29,7 +29,7 @@
  database or through a REST API. State only lives in memory, but before changing the memory we should at least start
  Side-Effects. Let's revisit the example above and say that we got a `MovieListAction.didTapWatchToggle(rowIndex:)`
  action. Yes, we still should check what movie is at that row and whether or not it's watched. Now, we can trigger an
- `URLSession` task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:
+ http task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:
 
  - assume that this API won't fail, and mark the movie immediately as unwatched;
  - don't assume anything and wait for the `HTTPResponse`;
@@ -37,37 +37,40 @@
  changed" and, once we get the response we update again.
 
  In the first case, we create the `URLSessionDataTask`, call `task.resume()` and immediately trigger the
- `setMovieAsUnwatched` action. We may use the completion handler or the `HTTPRequest` to confirm the result and rollback
- if needed. In the second case, after calling `task.resume()` we don't trigger any action, only when we get the response
- in case it was successful one.
+ `setMovieAsUnwatched` action for the reducer to update the app state. We may use the completion handler of the
+ `HTTPRequest` to confirm the successful result and rollback if needed, by sending another action so the reducer will
+ revert the change in the state, and the UI will then react to that.
+
+ In the second case, after calling `task.resume()` we don't trigger any action, only when we get the response we trigger
+ the action that will eventually change the state and the UI, of course in case it was a successful response.
 
  The third case, however, offers many more possibilities. You can think about the possible three states of a movie:
  watched, not watched, mutating. You can even split the "mutating" case in two: "mutating to watched" and "mutating to
- unwatched". What you get from that is the ability to disable the "watch" button, or replaced it by an activity indicator
- view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate
+ unwatched". So instead of a boolean with `true` or `false`, now your state is an enum with four cases, describing
+ precisely the situation of your element. What you get from that is the ability to perform better animations, improved
+ UI features like disable the "watch" button while the change is being requested, use activity indicators view or simply
+ ignore further attempts to click the Toggle in the screen, by ignoring the events while the movie is in this intermediate
  situation. To offer that, you call `task.resume` and immediately trigger an Action `setMovieAsUnwatchRequestInProgress`,
  which will eventually set the state accordingly, while inside the response completion handler you evaluate the response
  and trigger another action to update the movie state again, by triggering either `setMovieAsUnwatched` in case of
  successful response, or back to `setMovieAsWatched` if the operation fails. In case of failure you may also consider
  to trigger an additional Action `gotError` so you notify the user, or maybe implement a retry.
 
- Because the `Middleware` accesses all actions and the state of the app at any point, anything can be done in these
- small and reusable boxes. For example, the same `CoreLocation` middleware could be used from an iOS app, its extensions,
- the Apple Watch extension or even different apps, as long as they share some sub-state struct. Some suggestions of
- middlewares:
+ Because the `Middleware` receive all actions and accesses the state of the app at any point, anything can be done from
+ these small and reusable boxes. For example, the same `CoreLocation` middleware could be used from an iOS app, its
+ extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct.
+
+ Some suggestions of middlewares:
 
  - Run Timers, pooling some external resource or updating some local state at a constant time
- - Subscribe for `CoreData` changes
- - Subscribe for `Realm` changes
- - Subscribe for `Firebase Realtime Database` notifications
+ - Subscribe for `CoreData`, `Realm`, `Firebase Realtime Database` or equivalent database changes
  - Be a `CoreLocation` delegate, checking for significant location changes or beacon ranges and triggering actions to
  update the state
  - Be a `HealthKit` delegate to track activities, or even combining that with `CoreLocation` observation in order to
  track the activity route
- - Logger
- - Telemetry
- - Analytics tracker
+ - Logger, Telemetry, Auditing, Analytics tracker, Crash report breadcrumbs
  - `WatchConnectivity` sync, keep iOS and watchOS state in sync
+ - Monitoring or debugging tools, like external apps to monitor the state and actions remotely from a different device
  - API calls and other "cold observables"
  - Network Reachability
  - Navigation through the app (Redux Coordinator pattern)
@@ -75,25 +78,73 @@
  - `CoreNFC`
  - `NotificationCenter` and other delegates
  - `RxSwift` observables, `ReactiveSwift` signal producers, `Combine` publishers
+ - Observation of traits changes, device rotation, language/locale, dark mode, dynamic fonts, background/foreground state
  - Any side-effect, I/O, networking, sensors, third-party libraries that you want to abstract
+
+ When implementing your Middleware, all you have to do is to handle the incoming actions:
+ ```
+ class MyMiddleware: Middleware {
+     var context: (() -> MiddlewareContext<SomeActionType, SomeStateType>) = { fatalError("Store will set this") }
+
+     func handle(action: SomeActionType, next: @escaping Next) {
+         guard action == .requestNetwork else {
+             next()
+             return
+         }
+
+         requestMyFavoriteAPI(completion: { result in
+             switch result {
+             case let .success(value): context().dispatch(.gotSuccessfulValue(value))
+             case let .failure(error): context().dispatch(.gotFailure(error))
+             }
+         })
+
+         next()
+     }
+ }
+ ```
+
+ Some important notes about the code above, and generally speaking about any middleware:
+ - Always call `next()`. If you have an early exit by using `guard`, don't forget to call there and in the regular case too.
+ - Never call `next()` more than once. Seriously, you don't want that.
+ - Most of the time you can consider calling `next()` in a `defer` block put at the beginning of your function.
+ - Although that would work somehow, please don't call `next()` in a callback or dispatch queue async/sync block. Call it
+ exactly in the thread you got it, and in the same runloop. Unless you REALLY know what you're doing.
+ - Anything before `next()` happens before the state change, what comes after `next()` will happen after the reducer chain
+ so you can you that to track state changes:
+ ```
+ func handle(action: SomeActionType, next: @escaping Next) {
+     let stateBefore = context().getState()
+     let dateBefore = Date()
+
+     next()
+
+     let stateAfter = context().getState()
+     let dateAfter = Date()
+
+     log(action: action, before: stateBefore, after: stateAfter, dateBefore: dateBefore, dateAfter: dateAfter)
+ }
+ ```
  */
 public protocol Middleware: class {
     /**
      The Action that this `Middleware` knowns how to handle. Thanks to optics, this action can be a sub-action lifted to
-     a global action type. Please check `lift(actionMap:actionContramap:stateMap:stateContramap:)` for more details.
+     a global action type. Please check `lift(actionZoomIn:actionZoomOut:stateZoomIn:)` for more details.
      */
     associatedtype ActionType
 
     /**
      The State that this `Middleware` knowns how to handle. Thanks to lenses, this state can be a sub-state lifted to
-     a global state. Please check `lift(actionMap:actionContramap:stateMap:stateContramap:)` for more details.
+     a global state. Please check `lift(actionZoomIn:actionZoomOut:stateZoomIn:)` for more details.
      */
     associatedtype StateType
 
     /**
      Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
-     This context includes ways to fetch the most up-to-date state, dispatch new actions or call the next middleware in
-     the chain.
+     This context includes ways to fetch the most up-to-date state or dispatch new actions.
+     When implementing your own Middleware, the initial value of this property can be a closure that simply crashes with
+     fatal error, because once the middleware is added to the `Store` or to a pipeline of composed middlewares, this
+     value will point to the store actions.
      */
     var context: (() -> MiddlewareContext<ActionType, StateType>) { get set }
 
@@ -103,7 +154,10 @@ public protocol Middleware: class {
      - Parameters:
        - action: the action to be handled
        - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
-               only once, not more or less than once.
+               only once, not more or less than once. Call it from the same thread and runloop where the handle function
+               is executed, never from a completion handler or dispatch queue block. In case you don't need to compare
+               state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
+               on it, at the beginning of `handle` function.
      */
     func handle(action: ActionType, next: @escaping Next)
 }
@@ -115,7 +169,10 @@ extension Middleware {
      - Parameters:
        - action: the action to be handled
        - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
-               only once, not more or less than once.
+               only once, not more or less than once. Call it from the same thread and runloop where the handle function
+               is executed, never from a completion handler or dispatch queue block. In case you don't need to compare
+               state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
+               on it, at the beginning of `handle` function.
      */
     public func handle(action: ActionType, next: @escaping Next) {
         next()

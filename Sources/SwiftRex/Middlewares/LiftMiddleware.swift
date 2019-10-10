@@ -46,11 +46,22 @@ public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: M
     }
 
     /**
-     Handles the incoming actions and may change them or trigger additional ones. Usually this is not the best place to start side-effects or trigger new actions, it should be more as an observation point for tracking, logging and telemetry.
+     Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
+     additional actions. This is also a good place for analytics, tracking, logging and telemetry. Because the lift
+     middleware is derived from a sub-state/sub-action middleware, every global action received will be mapped into
+     a sub-action, in a operation that can return nil (`Optional<SubAction>`). In case it's nil, it means that the
+     sub-action middleware doesn't work with this type of action, so the lifted middleware will simply call the next
+     middleware in the chain. On the other hand, if this operation returns a non-nil local action, this local action will
+     be handled by the child middleware, which is also responsible for calling `next()` in this case. When the `State`
+     type is also lifted, the context property will translate the global state into local state as expected every time
+     you call `context().getState()`.
      - Parameters:
        - action: the action to be handled
-       - getState: a function that can be used to get the current state at any point in time
-       - next: the next `Middleware` in the chain, probably we want to call this method in some point of our method (not necessarily in the end. When this is the last middleware in the pipeline, the next function will call the `Reducer` pipeline.
+       - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
+               only once, not more or less than once. Call it from the same thread and runloop where the handle function
+               is executed, never from a completion handler or dispatch queue block. In case you don't need to compare
+               state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
+               on it, at the beginning of `handle` function.
      */
     public func handle(action: GlobalActionType, next: @escaping Next) {
         guard let actionSubpart = actionZoomIn(action) else {
