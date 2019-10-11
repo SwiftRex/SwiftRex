@@ -1,6 +1,6 @@
 /**
  ⛓ `Middleware` is a plugin, or a composition of several plugins, that are assigned to the `Store` pipeline in order
- to handle each `ActionType` dispatched, to execute side-effects in response, and eventually dispatch more  `ActionType`
+ to handle each `ActionType` dispatched, to execute side-effects in response, and eventually dispatch more `ActionType`
  in the process. This happens before the `Reducer` to do its job. So in other words, we can think of a Middleware as an
  object that transforms `ActionType` into sync or async tasks and create more actions as these side-effects complete,
  also being able to check the current state at any point.
