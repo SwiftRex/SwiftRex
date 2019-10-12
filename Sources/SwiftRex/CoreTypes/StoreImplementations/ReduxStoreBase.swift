@@ -1,41 +1,76 @@
 import Foundation
-
 /**
- 🏪 `Store` defines a protocol for the state store of an app. It must have an input and an output:
- - an `EventHandler`: that's the store input, so it's able to receive and distribute events of type `EventProtocol`. Being an event handler means that an `UIViewController` can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`.
- - a `StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an `UIViewController` can subscribe to state changes and react to them.
+ 🏪 `ReduxStoreBase` is a base class that can be used to create the main store of an app, using the redux pattern.
 
- The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `Store` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
+ A store should have a single input and a single output, being the input the method to handle actions dispatched by the
+ counterparts, and the output the state that can be observed by them. For that reason, a `StoreType` protocol is nothing
+ but a composition of two other protocols: `ActionHandler` and `StateProvider`:
 
- ![Store and ViewController](https://swiftrex.github.io/SwiftRex/markdown/img/StoreBase.png)
+ - as `ActionHandler`, which represents the store input, it's gonna be able to receive and distribute action of a
+ generic type `ActionType`. Being an action handler means that an `UIViewController` or SwiftUI `View` can dispatch
+ actions to it, such as `.saveButtonTapped`, `.didScrollToPosition(y)`, `.viewDidLoad` or `.queryTextFieldChanged(text)`.
+ - as `StateProvider`, which represents the store output, it's gonna be able to offer to the system a way to subscribe
+ for updates on State. Being a state provider basically means that a store has a `statePublisher` that is either a
+ `Observable<StateType>`, `SignalProducer<StateType, Never>` or `Publisher<StateType, Never>` depending on the reactive
+ framework of your choice, so an `UIViewController` can subscribe to state changes and react to them, or a SwiftUI View
+ can use it as a `ObservedObject`.
 
- In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
+ This type of store will glue all the parts together and its responsibility is owning the main state, which means the
+ only source-of-truth an app can have, besides of coordinating the sequence of operations that will be triggered once a
+ new action arrives from views or middlewares. It's highly recommended that your app should have only a single instance
+ of this class and, directly or indirectly, all the other parts of your app will react to the state notifications sent
+ by this instance.
 
- ![iOS MVC](https://swiftrex.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
+ That means that other types of store can act as a proxy to this one, but none of them should hold any state. For more
+ information on that please check `ViewStore`.
 
- You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
+ ![Store, ViewStore and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png)
 
- You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the `UIKit` world. Theoretically it should be possible to keep multiple stores - one per module or per `UIViewController` - and keep them in sync through Rx observation, like the "Flux" approach. However, the main goal of SwiftRex is to keep an unified state independent from `UIKit`, therefore it's the recommended approach.
+ You can think of Store as a very heavy "Model" layer, completely detached from the Views, Controllers, Presenters etc.,
+ and where all the business logic stands. At a first sight it may look like transferring the "Massive" problem from a
+ layer to another, but the store actually won't have any of this logic, only coordinate the multiple entities that do
+ that. These entities are `Middleware` and `Reducer`, and you can learn more about them in their own documentation.
 
- The `StoreBase` implementation also is:
- - an `ActionHandler`: be able to receive and distribute actions of type `ActionProtocol`
-
- A `StoreBase` uses `Middleware` pipeline and `Reducer` pipeline. It creates a queue of incoming events that is handled to the middleware pipeline, which triggers actions back to the store. These actions are put in a queue that again are handled to the middleware pipeline, usually for logging or analytics purposes. The actions are them forwarded to the `Reducer` pipeline, together with the current state. One by one, the reducers will handle the action and incrementally change a copy of the app state. When this process is done, the store takes the resulting state, sets it as the current state and notifies all subscribers.
+ The `ReduxStoreBase` has a pipeline of middlewares and reducers. Upon an action arrival, which first is bottlenecked
+ into a serial queue, every middleware will have the chance to handle the action, and trigger side-effects in response.
+ These middlewares also have read-only access to the state at any point, and can dispatch new actions to the beginning
+ of the process at any point. Once all middlewares were informed about the action, now your reducers will have the
+ chance to act. The reducers can't trigger side-effects or do any async operation, all they do is calculating a new
+ version of the app state from the old version of the app state plus the action. One-by-one the reducers will shape the
+ new state, accumulatively. When they are done, the store publishes the final state as the new one, and notifies all the
+ subscribers.
 
  ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
+
+ By using this architecture, your model gets completely detached from the `UIKit`/`SwiftUI` world. And your UI gets
+ completely independent from side-effects, state mutations, threading, ownership, logic, logs, analytics and everything
+ other than UI. No more dependency injection for your views, they only need to know about the store (the main one or
+ a derived view store).
  */
 open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
     private let subject: UnfailableReplayLastSubjectType<StateType>
+
+    /// Pipeline to execute upon action arrival, containing all middlewares and reducers
     public let pipeline: ReduxPipelineWrapper<AnyMiddleware<ActionType, StateType>>
+
+    /// State publisher which can be subscribed in order to be notified on every mutation
     public var statePublisher: UnfailablePublisherType<StateType> { return subject.publisher }
 
     /**
-     Required initializer that takes all the expected pipelines
+     Required initializer that configures the action handler pipeline and the state storage
 
      - Parameters:
-       - initialState: when an app is starting, how should be its state struct? Initialize the state and set it before creating the `Store`
-       - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the same type as the `initialState` property. For `reducer` composition, please use the diamond operator (`<>`) and for reducers that understand only a sub-state part, use the `Reducer.lift(_:)` method
-       - middleware: a middleware pipeline, that can be any flat middleware or a `ComposedMiddleware`, as long as it's able to handle the state of the same type as the `initialState` property. For `middleware` composition, please use the diamond operator (`<>`) and for middlewares that understand only a sub-state part, use the `Middleware.lift(_:)` method
+       - subject: a reactive subject type that replays the last value, never fails and works on `StateType` elements. It
+                  should contain the initial state already.
+       - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the
+                  type `StateType` and actions of type `ActionType`. For `reducer` composition, please use the diamond
+                  operator (`<>`) and for reducers that understand only a sub-state part, use the `lift` functions to
+                  elevate them to the same global state and global action type.
+       - middleware: a middleware pipeline, that can be any flat middleware or a `ComposedMiddleware`, as long as it's
+                     able to handle the state of type `StateType` and actions of type `ActionType`. For `middleware`
+                     composition, please use the diamond operator (`<>`) and for middlewares that understand only a
+                     sub-state part, use the `lift` functions to elevate them to the same global state and global action
+                     type.
      */
     public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<StateType>,
                                reducer: Reducer<ActionType, StateType>,

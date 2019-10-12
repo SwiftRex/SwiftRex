@@ -1,23 +1,29 @@
 /**
- 🏪 `StoreType` defines a protocol for the state store of an app. It must have an input and an output:
- - an `EventHandler`: that's the store input, so it's able to receive and distribute events of type `EventProtocol`. Being an event handler means that an `UIViewController` can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`.
- - a `StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an `UIViewController` can subscribe to state changes and react to them.
+ 🏪 `StoreType` defines a protocol for a state store.
 
- The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `StoreType` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
+ A store should have a single input and a single output, being the input the method to handle actions dispatched by the
+ counterparts, and the output the state that can be observed by them. For that reason, a `StoreType` protocol is nothing
+ but a composition of two other protocols: `ActionHandler` and `StateProvider`:
 
- ![Store and ViewController](https://swiftrex.github.io/SwiftRex/markdown/img/StoreBase.png)
+ - as `ActionHandler`, which represents the store input, it's gonna be able to receive and distribute action of a
+ generic type `ActionType`. Being an action handler means that an `UIViewController` or SwiftUI `View` can dispatch
+ actions to it, such as `.saveButtonTapped`, `.didScrollToPosition(y)`, `.viewDidLoad` or `.queryTextFieldChanged(text)`.
+ - as `StateProvider`, which represents the store output, it's gonna be able to offer to the system a way to subscribe
+ for updates on State. Being a state provider basically means that a store has a `statePublisher` that is either a
+ `Observable<StateType>`, `SignalProducer<StateType, Never>` or `Publisher<StateType, Never>` depending on the reactive
+ framework of your choice, so an `UIViewController` can subscribe to state changes and react to them, or a SwiftUI View
+ can use it as a `ObservedObject`.
 
- In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
+ Not necessarily a store implementation means that this entity holds the source-of-truth of an app. Every app should
+ have a single and centralized store, where the whole state is held. But Views and ViewControllers do not necessarily
+ need to access this main Store directly, they could, instead, access some "proxy" store that intermediates the actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
+ on that please check `ViewStore`, and compare it to `ReduxStoreBase`.
 
- ![iOS MVC](https://swiftrex.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
+ In summary, it's recommended to have one and only store `ReduxStoreBase` in your app, holding the one and only one
+ source-of-truth, but at the same time having several `ViewStore` instances mapping the whole state and whole set of
+ possible actions from and to view state and events relevant to the specific view you implement.
 
- You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
-
- You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the `UIKit` world. Theoretically it should be possible to keep multiple stores - one per module or per `UIViewController` - and keep them in sync through Rx observation, like the "Flux" approach. However, the main goal of SwiftRex is to keep an unified state independent from `UIKit`, therefore it's the recommended approach.
-
- Specific implementations of a store will require mechanisms to distribute events, mutate the state and notifies subscribers, probably by using `Middleware` and being an `ActionHandler` too, but this is not necessary for the outside world, that only needs the input and output bus of a store.
-
- Please check (and inherit from) `StoreBase` for a standard implementation.
+ ![Store, ViewStore and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png)
  */
 public protocol StoreType: StateProvider, ActionHandler {
 }
