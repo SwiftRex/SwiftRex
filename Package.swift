@@ -1,26 +1,6 @@
 // swift-tools-version:5.1
 import PackageDescription
 
-let combineProduct: [Product] = {
-    #if !os(Linux) && canImport(Combine)
-        return [.library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"])]
-    #else
-        return []
-    #endif
-}()
-
-let combineTargets: [Target] = {
-    #if !os(Linux) && canImport(Combine)
-        return [
-            .target(name: "CombineRex", dependencies: ["SwiftRex"]),
-            .testTarget(name: "CombineRexTests",
-                        dependencies: ["SwiftRex", "CombineRex"])
-        ]
-    #else
-        return []
-    #endif
-}()
-
 let package = Package(
     name: "SwiftRex",
     platforms: [
@@ -29,15 +9,13 @@ let package = Package(
         .tvOS(SupportedPlatform.TVOSVersion.v13),
         .watchOS(SupportedPlatform.WatchOSVersion.v6)
     ],
-    products: combineProduct + [
-        .library(name: "RxSwiftRex", targets: ["SwiftRex", "RxSwiftRex"])
+    products: [
+        .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.0.0")
-    ],
-    targets: combineTargets + [
+    dependencies: [ ],
+    targets: [
         .target(name: "SwiftRex", dependencies: []),
-        .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"])
+        .target(name: "CombineRex", dependencies: ["SwiftRex"])
     ],
     swiftLanguageVersions: [.v5]
 )
