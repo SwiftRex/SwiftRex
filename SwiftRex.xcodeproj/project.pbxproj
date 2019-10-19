@@ -51,6 +51,7 @@
 		D56D300A234D887900678381 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CACB22BE909B00BE6679 /* SomeError.swift */; };
 		D56D300B234D887900678381 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D529D58422E671D400A287D1 /* TestState.swift */; };
 		D56E317C235A5D7600BEF634 /* IssueTrackerTests39.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5326483233E30F800CF0589 /* IssueTrackerTests39.swift */; };
+		D56E317E235A746C00BEF634 /* IntegrationWithComposableMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56E317D235A746C00BEF634 /* IntegrationWithComposableMiddlewareTests.swift */; };
 		D5741CAA2349296300E58D89 /* MiddlewareContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */; };
 		D5741CAC2349297200E58D89 /* MiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5741CAB2349297200E58D89 /* MiddlewareTests.swift */; };
 		D5741CAE234942D100E58D89 /* IdentityMiddlewareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6071E2071287A00D682EF /* IdentityMiddlewareTests.swift */; };
@@ -464,6 +465,7 @@
 		D56449272082F1F500453ABB /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		D56C218522DAABC50096DB96 /* PipelineMiddleware+RxSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+RxSwift.swift"; sourceTree = "<group>"; };
 		D56C218A22DAABEA0096DB96 /* PipelineMiddleware+ReactiveSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PipelineMiddleware+ReactiveSwift.swift"; sourceTree = "<group>"; };
+		D56E317D235A746C00BEF634 /* IntegrationWithComposableMiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationWithComposableMiddlewareTests.swift; sourceTree = "<group>"; };
 		D5741CA92349296300E58D89 /* MiddlewareContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContextTests.swift; sourceTree = "<group>"; };
 		D5741CAB2349297200E58D89 /* MiddlewareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareTests.swift; sourceTree = "<group>"; };
 		D5741CB0234944C000E58D89 /* MiddlewareContextMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareContextMock.swift; sourceTree = "<group>"; };
@@ -885,6 +887,7 @@
 			isa = PBXGroup;
 			children = (
 				D5326483233E30F800CF0589 /* IssueTrackerTests39.swift */,
+				D56E317D235A746C00BEF634 /* IntegrationWithComposableMiddlewareTests.swift */,
 			);
 			path = Integration;
 			sourceTree = "<group>";
@@ -2963,6 +2966,7 @@
 				D5FEA883234D7EBC003486A7 /* SubscriberTypeBridgeTests.swift in Sources */,
 				D56E317C235A5D7600BEF634 /* IssueTrackerTests39.swift in Sources */,
 				D5FEA885234D7F1D003486A7 /* ReplayLastSubjectTypeBridgeTests.swift in Sources */,
+				D56E317E235A746C00BEF634 /* IntegrationWithComposableMiddlewareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

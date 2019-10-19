@@ -13,6 +13,7 @@
 infix operator |>: ForwardApplication
 precedencegroup ForwardApplication {
     associativity: left
+    higherThan: AssignmentPrecedence
 }
 
 /**
@@ -55,5 +56,5 @@ precedencegroup ForwardComposition {
 infix operator <>: MonoidAppend
 precedencegroup MonoidAppend {
     associativity: left
-    higherThan: ForwardApplication
+    higherThan: ForwardComposition
 }
