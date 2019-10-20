@@ -4,9 +4,9 @@ import XCTest
 
 class ReduxPipelineWrapperTests: XCTestCase {
     func testDispatchCallOnActionAlwaysInMainThread() {
-        let middlewareMock = MiddlewareMock<AppAction, TestState>()
+        let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
-        let sut = ReduxPipelineWrapper<MiddlewareMock<AppAction, TestState>>(
+        let sut = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
             reducer: createReducerMock().0,
             middleware: middlewareMock)
@@ -28,9 +28,9 @@ class ReduxPipelineWrapperTests: XCTestCase {
     }
 
     func testMiddlewareDispatchesNewActionsBackToTheStore() {
-        let middlewareMock = MiddlewareMock<AppAction, TestState>()
+        let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
-        _ = ReduxPipelineWrapper<MiddlewareMock<AppAction, TestState>>(
+        _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
             reducer: createReducerMock().0,
             middleware: middlewareMock)
@@ -52,10 +52,10 @@ class ReduxPipelineWrapperTests: XCTestCase {
     }
 
     func testMiddlewareGetStateIsSetCorrectly() {
-        let middlewareMock = MiddlewareMock<AppAction, TestState>()
+        let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let currentState = TestState()
         let stateSubjectMock = CurrentValueSubject(currentValue: currentState)
-        _ = ReduxPipelineWrapper<MiddlewareMock<AppAction, TestState>>(
+        _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
             reducer: createReducerMock().0,
             middleware: middlewareMock)
@@ -63,11 +63,11 @@ class ReduxPipelineWrapperTests: XCTestCase {
     }
 
     func testReducersPipelineWillBeWiredToTheEndOfMiddlewarePipeline() {
-        let middlewareMock = MiddlewareMock<AppAction, TestState>()
+        let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let initialState = TestState()
         let stateSubjectMock = CurrentValueSubject(currentValue: initialState)
         let reducerMock = createReducerMock()
-        let sut = ReduxPipelineWrapper<MiddlewareMock<AppAction, TestState>>(
+        let sut = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
             reducer: reducerMock.0,
             middleware: middlewareMock)
@@ -95,12 +95,12 @@ class ReduxPipelineWrapperTests: XCTestCase {
     }
 
     func testReducersChangeTheState() {
-        let middlewareMock = MiddlewareMock<AppAction, TestState>()
+        let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let initialState = TestState()
         let reducedState = TestState(value: UUID(), name: "reduced state")
         let stateSubjectMock = CurrentValueSubject(currentValue: initialState)
         let reducerMock = createReducerMock()
-        let sut = ReduxPipelineWrapper<MiddlewareMock<AppAction, TestState>>(
+        let sut = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
             reducer: reducerMock.0,
             middleware: middlewareMock)

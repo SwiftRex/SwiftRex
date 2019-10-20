@@ -32,7 +32,7 @@ class ViewStoreTests: XCTestCase {
         let stateSubject = CurrentValueSubject(currentValue: TestState())
         let shouldCallUpstreamActionHandler = expectation(description: "upstream action handler should have been called")
 
-        let middlewareMock = MiddlewareMock<AppAction, TestState>()
+        let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         middlewareMock.handleActionNextClosure = { action, _ in
             XCTAssertEqual(.bar(.delta), action)
             shouldCallUpstreamActionHandler.fulfill()
@@ -70,7 +70,7 @@ class ViewStoreTests: XCTestCase {
         let originalStore = ReduxStoreBase<AppAction, TestState>(
             subject: stateSubject.subject,
             reducer: createReducerMock().0,
-            middleware: MiddlewareMock<AppAction, TestState>()
+            middleware: IsoMiddlewareMock<AppAction, TestState>()
         )
 
         struct MockViewState: Equatable {

@@ -1,7 +1,8 @@
 import Foundation
 
-public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler {
-    public typealias ActionType = MiddlewareType.ActionType
+public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
+    where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
+    public typealias ActionType = MiddlewareType.InputActionType
     public typealias StateType = MiddlewareType.StateType
     private let onAction: (ActionType) -> Void
     private let middleware: MiddlewareType
@@ -37,7 +38,7 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler {
         self.onAction = dispatchAction
     }
 
-    public func dispatch(_ action: MiddlewareType.ActionType) {
+    public func dispatch(_ action: ActionType) {
         onAction(action)
     }
 }

@@ -1,13 +1,13 @@
 import Foundation
 
-public class PipelineMiddleware<ActionType, StateType>: Middleware {
-    public var context: () -> MiddlewareContext<ActionType, StateType>
-    private let actionSubject: UnfailableSubject<(ActionType, StateType)>
+public class PipelineMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
+    public var context: () -> MiddlewareContext<OutputActionType, StateType>
+    private let actionSubject: UnfailableSubject<(InputActionType, StateType)>
     private var subscriptionCollection: SubscriptionCollection
 
     public init(
-        actionTransformer: ((UnfailablePublisherType<(ActionType, StateType)>) -> UnfailablePublisherType<ActionType>)? = nil,
-        actionSubject: () -> UnfailableSubject<(ActionType, StateType)>,
+        actionTransformer: ((UnfailablePublisherType<(InputActionType, StateType)>) -> UnfailablePublisherType<OutputActionType>)? = nil,
+        actionSubject: () -> UnfailableSubject<(InputActionType, StateType)>,
         subscriptionCollection: () -> SubscriptionCollection
     ) {
         self.actionSubject = actionSubject()
@@ -37,7 +37,7 @@ public class PipelineMiddleware<ActionType, StateType>: Middleware {
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: ActionType, next: @escaping Next) {
+    public func handle(action: InputActionType, next: @escaping Next) {
         actionSubject.subscriber.onValue((action, context().getState()))
         next()
     }

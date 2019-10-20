@@ -51,7 +51,7 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
     private let subject: UnfailableReplayLastSubjectType<StateType>
 
     /// Pipeline to execute upon action arrival, containing all middlewares and reducers
-    public let pipeline: ReduxPipelineWrapper<AnyMiddleware<ActionType, StateType>>
+    public let pipeline: ReduxPipelineWrapper<AnyMiddleware<ActionType, ActionType, StateType>>
 
     /// State publisher which can be subscribed in order to be notified on every mutation
     public var statePublisher: UnfailablePublisherType<StateType> { return subject.publisher }
@@ -74,7 +74,8 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
      */
     public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<StateType>,
                                reducer: Reducer<ActionType, StateType>,
-                               middleware: M) where M.ActionType == ActionType, M.StateType == StateType {
+                               middleware: M)
+        where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
         self.subject = subject
         self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware))
     }

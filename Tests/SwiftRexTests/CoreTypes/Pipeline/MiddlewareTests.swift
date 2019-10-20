@@ -8,6 +8,9 @@ class MiddlewareTests: XCTestCase {
         let shouldCallNext2 = expectation(description: "next middleware should have been called on second event")
 
         class SomeMiddleware: Middleware {
+            typealias InputActionType = AppAction
+            typealias OutputActionType = AppAction
+
             lazy var context: (() -> MiddlewareContext<AppAction, TestState>) = { {
                     .init(
                         onAction: { _ in fatalError("on action was not supposed to be called") },

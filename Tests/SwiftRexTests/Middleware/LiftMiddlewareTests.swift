@@ -1,11 +1,13 @@
 @testable import SwiftRex
 import XCTest
 
+typealias IsoMiddlewareMock<Action, State> = MiddlewareMock<Action, Action, State>
+
 class LiftMiddlewareTests: XCTestCase {
     func testLiftMiddlewareNewActionsAreForwardedToGlobalContext() {
-        let nameMiddleware = MiddlewareMock<AppAction.Bar, String>()
+        let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         let context = MiddlewareContextMock<AppAction, TestState>()
-        let generalMiddleware: LiftMiddleware<AppAction, TestState, MiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
+        let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
             actionZoomIn: { $0.bar },
             actionZoomOut: { bar in .bar(bar) },
             stateZoomIn: { $0.name }
@@ -23,12 +25,12 @@ class LiftMiddlewareTests: XCTestCase {
     }
 
     func testLiftMiddlewareForwardsActionsFromTheGlobalMiddleware() {
-        let nameMiddleware = MiddlewareMock<AppAction.Bar, String>()
+        let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         var receivedActions = [AppAction.Bar]()
         nameMiddleware.handleActionNextClosure = { action, _ in
             receivedActions.append(action)
         }
-        let generalMiddleware: LiftMiddleware<AppAction, TestState, MiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
+        let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
             actionZoomIn: { $0.bar },
             actionZoomOut: { bar in .bar(bar) },
             stateZoomIn: { $0.name }
@@ -45,10 +47,10 @@ class LiftMiddlewareTests: XCTestCase {
     }
 
     func testLiftMiddlewareUnliftsStateForLocalMiddleware() {
-        let nameMiddleware = MiddlewareMock<AppAction.Bar, String>()
+        let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         let context = MiddlewareContextMock<AppAction, TestState>()
         context.state = TestState(value: .init(), name: "test-unlift-state")
-        let generalMiddleware: LiftMiddleware<AppAction, TestState, MiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
+        let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
             actionZoomIn: { $0.bar },
             actionZoomOut: { bar in .bar(bar) },
             stateZoomIn: { $0.name }

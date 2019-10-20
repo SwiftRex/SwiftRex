@@ -1,18 +1,18 @@
 /**
  ⛓ `Middleware` is a plugin, or a composition of several plugins, that are assigned to the `Store` pipeline in order
- to handle each `ActionType` dispatched, to execute side-effects in response, and eventually dispatch more `ActionType`
- in the process. This happens before the `Reducer` to do its job. So in other words, we can think of a Middleware as an
- object that transforms `ActionType` into sync or async tasks and create more actions as these side-effects complete,
- also being able to check the current state at any point.
+ to handle each action received (`InputActionType`), to execute side-effects in response, and eventually dispatch more
+ action (`OutputActionType`) in the process. This happens before the `Reducer` to do its job. So in other words, we can
+ think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these
+ side-effects complete, also being able to check the current state at any point.
 
- An `ActionType` is a lightweight structure that is dispatched into the `Store`. The store enqueues a new element that
- arrives and submits it to a pipeline of middlewares. So, in other words, a `Middleware` is class that handles actions,
- and has the power to dispatch more actions to the `ActionHandler` chain. The `Middleware` can ignore the action and
- simply delegate to the next node in the chain of middlewares, or it can execute side-effects in response, such as
- logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they
- complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of
- movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop,
- or perhaps some `Reducer`, as reducers pipeline is at the end of every middleware pipeline.
+ An action is a lightweight structure that is dispatched into the `Store`. The store enqueues a new action that arrives
+ and submits it to a pipeline of middlewares. So, in other words, a `Middleware` is class that handles actions, and has
+ the power to dispatch more actions to the `ActionHandler` chain. The `Middleware` can ignore the action and simply
+ delegate to the next node in the chain of middlewares, or it can execute side-effects in response, such as logging into
+ file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the
+ middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies,
+ credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop, or
+ perhaps some `Reducer`, as reducers pipeline is at the end of every middleware pipeline.
 
  Because we control when the next node will be called, we can for example collect the state before and after reducers
  have changed the state, which can be very interesting for logging, auditing, analytics tracking, telemetry or state
@@ -128,10 +128,19 @@
  */
 public protocol Middleware: class {
     /**
-     The Action that this `Middleware` knowns how to handle. Thanks to optics, this action can be a sub-action lifted to
-     a global action type. Please check `lift(actionZoomIn:actionZoomOut:stateZoomIn:)` for more details.
+     The Action type that this `Middleware` knowns how to handle, so the store will forward actions of this type to this
+     middleware. Thanks to optics, this action can be a sub-action lifted to a global action type. Please check
+     `lift(actionZoomIn:actionZoomOut:stateZoomIn:)` for more details.
      */
-    associatedtype ActionType
+    associatedtype InputActionType
+
+    /**
+     The Action type that this `Middleware` will eventually trigger back to the store in response of side-effects. This
+     can be the same as `InputActionType` or different, in case you want to separate your enum in requests and responses.
+     Thanks to optics, this action can be a sub-action lifted to a global action type. Please check
+     `lift(actionZoomIn:actionZoomOut:stateZoomIn:)` for more details.
+     */
+    associatedtype OutputActionType
 
     /**
      The State that this `Middleware` knowns how to handle. Thanks to lenses, this state can be a sub-state lifted to
@@ -146,7 +155,7 @@ public protocol Middleware: class {
      fatal error, because once the middleware is added to the `Store` or to a pipeline of composed middlewares, this
      value will point to the store actions.
      */
-    var context: (() -> MiddlewareContext<ActionType, StateType>) { get set }
+    var context: (() -> MiddlewareContext<OutputActionType, StateType>) { get set }
 
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
@@ -159,7 +168,7 @@ public protocol Middleware: class {
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    func handle(action: ActionType, next: @escaping Next)
+    func handle(action: InputActionType, next: @escaping Next)
 }
 
 extension Middleware {
@@ -174,14 +183,16 @@ extension Middleware {
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: ActionType, next: @escaping Next) {
+    public func handle(action: InputActionType, next: @escaping Next) {
         next()
     }
 }
 
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
-// sourcery: AutoMockableGeneric = ActionType
+// sourcery: AutoMockableGeneric = OutputActionType
+// sourcery: AutoMockableGeneric = InputActionType
 // sourcery: TypeErase = StateType
-// sourcery: TypeErase = ActionType
+// sourcery: TypeErase = OutputActionType
+// sourcery: TypeErase = InputActionType
 extension Middleware { }

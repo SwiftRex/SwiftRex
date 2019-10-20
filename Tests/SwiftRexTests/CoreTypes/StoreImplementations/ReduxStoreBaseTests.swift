@@ -17,7 +17,7 @@ class ReduxStoreBaseTests: XCTestCase {
         shouldNotifySubscribers.expectedFulfillmentCount = 11
         let events: [AppAction] = [.foo, .bar(.charlie), .foo]
         let initialState = TestState()
-        let fooMiddleware = MiddlewareMock<AppAction, TestState>()
+        let fooMiddleware = IsoMiddlewareMock<AppAction, TestState>()
         fooMiddleware.handleActionNextClosure = { [weak fooMiddleware] action, next in
             guard action == .foo else {
                 next()
@@ -29,7 +29,7 @@ class ReduxStoreBaseTests: XCTestCase {
             fooMiddleware?.context().dispatch(.bar(.bravo))
             shouldCallFooMiddleware.fulfill()
         }
-        let barMiddleware = MiddlewareMock<AppAction.Bar, String>()
+        let barMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         barMiddleware.handleActionNextClosure = { [weak barMiddleware] action, next in
             switch action {
             case .alpha:

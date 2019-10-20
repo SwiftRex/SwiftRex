@@ -13,6 +13,8 @@ function_parameter_count:
   error: 8
 nesting:
   type_level: 6
+generic_type_name:
+  max_length: 30
 identifier_name:
   min_length:
     error: 3

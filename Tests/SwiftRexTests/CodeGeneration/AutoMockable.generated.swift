@@ -40,12 +40,12 @@ class ActionHandlerMock<ActionType>: ActionHandler {
     }
 
 }
-class MiddlewareMock<ActionType, StateType>: Middleware {
-    var context: (() -> MiddlewareContext<ActionType, StateType>) {
+class MiddlewareMock<InputActionType, OutputActionType, StateType>: Middleware {
+    var context: (() -> MiddlewareContext<OutputActionType, StateType>) {
         get { return underlyingContext }
         set(value) { underlyingContext = value }
     }
-    var underlyingContext: (() -> MiddlewareContext<ActionType, StateType>)!
+    var underlyingContext: (() -> MiddlewareContext<OutputActionType, StateType>)!
 
     //MARK: - handle
 
@@ -53,10 +53,10 @@ class MiddlewareMock<ActionType, StateType>: Middleware {
     var handleActionNextCalled: Bool {
         return handleActionNextCallsCount > 0
     }
-    var handleActionNextReceivedArguments: (action: ActionType, next: Next)?
-    var handleActionNextClosure: ((ActionType, @escaping Next) -> Void)?
+    var handleActionNextReceivedArguments: (action: InputActionType, next: Next)?
+    var handleActionNextClosure: ((InputActionType, @escaping Next) -> Void)?
 
-    func handle(action: ActionType, next: @escaping Next) {
+    func handle(action: InputActionType, next: @escaping Next) {
         handleActionNextCallsCount += 1
         handleActionNextReceivedArguments = (action: action, next: next)
         handleActionNextClosure?(action, next)

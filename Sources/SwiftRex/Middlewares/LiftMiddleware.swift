@@ -5,8 +5,9 @@
 
  You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call `Middleware.lift(_:)`, passing as parameter the keyPath from whole to part.
  */
-public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: Middleware>: Middleware {
-    typealias LocalActionType = PartMiddleware.ActionType
+public class LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, PartMiddleware: Middleware>: Middleware {
+    typealias LocalInputActionType = PartMiddleware.InputActionType
+    typealias LocalOutputActionType = PartMiddleware.OutputActionType
     typealias LocalStateType = PartMiddleware.StateType
 
     /**
@@ -17,7 +18,7 @@ public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: M
      For `SubstateMiddleware` this property is only a proxy call to the inner middleware's context, taking care of
      lifting `StateType` for all the function types inside.
      */
-    public var context: () -> MiddlewareContext<GlobalActionType, GlobalStateType> {
+    public var context: () -> MiddlewareContext<GlobalOutputActionType, GlobalStateType> {
         didSet {
             partMiddleware
                 .context = { [unowned self] in
@@ -28,13 +29,13 @@ public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: M
     }
 
     private let partMiddleware: PartMiddleware
-    private let actionZoomIn: (GlobalActionType) -> LocalActionType?
-    private let actionZoomOut: (LocalActionType) -> GlobalActionType
+    private let actionZoomIn: (GlobalInputActionType) -> LocalInputActionType?
+    private let actionZoomOut: (LocalOutputActionType) -> GlobalOutputActionType
     private let stateZoomIn: (GlobalStateType) -> LocalStateType
 
     init(middleware: PartMiddleware,
-         actionZoomIn: @escaping (GlobalActionType) -> LocalActionType?,
-         actionZoomOut: @escaping (LocalActionType) -> GlobalActionType,
+         actionZoomIn: @escaping (GlobalInputActionType) -> LocalInputActionType?,
+         actionZoomOut: @escaping (LocalOutputActionType) -> GlobalOutputActionType,
          stateZoomIn: @escaping (GlobalStateType) -> LocalStateType) {
         self.actionZoomIn = actionZoomIn
         self.actionZoomOut = actionZoomOut
@@ -63,7 +64,7 @@ public class LiftMiddleware<GlobalActionType, GlobalStateType, PartMiddleware: M
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: GlobalActionType, next: @escaping Next) {
+    public func handle(action: GlobalInputActionType, next: @escaping Next) {
         guard let actionSubpart = actionZoomIn(action) else {
             next()
             return
@@ -107,11 +108,11 @@ extension Middleware {
      - Parameter substatePath: the keyPath that goes from `Whole` to `Part`
      - Returns: a `SubstateMiddleware``<Whole, Self>` that knows how to translate `Whole` to `Part` and vice-versa, by using the key path.
      */
-    public func lift<GlobalActionType, GlobalStateType>(
-        actionZoomIn: @escaping (GlobalActionType) -> ActionType?,
-        actionZoomOut: @escaping (ActionType) -> GlobalActionType,
+    public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
+        actionZoomIn: @escaping (GlobalInputActionType) -> InputActionType?,
+        actionZoomOut: @escaping (OutputActionType) -> GlobalOutputActionType,
         stateZoomIn: @escaping (GlobalStateType) -> StateType
-    ) -> LiftMiddleware<GlobalActionType, GlobalStateType, Self> {
+    ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self> {
         .init(
             middleware: self,
             actionZoomIn: actionZoomIn,

@@ -5,7 +5,7 @@ import XCTest
 class ReduxStoreProtocolTests: XCTestCase {
     func testDispatchIsForwardedToPipeline() {
         let sut = ReduxStoreProtocolMock<AppAction, TestState>()
-        let middlewareMock = MiddlewareMock<AppAction, TestState>()
+        let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
@@ -13,7 +13,7 @@ class ReduxStoreProtocolTests: XCTestCase {
             XCTAssertEqual(action, expectedAction)
             shouldCallMiddlewareActionHandler.fulfill()
         }
-        sut.pipeline = ReduxPipelineWrapper<MiddlewareMock<AppAction, TestState>>(
+        sut.pipeline = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: CurrentValueSubject(currentValue: TestState()).subject!,
             reducer: createReducerMock().0,
             middleware: middlewareMock)

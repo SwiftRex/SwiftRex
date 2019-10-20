@@ -6,7 +6,10 @@ import Foundation
 // sourcery: AutoMockableSkip = "dispatch(_ action: ActionType)"
 public protocol ReduxStoreProtocol: class, StoreType {
     associatedtype MiddlewareType: Middleware
-        where MiddlewareType.StateType == StateType, MiddlewareType.ActionType == ActionType
+        where MiddlewareType.StateType == StateType,
+              MiddlewareType.InputActionType == ActionType,
+              MiddlewareType.OutputActionType == ActionType
+
     var pipeline: ReduxPipelineWrapper<MiddlewareType> { get }
 }
 

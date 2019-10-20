@@ -119,7 +119,7 @@ class IntegrationWithComposableMiddlewareTests: XCTestCase {
         }
     }
 
-    var middleware: ComposedMiddleware<AppAction, MyState>!
+    var middleware: ComposedMiddleware<AppAction, AppAction, MyState>!
     var reducer: Reducer<AppAction, MyState>!
     var store: ReduxStoreBase<AppAction, MyState>!
 

@@ -4,7 +4,7 @@ import XCTest
 
 class ComposedMiddlewareTests: XCTestCase {
     func testComposedMiddlewareAction() {
-        let sut = ComposedMiddleware<AppAction, TestState>()
+        let sut = ComposedMiddleware<AppAction, AppAction, TestState>()
         var newActions = [AppAction]()
         let originalActions: [AppAction] = [.foo, .bar(.alpha), .bar(.alpha), .bar(.bravo), .bar(.echo), .foo]
         var originalActionsReceived: [(middlewareName: String, action: AppAction)] = []
@@ -12,7 +12,7 @@ class ComposedMiddlewareTests: XCTestCase {
         ["m1", "m2"]
             .lazy
             .map { name in
-                let middleware = MiddlewareMock<AppAction, TestState>()
+                let middleware = IsoMiddlewareMock<AppAction, TestState>()
                 middleware.handleActionNextClosure = { [unowned middleware] action, next in
                     originalActionsReceived.append((middlewareName: name, action: action))
                     middleware.context().dispatch(action)
@@ -20,7 +20,7 @@ class ComposedMiddlewareTests: XCTestCase {
                 }
                 return middleware
             }
-            .forEach { sut.append(middleware: $0 as MiddlewareMock<AppAction, TestState>) }
+            .forEach { sut.append(middleware: $0 as IsoMiddlewareMock<AppAction, TestState>) }
 
         sut.context = { .init(onAction: { action in
             newActions.append(action)
@@ -48,8 +48,8 @@ class ComposedMiddlewareTests: XCTestCase {
 
     func testMiddlewareActionHandlerPropagationOnInit() {
         let middlewares = ["m1", "m2", "m3", "m4"]
-            .map { _ -> MiddlewareMock<AppAction, TestState> in
-                let middleware = MiddlewareMock<AppAction, TestState>()
+            .map { _ -> IsoMiddlewareMock<AppAction, TestState> in
+                let middleware = IsoMiddlewareMock<AppAction, TestState>()
                 middleware.handleActionNextClosure = { [unowned middleware] action, next in
                     XCTAssertNoThrow(middleware.context().getState())
                     next()
@@ -83,8 +83,8 @@ class ComposedMiddlewareTests: XCTestCase {
 
     func testMiddlewareActionHandlerPropagationOnAppend() {
         let middlewares = ["m1", "m2", "m3", "m4"]
-            .map { _ -> MiddlewareMock<AppAction, TestState> in
-                let middleware = MiddlewareMock<AppAction, TestState>()
+            .map { _ -> IsoMiddlewareMock<AppAction, TestState> in
+                let middleware = IsoMiddlewareMock<AppAction, TestState>()
                 middleware.handleActionNextClosure = { [unowned middleware] action, next in
                     XCTAssertNoThrow(middleware.context().getState())
                     next()
@@ -98,7 +98,7 @@ class ComposedMiddlewareTests: XCTestCase {
             }.to(throwAssertion())
         }
 
-        let composedMiddlewares = ComposedMiddleware<AppAction, TestState>()
+        let composedMiddlewares = ComposedMiddleware<AppAction, AppAction, TestState>()
         expect {
             _ = composedMiddlewares.context()
         }.to(throwAssertion())

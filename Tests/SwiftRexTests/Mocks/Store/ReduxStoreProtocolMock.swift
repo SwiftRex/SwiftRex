@@ -1,5 +1,5 @@
 import Foundation
 
 extension ReduxStoreProtocolMock {
-    typealias MiddlewareType = MiddlewareMock<ActionType, StateType>
+    typealias MiddlewareType = IsoMiddlewareMock<ActionType, StateType>
 }

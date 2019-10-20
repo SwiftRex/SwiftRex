@@ -9,7 +9,7 @@ class PipelineMiddlewareTests: XCTestCase {
         let action = AppAction.bar(.charlie)
         let disposables = FooSubscriptionCollection()
 
-        let sut = PipelineMiddleware<AppAction, TestState>(
+        let sut = PipelineMiddleware<AppAction, AppAction, TestState>(
             actionTransformer: { _ in
                 let downstream = PublisherType<AppAction, Never> { _ in
                     shouldCallActionPipeline.fulfill()
@@ -46,7 +46,7 @@ class PipelineMiddlewareTests: XCTestCase {
         let derivedActions = [AppAction.bar(.charlie), .foo]
         let disposables = FooSubscriptionCollection()
 
-        let sut = PipelineMiddleware<AppAction, TestState>(
+        let sut = PipelineMiddleware<AppAction, AppAction, TestState>(
             actionTransformer: { upstream in
                 let downstream = PublisherType<AppAction, Never> { downstreamSubscriber in
                     let subscription = upstream.subscribe(SubscriberType<(AppAction, TestState), Never>(

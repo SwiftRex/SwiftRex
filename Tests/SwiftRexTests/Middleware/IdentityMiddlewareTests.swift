@@ -4,7 +4,7 @@ import XCTest
 class IdentityMiddlewareTests: XCTestCase {
     func testIdentityMiddlewareAction() {
         // Given
-        let sut = IdentityMiddleware<AppAction, TestState>()
+        let sut = IdentityMiddleware<AppAction, AppAction, TestState>()
 
         let middlewareContext = MiddlewareContextMock<AppAction, TestState>()
         sut.context = { middlewareContext.value }

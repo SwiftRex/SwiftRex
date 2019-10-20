@@ -5,7 +5,7 @@ import XCTest
 
 class TypeErasureTests: XCTestCase {
     func testMiddlewareBaseInitThrows() {
-        expect { _ = _AnyMiddlewareBase<AppAction, TestState>() }.to(throwAssertion())
+        expect { _ = _AnyMiddlewareBase<AppAction, AppAction, TestState>() }.to(throwAssertion())
     }
 
     func testMiddlewareBaseHandleActionThrows() {
@@ -31,14 +31,14 @@ class TypeErasureTests: XCTestCase {
     }
 
     func testAnyMiddlewareInit() {
-        let middleware = MiddlewareMock<AppAction, TestState>()
+        let middleware = IsoMiddlewareMock<AppAction, TestState>()
         expect {
             _ = AnyMiddleware(middleware)
         }.toNot(throwError())
     }
 
     func testAnyMiddlewareHandleAction() {
-        let middleware = MiddlewareMock<AppAction, TestState>()
+        let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let sut = AnyMiddleware(middleware)
         sut.handle(action: .foo, next: { })
         XCTAssertTrue(middleware.handleActionNextCalled)
@@ -46,7 +46,7 @@ class TypeErasureTests: XCTestCase {
 
     func testAnyMiddlewareHandleActionCallsNext() {
         // Given
-        let middleware = MiddlewareMock<AppAction, TestState>()
+        let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let sut = AnyMiddleware(middleware)
         let action = AppAction.foo
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
@@ -68,7 +68,7 @@ class TypeErasureTests: XCTestCase {
     }
 
     func testAnyMiddlewareContextGetsFromWrapped() {
-        let middleware = MiddlewareMock<AppAction, TestState>()
+        let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let state = TestState(value: UUID(), name: "")
         let context = MiddlewareContext<AppAction, TestState>(onAction: { _ in }, getState: { state })
 
@@ -80,7 +80,7 @@ class TypeErasureTests: XCTestCase {
     }
 
     func testAnyMiddlewareContextSetsIntoWrapped() {
-        let middleware = MiddlewareMock<AppAction, TestState>()
+        let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let state = TestState(value: UUID(), name: "")
         let context = MiddlewareContext<AppAction, TestState>(onAction: { _ in }, getState: { state })
 
@@ -92,5 +92,5 @@ class TypeErasureTests: XCTestCase {
     }
 }
 
-private class MiddlewareAbstract<A, S>: _AnyMiddlewareBase<A, S> {
+private class MiddlewareAbstract<A, S>: _AnyMiddlewareBase<A, A, S> {
 }

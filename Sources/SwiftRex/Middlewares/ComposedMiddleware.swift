@@ -7,8 +7,8 @@
  let composedMiddleware = firstMiddleware <> secondMiddleware <> thirdMiddleware
  ```
  */
-public final class ComposedMiddleware<ActionType, GlobalState>: Middleware {
-    private var middlewares: [AnyMiddleware<ActionType, GlobalState>] = []
+public final class ComposedMiddleware<InputActionType, OutputActionType, GlobalState>: Middleware {
+    private var middlewares: [AnyMiddleware<InputActionType, OutputActionType, GlobalState>] = []
 
     /**
      Default initializer for `ComposedMiddleware`, use this only if you don't like custom operators, otherwise create a `ComposedMiddleware` by composing two or more middlewares using the diamond operator, as shown below:
@@ -29,7 +29,7 @@ public final class ComposedMiddleware<ActionType, GlobalState>: Middleware {
 
      A `ComposedMiddleware` also sets its child middlewares to the same context whenever this property is set.
      */
-    public var context: () -> MiddlewareContext<ActionType, GlobalState> {
+    public var context: () -> MiddlewareContext<OutputActionType, GlobalState> {
         didSet {
             middlewares.forEach {
                 $0.context = { [unowned self] in self.context() }
@@ -49,7 +49,10 @@ public final class ComposedMiddleware<ActionType, GlobalState>: Middleware {
      let composedOfThreeMiddlewares = firstMiddleware <> secondMiddleware <> thirdMiddleware
      ```
      */
-    public func append<M: Middleware>(middleware: M) where M.ActionType == ActionType, M.StateType == GlobalState {
+    public func append<M: Middleware>(middleware: M)
+        where M.InputActionType == InputActionType,
+              M.OutputActionType == OutputActionType,
+              M.StateType == GlobalState {
         // Add in reverse order because we reduce from top to bottom and trigger from the last
         middleware.context = { [unowned self] in self.context() }
         // Inserts into the first position because the forward methods will work in the reverse order.
@@ -73,7 +76,7 @@ public final class ComposedMiddleware<ActionType, GlobalState>: Middleware {
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: ActionType, next: @escaping Next) {
+    public func handle(action: InputActionType, next: @escaping Next) {
         let firstNode = middlewares
             .reversed()
             .reduce(next) { chain, middleware -> Next in {
@@ -110,10 +113,13 @@ public final class ComposedMiddleware<ActionType, GlobalState>: Middleware {
    - rhs: A flat middleware to be appended to the end of a `ComposedMiddleware`
  - Returns: A `ComposedMiddleware` that calls the `lhs` methods before the `rhs` ones. If `lhs` is already a `ComposedMiddleware`, we will return the same instance after mutating it to have the `rhs` in the end of its chain.
  */
-public func <> <M1: Middleware, M2: Middleware> (lhs: M1, rhs: M2) -> ComposedMiddleware<M1.ActionType, M1.StateType>
-    where M1.ActionType == M2.ActionType, M1.StateType == M2.StateType {
-    let container = lhs as? ComposedMiddleware<M1.ActionType, M1.StateType> ?? {
-        let newContainer: ComposedMiddleware<M1.ActionType, M1.StateType> = .init()
+public func <> <M1: Middleware, M2: Middleware>(lhs: M1, rhs: M2) -> ComposedMiddleware < M1.InputActionType, M1.OutputActionType,
+    M1.StateType>
+    where M1.InputActionType == M2.InputActionType,
+          M1.OutputActionType == M2.OutputActionType,
+          M1.StateType == M2.StateType {
+    let container = lhs as? ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> ?? {
+        let newContainer: ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> = .init()
         newContainer.append(middleware: lhs)
         return newContainer
     }()
