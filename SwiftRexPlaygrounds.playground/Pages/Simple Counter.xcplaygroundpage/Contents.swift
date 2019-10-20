@@ -98,18 +98,64 @@ final class Store: ReduxStoreBase<AppAction, AppState> {
     }
 }
 
-let store = Store()
-let subscription = store
-    .statePublisher
-    .map { String(data: try! JSONEncoder().encode($0), encoding: .utf8)! }
-    .sink { print("New state: \($0)") }
+class ViewModel {
+    private var subscription: AnyCancellable?
+    private var viewStore: ViewStore<Input, Output>!
 
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestDecrease))
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestDecrease))
-store.dispatch(.event(.requestDecrease))
+    enum Input {
+        case tapIncrease
+        case tapDecrease
+
+        var tapIncrease: Void? {
+            guard case .tapIncrease = self else { return nil }
+            return ()
+        }
+
+        var tapDecrease: Void? {
+            guard case .tapDecrease = self else { return nil }
+            return ()
+        }
+    }
+
+    struct Output: Codable, Equatable {
+        let counterLabel: String
+    }
+
+    init(store: Store) {
+        viewStore = store.view(
+            action: { viewEvent in
+                switch viewEvent {
+                case .tapIncrease: return .event(.requestIncrease)
+                case .tapDecrease: return .event(.requestDecrease)
+                }
+            },
+            state: { global in
+                global.map { state in
+                    Output(counterLabel: "Formatted for View: \(state.currentNumber)")
+                }.asPublisherType()
+            }
+        )
+
+        subscription = viewStore
+            .statePublisher
+            .map { String(data: try! JSONEncoder().encode($0), encoding: .utf8)! }
+            .sink { print("New view state: \($0)") }
+    }
+
+    func receivedFromViewController(_ event: Input) {
+        viewStore.dispatch(event)
+    }
+}
+
+let store = Store()
+let viewModel = ViewModel(store: store)
+
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapDecrease)
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapDecrease)
+viewModel.receivedFromViewController(.tapDecrease)
 
 //: [Next](@next)
