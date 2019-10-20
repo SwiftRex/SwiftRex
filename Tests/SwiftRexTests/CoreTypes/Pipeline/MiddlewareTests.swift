@@ -18,6 +18,10 @@ class MiddlewareTests: XCTestCase {
                     )
                 }
             }()
+
+            func handle(action: AppAction, next: @escaping Next) {
+                next()
+            }
         }
 
         let sut = SomeMiddleware()

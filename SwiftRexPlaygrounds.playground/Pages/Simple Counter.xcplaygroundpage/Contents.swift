@@ -22,7 +22,7 @@ enum AppAction: Equatable {
         case increase, decrease
     }
 
-    public var event: CounterEvent? {
+    var event: CounterEvent? {
         get {
             guard case let .event(value) = self else { return nil }
             return value
@@ -33,7 +33,7 @@ enum AppAction: Equatable {
         }
     }
 
-    public var action: CounterAction? {
+    var action: CounterAction? {
         get {
             guard case let .action(value) = self else { return nil }
             return value
@@ -89,7 +89,7 @@ final class Store: ReduxStoreBase<AppAction, AppState> {
                 CounterService.middleware.lift(
                     actionZoomIn: { $0.event },
                     actionZoomOut: {
-                        return AppAction.action($0)
+                        AppAction.action($0)
                     },
                     stateZoomIn: { $0.currentNumber }
                 ),
