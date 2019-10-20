@@ -65,7 +65,6 @@ extension BindableStore where ViewState: Equatable {
         self.init(initialState: initialState,
                   viewStore: viewStore,
                   removeDuplicates: { $0.removeDuplicates() })
-
     }
 }
 

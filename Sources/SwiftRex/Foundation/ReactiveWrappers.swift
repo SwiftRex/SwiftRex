@@ -98,6 +98,15 @@ extension ReplayLastSubjectType {
         subscriber.onValue(currentValue)
         return result
     }
+
+    @discardableResult
+    public func mutate<Result>(when condition: @escaping (Result) -> Bool, action: (inout Element) -> Result) -> Result {
+        var currentValue = value()
+        let result = action(&currentValue)
+        guard condition(result) else { return result }
+        subscriber.onValue(currentValue)
+        return result
+    }
 }
 
 public typealias UnfailableReplayLastSubjectType<Element> = ReplayLastSubjectType<Element, Never>

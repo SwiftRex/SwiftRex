@@ -1,14 +1,58 @@
-//: [Previous](@previous)
-
-// Please start by selecting target Playgrounds and any iPhone from the device list
-// Then build the target and run the playground
+//
+//  IntegrationCounterTests.swift
+//  UnitTests Combine
+//
+//  Created by Luiz Rodrigo Martins Barbosa on 20.10.19.
+//
 
 import Combine
 import CombineRex
-import PlaygroundSupport
+import Foundation
 import SwiftRex
+import XCTest
 
-PlaygroundPage.current.needsIndefiniteExecution = true
+class IntegrationCounterTests: XCTestCase {
+    var store: TestBasicStore!
+    var subscription: AnyCancellable?
+
+    override func setUp() {
+        super.setUp()
+        store = TestBasicStore()
+    }
+
+    func testDispatchToStore() {
+        var stateChanges: [String] = []
+        let shouldCallEightTimes = expectation(description: "sink closure should have been called 8 times")
+        shouldCallEightTimes.expectedFulfillmentCount = 8
+        subscription = store
+            .statePublisher
+            .map { String(data: try! JSONEncoder().encode($0), encoding: .utf8)! }
+            .sink {
+                stateChanges.append("\($0)")
+                print("\($0)")
+                shouldCallEightTimes.fulfill()
+            }
+        store.dispatch(.event(.requestIncrease))
+        store.dispatch(.event(.requestIncrease))
+        store.dispatch(.event(.requestIncrease))
+        store.dispatch(.event(.requestDecrease))
+        store.dispatch(.event(.requestIncrease))
+        store.dispatch(.event(.requestDecrease))
+        store.dispatch(.event(.requestDecrease))
+
+        wait(for: [shouldCallEightTimes], timeout: 1)
+        XCTAssertEqual(stateChanges, [
+            "{\"currentNumber\":0}",
+            "{\"currentNumber\":1}",
+            "{\"currentNumber\":2}",
+            "{\"currentNumber\":3}",
+            "{\"currentNumber\":2}",
+            "{\"currentNumber\":3}",
+            "{\"currentNumber\":2}",
+            "{\"currentNumber\":1}"
+        ])
+    }
+}
 
 enum AppAction: Equatable {
     case event(CounterEvent)
@@ -22,7 +66,7 @@ enum AppAction: Equatable {
         case increase, decrease
     }
 
-    public var event: CounterEvent? {
+    var event: CounterEvent? {
         get {
             guard case let .event(value) = self else { return nil }
             return value
@@ -33,7 +77,7 @@ enum AppAction: Equatable {
         }
     }
 
-    public var action: CounterAction? {
+    var action: CounterAction? {
         get {
             guard case let .action(value) = self else { return nil }
             return value
@@ -53,6 +97,7 @@ enum CounterService {
     static let middleware = CounterMiddleware()
 
     static let reducer = Reducer<AppAction.CounterAction, Int> { action, state in
+        print("reducing \(action) from state \(state)")
         switch action {
         case .increase: return state + 1
         case .decrease: return state - 1
@@ -76,7 +121,7 @@ enum CounterService {
     }
 }
 
-final class Store: ReduxStoreBase<AppAction, AppState> {
+final class TestBasicStore: ReduxStoreBase<AppAction, AppState> {
     init() {
         super.init(
             subject: .combine(initialValue: AppState()),
@@ -88,9 +133,7 @@ final class Store: ReduxStoreBase<AppAction, AppState> {
             middleware:
                 CounterService.middleware.lift(
                     actionZoomIn: { $0.event },
-                    actionZoomOut: {
-                        return AppAction.action($0)
-                    },
+                    actionZoomOut: { AppAction.action($0) },
                     stateZoomIn: { $0.currentNumber }
                 ),
             emitsChange: .whenChange
@@ -98,18 +141,6 @@ final class Store: ReduxStoreBase<AppAction, AppState> {
     }
 }
 
-let store = Store()
-let subscription = store
-    .statePublisher
-    .map { String(data: try! JSONEncoder().encode($0), encoding: .utf8)! }
-    .sink { print("New state: \($0)") }
-
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestDecrease))
-store.dispatch(.event(.requestIncrease))
-store.dispatch(.event(.requestDecrease))
-store.dispatch(.event(.requestDecrease))
-
-//: [Next](@next)
+enum ViewEvent: Equatable {
+    case tapIncrease, tapDecrease
+}
