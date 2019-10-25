@@ -17,5 +17,5 @@ extension ShouldEmitValue {
 }
 
 extension ShouldEmitValue where StateType: Equatable {
-    public static var whenChange: ShouldEmitValue<StateType> { .init(evaluate: !=) }
+    public static var whenDifferent: ShouldEmitValue<StateType> { .init(evaluate: !=) }
 }

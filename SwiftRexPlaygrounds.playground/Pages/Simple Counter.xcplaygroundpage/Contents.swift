@@ -93,7 +93,7 @@ final class Store: ReduxStoreBase<AppAction, AppState> {
                     },
                     stateZoomIn: { $0.currentNumber }
                 ),
-            emitsChange: .whenChange
+            emitsChange: .whenDifferent
         )
     }
 }
