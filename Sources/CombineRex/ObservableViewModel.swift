@@ -33,7 +33,7 @@ import SwiftRex
 /// ```
 /// Text(store.state.currentSearchText)
 /// ```
-public final class BindableStore<ViewAction, ViewState>: StoreType, ObservableObject {
+public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     @Published public var state: ViewState
     public var statePublisher: UnfailablePublisherType<ViewState> { viewStore.statePublisher }
     private var cancellableBinding: AnyCancellable!
@@ -60,7 +60,7 @@ public final class BindableStore<ViewAction, ViewState>: StoreType, ObservableOb
     }
 }
 
-extension BindableStore where ViewState: Equatable {
+extension ObservableViewModel where ViewState: Equatable {
     public convenience init(initialState: ViewState, viewStore: ViewStore<ViewAction, ViewState>) {
         self.init(initialState: initialState,
                   viewStore: viewStore,
@@ -73,7 +73,7 @@ extension StoreType {
         action viewActionToGlobalAction: @escaping (ViewAction) -> ActionType?,
         state globalStateToViewState: @escaping (StateType) -> ViewState,
         initialState: ViewState,
-        removeDuplicates: @escaping (ViewState, ViewState) -> Bool) -> BindableStore<ViewAction, ViewState> {
+        removeDuplicates: @escaping (ViewState, ViewState) -> Bool) -> ObservableViewModel<ViewAction, ViewState> {
         let viewStore = self.view(
             action: viewActionToGlobalAction,
             state: { (globalStatePublisher: UnfailablePublisherType<StateType>) -> UnfailablePublisherType<ViewState> in
@@ -87,7 +87,7 @@ extension StoreType {
     public func view<ViewAction, ViewState: Equatable>(
         action viewActionToGlobalAction: @escaping (ViewAction) -> ActionType?,
         state globalStateToViewState: @escaping (StateType) -> ViewState,
-        initialState: ViewState) -> BindableStore<ViewAction, ViewState> {
+        initialState: ViewState) -> ObservableViewModel<ViewAction, ViewState> {
         let viewStore = self.view(
             action: viewActionToGlobalAction,
             state: { (globalStatePublisher: UnfailablePublisherType<StateType>) -> UnfailablePublisherType<ViewState> in

@@ -50,7 +50,7 @@ class MiddlewareTest: Middleware {
     }
 }
 
-class BindableStoreTests: XCTestCase {
+class ObservableViewModelTests: XCTestCase {
     let reducerTest = Reducer<TestState> { state, action in
         if let action = action as? Action1 {
             return .init(value: UUID(), name: state.name + "_" + action.name)
@@ -63,11 +63,11 @@ class BindableStoreTests: XCTestCase {
         return state
     }
     let middlewareTest = MiddlewareTest()
-    var store: BindableStore<TestState>!
+    var store: ObservableViewModel<TestState>!
 
     override func setUp() {
         super.setUp()
-        store = BindableStore<TestState>(initialState: TestState(), reducer: reducerTest, middleware: middlewareTest)
+        store = ObservableViewModel<TestState>(initialState: TestState(), reducer: reducerTest, middleware: middlewareTest)
     }
 
     func testInitialState() {
