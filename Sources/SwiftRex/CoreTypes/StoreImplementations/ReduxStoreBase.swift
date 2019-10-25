@@ -75,9 +75,9 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
     public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<StateType>,
                                reducer: Reducer<ActionType, StateType>,
                                middleware: M,
-                               emitsChange: ShouldEmitValue<StateType> = .always)
+                               emitsValue: ShouldEmitValue<StateType> = .always)
         where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
         self.subject = subject
-            self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsChange: emitsChange.evaluate)
+            self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue.evaluate)
     }
 }

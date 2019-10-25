@@ -10,7 +10,7 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
     public init(state: UnfailableReplayLastSubjectType<StateType>,
                 reducer: Reducer<ActionType, StateType>,
                 middleware: MiddlewareType,
-                emitsChange: @escaping (StateType, StateType) -> Bool) {
+                emitsValue: @escaping (StateType, StateType) -> Bool) {
         self.middleware = middleware
 
         let reduce: (ActionType) -> Void = { action in
@@ -18,7 +18,7 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
                 when: { $0 },
                 action: { value -> Bool in
                     let newValue = reducer.reduce(action, value)
-                    guard emitsChange(value, newValue) else { return false }
+                    guard emitsValue(value, newValue) else { return false }
                     value = newValue
                     return true
                 }
@@ -54,6 +54,6 @@ extension ReduxPipelineWrapper where StateType: Equatable {
     public init(state: UnfailableReplayLastSubjectType<StateType>,
                 reducer: Reducer<ActionType, StateType>,
                 middleware: MiddlewareType) {
-        self.init(state: state, reducer: reducer, middleware: middleware, emitsChange: !=)
+        self.init(state: state, reducer: reducer, middleware: middleware, emitsValue: !=)
     }
 }

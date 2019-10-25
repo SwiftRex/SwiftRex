@@ -136,7 +136,7 @@ final class TestBasicStore: ReduxStoreBase<AppAction, AppState> {
                     actionZoomOut: { AppAction.action($0) },
                     stateZoomIn: { $0.currentNumber }
                 ),
-            emitsChange: .whenDifferent
+            emitsValue: .whenDifferent
         )
     }
 }
