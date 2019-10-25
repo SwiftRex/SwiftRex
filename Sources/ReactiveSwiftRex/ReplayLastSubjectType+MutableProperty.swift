@@ -12,7 +12,6 @@ extension ReplayLastSubjectType where ErrorType == Never {
     }
 
     public static func reactive(initialValue: Element) -> ReplayLastSubjectType {
-        let property = MutableProperty<Element>(initialValue)
-        return .init(property: property)
+        .init(property: MutableProperty<Element>(initialValue))
     }
 }

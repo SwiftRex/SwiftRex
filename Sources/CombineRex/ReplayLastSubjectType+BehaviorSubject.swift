@@ -23,8 +23,8 @@ extension ReplayLastSubjectType {
     }
 
     public static func combine(initialValue: Element, willChange: ((Element) -> Void)? = nil) -> ReplayLastSubjectType<Element, ErrorType> {
-        let currentValueSubject = CurrentValueSubject<Element, ErrorType>(initialValue)
-        return .init(currentValueSubject: currentValueSubject, willChange: willChange)
+        .init(currentValueSubject: CurrentValueSubject<Element, ErrorType>(initialValue),
+              willChange: willChange)
     }
 }
 #endif

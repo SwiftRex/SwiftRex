@@ -4,7 +4,7 @@ import SwiftRex
 
 extension SubscriberType {
     public func asObserver() -> Signal<Element, ErrorType>.Observer {
-        return .init(
+        .init(
             value: self.onValue,
             failed: { error in self.onCompleted(error) },
             completed: { self.onCompleted(nil) },
@@ -15,7 +15,7 @@ extension SubscriberType {
 
 extension Signal.Observer {
     public func asSubscriber() -> SubscriberType<Value, Error> {
-        return SubscriberType<Value, Error>(
+        .init(
             onValue: { value in
                 self.send(value: value)
             },

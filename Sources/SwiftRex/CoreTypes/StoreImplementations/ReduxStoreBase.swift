@@ -54,7 +54,7 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
     public let pipeline: ReduxPipelineWrapper<AnyMiddleware<ActionType, ActionType, StateType>>
 
     /// State publisher which can be subscribed in order to be notified on every mutation
-    public var statePublisher: UnfailablePublisherType<StateType> { return subject.publisher }
+    public var statePublisher: UnfailablePublisherType<StateType> { subject.publisher }
 
     /**
      Required initializer that configures the action handler pipeline and the state storage

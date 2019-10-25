@@ -21,8 +21,7 @@ extension SwiftRex.SubjectType {
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension SwiftRex.SubjectType {
     public static func combine() -> SwiftRex.SubjectType<Element, ErrorType> {
-        let passthroughSubject = PassthroughSubject<Element, ErrorType>()
-        return .init(passthroughSubject: passthroughSubject)
+        .init(passthroughSubject: PassthroughSubject<Element, ErrorType>())
     }
 }
 #endif

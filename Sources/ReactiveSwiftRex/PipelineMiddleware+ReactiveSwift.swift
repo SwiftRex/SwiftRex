@@ -11,7 +11,7 @@ extension PipelineMiddleware {
         },
         token: Lifetime.Token
     ) -> PipelineMiddleware {
-        return .init(
+        .init(
             actionTransformer: { actionPublisher in
                 actionTransformer(actionPublisher.producer).asPublisher()
             },

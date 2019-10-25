@@ -18,7 +18,7 @@ extension Disposable {
 
 private class DisposableSubscription: Disposable, SubscriptionType {
     let disposable: Disposable
-    var isDisposed: Bool { return disposable.isDisposed }
+    var isDisposed: Bool { disposable.isDisposed }
 
     init(disposable: Disposable) {
         self.disposable = disposable

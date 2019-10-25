@@ -8,7 +8,7 @@ extension PipelineMiddleware {
             .empty()
         }
     ) -> PipelineMiddleware {
-        return .init(
+        .init(
             actionTransformer: { actionPublisher in
                 actionTransformer(actionPublisher.asObservable())
                     .asPublisher()

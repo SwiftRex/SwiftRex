@@ -30,7 +30,7 @@ extension SubscriberType: Subscriber {
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension Subscriber {
     public func asSubscriberType() -> SubscriberType<Self.Input, Self.Failure> {
-        return SubscriberType<Self.Input, Self.Failure>(
+        .init(
             onValue: { value in
                 _ = self.receive(value)
             },

@@ -4,7 +4,7 @@ import SwiftRex
 
 extension PublisherType: SignalProducerProtocol, SignalProducerConvertible {
     public var producer: SignalProducer<Element, ErrorType> {
-        return SignalProducer<Element, ErrorType> { observer, lifetime in
+        .init { observer, lifetime in
             let subscription = self.subscribe(SubscriberType(
                 onValue: { value in
                     guard !lifetime.hasEnded else { return }
@@ -26,7 +26,7 @@ extension PublisherType: SignalProducerProtocol, SignalProducerConvertible {
 
 extension SignalProducerProtocol {
     public func asPublisher() -> PublisherType<Value, Self.Error> {
-        return PublisherType<Value, Self.Error> { subscriber in
+        .init { subscriber in
             self.producer.start(subscriber.asObserver()).asSubscription()
         }
     }

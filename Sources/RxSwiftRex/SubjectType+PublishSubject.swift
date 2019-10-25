@@ -22,7 +22,6 @@ extension SwiftRex.SubjectType where ErrorType == Never {
 
 extension SwiftRex.SubjectType {
     public static func rx() -> SwiftRex.SubjectType<Element, Error> {
-        let publishSubject = PublishSubject<Element>()
-        return .init(publishSubject: publishSubject)
+        .init(publishSubject: PublishSubject<Element>())
     }
 }

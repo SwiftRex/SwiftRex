@@ -9,7 +9,7 @@ extension PipelineMiddleware {
             Empty<OutputActionType, Never>().eraseToAnyPublisher()
         }
     ) -> PipelineMiddleware {
-        return .init(
+        .init(
             actionTransformer: { actionPublisher in
                 actionTransformer(actionPublisher.eraseToAnyPublisher()).asPublisherType()
             },
