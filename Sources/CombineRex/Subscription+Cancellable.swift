@@ -4,7 +4,7 @@ import Foundation
 import SwiftRex
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
-extension SwiftRex.Subscription {
+extension SwiftRex.SubscriptionType {
     public func asCancellable() -> Cancellable & Combine.Subscription {
         if let cancellable = self as? Cancellable & Combine.Subscription { return cancellable }
         return CancellableSubscription(subscription: self)
@@ -13,14 +13,14 @@ extension SwiftRex.Subscription {
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension Cancellable {
-    public func asSubscription() -> SwiftRex.Subscription {
-        if let subscription = self as? SwiftRex.Subscription { return subscription }
+    public func asSubscription() -> SwiftRex.SubscriptionType {
+        if let subscription = self as? SwiftRex.SubscriptionType { return subscription }
         return CancellableSubscription(cancellable: self)
     }
 }
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
-private class CancellableSubscription: Cancellable, SwiftRex.Subscription, Combine.Subscription {
+private class CancellableSubscription: Cancellable, SwiftRex.SubscriptionType, Combine.Subscription {
     func request(_ demand: Subscribers.Demand) {
         guard let combineSubscription = cancellable as? Combine.Subscription else { return }
         combineSubscription.request(demand)
@@ -32,7 +32,7 @@ private class CancellableSubscription: Cancellable, SwiftRex.Subscription, Combi
         self.cancellable = cancellable
     }
 
-    init(subscription: SwiftRex.Subscription) {
+    init(subscription: SwiftRex.SubscriptionType) {
         self.cancellable = AnyCancellable {
             subscription.unsubscribe()
         }
@@ -49,7 +49,7 @@ private class CancellableSubscription: Cancellable, SwiftRex.Subscription, Combi
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension Array: SwiftRex.SubscriptionCollection where Element == AnyCancellable {
-    public mutating func store(subscription: SwiftRex.Subscription) {
+    public mutating func store(subscription: SwiftRex.SubscriptionType) {
         let anyCancellable = AnyCancellable { subscription.asCancellable().cancel() }
         anyCancellable.store(in: &self)
     }

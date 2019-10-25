@@ -1,7 +1,7 @@
 import Foundation
 import SwiftRex
 
-class SubscriptionItem: Subscription {
+class SubscriptionItem: SubscriptionType {
     let uuid = UUID()
     var onUnsubscribe: (UUID) -> Void
 

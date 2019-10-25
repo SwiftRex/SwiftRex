@@ -1,13 +1,13 @@
 import SwiftRex
 
-class FooSubscription: Subscription {
+class FooSubscription: SubscriptionType {
     func unsubscribe() { }
 }
 
 final class FooSubscriptionCollection: SubscriptionCollection {
     var storeCalls = 0
-    var storeSubscriptionSubscription: Subscription?
-    func store(subscription: Subscription) {
+    var storeSubscriptionSubscription: SubscriptionType?
+    func store(subscription: SubscriptionType) {
         storeSubscriptionSubscription = subscription
         storeCalls += 1
     }

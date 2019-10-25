@@ -19,7 +19,7 @@ extension PublisherType: Publisher {
                 subscriber.receive(completion: .finished)
             }
         )
-        let subscription: SwiftRex.Subscription = self.subscribe(subscriberType)
+        let subscription: SwiftRex.SubscriptionType = self.subscribe(subscriberType)
         subscriber.receive(subscription: subscription.asCancellable())
     }
 }
@@ -27,7 +27,7 @@ extension PublisherType: Publisher {
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension Publisher {
     public func asPublisherType() -> PublisherType<Output, Failure> {
-        return .init { (subscriber: SubscriberType<Output, Failure>) -> SwiftRex.Subscription in
+        return .init { (subscriber: SubscriberType<Output, Failure>) -> SwiftRex.SubscriptionType in
             let cancellable = self.sink(
                 receiveCompletion: { completion in
                     switch completion {

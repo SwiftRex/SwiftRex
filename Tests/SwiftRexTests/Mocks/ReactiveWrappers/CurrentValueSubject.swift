@@ -14,7 +14,7 @@ class CurrentValueSubject {
 
     init(currentValue: TestState) {
         self.currentValue = currentValue
-        let publisher = PublisherType<TestState, Never> { [weak self] subscriber -> Subscription in
+        let publisher = PublisherType<TestState, Never> { [weak self] subscriber -> SubscriptionType in
             let subscription = SubscriptionItem(onUnsubscribe: { uuid in
                 self?.subscribers.removeValue(forKey: uuid)
             })

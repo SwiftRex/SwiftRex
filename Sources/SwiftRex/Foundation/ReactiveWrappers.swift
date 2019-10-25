@@ -19,8 +19,8 @@ public struct SubscriberType<Element, ErrorType: Error> {
 public typealias UnfailableSubscriberType<Element> = SubscriberType<Element, Never>
 
 public struct PublisherType<Element, ErrorType: Error> {
-    public let subscribe: (SubscriberType<Element, ErrorType>) -> Subscription
-    public init(subscribe: @escaping (SubscriberType<Element, ErrorType>) -> Subscription) {
+    public let subscribe: (SubscriberType<Element, ErrorType>) -> SubscriptionType
+    public init(subscribe: @escaping (SubscriberType<Element, ErrorType>) -> SubscriptionType) {
         self.subscribe = subscribe
     }
 
@@ -39,11 +39,11 @@ public struct PublisherType<Element, ErrorType: Error> {
 
 public typealias UnfailablePublisherType<Element> = PublisherType<Element, Never>
 
-public protocol Subscription {
+public protocol SubscriptionType {
     func unsubscribe()
 }
 
-extension Subscription {
+extension SubscriptionType {
     public func cancelled<SC: SubscriptionCollection>(by subscriptionCollection: inout SC) {
         subscriptionCollection += self
     }
@@ -54,14 +54,14 @@ extension Subscription {
 }
 
 public protocol SubscriptionCollection {
-    mutating func store(subscription: Subscription)
+    mutating func store(subscription: SubscriptionType)
 }
 
-func += (_ lhs: inout SubscriptionCollection, _ rhs: Subscription) {
+func += (_ lhs: inout SubscriptionCollection, _ rhs: SubscriptionType) {
     lhs.store(subscription: rhs)
 }
 
-func += <SC: SubscriptionCollection>(_ lhs: inout SC, _ rhs: Subscription) {
+func += <SC: SubscriptionCollection>(_ lhs: inout SC, _ rhs: SubscriptionType) {
     lhs.store(subscription: rhs)
 }
 

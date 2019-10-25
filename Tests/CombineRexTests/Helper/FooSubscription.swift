@@ -2,7 +2,7 @@
 import Combine
 import SwiftRex
 
-struct FooSubscription: SwiftRex.Subscription {
+struct FooSubscription: SwiftRex.SubscriptionType {
     let onUnsubscribe: Next
     func unsubscribe() { onUnsubscribe() }
 }

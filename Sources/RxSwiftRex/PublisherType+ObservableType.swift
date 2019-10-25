@@ -15,14 +15,14 @@ extension PublisherType: ObservableConvertibleType, ObservableType {
                 observer.onCompleted()
             }
         )
-        let subscription: Subscription = self.subscribe(subscriber)
+        let subscription: SubscriptionType = self.subscribe(subscriber)
         return subscription.asDisposable()
     }
 }
 
 extension ObservableType {
     public func asPublisher() -> PublisherType<Element, Error> {
-        return .init { (subscriber: SubscriberType<Element, Error>) -> Subscription in
+        return .init { (subscriber: SubscriberType<Element, Error>) -> SubscriptionType in
             self.subscribe(subscriber.asObserver()).asSubscription()
         }
     }

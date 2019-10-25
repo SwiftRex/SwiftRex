@@ -81,7 +81,7 @@ class ViewStoreTests: XCTestCase {
         let sut = originalStore.view(
             action: { $0 },
             state: { (statePublisher: UnfailablePublisherType<TestState>) -> UnfailablePublisherType<MockViewState> in
-                .init { subscriber -> Subscription in
+                .init { subscriber -> SubscriptionType in
                     statePublisher.subscribe(.init(onValue: { state in
                         subscriber.onValue(
                             MockViewState(

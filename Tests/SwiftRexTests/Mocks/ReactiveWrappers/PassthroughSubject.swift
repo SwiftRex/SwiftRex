@@ -7,7 +7,7 @@ class PassthroughSubject<Element> {
     var subscribers: [UUID: SubscriberType<Element, Never>] = [:]
 
     init() {
-        let publisher = PublisherType<Element, Never> { [weak self] subscriber -> Subscription in
+        let publisher = PublisherType<Element, Never> { [weak self] subscriber -> SubscriptionType in
             let subscription = SubscriptionItem(onUnsubscribe: { uuid in
                 self?.subscribers.removeValue(forKey: uuid)
             })
