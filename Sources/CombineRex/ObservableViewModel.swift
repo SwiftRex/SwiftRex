@@ -35,7 +35,7 @@ import SwiftRex
 /// ```
 public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     @Published public var state: ViewState
-    public var statePublisher: UnfailablePublisherType<ViewState> { viewStore.statePublisher }
+    public let statePublisher: UnfailablePublisherType<ViewState>
     private var cancellableBinding: AnyCancellable!
     private var viewStore: ViewStore<ViewAction, ViewState>
 
@@ -43,20 +43,13 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
         viewStore.dispatch(action)
     }
 
-    private init(initialState: ViewState,
-                 viewStore: ViewStore<ViewAction, ViewState>,
-                 removeDuplicates: @escaping (PublisherType<ViewState, Never>) -> Publishers.RemoveDuplicates<PublisherType<ViewState, Never>>) {
+    public init(initialState: ViewState,
+                viewStore: ViewStore<ViewAction, ViewState>,
+                emitsValue: ShouldEmitValue<ViewState>) {
         self.state = initialState
         self.viewStore = viewStore
-        cancellableBinding = removeDuplicates(statePublisher).assign(to: \.state, on: self)
-    }
-
-    public convenience init(initialState: ViewState,
-                            viewStore: ViewStore<ViewAction, ViewState>,
-                            removeDuplicates: @escaping (ViewState, ViewState) -> Bool) {
-        self.init(initialState: initialState,
-                  viewStore: viewStore,
-                  removeDuplicates: { $0.removeDuplicates(by: removeDuplicates) })
+        self.statePublisher = viewStore.statePublisher.removeDuplicates(by: emitsValue.evaluate).asPublisherType()
+        cancellableBinding = statePublisher.assign(to: \.state, on: self)
     }
 }
 
@@ -64,7 +57,7 @@ extension ObservableViewModel where ViewState: Equatable {
     public convenience init(initialState: ViewState, viewStore: ViewStore<ViewAction, ViewState>) {
         self.init(initialState: initialState,
                   viewStore: viewStore,
-                  removeDuplicates: { $0.removeDuplicates() })
+                  emitsValue: .whenDifferent)
     }
 }
 
@@ -73,7 +66,7 @@ extension StoreType {
         action viewActionToGlobalAction: @escaping (ViewAction) -> ActionType?,
         state globalStateToViewState: @escaping (StateType) -> ViewState,
         initialState: ViewState,
-        removeDuplicates: @escaping (ViewState, ViewState) -> Bool) -> ObservableViewModel<ViewAction, ViewState> {
+        emitsValue: ShouldEmitValue<ViewState>) -> ObservableViewModel<ViewAction, ViewState> {
         let viewStore = self.view(
             action: viewActionToGlobalAction,
             state: { (globalStatePublisher: UnfailablePublisherType<StateType>) -> UnfailablePublisherType<ViewState> in
@@ -81,21 +74,14 @@ extension StoreType {
             }
         )
 
-        return .init(initialState: initialState, viewStore: viewStore, removeDuplicates: removeDuplicates)
+        return .init(initialState: initialState, viewStore: viewStore, emitsValue: emitsValue)
     }
 
     public func view<ViewAction, ViewState: Equatable>(
-        action viewActionToGlobalAction: @escaping (ViewAction) -> ActionType?,
-        state globalStateToViewState: @escaping (StateType) -> ViewState,
+        action: @escaping (ViewAction) -> ActionType?,
+        state: @escaping (StateType) -> ViewState,
         initialState: ViewState) -> ObservableViewModel<ViewAction, ViewState> {
-        let viewStore = self.view(
-            action: viewActionToGlobalAction,
-            state: { (globalStatePublisher: UnfailablePublisherType<StateType>) -> UnfailablePublisherType<ViewState> in
-                globalStatePublisher.map(globalStateToViewState).asPublisherType()
-            }
-        )
-
-        return .init(initialState: initialState, viewStore: viewStore)
+        view(action: action, state: state, initialState: initialState, emitsValue: .whenDifferent)
     }
 }
 #endif
