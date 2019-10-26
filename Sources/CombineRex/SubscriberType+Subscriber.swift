@@ -10,6 +10,7 @@ extension SubscriberType: Subscriber {
     }
 
     public func receive(subscription: Combine.Subscription) {
+        onSubscribe(subscription.asSubscription())
     }
 
     public func receive(_ input: Element) -> Subscribers.Demand {
@@ -30,18 +31,50 @@ extension SubscriberType: Subscriber {
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension Subscriber {
     public func asSubscriberType() -> SubscriberType<Self.Input, Self.Failure> {
+        .combine(subscriber: self)
+    }
+
+    public static func combine<CombineSubject: Subject>(subject: CombineSubject)
+        -> SubscriberType<CombineSubject.Output, CombineSubject.Failure> {
         .init(
-            onValue: { value in
-                _ = self.receive(value)
-            },
+            onValue: { subject.send($0) },
             onCompleted: { error in
-                if let error = error {
-                    self.receive(completion: .failure(error))
-                } else {
-                    self.receive(completion: .finished)
-                }
+                subject.send(completion:
+                    error.map(Subscribers.Completion<CombineSubject.Failure>.failure) ?? .finished
+                )
+            },
+            onSubscribe: { subscription in
+                subject.send(subscription: subscription.asCancellable())
             }
         )
+    }
+
+    public static func combine<CombineSubscriber: Subscriber>(subscriber: CombineSubscriber)
+        -> SubscriberType<CombineSubscriber.Input, CombineSubscriber.Failure> {
+        .init(
+            onValue: { _ = subscriber.receive($0) },
+            onCompleted: { error in
+                subscriber.receive(completion:
+                    error.map(Subscribers.Completion<CombineSubscriber.Failure>.failure) ?? .finished
+                )
+            },
+            onSubscribe: { subscription in
+                subscriber.receive(subscription: subscription.asCancellable())
+            }
+        )
+    }
+
+    public static func combine<Input, Failure>(onValue: ((Input) -> Void)? = nil, onCompleted: ((Failure?) -> Void)? = nil)
+        -> SubscriberType<Input, Failure> {
+        Subscribers.Sink<Input, Failure>(
+            receiveCompletion: { completion in
+                switch completion {
+                case let .failure(error): onCompleted?(error)
+                case .finished: onCompleted?(nil)
+                }
+            },
+            receiveValue: onValue ?? { _ in }
+        ).asSubscriberType()
     }
 }
 #endif

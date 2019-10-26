@@ -16,6 +16,9 @@ extension ReplayLastSubjectType {
                 },
                 onCompleted: { error in
                     currentValueSubject.send(completion: error.map(Subscribers.Completion<ErrorType>.failure) ?? .finished)
+                },
+                onSubscribe: { subscription in
+                    currentValueSubject.send(subscription: subscription.asCancellable())
                 }
             ),
             value: { currentValueSubject.value }

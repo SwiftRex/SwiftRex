@@ -15,7 +15,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         let sut = ReplayLastSubjectType(currentValueSubject: currentValueSubject)
 
         var round = 1
-        let subscription = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 switch round {
                 case 1:
@@ -48,24 +48,17 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
 
         let sut = ReplayLastSubjectType<String, SomeError>(currentValueSubject: currentValueSubject)
 
-        let subscription = sut.publisher.subscribe(SubscriberType<String, SomeError>(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 XCTAssertEqual("current value", string)
                 shouldCallClosureValue.fulfill()
             },
             onCompleted: { error in
-                // Different from other Reactive frameworks, Combine allows CurrentValueSubject to have an Error
-                // generic parameter different than Never, which can receive error. However, it does never propagates
-                // the error, finishing the stream successfully. It's not clear if this is a bug or it's by design,
-                // the same way it's not clear whether or not these Subjects should complete at all. Anyway, this test
-                // will be here to continuously observe this behaviour on Combine Framework and, eventually, adapt
-                // SwiftRex behaviour to possible changes.
-                // XCTAssertNil(error)
-
-                // Update 08/July/2019: Yes, it was a bug. Will keep this comment here until the official release
-
+                guard let error = error else {
+                    XCTFail("Unexpected completion")
+                    return
+                }
                 XCTAssertEqual(someError, error)
-
                 shouldCallClosureCompletion.fulfill()
             }
         ))
@@ -86,13 +79,15 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
 
         let sut = ReplayLastSubjectType<String, SomeError>(currentValueSubject: currentValueSubject)
 
-        let subscription = sut.publisher.subscribe(SubscriberType<String, SomeError>(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 XCTAssertEqual("current value", string)
                 shouldCallClosureValue.fulfill()
             },
             onCompleted: { error in
-                XCTAssertNil(error)
+                if let error = error {
+                    XCTFail("Unexpected error: \(error)")
+                }
                 shouldCallClosureCompletion.fulfill()
             }
         ))
@@ -112,7 +107,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onValue("current value")
 
         var round = 1
-        let subscription = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 switch round {
                 case 1:
@@ -143,7 +138,7 @@ class ReplayLastSubjectTypeBridgeTests: XCTestCase {
         sut.subscriber.onValue("current value")
 
         var round = 1
-        let subscription = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 switch round {
                 case 1:

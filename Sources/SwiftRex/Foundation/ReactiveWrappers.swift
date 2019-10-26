@@ -3,15 +3,20 @@ import Foundation
 public struct SubscriberType<Element, ErrorType: Error> {
     public let onValue: (Element) -> Void
     public let onCompleted: (ErrorType?) -> Void
-    public init(onValue: ((Element) -> Void)? = nil, onCompleted: ((ErrorType?) -> Void)? = nil) {
+    public let onSubscribe: (SubscriptionType) -> Void
+    public init(onValue: ((Element) -> Void)? = nil,
+                onCompleted: ((ErrorType?) -> Void)? = nil,
+                onSubscribe: ((SubscriptionType) -> Void)? = nil) {
         self.onValue = onValue ?? { _ in }
         self.onCompleted = onCompleted ?? { _ in }
+        self.onSubscribe = onSubscribe ?? { _ in }
     }
 
     public func assertNoFailure() -> SubscriberType<Element, Never> {
         .init(
-            onValue: { value in self.onValue(value) },
-            onCompleted: { _ in self.onCompleted(nil) }
+            onValue: self.onValue,
+            onCompleted: { _ in self.onCompleted(nil) },
+            onSubscribe: self.onSubscribe
         )
     }
 }
@@ -31,7 +36,8 @@ public struct PublisherType<Element, ErrorType: Error> {
                 onCompleted: { error in
                     if let error = error { fatalError(error.localizedDescription) }
                     subscriber.onCompleted(nil)
-                }
+                },
+                onSubscribe: subscriber.onSubscribe
             ))
         }
     }

@@ -6,15 +6,15 @@ import XCTest
 
 class SubjectTypeBridgeTests: XCTestCase {
     func testPassthroughSubjectToSubjectTypeOnValue() {
-        let shouldCallClosureValue = expectation(description: "Closure should be called")
-        let shouldCallClosureCompleted = expectation(description: "Closure should be called")
+        let shouldCallClosureValue = expectation(description: "Closure value should be called")
+        let shouldCallClosureCompleted = expectation(description: "Closure completion should be called")
 
         let passthroughSubject = PassthroughSubject<String, SomeError>()
-        passthroughSubject.send("no one cares")
+        passthroughSubject.send("initial value will not be notified (no replay)")
 
         let sut = SubjectType(passthroughSubject: passthroughSubject)
 
-        let subscription = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -24,7 +24,8 @@ class SubjectTypeBridgeTests: XCTestCase {
                     XCTFail("Unexpected error: \(error)")
                 }
                 shouldCallClosureCompleted.fulfill()
-            }))
+            }
+        ))
 
         sut.subscriber.onValue("test")
         sut.subscriber.onCompleted(nil)
@@ -43,7 +44,7 @@ class SubjectTypeBridgeTests: XCTestCase {
 
         let sut = SubjectType(passthroughSubject: passthroughSubject)
 
-        let subscription = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -56,7 +57,8 @@ class SubjectTypeBridgeTests: XCTestCase {
 
                 XCTAssertEqual(someError, error)
                 shouldCallClosureError.fulfill()
-            }))
+            }
+        ))
 
         sut.subscriber.onValue("test")
         sut.subscriber.onCompleted(someError)
@@ -72,7 +74,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         let sut = SubjectType<String, SomeError>.combine()
         sut.subscriber.onValue("no one cares")
 
-        let subscription = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -82,7 +84,8 @@ class SubjectTypeBridgeTests: XCTestCase {
                     XCTFail("Unexpected error: \(error)")
                 }
                 shouldCallClosureCompleted.fulfill()
-            }))
+            }
+        ))
 
         sut.subscriber.onValue("test")
         sut.subscriber.onCompleted(nil)
@@ -99,7 +102,7 @@ class SubjectTypeBridgeTests: XCTestCase {
         let sut = SubjectType<String, SomeError>.combine()
         sut.subscriber.onValue("no one cares")
 
-        let subscription = sut.publisher.subscribe(SubscriberType(
+        let subscription = sut.publisher.subscribe(.combine(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -112,7 +115,8 @@ class SubjectTypeBridgeTests: XCTestCase {
 
                 XCTAssertEqual(someError, error)
                 shouldCallClosureError.fulfill()
-            }))
+            }
+        ))
 
         sut.subscriber.onValue("test")
         sut.subscriber.onCompleted(someError)

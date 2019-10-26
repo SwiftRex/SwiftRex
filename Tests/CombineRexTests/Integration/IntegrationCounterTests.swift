@@ -1,10 +1,3 @@
-//
-//  IntegrationCounterTests.swift
-//  UnitTests Combine
-//
-//  Created by Luiz Rodrigo Martins Barbosa on 20.10.19.
-//
-
 import Combine
 import CombineRex
 import Foundation
@@ -32,13 +25,15 @@ class IntegrationCounterTests: XCTestCase {
                 print("\($0)")
                 shouldCallEightTimes.fulfill()
             }
-        store.dispatch(.event(.requestIncrease))
-        store.dispatch(.event(.requestIncrease))
-        store.dispatch(.event(.requestIncrease))
-        store.dispatch(.event(.requestDecrease))
-        store.dispatch(.event(.requestIncrease))
-        store.dispatch(.event(.requestDecrease))
-        store.dispatch(.event(.requestDecrease))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.store.dispatch(.event(.requestIncrease))
+            self.store.dispatch(.event(.requestIncrease))
+            self.store.dispatch(.event(.requestIncrease))
+            self.store.dispatch(.event(.requestDecrease))
+            self.store.dispatch(.event(.requestIncrease))
+            self.store.dispatch(.event(.requestDecrease))
+            self.store.dispatch(.event(.requestDecrease))
+        }
 
         wait(for: [shouldCallEightTimes], timeout: 1)
         XCTAssertEqual(stateChanges, [
