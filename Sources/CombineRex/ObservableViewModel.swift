@@ -48,7 +48,7 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
                 emitsValue: ShouldEmitValue<ViewState>) {
         self.state = initialState
         self.viewStore = viewStore
-        self.statePublisher = viewStore.statePublisher.removeDuplicates(by: emitsValue.evaluate).asPublisherType()
+        self.statePublisher = viewStore.statePublisher.removeDuplicates(by: emitsValue.shouldRemove).asPublisherType()
         cancellableBinding = statePublisher.assign(to: \.state, on: self)
     }
 }

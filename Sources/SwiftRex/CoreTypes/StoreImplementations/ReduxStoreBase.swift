@@ -78,6 +78,6 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
                                emitsValue: ShouldEmitValue<StateType> = .always)
         where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
         self.subject = subject
-            self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue.evaluate)
+            self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue)
     }
 }

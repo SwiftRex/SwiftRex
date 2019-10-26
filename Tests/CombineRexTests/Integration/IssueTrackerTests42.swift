@@ -6,7 +6,7 @@ import XCTest
 
 class IssueTracker42Tests: XCTestCase {
     struct AppState: Equatable, Codable {
-        let int: Int = 0
+        let int: Int
     }
 
     enum ViewEvent: Equatable {
@@ -23,8 +23,10 @@ class IssueTracker42Tests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        store = Store(subject: .combine(initialValue: AppState()),
-                      reducer: .identity,
+        store = Store(subject: .combine(initialValue: AppState(int: 0)),
+                      reducer: .init { _, state in
+                          AppState(int: state.int + 1)
+                      },
                       middleware: IdentityMiddleware())
     }
 
@@ -33,7 +35,7 @@ class IssueTracker42Tests: XCTestCase {
         shouldNotifyTwice.expectedFulfillmentCount = 2
         let viewModel = store.view(action: { $0 },
                                    state: { $0 },
-                                   initialState: .init())
+                                   initialState: .init(int: 0))
         let cancellable = viewModel.statePublisher.sink { _ in
             shouldNotifyTwice.fulfill()
         }
