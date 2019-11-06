@@ -33,7 +33,7 @@ public struct ViewStore<ViewAction, ViewState>: StoreType {
     public var statePublisher: UnfailablePublisherType<ViewState>
     private var onAction: (ViewAction) -> Void
 
-    init(action: @escaping (ViewAction) -> Void, state: UnfailablePublisherType<ViewState>) {
+    public init(action: @escaping (ViewAction) -> Void, state: UnfailablePublisherType<ViewState>) {
         self.onAction = action
         self.statePublisher = state
     }

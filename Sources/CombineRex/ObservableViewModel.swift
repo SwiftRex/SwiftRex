@@ -84,4 +84,51 @@ extension StoreType {
         view(action: action, state: state, initialState: initialState, emitsValue: .whenDifferent)
     }
 }
+
+#if DEBUG
+extension ObservableViewModel {
+    /// Mock for using in tests or SwiftUI previews, available in DEBUG mode only
+    /// You can use if as a micro-redux for tests and SwiftUI previews, for example:
+    /// ```
+    /// let mock = ObservableViewModel<(user: String, pass: String, buttonEnabled: Bool), ViewAction>.mock(
+    ///     state: (user: "ozzy", pass: "", buttonEnabled: false),
+    ///     action: { action, state in
+    ///         switch action {
+    ///         case let .userChanged(newUser):
+    ///             state.user = newUser
+    ///             state.buttonEnabled = !state.user.isEmpty && !state.pass.isEmpty
+    ///         case let .passwordChanged(newPass):
+    ///             state.pass = newPass
+    ///             state.buttonEnabled = !state.user.isEmpty && !state.pass.isEmpty
+    ///         case .buttonTapped:
+    ///             print("Button tapped")
+    ///         }
+    ///     }
+    /// )
+    /// ```
+    /// - Parameter state: Initial state mock
+    /// - Parameter action: a simple reducer function, of type `(ActionType, inout StateType) -> Void`, useful if
+    ///                     you want to use in SwiftUI live previews and quickly change an UI property when a
+    ///                     button is tapped, for example. It's like a micro-redux for tests and SwiftUI previews.
+    ///                     Defaults to do nothing.
+    /// - Returns: a very simple ObservableViewModel mock, that you can inject in your SwiftUI View for tests or
+    ///            live preview.
+    public static func mock(state: StateType, action: (@escaping (ActionType, inout StateType) -> Void) = { _, _ in })
+        -> ObservableViewModel<ActionType, StateType> {
+        let subject = CurrentValueSubject<StateType, Never>(state)
+
+        let viewStore = ViewStore<ActionType, StateType>(
+            action: {
+                var state = subject.value
+                action($0, &state)
+                subject.send(state)
+            },
+            state: subject.asPublisherType()
+        )
+
+        return .init(initialState: state, viewStore: viewStore, emitsValue: .always)
+    }
+}
+#endif
+
 #endif
