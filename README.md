@@ -91,19 +91,118 @@ That's the scenario where SwiftRex shines, because it:
 
 I'm not gonna lie, it's a completely different way of writing apps, as most reactive approaches are; but once you get used to, it makes more sense and enables you to reuse much more code between your projects, gives you better tooling for writing software, testing, debugging, logging and finally thinking about events, state and mutation as you've never done before. And I promise you, it's gonna be a way with no return, an Unidirectional journey.
 
+# Reactive Framework Libraries
+SwiftRex currently supports the 3 major reactive frameworks:
+- [Apple Combine](https://developer.apple.com/documentation/combine)
+- [RxSwift](https://github.com/ReactiveX/RxSwift)
+- [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift)
+
+More can be easily added later by implementing some abstraction bridges that can be found in the `ReactiveWrappers.swift` file. To avoid adding unnecessary files to your app, SwiftRex is split in 4 packages:
+- SwiftRex: the core library
+- CombineRex: the implementation for Combine framework
+- RxSwiftRex: the implementation for RxSwift framework
+- ReactiveSwiftRex: the implementation for ReactiveSwift framework
+
+SwiftRex itself won't be enough, so you have to pick one of the three implementations.
+
 # Installation
 
 ## CocoaPods
 
-TBD
-         
+Create or modify the Podfile at the root folder of your project. Your settings will depend on the ReactiveFramework of your choice.
+
+For Combine:
+```ruby
+# Podfile
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'MyAppTarget' do
+  pod 'SwiftRex'      # optional line
+  pod 'CombineRex'
+end
+```
+
+For RxSwift:
+```ruby
+# Podfile
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'MyAppTarget' do
+  pod 'RxSwift'       # optional line
+  pod 'SwiftRex'      # optional line
+  pod 'RxSwiftRex'
+end
+```
+
+For ReactiveSwift:
+```ruby
+# Podfile
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'MyAppTarget' do
+  pod 'ReactiveSwift' # optional line
+  pod 'SwiftRex'      # optional line
+  pod 'ReactiveSwiftRex'
+end
+```
+
+As seen above, some lines are optional because the final Podspecs already include the correct dependencies.
+
+Then, all you must do is install your pods and open the `.xcworkspace` instead of the `.xcodeproj` file:
+
+```shell
+$ pod install
+$ xed .
+```
+
 ## Swift Package Manager
 
-TBD
+Create or modify the Package.swift at the root folder of your project. Currently, only Combine is supported by this method.
+
+```swift
+// swift-tools-version:5.1
+
+import PackageDescription
+
+let package = Package(
+  name: "MyApp",
+  dependencies: [
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.6.0")
+  ],
+  targets: [
+    .target(name: "MyApp", dependencies: ["CombineRex"])
+  ]
+)
+```
+
+Then you can either building on the terminal or use Xcode 11 or higher that now supports SPM natively.
+
+```shell
+$ swift build
+$ xed .
+```
 
 ## Carthage
 
-TBD
+Carthage is currently not our recommended way of using SwiftRex and its support can be dropped future versions. If this is critical for you or your company, please contact us and we will take this into account.
+
+Add this to your Cartfile:
+
+```ruby
+github "SwiftRex/SwiftRex" ~> 0.6.0
+```
+
+Run
+
+```shell
+$ carthage update
+```
+
+Then follow the instructions from [Carthage README](https://github.com/Carthage/Carthage#getting-started).
+
 
 # Core Parts
 - [Store](#store)
@@ -195,7 +294,7 @@ Once the reducer function executes, the store will update its single source of t
 # Projection and Lifting
 - [Store Projection](#store-projection)
 - [Lifting Middleware](#lifting-middleware)
-- [Lifting Reducer](#-lifting-reducer)
+- [Lifting Reducer](#lifting-reducer)
 
 ## Store Projection
 
