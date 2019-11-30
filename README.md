@@ -380,7 +380,7 @@ You can think of Store as a very heavy "Model" layer, completely detached from t
 
 And what about SwiftUI? Is this architecture a good fit for the new UI framework? In fact, this architecture works even better in SwiftUI, because SwiftUI was inspired by several functional patterns and it's reactive and stateless by conception. It was said multiple times during WWDC 2019 that, in SwiftUI, the **View is a function of the state**, and that we should always aim for single source of truth and the data should always flow in a single direction.
 
-![SwiftUI Unidirectional Flow](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-01.png)
+![SwiftUI Unidirectional Flow](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-01.jpg)
 
 There will be only one honest Store in your entire app, so either you create it as a singleton or a property in a long-living class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the `UIKit`/SwiftUI world.
 
@@ -420,7 +420,7 @@ Because the `Middleware` accesses all events and the state of the app at any poi
 - `NotificationCenter` and other delegates
 - `Combine` publishers/subjects, `RxSwift` observables / `ReactiveSwift` signal producers
 
-![SwiftUI Side-Effects](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.png)
+![SwiftUI Side-Effects](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg)
 
 ### Reducer
 
