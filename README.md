@@ -203,14 +203,124 @@ $ carthage update
 
 Then follow the instructions from [Carthage README](https://github.com/Carthage/Carthage#getting-started).
 
+# Parts
 
-# Core Parts
-- [Store](#store)
+Let's understand the components of SwiftRex by splitting them into 3 sections:
+- [Conceptual parts](#conceptual-parts)
+    - [Action](#action)
+    - [State](#state)
+- [Core Parts](#core-parts)
+    - [Store](#store)
+    - [Middleware](#middleware)
+    - [Reducer](#reducer)
+- [Projection and Lifting](projection-and-lifting)
+    - [Store Projection](#store-projection)
+    - [Lifting Middleware](#lifting-middleware)
+    - [Lifting Reducer](#lifting-reducer)
+
+## Conceptual Parts
 - [Action](#action)
+- [State](#state)
+
+---
+### Action
+
+There's no "Action" protocol or type in SwiftRex. However, Action will be found as a generic parameter for most core data structures, meaning that it's up to you to define what is the root Action type.
+
+Conceptually, we can say that action is something that happens from external actors of your app, that means user interactions, timer callbacks, responses from web services, callbacks from CoreLocation and other frameworks. Some internal actors also can start actions, however. For example, when UIKit finishes loading your view we could say that `viewDidLoad` is an action, in case we're interested in this event.
+
+**Actions are about INPUT events that are relevant for an app.**
+
+For representing an action in your app you can use structs, classes or enums, and organize the list of possible actions the way you think it's better. But we have a recommended way that will enable you to fully use type-safety and avoid problems, and this way is by using a tree structure created with enums and associated values.
+
+```swift
+enum AppAction {
+    case started
+    case movieAction(MovieAction)
+    case castAction(CastAction)
+}
+
+enum MovieAction {
+    case didRequestList
+    case didGetList(movies: [Movie])
+    case didSelectMovie(id: UUID)
+}
+
+enum CastAction {
+    case didRequestList(movieId: UUID)
+    case didGetList(movieId: UUID, cast: [Person])
+    case didSelectPerson(id: UUID)
+}
+```
+
+All possible events in your app should be listed in these enums and grouped the way you consider more relevant. When grouping these enums one thing to consider is modularity: you can split some or all these enums in different frameworks if you want strict boundaries between your modules and/or reuse the same group of actions among different apps.
+
+For example, all apps will have common actions that represent life-cycle of any iOS app, such as `willResignActive`, `didBecomeActive`, `didEnterBackground`, `willEnterForeground`. If multiples apps need to know this life-cycle, maybe it's convenient to create an enum for this specific domain. The same for network reachability, we should consider creating an enum to represent all possible events we get from the system when our connection state changes, and this can be used in a wide variety of apps.
+
+---
+
+### State
+
+There's no "State" protocol or type in SwiftRex. However, State will be found as a generic parameter for most core data structures, meaning that it's up to you to define what is the root State type.
+
+Conceptually, we can say that state is the knowledge an app holds while is open, usually in memory and mutable, or in other words, it's like a paper where you write down some values, and for every action you receive you erase one value and replace by another value. Another way of thinking about state is in a functional programming way: the state is not persisted, but it's the result of a function that takes the initial values of your app and also all the actions it received since it was launched, and calculates the current values by applying the action changes on top of the initial state. This is known as [Event Sourcing Design Pattern](https://martinfowler.com/eaaDev/EventSourcing.html) and it's becoming popular recently in some web backend services, such as [Kafka Event Sourcing](https://kafka.apache.org/uses).
+
+In a device with limited battery and memory we can't afford having a true event-sourcing pattern because it would be too expensive recreating the whole history of an app every time someone requests a simple boolean. So we "cache" the new state every time an action is received, and this in-memory cache is precisely what we call "State" in SwiftRex. So maybe we can have a better generalisation for what a state is.
+
+**State is the result of a function that takes two arguments: the previous (or initial) state and some action that occurred, to determine the new state.** This happens incrementally as more and more actions arrive. State is useful for **output** data to the user.
+
+However, be careful, some things may look like state but they are not. Let's assume you have an app that shows to the user a price. This price will be shown as `"$3.00"` in US, or `"$3,00"` in Germany, or maybe this product can be listed in british pounds, so in US we should show `"£3.00"` while in Germany it would be `"£3,00"`. In this example we have:
+- Currency type (`£` or `$`)
+- Numeric value (`3`)
+- Locale (`us` or `de`)
+- Formatted string (`"$3.00"`, `"$3,00"`, `"£3.00"` or `"£3,00"`)
+
+The formatted string itself is **NOT** state, because it can be calculated from the other properties. This can be called "derived state" and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it's better to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it.
+
+For representing the state of an app we recommend value types: structs or enums. Tuples would be acceptable as well, but unfortunately Swift currently doesn't allow us to conform tuples to protocols, and **we want our whole state to be Equatable**.
+
+```swift
+struct AppState: Equatable {
+    var appLifecycle: AppLifecycle
+    var movies: Loadable<[Movie]> = .neverLoaded
+    var currentFilter: MovieFilter
+    var selectedMovie: UUID?
+}
+
+enum Loadable<T: Equatable>: Equatable {
+    case neverLoaded
+    case loading
+    case loaded(T)
+}
+
+struct MovieFilter: Equatable {
+    var stringFilter: String?
+    var yearMin: Int?
+    var yearMax: Int?
+    var ratingMin: Int?
+    var ratingMax: Int?
+}
+
+enum AppLifecycle: Equatable {
+    case backgroundActive
+    case backgroundInactive
+    case foregroundActive
+    case foregroundInactive
+}
+```
+
+Some properties represent a state-machine, for example the `Loadable` enum will eventually change from `neverLoaded` to `loading` and then to `loaded([Movie])` in our `movies` property.
+
+Annotating the whole state as Equatable allows us to reduce the UI updates. Use of `let` instead of `var` is also possible, however this is a more advanced topic.
+
+---
+
+## Core Parts
+- [Store](#store)
 - [Middleware](#middleware)
 - [Reducer](#reducer)
 
-## Store
+### Store
 
  `Store` defines a protocol for the state store of an app. It must have an input and an output:
  - an `EventHandler`: that's the store input, so it's able to receive and distribute events of type `EventProtocol`. Being an event handler means that an `UIViewController` can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`.
@@ -235,11 +345,7 @@ Then follow the instructions from [Carthage README](https://github.com/Carthage/
 
  ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
 
-## Action
-
-TBD
-
-## Middleware
+### Middleware
 
 `Middleware` is a plugin, or a composition of several plugins, that are assigned to the `Store` pipeline in order to handle each `EventProtocol` dispatched and to create `ActionProtocol` in response. It's also capable of handling each `ActionProtocol` before the `Reducer` to do its job.
 
@@ -275,7 +381,7 @@ Because the `Middleware` accesses all events and the state of the app at any poi
 - `NotificationCenter` and other delegates
 - `Combine` publishers/subjects, `RxSwift` observables / `ReactiveSwift` signal producers
 
-## Reducer
+### Reducer
 
 `Reducer` is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.
 
@@ -291,21 +397,21 @@ It's important to understand that reducer is a synchronous operations that calcu
 
 Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.
 
-# Projection and Lifting
+## Projection and Lifting
 - [Store Projection](#store-projection)
 - [Lifting Middleware](#lifting-middleware)
 - [Lifting Reducer](#lifting-reducer)
 
-## Store Projection
+### Store Projection
 
 TBD
 
 ![Store Projection](https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png)
 
-## Lifting Middleware
+### Lifting Middleware
 
 TBD
 
-## Lifting Reducer
+### Lifting Reducer
 
 TBD
