@@ -106,10 +106,10 @@ TBD
 TBD
 
 # Core Parts
-- [Store](#-store)
-- [Action](#-action)
-- [Middleware](#-middleware)
-- [Reducer](#-reducer)
+- [Store](#store)
+- [Action](#action)
+- [Middleware](#middleware)
+- [Reducer](#reducer)
 
 ## Store
 
@@ -193,9 +193,9 @@ It's important to understand that reducer is a synchronous operations that calcu
 Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.
 
 # Projection and Lifting
-- [Store Projection](#-storeprojection)
-- [LiftMiddleware](#-liftmiddleware)
-- [LiftReducer](#-liftreducer)
+- [Store Projection](#store-projection)
+- [Lifting Middleware](#lifting-middleware)
+- [Lifting Reducer](#-lifting-reducer)
 
 ## Store Projection
 
@@ -203,10 +203,10 @@ TBD
 
 ![Store Projection](https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png)
 
-## LiftMiddleware
+## Lifting Middleware
 
 TBD
 
-## LiftReducer
+## Lifting Reducer
 
 TBD
