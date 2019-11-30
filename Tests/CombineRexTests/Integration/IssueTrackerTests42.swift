@@ -33,9 +33,9 @@ class IssueTracker42Tests: XCTestCase {
     func testIssue42() {
         let shouldNotifyTwice = expectation(description: "should have been notified twice")
         shouldNotifyTwice.expectedFulfillmentCount = 2
-        let viewModel = store.view(action: { $0 },
-                                   state: { $0 },
-                                   initialState: .init(int: 0))
+        let viewModel = store.projection(action: { $0 },
+                                         state: { $0 },
+                                         initialState: .init(int: 0))
         let cancellable = viewModel.statePublisher.sink { _ in
             shouldNotifyTwice.fulfill()
         }

@@ -22,9 +22,9 @@ import Foundation
  by this instance.
 
  That means that other types of store can act as a proxy to this one, but none of them should hold any state. For more
- information on that please check `ViewStore`.
+ information on that please check `StoreProjection`.
 
- ![Store, ViewStore and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png)
+ ![Store, StoreProjection and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png)
 
  You can think of Store as a very heavy "Model" layer, completely detached from the Views, Controllers, Presenters etc.,
  and where all the business logic stands. At a first sight it may look like transferring the "Massive" problem from a

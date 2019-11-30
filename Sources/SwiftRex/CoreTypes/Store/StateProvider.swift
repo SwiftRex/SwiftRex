@@ -1,7 +1,7 @@
 /**
  `StateProvider` defines a protocol for entities able to offer state publishers (Combine Publisher, RxSwift Observable,
  ReactiveSwift SignalProducer) of certain `StateType`, so everybody can observe the global state changes through this
- container. Usually a `Store` will implement that, but it can also be a `ViewStore` with a state that is derived from
+ container. Usually a `Store` will implement that, but it can also be a `StoreProjection` with a state that is derived from
  the global source-of-truth.
 
  The only protocol requirement is to offer a property `statePublisher` that will allow other entities to subscribe to

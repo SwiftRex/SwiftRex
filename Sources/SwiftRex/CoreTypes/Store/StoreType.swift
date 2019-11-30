@@ -17,13 +17,13 @@
  Not necessarily a store implementation means that this entity holds the source-of-truth of an app. Every app should
  have a single and centralized store, where the whole state is held. But Views and ViewControllers do not necessarily
  need to access this main Store directly, they could, instead, access some "proxy" store that intermediates the actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
- on that please check `ViewStore`, and compare it to `ReduxStoreBase`.
+ on that please check `StoreProjection`, and compare it to `ReduxStoreBase`.
 
  In summary, it's recommended to have one and only store `ReduxStoreBase` in your app, holding the one and only one
- source-of-truth, but at the same time having several `ViewStore` instances mapping the whole state and whole set of
+ source-of-truth, but at the same time having several `StoreProjection` instances mapping the whole state and whole set of
  possible actions from and to view state and events relevant to the specific view you implement.
 
- ![Store, ViewStore and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png)
+ ![Store, StoreProjection and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png)
  */
 public protocol StoreType: StateProvider, ActionHandler {
 }

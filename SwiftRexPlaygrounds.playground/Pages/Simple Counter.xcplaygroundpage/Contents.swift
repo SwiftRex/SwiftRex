@@ -100,7 +100,7 @@ final class Store: ReduxStoreBase<AppAction, AppState> {
 
 class ViewModel {
     private var subscription: AnyCancellable?
-    private var viewStore: ViewStore<Input, Output>!
+    private var storeProjection: StoreProjection<Input, Output>!
 
     enum Input {
         case tapIncrease
@@ -122,7 +122,7 @@ class ViewModel {
     }
 
     init(store: Store) {
-        viewStore = store.view(
+        storeProjection = store.projection(
             action: { viewEvent in
                 switch viewEvent {
                 case .tapIncrease: return .event(.requestIncrease)
@@ -136,14 +136,14 @@ class ViewModel {
             }
         )
 
-        subscription = viewStore
+        subscription = storeProjection
             .statePublisher
             .map { String(data: try! JSONEncoder().encode($0), encoding: .utf8)! }
             .sink { print("New view state: \($0)") }
     }
 
     func receivedFromViewController(_ event: Input) {
-        viewStore.dispatch(event)
+        storeProjection.dispatch(event)
     }
 }
 
