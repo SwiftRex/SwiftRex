@@ -5,7 +5,7 @@ set-version:
 	$(error Missing new version number. Please use `make set-version TO=1.2.3`)
 else
 set-version:
-	sed -i .bkp -E "s/(s\.version.*=.*)'.*'/\1'${TO}'/" SwiftRex.podspec
+	sed -i .bkp -E "s/(s\.version.*=.*)'.*'/\1'${TO}'/" *.podspec
 	sed -i .bkp -E "s/(CURRENT_PROJECT_VERSION.*= ).*/\1${TO}/" Configuration/SwiftRex-Common.xcconfig
 endif
 
@@ -20,12 +20,48 @@ xcodeproj:
 
 # Unit Test
 
+test-all:
+	set -o pipefail && \
+		xcodebuild clean test \
+		-workspace SwiftRex.xcworkspace \
+		-scheme BuildAndTestAll \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		CODE_SIGN_IDENTITY="" \
+		CODE_SIGNING_REQUIRED=NO \
+		ONLY_ACTIVE_ARCH=YES \
+		VALID_ARCHS=x86_64 \
+		| bundle exec xcpretty
+
+test-common:
+	set -o pipefail && \
+		xcodebuild clean test \
+		-workspace SwiftRex.xcworkspace \
+		-scheme SwiftRex\ iOS \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		CODE_SIGN_IDENTITY="" \
+		CODE_SIGNING_REQUIRED=NO \
+		ONLY_ACTIVE_ARCH=YES \
+		VALID_ARCHS=x86_64 \
+		| bundle exec xcpretty
+
+test-combine:
+	set -o pipefail && \
+		xcodebuild clean test \
+		-workspace SwiftRex.xcworkspace \
+		-scheme SwiftRex\ iOS\ Combine \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		CODE_SIGN_IDENTITY="" \
+		CODE_SIGNING_REQUIRED=NO \
+		ONLY_ACTIVE_ARCH=YES \
+		VALID_ARCHS=x86_64 \
+		| bundle exec xcpretty
+
 test-reactiveswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS\ ReactiveSwift \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS\ ReactiveSwift \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -36,15 +72,13 @@ test-rxswift:
 	set -o pipefail && \
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ macOS\ RxSwift \
-		-destination platform="macOS" \
+		-scheme SwiftRex\ iOS\ RxSwift \
+		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
 		VALID_ARCHS=x86_64 \
 		| bundle exec xcpretty
-
-test-all: test-reactiveswift test-rxswift
 
 # Lint
 
@@ -92,6 +126,12 @@ help:
 	@echo
 	@echo make xcodeproj
 	@echo -- creates xcodeproj for those using Swift Package Manager
+	@echo
+	@echo make test-common
+	@echo -- runs the unit tests for the macOS target common for any framework
+	@echo
+	@echo make test-combine
+	@echo -- runs the unit tests for the macOS target using Combine dependency
 	@echo
 	@echo make test-reactiveswift
 	@echo -- runs the unit tests for the macOS target using ReactiveSwift dependency

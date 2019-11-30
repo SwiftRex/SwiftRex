@@ -1,16 +1,21 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.1
 import PackageDescription
 
 let package = Package(
     name: "SwiftRex",
+    platforms: [
+        .macOS(SupportedPlatform.MacOSVersion.v10_15),
+        .iOS(SupportedPlatform.IOSVersion.v13),
+        .tvOS(SupportedPlatform.TVOSVersion.v13),
+        .watchOS(SupportedPlatform.WatchOSVersion.v6)
+    ],
     products: [
-        .library(name: "SwiftRex", targets: ["SwiftRex"])
+        .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("5.0.0"))
-    ],
+    dependencies: [ ],
     targets: [
-        .target(name: "SwiftRex", dependencies: ["RxSwift"], path: "Sources")
+        .target(name: "SwiftRex", dependencies: []),
+        .target(name: "CombineRex", dependencies: ["SwiftRex"])
     ],
     swiftLanguageVersions: [.v5]
 )

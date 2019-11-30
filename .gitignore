@@ -21,7 +21,6 @@
 **/derivedData
 **/Certificates
 **/xcuserdata
-**/Carthage
 
 .vscode
 
@@ -30,6 +29,7 @@
 **/DerivedData/
 **/derivedData/
 **/.build/
+**/.swiftpm/
 Developer.xcconfig
 
 # OS-specific files

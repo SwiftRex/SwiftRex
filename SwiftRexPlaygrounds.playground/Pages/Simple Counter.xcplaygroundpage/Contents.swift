@@ -3,53 +3,159 @@
 // Please start by selecting target Playgrounds and any iPhone from the device list
 // Then build the target and run the playground
 
+import Combine
+import CombineRex
 import PlaygroundSupport
 import SwiftRex
 
 PlaygroundPage.current.needsIndefiniteExecution = true
 
-// App state, shared among all modules of our app
-struct GlobalState: Equatable, Codable {
+enum AppAction: Equatable {
+    case event(CounterEvent)
+    case action(CounterAction)
+
+    enum CounterEvent: Equatable {
+        case requestIncrease, requestDecrease
+    }
+
+    enum CounterAction: Equatable {
+        case increase, decrease
+    }
+
+    var event: CounterEvent? {
+        get {
+            guard case let .event(value) = self else { return nil }
+            return value
+        }
+        set {
+            guard case .event = self, let newValue = newValue else { return }
+            self = .event(newValue)
+        }
+    }
+
+    var action: CounterAction? {
+        get {
+            guard case let .action(value) = self else { return nil }
+            return value
+        }
+        set {
+            guard case .action = self, let newValue = newValue else { return }
+            self = .action(newValue)
+        }
+    }
+}
+
+struct AppState: Codable, Equatable {
     var currentNumber = 0
 }
 
-// For simplicity, this enum is both an Event and an Action
-// DirectLineMiddleware transfers it directly to the reducers
-enum CounterEvent: EventProtocol, ActionProtocol, Equatable {
-    case increase, decrease
-}
+enum CounterService {
+    static let middleware = CounterMiddleware()
 
-// Only one Action type to handle, no need for sub-reducers
-let reducer = Reducer<GlobalState> { state, action in
-    guard let counterEvent = action as? CounterEvent else { return state }
-
-    var state = state
-    switch counterEvent {
-    case .increase: state.currentNumber += 1
-    case .decrease: state.currentNumber -= 1
+    static let reducer = Reducer<AppAction.CounterAction, Int> { action, state in
+        switch action {
+        case .increase: return state + 1
+        case .decrease: return state - 1
+        }
     }
 
-    return state
+    class CounterMiddleware: Middleware {
+        typealias InputActionType = AppAction.CounterEvent
+        typealias OutputActionType = AppAction.CounterAction
+        typealias StateType = Int
+
+        var context: () -> MiddlewareContext<AppAction.CounterAction, Int> = { fatalError("Not set yet") }
+
+        func handle(action: AppAction.CounterEvent, next: @escaping Next) {
+            next()
+            switch action {
+            case .requestIncrease: context().dispatch(.increase)
+            case .requestDecrease: context().dispatch(.decrease)
+            }
+        }
+    }
 }
 
-// Store glues all pieces together
-final class Store: StoreBase<GlobalState> {
+final class Store: ReduxStoreBase<AppAction, AppState> {
     init() {
-        super.init(initialState: GlobalState(), reducer: reducer, middleware: DirectLineMiddleware())
+        super.init(
+            subject: .combine(initialValue: AppState()),
+            reducer:
+                CounterService.reducer.lift(
+                    action: \AppAction.action,
+                    state: \AppState.currentNumber
+                ),
+            middleware:
+                CounterService.middleware.lift(
+                    actionZoomIn: { $0.event },
+                    actionZoomOut: {
+                        AppAction.action($0)
+                    },
+                    stateZoomIn: { $0.currentNumber }
+                ),
+            emitsValue: .whenDifferent
+        )
+    }
+}
+
+class ViewModel {
+    private var subscription: AnyCancellable?
+    private var storeProjection: StoreProjection<Input, Output>!
+
+    enum Input {
+        case tapIncrease
+        case tapDecrease
+
+        var tapIncrease: Void? {
+            guard case .tapIncrease = self else { return nil }
+            return ()
+        }
+
+        var tapDecrease: Void? {
+            guard case .tapDecrease = self else { return nil }
+            return ()
+        }
+    }
+
+    struct Output: Codable, Equatable {
+        let counterLabel: String
+    }
+
+    init(store: Store) {
+        storeProjection = store.projection(
+            action: { viewEvent in
+                switch viewEvent {
+                case .tapIncrease: return .event(.requestIncrease)
+                case .tapDecrease: return .event(.requestDecrease)
+                }
+            },
+            state: { global in
+                global.map { state in
+                    Output(counterLabel: "Formatted for View: \(state.currentNumber)")
+                }.asPublisherType()
+            }
+        )
+
+        subscription = storeProjection
+            .statePublisher
+            .map { String(data: try! JSONEncoder().encode($0), encoding: .utf8)! }
+            .sink { print("New view state: \($0)") }
+    }
+
+    func receivedFromViewController(_ event: Input) {
+        storeProjection.dispatch(event)
     }
 }
 
 let store = Store()
-store
-    .map { String(data: try! JSONEncoder().encode($0), encoding: .utf8)! }
-    .subscribe(onNext: { print("New state: \($0)") })
+let viewModel = ViewModel(store: store)
 
-store.dispatch(CounterEvent.increase)
-store.dispatch(CounterEvent.increase)
-store.dispatch(CounterEvent.increase)
-store.dispatch(CounterEvent.decrease)
-store.dispatch(CounterEvent.increase)
-store.dispatch(CounterEvent.decrease)
-store.dispatch(CounterEvent.decrease)
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapDecrease)
+viewModel.receivedFromViewController(.tapIncrease)
+viewModel.receivedFromViewController(.tapDecrease)
+viewModel.receivedFromViewController(.tapDecrease)
 
 //: [Next](@next)

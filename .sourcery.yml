@@ -3,11 +3,11 @@ sources:
     - Sources
 templates:
   include:
-    - Sources/Common/CodeGeneration/Templates
+    - Sources/SwiftRex/CodeGeneration/Templates
   exclude:
-    - Sources/Common/CodeGeneration/Templates/AutoCases.stencil
-    - Sources/Common/CodeGeneration/Templates/AutoEquatable.stencil
-    - Sources/Common/CodeGeneration/Templates/AutoHashable.stencil
-    - Sources/Common/CodeGeneration/Templates/AutoLenses.stencil
+    - Sources/SwiftRex/CodeGeneration/Templates/AutoCases.stencil
+    - Sources/SwiftRex/CodeGeneration/Templates/AutoEquatable.stencil
+    - Sources/SwiftRex/CodeGeneration/Templates/AutoHashable.stencil
+    - Sources/SwiftRex/CodeGeneration/Templates/AutoLenses.stencil
 
-output: Sources/Common/CodeGeneration
+output: Sources/SwiftRex/CodeGeneration

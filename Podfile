@@ -14,7 +14,11 @@ def rxswift
 end
 
 def reactiveswift
-  pod 'ReactiveSwift', '6.0.0', :inhibit_warnings => true
+  pod 'ReactiveSwift', '6.1.0', :inhibit_warnings => true
+end
+
+def tests
+  pod 'Nimble', '8.0.4'
 end
 
 ###################
@@ -42,8 +46,9 @@ target 'SwiftRex tvOS RxSwift' do
 end
 
 target 'UnitTests RxSwift' do
-  platform :macos, macos_version
+  platform :ios, ios_version
   rxswift
+  tests
   pod 'RxBlocking', '5.0.0'
   pod 'RxTest', '5.0.0'
 end
@@ -73,8 +78,18 @@ target 'SwiftRex tvOS ReactiveSwift' do
 end
 
 target 'UnitTests ReactiveSwift' do
-  platform :macos, macos_version
+  platform :ios, ios_version
   reactiveswift
+  tests
+end
+
+##################
+# Common Targets #
+##################
+
+target 'UnitTests SwiftRex' do
+  platform :ios, ios_version
+  tests
 end
 
 post_install do |installer|
@@ -82,7 +97,7 @@ post_install do |installer|
         target.build_configurations.each do |config|
             config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
             config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
-            config.build_settings['SWIFT_VERSION'] = "5.0"
+            config.build_settings['SWIFT_VERSION'] = "5.1"
             config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = "YES"
 
             if target.name == 'RxSwift' && config.name == 'Debug'
