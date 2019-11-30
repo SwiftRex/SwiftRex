@@ -227,7 +227,7 @@ Let's understand the components of SwiftRex by splitting them into 3 sections:
 
 There's no "Action" protocol or type in SwiftRex. However, Action will be found as a generic parameter for most core data structures, meaning that it's up to you to define what is the root Action type.
 
-Conceptually, we can say that action is something that happens from external actors of your app, that means user interactions, timer callbacks, responses from web services, callbacks from CoreLocation and other frameworks. Some internal actors also can start actions, however. For example, when UIKit finishes loading your view we could say that `viewDidLoad` is an action, in case we're interested in this event.
+Conceptually, we can say that an Action represents something that happens from external actors of your app, that means user interactions, timer callbacks, responses from web services, callbacks from CoreLocation and other frameworks. Some internal actors also can start actions, however. For example, when UIKit finishes loading your view we could say that `viewDidLoad` is an action, in case we're interested in this event.
 
 **Actions are about INPUT events that are relevant for an app.**
 
@@ -263,19 +263,19 @@ For example, all apps will have common actions that represent life-cycle of any 
 
 There's no "State" protocol or type in SwiftRex. However, State will be found as a generic parameter for most core data structures, meaning that it's up to you to define what is the root State type.
 
-Conceptually, we can say that state is the knowledge an app holds while is open, usually in memory and mutable, or in other words, it's like a paper where you write down some values, and for every action you receive you erase one value and replace by another value. Another way of thinking about state is in a functional programming way: the state is not persisted, but it's the result of a function that takes the initial values of your app and also all the actions it received since it was launched, and calculates the current values by applying the action changes on top of the initial state. This is known as [Event Sourcing Design Pattern](https://martinfowler.com/eaaDev/EventSourcing.html) and it's becoming popular recently in some web backend services, such as [Kafka Event Sourcing](https://kafka.apache.org/uses).
+Conceptually, we can say that state represents the whole knowledge that an app holds while is open, usually in memory and mutable; it's like a paper on where you write down some values, and for every action you receive you erase one value and replace it by a different value. Another way of thinking about state is in a functional programming way: the state is not persisted, but it's the result of a function that takes the initial condition of your app plus all the actions it received since it was launched, and calculates the current values by applying chronologically all the action changes on top of the initial state. This is known as [Event Sourcing Design Pattern](https://martinfowler.com/eaaDev/EventSourcing.html) and it's becoming popular recently in some web backend services, such as [Kafka Event Sourcing](https://kafka.apache.org/uses).
 
-In a device with limited battery and memory we can't afford having a true event-sourcing pattern because it would be too expensive recreating the whole history of an app every time someone requests a simple boolean. So we "cache" the new state every time an action is received, and this in-memory cache is precisely what we call "State" in SwiftRex. So maybe we can have a better generalisation for what a state is.
+In a device with limited battery and memory we can't afford having a true event-sourcing pattern because it would be too expensive recreating the whole history of an app every time someone requests a simple boolean. So we "cache" the new state every time an action is received, and this in-memory cache is precisely what we call "State" in SwiftRex. So maybe we mix both ways of thinking about State and come up with a better generalisation for what a state is.
 
 **State is the result of a function that takes two arguments: the previous (or initial) state and some action that occurred, to determine the new state.** This happens incrementally as more and more actions arrive. State is useful for **output** data to the user.
 
-However, be careful, some things may look like state but they are not. Let's assume you have an app that shows to the user a price. This price will be shown as `"$3.00"` in US, or `"$3,00"` in Germany, or maybe this product can be listed in british pounds, so in US we should show `"£3.00"` while in Germany it would be `"£3,00"`. In this example we have:
+However, be careful, some things may look like state but they are not. Let's assume you have an app that shows an item price to the user. This price will be shown as `"$3.00"` in US, or `"$3,00"` in Germany, or maybe this product can be listed in british pounds, so in US we should show `"£3.00"` while in Germany it would be `"£3,00"`. In this example we have:
 - Currency type (`£` or `$`)
 - Numeric value (`3`)
 - Locale (`us` or `de`)
 - Formatted string (`"$3.00"`, `"$3,00"`, `"£3.00"` or `"£3,00"`)
 
-The formatted string itself is **NOT** state, because it can be calculated from the other properties. This can be called "derived state" and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it's better to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it.
+The formatted string itself is **NOT** state, because it can be calculated from the other properties. This can be called "derived state" and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it's better to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it. Luckily SwiftRex helps to keep the state consistent as we're about to see in the Reducer section, still, it's better off not duplicating information that can be easily and cheaply calculated.
 
 For representing the state of an app we recommend value types: structs or enums. Tuples would be acceptable as well, but unfortunately Swift currently doesn't allow us to conform tuples to protocols, and **we want our whole state to be Equatable**.
 
@@ -309,7 +309,7 @@ enum AppLifecycle: Equatable {
 }
 ```
 
-Some properties represent a state-machine, for example the `Loadable` enum will eventually change from `neverLoaded` to `loading` and then to `loaded([Movie])` in our `movies` property.
+Some properties represent a state-machine, for example the `Loadable` enum will eventually change from `.neverLoaded` to `.loading` and then to `.loaded([Movie])` in our `movies` property. Learning when and how to represent properties in this shape is a matter of experimenting more and more with SwiftRex and getting used to this architecture. Eventually this will become natural and you can start writing your own data structures to represent such state-machines, that will be very useful in countless situations.
 
 Annotating the whole state as Equatable allows us to reduce the UI updates. Use of `let` instead of `var` is also possible, however this is a more advanced topic.
 
@@ -320,30 +320,65 @@ Annotating the whole state as Equatable allows us to reduce the UI updates. Use 
 - [Middleware](#middleware)
 - [Reducer](#reducer)
 
+---
+
 ### Store
 
- `Store` defines a protocol for the state store of an app. It must have an input and an output:
- - an `EventHandler`: that's the store input, so it's able to receive and distribute events of type `EventProtocol`. Being an event handler means that an `UIViewController` can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`.
- - a `StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an Observable<T>, where T is the State of your app, so an `UIViewController` can subscribe to state changes and react to them.
+`Store` is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle.
 
- The store will glue all the parts together and its responsibility is being a proxy to the non-Redux world. For that reason, it's correct to say that a `Store` is the single point of contact with `UIKit` and it's a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - `EventHandler` and `StateProvider` -, both eventually pointing to the same instance.
+SwiftRex will provide a protocol and a base type for helping you to create your own Store. Let's learn about them.
+
+`StoreType` is the protocol that defines the minimum implementation requirement of a Store, and it's actually composed only by two other protocols, one for the store input and one for the store output:
+- an `ActionHandler`: that's the store input, so it makes it able to receive and distribute events of generic type `ActionType`. Being an action handler means that an `UIViewController` or SwiftUI View can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`. There's only one requirement:
+    ```swift
+    func dispatch<ActionType>(_ action: ActionType)
+    ```
+
+- a `StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an `Observable` (`RxSwift`) or a `Publisher` (`Combine`) of state elements, and an `UIViewController` can subscribe to the store and react to state changes. There's only one requirement:
+    ```swift
+    var statePublisher<StateType>: UnfailablePublisherType<StateType> { get }
+    ```
+    The `UnfailablePublisherType<StateType>` is an abstraction that will be implemented as `Observable`, `Publisher` or `SignalProducer` according to the selected Reactive Framework, and emits the element `StateType` (your root app state) with `Never` type for failure, when the framework supports it.
 
 [![ViewController and Store](https://swiftrex.github.io/SwiftRex/markdown/img/Redux1.gif)](https://www.youtube.com/watch?v=oBR94I2p2BA)
 
- In its documentation, Apple suggests some communication patterns between the MVC layers. Most important, they say that Controllers should update the Model, who notifies the Controller about changes:
+As seen in the animation above, the Store only exposes an input (action) and an output (state provider), and that's all the Views need to know about the Store.
 
- ![iOS MVC](https://swiftrex.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
+`ReduxStoreBase` is an `open class` that conforms to `StoreType` and provides all we need to start using SwiftRex. You can choose to inherit from this class or use it directly. We recommend inheritance because this will allow you to better mock the Store if necessary, however there's nothing you really have to write once `ReduxStoreBase` is complete: it glues all the parts together and acts as a proxy to the non-Redux world.
 
- You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transfering the "Massive" problem from a layer to another, but later in this docs it's gonna be clear how the logic will be split and, hopefully, by having specialized middlewares we can even start sharing more code between different apps or different devices such as Apple TV, macOS, iOS, watchOS or backend APIs, thanks to the business decisions being completely off your presentation layer.
+A suggested `Store` can be written with no more than 10 lines of code:
+```swift
+class Store: ReduxStoreBase<AppAction, AppState> {
+    init(world: World) {
+        super.init(
+            subject: .combine(initialValue: AppState()),
+            reducer: appReducer,
+            middleware: appMiddleware().inject(world),
+            emitsValue: .whenDifferent
+        )
+    }
+}
+```
 
- You want only one Store in your app, so either you create a singleton or a public property in a long-life class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the `UIKit` world. Theoretically it should be possible to keep multiple stores - one per module or per `UIViewController` - and keep them in sync through Rx observation, like the "Flux" approach. However, the main goal of SwiftRex is to keep an unified state independent from `UIKit`, therefore it's the recommended approach.
+The `ReduxStoreBase` initialiser expects a middleware and a reducer as input, and that's enough for the store to coordinate the entire process. It creates a queue of incoming actions that will be handled by the middleware pipeline and by the reducer pipeline. By the end of this process the state may or may not change, as a result of reducer pipeline acting on action + current state. Finally, the store notifies all subscribers about the state change and only then starts evaluating the next action on the queue.
 
- The `StoreBase` implementation also is:
- - an `ActionHandler`: be able to receive and distribute actions of type `ActionProtocol`
+![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
 
- A `StoreBase` uses `Middleware` pipeline and `Reducer` pipeline. It creates a queue of incoming events that is handled to the middleware pipeline, which triggers actions back to the store. These actions are put in a queue that again are handled to the middleware pipeline, usually for logging or analytics purposes. The actions are them forwarded to the `Reducer` pipeline, together with the current state. One by one, the reducers will handle the action and incrementally change a copy of the app state. When this process is done, the store takes the resulting state, sets it as the current state and notifies all subscribers.
+We will see more in depth this dataflow when reading about middlewares and reducers, but please come back to this picture above every time you read about the store internals, it can be very useful.
 
- ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
+At this point all you have to notice is the action handler (dispatch action function) and the state provider (subscribe state) boxes that are shown to the outside world. When writing UIViewControllers or SwiftUI Views those are the only 2 functions you'll ever have to use.
+
+But why?
+
+This dataflow is, somehow, an implementation of MVC, on that differs significantly from the Apple's MVC for offering a very strict and opinative description of layers' responsibilities and by enforcing the growth of the Model layer, through a better definition of how it should be implemented: in this scenario, the Model is the Store. All your Controller has to do is to forward view actions to the Store and subscribe to state changes, updating the views whenever needed. If this flow doesn't sound like MVC, let's check a picture taken from Apple's website:
+
+![iOS MVC](https://swiftrex.github.io/SwiftRex/markdown/img/CocoaMVC.gif)
+
+One important distinction is about the user action: on SwiftRex it's forwarded by the controller and reaches the Store, so the responsibility of updating the state becomes the Store's responsibility now. The rest is pretty much the same, but with a better definition of how the Model operates.
+
+You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transferring the "Massive" problem from a layer to another, so that's why the Store is nothing but a collection of composable boxes with very well defined roles and, most importantly, restrictions. 
+
+There will be only one honest Store in your entire app, so either you create it as a singleton or a property in a long-living class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the `UIKit`/SwiftUI world.
 
 ### Middleware
 
