@@ -23,7 +23,7 @@
  source-of-truth, but at the same time having several `StoreProjection` instances mapping the whole state and whole set of
  possible actions from and to view state and events relevant to the specific view you implement.
 
- ![Store, StoreProjection and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png)
+ ![Store, StoreProjection and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png)
  */
 public protocol StoreType: StateProvider, ActionHandler {
 }
