@@ -326,6 +326,24 @@ It's important to understand that reducer is a synchronous operations that calcu
 
 Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.
 
+```
+                  ┌─────┐                                                                                        ┌─────┐
+                  │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
+                  │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
+                  │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
+                  │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
+┌──────┐ dispatch │     │   │
+│Button│─────────▶│Store│──▶│                                                         ┌────────┐
+└──────┘ Action   │     │   │                                                      ┌─▶│ View 1 │
+                  │     │   │                                  ┌─────┐             │  └────────┘
+                  │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
+                  │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
+                  │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
+                  └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
+                              State                                                └─▶│ View 3 │
+                                                                                      └────────┘
+```
+
 ## Projection and Lifting
 - [Store Projection](#store-projection)
 - [Lifting Middleware](#lifting-middleware)
