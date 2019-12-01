@@ -24,6 +24,42 @@
  possible actions from and to view state and events relevant to the specific view you implement.
 
  ![Store, StoreProjection and View](https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png)
+
+ ```
+             ┌──────────┐
+             │ UIButton │────────┐
+             └──────────┘        │
+         ┌───────────────────┐   │         dispatch<Action>(_ action: Action)
+         │UIGestureRecognizer│───┼──────────────────────────────────────────────┐
+         └───────────────────┘   │                                              │
+             ┌───────────┐       │                                              ▼
+             │viewDidLoad│───────┘                                   ┏━━━━━━━━━━━━━━━━━━━━┓
+             └───────────┘                                           ┃                    ┃░
+                                                                     ┃                    ┃░
+                                                                     ┃                    ┃░
+               ┌───────┐                                             ┃                    ┃░
+               │UILabel│◀─ ─ ─ ─ ┐                                   ┃                    ┃░
+               └───────┘                   Combine, RxSwift    ┌ ─ ─ ┻ ─ ┐                ┃░
+                                 │         or ReactiveSwift       State      Store        ┃░
+        ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│Publisher│                ┃░
+        ▼               │                  subscribe(onNext:)                             ┃░
+ ┌─────────────┐        ▼                  sink(receiveValue:) └ ─ ─ ┳ ─ ┘                ┃░
+ │  Diffable   │ ┌─────────────┐           assign(to:on:)            ┃                    ┃░
+ │ DataSource  │ │RxDataSources│                                     ┃                    ┃░
+ └─────────────┘ └─────────────┘                                     ┃                    ┃░
+        │               │                                            ┃                    ┃░
+ ┌──────▼───────────────▼───────────┐                                ┗━━━━━━━━━━━━━━━━━━━━┛░
+ │                                  │                                 ░░░░░░░░░░░░░░░░░░░░░░
+ │                                  │
+ │                                  │
+ │                                  │
+ │         UICollectionView         │
+ │                                  │
+ │                                  │
+ │                                  │
+ │                                  │
+ └──────────────────────────────────┘
+ ```
  */
 public protocol StoreType: StateProvider, ActionHandler {
 }

@@ -3,35 +3,36 @@ import Combine
 import Foundation
 import SwiftRex
 
-/// A Store made to be used in SwiftUI
+/// A Store Projection made to be used in SwiftUI
 ///
-/// All you need is to create a single instance of this class for the whole lifetime of your app and send to your Views
-/// using either, object binding:
-/// ```
-/// // SceneDelegate.swift:
-/// ContentView(store: store)
-/// // ContentView.swift:
-/// @ObjectBinding var store: MainStore
-/// ```
+/// All you need is to create an instance of this class by projecting the main store and providing maps for state and
+/// actions. For the consumers, it will act as a real Store, but in fact it's only a proxy to the main store but working
+/// in types more close to what a View should know, instead of working on global domain.
 ///
-/// or environment object:
 /// ```
-/// // SceneDelegate.swift:
-/// ContentView().environmentObject(store)
-/// // ContentView.swift:
-/// @EnvironmentObject var store: MainStore
-/// ```
-///
-/// Either way you can dispatch events:
-/// ```
-/// Button("Add to List") {
-///     self.store.eventHandler.dispatch(MyListEvent.add)
-/// }
-/// ```
-///
-/// or present info:
-/// ```
-/// Text(store.state.currentSearchText)
+///             ┌────────┐
+///             │ Button │────────┐
+///             └────────┘        │                     ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐             ┏━━━━━━━━━━━━━━━━━━━━━━━┓
+///        ┌──────────────────┐   │         dispatch                                            ┃                       ┃░
+///        │      Toggle      │───┼────────────────────▶│   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─▶  │────────────▶┃                       ┃░
+///        └──────────────────┘   │         view event      f: (Event) → Action     app action  ┃                       ┃░
+///            ┌──────────┐       │                     │                         │             ┃                       ┃░
+///            │ onAppear │───────┘                                                             ┃                       ┃░
+///            └──────────┘                             │   ObservableViewModel   │             ┃                       ┃░
+///                                                                                             ┃                       ┃░
+///                                                     │     a projection of     │  projection ┃         Store         ┃░
+///                                                          the actual store                   ┃                       ┃░
+///                                                     │                         │             ┃                       ┃░
+///    ┌────────────────────────┐                                                               ┃                       ┃░
+///    │                        │                       │                         │            ┌┃─ ─ ─ ─ ─ ┐            ┃░
+///    │    @ObservedObject     │◀ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─    ◀─ ─ ─ ─ ─ ─ ─ ─ ─ ─   ◀─ ─ ─ ─ ─ ─    State                ┃░
+///    │                        │           view state  │   f: (State) → View     │  app state │ Publisher │            ┃░
+///    └────────────────────────┘                                        State                  ┳ ─ ─ ─ ─ ─             ┃░
+///      │          │          │                        └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘             ┗━━━━━━━━━━━━━━━━━━━━━━━┛░
+///      ▼          ▼          ▼                                                                 ░░░░░░░░░░░░░░░░░░░░░░░░░
+/// ┌────────┐ ┌────────┐ ┌────────┐
+/// │  Text  │ │  List  │ │ForEach │
+/// └────────┘ └────────┘ └────────┘
 /// ```
 public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     @Published public var state: ViewState

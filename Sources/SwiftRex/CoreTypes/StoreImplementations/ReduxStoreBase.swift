@@ -42,6 +42,41 @@ import Foundation
 
  ![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
 
+ ```
+                   ┌────────────────────────────────────────┐
+                   │                                        │
+                   │    SwiftUI View / UIViewController     │
+                   │                                        │
+                   └────┬───────────────────────────────────┘
+                        │                            ▲
+                        │                            │
+                        │ action        notification
+            ┌─────────┐ │                            │
+            │         ▼ │                       ─ ─ ─ ─ ─ ─
+            │      ┏━━━━│━━━━━━━━━━━━━━━━━━━━━━┫   State   ┣┓
+    new actions    ┃    │            Store       Publisher  ┃░
+  from middleware  ┃    ▼                      └ ─ ─ ┬ ─ ─ ┘┃░
+            │      ┃ ┌───────────────────┐                  ┃░
+            │      ┃ │    Middlewares    │           │      ┃░
+            └────────┤┌───┐  ┌───┐  ┌───┐│                  ┃░
+                   ┃ ││ 1 │─▶│ 2 │─▶│ 3 ││◀─         │      ┃░
+                   ┃ │└───┘  └───┘  └───┘│  │               ┃░
+                   ┃ └────────────────┬──┘      ┌────┴────┐ ┃░
+                   ┃                  │     │   │         │ ┃░
+                   ┃    ┌─────────────┘      ─ ─│  State  │ ┃░
+                   ┃    │ ┌─────────────────────│         │ ┃░
+                   ┃    ▼ ▼                     └────▲────┘ ┃░
+                   ┃ ┌───────────────────┐           ║      ┃░
+                   ┃ │     Reducers      │           ║      ┃░
+                   ┃ │┌───┐  ┌───┐  ┌───┐│           ║      ┃░
+                   ┃ ││ 1 │─▶│ 2 │─▶│ 3 │╠═══════════╝      ┃░
+                   ┃ │└───┘  └───┘  └───┘│    state         ┃░
+                   ┃ └───────────────────┘   mutation       ┃░
+                   ┃                                        ┃░
+                   ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛░
+                    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+ ```
+ 
  By using this architecture, your model gets completely detached from the `UIKit`/`SwiftUI` world. And your UI gets
  completely independent from side-effects, state mutations, threading, ownership, logic, logs, analytics and everything
  other than UI. No more dependency injection for your views, they only need to know about the store (the main one or

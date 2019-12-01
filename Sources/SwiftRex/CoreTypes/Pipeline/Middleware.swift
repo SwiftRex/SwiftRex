@@ -125,6 +125,23 @@
      log(action: action, before: stateBefore, after: stateAfter, dateBefore: dateBefore, dateAfter: dateAfter)
  }
  ```
+ ```
+                   ┌─────┐                                                                                        ┌─────┐
+                   │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
+                   │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
+                   │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
+                   │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
+ ┌──────┐ dispatch │     │   │
+ │Button│─────────▶│Store│──▶│                                                         ┌────────┐
+ └──────┘ Action   │     │   │                                                      ┌─▶│ View 1 │
+                   │     │   │                                  ┌─────┐             │  └────────┘
+                   │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
+                   │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
+                   │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
+                   └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
+                               State                                                └─▶│ View 3 │
+                                                                                       └────────┘
+ ```
  */
 public protocol Middleware: class {
     /**

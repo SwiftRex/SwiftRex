@@ -61,6 +61,23 @@
  - Make the action and the state generic parameters as much specialized as you can. If volume state is part of a bigger
  state, you should not be tempted to pass the whole big state into this reducer. Make it short, brief and specialized,
  this also helps preventing `default` case or having to re-assign properties that are never mutated by this reducer.
+ ```
+                   ┌─────┐                                                                                        ┌─────┐
+                   │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
+                   │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
+                   │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
+                   │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
+ ┌──────┐ dispatch │     │   │
+ │Button│─────────▶│Store│──▶│                                                         ┌────────┐
+ └──────┘ Action   │     │   │                                                      ┌─▶│ View 1 │
+                   │     │   │                                  ┌─────┐             │  └────────┘
+                   │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
+                   │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
+                   │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
+                   └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
+                               State                                                └─▶│ View 3 │
+                                                                                       └────────┘
+ ```
  */
 public struct Reducer<ActionType, StateType> {
     /**
