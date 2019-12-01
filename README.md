@@ -272,6 +272,41 @@ At this point all you have to notice is the action handler (dispatch action func
 
 There will be only one honest Store in your entire app, so either you create it as a singleton or a property in a long-living class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the `UIKit`/SwiftUI world.
 
+```
+                 ┌────────────────────────────────────────┐
+                 │                                        │
+                 │    SwiftUI View / UIViewController     │
+                 │                                        │
+                 └────┬───────────────────────────────────┘
+                      │                            ▲
+                      │                            │
+                      │ action        notification
+          ┌─────────┐ │                            │
+          │         ▼ │                       ─ ─ ─ ─ ─ ─
+          │      ┏━━━━│━━━━━━━━━━━━━━━━━━━━━━┫   State   ┣┓
+  new actions    ┃    │            Store       Publisher  ┃░
+from middleware  ┃    ▼                      └ ─ ─ ┬ ─ ─ ┘┃░
+          │      ┃ ┌───────────────────┐                  ┃░
+          │      ┃ │    Middlewares    │           │      ┃░
+          └────────┤┌───┐  ┌───┐  ┌───┐│                  ┃░
+                 ┃ ││ 1 │─▶│ 2 │─▶│ 3 ││◀─         │      ┃░
+                 ┃ │└───┘  └───┘  └───┘│  │               ┃░
+                 ┃ └────────────────┬──┘      ┌────┴────┐ ┃░
+                 ┃                  │     │   │         │ ┃░
+                 ┃    ┌─────────────┘      ─ ─│  State  │ ┃░
+                 ┃    │ ┌─────────────────────│         │ ┃░
+                 ┃    ▼ ▼                     └────▲────┘ ┃░
+                 ┃ ┌───────────────────┐           ║      ┃░
+                 ┃ │     Reducers      │           ║      ┃░
+                 ┃ │┌───┐  ┌───┐  ┌───┐│           ║      ┃░
+                 ┃ ││ 1 │─▶│ 2 │─▶│ 3 │╠═══════════╝      ┃░
+                 ┃ │└───┘  └───┘  └───┘│    state         ┃░
+                 ┃ └───────────────────┘   mutation       ┃░
+                 ┃                                        ┃░
+                 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛░
+                  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+```
+
 ### Middleware
 
 `Middleware` is a plugin, or a composition of several plugins, that are assigned to the `Store` pipeline in order to handle each `EventProtocol` dispatched and to create `ActionProtocol` in response. It's also capable of handling each `ActionProtocol` before the `Reducer` to do its job.
@@ -371,7 +406,105 @@ This dataflow is, somehow, an implementation of MVC, one that differs significan
 
 One important distinction is about the user action: on SwiftRex it's forwarded by the controller and reaches the Store, so the responsibility of updating the state becomes the Store's responsibility now. The rest is pretty much the same, but with a better definition of how the Model operates.
 
+```
+     ╼━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╾
+    ╱░░░░░░░░░░░░░░░░░◉░░░░░░░░░░░░░░░░░░╲
+  ╱░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╲
+ ┃░░░░░░░░░░░░░◉░░◖■■■■■■■◗░░░░░░░░░░░░░░░░░┃
+ ┃░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░┃
+╭┃░╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮░┃
+│┃░┃             ┌──────────┐             ┃░┃
+╰┃░┃             │ UIButton │────────┐    ┃░┃
+ ┃░┃             └──────────┘        │    ┃░┃
+╭┃░┃         ┌───────────────────┐   │    ┃░┃╮ dispatch<Action>(_ action: Action)
+│┃░┃         │UIGestureRecognizer│───┼──────────────────────────────────────────────┐
+│┃░┃         └───────────────────┘   │    ┃░┃│                                      │
+╰┃░┃             ┌───────────┐       │    ┃░┃│                                      ▼
+╭┃░┃             │viewDidLoad│───────┘    ┃░┃╯                           ┏━━━━━━━━━━━━━━━━━━━━┓
+│┃░┃             └───────────┘            ┃░┃                            ┃                    ┃░
+│┃░┃                                      ┃░┃                            ┃                    ┃░
+╰┃░┃                                      ┃░┃                            ┃                    ┃░
+ ┃░┃               ┌───────┐              ┃░┃                            ┃                    ┃░
+ ┃░┃               │UILabel│◀─ ─ ─ ─ ┐    ┃░┃                            ┃                    ┃░
+ ┃░┃               └───────┘              ┃░┃  Combine, RxSwift    ┌ ─ ─ ┻ ─ ┐                ┃░
+ ┃░┃                                 │    ┃░┃  or ReactiveSwift       State      Store        ┃░
+ ┃░┃        ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ╋░─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│Publisher│                ┃░
+ ┃░┃        ▼               │             ┃░┃  subscribe(onNext:)                             ┃░
+ ┃░┃ ┌─────────────┐        ▼             ┃░┃  sink(receiveValue:) └ ─ ─ ┳ ─ ┘                ┃░
+ ┃░┃ │  Diffable   │ ┌─────────────┐      ┃░┃  assign(to:on:)            ┃                    ┃░
+ ┃░┃ │ DataSource  │ │RxDataSources│      ┃░┃                            ┃                    ┃░
+ ┃░┃ └─────────────┘ └─────────────┘      ┃░┃                            ┃                    ┃░
+ ┃░┃        │               │             ┃░┃                            ┃                    ┃░
+ ┃░┃ ┌──────▼───────────────▼───────────┐ ┃░┃                            ┗━━━━━━━━━━━━━━━━━━━━┛░
+ ┃░┃ │                                  │ ┃░┃                             ░░░░░░░░░░░░░░░░░░░░░░
+ ┃░┃ │                                  │ ┃░┃
+ ┃░┃ │                                  │ ┃░┃
+ ┃░┃ │                                  │ ┃░┃
+ ┃░┃ │         UICollectionView         │ ┃░┃
+ ┃░┃ │                                  │ ┃░┃
+ ┃░┃ │                                  │ ┃░┃
+ ┃░┃ │                                  │ ┃░┃
+ ┃░┃ │                                  │ ┃░┃
+ ┃░┃ └──────────────────────────────────┘ ┃░┃
+ ┃░╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯░┃
+ ┃░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░┃
+ ┃░░░░░░░░░░░░░░░░░░░▓▓▓▓░░░░░░░░░░░░░░░░░░░┃
+ ┃░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░┃
+  ╲░░░░░░░░░░░░░░░░░░▓▓▓▓░░░░░░░░░░░░░░░░░░╱
+    ╲░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╱
+     ╼━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╾
+```
+
 You can think of Store as a very heavy "Model" layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transferring the "Massive" problem from a layer to another, so that's why the Store is nothing but a collection of composable boxes with very well defined roles and, most importantly, restrictions.
+
+```
+     ╼━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╾
+    ╱░░░░░░░░░░░░░░░░░◉░░░░░░░░░░░░░░░░░░╲
+  ╱░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╲
+ ┃░░░░░░░░░░░░░◉░░◖■■■■■■■◗░░░░░░░░░░░░░░░░░┃
+ ┃░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░┃
+╭┃░╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮░┃
+│┃░┃               ┌────────┐             ┃░┃
+╰┃░┃               │ Button │────────┐    ┃░┃
+ ┃░┃               └────────┘        │    ┃░┃              ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐             ┏━━━━━━━━━━━━━━━━━━━━━━━┓
+╭┃░┃          ┌──────────────────┐   │    ┃░┃╮ dispatch                                            ┃                       ┃░
+│┃░┃          │      Toggle      │───┼────────────────────▶│   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─▶  │────────────▶┃                       ┃░
+│┃░┃          └──────────────────┘   │    ┃░┃│ view event      f: (Event) → Action     app action  ┃                       ┃░
+╰┃░┃              ┌──────────┐       │    ┃░┃│             │                         │             ┃                       ┃░
+╭┃░┃              │ onAppear │───────┘    ┃░┃╯                                                     ┃                       ┃░
+│┃░┃              └──────────┘            ┃░┃              │   ObservableViewModel   │             ┃                       ┃░
+│┃░┃                                      ┃░┃                                                      ┃                       ┃░
+╰┃░┃                                      ┃░┃              │     a projection of     │  projection ┃         Store         ┃░
+ ┃░┃                                      ┃░┃                   the actual store                   ┃                       ┃░
+ ┃░┃                                      ┃░┃              │                         │             ┃                       ┃░
+ ┃░┃      ┌────────────────────────┐      ┃░┃                                                      ┃                       ┃░
+ ┃░┃      │                        │      ┃░┃              │                         │            ┌┃─ ─ ─ ─ ─ ┐            ┃░
+ ┃░┃      │    @ObservedObject     │◀ ─ ─ ╋░─ ─ ─ ─ ─ ─ ─ ─    ◀─ ─ ─ ─ ─ ─ ─ ─ ─ ─   ◀─ ─ ─ ─ ─ ─    State                ┃░
+ ┃░┃      │                        │      ┃░┃  view state  │   f: (State) → View     │  app state │ Publisher │            ┃░
+ ┃░┃      └────────────────────────┘      ┃░┃                               State                  ┳ ─ ─ ─ ─ ─             ┃░
+ ┃░┃        │          │          │       ┃░┃              └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘             ┗━━━━━━━━━━━━━━━━━━━━━━━┛░
+ ┃░┃        ▼          ▼          ▼       ┃░┃                                                       ░░░░░░░░░░░░░░░░░░░░░░░░░
+ ┃░┃   ┌────────┐ ┌────────┐ ┌────────┐   ┃░┃
+ ┃░┃   │  Text  │ │  List  │ │ForEach │   ┃░┃
+ ┃░┃   └────────┘ └────────┘ └────────┘   ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░┃                                      ┃░┃
+ ┃░╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯░┃
+ ┃░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░┃
+ ┃░░░░░░░░░░░░░░░░░░░▓▓▓▓░░░░░░░░░░░░░░░░░░░┃
+ ┃░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░┃
+  ╲░░░░░░░░░░░░░░░░░░▓▓▓▓░░░░░░░░░░░░░░░░░░╱
+    ╲░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╱
+     ╼━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╾
+```
 
 And what about SwiftUI? Is this architecture a good fit for the new UI framework? In fact, this architecture works even better in SwiftUI, because SwiftUI was inspired by several functional patterns and it's reactive and stateless by conception. It was said multiple times during WWDC 2019 that, in SwiftUI, the **View is a function of the state**, and that we should always aim for single source of truth and the data should always flow in a single direction.
 
