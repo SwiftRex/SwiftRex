@@ -144,13 +144,13 @@
                 <a href="Structs/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/StoreProjection.html">StoreProjection</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/SubscriberType.html">SubscriberType</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ViewStore.html">ViewStore</a>
               </li>
             </ul>
           </li>
@@ -223,9 +223,9 @@ of this class and, directly or indirectly, all the other parts of your app will 
 by this instance.</p>
 
 <p>That means that other types of store can act as a proxy to this one, but none of them should hold any state. For more
-information on that please check <code><a href="Structs/ViewStore.html">ViewStore</a></code>.</p>
+information on that please check <code><a href="Structs/StoreProjection.html">StoreProjection</a></code>.</p>
 
-<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png" alt="Store, ViewStore and View"></p>
+<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png" alt="Store, StoreProjection and View"></p>
 
 <p>You can think of Store as a very heavy <q>Model</q> layer, completely detached from the Views, Controllers, Presenters etc.,
 and where all the business logic stands. At a first sight it may look like transferring the <q>Massive</q> problem from a
@@ -242,6 +242,39 @@ new state, accumulatively. When they are done, the store publishes the final sta
 subscribers.</p>
 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png" alt="Store internals"></p>
+<pre class="highlight swift"><code>                  <span class="err">┌────────────────────────────────────────┐</span>
+                  <span class="err">│</span>                                        <span class="err">│</span>
+                  <span class="err">│</span>    <span class="kt">SwiftUI</span> <span class="kt">View</span> <span class="o">/</span> <span class="kt">UIViewController</span>     <span class="err">│</span>
+                  <span class="err">│</span>                                        <span class="err">│</span>
+                  <span class="err">└────┬───────────────────────────────────┘</span>
+                       <span class="err">│</span>                            <span class="err">▲</span>
+                       <span class="err">│</span>                            <span class="err">│</span>
+                       <span class="err">│</span> <span class="n">action</span>        <span class="n">notification</span>
+           <span class="err">┌─────────┐</span> <span class="err">│</span>                            <span class="err">│</span>
+           <span class="err">│</span>         <span class="err">▼</span> <span class="err">│</span>                       <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>
+           <span class="err">│</span>      <span class="err">┏━━━━│━━━━━━━━━━━━━━━━━━━━━━┫</span>   <span class="kt">State</span>   <span class="err">┣┓</span>
+   <span class="k">new</span> <span class="n">actions</span>    <span class="err">┃</span>    <span class="err">│</span>            <span class="kt">Store</span>       <span class="kt">Publisher</span>  <span class="err">┃░</span>
+ <span class="n">from</span> <span class="n">middleware</span>  <span class="err">┃</span>    <span class="err">▼</span>                      <span class="err">└</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┬</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┘┃░</span>
+           <span class="err">│</span>      <span class="err">┃</span> <span class="err">┌───────────────────┐</span>                  <span class="err">┃░</span>
+           <span class="err">│</span>      <span class="err">┃</span> <span class="err">│</span>    <span class="kt">Middlewares</span>    <span class="err">│</span>           <span class="err">│</span>      <span class="err">┃░</span>
+           <span class="err">└────────┤┌───┐</span>  <span class="err">┌───┐</span>  <span class="err">┌───┐│</span>                  <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">││</span> <span class="mi">1</span> <span class="err">│─▶│</span> <span class="mi">2</span> <span class="err">│─▶│</span> <span class="mi">3</span> <span class="err">││◀─</span>         <span class="err">│</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│└───┘</span>  <span class="err">└───┘</span>  <span class="err">└───┘│</span>  <span class="err">│</span>               <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">└────────────────┬──┘</span>      <span class="err">┌────┴────┐</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>                  <span class="err">│</span>     <span class="err">│</span>   <span class="err">│</span>         <span class="err">│</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>    <span class="err">┌─────────────┘</span>      <span class="err">─</span> <span class="err">─│</span>  <span class="kt">State</span>  <span class="err">│</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>    <span class="err">│</span> <span class="err">┌─────────────────────│</span>         <span class="err">│</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>    <span class="err">▼</span> <span class="err">▼</span>                     <span class="err">└────▲────┘</span> <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">┌───────────────────┐</span>           <span class="err">║</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│</span>     <span class="kt">Reducers</span>      <span class="err">│</span>           <span class="err">║</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│┌───┐</span>  <span class="err">┌───┐</span>  <span class="err">┌───┐│</span>           <span class="err">║</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">││</span> <span class="mi">1</span> <span class="err">│─▶│</span> <span class="mi">2</span> <span class="err">│─▶│</span> <span class="mi">3</span> <span class="err">│╠═══════════╝</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│└───┘</span>  <span class="err">└───┘</span>  <span class="err">└───┘│</span>    <span class="n">state</span>         <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">└───────────────────┘</span>   <span class="n">mutation</span>       <span class="err">┃░</span>
+                  <span class="err">┃</span>                                        <span class="err">┃░</span>
+                  <span class="err">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛░</span>
+                   <span class="err">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
+</code></pre>
 
 <p>By using this architecture, your model gets completely detached from the <code>UIKit</code>/<code>SwiftUI</code> world. And your UI gets
 completely independent from side-effects, state mutations, threading, ownership, logic, logs, analytics and everything
@@ -367,7 +400,7 @@ in the chain or to the reducers. It can be useful for Unit Tests or for some com
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-01)</p>
+          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-18)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

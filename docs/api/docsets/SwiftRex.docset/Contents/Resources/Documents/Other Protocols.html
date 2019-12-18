@@ -144,13 +144,13 @@
                 <a href="Structs/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/StoreProjection.html">StoreProjection</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/SubscriberType.html">SubscriberType</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ViewStore.html">ViewStore</a>
               </li>
             </ul>
           </li>
@@ -219,13 +219,47 @@ can use it as a <code>ObservedObject</code>.</li>
 <p>Not necessarily a store implementation means that this entity holds the source-of-truth of an app. Every app should
 have a single and centralized store, where the whole state is held. But Views and ViewControllers do not necessarily
 need to access this main Store directly, they could, instead, access some <q>proxy</q> store that intermediates the actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
-on that please check <code><a href="Structs/ViewStore.html">ViewStore</a></code>, and compare it to <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
+on that please check <code><a href="Structs/StoreProjection.html">StoreProjection</a></code>, and compare it to <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
 
 <p>In summary, it&rsquo;s recommended to have one and only store <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code> in your app, holding the one and only one
-source-of-truth, but at the same time having several <code><a href="Structs/ViewStore.html">ViewStore</a></code> instances mapping the whole state and whole set of
+source-of-truth, but at the same time having several <code><a href="Structs/StoreProjection.html">StoreProjection</a></code> instances mapping the whole state and whole set of
 possible actions from and to view state and events relevant to the specific view you implement.</p>
 
-<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png" alt="Store, ViewStore and View"></p>
+<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png" alt="Store, StoreProjection and View"></p>
+<pre class="highlight swift"><code>            <span class="err">┌──────────┐</span>
+            <span class="err">│</span> <span class="kt">UIButton</span> <span class="err">│────────┐</span>
+            <span class="err">└──────────┘</span>        <span class="err">│</span>
+        <span class="err">┌───────────────────┐</span>   <span class="err">│</span>         <span class="n">dispatch</span><span class="o">&lt;</span><span class="kt">Action</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span>
+        <span class="err">│</span><span class="kt">UIGestureRecognizer</span><span class="err">│───┼──────────────────────────────────────────────┐</span>
+        <span class="err">└───────────────────┘</span>   <span class="err">│</span>                                              <span class="err">│</span>
+            <span class="err">┌───────────┐</span>       <span class="err">│</span>                                              <span class="err">▼</span>
+            <span class="err">│</span><span class="n">viewDidLoad</span><span class="err">│───────┘</span>                                   <span class="err">┏━━━━━━━━━━━━━━━━━━━━┓</span>
+            <span class="err">└───────────┘</span>                                           <span class="err">┃</span>                    <span class="err">┃░</span>
+                                                                    <span class="err">┃</span>                    <span class="err">┃░</span>
+                                                                    <span class="err">┃</span>                    <span class="err">┃░</span>
+              <span class="err">┌───────┐</span>                                             <span class="err">┃</span>                    <span class="err">┃░</span>
+              <span class="err">│</span><span class="kt">UILabel</span><span class="err">│◀─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┐</span>                                   <span class="err">┃</span>                    <span class="err">┃░</span>
+              <span class="err">└───────┘</span>                   <span class="kt">Combine</span><span class="p">,</span> <span class="kt">RxSwift</span>    <span class="err">┌</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┻</span> <span class="err">─</span> <span class="err">┐</span>                <span class="err">┃░</span>
+                                <span class="err">│</span>         <span class="n">or</span> <span class="kt">ReactiveSwift</span>       <span class="kt">State</span>      <span class="kt">Store</span>        <span class="err">┃░</span>
+       <span class="err">┌</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─│</span><span class="kt">Publisher</span><span class="err">│</span>                <span class="err">┃░</span>
+       <span class="err">▼</span>               <span class="err">│</span>                  <span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:)</span>                             <span class="err">┃░</span>
+<span class="err">┌─────────────┐</span>        <span class="err">▼</span>                  <span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:)</span> <span class="err">└</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┳</span> <span class="err">─</span> <span class="err">┘</span>                <span class="err">┃░</span>
+<span class="err">│</span>  <span class="kt">Diffable</span>   <span class="err">│</span> <span class="err">┌─────────────┐</span>           <span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span><span class="nv">on</span><span class="p">:)</span>            <span class="err">┃</span>                    <span class="err">┃░</span>
+<span class="err">│</span> <span class="kt">DataSource</span>  <span class="err">│</span> <span class="err">│</span><span class="kt">RxDataSources</span><span class="err">│</span>                                     <span class="err">┃</span>                    <span class="err">┃░</span>
+<span class="err">└─────────────┘</span> <span class="err">└─────────────┘</span>                                     <span class="err">┃</span>                    <span class="err">┃░</span>
+       <span class="err">│</span>               <span class="err">│</span>                                            <span class="err">┃</span>                    <span class="err">┃░</span>
+<span class="err">┌──────▼───────────────▼───────────┐</span>                                <span class="err">┗━━━━━━━━━━━━━━━━━━━━┛░</span>
+<span class="err">│</span>                                  <span class="err">│</span>                                 <span class="err">░░░░░░░░░░░░░░░░░░░░░░</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>         <span class="kt">UICollectionView</span>         <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">└──────────────────────────────────┘</span>
+</code></pre>
 
                         <a href="Protocols/StoreType.html" class="slightly-smaller">See more</a>
                       </div>
@@ -378,7 +412,7 @@ function <code>h(x)</code> will be similar to <code>g(f(x))</code></p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-01)</p>
+          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-18)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

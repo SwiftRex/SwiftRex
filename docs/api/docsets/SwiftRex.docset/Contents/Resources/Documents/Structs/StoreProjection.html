@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ReduxPipelineWrapper Structure Reference</title>
+    <title>StoreProjection Structure Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -10,8 +10,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/swift/Struct/ReduxPipelineWrapper" class="dashAnchor"></a>
-    <a title="ReduxPipelineWrapper Structure Reference"></a>
+    <a name="//apple_ref/swift/Struct/StoreProjection" class="dashAnchor"></a>
+    <a title="StoreProjection Structure Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
@@ -22,7 +22,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">SwiftRex Reference</a>
         <img id="carat" src="../img/carat.png" />
-        ReduxPipelineWrapper Structure Reference
+        StoreProjection Structure Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -179,15 +179,43 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>ReduxPipelineWrapper</h1>
+            <h1>StoreProjection</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ReduxPipelineWrapper</span><span class="o">&lt;</span><span class="kt">MiddlewareType</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ActionHandler.html">ActionHandler</a></span>
-    <span class="k">where</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">InputActionType</span> <span class="o">==</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">OutputActionType</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">StoreProjection</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/StoreType.html">StoreType</a></span></code></pre>
 
                 </div>
               </div>
-            
+            <p>Not necessarily a store implementation means that this entity holds the source-of-truth of an app. The source-of-truth
+should be single a centralized store, where all the state is held. But your Views and ViewControllers not necessarily
+need to access this main Store directly, they could, instead, access some <q>proxy</q> store that simply intermediates
+all actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
+on that please check <code>StoreProjection</code>, and compare it to <code><a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
+
+<p>Well, this unlocks several possibilities like having <q>Store Projections</q> or <q>View Stores</q>, which act somehow like
+presenters (in MVP pattern) or ViewModels (in MVVM pattern), because this layer can be seen as a simple transformation
+of states and actions. The view store will transform State into View State by, for example, applying NumberFormatter or
+DateFormatter into numbers and dates from your state and generating strings to be shown in UI labels or text fields.
+You can picture that as dozens of small functions, transforming each property individually, or you can group all the
+properties in a view item, or view state, containing lots of strings to be used by UI controls, and then the whole
+process is a single function from <code>(State) -&gt; ViewState</code>. In the other direction, you probably want to map UI events
+like scrolling, button taps, toggle changes and view lifecycle events (did load, will appear, foreground) into app
+actions like save a form, load next page, add to favorites or reload a list of items. Grouping them in an enum of
+possible events triggered by the user in a certain view, and you may want to map these view actions into app actions:
+<code>(ViewAction) -&gt; AppAction</code>.</p>
+
+<p>Because the <code><a href="../Protocols/StoreType.html">StoreType</a></code> protocol is very generic and offers <code><a href="../Protocols/ActionHandler.html">ActionHandler</a></code> and <code><a href="../Protocols/StateProvider.html">StateProvider</a></code>, we can think of other
+possible implementations like a proxy view store that knows how to reach the main store, but exposes to a view only
+what&rsquo;s relevant for it (<code>ViewState</code> and <code>ViewAction</code>), at the same time it knows how to map <code>(State) -&gt; ViewState</code> and
+<code>(ViewAction) -&gt; AppAction</code>. These two transformations are used every time a view dispatches a view action or a state
+changes and notifies all subscribers.</p>
+
+<p>Some store implementations will glue all the parts together and become responsible for being its responsibility is
+being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="../Protocols/StoreType.html">StoreType</a></code> is the single point of
+contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one
+single dependency or, preferably, a dependency for each of its protocols - <code>EventHandler</code> and <code><a href="../Protocols/StateProvider.html">StateProvider</a></code> -, both
+eventually pointing to the same instance.</p>
+
           </section>
           <section class="section task-group-section">
             <div class="task-group">
@@ -195,9 +223,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex20ReduxPipelineWrapperV10ActionTypea"></a>
-                    <a name="//apple_ref/swift/Alias/ActionType" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20ReduxPipelineWrapperV10ActionTypea">ActionType</a>
+                    <a name="/s:8SwiftRex13StateProviderP14statePublisherAA0F4TypeVy0cG0Qzs5NeverOGvp"></a>
+                    <a name="//apple_ref/swift/Property/statePublisher" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13StateProviderP14statePublisherAA0F4TypeVy0cG0Qzs5NeverOGvp">statePublisher</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -211,7 +239,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ActionType</span> <span class="o">=</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">InputActionType</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">statePublisher</span><span class="p">:</span> <span class="kt"><a href="../Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a></span><span class="o">&lt;</span><span class="kt">ViewState</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -221,9 +249,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea"></a>
-                    <a name="//apple_ref/swift/Alias/StateType" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a>
+                    <a name="/s:8SwiftRex15StoreProjectionV6action5stateACyxq_Gyxc_AA13PublisherTypeVyq_s5NeverOGtcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(action:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex15StoreProjectionV6action5stateACyxq_Gyxc_AA13PublisherTypeVyq_s5NeverOGtcfc">init(action:state:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -237,36 +265,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">StateType</span> <span class="o">=</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">StateType</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex20ReduxPipelineWrapperV5state7reducer10middleware10emitsValueACyxGAA21ReplayLastSubjectTypeVy05StateN0Qzs5NeverOG_AA7ReducerVy011InputActionN0QzALGxAA010ShouldEmitJ0VyALGtcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(state:reducer:middleware:emitsValue:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20ReduxPipelineWrapperV5state7reducer10middleware10emitsValueACyxGAA21ReplayLastSubjectTypeVy05StateN0Qzs5NeverOG_AA7ReducerVy011InputActionN0QzALGxAA010ShouldEmitJ0VyALGtcfc">init(state:reducer:middleware:emitsValue:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="kt"><a href="../Other%20Typealiases.html#/s:8SwiftRex31UnfailableReplayLastSubjectTypea">UnfailableReplayLastSubjectType</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="nv">reducer</span><span class="p">:</span> <span class="kt"><a href="../Structs/Reducer.html">Reducer</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV10ActionTypea">ActionType</a></span><span class="p">,</span> <span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="nv">middleware</span><span class="p">:</span> <span class="kt">MiddlewareType</span><span class="p">,</span>
-            <span class="nv">emitsValue</span><span class="p">:</span> <span class="kt"><a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">ViewAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="kt"><a href="../Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a></span><span class="o">&lt;</span><span class="kt">ViewState</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -292,39 +291,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV10ActionTypea">ActionType</a></span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex20ReduxPipelineWrapperVAASQ9StateTypeRpzrlE5state7reducer10middlewareACyxGAA017ReplayLastSubjectG0VyAEs5NeverOG_AA7ReducerVy011InputActionG0QzAEGxtcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(state:reducer:middleware:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20ReduxPipelineWrapperVAASQ9StateTypeRpzrlE5state7reducer10middlewareACyxGAA017ReplayLastSubjectG0VyAEs5NeverOG_AA7ReducerVy011InputActionG0QzAEGxtcfc">init(state:reducer:middleware:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="kt"><a href="../Other%20Typealiases.html#/s:8SwiftRex31UnfailableReplayLastSubjectTypea">UnfailableReplayLastSubjectType</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="nv">reducer</span><span class="p">:</span> <span class="kt"><a href="../Structs/Reducer.html">Reducer</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV10ActionTypea">ActionType</a></span><span class="p">,</span> <span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="nv">middleware</span><span class="p">:</span> <span class="kt">MiddlewareType</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ViewAction</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
