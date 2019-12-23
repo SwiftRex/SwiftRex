@@ -12,6 +12,9 @@ endif
 # Pod push
 pod-push:
 	pod trunk push SwiftRex.podspec --allow-warnings
+	pod trunk push ReactiveSwiftRex.podspec --allow-warnings
+	pod trunk push RxSwiftRex.podspec --allow-warnings
+	pod trunk push CombineRex.podspec --allow-warnings
 
 # Xcodeproj
 
