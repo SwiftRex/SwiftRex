@@ -34,6 +34,7 @@ import SwiftRex
 /// │  Text  │ │  List  │ │ForEach │
 /// └────────┘ └────────┘ └────────┘
 /// ```
+/*
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     @Published public var state: ViewState
@@ -134,5 +135,5 @@ extension ObservableViewModel {
     }
 }
 #endif
-
+*/
 #endif
