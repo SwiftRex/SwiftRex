@@ -20,7 +20,17 @@ extension Publisher {
     public func asPublisherType() -> PublisherType<Output, Failure> {
         .init { (subscriber: SubscriberType<Output, Failure>) -> SwiftRex.SubscriptionType in
             self.subscribe(subscriber)
-            return AnyCancellable { }.asSubscription()
+            return AnyCancellable { }.asSubscriptionType()
+        }
+    }
+}
+
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+extension PublisherType {
+    public static func lift<FromOutput>(_ transform: @escaping (FromOutput) -> Output) -> (PublisherType<FromOutput, Failure>)
+    -> PublisherType<Output, Failure> {
+        return { originalPublisher in
+            originalPublisher.map(transform).asPublisherType()
         }
     }
 }

@@ -5,8 +5,8 @@ import SwiftRex
 extension SwiftRex.SubjectType where ErrorType == Error {
     public init(publishSubject: PublishSubject<Element>) {
         self.init(
-            publisher: publishSubject.asPublisher(),
-            subscriber: publishSubject.asSubscriber()
+            publisher: publishSubject.asPublisherType(),
+            subscriber: publishSubject.asSubscriberType()
         )
     }
 }
@@ -14,8 +14,8 @@ extension SwiftRex.SubjectType where ErrorType == Error {
 extension SwiftRex.SubjectType where ErrorType == Never {
     public init(unfailablePublishSubject: PublishSubject<Element>) {
         self.init(
-            publisher: unfailablePublishSubject.asPublisher().assertNoFailure(),
-            subscriber: unfailablePublishSubject.asSubscriber().assertNoFailure()
+            publisher: unfailablePublishSubject.asPublisherType().assertNoFailure(),
+            subscriber: unfailablePublishSubject.asSubscriberType().assertNoFailure()
         )
     }
 }

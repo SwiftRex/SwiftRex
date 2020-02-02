@@ -11,7 +11,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = disposable.asSubscription()
+        let sut = disposable.asSubscriptionType()
         sut.unsubscribe()
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
@@ -37,7 +37,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = disposable.asSubscription().asDisposable()
+        let sut = disposable.asSubscriptionType().asDisposable()
         sut.dispose()
 
         XCTAssertTrue(sut.isDisposed)
@@ -50,7 +50,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = subscription.asDisposable().asSubscription()
+        let sut = subscription.asDisposable().asSubscriptionType()
         sut.unsubscribe()
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
@@ -63,7 +63,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let subscription = disposable.asSubscription()
+        let subscription = disposable.asSubscriptionType()
         var (lifetime, token) = { () -> (Lifetime, Lifetime.Token?) in
             let (lifetime, token) = Lifetime.make()
             return (lifetime, .some(token))

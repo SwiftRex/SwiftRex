@@ -143,7 +143,7 @@
                                                                                        └────────┘
  ```
  */
-public protocol Middleware: class {
+public protocol Middleware {
     /**
      The Action type that this `Middleware` knowns how to handle, so the store will forward actions of this type to this
      middleware. Thanks to optics, this action can be a sub-action lifted to a global action type. Please check
@@ -166,13 +166,16 @@ public protocol Middleware: class {
     associatedtype StateType
 
     /**
-     Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
-     This context includes ways to fetch the most up-to-date state or dispatch new actions.
-     When implementing your own Middleware, the initial value of this property can be a closure that simply crashes with
-     fatal error, because once the middleware is added to the `Store` or to a pipeline of composed middlewares, this
-     value will point to the store actions.
+     Middleware setup. This function will be called before actions are handled to the middleware, so you can configure your middleware with the given
+     parameters. You can hold any of them if you plan to read the state or dispatch new actions.
+     You can initialize and start timers or async tasks in here or in the `handle(action:next)` function, but never before this function is called,
+     otherwise the middleware would not yet be running from a store.
+
+     - Parameters:
+       - getState: a closure that allows the middleware to read the current state at any point in time
+       - output: an action handler that allows the middleware to dispatch new actions at any point in time
      */
-    var context: (() -> MiddlewareContext<OutputActionType, StateType>) { get set }
+    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>)
 
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
@@ -185,14 +188,11 @@ public protocol Middleware: class {
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    func handle(action: InputActionType, next: @escaping Next)
+    func handle(action: InputActionType) -> AfterReducer
 }
 
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
 // sourcery: AutoMockableGeneric = OutputActionType
 // sourcery: AutoMockableGeneric = InputActionType
-// sourcery: TypeErase = StateType
-// sourcery: TypeErase = OutputActionType
-// sourcery: TypeErase = InputActionType
 extension Middleware { }

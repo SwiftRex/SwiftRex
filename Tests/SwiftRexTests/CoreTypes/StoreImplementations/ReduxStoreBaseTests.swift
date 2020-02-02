@@ -18,32 +18,43 @@ class ReduxStoreBaseTests: XCTestCase {
         let events: [AppAction] = [.foo, .bar(.charlie), .foo]
         let initialState = TestState()
         let fooMiddleware = IsoMiddlewareMock<AppAction, TestState>()
-        fooMiddleware.handleActionNextClosure = { [weak fooMiddleware] action, next in
+        var fooMiddlewareOutput: AnyActionHandler<AppAction>?
+        fooMiddleware.receiveContextGetStateOutputClosure = { getState, output in
+            fooMiddlewareOutput = output
+        }
+        fooMiddleware.handleActionClosure = { action in
             guard action == .foo else {
-                next()
-                return
+                return .doNothing()
             }
 
-            fooMiddleware?.context().dispatch(.bar(.alpha))
-            next()
-            fooMiddleware?.context().dispatch(.bar(.bravo))
-            shouldCallFooMiddleware.fulfill()
+            fooMiddlewareOutput?.dispatch(.bar(.alpha))
+
+            return .do {
+                fooMiddlewareOutput?.dispatch(.bar(.bravo))
+                shouldCallFooMiddleware.fulfill()
+            }
         }
         let barMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
-        barMiddleware.handleActionNextClosure = { [weak barMiddleware] action, next in
+        var barMiddlewareOutput: AnyActionHandler<AppAction.Bar>?
+        barMiddleware.receiveContextGetStateOutputClosure = { getState, output in
+            barMiddlewareOutput = output
+        }
+        barMiddleware.handleActionClosure = { action in
             switch action {
             case .alpha:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.15) {
-                    barMiddleware?.context().dispatch(.delta)
+                    barMiddlewareOutput?.dispatch(.delta)
                 }
             case .bravo:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-                    barMiddleware?.context().dispatch(.echo)
+                    barMiddlewareOutput?.dispatch(.echo)
                 }
             default: break
             }
-            next()
-            shouldCallBarMiddleware.fulfill()
+
+            return .do {
+                shouldCallBarMiddleware.fulfill()
+            }
         }
 
         let subjectMock = CurrentValueSubject(currentValue: initialState)
@@ -68,9 +79,9 @@ class ReduxStoreBaseTests: XCTestCase {
             subject: subjectMock.subject,
             reducer: reducer,
             middleware: fooMiddleware <> barMiddleware.lift(
-                actionZoomIn: { $0.bar },
-                actionZoomOut: { AppAction.bar($0) },
-                stateZoomIn: { $0.name }
+                inputActionMap: { $0.bar },
+                outputActionMap: { AppAction.bar($0) },
+                stateMap: { $0.name }
             )
         )
 

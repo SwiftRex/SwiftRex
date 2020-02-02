@@ -41,25 +41,36 @@ class ActionHandlerMock<ActionType>: ActionHandler {
 
 }
 class MiddlewareMock<InputActionType, OutputActionType, StateType>: Middleware {
-    var context: (() -> MiddlewareContext<OutputActionType, StateType>) {
-        get { return underlyingContext }
-        set(value) { underlyingContext = value }
+
+    //MARK: - receiveContext
+
+    var receiveContextGetStateOutputCallsCount = 0
+    var receiveContextGetStateOutputCalled: Bool {
+        return receiveContextGetStateOutputCallsCount > 0
     }
-    var underlyingContext: (() -> MiddlewareContext<OutputActionType, StateType>)!
+    var receiveContextGetStateOutputReceivedArguments: (getState: GetState<StateType>, output: AnyActionHandler<OutputActionType>)?
+    var receiveContextGetStateOutputClosure: ((@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void)?
+
+    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
+        receiveContextGetStateOutputCallsCount += 1
+        receiveContextGetStateOutputReceivedArguments = (getState: getState, output: output)
+        receiveContextGetStateOutputClosure?(getState, output)
+    }
 
     //MARK: - handle
 
-    var handleActionNextCallsCount = 0
-    var handleActionNextCalled: Bool {
-        return handleActionNextCallsCount > 0
+    var handleActionCallsCount = 0
+    var handleActionCalled: Bool {
+        return handleActionCallsCount > 0
     }
-    var handleActionNextReceivedArguments: (action: InputActionType, next: Next)?
-    var handleActionNextClosure: ((InputActionType, @escaping Next) -> Void)?
+    var handleActionReceivedAction: InputActionType?
+    var handleActionReturnValue: AfterReducer!
+    var handleActionClosure: ((InputActionType) -> AfterReducer)?
 
-    func handle(action: InputActionType, next: @escaping Next) {
-        handleActionNextCallsCount += 1
-        handleActionNextReceivedArguments = (action: action, next: next)
-        handleActionNextClosure?(action, next)
+    func handle(action: InputActionType) -> AfterReducer {
+        handleActionCallsCount += 1
+        handleActionReceivedAction = action
+        return handleActionClosure.map({ $0(action) }) ?? handleActionReturnValue
     }
 
 }
@@ -84,7 +95,7 @@ class StateProviderMock<StateType>: StateProvider {
     var underlyingStatePublisher: UnfailablePublisherType<StateType>!
 
 }
-class StoreTypeMock<StateType, ActionType>: StoreType {
+class StoreTypeMock<ActionType, StateType>: StoreType {
     var statePublisher: UnfailablePublisherType<StateType> {
         get { return underlyingStatePublisher }
         set(value) { underlyingStatePublisher = value }

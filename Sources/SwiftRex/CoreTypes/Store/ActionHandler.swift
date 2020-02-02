@@ -15,6 +15,15 @@ public protocol ActionHandler {
     func dispatch(_ action: ActionType)
 }
 
+extension ActionHandler {
+    public func contramap<NewActionType>(_ transform: @escaping (NewActionType) -> ActionType) -> AnyActionHandler<NewActionType> {
+        AnyActionHandler { newAction in
+            let oldAction = transform(newAction)
+            self.dispatch(oldAction)
+        }
+    }
+}
+
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = ActionType
 extension ActionHandler { }

@@ -1,62 +1,66 @@
 @testable import SwiftRex
 import XCTest
 
-typealias IsoMiddlewareMock<Action, State> = MiddlewareMock<Action, Action, State>
-
 class LiftMiddlewareTests: XCTestCase {
     func testLiftMiddlewareNewActionsAreForwardedToGlobalContext() {
+        var localDispatcher: AnyActionHandler<AppAction.Bar>?
+        var globalReceived: [AppAction] = []
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { globalReceived.append($0) }
+
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
-        let context = MiddlewareContextMock<AppAction, TestState>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
-            actionZoomIn: { $0.bar },
-            actionZoomOut: { bar in .bar(bar) },
-            stateZoomIn: { $0.name }
+            inputActionMap: { $0.bar },
+            outputActionMap: { bar in .bar(bar) },
+            stateMap: { $0.name }
         )
-        generalMiddleware.context = { context.value }
+        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
+        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
 
-        nameMiddleware.context().dispatch(.echo)
-        generalMiddleware.context().dispatch(.foo)
-        generalMiddleware.context().dispatch(.bar(.bravo))
-        nameMiddleware.context().dispatch(.delta)
+        localDispatcher?.dispatch(.echo)
+        globalDispatcher.dispatch(.foo)
+        globalDispatcher.dispatch(.bar(.bravo))
+        localDispatcher?.dispatch(.delta)
 
-        XCTAssertEqual(4, context.onActionCount)
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
-        XCTAssertEqual(context.onActionParameters, expectedActionsOnGlobalContext)
+        XCTAssertEqual(globalReceived, expectedActionsOnGlobalContext)
     }
 
     func testLiftMiddlewareForwardsActionsFromTheGlobalMiddleware() {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         var receivedActions = [AppAction.Bar]()
-        nameMiddleware.handleActionNextClosure = { action, _ in
+        nameMiddleware.handleActionClosure = { action in
             receivedActions.append(action)
+            return .doNothing()
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
-            actionZoomIn: { $0.bar },
-            actionZoomOut: { bar in .bar(bar) },
-            stateZoomIn: { $0.name }
-        )
+                inputActionMap: { $0.bar },
+                outputActionMap: { bar in .bar(bar) },
+                stateMap: { $0.name }
+            )
 
-        generalMiddleware.handle(action: .bar(.echo), next: { })
-        generalMiddleware.handle(action: .foo, next: { })
-        generalMiddleware.handle(action: .bar(.bravo), next: { })
-        generalMiddleware.handle(action: .bar(.delta), next: { })
+        _ = generalMiddleware.handle(action: .bar(.echo))
+        _ = generalMiddleware.handle(action: .foo)
+        _ = generalMiddleware.handle(action: .bar(.bravo))
+        _ = generalMiddleware.handle(action: .bar(.delta))
 
-        XCTAssertEqual(3, nameMiddleware.handleActionNextCallsCount)
+        XCTAssertEqual(3, nameMiddleware.handleActionCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
     }
 
     func testLiftMiddlewareUnliftsStateForLocalMiddleware() {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
-        let context = MiddlewareContextMock<AppAction, TestState>()
-        context.state = TestState(value: .init(), name: "test-unlift-state")
-        let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
-            actionZoomIn: { $0.bar },
-            actionZoomOut: { bar in .bar(bar) },
-            stateZoomIn: { $0.name }
-        )
-        generalMiddleware.context = { context.value }
+        var middlewareGetState: (() -> String)?
+        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
 
-        XCTAssertEqual("test-unlift-state", nameMiddleware.context().getState())
+        let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> = nameMiddleware.lift(
+                inputActionMap: { $0.bar },
+                outputActionMap: { bar in .bar(bar) },
+                stateMap: { $0.name }
+            )
+
+        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
+
+        XCTAssertEqual("test-unlift-state", middlewareGetState?())
     }
 }

@@ -29,6 +29,31 @@ class PublisherTypeBridgeTests: XCTestCase {
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
     }
 
+    func testPublisherTypeToObservableOnValueMap() {
+        let shouldCallClosureValue = expectation(description: "Closure should be called")
+        let shouldCallClosureCompleted = expectation(description: "Closure should be called")
+
+        let publisherType = PublisherType<Int, Error> { subscriber in
+            subscriber.onValue(42)
+            subscriber.onCompleted(nil)
+            return FooSubscription { }
+        }
+
+        _ = PublisherType<String, Error>.lift { (int: Int) -> String in "\(int)" }(publisherType).subscribe(
+            onNext: { string in
+                XCTAssertEqual("42", string)
+                shouldCallClosureValue.fulfill()
+            },
+            onError: { error in
+                XCTFail("Unexpected error: \(error)")
+            },
+            onCompleted: {
+                shouldCallClosureCompleted.fulfill()
+            })
+
+        wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
+    }
+
     func testPublisherTypeToObservableOnError() {
         let shouldCallClosureValue = expectation(description: "Closure should be called")
         let shouldCallClosureError = expectation(description: "Closure should be called")
@@ -66,7 +91,7 @@ class PublisherTypeBridgeTests: XCTestCase {
             return Disposables.create()
         }
 
-        _ = observable.asPublisher().subscribe(SubscriberType(
+        _ = observable.asPublisherType().subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()
@@ -92,7 +117,7 @@ class PublisherTypeBridgeTests: XCTestCase {
             return Disposables.create()
         }
 
-        _ = observable.asPublisher().subscribe(SubscriberType(
+        _ = observable.asPublisherType().subscribe(SubscriberType(
             onValue: { string in
                 XCTAssertEqual("test", string)
                 shouldCallClosureValue.fulfill()

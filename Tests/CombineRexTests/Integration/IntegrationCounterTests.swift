@@ -104,13 +104,20 @@ enum CounterService {
         typealias OutputActionType = AppAction.CounterAction
         typealias StateType = Int
 
-        var context: () -> MiddlewareContext<AppAction.CounterAction, Int> = { fatalError("Not set yet") }
+        var getState: (() -> Int)!
+        var output: AnyActionHandler<AppAction.CounterAction>!
 
-        func handle(action: AppAction.CounterEvent, next: @escaping Next) {
-            next()
-            switch action {
-            case .requestIncrease: context().dispatch(.increase)
-            case .requestDecrease: context().dispatch(.decrease)
+        func receiveContext(getState: @escaping GetState<Int>, output: AnyActionHandler<AppAction.CounterAction>) {
+            self.getState = getState
+            self.output = output
+        }
+
+        func handle(action: AppAction.CounterEvent) -> AfterReducer {
+            return .do { [unowned self] in
+                switch action {
+                case .requestIncrease: self.output.dispatch(.increase)
+                case .requestDecrease: self.output.dispatch(.decrease)
+                }
             }
         }
     }
@@ -127,9 +134,9 @@ final class TestBasicStore: ReduxStoreBase<AppAction, AppState> {
                 ),
             middleware:
                 CounterService.middleware.lift(
-                    actionZoomIn: { $0.event },
-                    actionZoomOut: { AppAction.action($0) },
-                    stateZoomIn: { $0.currentNumber }
+                    inputActionMap: { $0.event },
+                    outputActionMap: { AppAction.action($0) },
+                    stateMap: { $0.currentNumber }
                 ),
             emitsValue: .whenDifferent
         )

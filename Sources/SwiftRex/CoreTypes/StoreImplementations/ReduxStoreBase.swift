@@ -107,12 +107,13 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
                      sub-state part, use the `lift` functions to elevate them to the same global state and global action
                      type.
      */
-    public init<M: Middleware>(subject: UnfailableReplayLastSubjectType<StateType>,
-                               reducer: Reducer<ActionType, StateType>,
-                               middleware: M,
-                               emitsValue: ShouldEmitValue<StateType> = .always)
-        where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
+    public init<M: Middleware>(
+        subject: UnfailableReplayLastSubjectType<StateType>,
+        reducer: Reducer<ActionType, StateType>,
+        middleware: M,
+        emitsValue: ShouldEmitValue<StateType> = .always
+    ) where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
         self.subject = subject
-            self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue)
+        self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue)
     }
 }

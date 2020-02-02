@@ -25,9 +25,18 @@ extension PublisherType: SignalProducerProtocol, SignalProducerConvertible {
 }
 
 extension SignalProducerProtocol {
-    public func asPublisher() -> PublisherType<Value, Self.Error> {
-        .init { subscriber in
-            self.producer.start(subscriber.asObserver()).asSubscription()
+    public func asPublisherType() -> PublisherType<Value, Self.Error> {
+        PublisherType<Value, Self.Error> { (subscriber: SubscriberType<Value, Self.Error>) in
+            self.producer.start(subscriber.asObserver()).asSubscriptionType()
+        }
+    }
+}
+
+extension PublisherType {
+    public static func lift<FromValue>(_ transform: @escaping (FromValue) -> Value) -> (PublisherType<FromValue, Error>)
+    -> PublisherType<Value, Error> {
+        return { originalPublisher in
+            originalPublisher.producer.map(transform).asPublisherType()
         }
     }
 }

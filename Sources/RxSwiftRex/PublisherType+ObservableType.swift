@@ -21,9 +21,18 @@ extension PublisherType: ObservableConvertibleType, ObservableType {
 }
 
 extension ObservableType {
-    public func asPublisher() -> PublisherType<Element, Error> {
+    public func asPublisherType() -> PublisherType<Element, Error> {
         .init { (subscriber: SubscriberType<Element, Error>) -> SubscriptionType in
-            self.subscribe(subscriber.asObserver()).asSubscription()
+            self.subscribe(subscriber.asObserver()).asSubscriptionType()
+        }
+    }
+}
+
+extension PublisherType {
+    public static func lift<FromElement>(_ transform: @escaping (FromElement) -> Element) -> (PublisherType<FromElement, Error>)
+    -> PublisherType<Element, Error> {
+        return { originalPublisher in
+            originalPublisher.map(transform).asPublisherType()
         }
     }
 }

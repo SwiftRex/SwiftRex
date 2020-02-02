@@ -13,7 +13,7 @@ extension SwiftRex.SubscriptionType {
 
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension Cancellable {
-    public func asSubscription() -> SwiftRex.SubscriptionType {
+    public func asSubscriptionType() -> SwiftRex.SubscriptionType {
         if let subscription = self as? SwiftRex.SubscriptionType { return subscription }
         return CancellableSubscription(cancellable: self)
     }

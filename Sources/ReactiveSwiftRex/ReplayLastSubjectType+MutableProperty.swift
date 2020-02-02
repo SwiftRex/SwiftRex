@@ -5,7 +5,7 @@ import SwiftRex
 extension ReplayLastSubjectType where ErrorType == Never {
     public init<P: MutablePropertyProtocol>(property: P) where P.Value == Element {
         self.init(
-            publisher: property.producer.asPublisher(),
+            publisher: property.producer.asPublisherType(),
             subscriber: SubscriberType(onValue: { property.value = $0 }),
             value: { property.value }
         )

@@ -84,7 +84,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
             case .interrupted:
                 XCTFail("Unexpected interruption")
             }
-        }.asSubscriber())
+        }.asSubscriberType())
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
     }
@@ -113,7 +113,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
             case .interrupted:
                 XCTFail("Unexpected interruption")
             }
-        }.asSubscriber())
+        }.asSubscriberType())
 
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
     }

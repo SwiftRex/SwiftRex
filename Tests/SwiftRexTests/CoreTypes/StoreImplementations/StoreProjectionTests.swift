@@ -31,16 +31,25 @@ class StoreProjectionTests: XCTestCase {
     func testStoreProjectionDispatchesActionToUpstreamStore() {
         let stateSubject = CurrentValueSubject(currentValue: TestState())
         let shouldCallUpstreamActionHandler = expectation(description: "upstream action handler should have been called")
+        let shouldCallReducer = expectation(description: "reducer should have been called")
+        let reducerMock = createReducerMock()
 
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
-        middlewareMock.handleActionNextClosure = { action, _ in
+        middlewareMock.handleActionClosure = { action in
             XCTAssertEqual(.bar(.delta), action)
             shouldCallUpstreamActionHandler.fulfill()
+            return .doNothing()
+        }
+
+        reducerMock.1.reduceClosure = { action, state in
+            XCTAssertEqual(.bar(.delta), action)
+            shouldCallReducer.fulfill()
+            return state
         }
 
         let originalStore = ReduxStoreBase<AppAction, TestState>(
             subject: stateSubject.subject,
-            reducer: createReducerMock().0,
+            reducer: reducerMock.0,
             middleware: middlewareMock
         )
 
@@ -59,7 +68,7 @@ class StoreProjectionTests: XCTestCase {
         sut.dispatch(MockViewAction(name: "delta"))
         sut.dispatch(MockViewAction(name: "ignore"))
 
-        wait(for: [shouldCallUpstreamActionHandler], timeout: 0.1)
+        wait(for: [shouldCallUpstreamActionHandler, shouldCallReducer], timeout: 0.1, enforceOrder: true)
     }
 
     func testStoreProjectionForwardsStateFromUpstreamStore() {
@@ -80,17 +89,11 @@ class StoreProjectionTests: XCTestCase {
 
         let sut = originalStore.projection(
             action: { $0 },
-            state: { (statePublisher: UnfailablePublisherType<TestState>) -> UnfailablePublisherType<MockViewState> in
-                .init { subscriber -> SubscriptionType in
-                    statePublisher.subscribe(.init(onValue: { state in
-                        subscriber.onValue(
-                            MockViewState(
-                                decoratedValue: "*** " + state.value.uuidString + " ***",
-                                decoratedName: "*** " + state.name + " ***"
-                            )
-                        )
-                    }, onCompleted: nil))
-                }
+            state: { (state: TestState) -> MockViewState in
+                MockViewState(
+                    decoratedValue: "*** " + state.value.uuidString + " ***",
+                    decoratedName: "*** " + state.name + " ***"
+                )
             }
         )
 

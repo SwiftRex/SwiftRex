@@ -8,18 +8,28 @@ class ReduxStoreProtocolTests: XCTestCase {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
-        let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionNextClosure = { action, _ in
+        let shouldCallActionHandler = expectation(description: "middleware action handler should have been called")
+        let shouldCallActionHandlerAfterReducer =
+            expectation(description: "middleware action handler after reducer should have been called")
+        let shouldCallReducer = expectation(description: "reducer should have been called")
+        middlewareMock.handleActionClosure = { action in
             XCTAssertEqual(action, expectedAction)
-            shouldCallMiddlewareActionHandler.fulfill()
+            shouldCallActionHandler.fulfill()
+            return .do { shouldCallActionHandlerAfterReducer.fulfill() }
         }
+        let reducer = createReducerMock()
+        reducer.1.reduceClosure = { action, state in
+            shouldCallReducer.fulfill()
+            XCTAssertEqual(action, expectedAction)
+            return state
+        }
+        let state = CurrentValueSubject(currentValue: TestState())
         sut.pipeline = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-            state: CurrentValueSubject(currentValue: TestState()).subject!,
-            reducer: createReducerMock().0,
+            state: state.subject!,
+            reducer: reducer.0,
             middleware: middlewareMock)
 
         sut.dispatch(actionToDispatch)
-
-        wait(for: [shouldCallMiddlewareActionHandler], timeout: 0.1)
+        wait(for: [shouldCallActionHandler, shouldCallReducer, shouldCallActionHandlerAfterReducer], timeout: 0.1, enforceOrder: true)
     }
 }

@@ -5,8 +5,8 @@ import SwiftRex
 extension SubjectType {
     public init(input: Signal<Element, ErrorType>.Observer, output: Signal<Element, ErrorType>) {
         self.init(
-            publisher: output.asPublisher(),
-            subscriber: input.asSubscriber()
+            publisher: output.asPublisherType(),
+            subscriber: input.asSubscriberType()
         )
     }
 

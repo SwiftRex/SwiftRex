@@ -5,20 +5,24 @@ class IdentityMiddlewareTests: XCTestCase {
     func testIdentityMiddlewareAction() {
         // Given
         let sut = IdentityMiddleware<AppAction, AppAction, TestState>()
+        var getStateCount = 0
+        var dispatchActionCount = 0
 
-        let middlewareContext = MiddlewareContextMock<AppAction, TestState>()
-        sut.context = { middlewareContext.value }
+        sut.receiveContext(
+            getState: {
+                getStateCount += 1
+                return TestState()
+            },
+            output: .init { _ in
+                dispatchActionCount += 1
+            })
         let action = AppAction.bar(.delta)
-        let lastInChainWasCalledExpectation = self.expectation(description: "last in chain was called")
 
         // Then
-        sut.handle(action: action) {
-            lastInChainWasCalledExpectation.fulfill()
-        }
+        _ = sut.handle(action: action)
 
         // Expect
-        wait(for: [lastInChainWasCalledExpectation], timeout: 3)
-        XCTAssertEqual(0, middlewareContext.onActionCount)
-        XCTAssertEqual(0, middlewareContext.getStateCount)
+        XCTAssertEqual(0, dispatchActionCount)
+        XCTAssertEqual(0, getStateCount)
     }
 }

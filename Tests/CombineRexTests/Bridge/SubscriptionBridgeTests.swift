@@ -12,7 +12,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = cancellable.asSubscription()
+        let sut = cancellable.asSubscriptionType()
         sut.unsubscribe()
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
@@ -37,7 +37,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = cancellable.asSubscription().asCancellable()
+        let sut = cancellable.asSubscriptionType().asCancellable()
         sut.cancel()
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
@@ -49,7 +49,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let sut = subscription.asCancellable().asSubscription()
+        let sut = subscription.asCancellable().asSubscriptionType()
         sut.unsubscribe()
 
         wait(for: [shouldBeDisposed], timeout: 0.1)
@@ -75,7 +75,7 @@ class SubscriptionBridgeTests: XCTestCase {
             XCTAssertEqual(.unlimited, demand)
             shouldBeRequested.fulfill()
         }
-        let subscription = fooCombineSubscription.asSubscription()
+        let subscription = fooCombineSubscription.asSubscriptionType()
 
         let sut = subscription.asCancellable()
         sut.request(.unlimited)
@@ -90,7 +90,7 @@ class SubscriptionBridgeTests: XCTestCase {
             shouldBeDisposed.fulfill()
         }
 
-        let subscription = cancellable.asSubscription()
+        let subscription = cancellable.asSubscriptionType()
         var sut: [AnyCancellable]? = [AnyCancellable]() // swiftlint:disable:this discouraged_optional_collection
         subscription.cancelled(by: &sut!)
 
