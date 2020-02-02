@@ -34,7 +34,6 @@ import SwiftRex
 /// │  Text  │ │  List  │ │ForEach │
 /// └────────┘ └────────┘ └────────┘
 /// ```
-/*
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     @Published public var state: ViewState
@@ -46,18 +45,15 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
         store.dispatch(action)
     }
 
-    public init<S: StoreType>(
-        initialState: ViewState,
-        store: S,
-        emitsValue: ShouldEmitValue<ViewState>
-    ) where S.ActionType == ViewAction, S.StateType == ViewState {
+    public init<S: StoreType>(initialState: ViewState, store: S, emitsValue: ShouldEmitValue<ViewState>)
+    where S.ActionType == ViewAction, S.StateType == ViewState {
         self.state = initialState
         self.store = store.eraseToAnyStoreType()
         self.statePublisher = store.statePublisher.removeDuplicates(by: emitsValue.shouldRemove).asPublisherType()
         cancellableBinding = statePublisher.assign(to: \.state, on: self)
     }
 }
-
+/*
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension ObservableViewModel where ViewState: Equatable {
     public convenience init<S: StoreType>(
