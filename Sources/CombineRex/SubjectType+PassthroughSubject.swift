@@ -20,6 +20,7 @@ extension SwiftRex.SubjectType {
     }
 }
 
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension PassthroughSubject {
     public func asSubscriberType() -> SubscriberType<Output, Failure> {
         SubscriberType<Output, Failure>.combine(subject: self)
