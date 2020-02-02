@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import Foundation
 import SwiftRex
@@ -33,6 +34,7 @@ import SwiftRex
 /// │  Text  │ │  List  │ │ForEach │
 /// └────────┘ └────────┘ └────────┘
 /// ```
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     @Published public var state: ViewState
     public let statePublisher: UnfailablePublisherType<ViewState>
@@ -55,6 +57,7 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
     }
 }
 
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension ObservableViewModel where ViewState: Equatable {
     public convenience init<S: StoreType>(
         initialState: ViewState,
@@ -68,6 +71,7 @@ extension ObservableViewModel where ViewState: Equatable {
     }
 }
 
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension StoreType {
     public func asObservableViewModel(
         initialState: StateType,
@@ -77,6 +81,7 @@ extension StoreType {
     }
 }
 
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension StoreType where StateType: Equatable {
     public func asObservableViewModel(
         initialState: StateType
@@ -86,6 +91,7 @@ extension StoreType where StateType: Equatable {
 }
 
 #if DEBUG
+@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension ObservableViewModel {
     /// Mock for using in tests or SwiftUI previews, available in DEBUG mode only
     /// You can use if as a micro-redux for tests and SwiftUI previews, for example:
@@ -127,4 +133,6 @@ extension ObservableViewModel {
         ).asObservableViewModel(initialState: state, emitsValue: .always)
     }
 }
+#endif
+
 #endif
