@@ -38,20 +38,20 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
     @Published public var state: ViewState
     public let statePublisher: UnfailablePublisherType<ViewState>
     private var cancellableBinding: AnyCancellable!
-    private var storeProjection: AnyStoreType<ViewAction, ViewState>
+    private var store: AnyStoreType<ViewAction, ViewState>
 
     public func dispatch(_ action: ViewAction) {
-        storeProjection.dispatch(action)
+        store.dispatch(action)
     }
 
     public init<S: StoreType>(
         initialState: ViewState,
-        storeProjection: S,
+        store: S,
         emitsValue: ShouldEmitValue<ViewState>
     ) where S.ActionType == ViewAction, S.StateType == ViewState {
         self.state = initialState
-        self.storeProjection = storeProjection.eraseToAnyStoreType()
-        self.statePublisher = storeProjection.statePublisher.removeDuplicates(by: emitsValue.shouldRemove).asPublisherType()
+        self.store = store.eraseToAnyStoreType()
+        self.statePublisher = store.statePublisher.removeDuplicates(by: emitsValue.shouldRemove).asPublisherType()
         cancellableBinding = statePublisher.assign(to: \.state, on: self)
     }
 }
@@ -59,36 +59,30 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
 extension ObservableViewModel where ViewState: Equatable {
     public convenience init<S: StoreType>(
         initialState: ViewState,
-        storeProjection: S
+        store: S
     ) where S.ActionType == ViewAction, S.StateType == ViewState {
         self.init(
             initialState: initialState,
-            storeProjection: storeProjection,
+            store: store,
             emitsValue: .whenDifferent
         )
     }
 }
 
 extension StoreType {
-    public func projection<ViewAction, ViewState>(
-        action viewActionToGlobalAction: @escaping (ViewAction) -> ActionType?,
-        state globalStateToViewState: @escaping (StateType) -> ViewState,
-        initialState: ViewState,
-        emitsValue: ShouldEmitValue<ViewState>
-    ) -> ObservableViewModel<ViewAction, ViewState> {
-        let storeProjection = self.projection(
-            action: viewActionToGlobalAction,
-            state: globalStateToViewState
-        )
-
-        return .init(initialState: initialState, storeProjection: storeProjection, emitsValue: emitsValue)
+    public func asObservableViewModel(
+        initialState: StateType,
+        emitsValue: ShouldEmitValue<StateType>
+    ) -> ObservableViewModel<ActionType, StateType> {
+        .init(initialState: initialState, store: self, emitsValue: emitsValue)
     }
+}
 
-    public func projection<ViewAction, ViewState: Equatable>(
-        action: @escaping (ViewAction) -> ActionType?,
-        state: @escaping (StateType) -> ViewState,
-        initialState: ViewState) -> ObservableViewModel<ViewAction, ViewState> {
-        projection(action: action, state: state, initialState: initialState, emitsValue: .whenDifferent)
+extension StoreType where StateType: Equatable {
+    public func asObservableViewModel(
+        initialState: StateType
+    ) -> ObservableViewModel<ActionType, StateType> {
+        .init(initialState: initialState, store: self, emitsValue: .whenDifferent)
     }
 }
 
@@ -124,16 +118,14 @@ extension ObservableViewModel {
         -> ObservableViewModel<ActionType, StateType> {
         let subject = CurrentValueSubject<StateType, Never>(state)
 
-        let storeProjection = AnyStoreType<ActionType, StateType>(
+        return AnyStoreType<ActionType, StateType>(
             action: {
                 var state = subject.value
                 action($0, &state)
                 subject.send(state)
             },
             state: subject.asPublisherType()
-        )
-
-        return .init(initialState: state, storeProjection: storeProjection, emitsValue: .always)
+        ).asObservableViewModel(initialState: state, emitsValue: .always)
     }
 }
 #endif
