@@ -17,13 +17,7 @@
 		D3D427DDFB3BDDF078BE250D /* Pods_SwiftRex_macOS_ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B341B0E0F375E97B37670E20 /* Pods_SwiftRex_macOS_ReactiveSwift.framework */; };
 		D507CACA22BE8F2D00BE6679 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D507CAC922BE8F2400BE6679 /* PublisherTypeBridgeTests.swift */; };
 		D51A223D22BFFC2500194408 /* SubscriptionType+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* SubscriptionType+Cancellable.swift */; };
-		D51A224222BFFC2500194408 /* SubscriptionType+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* SubscriptionType+Cancellable.swift */; };
-		D51A224C22BFFC2600194408 /* SubscriptionType+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223722BFF1EB00194408 /* SubscriptionType+Cancellable.swift */; };
 		D51A225122BFFF1F00194408 /* SubscriberType+Subscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223822BFF1EB00194408 /* SubscriberType+Subscriber.swift */; };
-		D51A225222BFFF2000194408 /* SubscriberType+Subscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223822BFF1EB00194408 /* SubscriberType+Subscriber.swift */; };
-		D51A225422BFFF2200194408 /* SubscriberType+Subscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223822BFF1EB00194408 /* SubscriberType+Subscriber.swift */; };
-		D51A225522C0159A00194408 /* PublisherType+Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223622BFF1EB00194408 /* PublisherType+Publisher.swift */; };
-		D51A225722C0159B00194408 /* PublisherType+Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223622BFF1EB00194408 /* PublisherType+Publisher.swift */; };
 		D51A225822C0159C00194408 /* PublisherType+Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223622BFF1EB00194408 /* PublisherType+Publisher.swift */; };
 		D552CC3C22BEF16F008EF537 /* PublisherTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3A22BEF150008EF537 /* PublisherTypeBridgeTests.swift */; };
 		D552CC3E22BEF978008EF537 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D552CC3B22BEF150008EF537 /* SubscriberTypeBridgeTests.swift */; };
@@ -139,10 +133,6 @@
 		D594C9052363754800813DF3 /* ShouldEmitValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D594C9022363754800813DF3 /* ShouldEmitValue.swift */; };
 		D594C9062363754800813DF3 /* ShouldEmitValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D594C9022363754800813DF3 /* ShouldEmitValue.swift */; };
 		D598492922C021AB00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223522BFF1EA00194408 /* SubjectType+PassthroughSubject.swift */; };
-		D598492A22C021AB00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223522BFF1EA00194408 /* SubjectType+PassthroughSubject.swift */; };
-		D598492C22C021AD00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223522BFF1EA00194408 /* SubjectType+PassthroughSubject.swift */; };
-		D598492D22C023CC00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223422BFF1EA00194408 /* ReplayLastSubjectType+BehaviorSubject.swift */; };
-		D598492F22C023CE00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223422BFF1EA00194408 /* ReplayLastSubjectType+BehaviorSubject.swift */; };
 		D598493022C023CF00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51A223422BFF1EA00194408 /* ReplayLastSubjectType+BehaviorSubject.swift */; };
 		D5A022B022BED5C600797438 /* SubscriberTypeBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A022AF22BED5C600797438 /* SubscriberTypeBridgeTests.swift */; };
 		D5A2EAEA22B9A02800CA10B8 /* ReactiveSwiftRex.h in Headers */ = {isa = PBXBuildFile; fileRef = D5A2EAE922B9A00E00CA10B8 /* ReactiveSwiftRex.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -196,8 +186,6 @@
 		D5C306752348D7510098BC59 /* SomeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070E2071287900D682EF /* SomeError.swift */; };
 		D5C306762348D7560098BC59 /* FooSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E66D5022B962B5003BF88B /* FooSubscription.swift */; };
 		D5C96A5D22DA1BAB00585865 /* ObservableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* ObservableViewModel.swift */; };
-		D5C96A5E22DA1BAB00585865 /* ObservableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* ObservableViewModel.swift */; };
-		D5C96A6022DA1BAB00585865 /* ObservableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C96A5C22DA1BAB00585865 /* ObservableViewModel.swift */; };
 		D5D06C5723489ED8008DD2C7 /* TestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607162071287900D682EF /* TestState.swift */; };
 		D5D06C5823489EF5008DD2C7 /* AppAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A6070C2071287900D682EF /* AppAction.swift */; };
 		D5D06C5E2348A8A7008DD2C7 /* NameReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A607072071287900D682EF /* NameReducer.swift */; };
@@ -2922,12 +2910,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5C96A5E22DA1BAB00585865 /* ObservableViewModel.swift in Sources */,
-				D51A224222BFFC2500194408 /* SubscriptionType+Cancellable.swift in Sources */,
-				D51A225722C0159B00194408 /* PublisherType+Publisher.swift in Sources */,
-				D598492A22C021AB00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */,
-				D598492F22C023CE00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */,
-				D51A225222BFFF2000194408 /* SubscriberType+Subscriber.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2942,12 +2924,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5C96A6022DA1BAB00585865 /* ObservableViewModel.swift in Sources */,
-				D51A224C22BFFC2600194408 /* SubscriptionType+Cancellable.swift in Sources */,
-				D51A225522C0159A00194408 /* PublisherType+Publisher.swift in Sources */,
-				D598492C22C021AD00F99D09 /* SubjectType+PassthroughSubject.swift in Sources */,
-				D598492D22C023CC00F99D09 /* ReplayLastSubjectType+BehaviorSubject.swift in Sources */,
-				D51A225422BFFF2200194408 /* SubscriberType+Subscriber.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
