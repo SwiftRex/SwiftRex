@@ -36,30 +36,29 @@ import SwiftRex
 /// ```
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
+    private var cancellableBinding: AnyCancellable?
+    private var store: StoreProjection<ViewAction, ViewState>
+
     @Published public var state: ViewState
     public let statePublisher: UnfailablePublisherType<ViewState>
-    private var cancellableBinding: AnyCancellable!
-    private var store: AnyStoreType<ViewAction, ViewState>
+
+    public init<S>(initialState: ViewState, store: S, emitsValue: ShouldEmitValue<ViewState>)
+    where S: StoreType, S.ActionType == ViewAction, S.StateType == ViewState {
+        self.state = initialState
+        self.store = store.eraseToAnyStoreType()
+        self.statePublisher = store.statePublisher.removeDuplicates(by: emitsValue.shouldRemove).asPublisherType()
+        self.cancellableBinding = statePublisher.assign(to: \.state, on: self)
+    }
 
     public func dispatch(_ action: ViewAction) {
         store.dispatch(action)
     }
-
-    public init<S: StoreType>(initialState: ViewState, store: S, emitsValue: ShouldEmitValue<ViewState>)
-    where S.ActionType == ViewAction, S.StateType == ViewState {
-        self.state = initialState
-        self.store = store.eraseToAnyStoreType()
-        self.statePublisher = store.statePublisher.removeDuplicates(by: emitsValue.shouldRemove).asPublisherType()
-        cancellableBinding = statePublisher.assign(to: \.state, on: self)
-    }
 }
-/*
+
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension ObservableViewModel where ViewState: Equatable {
-    public convenience init<S: StoreType>(
-        initialState: ViewState,
-        store: S
-    ) where S.ActionType == ViewAction, S.StateType == ViewState {
+    public convenience init<S: StoreType>(initialState: ViewState, store: S)
+    where S.ActionType == ViewAction, S.StateType == ViewState {
         self.init(
             initialState: initialState,
             store: store,
@@ -131,5 +130,5 @@ extension ObservableViewModel {
     }
 }
 #endif
-*/
+
 #endif
