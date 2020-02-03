@@ -127,20 +127,58 @@ class ObservableViewModelTests: XCTestCase {
         XCTAssertNotNil(subscription)
     }
 
+    func testStatePublisherNotifyOnSubscribeIntegrationTest() {
+        let shouldBeNotified = expectation(description: "should be notified by state publisher")
+        // Can't test objectWillChange Publisher because it happens before the mutation
+        let subscription = viewModel.statePublisher.sink { state in
+            XCTAssertEqual("name: Initial State", state)
+            shouldBeNotified.fulfill()
+        }
+
+        wait(for: [shouldBeNotified], timeout: 1)
+        XCTAssertNotNil(subscription)
+}
+
+    func testStatePublisherNotifyOnChangeIntegrationTest() {
+        let shouldBeNotified = expectation(description: "should be notified by state publisher")
+        var count = 0
+        // Can't test objectWillChange Publisher because it happens before the mutation
+        let subscription = viewModel.statePublisher.sink { [unowned self] state in
+            switch count {
+            case 0:
+                XCTAssertEqual("name: Initial State", state)
+            case 1:
+                XCTAssertEqual("name: Initial State_a1", state)
+            case 2:
+                XCTAssertEqual("name: Initial State_a1_ma:a1", state)
+            case 3:
+                XCTAssertEqual("name: Initial State_a1_ma:a1_maar:a1", state)
+                shouldBeNotified.fulfill()
+            default:
+                XCTFail("Unexpected notification: \(self.viewModel.state)")
+            }
+            count += 1
+        }
+        viewModel.dispatch(.event1(Event1()))
+
+        wait(for: [shouldBeNotified], timeout: 1)
+        XCTAssertNotNil(subscription)
+    }
+
     func testWillChangeNotifyOnChangeIntegrationTest() {
         let shouldBeNotifiedByWillChangePublisher = expectation(description: "should be notified by will change publisher")
         var count = 0
+
         let subscription = viewModel.objectWillChange.sink { [unowned self] _ in
-            print("count: \(count) value: \(self.viewModel.state)")
             switch count {
+            // expected one notification less (only changes, not initial state) and always with the previous value
+            // not yet the one being set.
             case 0:
                 XCTAssertEqual("name: Initial State", self.viewModel.state)
             case 1:
                 XCTAssertEqual("name: Initial State_a1", self.viewModel.state)
             case 2:
                 XCTAssertEqual("name: Initial State_a1_ma:a1", self.viewModel.state)
-            case 3:
-                XCTAssertEqual("name: Initial State_a1_ma:a1_maar:a1", self.viewModel.state)
                 shouldBeNotifiedByWillChangePublisher.fulfill()
             default:
                 XCTFail("Unexpected notification: \(self.viewModel.state)")
@@ -153,92 +191,66 @@ class ObservableViewModelTests: XCTestCase {
         XCTAssertNotNil(subscription)
     }
 
-//    func testStatePublisherNotifyOnSubscribeIntegrationTest() {
-//        let shouldBeNotifiedByStatePublisher = expectation(description: "should be notified by state publisher")
-//        let subscription = store.statePublisher.sink { [unowned self] _ in
-//            XCTAssertEqual("Initial State", self.store.state.name)
-//            shouldBeNotifiedByStatePublisher.fulfill()
-//        }
-//
-//        wait(for: [shouldBeNotifiedByStatePublisher], timeout: 1)
-//        XCTAssertNotNil(subscription)
-//    }
-//
-//    func testStatePublisherNotifyOnChangeIntegrationTest() {
-//        let shouldBeNotifiedByStatePublisher = expectation(description: "should be notified by state publisher")
-//        var time = 0
-//        let cancellable = store.statePublisher.sink { [unowned self] value in
-//            switch time {
-//            case 0:
-//                XCTAssertEqual("Initial State", self.store.state.name)
-//                XCTAssertEqual("Initial State", value.name)
-//            case 1:
-//                XCTAssertEqual("Initial State_a1", self.store.state.name)
-//                XCTAssertEqual("Initial State_a1", value.name)
-//                shouldBeNotifiedByStatePublisher.fulfill()
-//            default:
-//                XCTFail("Too many calls")
-//            }
-//            time += 1
-//        }
-//        store.eventHandler.dispatch(Event1())
-//
-//        wait(for: [shouldBeNotifiedByStatePublisher], timeout: 1)
-//        XCTAssertNotNil(cancellable)
-//    }
-
 //    func testWillChangePublisherCanHaveMultipleSubscriptions() {
-//        let shouldBeNotifiedByWillChangePublisher1 = expectation(description: "should be notified by will change publisher 1")
-//        let shouldBeNotifiedByWillChangePublisher2 = expectation(description: "should be notified by will change publisher 2")
-//        let subscription1 = store.objectWillChange.sink { _ in
+//        let shouldBeNotifiedByWillChangePublisher3 = expectation(description: "should be notified by will change publisher 1")
+//        let shouldBeNotifiedByWillChangePublisher4 = expectation(description: "should be notified by will change publisher 2")
+//        let subscription1 = viewModel.objectWillChange.sink { _ in
 //            XCTFail("On subscribe this notification should never be triggered")
 //        }
 //        subscription1.cancel()
 //
-//        let subscription2 = store.objectWillChange.sink { _ in
+//        let subscription2 = viewModel.objectWillChange.sink { _ in
 //            XCTFail("On subscribe this notification should never be triggered")
 //        }
 //        subscription2.cancel()
 //
-//        let subscription3 = store.objectWillChange.sink { [unowned self] _ in
-//            XCTAssertEqual("Initial State", self.store.state.name)
-//            DispatchQueue.main.async {
-//                XCTAssertEqual("Initial State_a1", self.store.state.name)
-//            }
-//            shouldBeNotifiedByWillChangePublisher1.fulfill()
-//        }
-//
-//        var time = 0
-//        let subscription4 = store.objectWillChange.sink { [unowned self] _ in
-//            switch time {
+//        var countSub3 = 0
+//        let subscription3 = viewModel.objectWillChange.sink { [unowned self] _ in
+//            switch countSub3 {
+//            // expected one notification less (only changes, not initial state) and always with the previous value
+//            // not yet the one being set.
 //            case 0:
-//                XCTAssertEqual("Initial State", self.store.state.name)
-//                DispatchQueue.main.async {
-//                    XCTAssertEqual("Initial State_a1", self.store.state.name)
-//                }
+//                XCTAssertEqual("name: Initial State", self.viewModel.state)
 //            case 1:
-//                XCTAssertEqual("Initial State_a1", self.store.state.name)
-//                DispatchQueue.main.async {
-//                    XCTAssertEqual("Initial State_a1_a2", self.store.state.name)
-//                    shouldBeNotifiedByWillChangePublisher2.fulfill()
-//                }
+//                XCTAssertEqual("name: Initial State_a1", self.viewModel.state)
+//            case 2:
+//                XCTAssertEqual("name: Initial State_a1_ma:a1", self.viewModel.state)
+//                shouldBeNotifiedByWillChangePublisher3.fulfill()
 //            default:
-//                XCTFail("Too many calls")
+//                XCTFail("Unexpected notification: \(self.viewModel.state)")
 //            }
-//            time += 1
+//            countSub3 += 1
 //        }
 //
-//        store.eventHandler.dispatch(Event1())
+//        var countSub4 = 0
+//        let subscription4 = viewModel.objectWillChange.sink { [unowned self] _ in
+//            switch countSub4 {
+//            // expected one notification less (only changes, not initial state) and always with the previous value
+//            // not yet the one being set.
+//            case 0:
+//                XCTAssertEqual("name: Initial State", self.viewModel.state)
+//            case 1:
+//                XCTAssertEqual("name: Initial State_a1", self.viewModel.state)
+//            case 2:
+//                XCTAssertEqual("name: Initial State_a1_ma:a1", self.viewModel.state)
+//                shouldBeNotifiedByWillChangePublisher3.fulfill()
+//            default:
+//                XCTFail("Unexpected notification: \(self.viewModel.state)")
+//            }
+//            countSub4 += 1
+//        }
 //
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//        viewModel.dispatch(.event1(Event1()))
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
 //            subscription3.cancel()
 //        }
 //
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-//            self.store.eventHandler.dispatch(Event2())
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+//            self.viewModel.dispatch(.event2(Event2()))
 //        }
 //
-//        wait(for: [shouldBeNotifiedByWillChangePublisher1, shouldBeNotifiedByWillChangePublisher2], timeout: 2)
+//        wait(for: [shouldBeNotifiedByWillChangePublisher3, shouldBeNotifiedByWillChangePublisher4], timeout: 5)
 //        XCTAssertNotNil(subscription4)
 //    }
 //
