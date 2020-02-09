@@ -61,17 +61,17 @@ class MiddlewareTest: Middleware {
         self.output = output
     }
 
-    func handle(action: Action) -> AfterReducer {
+    func handle(action: Action, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
         switch action {
         case .middlewareAction, .middlewareActionAfterReducer:
-            return .doNothing()
+            afterReducer = .doNothing()
         default:
             break
         }
 
-        output?.dispatch(.middlewareAction(action))
-        return AfterReducer.do {
-            self.output?.dispatch(.middlewareActionAfterReducer(action))
+        output?.dispatch(.middlewareAction(action), from: .here())
+        afterReducer = .do {
+            self.output?.dispatch(.middlewareActionAfterReducer(action), from: .here())
         }
     }
 }
@@ -159,7 +159,7 @@ class ObservableViewModelTests: XCTestCase {
             }
             count += 1
         }
-        viewModel.dispatch(.event1(Event1()))
+        viewModel.dispatch(.event1(Event1()), from: .here())
 
         wait(for: [shouldBeNotified], timeout: 1)
         XCTAssertNotNil(subscription)
@@ -185,7 +185,7 @@ class ObservableViewModelTests: XCTestCase {
             }
             count += 1
         }
-        viewModel.dispatch(.event1(Event1()))
+        viewModel.dispatch(.event1(Event1()), from: .here())
 
         wait(for: [shouldBeNotifiedByWillChangePublisher], timeout: 1)
         XCTAssertNotNil(subscription)

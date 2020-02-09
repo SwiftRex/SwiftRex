@@ -5,7 +5,7 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
     public typealias ActionType = MiddlewareType.InputActionType
     public typealias StateType = MiddlewareType.StateType
 
-    private var onAction: (ActionType) -> Void
+    private var onAction: (ActionType, ActionSource) -> Void
 
     public init(
         state: UnfailableReplayLastSubjectType<StateType>,
@@ -15,8 +15,9 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
     ) {
         DispatchQueue.setMainQueueID()
 
-        let onAction: (ActionType) -> Void = { action in
-            let afterReducer = middleware.handle(action: action)
+        let onAction: (ActionType, ActionSource) -> Void = { action, dispatcher in
+            var afterReducer: AfterReducer = .doNothing()
+            middleware.handle(action: action, from: dispatcher, afterReducer: &afterReducer)
 
             state.mutate(
                 when: { $0 },
@@ -33,9 +34,9 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
 
         middleware.receiveContext(
             getState: { state.value() },
-            output: .init { action in
+            output: .init { action, dispatcher in
                 DispatchQueue.main.async {
-                    onAction(action)
+                    onAction(action, dispatcher)
                 }
             }
         )
@@ -43,9 +44,9 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
         self.onAction = onAction
     }
 
-    public nonmutating func dispatch(_ action: ActionType) {
+    public func dispatch(_ action: MiddlewareType.InputActionType, from dispatcher: ActionSource) {
         DispatchQueue.asap {
-            self.onAction(action)
+            self.onAction(action, dispatcher)
         }
     }
 }

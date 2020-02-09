@@ -40,19 +40,19 @@ class IssueTracker39Tests: XCTestCase {
             self.output = output
         }
 
-        func handle(action: AppAction) -> AfterReducer {
+        func handle(action: AppAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
             switch action {
             case .events(.requestPrepare):
                 // Nothing asked yet
                 XCTAssertEqual(getState().preparation, .stopped)
                 XCTAssertEqual(getState().running, .stopped)
 
-                return .do { [unowned self] in
+                afterReducer = .do { [unowned self] in
                     // After reducing "requestPrepare", preparation should have been requested
                     XCTAssertEqual(self.getState().preparation, .requested)
                     XCTAssertEqual(self.getState().running, .stopped)
 
-                    self.output.dispatch(.actions(.prepare))
+                    self.output.dispatch(.actions(.prepare), from: .here())
 
                     // We expect the prepare action to happen only on the next runloop, so
                     // we still expect the state to remain unchanged
@@ -68,12 +68,12 @@ class IssueTracker39Tests: XCTestCase {
                 XCTAssertEqual(getState().running, .stopped)
 
                 if getState().preparation == .done && getState().running == .requested {
-                    output.dispatch(.actions(.run))
+                    output.dispatch(.actions(.run), from: .here())
                     // this should never happen, actually
                     XCTFail("This should never happen")
                 }
 
-                return .do { [unowned self] in
+                afterReducer = .do { [unowned self] in
                     // Both properties should be requested now, after reducing requestRun
                     XCTAssertEqual(self.getState().preparation, .requested)
                     XCTAssertEqual(self.getState().running, .requested)
@@ -85,7 +85,7 @@ class IssueTracker39Tests: XCTestCase {
                 XCTAssertEqual(getState().preparation, .requested)
                 XCTAssertEqual(getState().running, .requested)
 
-                return .do { [unowned self] in
+                afterReducer = .do { [unowned self] in
                     // After reducing "prepare", preparation should be done
                     XCTAssertEqual(self.getState().preparation, .done)
                     XCTAssertEqual(self.getState().running, .requested)
@@ -94,7 +94,7 @@ class IssueTracker39Tests: XCTestCase {
                         // We evaluate this same condition in two places because we can reach the pre-conditions
                         // either when "preparation" or "running" states changed
                         // This time we are expected to execute this operation
-                        self.output.dispatch(.actions(.run))
+                        self.output.dispatch(.actions(.run), from: .here())
                     }
                 }
             case .actions(.run):
@@ -103,7 +103,7 @@ class IssueTracker39Tests: XCTestCase {
                 XCTAssertEqual(getState().preparation, .done)
                 XCTAssertEqual(getState().running, .requested)
 
-                return .do { [unowned self] in
+                afterReducer = .do { [unowned self] in
                     // Now everything should be done
                     XCTAssertEqual(self.getState().preparation, .done)
                     XCTAssertEqual(self.getState().running, .done)
@@ -188,8 +188,8 @@ class IssueTracker39Tests: XCTestCase {
             count += 1
         }
 
-        store.dispatch(.events(.requestPrepare))
-        store.dispatch(.events(.requestRun))
+        store.dispatch(.events(.requestPrepare), from: .here())
+        store.dispatch(.events(.requestRun), from: .here())
 
         wait(
             for: [

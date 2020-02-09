@@ -22,15 +22,16 @@ class ReduxStoreBaseTests: XCTestCase {
         fooMiddleware.receiveContextGetStateOutputClosure = { getState, output in
             fooMiddlewareOutput = output
         }
-        fooMiddleware.handleActionClosure = { action in
+        fooMiddleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
             guard action == .foo else {
-                return .doNothing()
+                afterReducer = .doNothing()
+                return
             }
 
-            fooMiddlewareOutput?.dispatch(.bar(.alpha))
+            fooMiddlewareOutput?.dispatch(.bar(.alpha), from: .here())
 
-            return .do {
-                fooMiddlewareOutput?.dispatch(.bar(.bravo))
+            afterReducer = .do {
+                fooMiddlewareOutput?.dispatch(.bar(.bravo), from: .here())
                 shouldCallFooMiddleware.fulfill()
             }
         }
@@ -39,20 +40,20 @@ class ReduxStoreBaseTests: XCTestCase {
         barMiddleware.receiveContextGetStateOutputClosure = { getState, output in
             barMiddlewareOutput = output
         }
-        barMiddleware.handleActionClosure = { action in
+        barMiddleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
             switch action {
             case .alpha:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.15) {
-                    barMiddlewareOutput?.dispatch(.delta)
+                    barMiddlewareOutput?.dispatch(.delta, from: .here())
                 }
             case .bravo:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-                    barMiddlewareOutput?.dispatch(.echo)
+                    barMiddlewareOutput?.dispatch(.echo, from: .here())
                 }
             default: break
             }
 
-            return .do {
+            afterReducer = .do {
                 shouldCallBarMiddleware.fulfill()
             }
         }
@@ -105,7 +106,7 @@ class ReduxStoreBaseTests: XCTestCase {
             count += 1
         }, onCompleted: { error in XCTFail("Unexpected completion. Error? \(String(describing: error))") }))
 
-        events.forEach(store.dispatch)
+        events.forEach { store.dispatch($0, from: .here()) }
 
         waitForExpectations(timeout: 3)
         XCTAssertEqual(subjectMock.currentValue.value, initialState.value)

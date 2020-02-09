@@ -22,10 +22,14 @@ class ComposedMiddlewareTests: XCTestCase {
             .map { name in
                 let middleware = IsoMiddlewareMock<AppAction, TestState>()
                 middleware.receiveContextGetStateOutputClosure = { _, output in middlewareOutput = output }
-                middleware.handleActionClosure = { action in
+                middleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
                     originalActionsReceived.append((middlewareName: name, action: action))
-                    middlewareOutput?.dispatch(action)
-                    return .do {
+                    middlewareOutput?.dispatch(action, from: .init(file: "file_2", function: "function_2", line: 2, info: "info_2"))
+                    XCTAssertEqual("file_1", dispatcher.file)
+                    XCTAssertEqual("function_1", dispatcher.function)
+                    XCTAssertEqual(1, dispatcher.line)
+                    XCTAssertEqual("info_1", dispatcher.info)
+                    afterReducer = .do {
                         lastInChainWasCalledExpectation.fulfill()
                     }
                 }
@@ -33,10 +37,14 @@ class ComposedMiddlewareTests: XCTestCase {
             }
             .forEach { sut.append(middleware: $0 as IsoMiddlewareMock<AppAction, TestState>) }
 
-        sut.receiveContext(getState: { TestState() }, output: .init({ action in newActions.append(action) }))
+        sut.receiveContext(getState: { TestState() }, output: .init({ action, _ in newActions.append(action) }))
 
         originalActions.forEach { originalAction in
-            sut.handle(action: originalAction).reducerIsDone()
+            var afterReducer: AfterReducer = .doNothing()
+            sut.handle(action: originalAction,
+                       from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"),
+                       afterReducer: &afterReducer)
+            afterReducer.reducerIsDone()
         }
 
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
@@ -55,14 +63,12 @@ class ComposedMiddlewareTests: XCTestCase {
                 middleware.receiveContextGetStateOutputClosure = { _, _ in
                     shouldReceiveContext.fulfill()
                 }
-                middleware.handleActionClosure = { action in
-                    .doNothing()
-                }
+                middleware.handleActionFromAfterReducerClosure = { _, _, _ in }
                 return middleware
             }
 
         let composedMiddlewares = middlewares[0] <> middlewares[1] <> middlewares[2] <> middlewares[3]
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
 
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
@@ -77,15 +83,13 @@ class ComposedMiddlewareTests: XCTestCase {
                 middleware.receiveContextGetStateOutputClosure = { _, _ in
                     shouldReceiveContext.fulfill()
                 }
-                middleware.handleActionClosure = { action in
-                    .doNothing()
-                }
+                middleware.handleActionFromAfterReducerClosure = { _, _, _ in }
                 return middleware
             }.forEach { middleware in
                 composedMiddlewares.append(middleware: middleware)
             }
 
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
 }

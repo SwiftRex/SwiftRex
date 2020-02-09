@@ -26,17 +26,17 @@ class ActionHandlerMock<ActionType>: ActionHandler {
 
     //MARK: - dispatch
 
-    var dispatchCallsCount = 0
-    var dispatchCalled: Bool {
-        return dispatchCallsCount > 0
+    var dispatchFromCallsCount = 0
+    var dispatchFromCalled: Bool {
+        return dispatchFromCallsCount > 0
     }
-    var dispatchReceivedAction: ActionType?
-    var dispatchClosure: ((ActionType) -> Void)?
+    var dispatchFromReceivedArguments: (action: ActionType, dispatcher: ActionSource)?
+    var dispatchFromClosure: ((ActionType, ActionSource) -> Void)?
 
-    func dispatch(_ action: ActionType) {
-        dispatchCallsCount += 1
-        dispatchReceivedAction = action
-        dispatchClosure?(action)
+    func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
+        dispatchFromCallsCount += 1
+        dispatchFromReceivedArguments = (action: action, dispatcher: dispatcher)
+        dispatchFromClosure?(action, dispatcher)
     }
 
 }
@@ -59,18 +59,17 @@ class MiddlewareMock<InputActionType, OutputActionType, StateType>: Middleware {
 
     //MARK: - handle
 
-    var handleActionCallsCount = 0
-    var handleActionCalled: Bool {
-        return handleActionCallsCount > 0
+    var handleActionFromAfterReducerCallsCount = 0
+    var handleActionFromAfterReducerCalled: Bool {
+        return handleActionFromAfterReducerCallsCount > 0
     }
-    var handleActionReceivedAction: InputActionType?
-    var handleActionReturnValue: AfterReducer!
-    var handleActionClosure: ((InputActionType) -> AfterReducer)?
+    var handleActionFromAfterReducerReceivedArguments: (action: InputActionType, dispatcher: ActionSource, afterReducer: AfterReducer)?
+    var handleActionFromAfterReducerClosure: ((InputActionType, ActionSource, inout AfterReducer) -> Void)?
 
-    func handle(action: InputActionType) -> AfterReducer {
-        handleActionCallsCount += 1
-        handleActionReceivedAction = action
-        return handleActionClosure.map({ $0(action) }) ?? handleActionReturnValue
+    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        handleActionFromAfterReducerCallsCount += 1
+        handleActionFromAfterReducerReceivedArguments = (action: action, dispatcher: dispatcher, afterReducer: afterReducer)
+        handleActionFromAfterReducerClosure?(action, dispatcher, &afterReducer)
     }
 
 }
@@ -104,17 +103,17 @@ class StoreTypeMock<ActionType, StateType>: StoreType {
 
     //MARK: - dispatch
 
-    var dispatchCallsCount = 0
-    var dispatchCalled: Bool {
-        return dispatchCallsCount > 0
+    var dispatchFromCallsCount = 0
+    var dispatchFromCalled: Bool {
+        return dispatchFromCallsCount > 0
     }
-    var dispatchReceivedAction: ActionType?
-    var dispatchClosure: ((ActionType) -> Void)?
+    var dispatchFromReceivedArguments: (action: ActionType, dispatcher: ActionSource)?
+    var dispatchFromClosure: ((ActionType, ActionSource) -> Void)?
 
-    func dispatch(_ action: ActionType) {
-        dispatchCallsCount += 1
-        dispatchReceivedAction = action
-        dispatchClosure?(action)
+    func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
+        dispatchFromCallsCount += 1
+        dispatchFromReceivedArguments = (action: action, dispatcher: dispatcher)
+        dispatchFromClosure?(action, dispatcher)
     }
 
 }

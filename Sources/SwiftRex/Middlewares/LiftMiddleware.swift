@@ -53,13 +53,13 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: GlobalInputActionType) -> AfterReducer {
+    public func handle(action: GlobalInputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
         guard let localAction: LocalInputActionType = inputActionMap(action) else {
             // This middleware doesn't care about this action type
-            return .doNothing()
+            return
         }
 
-        return partMiddleware.handle(action: localAction)
+        return partMiddleware.handle(action: localAction, from: dispatcher, afterReducer: &afterReducer)
     }
 }
 

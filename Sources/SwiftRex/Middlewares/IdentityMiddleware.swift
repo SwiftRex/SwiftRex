@@ -23,5 +23,7 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: InputActionType) -> AfterReducer { .doNothing() }
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        afterReducer = .identity
+    }
 }

@@ -39,7 +39,7 @@ class IssueTracker42Tests: XCTestCase {
         let cancellable = viewModel.statePublisher.sink { _ in
             shouldNotifyTwice.fulfill()
         }
-        viewModel.dispatch(.action)
+        viewModel.dispatch(.action, from: .here())
 
         wait(for: [shouldNotifyTwice], timeout: 0.3)
         XCTAssertNotNil(cancellable)

@@ -50,8 +50,8 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
         self.cancellableBinding = statePublisher.assign(to: \.state, on: self)
     }
 
-    public func dispatch(_ action: ViewAction) {
-        store.dispatch(action)
+    public func dispatch(_ action: ViewAction, from dispatcher: ActionSource) {
+        store.dispatch(action, from: dispatcher)
     }
 }
 
@@ -115,14 +115,14 @@ extension ObservableViewModel {
     ///                     Defaults to do nothing.
     /// - Returns: a very simple ObservableViewModel mock, that you can inject in your SwiftUI View for tests or
     ///            live preview.
-    public static func mock(state: StateType, action: (@escaping (ActionType, inout StateType) -> Void) = { _, _ in })
+    public static func mock(state: StateType, action: (@escaping (ActionType, ActionSource, inout StateType) -> Void) = { _, _, _ in })
         -> ObservableViewModel<ActionType, StateType> {
         let subject = CurrentValueSubject<StateType, Never>(state)
 
         return AnyStoreType<ActionType, StateType>(
-            action: {
+            action: { viewAction, dispatcher in
                 var state = subject.value
-                action($0, &state)
+                action(viewAction, dispatcher, &state)
                 subject.send(state)
             },
             state: subject.asPublisherType()

@@ -19,12 +19,14 @@ class MiddlewareTests: XCTestCase {
             actionBravoAfterReducerCalled: actionBravoAfterReducerCalled,
             actionCharlieAfterReducerCalled: actionCharlieAfterReducerCalled
         )
-        sut.receiveContext(getState: { state }, output: .init { _ in })
+        sut.receiveContext(getState: { state }, output: .init { _, _ in })
 
-        let after1 = sut.handle(action: .bar(.bravo))
+        var after1: AfterReducer = .doNothing()
+        sut.handle(action: .bar(.bravo), from: .here(), afterReducer: &after1)
         after1.reducerIsDone()
 
-        let after2 = sut.handle(action: .bar(.charlie))
+        var after2: AfterReducer = .doNothing()
+        sut.handle(action: .bar(.charlie), from: .here(), afterReducer: &after2)
         after2.reducerIsDone()
 
         wait(
@@ -72,14 +74,14 @@ class MiddlewareTests: XCTestCase {
             self.receiveContextCalled.fulfill()
         }
 
-        func handle(action: AppAction) -> AfterReducer {
+        func handle(action: AppAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
             switch action {
             case .bar(.bravo): self.actionBravoBeforeReducerCalled.fulfill()
             case .bar(.charlie): self.actionCharlieBeforeReducerCalled.fulfill()
             default: XCTFail("Invalid action")
             }
 
-            return .do {
+            afterReducer = .do {
                 switch action {
                 case .bar(.bravo): self.actionBravoAfterReducerCalled.fulfill()
                 case .bar(.charlie): self.actionCharlieAfterReducerCalled.fulfill()

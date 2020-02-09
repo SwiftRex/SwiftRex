@@ -26,13 +26,13 @@ class IntegrationCounterTests: XCTestCase {
                 shouldCallEightTimes.fulfill()
             }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.store.dispatch(.event(.requestIncrease))
-            self.store.dispatch(.event(.requestIncrease))
-            self.store.dispatch(.event(.requestIncrease))
-            self.store.dispatch(.event(.requestDecrease))
-            self.store.dispatch(.event(.requestIncrease))
-            self.store.dispatch(.event(.requestDecrease))
-            self.store.dispatch(.event(.requestDecrease))
+            self.store.dispatch(.event(.requestIncrease), from: .here())
+            self.store.dispatch(.event(.requestIncrease), from: .here())
+            self.store.dispatch(.event(.requestIncrease), from: .here())
+            self.store.dispatch(.event(.requestDecrease), from: .here())
+            self.store.dispatch(.event(.requestIncrease), from: .here())
+            self.store.dispatch(.event(.requestDecrease), from: .here())
+            self.store.dispatch(.event(.requestDecrease), from: .here())
         }
 
         wait(for: [shouldCallEightTimes], timeout: 1)
@@ -112,11 +112,11 @@ enum CounterService {
             self.output = output
         }
 
-        func handle(action: AppAction.CounterEvent) -> AfterReducer {
-            return .do { [unowned self] in
+        func handle(action: AppAction.CounterEvent, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+            afterReducer = .do { [unowned self] in
                 switch action {
-                case .requestIncrease: self.output.dispatch(.increase)
-                case .requestDecrease: self.output.dispatch(.decrease)
+                case .requestIncrease: self.output.dispatch(.increase, from: .here())
+                case .requestDecrease: self.output.dispatch(.decrease, from: .here())
                 }
             }
         }

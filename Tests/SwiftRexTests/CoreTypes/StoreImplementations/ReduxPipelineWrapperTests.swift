@@ -16,15 +16,18 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionClosure = { action in
+        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertEqual(action, expectedAction)
+            XCTAssertEqual("file_1", dispatcher.file)
+            XCTAssertEqual("function_1", dispatcher.function)
+            XCTAssertEqual(1, dispatcher.line)
+            XCTAssertEqual("info_1", dispatcher.info)
             shouldCallMiddlewareActionHandler.fulfill()
-            return .doNothing()
         }
 
         DispatchQueue.global().async {
-            sut.dispatch(actionToDispatch)
+            sut.dispatch(actionToDispatch, from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"))
         }
 
         wait(for: [shouldCallMiddlewareActionHandler], timeout: 0.1)
@@ -47,15 +50,18 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionClosure = { action in
+        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertEqual(action, expectedAction)
+            XCTAssertEqual("file_1", dispatcher.file)
+            XCTAssertEqual("function_1", dispatcher.function)
+            XCTAssertEqual(1, dispatcher.line)
+            XCTAssertEqual("info_1", dispatcher.info)
             shouldCallMiddlewareActionHandler.fulfill()
-            return .doNothing()
         }
 
         DispatchQueue.global().async {
-            middlewareDispatcher?.dispatch(actionToDispatch)
+            middlewareDispatcher?.dispatch(actionToDispatch, from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"))
         }
 
         wait(for: [shouldCallMiddlewareActionHandler], timeout: 0.1)
@@ -89,8 +95,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallReducerActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionClosure = { _ in
-            .doNothing()
+        middlewareMock.handleActionFromAfterReducerClosure = { _, _, _ in
         }
 
         reducerMock.1.reduceClosure = { action, state in
@@ -102,7 +107,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         }
 
         DispatchQueue.global().async {
-            sut.dispatch(actionToDispatch)
+            sut.dispatch(actionToDispatch, from: .here())
         }
 
         wait(for: [shouldCallReducerActionHandler], timeout: 0.1)
@@ -120,8 +125,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             middleware: middlewareMock)
 
         let shouldCallReducerActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionClosure = { _ in
-            .doNothing()
+        middlewareMock.handleActionFromAfterReducerClosure = { _, _, _ in
         }
 
         reducerMock.1.reduceClosure = { _, state in
@@ -130,7 +134,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             return reducedState
         }
 
-        sut.dispatch(.bar(.charlie))
+        sut.dispatch(.bar(.charlie), from: .here())
 
         wait(for: [shouldCallReducerActionHandler], timeout: 0.1)
         XCTAssertEqual(reducedState, stateSubjectMock.currentValue)
