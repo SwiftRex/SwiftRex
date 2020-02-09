@@ -103,7 +103,7 @@ pod-install:
 # Jazzy
 
 jazzy:
-	bundle exec jazzy -x -target,SwiftRex\ macOS\ RxSwift
+	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine
 
 # Pre-Build
 
