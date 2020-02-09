@@ -14,7 +14,7 @@
     <a title="Other Structures  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (55% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -59,13 +59,16 @@
                 <a href="Protocols/Middleware.html">Middleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+                <a href="Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareCy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/AnyMiddleware.html">AnyMiddleware</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyMiddleware.html">AnyMiddleware</a>
               </li>
             </ul>
           </li>
@@ -92,16 +95,18 @@
             <a href="Other%20Classes.html">Other Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/IdentityMiddleware.html">IdentityMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/LiftMiddleware.html">LiftMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/PipelineMiddleware.html">PipelineMiddleware</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other%20Extensions.html">Other Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Collection.html">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/DispatchQueue.html">DispatchQueue</a>
               </li>
             </ul>
           </li>
@@ -129,7 +134,25 @@
             <a href="Other%20Structs.html">Other Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Structs/MiddlewareContext.html">MiddlewareContext</a>
+                <a href="Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/LiftMiddleware.html">LiftMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/PublisherType.html">PublisherType</a>
@@ -149,9 +172,6 @@
               <li class="nav-group-task">
                 <a href="Structs/SubscriberType.html">SubscriberType</a>
               </li>
-              <li class="nav-group-task">
-                <a href="Structs/ViewStore.html">ViewStore</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -159,6 +179,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
@@ -189,9 +212,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex17MiddlewareContextV"></a>
-                    <a name="//apple_ref/swift/Struct/MiddlewareContext" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex17MiddlewareContextV">MiddlewareContext</a>
+                    <a name="/s:8SwiftRex12AfterReducerV"></a>
+                    <a name="//apple_ref/swift/Struct/AfterReducer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex12AfterReducerV">AfterReducer</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -199,21 +222,167 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p><code>MiddlewareContext</code> is a data structure that provides indirect access to the store, by offering middlewares two important
-features: ability to read the latest state at any point in time through the property <code>getState: () -&gt; StateType</code> and the
-ability to dispatch new actions at any point in the through the function <code>dispatch(_ action: ActionType)</code>.
-That way, your middleware will be able to perform async tasks or even scheduled task, such as timers, and in some moment
-in the future check the state and/or trigger new actions to the store.
-Every middleware will have a property <code>context</code> which it&rsquo;s a closure to access the context, and this property will be
-set by the store when the middleware gets added into the the pipeline.</p>
+                        <p>Wraps a closure that will be called after the Reducer pipeline has changed the state with the current action.
+With this structure, a middleware can schedule some callback to be executed with the new state, and evidently access this state to check what&rsquo;s
+different. This can be very useful for Middlewares that perform logging, monitoring or telemetry, so you can check the state before and after
+reducers&rsquo; execution, or how much time it took for the whole chain to be called (in case this middleware is the first in the chain, of course).
+<code>AfterReducer</code> is a monoid, that means it can be combined with another <code>AfterReducer</code> to form a new one (that executes both operations in the
+reverse order) and an identity instance, that when combined with any other <code>AfterReducer</code> changes nothing in the result, acting as a neutral
+element in composition. The identity of an <code>AfterReducer</code> is the static instance <code>doNothing()</code>, that contains an empty closure for no-op.
+The combination between two <code>AfterReducer</code> instances occur in reverse order so the first middleware will have its <q>after reducer</q> closure executed
+last. This composition can be achieved by using the operator <code>&lt;&gt;</code></p>
 
-                        <a href="Structs/MiddlewareContext.html" class="slightly-smaller">See more</a>
+                        <a href="Structs/AfterReducer.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">MiddlewareContext</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ActionHandler.html">ActionHandler</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">AfterReducer</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Monoid.html">Monoid</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16AnyActionHandlerV"></a>
+                    <a name="//apple_ref/swift/Struct/AnyActionHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16AnyActionHandlerV">AnyActionHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> defines a protocol for entities able to handle actions - defined by the associated type <code>ActionType</code>
+ and <code>AnyActionHandler</code> erases this protocol to a generic struct type.</p>
+
+<p>The only protocol requirement is a function that allows other entities to dispatch actions, so Views (or Presenters,
+ViewModels) in your UI layer, or even Middlewares can create actions of a certain type and send to your store, that
+is generalized by this protocol.</p>
+
+                        <a href="Structs/AnyActionHandler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ActionHandler.html">ActionHandler</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex12ActionSourceV"></a>
+                    <a name="//apple_ref/swift/Struct/ActionSource" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex12ActionSourceV">ActionSource</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Representation of the entity responsible for creating and dispatching the action, including information useful for logging, debugging, analytics
+or monitoring. The action source will be implicitly created when <code>ActionHandler.dispatch</code> is called from a middleware, view or presenter, and
+it will contain the file, function and line from where the dispatch function was called. Additionally you can append extra information useful
+for debugging, as an optional String attached to the ActionSource.</p>
+
+<p>The Action Source will arrive at every middleware&rsquo;s <code>handle</code> function, and you have the opportunity to use this information when performing side-
+effects, such as printing logs.</p>
+
+                        <a href="Structs/ActionSource.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ActionSource</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">Equatable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16AnyStateProviderV"></a>
+                    <a name="//apple_ref/swift/Struct/AnyStateProvider" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16AnyStateProviderV">AnyStateProvider</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>AnyStateProvider</code> erases the protocol <code><a href="Protocols/StateProvider.html">StateProvider</a></code>, which defines a entities able to offer state publishers (Combine Publisher, RxSwift
+Observable, ReactiveSwift SignalProducer) of certain <code>StateType</code>, so everybody can observe the global state changes through this container. Usually
+a <code>Store</code> will implement that, but it can also be a <code><a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a></code> with a state that is derived from the global source-of-truth.</p>
+
+<p>The only protocol requirement is to offer a property <code>statePublisher</code> that will allow other entities to subscribe to state changes and react to
+those.</p>
+
+                        <a href="Structs/AnyStateProvider.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">AnyStateProvider</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/StateProvider.html">StateProvider</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex12AnyStoreTypeV"></a>
+                    <a name="//apple_ref/swift/Struct/AnyStoreType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex12AnyStoreTypeV">AnyStoreType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                        <a href="Structs/AnyStoreType.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">AnyStoreType</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/StoreType.html">StoreType</a></span></code></pre>
 
                         </div>
                       </div>
@@ -237,7 +406,8 @@ set by the store when the middleware gets added into the the pipeline.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Structs/ReduxPipelineWrapper.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -246,62 +416,6 @@ set by the store when the middleware gets added into the the pipeline.</p>
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ReduxPipelineWrapper</span><span class="o">&lt;</span><span class="kt">MiddlewareType</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols/ActionHandler.html">ActionHandler</a></span>
     <span class="k">where</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">InputActionType</span> <span class="o">==</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">OutputActionType</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex9ViewStoreV"></a>
-                    <a name="//apple_ref/swift/Struct/ViewStore" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex9ViewStoreV">ViewStore</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Not necessarily a store implementation means that this entity holds the source-of-truth of an app. The source-of-truth
-should be single a centralized store, where all the state is held. But your Views and ViewControllers not necessarily
-need to access this main Store directly, they could, instead, access some <q>proxy</q> store that simply intermediates
-all actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
-on that please check <code>ViewStore</code>, and compare it to <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
-
-<p>Well, this unlocks several possibilities like having <q>View Stores</q>, which act somehow like presenters (in MVP pattern)
-or ViewModels (in MVVM pattern), because this layer can be seen as a simple transformation of states and actions. The
-view store will transform State into View State by, for example, applying NumberFormatter or DateFormatter into numbers
-and dates from your state and generating strings to be shown in UI labels or text fields. You can picture that as
-dozens of small functions, transforming each property individually, or you can group all the properties in a view item,
-or view state, containing lots of strings to be used by UI controls, and then the whole process is a single function
-from <code>(State) -&gt; ViewState</code>. In the other direction, you probably want to map UI events like scrolling, button taps,
-toggle changes and view lifecycle events (did load, will appear, foreground) into app actions like save a form, load
-next page, add to favorites or reload a list of items. Grouping them in an enum of possible events triggered by the
-user in a certain view, and you may want to map these view actions into app actions: <code>(ViewAction) -&gt; AppAction</code>.</p>
-
-<p>Because the <code><a href="Protocols/StoreType.html">StoreType</a></code> protocol is very generic and offers <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code>, we can think of other
-possible implementations like a proxy view store that knows how to reach the main store, but exposes to a view only
-what&rsquo;s relevant for it (<code>ViewState</code> and <code>ViewAction</code>), at the same time it knows how to map <code>(State) -&gt; ViewState</code> and
-<code>(ViewAction) -&gt; AppAction</code>. These two transformations are used every time a view dispatches a view action or a state
-changes and notifies all subscribers.</p>
-
-<p>Some store implementations will glue all the parts together and become responsible for being
-its responsibility is being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="Protocols/StoreType.html">StoreType</a></code> is the single point of contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one single dependency or, preferably, a dependency for each of its protocols - <code>EventHandler</code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code> -, both eventually pointing to the same instance.</p>
-
-                        <a href="Structs/ViewStore.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ViewStore</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/StoreType.html">StoreType</a></span></code></pre>
 
                         </div>
                       </div>
@@ -325,7 +439,8 @@ its responsibility is being a proxy to the non-Redux world. For that reason, it&
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Structs/SubscriberType.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -352,7 +467,8 @@ its responsibility is being a proxy to the non-Redux world. For that reason, it&
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Structs/PublisherType.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -379,7 +495,8 @@ its responsibility is being a proxy to the non-Redux world. For that reason, it&
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Structs/SubjectType.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -406,7 +523,8 @@ its responsibility is being a proxy to the non-Redux world. For that reason, it&
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Structs/ReplayLastSubjectType.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -437,7 +555,8 @@ its responsibility is being a proxy to the non-Redux world. For that reason, it&
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Structs/ShouldEmitValue.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -453,10 +572,80 @@ its responsibility is being a proxy to the non-Redux world. For that reason, it&
                 </li>
               </ul>
             </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18IdentityMiddlewareV"></a>
+                    <a name="//apple_ref/swift/Struct/IdentityMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18IdentityMiddlewareV">IdentityMiddleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The <code>IdentityMiddleware</code> won&rsquo;t do any operation, simply bypass actions through. It&rsquo;s meant to provide identity axiom
+to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware
+in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.</p>
+
+                        <a href="Structs/IdentityMiddleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">IdentityMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex14LiftMiddlewareV"></a>
+                    <a name="//apple_ref/swift/Struct/LiftMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex14LiftMiddlewareV">LiftMiddleware</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>This is a container that lifts a sub-state middleware to a global state middleware.</p>
+
+<p>Internally you find the middleware responsible for handling events and actions for a sub-state (<code>Part</code>), while this outer class will be able to compose with global state (<code>Whole</code>) in your <code>Store</code>.</p>
+
+<p>You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call <code>Middleware.lift(_:)</code>, passing as parameter the keyPath from whole to part.</p>
+
+                        <a href="Structs/LiftMiddleware.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">LiftMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">PartMiddleware</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span> <span class="k">where</span> <span class="kt">PartMiddleware</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-01)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

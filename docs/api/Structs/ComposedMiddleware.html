@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ComposedMiddleware Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/ComposedMiddleware" class="dashAnchor"></a>
+    <a title="ComposedMiddleware Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">SwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ComposedMiddleware Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Store%20%28contracts%29.html">Store (contracts)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/StateProvider.html">StateProvider</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Store%20%28basic%20implementation%29.html">Store (basic implementation)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Reducer.html">Reducer</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Reducer.html">Reducer</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Middleware%20%28basics%29.html">Middleware (basics)</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Composition%20helpers.html">Composition helpers</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/Monoid.html">Monoid</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Closure%20type-aliases.html">Closure type-aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Closure%20type-aliases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Closure%20type-aliases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Other%20Classes.html">Other Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Other%20Extensions.html">Other Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Collection.html">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/DispatchQueue.html">DispatchQueue</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Other%20Protocols.html">Other Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ReduxStoreProtocol.html">ReduxStoreProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Semigroup.html">Semigroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StoreType.html">StoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SubscriptionCollection.html">SubscriptionCollection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SubscriptionType.html">SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Other%20Structs.html">Other Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ReduxPipelineWrapper.html">ReduxPipelineWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SubjectType.html">SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SubscriberType.html">SubscriberType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Other%20Typealiases.html">Other Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other%20Typealiases.html#/s:8SwiftRex31UnfailableReplayLastSubjectTypea">UnfailableReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other%20Typealiases.html#/s:8SwiftRex17UnfailableSubjecta">UnfailableSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other%20Typealiases.html#/s:8SwiftRex24UnfailableSubscriberTypea">UnfailableSubscriberType</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ComposedMiddleware</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ComposedMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/Middleware.html">Middleware</a></span></code></pre>
+
+                </div>
+              </div>
+            <p>The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code>EventProtocol</code> or an <code>ActionProtocol</code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</p>
+
+<p>It could be initialized manually by using the <code>init()</code> and configured by using the method <code>append(middleware:)</code>, but if you&rsquo;re ok with using custom operators you can compose two or more middlewares using the diamond operator:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddleware</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18ComposedMiddlewareVACyxq_q0_Gycfc"></a>
+                    <a name="//apple_ref/swift/Method/init()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareVACyxq_q0_Gycfc">init()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Default initializer for <code>ComposedMiddleware</code>, use this only if you don&rsquo;t like custom operators, otherwise create a <code>ComposedMiddleware</code> by composing two or more middlewares using the diamond operator, as shown below:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedMiddleware</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span>
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18ComposedMiddlewareV6append10middlewareyqd___t15InputActionTypeQyd__Rsz06OutputhI0Qyd__Rs_05StateI0Qyd__Rs0_AA0D0Rd__lF"></a>
+                    <a name="//apple_ref/swift/Method/append(middleware:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareV6append10middlewareyqd___t15InputActionTypeQyd__Rsz06OutputhI0Qyd__Rs_05StateI0Qyd__Rs0_AA0D0Rd__lF">append(middleware:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Appends a new middleware to end of the composition (inner chain). Use this only if you don&rsquo;t like custom operators, otherwise create a <code>ComposedMiddleware</code> append more middlewares to the composition by using the diamond operator, as shown below:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">composedOfTwoMiddlewares</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+<p>Or</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">composedOfThreeMiddlewares</span> <span class="o">=</span> <span class="n">firstMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">secondMiddleware</span> <span class="o">&lt;&gt;</span> <span class="n">thirdMiddleware</span>
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">mutating</span> <span class="kd">func</span> <span class="n">append</span><span class="o">&lt;</span><span class="kt">M</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span><span class="p">(</span><span class="nv">middleware</span><span class="p">:</span> <span class="kt">M</span><span class="p">)</span>
+    <span class="k">where</span> <span class="kt">M</span><span class="o">.</span><span class="kt">InputActionType</span> <span class="o">==</span> <span class="kt">InputActionType</span><span class="p">,</span>
+          <span class="kt">M</span><span class="o">.</span><span class="kt">OutputActionType</span> <span class="o">==</span> <span class="kt">OutputActionType</span><span class="p">,</span>
+          <span class="kt">M</span><span class="o">.</span><span class="kt">StateType</span> <span class="o">==</span> <span class="kt">StateType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF"></a>
+                    <a name="//apple_ref/swift/Method/receiveContext(getState:output:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF">receiveContext(getState:output:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt"><a href="../Structs/AnyActionHandler.html">AnyActionHandler</a></span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18ComposedMiddlewareV6handle6action4from12afterReduceryx_AA12ActionSourceVAA05AfterI0VztF"></a>
+                    <a name="//apple_ref/swift/Method/handle(action:from:afterReducer:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareV6handle6action4from12afterReduceryx_AA12ActionSourceVAA05AfterI0VztF">handle(action:from:afterReducer:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Handles the incoming actions. The <code>ComposedMiddleware</code> will forward each action to all its internal middlewares, in
+the order as they were composed together, and when all of them are done, the <code>ActionType</code> will be forwarded to the
+next middleware in the chain, or to the reducer pipeline in case this is the last middleware.</p>
+
+<p>The internal middlewares in this <code>ComposedMiddleware</code> container may trigger additional actions, as any middleware,
+and in this case the actions will be forwarded to the store by using the <code>context</code> property or the parent composed
+middleware object.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">InputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt"><a href="../Structs/ActionSource.html">ActionSource</a></span><span class="p">,</span> <span class="nv">afterReducer</span><span class="p">:</span> <span class="k">inout</span> <span class="kt"><a href="../Structs/AfterReducer.html">AfterReducer</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the action to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>next</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
+  only once, not more or less than once. Call it from the same thread and runloop where the handle function
+  is executed, never from a completion handler or dispatch queue block. In case you don&rsquo;t need to compare
+  state before and after it&rsquo;s changed from the reducers, please consider to add a <code>defer</code> block with <code>next()</code>
+  on it, at the beginning of <code>handle</code> function.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

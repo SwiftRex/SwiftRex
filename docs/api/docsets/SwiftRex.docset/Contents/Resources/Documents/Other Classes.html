@@ -14,7 +14,7 @@
     <a title="Other Classes  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (55% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -59,13 +59,16 @@
                 <a href="Protocols/Middleware.html">Middleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+                <a href="Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareCy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/AnyMiddleware.html">AnyMiddleware</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyMiddleware.html">AnyMiddleware</a>
               </li>
             </ul>
           </li>
@@ -92,16 +95,18 @@
             <a href="Other%20Classes.html">Other Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/IdentityMiddleware.html">IdentityMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/LiftMiddleware.html">LiftMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/PipelineMiddleware.html">PipelineMiddleware</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other%20Extensions.html">Other Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Collection.html">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/DispatchQueue.html">DispatchQueue</a>
               </li>
             </ul>
           </li>
@@ -129,7 +134,25 @@
             <a href="Other%20Structs.html">Other Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Structs/MiddlewareContext.html">MiddlewareContext</a>
+                <a href="Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/LiftMiddleware.html">LiftMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/PublisherType.html">PublisherType</a>
@@ -149,9 +172,6 @@
               <li class="nav-group-task">
                 <a href="Structs/SubscriberType.html">SubscriberType</a>
               </li>
-              <li class="nav-group-task">
-                <a href="Structs/ViewStore.html">ViewStore</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -159,6 +179,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
@@ -223,9 +246,9 @@ of this class and, directly or indirectly, all the other parts of your app will 
 by this instance.</p>
 
 <p>That means that other types of store can act as a proxy to this one, but none of them should hold any state. For more
-information on that please check <code><a href="Structs/ViewStore.html">ViewStore</a></code>.</p>
+information on that please check <code><a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a></code>.</p>
 
-<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png" alt="Store, ViewStore and View"></p>
+<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png" alt="Store, StoreProjection and View"></p>
 
 <p>You can think of Store as a very heavy <q>Model</q> layer, completely detached from the Views, Controllers, Presenters etc.,
 and where all the business logic stands. At a first sight it may look like transferring the <q>Massive</q> problem from a
@@ -242,6 +265,39 @@ new state, accumulatively. When they are done, the store publishes the final sta
 subscribers.</p>
 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png" alt="Store internals"></p>
+<pre class="highlight swift"><code>                  <span class="err">┌────────────────────────────────────────┐</span>
+                  <span class="err">│</span>                                        <span class="err">│</span>
+                  <span class="err">│</span>    <span class="kt">SwiftUI</span> <span class="kt">View</span> <span class="o">/</span> <span class="kt">UIViewController</span>     <span class="err">│</span>
+                  <span class="err">│</span>                                        <span class="err">│</span>
+                  <span class="err">└────┬───────────────────────────────────┘</span>
+                       <span class="err">│</span>                            <span class="err">▲</span>
+                       <span class="err">│</span>                            <span class="err">│</span>
+                       <span class="err">│</span> <span class="n">action</span>        <span class="n">notification</span>
+           <span class="err">┌─────────┐</span> <span class="err">│</span>                            <span class="err">│</span>
+           <span class="err">│</span>         <span class="err">▼</span> <span class="err">│</span>                       <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>
+           <span class="err">│</span>      <span class="err">┏━━━━│━━━━━━━━━━━━━━━━━━━━━━┫</span>   <span class="kt">State</span>   <span class="err">┣┓</span>
+   <span class="k">new</span> <span class="n">actions</span>    <span class="err">┃</span>    <span class="err">│</span>            <span class="kt">Store</span>       <span class="kt">Publisher</span>  <span class="err">┃░</span>
+ <span class="n">from</span> <span class="n">middleware</span>  <span class="err">┃</span>    <span class="err">▼</span>                      <span class="err">└</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┬</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┘┃░</span>
+           <span class="err">│</span>      <span class="err">┃</span> <span class="err">┌───────────────────┐</span>                  <span class="err">┃░</span>
+           <span class="err">│</span>      <span class="err">┃</span> <span class="err">│</span>    <span class="kt">Middlewares</span>    <span class="err">│</span>           <span class="err">│</span>      <span class="err">┃░</span>
+           <span class="err">└────────┤┌───┐</span>  <span class="err">┌───┐</span>  <span class="err">┌───┐│</span>                  <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">││</span> <span class="mi">1</span> <span class="err">│─▶│</span> <span class="mi">2</span> <span class="err">│─▶│</span> <span class="mi">3</span> <span class="err">││◀─</span>         <span class="err">│</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│└───┘</span>  <span class="err">└───┘</span>  <span class="err">└───┘│</span>  <span class="err">│</span>               <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">└────────────────┬──┘</span>      <span class="err">┌────┴────┐</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>                  <span class="err">│</span>     <span class="err">│</span>   <span class="err">│</span>         <span class="err">│</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>    <span class="err">┌─────────────┘</span>      <span class="err">─</span> <span class="err">─│</span>  <span class="kt">State</span>  <span class="err">│</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>    <span class="err">│</span> <span class="err">┌─────────────────────│</span>         <span class="err">│</span> <span class="err">┃░</span>
+                  <span class="err">┃</span>    <span class="err">▼</span> <span class="err">▼</span>                     <span class="err">└────▲────┘</span> <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">┌───────────────────┐</span>           <span class="err">║</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│</span>     <span class="kt">Reducers</span>      <span class="err">│</span>           <span class="err">║</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│┌───┐</span>  <span class="err">┌───┐</span>  <span class="err">┌───┐│</span>           <span class="err">║</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">││</span> <span class="mi">1</span> <span class="err">│─▶│</span> <span class="mi">2</span> <span class="err">│─▶│</span> <span class="mi">3</span> <span class="err">│╠═══════════╝</span>      <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">│└───┘</span>  <span class="err">└───┘</span>  <span class="err">└───┘│</span>    <span class="n">state</span>         <span class="err">┃░</span>
+                  <span class="err">┃</span> <span class="err">└───────────────────┘</span>   <span class="n">mutation</span>       <span class="err">┃░</span>
+                  <span class="err">┃</span>                                        <span class="err">┃░</span>
+                  <span class="err">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛░</span>
+                   <span class="err">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
+</code></pre>
 
 <p>By using this architecture, your model gets completely detached from the <code>UIKit</code>/<code>SwiftUI</code> world. And your UI gets
 completely independent from side-effects, state mutations, threading, ownership, logic, logs, analytics and everything
@@ -263,111 +319,10 @@ a derived view store).</p>
                 </li>
               </ul>
             </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex18IdentityMiddlewareC"></a>
-                    <a name="//apple_ref/swift/Class/IdentityMiddleware" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex18IdentityMiddlewareC">IdentityMiddleware</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The <code>IdentityMiddleware</code> won&rsquo;t do any operation, simply bypass actions through. It&rsquo;s meant to provide identity axiom
-to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware
-in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.</p>
-
-                        <a href="Classes/IdentityMiddleware.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">IdentityMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex14LiftMiddlewareC"></a>
-                    <a name="//apple_ref/swift/Class/LiftMiddleware" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex14LiftMiddlewareC">LiftMiddleware</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>This is a container that lifts a sub-state middleware to a global state middleware.</p>
-
-<p>Internally you find the middleware responsible for handling events and actions for a sub-state (<code>Part</code>), while this outer class will be able to compose with global state (<code>Whole</code>) in your <code>Store</code>.</p>
-
-<p>You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call <code>Middleware.lift(_:)</code>, passing as parameter the keyPath from whole to part.</p>
-
-                        <a href="Classes/LiftMiddleware.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">LiftMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">PartMiddleware</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span> <span class="k">where</span> <span class="kt">PartMiddleware</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex18PipelineMiddlewareC"></a>
-                    <a name="//apple_ref/swift/Class/PipelineMiddleware" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex18PipelineMiddlewareC">PipelineMiddleware</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                        <a href="Classes/PipelineMiddleware.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">PipelineMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-01)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

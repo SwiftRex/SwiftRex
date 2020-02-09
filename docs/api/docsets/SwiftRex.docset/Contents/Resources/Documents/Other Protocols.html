@@ -14,7 +14,7 @@
     <a title="Other Protocols  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (55% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -59,13 +59,16 @@
                 <a href="Protocols/Middleware.html">Middleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+                <a href="Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareCy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/AnyMiddleware.html">AnyMiddleware</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyMiddleware.html">AnyMiddleware</a>
               </li>
             </ul>
           </li>
@@ -92,16 +95,18 @@
             <a href="Other%20Classes.html">Other Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/IdentityMiddleware.html">IdentityMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/LiftMiddleware.html">LiftMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/PipelineMiddleware.html">PipelineMiddleware</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other%20Extensions.html">Other Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Collection.html">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/DispatchQueue.html">DispatchQueue</a>
               </li>
             </ul>
           </li>
@@ -129,7 +134,25 @@
             <a href="Other%20Structs.html">Other Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Structs/MiddlewareContext.html">MiddlewareContext</a>
+                <a href="Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/LiftMiddleware.html">LiftMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/PublisherType.html">PublisherType</a>
@@ -149,9 +172,6 @@
               <li class="nav-group-task">
                 <a href="Structs/SubscriberType.html">SubscriberType</a>
               </li>
-              <li class="nav-group-task">
-                <a href="Structs/ViewStore.html">ViewStore</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -159,6 +179,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
@@ -219,13 +242,47 @@ can use it as a <code>ObservedObject</code>.</li>
 <p>Not necessarily a store implementation means that this entity holds the source-of-truth of an app. Every app should
 have a single and centralized store, where the whole state is held. But Views and ViewControllers do not necessarily
 need to access this main Store directly, they could, instead, access some <q>proxy</q> store that intermediates the actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
-on that please check <code><a href="Structs/ViewStore.html">ViewStore</a></code>, and compare it to <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
+on that please check <code><a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a></code>, and compare it to <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
 
 <p>In summary, it&rsquo;s recommended to have one and only store <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code> in your app, holding the one and only one
-source-of-truth, but at the same time having several <code><a href="Structs/ViewStore.html">ViewStore</a></code> instances mapping the whole state and whole set of
+source-of-truth, but at the same time having several <code><a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a></code> instances mapping the whole state and whole set of
 possible actions from and to view state and events relevant to the specific view you implement.</p>
 
-<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreTypes.png" alt="Store, ViewStore and View"></p>
+<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png" alt="Store, StoreProjection and View"></p>
+<pre class="highlight swift"><code>            <span class="err">┌──────────┐</span>
+            <span class="err">│</span> <span class="kt">UIButton</span> <span class="err">│────────┐</span>
+            <span class="err">└──────────┘</span>        <span class="err">│</span>
+        <span class="err">┌───────────────────┐</span>   <span class="err">│</span>         <span class="n">dispatch</span><span class="o">&lt;</span><span class="kt">Action</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span>
+        <span class="err">│</span><span class="kt">UIGestureRecognizer</span><span class="err">│───┼──────────────────────────────────────────────┐</span>
+        <span class="err">└───────────────────┘</span>   <span class="err">│</span>                                              <span class="err">│</span>
+            <span class="err">┌───────────┐</span>       <span class="err">│</span>                                              <span class="err">▼</span>
+            <span class="err">│</span><span class="n">viewDidLoad</span><span class="err">│───────┘</span>                                   <span class="err">┏━━━━━━━━━━━━━━━━━━━━┓</span>
+            <span class="err">└───────────┘</span>                                           <span class="err">┃</span>                    <span class="err">┃░</span>
+                                                                    <span class="err">┃</span>                    <span class="err">┃░</span>
+                                                                    <span class="err">┃</span>                    <span class="err">┃░</span>
+              <span class="err">┌───────┐</span>                                             <span class="err">┃</span>                    <span class="err">┃░</span>
+              <span class="err">│</span><span class="kt">UILabel</span><span class="err">│◀─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┐</span>                                   <span class="err">┃</span>                    <span class="err">┃░</span>
+              <span class="err">└───────┘</span>                   <span class="kt">Combine</span><span class="p">,</span> <span class="kt">RxSwift</span>    <span class="err">┌</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┻</span> <span class="err">─</span> <span class="err">┐</span>                <span class="err">┃░</span>
+                                <span class="err">│</span>         <span class="n">or</span> <span class="kt">ReactiveSwift</span>       <span class="kt">State</span>      <span class="kt">Store</span>        <span class="err">┃░</span>
+       <span class="err">┌</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─│</span><span class="kt">Publisher</span><span class="err">│</span>                <span class="err">┃░</span>
+       <span class="err">▼</span>               <span class="err">│</span>                  <span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:)</span>                             <span class="err">┃░</span>
+<span class="err">┌─────────────┐</span>        <span class="err">▼</span>                  <span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:)</span> <span class="err">└</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┳</span> <span class="err">─</span> <span class="err">┘</span>                <span class="err">┃░</span>
+<span class="err">│</span>  <span class="kt">Diffable</span>   <span class="err">│</span> <span class="err">┌─────────────┐</span>           <span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span><span class="nv">on</span><span class="p">:)</span>            <span class="err">┃</span>                    <span class="err">┃░</span>
+<span class="err">│</span> <span class="kt">DataSource</span>  <span class="err">│</span> <span class="err">│</span><span class="kt">RxDataSources</span><span class="err">│</span>                                     <span class="err">┃</span>                    <span class="err">┃░</span>
+<span class="err">└─────────────┘</span> <span class="err">└─────────────┘</span>                                     <span class="err">┃</span>                    <span class="err">┃░</span>
+       <span class="err">│</span>               <span class="err">│</span>                                            <span class="err">┃</span>                    <span class="err">┃░</span>
+<span class="err">┌──────▼───────────────▼───────────┐</span>                                <span class="err">┗━━━━━━━━━━━━━━━━━━━━┛░</span>
+<span class="err">│</span>                                  <span class="err">│</span>                                 <span class="err">░░░░░░░░░░░░░░░░░░░░░░</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>         <span class="kt">UICollectionView</span>         <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">│</span>                                  <span class="err">│</span>
+<span class="err">└──────────────────────────────────┘</span>
+</code></pre>
 
                         <a href="Protocols/StoreType.html" class="slightly-smaller">See more</a>
                       </div>
@@ -257,7 +314,8 @@ possible actions from and to view state and events relevant to the specific view
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Protocols/ReduxStoreProtocol.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -332,7 +390,8 @@ function <code>h(x)</code> will be similar to <code>g(f(x))</code></p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Protocols/SubscriptionType.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -359,7 +418,8 @@ function <code>h(x)</code> will be similar to <code>g(f(x))</code></p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                         <a href="Protocols/SubscriptionCollection.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -378,7 +438,7 @@ function <code>h(x)</code> will be similar to <code>g(f(x))</code></p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-01)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
