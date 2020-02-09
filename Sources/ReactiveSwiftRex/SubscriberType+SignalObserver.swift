@@ -14,7 +14,7 @@ extension SubscriberType {
 }
 
 extension Signal.Observer {
-    public func asSubscriber() -> SubscriberType<Value, Error> {
+    public func asSubscriberType() -> SubscriberType<Value, Error> {
         .init(
             onValue: { value in
                 self.send(value: value)

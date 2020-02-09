@@ -21,7 +21,7 @@ extension SubscriberType: ObserverType {
 }
 
 extension ObserverType {
-    public func asSubscriber() -> SubscriberType<Element, Error> {
+    public func asSubscriberType() -> SubscriberType<Element, Error> {
         .init(
             onValue: { value in
                 self.onNext(value)

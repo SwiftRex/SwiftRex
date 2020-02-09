@@ -4,16 +4,21 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
     where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
     public typealias ActionType = MiddlewareType.InputActionType
     public typealias StateType = MiddlewareType.StateType
-    private let onAction: (ActionType) -> Void
-    private let middleware: MiddlewareType
 
-    public init(state: UnfailableReplayLastSubjectType<StateType>,
-                reducer: Reducer<ActionType, StateType>,
-                middleware: MiddlewareType,
-                emitsValue: ShouldEmitValue<StateType>) {
-        self.middleware = middleware
+    private var onAction: (ActionType, ActionSource) -> Void
 
-        let reduce: (ActionType) -> Void = { action in
+    public init(
+        state: UnfailableReplayLastSubjectType<StateType>,
+        reducer: Reducer<ActionType, StateType>,
+        middleware: MiddlewareType,
+        emitsValue: ShouldEmitValue<StateType>
+    ) {
+        DispatchQueue.setMainQueueID()
+
+        let onAction: (ActionType, ActionSource) -> Void = { action, dispatcher in
+            var afterReducer: AfterReducer = .doNothing()
+            middleware.handle(action: action, from: dispatcher, afterReducer: &afterReducer)
+
             state.mutate(
                 when: { $0 },
                 action: { value -> Bool in
@@ -23,37 +28,35 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
                     return true
                 }
             )
+
+            afterReducer.reducerIsDone()
         }
 
-        let middlewarePipeline: (ActionType) -> Void = { [unowned middleware] action in
-            middleware.handle(action: action, next: { reduce(action) })
-        }
-
-        let dispatchAction: (ActionType) -> Void = { action in
-            DispatchQueue.main.async {
-                middlewarePipeline(action)
+        middleware.receiveContext(
+            getState: { state.value() },
+            output: .init { action, dispatcher in
+                DispatchQueue.main.async {
+                    onAction(action, dispatcher)
+                }
             }
-        }
+        )
 
-        middleware.context = {
-            .init(
-                onAction: dispatchAction,
-                getState: { state.value() }
-            )
-        }
-
-        self.onAction = dispatchAction
+        self.onAction = onAction
     }
 
-    public func dispatch(_ action: ActionType) {
-        onAction(action)
+    public func dispatch(_ action: MiddlewareType.InputActionType, from dispatcher: ActionSource) {
+        DispatchQueue.asap {
+            self.onAction(action, dispatcher)
+        }
     }
 }
 
 extension ReduxPipelineWrapper where StateType: Equatable {
-    public init(state: UnfailableReplayLastSubjectType<StateType>,
-                reducer: Reducer<ActionType, StateType>,
-                middleware: MiddlewareType) {
+    public init(
+        state: UnfailableReplayLastSubjectType<StateType>,
+        reducer: Reducer<ActionType, StateType>,
+        middleware: MiddlewareType
+    ) {
         self.init(state: state, reducer: reducer, middleware: middleware, emitsValue: .whenDifferent)
     }
 }

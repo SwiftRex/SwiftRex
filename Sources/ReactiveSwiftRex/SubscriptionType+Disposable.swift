@@ -10,7 +10,7 @@ extension SubscriptionType {
 }
 
 extension Disposable {
-    public func asSubscription() -> SubscriptionType {
+    public func asSubscriptionType() -> SubscriptionType {
         if let subscription = self as? SubscriptionType { return subscription }
         return DisposableSubscription(disposable: self)
     }

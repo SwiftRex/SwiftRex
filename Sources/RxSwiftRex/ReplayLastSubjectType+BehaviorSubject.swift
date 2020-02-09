@@ -5,8 +5,8 @@ import SwiftRex
 extension ReplayLastSubjectType where ErrorType == Never {
     public init(behaviorSubject: BehaviorSubject<Element>) {
         self.init(
-            publisher: behaviorSubject.asPublisher().assertNoFailure(),
-            subscriber: behaviorSubject.asSubscriber().assertNoFailure(),
+            publisher: behaviorSubject.asPublisherType().assertNoFailure(),
+            subscriber: behaviorSubject.asSubscriberType().assertNoFailure(),
             value: { try! behaviorSubject.value() }
         )
     }

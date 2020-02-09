@@ -3,22 +3,13 @@
  to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware
  in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.
  */
-public final class IdentityMiddleware<InputActionType, OutputActionType, GlobalState>: Middleware {
-    /**
-     Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
-     This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
-     the chain.
-     */
-    public var context: () -> MiddlewareContext<OutputActionType, GlobalState>
-
+public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
     /**
      Default initializer for `IdentityMiddleware`
      */
-    public init() {
-        self.context = {
-            fatalError("No context set for middleware PipelineMiddleware, please be sure to configure your middleware prior to usage")
-        }
-    }
+    public init() { }
+
+    public func receiveContext(getState: @escaping () -> StateType, output: AnyActionHandler<OutputActionType>) { }
 
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
@@ -32,7 +23,7 @@ public final class IdentityMiddleware<InputActionType, OutputActionType, GlobalS
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: InputActionType, next: @escaping Next) {
-        next()
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        afterReducer = .identity
     }
 }

@@ -14,7 +14,7 @@
     <a title="StoreType Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -59,13 +59,16 @@
                 <a href="../Protocols/Middleware.html">Middleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+                <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareCy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="../Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/AnyMiddleware.html">AnyMiddleware</a>
+                <a href="../Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyMiddleware.html">AnyMiddleware</a>
               </li>
             </ul>
           </li>
@@ -92,16 +95,18 @@
             <a href="../Other%20Classes.html">Other Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Classes/IdentityMiddleware.html">IdentityMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/LiftMiddleware.html">LiftMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/PipelineMiddleware.html">PipelineMiddleware</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Other%20Extensions.html">Other Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Collection.html">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/DispatchQueue.html">DispatchQueue</a>
               </li>
             </ul>
           </li>
@@ -129,7 +134,25 @@
             <a href="../Other%20Structs.html">Other Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Structs/MiddlewareContext.html">MiddlewareContext</a>
+                <a href="../Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/PublisherType.html">PublisherType</a>
@@ -144,9 +167,6 @@
                 <a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/StoreProjection.html">StoreProjection</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -159,6 +179,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
@@ -206,10 +229,10 @@ can use it as a <code>ObservedObject</code>.</li>
 <p>Not necessarily a store implementation means that this entity holds the source-of-truth of an app. Every app should
 have a single and centralized store, where the whole state is held. But Views and ViewControllers do not necessarily
 need to access this main Store directly, they could, instead, access some <q>proxy</q> store that intermediates the actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
-on that please check <code><a href="../Structs/StoreProjection.html">StoreProjection</a></code>, and compare it to <code><a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
+on that please check <code><a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a></code>, and compare it to <code><a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
 
 <p>In summary, it&rsquo;s recommended to have one and only store <code><a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a></code> in your app, holding the one and only one
-source-of-truth, but at the same time having several <code><a href="../Structs/StoreProjection.html">StoreProjection</a></code> instances mapping the whole state and whole set of
+source-of-truth, but at the same time having several <code><a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a></code> instances mapping the whole state and whole set of
 possible actions from and to view state and events relevant to the specific view you implement.</p>
 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png" alt="Store, StoreProjection and View"></p>
@@ -255,9 +278,9 @@ possible actions from and to view state and events relevant to the specific view
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex9StoreTypePAAE10projection6action5stateAA0C10ProjectionVyqd__qd_0_G06ActionD0QzSgqd__c_AA09PublisherD0Vyqd_0_s5NeverOGANy05StateD0QzAPGctr0_lF"></a>
+                    <a name="/s:8SwiftRex9StoreTypePAAE10projection6action5stateAA03AnycD0Vyqd__qd_0_G06ActionD0QzSgqd__c_qd_0_05StateD0Qzctr0_lF"></a>
                     <a name="//apple_ref/swift/Method/projection(action:state:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex9StoreTypePAAE10projection6action5stateAA0C10ProjectionVyqd__qd_0_G06ActionD0QzSgqd__c_AA09PublisherD0Vyqd_0_s5NeverOGANy05StateD0QzAPGctr0_lF">projection(action:state:)</a>
+                    <a class="token" href="#/s:8SwiftRex9StoreTypePAAE10projection6action5stateAA03AnycD0Vyqd__qd_0_G06ActionD0QzSgqd__c_qd_0_05StateD0Qzctr0_lF">projection(action:state:)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -268,7 +291,8 @@ possible actions from and to view state and events relevant to the specific view
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -276,8 +300,108 @@ possible actions from and to view state and events relevant to the specific view
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">projection</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="n">action</span> <span class="nv">viewActionToGlobalAction</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">ViewAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ActionType</span><span class="p">?,</span>
-    <span class="n">state</span> <span class="nv">globalStateToViewState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a></span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a></span><span class="o">&lt;</span><span class="kt">ViewState</span><span class="o">&gt;</span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/StoreProjection.html">StoreProjection</a></span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span></code></pre>
+    <span class="n">state</span> <span class="nv">globalStateToViewState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ViewState</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a></span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex9StoreTypePAAE010eraseToAnycD0AA0gcD0Vy06ActionD0Qz05StateD0QzGyF"></a>
+                    <a name="//apple_ref/swift/Method/eraseToAnyStoreType()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex9StoreTypePAAE010eraseToAnycD0AA0gcD0Vy06ActionD0Qz05StateD0QzGyF">eraseToAnyStoreType()</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">eraseToAnyStoreType</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/AnyStoreType.html">AnyStoreType</a></span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex9StoreTypePAAE15contramapActionyAA03AnycD0Vyqd__05StateD0QzG0fD0Qzqd__clF"></a>
+                    <a name="//apple_ref/swift/Method/contramapAction(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex9StoreTypePAAE15contramapActionyAA03AnycD0Vyqd__05StateD0QzG0fD0Qzqd__clF">contramapAction(_:)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">contramapAction</span><span class="o">&lt;</span><span class="kt">NewActionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">transform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">NewActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ActionType</span><span class="p">)</span>
+<span class="o">-&gt;</span> <span class="kt"><a href="../Structs/AnyStoreType.html">AnyStoreType</a></span><span class="o">&lt;</span><span class="kt">NewActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex9StoreTypePAAE8mapStateyAA03AnycD0Vy06ActionD0Qzqd__Gqd__0fD0QzclF"></a>
+                    <a name="//apple_ref/swift/Method/mapState(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex9StoreTypePAAE8mapStateyAA03AnycD0Vy06ActionD0Qzqd__Gqd__0fD0QzclF">mapState(_:)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">mapState</span><span class="o">&lt;</span><span class="kt">NewStateType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">transform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NewStateType</span><span class="p">)</span>
+<span class="o">-&gt;</span> <span class="kt"><a href="../Structs/AnyStoreType.html">AnyStoreType</a></span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">NewStateType</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -289,7 +413,7 @@ possible actions from and to view state and events relevant to the specific view
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-18)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

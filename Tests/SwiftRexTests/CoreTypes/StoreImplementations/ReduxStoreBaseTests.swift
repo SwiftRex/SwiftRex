@@ -18,32 +18,44 @@ class ReduxStoreBaseTests: XCTestCase {
         let events: [AppAction] = [.foo, .bar(.charlie), .foo]
         let initialState = TestState()
         let fooMiddleware = IsoMiddlewareMock<AppAction, TestState>()
-        fooMiddleware.handleActionNextClosure = { [weak fooMiddleware] action, next in
+        var fooMiddlewareOutput: AnyActionHandler<AppAction>?
+        fooMiddleware.receiveContextGetStateOutputClosure = { getState, output in
+            fooMiddlewareOutput = output
+        }
+        fooMiddleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
             guard action == .foo else {
-                next()
+                afterReducer = .doNothing()
                 return
             }
 
-            fooMiddleware?.context().dispatch(.bar(.alpha))
-            next()
-            fooMiddleware?.context().dispatch(.bar(.bravo))
-            shouldCallFooMiddleware.fulfill()
+            fooMiddlewareOutput?.dispatch(.bar(.alpha), from: .here())
+
+            afterReducer = .do {
+                fooMiddlewareOutput?.dispatch(.bar(.bravo), from: .here())
+                shouldCallFooMiddleware.fulfill()
+            }
         }
         let barMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
-        barMiddleware.handleActionNextClosure = { [weak barMiddleware] action, next in
+        var barMiddlewareOutput: AnyActionHandler<AppAction.Bar>?
+        barMiddleware.receiveContextGetStateOutputClosure = { getState, output in
+            barMiddlewareOutput = output
+        }
+        barMiddleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
             switch action {
             case .alpha:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.15) {
-                    barMiddleware?.context().dispatch(.delta)
+                    barMiddlewareOutput?.dispatch(.delta, from: .here())
                 }
             case .bravo:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-                    barMiddleware?.context().dispatch(.echo)
+                    barMiddlewareOutput?.dispatch(.echo, from: .here())
                 }
             default: break
             }
-            next()
-            shouldCallBarMiddleware.fulfill()
+
+            afterReducer = .do {
+                shouldCallBarMiddleware.fulfill()
+            }
         }
 
         let subjectMock = CurrentValueSubject(currentValue: initialState)
@@ -68,9 +80,9 @@ class ReduxStoreBaseTests: XCTestCase {
             subject: subjectMock.subject,
             reducer: reducer,
             middleware: fooMiddleware <> barMiddleware.lift(
-                actionZoomIn: { $0.bar },
-                actionZoomOut: { AppAction.bar($0) },
-                stateZoomIn: { $0.name }
+                inputActionMap: { $0.bar },
+                outputActionMap: { AppAction.bar($0) },
+                stateMap: { $0.name }
             )
         )
 
@@ -94,7 +106,7 @@ class ReduxStoreBaseTests: XCTestCase {
             count += 1
         }, onCompleted: { error in XCTFail("Unexpected completion. Error? \(String(describing: error))") }))
 
-        events.forEach(store.dispatch)
+        events.forEach { store.dispatch($0, from: .here()) }
 
         waitForExpectations(timeout: 3)
         XCTAssertEqual(subjectMock.currentValue.value, initialState.value)

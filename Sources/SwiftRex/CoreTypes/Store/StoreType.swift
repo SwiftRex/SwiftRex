@@ -64,7 +64,28 @@
 public protocol StoreType: StateProvider, ActionHandler {
 }
 
+extension StoreType {
+    public func contramapAction<NewActionType>(_ transform: @escaping (NewActionType) -> ActionType)
+    -> AnyStoreType<NewActionType, StateType> {
+        AnyStoreType(
+            action: { newAction, dispatcher in
+                let oldAction = transform(newAction)
+                self.dispatch(oldAction, from: dispatcher)
+            },
+            state: self.statePublisher
+        )
+    }
+
+    public func mapState<NewStateType>(_ transform: @escaping (StateType) -> NewStateType)
+    -> AnyStoreType<ActionType, NewStateType> {
+        AnyStoreType(
+            action: { action, dispatcher in self.dispatch(action, from: dispatcher) },
+            state: self.statePublisher.map(transform)
+        )
+    }
+}
+
 // sourcery: AutoMockable
-// sourcery: AutoMockableGeneric = ActionType
 // sourcery: AutoMockableGeneric = StateType
+// sourcery: AutoMockableGeneric = ActionType
 extension StoreType { }

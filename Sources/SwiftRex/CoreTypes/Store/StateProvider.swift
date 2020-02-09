@@ -16,6 +16,12 @@ public protocol StateProvider {
     var statePublisher: UnfailablePublisherType<StateType> { get }
 }
 
+extension StateProvider {
+    public func map<NewStateType>(_ transform: @escaping (StateType) -> NewStateType) -> AnyStateProvider<NewStateType> {
+        .init(self.statePublisher.map(transform))
+    }
+}
+
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
 extension StateProvider { }

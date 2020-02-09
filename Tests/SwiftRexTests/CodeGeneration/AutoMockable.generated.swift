@@ -26,40 +26,50 @@ class ActionHandlerMock<ActionType>: ActionHandler {
 
     //MARK: - dispatch
 
-    var dispatchCallsCount = 0
-    var dispatchCalled: Bool {
-        return dispatchCallsCount > 0
+    var dispatchFromCallsCount = 0
+    var dispatchFromCalled: Bool {
+        return dispatchFromCallsCount > 0
     }
-    var dispatchReceivedAction: ActionType?
-    var dispatchClosure: ((ActionType) -> Void)?
+    var dispatchFromReceivedArguments: (action: ActionType, dispatcher: ActionSource)?
+    var dispatchFromClosure: ((ActionType, ActionSource) -> Void)?
 
-    func dispatch(_ action: ActionType) {
-        dispatchCallsCount += 1
-        dispatchReceivedAction = action
-        dispatchClosure?(action)
+    func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
+        dispatchFromCallsCount += 1
+        dispatchFromReceivedArguments = (action: action, dispatcher: dispatcher)
+        dispatchFromClosure?(action, dispatcher)
     }
 
 }
 class MiddlewareMock<InputActionType, OutputActionType, StateType>: Middleware {
-    var context: (() -> MiddlewareContext<OutputActionType, StateType>) {
-        get { return underlyingContext }
-        set(value) { underlyingContext = value }
+
+    //MARK: - receiveContext
+
+    var receiveContextGetStateOutputCallsCount = 0
+    var receiveContextGetStateOutputCalled: Bool {
+        return receiveContextGetStateOutputCallsCount > 0
     }
-    var underlyingContext: (() -> MiddlewareContext<OutputActionType, StateType>)!
+    var receiveContextGetStateOutputReceivedArguments: (getState: GetState<StateType>, output: AnyActionHandler<OutputActionType>)?
+    var receiveContextGetStateOutputClosure: ((@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void)?
+
+    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
+        receiveContextGetStateOutputCallsCount += 1
+        receiveContextGetStateOutputReceivedArguments = (getState: getState, output: output)
+        receiveContextGetStateOutputClosure?(getState, output)
+    }
 
     //MARK: - handle
 
-    var handleActionNextCallsCount = 0
-    var handleActionNextCalled: Bool {
-        return handleActionNextCallsCount > 0
+    var handleActionFromAfterReducerCallsCount = 0
+    var handleActionFromAfterReducerCalled: Bool {
+        return handleActionFromAfterReducerCallsCount > 0
     }
-    var handleActionNextReceivedArguments: (action: InputActionType, next: Next)?
-    var handleActionNextClosure: ((InputActionType, @escaping Next) -> Void)?
+    var handleActionFromAfterReducerReceivedArguments: (action: InputActionType, dispatcher: ActionSource, afterReducer: AfterReducer)?
+    var handleActionFromAfterReducerClosure: ((InputActionType, ActionSource, inout AfterReducer) -> Void)?
 
-    func handle(action: InputActionType, next: @escaping Next) {
-        handleActionNextCallsCount += 1
-        handleActionNextReceivedArguments = (action: action, next: next)
-        handleActionNextClosure?(action, next)
+    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        handleActionFromAfterReducerCallsCount += 1
+        handleActionFromAfterReducerReceivedArguments = (action: action, dispatcher: dispatcher, afterReducer: afterReducer)
+        handleActionFromAfterReducerClosure?(action, dispatcher, &afterReducer)
     }
 
 }
@@ -84,7 +94,7 @@ class StateProviderMock<StateType>: StateProvider {
     var underlyingStatePublisher: UnfailablePublisherType<StateType>!
 
 }
-class StoreTypeMock<StateType, ActionType>: StoreType {
+class StoreTypeMock<ActionType, StateType>: StoreType {
     var statePublisher: UnfailablePublisherType<StateType> {
         get { return underlyingStatePublisher }
         set(value) { underlyingStatePublisher = value }
@@ -93,17 +103,17 @@ class StoreTypeMock<StateType, ActionType>: StoreType {
 
     //MARK: - dispatch
 
-    var dispatchCallsCount = 0
-    var dispatchCalled: Bool {
-        return dispatchCallsCount > 0
+    var dispatchFromCallsCount = 0
+    var dispatchFromCalled: Bool {
+        return dispatchFromCallsCount > 0
     }
-    var dispatchReceivedAction: ActionType?
-    var dispatchClosure: ((ActionType) -> Void)?
+    var dispatchFromReceivedArguments: (action: ActionType, dispatcher: ActionSource)?
+    var dispatchFromClosure: ((ActionType, ActionSource) -> Void)?
 
-    func dispatch(_ action: ActionType) {
-        dispatchCallsCount += 1
-        dispatchReceivedAction = action
-        dispatchClosure?(action)
+    func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
+        dispatchFromCallsCount += 1
+        dispatchFromReceivedArguments = (action: action, dispatcher: dispatcher)
+        dispatchFromClosure?(action, dispatcher)
     }
 
 }

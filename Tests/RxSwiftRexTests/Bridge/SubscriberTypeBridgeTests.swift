@@ -84,7 +84,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
             case .completed:
                 shouldCallClosureCompleted.fulfill()
             }
-        }.asSubscriber())
+        }.asSubscriberType())
 
         wait(for: [shouldCallClosureValue, shouldCallClosureCompleted], timeout: 0.1)
     }
@@ -111,7 +111,7 @@ class SubscriberTypeBridgeTests: XCTestCase {
             case .completed:
                 XCTFail("Unexpected completion")
             }
-        }.asSubscriber())
+        }.asSubscriberType())
 
         wait(for: [shouldCallClosureValue, shouldCallClosureError], timeout: 0.1)
     }

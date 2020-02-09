@@ -6,22 +6,28 @@ class ReduxPipelineWrapperTests: XCTestCase {
     func testDispatchCallOnActionAlwaysInMainThread() {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
+        let reducerMock = createReducerMock()
+        reducerMock.1.reduceClosure = { _, state in state }
         let sut = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
-            reducer: createReducerMock().0,
+            reducer: reducerMock.0,
             middleware: middlewareMock)
 
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionNextClosure = { action, _ in
+        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertEqual(action, expectedAction)
+            XCTAssertEqual("file_1", dispatcher.file)
+            XCTAssertEqual("function_1", dispatcher.function)
+            XCTAssertEqual(1, dispatcher.line)
+            XCTAssertEqual("info_1", dispatcher.info)
             shouldCallMiddlewareActionHandler.fulfill()
         }
 
         DispatchQueue.global().async {
-            sut.dispatch(actionToDispatch)
+            sut.dispatch(actionToDispatch, from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"))
         }
 
         wait(for: [shouldCallMiddlewareActionHandler], timeout: 0.1)
@@ -29,23 +35,33 @@ class ReduxPipelineWrapperTests: XCTestCase {
 
     func testMiddlewareDispatchesNewActionsBackToTheStore() {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
+        var middlewareDispatcher: AnyActionHandler<AppAction>?
+        middlewareMock.receiveContextGetStateOutputClosure = { getState, output in
+            middlewareDispatcher = output
+        }
         let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
+        let reducerMock = createReducerMock()
+        reducerMock.1.reduceClosure = { _, state in state }
         _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
-            reducer: createReducerMock().0,
+            reducer: reducerMock.0,
             middleware: middlewareMock)
 
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionNextClosure = { action, _ in
+        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertEqual(action, expectedAction)
+            XCTAssertEqual("file_1", dispatcher.file)
+            XCTAssertEqual("function_1", dispatcher.function)
+            XCTAssertEqual(1, dispatcher.line)
+            XCTAssertEqual("info_1", dispatcher.info)
             shouldCallMiddlewareActionHandler.fulfill()
         }
 
         DispatchQueue.global().async {
-            middlewareMock.context().dispatch(actionToDispatch)
+            middlewareDispatcher?.dispatch(actionToDispatch, from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"))
         }
 
         wait(for: [shouldCallMiddlewareActionHandler], timeout: 0.1)
@@ -53,13 +69,17 @@ class ReduxPipelineWrapperTests: XCTestCase {
 
     func testMiddlewareGetStateIsSetCorrectly() {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
+        var middlewareGetState: (() -> TestState)?
+        middlewareMock.receiveContextGetStateOutputClosure = { getState, output in
+            middlewareGetState = getState
+        }
         let currentState = TestState()
         let stateSubjectMock = CurrentValueSubject(currentValue: currentState)
         _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
             reducer: createReducerMock().0,
             middleware: middlewareMock)
-        XCTAssertEqual(currentState, middlewareMock.context().getState())
+        XCTAssertEqual(currentState, middlewareGetState?())
     }
 
     func testReducersPipelineWillBeWiredToTheEndOfMiddlewarePipeline() {
@@ -75,8 +95,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallReducerActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionNextClosure = { _, next in
-            next()
+        middlewareMock.handleActionFromAfterReducerClosure = { _, _, _ in
         }
 
         reducerMock.1.reduceClosure = { action, state in
@@ -88,7 +107,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         }
 
         DispatchQueue.global().async {
-            sut.dispatch(actionToDispatch)
+            sut.dispatch(actionToDispatch, from: .here())
         }
 
         wait(for: [shouldCallReducerActionHandler], timeout: 0.1)
@@ -106,8 +125,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             middleware: middlewareMock)
 
         let shouldCallReducerActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionNextClosure = { _, next in
-            next()
+        middlewareMock.handleActionFromAfterReducerClosure = { _, _, _ in
         }
 
         reducerMock.1.reduceClosure = { _, state in
@@ -116,7 +134,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             return reducedState
         }
 
-        sut.dispatch(.bar(.charlie))
+        sut.dispatch(.bar(.charlie), from: .here())
 
         wait(for: [shouldCallReducerActionHandler], timeout: 0.1)
         XCTAssertEqual(reducedState, stateSubjectMock.currentValue)

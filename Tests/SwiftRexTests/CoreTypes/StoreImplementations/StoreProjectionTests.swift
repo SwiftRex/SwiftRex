@@ -6,12 +6,16 @@ class StoreProjectionTests: XCTestCase {
     func testStoreProjectionDispatchesActionToUpstream() {
         let stateSubject = CurrentValueSubject(currentValue: TestState())
         let shouldCallUpstreamActionHandler = expectation(description: "upstream action handler should have been called")
-        let upstreamActionHandler: (AppAction) -> Void = { action in
+        let upstreamActionHandler: (AppAction, ActionSource) -> Void = { action, dispatcher in
             XCTAssertEqual(.bar(.delta), action)
+            XCTAssertEqual("file_1", dispatcher.file)
+            XCTAssertEqual("function_1", dispatcher.function)
+            XCTAssertEqual(1, dispatcher.line)
+            XCTAssertEqual("info_1", dispatcher.info)
             shouldCallUpstreamActionHandler.fulfill()
         }
         let sut = StoreProjection<AppAction, TestState>(action: upstreamActionHandler, state: stateSubject.subject.publisher)
-        sut.dispatch(.bar(.delta))
+        sut.dispatch(.bar(.delta), from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"))
         wait(for: [shouldCallUpstreamActionHandler], timeout: 0.1)
     }
 
@@ -19,7 +23,7 @@ class StoreProjectionTests: XCTestCase {
         let initialState = TestState()
         let shouldNotifyInitialState = expectation(description: "initial state should have been notified")
         let stateSubject = CurrentValueSubject(currentValue: initialState)
-        let sut = StoreProjection<AppAction, TestState>(action: { _ in }, state: stateSubject.subject.publisher)
+        let sut = StoreProjection<AppAction, TestState>(action: { _, _ in }, state: stateSubject.subject.publisher)
         _ = sut.statePublisher.subscribe(.init(onValue: { state in
             XCTAssertEqual(state, initialState)
             shouldNotifyInitialState.fulfill()
@@ -31,16 +35,28 @@ class StoreProjectionTests: XCTestCase {
     func testStoreProjectionDispatchesActionToUpstreamStore() {
         let stateSubject = CurrentValueSubject(currentValue: TestState())
         let shouldCallUpstreamActionHandler = expectation(description: "upstream action handler should have been called")
+        let shouldCallReducer = expectation(description: "reducer should have been called")
+        let reducerMock = createReducerMock()
 
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
-        middlewareMock.handleActionNextClosure = { action, _ in
+        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
             XCTAssertEqual(.bar(.delta), action)
+            XCTAssertEqual("file_1", dispatcher.file)
+            XCTAssertEqual("function_1", dispatcher.function)
+            XCTAssertEqual(1, dispatcher.line)
+            XCTAssertEqual("info_1", dispatcher.info)
             shouldCallUpstreamActionHandler.fulfill()
+        }
+
+        reducerMock.1.reduceClosure = { action, state in
+            XCTAssertEqual(.bar(.delta), action)
+            shouldCallReducer.fulfill()
+            return state
         }
 
         let originalStore = ReduxStoreBase<AppAction, TestState>(
             subject: stateSubject.subject,
-            reducer: createReducerMock().0,
+            reducer: reducerMock.0,
             middleware: middlewareMock
         )
 
@@ -56,10 +72,10 @@ class StoreProjectionTests: XCTestCase {
             state: { $0 }
         )
 
-        sut.dispatch(MockViewAction(name: "delta"))
-        sut.dispatch(MockViewAction(name: "ignore"))
+        sut.dispatch(MockViewAction(name: "delta"), from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"))
+        sut.dispatch(MockViewAction(name: "ignore"), from: .init(file: "file_2", function: "function_2", line: 2, info: "info_2"))
 
-        wait(for: [shouldCallUpstreamActionHandler], timeout: 0.1)
+        wait(for: [shouldCallUpstreamActionHandler, shouldCallReducer], timeout: 0.1, enforceOrder: true)
     }
 
     func testStoreProjectionForwardsStateFromUpstreamStore() {
@@ -80,17 +96,11 @@ class StoreProjectionTests: XCTestCase {
 
         let sut = originalStore.projection(
             action: { $0 },
-            state: { (statePublisher: UnfailablePublisherType<TestState>) -> UnfailablePublisherType<MockViewState> in
-                .init { subscriber -> SubscriptionType in
-                    statePublisher.subscribe(.init(onValue: { state in
-                        subscriber.onValue(
-                            MockViewState(
-                                decoratedValue: "*** " + state.value.uuidString + " ***",
-                                decoratedName: "*** " + state.name + " ***"
-                            )
-                        )
-                    }, onCompleted: nil))
-                }
+            state: { (state: TestState) -> MockViewState in
+                MockViewState(
+                    decoratedValue: "*** " + state.value.uuidString + " ***",
+                    decoratedName: "*** " + state.name + " ***"
+                )
             }
         )
 

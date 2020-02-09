@@ -7,8 +7,8 @@
  let composedMiddleware = firstMiddleware <> secondMiddleware <> thirdMiddleware
  ```
  */
-public final class ComposedMiddleware<InputActionType, OutputActionType, GlobalState>: Middleware {
-    private var middlewares: [AnyMiddleware<InputActionType, OutputActionType, GlobalState>] = []
+public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
+    private var middlewares: [AnyMiddleware<InputActionType, OutputActionType, StateType>] = []
 
     /**
      Default initializer for `ComposedMiddleware`, use this only if you don't like custom operators, otherwise create a `ComposedMiddleware` by composing two or more middlewares using the diamond operator, as shown below:
@@ -17,24 +17,6 @@ public final class ComposedMiddleware<InputActionType, OutputActionType, GlobalS
      ```
      */
     public init() {
-        self.context = {
-            fatalError("No context set for middleware PipelineMiddleware, please be sure to configure your middleware prior to usage")
-        }
-    }
-
-    /**
-     Every `Middleware` needs some context in order to be able to interface with other middleware and with the store.
-     This context includes ways to fetch the most up-to-date state, dispatch new events or call the next middleware in
-     the chain.
-
-     A `ComposedMiddleware` also sets its child middlewares to the same context whenever this property is set.
-     */
-    public var context: () -> MiddlewareContext<OutputActionType, GlobalState> {
-        didSet {
-            middlewares.forEach {
-                $0.context = { [unowned self] in self.context() }
-            }
-        }
     }
 
     /**
@@ -49,15 +31,17 @@ public final class ComposedMiddleware<InputActionType, OutputActionType, GlobalS
      let composedOfThreeMiddlewares = firstMiddleware <> secondMiddleware <> thirdMiddleware
      ```
      */
-    public func append<M: Middleware>(middleware: M)
+    public mutating func append<M: Middleware>(middleware: M)
         where M.InputActionType == InputActionType,
               M.OutputActionType == OutputActionType,
-              M.StateType == GlobalState {
-        // Add in reverse order because we reduce from top to bottom and trigger from the last
-        middleware.context = { [unowned self] in self.context() }
-        // Inserts into the first position because the forward methods will work in the reverse order.
-        // So the result for the user will be the expected, FIFO regardless the way we store the inner middlewares.
-        middlewares.insert(AnyMiddleware(middleware), at: 0)
+              M.StateType == StateType {
+        middlewares.append(middleware.eraseToAnyMiddleware())
+    }
+
+    public func receiveContext(getState: @escaping () -> StateType, output: AnyActionHandler<OutputActionType>) {
+        middlewares.forEach {
+            $0.receiveContext(getState: getState, output: output)
+        }
     }
 
     /**
@@ -76,14 +60,14 @@ public final class ComposedMiddleware<InputActionType, OutputActionType, GlobalS
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: InputActionType, next: @escaping Next) {
-        let firstNode = middlewares
-            .reversed()
-            .reduce(next) { chain, middleware -> Next in {
-                middleware.handle(action: action, next: chain)
-            }
-            }
-        firstNode()
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        var composedAfterReducer: [AfterReducer] = []
+        for middleware in middlewares {
+            var individualAfterReducer: AfterReducer = .doNothing()
+            middleware.handle(action: action, from: dispatcher, afterReducer: &individualAfterReducer)
+            composedAfterReducer.append(individualAfterReducer)
+        }
+        afterReducer = composedAfterReducer.asAfterReducer()
     }
 }
 
@@ -118,8 +102,8 @@ public func <> <M1: Middleware, M2: Middleware>(lhs: M1, rhs: M2) -> ComposedMid
     where M1.InputActionType == M2.InputActionType,
           M1.OutputActionType == M2.OutputActionType,
           M1.StateType == M2.StateType {
-    let container = lhs as? ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> ?? {
-        let newContainer: ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> = .init()
+    var container = lhs as? ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> ?? {
+        var newContainer: ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> = .init()
         newContainer.append(middleware: lhs)
         return newContainer
     }()

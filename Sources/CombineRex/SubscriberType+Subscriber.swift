@@ -10,7 +10,7 @@ extension SubscriberType: Subscriber {
     }
 
     public func receive(subscription: Combine.Subscription) {
-        onSubscribe(subscription.asSubscription())
+        onSubscribe(subscription.asSubscriptionType())
     }
 
     public func receive(_ input: Element) -> Subscribers.Demand {

@@ -36,7 +36,7 @@ import AppKit
     var {% call methodClosureName method %}: (({% for param in method.parameters %}{{ param.typeName }}{% if not forloop.last %}, {% endif %}{% endfor %}) {% if method.throws %}throws {% endif %}-> {% if method.isInitializer %}Void{% else %}{{ method.returnTypeName }}{% endif %})?
 {% endmacro %}
 
-{% macro methodClosureCallParameters method %}{% for param in method.parameters %}{{ param.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endmacro %}
+{% macro methodClosureCallParameters method %}{% for param in method.parameters %}{{ "&" if param.inout }}{{ param.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endmacro %}
 
 {% macro mockMethod method %}
     //MARK: - {{ method.shortName }}
@@ -53,7 +53,7 @@ import AppKit
     {% if method.parameters.count == 1 %}
     var {% call swiftifyMethodName method.selectorName %}Received{% for param in method.parameters %}{{ param.name|upperFirstLetter }}: {% if param.isClosure %}({% endif %}{{ param.typeName.unwrappedTypeName }}{% if param.isClosure %}){% endif %}?{% endfor %}
     {% else %}{% if not method.parameters.count == 0 %}
-    var {% call swiftifyMethodName method.selectorName %}ReceivedArguments: ({% for param in method.parameters %}{{ param.name }}: {% if param.typeAttributes.escaping %}{{ param.unwrappedTypeName }}{% else %}{{ param.typeName }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %})?
+    var {% call swiftifyMethodName method.selectorName %}ReceivedArguments: ({% for param in method.parameters %}{{ param.name }}: {% if param.typeAttributes.escaping %}{{ param.unwrappedTypeName }}{% else %}{{ param.type.name if param.inout }}{{ param.typeName if not param.inout }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %})?
     {% endif %}{% endif %}
     {% if not method.returnTypeName.isVoid and not method.isInitializer %}
     var {% call swiftifyMethodName method.selectorName %}ReturnValue: {{ method.returnTypeName }}!

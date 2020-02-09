@@ -41,6 +41,18 @@ public struct PublisherType<Element, ErrorType: Error> {
             ))
         }
     }
+
+    public func map<NewElement>(_ transform: @escaping (Element) -> NewElement) -> PublisherType<NewElement, ErrorType> {
+        .init { subscriber in
+            self.subscribe(
+                .init(
+                    onValue: { subscriber.onValue(transform($0)) },
+                    onCompleted: subscriber.onCompleted,
+                    onSubscribe: subscriber.onSubscribe
+                )
+            )
+        }
+    }
 }
 
 public typealias UnfailablePublisherType<Element> = PublisherType<Element, Never>

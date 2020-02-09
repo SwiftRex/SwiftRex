@@ -13,7 +13,7 @@
     <a title="SwiftRex  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (100% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (55% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -58,13 +58,16 @@
                 <a href="Protocols/Middleware.html">Middleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ComposedMiddleware.html">ComposedMiddleware</a>
+                <a href="Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareCy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/AnyMiddleware.html">AnyMiddleware</a>
+                <a href="Middleware%20%28basics%29.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyMiddleware.html">AnyMiddleware</a>
               </li>
             </ul>
           </li>
@@ -91,16 +94,18 @@
             <a href="Other%20Classes.html">Other Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/IdentityMiddleware.html">IdentityMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/LiftMiddleware.html">LiftMiddleware</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/PipelineMiddleware.html">PipelineMiddleware</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other%20Extensions.html">Other Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Collection.html">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/DispatchQueue.html">DispatchQueue</a>
               </li>
             </ul>
           </li>
@@ -128,7 +133,25 @@
             <a href="Other%20Structs.html">Other Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Structs/MiddlewareContext.html">MiddlewareContext</a>
+                <a href="Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/LiftMiddleware.html">LiftMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/PublisherType.html">PublisherType</a>
@@ -143,9 +166,6 @@
                 <a href="Structs/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
               <li class="nav-group-task">
-                <a href="Structs/StoreProjection.html">StoreProjection</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -158,6 +178,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
@@ -512,43 +535,128 @@ from middleware  ┃    ▼                      └ ─ ─ ┬ ─ ─ ┘┃�
 </code></pre>
 <h3 id='middleware' class='heading'>Middleware</h3>
 
-<p><code><a href="Protocols/Middleware.html">Middleware</a></code> is a plugin, or a composition of several plugins, that are assigned to the <code>Store</code> pipeline in order to handle each <code>EventProtocol</code> dispatched and to create <code>ActionProtocol</code> in response. It&rsquo;s also capable of handling each <code>ActionProtocol</code> before the <code><a href="Structs/Reducer.html">Reducer</a></code> to do its job.</p>
+<p><code><a href="Protocols/Middleware.html">Middleware</a></code> is a plugin, or a composition of several plugins, that are assigned to the <code><a href="Protocols/ReduxStoreProtocol.html">ReduxStoreProtocol</a></code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process.
+This happens before the <code><a href="Structs/Reducer.html">Reducer</a></code> to do its job.</p>
 
-<p>We already know what <code>EventProtocol</code> and <code>ActionProtocol</code> are: both are lightweight structures that are dispatched (event) or triggered (action) into the <code>Store</code>. The store enqueues a new item that arrives and submits it to a pipeline of middlewares. So, in other words, a <code><a href="Protocols/Middleware.html">Middleware</a></code> is class that handles actions and events, and has the power to trigger more actions to the <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> chain. A very simple <code><a href="Protocols/Middleware.html">Middleware</a></code> will receive an <code>EventProtocol</code> and current state, and trigger an equivalent <code>ActionProtocol</code> to the <code>Store</code>.</p>
+<p>We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state at any point.</p>
 
-<p>For example, a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event would be handled by a <code><a href="Protocols/Middleware.html">Middleware</a></code> that checks the state and finds that current list has certain movie at the given row index, and this movie has been already marked as watched before. That <code><a href="Protocols/Middleware.html">Middleware</a></code> was able to learn that thanks to the <code>getState: @escaping () -&gt; StateType</code> closure received together with the <code>EventProtocol</code>, and which can be checked at any point to read an updated state. Our example <code><a href="Protocols/Middleware.html">Middleware</a></code> then will trigger a <code>MovieListAction.setMovieAsUnwatched(movieId:)</code> action to be handled by itself, other middlewares or the <code><a href="Structs/Reducer.html">Reducer</a></code> chain.</p>
+<p>An action is a lightweight structure, typically an enum, that is dispatched into the <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> (usually a <code>StoreProtocol</code>).
+A Store like <code><a href="Protocols/ReduxStoreProtocol.html">ReduxStoreProtocol</a></code> enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a <code><a href="Protocols/Middleware.html">Middleware</a></code> is class that handles actions, and has the power to dispatch more actions to the <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> chain. The <code><a href="Protocols/Middleware.html">Middleware</a></code> can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop, or perhaps some <code><a href="Structs/Reducer.html">Reducer</a></code>, as reducers pipeline is at the end of every middleware pipeline.</p>
 
-<p>However, this would be a very naive implementation. Most of the times we handle data that must be persisted in a database or through a REST API. State only lives in memory, but before changing the memory we should at least start Side-Effects. Let&rsquo;s revisit the example above and say that we got a <code>MovieListEvent.didTapWatchToggle(rowIndex:)</code> event. Yes, we still should check what movie is at that row and whether or not it&rsquo;s watched. Now, we can trigger a <code>URLSession</code> task requesting our API to mark it as unwatched. Because this request is asynchronous we have three options:</p>
+<p>Middlewares can schedule a callback to be executed after the reducer pipeline is done mutating the global state. At that point, the middleware will have access to the new state, and in case it cached the old state it can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.</p>
 
-<ul>
-<li>assume that this API won&rsquo;t fail, and mark the movie immediately as unwatched;</li>
-<li>don&rsquo;t assume anything and wait for the <code>HTTPResponse</code>;</li>
-<li>provide a very precise state management, meaning that we immediately change the state of our movie to <q>it&rsquo;s being changed</q> and, once we get the response we update again.</li>
-</ul>
+<p>Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file, line, function and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.</p>
 
-<p>In the first case, we create the <code>URLSessionDataTask</code>, call <code>task.resume()</code> and immediately trigger the <code>setMovieAsUnwatched</code> action. We may use the completion handler or the <code>HTTPRequest</code> to confirm the result and rollback if needed. In the second case, after calling <code>task.resume()</code> we don&rsquo;t trigger any action, only when we get the response in case it was successful one.</p>
+<p>Because the <code><a href="Protocols/Middleware.html">Middleware</a></code> receive all actions and accesses the state of the app at any point, anything can be done from these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct.</p>
 
-<p>The third case, however, offers many more possibilities. You can think about the possible three states of a movie: watched, not watched, mutating. You can even split the <q>mutating</q> case in two: <q>mutating to watched</q> and <q>mutating to unwatched</q>. What you get from that is the ability to disable the <q>watch</q> button, or replaced it by an activity indicator view or simply ignore further attempts to click it by ignoring the events when the movie is in this intermediate situation. To offer that, you call task.resume and immediately trigger a <code>setMovieAsUnwatchRequestInProgress</code>, while inside the response completion handler you evaluate the response and trigger another action to update the movie state again.</p>
-
-<p>Because the <code><a href="Protocols/Middleware.html">Middleware</a></code> accesses all events and the state of the app at any point, anything can be done in these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct. Some suggestions of middlewares:</p>
+<p>Some suggestions of middlewares:</p>
 
 <ul>
 <li>Run Timers, pooling some external resource or updating some local state at a constant time</li>
-<li>Subscribe for <code>CoreData</code> changes</li>
-<li>Subscribe for <code>Realm</code> changes</li>
-<li>Subscribe for <code>Firebase Realtime Database</code> notifications</li>
+<li>Subscribe for <code>CoreData</code>, <code>Realm</code>, <code>Firebase Realtime Database</code> or equivalent database changes</li>
 <li>Be a <code>CoreLocation</code> delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</li>
 <li>Be a <code>HealthKit</code> delegate to track activities, or even combining that with <code>CoreLocation</code> observation in order to track the activity route</li>
-<li>Logger</li>
-<li>Telemetry</li>
-<li>Analytics tracker</li>
+<li>Logger, Telemetry, Auditing, Analytics tracker, Crash report breadcrumbs</li>
+<li>Monitoring or debugging tools, like external apps to monitor the state and actions remotely from a different device</li>
 <li><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</li>
 <li>API calls and other <q>cold observables</q></li>
-<li>Reachability</li>
+<li>Network Reachability</li>
 <li>Navigation through the app (Redux Coordinator pattern)</li>
+<li><code>CoreBluetooth</code> central or peripheral manager</li>
+<li><code>CoreNFC</code> manager and delegate</li>
 <li><code>NotificationCenter</code> and other delegates</li>
-<li><code>Combine</code> publishers/subjects, <code>RxSwift</code> observables / <code>ReactiveSwift</code> signal producers</li>
+<li>WebSocket, TCP Socket, Multipeer and many other connectivity protocols</li>
+<li><code>RxSwift</code> observables, <code>ReactiveSwift</code> signal producers, <code>Combine</code> publishers</li>
+<li>Observation of traits changes, device rotation, language/locale, dark mode, dynamic fonts, background/foreground state</li>
+<li>Any side-effect, I/O, networking, sensors, third-party libraries that you want to abstract</li>
 </ul>
+<pre class="highlight plaintext"><code>                   ┌─────┐                                                                                        ┌─────┐
+                   │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
+                   │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
+                   │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
+                   │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
+ ┌──────┐ dispatch │     │   │                ▲
+ │Button│─────────▶│Store│──▶│                └───afterReducer─────┐                   ┌────────┐
+ └──────┘ Action   │     │   │                                     │                ┌─▶│ View 1 │
+                   │     │   │                                  ┌─────┐             │  └────────┘
+                   │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
+                   │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
+                   │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
+                   └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
+                               State                                                └─▶│ View 3 │
+                                                                                       └────────┘
+</code></pre>
+
+<p>Middleware protocol is generic over 3 associated types:</p>
+<h4 id='inputactiontype' class='heading'>InputActionType:</h4>
+
+<p>The Action type that this <code><a href="Protocols/Middleware.html">Middleware</a></code> knowns how to handle, so the store will forward actions of this type to this middleware.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+<h4 id='outputactiontype' class='heading'>OutputActionType:</h4>
+
+<p>The Action type that this <code><a href="Protocols/Middleware.html">Middleware</a></code> will eventually trigger back to the store in response of side-effects. This can be the same as <code>InputActionType</code> or different, in case you want to separate your enum in requests and responses.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+<h4 id='statetype' class='heading'>StateType:</h4>
+
+<p>The State part that this <code><a href="Protocols/Middleware.html">Middleware</a></code> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <code>StateType</code> from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don&rsquo;t need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn&rsquo;t need to read any state, so the <code>StateType</code>can safely be set to <code>Void</code>.
+Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+
+<p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p>
+<pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">LoggerMiddleware</span><span class="p">:</span> <span class="kt">Middleware</span> <span class="p">{</span>
+    <span class="kd">typealias</span> <span class="kt">InputActionType</span> <span class="o">=</span> <span class="kt">AppGlobalAction</span> <span class="c1">// It wants to receive all possible app actions</span>
+    <span class="kd">typealias</span> <span class="kt">OutputActionType</span> <span class="o">=</span> <span class="kt">Never</span>          <span class="c1">// No action is generated from this Middleware</span>
+    <span class="kd">typealias</span> <span class="kt">StateType</span> <span class="o">=</span> <span class="kt">AppGlobalState</span>        <span class="c1">// It wants to read the whole app state</span>
+
+    <span class="k">var</span> <span class="nv">getState</span><span class="p">:</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">AppGlobalState</span><span class="o">&gt;!</span>
+
+    <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">AppGlobalState</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">Never</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">getState</span> <span class="o">=</span> <span class="n">getState</span>
+    <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">AppGlobalAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">afterReducer</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AfterReducer</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">stateBefore</span><span class="p">:</span> <span class="kt">AppGlobalState</span> <span class="o">=</span> <span class="nf">getState</span><span class="p">()</span>
+        <span class="k">let</span> <span class="nv">dateBefore</span> <span class="o">=</span> <span class="kt">Date</span><span class="p">()</span>
+
+        <span class="n">afterReducer</span> <span class="o">=</span> <span class="o">.</span><span class="k">do</span> <span class="p">{</span>
+            <span class="k">let</span> <span class="nv">stateAfter</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="nf">getState</span><span class="p">()</span>
+            <span class="k">let</span> <span class="nv">dateAfter</span> <span class="o">=</span> <span class="kt">Date</span><span class="p">()</span>
+            <span class="k">let</span> <span class="nv">source</span> <span class="o">=</span> <span class="s">"</span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">file</span><span class="se">)</span><span class="s">:</span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">line</span><span class="se">)</span><span class="s"> - </span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">function</span><span class="se">)</span><span class="s"> | </span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">info</span> <span class="p">??</span> <span class="s">""</span><span class="se">)</span><span class="s">"</span>
+
+            <span class="kt">Logger</span><span class="o">.</span><span class="nf">log</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="nv">before</span><span class="p">:</span> <span class="n">stateBefore</span><span class="p">,</span> <span class="nv">after</span><span class="p">:</span> <span class="n">stateAfter</span><span class="p">,</span> <span class="nv">dateBefore</span><span class="p">:</span> <span class="n">dateBefore</span><span class="p">,</span> <span class="nv">dateAfter</span><span class="p">:</span> <span class="n">dateAfter</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">FavoritesAPIMiddleware</span><span class="p">:</span> <span class="kt">Middleware</span> <span class="p">{</span>
+    <span class="kd">typealias</span> <span class="kt">InputActionType</span> <span class="o">=</span> <span class="kt">FavoritesAction</span>  <span class="c1">// It wants to receive only actions related to Favorites</span>
+    <span class="kd">typealias</span> <span class="kt">OutputActionType</span> <span class="o">=</span> <span class="kt">FavoritesAction</span> <span class="c1">// It wants to also dispatch actions related to Favorites</span>
+    <span class="kd">typealias</span> <span class="kt">StateType</span> <span class="o">=</span> <span class="kt">FavoritesModel</span>         <span class="c1">// It wants to read the app state that manages favorites</span>
+
+    <span class="k">var</span> <span class="nv">getState</span><span class="p">:</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">FavoritesModel</span><span class="o">&gt;!</span>
+    <span class="k">var</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">FavoritesAction</span><span class="o">&gt;!</span>
+
+    <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">FavoritesModel</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">FavoritesAction</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">getState</span> <span class="o">=</span> <span class="n">getState</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+    <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">FavoritesAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">afterReducer</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AfterReducer</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">toggleFavorite</span><span class="p">(</span><span class="n">movieId</span><span class="p">)</span> <span class="o">=</span> <span class="n">action</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+
+        <span class="k">let</span> <span class="nv">favoritesList</span> <span class="o">=</span> <span class="nf">getState</span><span class="p">()</span>
+        <span class="k">let</span> <span class="nv">makeFavorite</span> <span class="o">=</span> <span class="o">!</span><span class="n">favoritesList</span><span class="o">.</span><span class="nf">contains</span><span class="p">(</span><span class="nv">where</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">movieId</span> <span class="p">})</span>
+
+        <span class="kt">API</span><span class="o">.</span><span class="nf">changeFavorite</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">movieId</span><span class="p">,</span> <span class="nv">makeFavorite</span><span class="p">:</span> <span class="n">makeFavorite</span><span class="p">)</span> <span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+            <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="nf">changedFavorite</span><span class="p">(</span><span class="n">movieId</span><span class="p">,</span> <span class="nv">isFavorite</span><span class="p">:</span> <span class="kc">true</span><span class="p">),</span> <span class="nv">info</span><span class="p">:</span> <span class="s">"API.changeFavorite callback"</span><span class="p">)</span>
+            <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="nf">changedFavoriteHasFailed</span><span class="p">(</span><span class="n">movieId</span><span class="p">,</span> <span class="nv">isFavorite</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nv">error</span><span class="p">:</span> <span class="n">error</span><span class="p">),</span> <span class="nv">info</span><span class="p">:</span> <span class="s">"API.changeFavorite callback"</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg" alt="SwiftUI Side-Effects"></p>
 <h3 id='reducer' class='heading'>Reducer</h3>
@@ -790,7 +898,7 @@ from middleware  ┃    ▼                      └ ─ ─ ┬ ─ ─ ┘┃�
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2019-12-18)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

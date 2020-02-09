@@ -154,6 +154,62 @@ class ReactiveWrappersTests: XCTestCase {
     }
     #endif
 
+    // MARK: PublisherType map
+
+    func testPublisherTypeMapOnValue() {
+        let shouldCallClosure = expectation(description: "Closure should be called")
+        let subscriberType = SubscriberType<String, Error>(onValue: { string in
+            XCTAssertEqual("42", string)
+            shouldCallClosure.fulfill()
+        })
+
+        let publisherType = PublisherType<Int, Error> { subscriber in
+            subscriber.onValue(42)
+            return FooSubscription()
+        }
+
+        _ = publisherType.map(String.init).subscribe(subscriberType)
+
+        wait(for: [shouldCallClosure], timeout: 0.1)
+    }
+
+    func testPublisherTypeMapOnError() {
+        let shouldCallClosure = expectation(description: "Closure should be called")
+        let someError = SomeError()
+        let subscriberType = SubscriberType<String, Error>(
+            onCompleted: { error in
+                XCTAssertEqual(someError, error as! SomeError)
+                shouldCallClosure.fulfill()
+            }
+        )
+
+        let publisherType = PublisherType<Int, Error> { subscriber in
+            subscriber.onCompleted(someError)
+            return FooSubscription()
+        }
+
+        _ = publisherType.map(String.init).subscribe(subscriberType)
+
+        wait(for: [shouldCallClosure], timeout: 0.1)
+    }
+
+    func testPublisherTypeMapAssertNoFailureOnValue() {
+        let shouldCallClosure = expectation(description: "Closure should be called")
+        let subscriberType = SubscriberType<String, Never>(onValue: { string in
+            XCTAssertEqual("42", string)
+            shouldCallClosure.fulfill()
+        })
+
+        let publisherType = PublisherType<Int, Error> { subscriber in
+            subscriber.onValue(42)
+            return FooSubscription()
+        }.assertNoFailure()
+
+        _ = publisherType.map(String.init).subscribe(subscriberType)
+
+        wait(for: [shouldCallClosure], timeout: 0.1)
+    }
+
     // MARK: - Subject
     func testSubjectTypeOnValue() {
         let shouldCallClosure = expectation(description: "Closure should be called")
@@ -276,6 +332,87 @@ class ReactiveWrappersTests: XCTestCase {
             value = "changed"
             return oldDecorated
         }
+
+        XCTAssertEqual("constant", subjectType.value())
+        XCTAssertEqual("*constant*", oldValueDecorated)
+        wait(for: [shouldCallClosure], timeout: 0.1)
+    }
+
+    func testReplaySubjectTypeMutateWhenTrue() {
+        let shouldCallClosure = expectation(description: "Closure should be called")
+        shouldCallClosure.expectedFulfillmentCount = 2
+        var time = 1
+        let subscriberType = SubscriberType<String, Error>(onValue: { string in
+            switch time {
+            case 1: XCTAssertEqual(string, "initial")
+            case 2: XCTAssertEqual(string, "changed")
+            default: XCTFail("Called too many times")
+            }
+            shouldCallClosure.fulfill()
+            time += 1
+        })
+
+        let publisherType = PublisherType<String, Error> { subscriber in
+            subscriber.onValue("initial")
+            return FooSubscription()
+        }
+
+        let subjectType = ReplayLastSubjectType(
+            publisher: publisherType,
+            subscriber: subscriberType,
+            value: { "constant" }
+        )
+
+        _ = subjectType.publisher.subscribe(subjectType.subscriber)
+
+        let oldValueDecorated = subjectType.mutate(
+            when: { _ in true },
+            action: { value -> String in
+                let oldDecorated = "*" + value + "*"
+                value = "changed"
+                return oldDecorated
+            }
+        )
+
+        XCTAssertEqual("constant", subjectType.value())
+        XCTAssertEqual("*constant*", oldValueDecorated)
+        wait(for: [shouldCallClosure], timeout: 0.1)
+    }
+
+    func testReplaySubjectTypeMutateWhenIsFalse() {
+        let shouldCallClosure = expectation(description: "Closure should be called")
+        shouldCallClosure.expectedFulfillmentCount = 1
+        var time = 1
+        let subscriberType = SubscriberType<String, Error>(onValue: { string in
+            switch time {
+            case 1: XCTAssertEqual(string, "initial")
+            default: XCTFail("Called too many times")
+            }
+            shouldCallClosure.fulfill()
+            time += 1
+        })
+
+        let publisherType = PublisherType<String, Error> { subscriber in
+            subscriber.onValue("initial")
+            return FooSubscription()
+        }
+
+        let subjectType = ReplayLastSubjectType(
+            publisher: publisherType,
+            subscriber: subscriberType,
+            value: { "constant" }
+        )
+
+        _ = subjectType.publisher.subscribe(subjectType.subscriber)
+
+        let oldValueDecorated = subjectType.mutate(
+            when: { _ in false },
+            action: { value -> String in
+                let oldDecorated = "*" + value + "*"
+                value = "changed"
+                return oldDecorated
+            }
+        )
 
         XCTAssertEqual("constant", subjectType.value())
         XCTAssertEqual("*constant*", oldValueDecorated)

@@ -28,7 +28,7 @@ test-all:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme BuildAndTestAll \
-		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -40,7 +40,7 @@ test-common:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme SwiftRex\ iOS \
-		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -52,7 +52,7 @@ test-combine:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme SwiftRex\ iOS\ Combine \
-		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -64,7 +64,7 @@ test-reactiveswift:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme SwiftRex\ iOS\ ReactiveSwift \
-		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \
@@ -76,7 +76,7 @@ test-rxswift:
 		xcodebuild clean test \
 		-workspace SwiftRex.xcworkspace \
 		-scheme SwiftRex\ iOS\ RxSwift \
-		-destination "platform=iOS Simulator,OS=13.0,name=iPhone 11 Pro Max" \
+		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		ONLY_ACTIVE_ARCH=YES \

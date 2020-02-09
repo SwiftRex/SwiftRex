@@ -33,31 +33,19 @@ import Foundation
  eventually pointing to the same instance.
 
  */
-public struct StoreProjection<ViewAction, ViewState>: StoreType {
-    public var statePublisher: UnfailablePublisherType<ViewState>
-    private var onAction: (ViewAction) -> Void
-
-    public init(action: @escaping (ViewAction) -> Void, state: UnfailablePublisherType<ViewState>) {
-        self.onAction = action
-        self.statePublisher = state
-    }
-
-    public func dispatch(_ action: ViewAction) {
-        onAction(action)
-    }
-}
+public typealias StoreProjection<ViewAction, ViewState> = AnyStoreType<ViewAction, ViewState>
 
 extension StoreType {
     public func projection<ViewAction, ViewState>(
         action viewActionToGlobalAction: @escaping (ViewAction) -> ActionType?,
-        state globalStateToViewState: @escaping (UnfailablePublisherType<StateType>) -> UnfailablePublisherType<ViewState>)
-        -> StoreProjection<ViewAction, ViewState> {
+        state globalStateToViewState: @escaping (StateType) -> ViewState
+    ) -> StoreProjection<ViewAction, ViewState> {
         .init(
-            action: { viewAction in
-                guard let globalAction = viewActionToGlobalAction(viewAction) else { return }
-                self.dispatch(globalAction)
+            action: { newAction, dispatcher in
+                guard let oldAction = viewActionToGlobalAction(newAction) else { return }
+                self.dispatch(oldAction, from: dispatcher)
             },
-            state: globalStateToViewState(statePublisher)
+            state: self.statePublisher.map(globalStateToViewState)
         )
     }
 }

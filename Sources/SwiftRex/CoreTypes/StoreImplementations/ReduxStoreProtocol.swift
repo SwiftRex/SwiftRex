@@ -3,7 +3,7 @@ import Foundation
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
 // sourcery: AutoMockableGeneric = ActionType
-// sourcery: AutoMockableSkip = "dispatch(_ action: ActionType)"
+// sourcery: AutoMockableSkip = "dispatch(_ action: ActionType, from dispatcher: ActionSource)"
 public protocol ReduxStoreProtocol: class, StoreType {
     associatedtype MiddlewareType: Middleware
         where MiddlewareType.StateType == StateType,
@@ -14,7 +14,7 @@ public protocol ReduxStoreProtocol: class, StoreType {
 }
 
 extension ReduxStoreProtocol {
-    public func dispatch(_ action: ActionType) {
-        pipeline.dispatch(action)
+    public func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
+        pipeline.dispatch(action, from: dispatcher)
     }
 }
