@@ -29,6 +29,29 @@
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
+            <a href="Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
             <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
@@ -201,7 +224,7 @@ reducers&rsquo; execution, or how much time it took for the whole chain to be ca
 <code>AfterReducer</code> is a monoid, that means it can be combined with another <code>AfterReducer</code> to form a new one (that executes both operations in the
 reverse order) and an identity instance, that when combined with any other <code>AfterReducer</code> changes nothing in the result, acting as a neutral
 element in composition. The identity of an <code>AfterReducer</code> is the static instance <code>doNothing()</code>, that contains an empty closure for no-op.
-The combination between two <code>AfterReducer</code> instances occur in reverse order so the first middleware will have its <q>after reducer</q> closure executed
+The combination between two <code>AfterReducer</code> instances occur in reverse order so the first middleware will have its &ldquo;after reducer&rdquo; closure executed
 last. This composition can be achieved by using the operator <code>&lt;&gt;</code></p>
 
                         <a href="Structs/AfterReducer.html" class="slightly-smaller">See more</a>
@@ -217,10 +240,6 @@ last. This composition can be achieved by using the operator <code>&lt;&gt;</cod
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -249,10 +268,6 @@ last. This composition can be achieved by using the operator <code>&lt;&gt;</cod
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -353,16 +368,13 @@ this also helps preventing <code>default</code> case or having to re-assign prop
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Reducer</span><span class="p">:</span> <span class="kt"><a href="Protocols/Monoid.html">Monoid</a></span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -396,10 +408,6 @@ is generalized by this protocol.</p>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -434,10 +442,6 @@ effects, such as printing logs.</p>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -471,10 +475,6 @@ those.</p>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -503,10 +503,6 @@ those.</p>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -536,10 +532,6 @@ those.</p>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -661,10 +653,6 @@ delegating to them once the wrapper funcions are called.</p>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -695,10 +683,6 @@ It comes with some standard options like <code>.always</code>, <code>.never</cod
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -731,10 +715,6 @@ It comes with some standard options like <code>.always</code>, <code>.never</cod
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -765,10 +745,6 @@ in the chain or to the reducers. It can be useful for Unit Tests or for some com
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -807,7 +783,7 @@ in the chain or to the reducers. It can be useful for Unit Tests or for some com
         </section>
         <section id="footer">
           <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

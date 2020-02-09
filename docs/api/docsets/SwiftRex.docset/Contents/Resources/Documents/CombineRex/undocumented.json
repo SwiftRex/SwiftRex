@@ -1,0 +1,145 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
+      "line": 42,
+      "symbol": "ObservableViewModel.state",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
+      "line": 45,
+      "symbol": "ObservableViewModel.init(initialState:store:emitsValue:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
+      "line": 60,
+      "symbol": "ObservableViewModel.init(initialState:store:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
+      "line": 72,
+      "symbol": "StoreType.asObservableViewModel(initialState:emitsValue:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
+      "line": 82,
+      "symbol": "StoreType.asObservableViewModel(initialState:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/PublisherType+Publisher.swift",
+      "line": 20,
+      "symbol": "Publisher.asPublisherType()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/PublisherType+Publisher.swift",
+      "line": 30,
+      "symbol": "PublisherType.lift(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ReplayLastSubjectType+BehaviorSubject.swift",
+      "line": 8,
+      "symbol": "ReplayLastSubjectType.init(currentValueSubject:willChange:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ReplayLastSubjectType+BehaviorSubject.swift",
+      "line": 28,
+      "symbol": "ReplayLastSubjectType.combine(initialValue:willChange:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubjectType+PassthroughSubject.swift",
+      "line": 8,
+      "symbol": "SwiftRex.SubjectType.init(passthroughSubject:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubjectType+PassthroughSubject.swift",
+      "line": 18,
+      "symbol": "SwiftRex.SubjectType.combine()",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubjectType+PassthroughSubject.swift",
+      "line": 25,
+      "symbol": "PassthroughSubject.asSubscriberType()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriberType+Subscriber.swift",
+      "line": 8,
+      "symbol": "SubscriberType.combineIdentifier",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriberType+Subscriber.swift",
+      "line": 33,
+      "symbol": "Subscriber.asSubscriberType()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriberType+Subscriber.swift",
+      "line": 37,
+      "symbol": "Subscriber.combine(subject:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriberType+Subscriber.swift",
+      "line": 52,
+      "symbol": "Subscriber.combine(subscriber:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriberType+Subscriber.swift",
+      "line": 67,
+      "symbol": "Subscriber.combine(onValue:onCompleted:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriptionType+Cancellable.swift",
+      "line": 8,
+      "symbol": "SwiftRex.SubscriptionType.asCancellable()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriptionType+Cancellable.swift",
+      "line": 16,
+      "symbol": "Cancellable.asSubscriptionType()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriptionType+Cancellable.swift",
+      "line": 52,
+      "symbol": "Array.store(subscription:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex"
+}

@@ -103,7 +103,13 @@ pod-install:
 # Jazzy
 
 jazzy:
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine
+	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine --build-tool-arguments -scheme,SwiftRex\ iOS\ Combine --module CombineRex --output docs/api/CombineRex
+	bundle exec jazzy -x -target,SwiftRex\ iOS\ ReactiveSwift --build-tool-arguments -scheme,SwiftRex\ iOS\ ReactiveSwift --module ReactiveSwiftRex --output docs/api/ReactiveSwiftRex
+	bundle exec jazzy -x -target,SwiftRex\ iOS\ RxSwift --build-tool-arguments -scheme,SwiftRex\ iOS\ RxSwift --module RxSwiftRex --output docs/api/RxSwiftRex
+	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine --build-tool-arguments -scheme,SwiftRex\ iOS\ Combine --module SwiftRex --output docs/api
+
+swiftdoc:
+	swift doc Sources --output docs/api
 
 # Pre-Build
 

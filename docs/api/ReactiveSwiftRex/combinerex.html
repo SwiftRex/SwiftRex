@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CombineRex  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="CombineRex  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">ReactiveSwiftRex Docs</a> (31% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">ReactiveSwiftRex Reference</a>
+        <img id="carat" src="img/carat.png" />
+        CombineRex  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Disposable.html">Disposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Lifetime.html">Lifetime</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Signal.html">Signal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Signal/Observer.html">– Observer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SignalProducerProtocol.html">SignalProducerProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SignalProtocol.html">SignalProtocol</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h1 id='combinerex-docs' class='heading'>CombineRex Docs</h1>
+
+<p>The SwiftRex implementation for Swift Combine framework</p>
+
+<p><a href="https://swiftrex.github.io/SwiftRex/api/CombineRex/index.html">CombineRex</a></p>
+
+<p><a href="https://swiftrex.github.io/SwiftRex/api/CombineRex/index.html"><img src="https://swiftrex.github.io/SwiftRex/api/CombineRex/badge.svg" alt="CombineRex"></a></p>
+<h1 id='installation' class='heading'>Installation</h1>
+<h2 id='cocoapods' class='heading'>CocoaPods</h2>
+
+<p>Create or modify the Podfile at the root folder of your project.</p>
+
+<p>For Combine:</p>
+<pre class="highlight ruby"><code><span class="c1"># Podfile</span>
+<span class="n">source</span> <span class="s1">'https://github.com/CocoaPods/Specs.git'</span>
+<span class="n">use_frameworks!</span>
+
+<span class="n">target</span> <span class="s1">'MyAppTarget'</span> <span class="k">do</span>
+  <span class="n">pod</span> <span class="s1">'CombineRex'</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>As seen above, some lines are optional because the final Podspecs already include the correct dependencies.</p>
+
+<p>Then, all you must do is install your pods and open the <code>.xcworkspace</code> instead of the <code>.xcodeproj</code> file:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>pod install
+<span class="gp">$ </span>xed .
+</code></pre>
+<h2 id='swift-package-manager' class='heading'>Swift Package Manager</h2>
+
+<p>Create or modify the Package.swift at the root folder of your project.</p>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.1</span>
+
+<span class="kd">import</span> <span class="kt">PackageDescription</span>
+
+<span class="k">let</span> <span class="nv">package</span> <span class="o">=</span> <span class="kt">Package</span><span class="p">(</span>
+  <span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span>
+  <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.6.0"</span><span class="p">)</span>
+  <span class="p">],</span>
+  <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="s">"CombineRex"</span><span class="p">])</span>
+  <span class="p">]</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Then you can either building on the terminal or use Xcode 11 or higher that now supports SPM natively.</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>swift build
+<span class="gp">$ </span>xed .
+</code></pre>
+<h2 id='carthage' class='heading'>Carthage</h2>
+
+<p>Carthage is currently not our recommended way of using SwiftRex and its support can be dropped future versions. If this is critical for you or your company, please contact us and we will take this into account.</p>
+
+<p>Add this to your Cartfile:</p>
+<pre class="highlight ruby"><code><span class="n">github</span> <span class="s2">"SwiftRex/SwiftRex"</span> <span class="o">~&gt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">6</span><span class="o">.</span><span class="mi">0</span>
+</code></pre>
+
+<p>Run</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>carthage update
+</code></pre>
+
+<p>Then follow the instructions from <a href="https://github.com/Carthage/Carthage#getting-started">Carthage README</a>.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
