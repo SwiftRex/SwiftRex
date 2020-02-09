@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Classes  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Section/Classes" class="dashAnchor"></a>
+    <a title="Classes  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">CombineRex Docs</a> (55% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">CombineRex Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Classes  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Cancellable.html">Cancellable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/PassthroughSubject.html">PassthroughSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Publisher.html">Publisher</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Subscriber.html">Subscriber</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Classes</h1>
+            <p>The following classes are available globally.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex19ObservableViewModelC"></a>
+                    <a name="//apple_ref/swift/Class/ObservableViewModel" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex19ObservableViewModelC">ObservableViewModel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A Store Projection made to be used in SwiftUI</p>
+
+<p>All you need is to create an instance of this class by projecting the main store and providing maps for state and
+actions. For the consumers, it will act as a real Store, but in fact it&rsquo;s only a proxy to the main store but working
+in types more close to what a View should know, instead of working on global domain.</p>
+<pre class="highlight swift"><code>            <span class="err">┌────────┐</span>
+            <span class="err">│</span> <span class="kt">Button</span> <span class="err">│────────┐</span>
+            <span class="err">└────────┘</span>        <span class="err">│</span>                     <span class="err">┌</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┐</span>             <span class="err">┏━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+       <span class="err">┌──────────────────┐</span>   <span class="err">│</span>         <span class="n">dispatch</span>                                            <span class="err">┃</span>                       <span class="err">┃░</span>
+       <span class="err">│</span>      <span class="kt">Toggle</span>      <span class="err">│───┼────────────────────▶│</span>   <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─▶</span>  <span class="err">│────────────▶┃</span>                       <span class="err">┃░</span>
+       <span class="err">└──────────────────┘</span>   <span class="err">│</span>         <span class="n">view</span> <span class="n">event</span>      <span class="nv">f</span><span class="p">:</span> <span class="p">(</span><span class="kt">Event</span><span class="p">)</span> <span class="err">→</span> <span class="kt">Action</span>     <span class="n">app</span> <span class="n">action</span>  <span class="err">┃</span>                       <span class="err">┃░</span>
+           <span class="err">┌──────────┐</span>       <span class="err">│</span>                     <span class="err">│</span>                         <span class="err">│</span>             <span class="err">┃</span>                       <span class="err">┃░</span>
+           <span class="err">│</span> <span class="n">onAppear</span> <span class="err">│───────┘</span>                                                             <span class="err">┃</span>                       <span class="err">┃░</span>
+           <span class="err">└──────────┘</span>                             <span class="err">│</span>   <span class="kt">ObservableViewModel</span>   <span class="err">│</span>             <span class="err">┃</span>                       <span class="err">┃░</span>
+                                                                                            <span class="err">┃</span>                       <span class="err">┃░</span>
+                                                    <span class="err">│</span>     <span class="n">a</span> <span class="n">projection</span> <span class="n">of</span>     <span class="err">│</span>  <span class="n">projection</span> <span class="err">┃</span>         <span class="kt">Store</span>         <span class="err">┃░</span>
+                                                         <span class="n">the</span> <span class="n">actual</span> <span class="n">store</span>                   <span class="err">┃</span>                       <span class="err">┃░</span>
+                                                    <span class="err">│</span>                         <span class="err">│</span>             <span class="err">┃</span>                       <span class="err">┃░</span>
+   <span class="err">┌────────────────────────┐</span>                                                               <span class="err">┃</span>                       <span class="err">┃░</span>
+   <span class="err">│</span>                        <span class="err">│</span>                       <span class="err">│</span>                         <span class="err">│</span>            <span class="err">┌┃─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┐</span>            <span class="err">┃░</span>
+   <span class="err">│</span>    <span class="kd">@ObservedObject</span>     <span class="err">│◀</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>    <span class="err">◀─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>   <span class="err">◀─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>    <span class="kt">State</span>                <span class="err">┃░</span>
+   <span class="err">│</span>                        <span class="err">│</span>           <span class="n">view</span> <span class="n">state</span>  <span class="err">│</span>   <span class="nv">f</span><span class="p">:</span> <span class="p">(</span><span class="kt">State</span><span class="p">)</span> <span class="err">→</span> <span class="kt">View</span>     <span class="err">│</span>  <span class="n">app</span> <span class="n">state</span> <span class="err">│</span> <span class="kt">Publisher</span> <span class="err">│</span>            <span class="err">┃░</span>
+   <span class="err">└────────────────────────┘</span>                                        <span class="kt">State</span>                  <span class="err">┳</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>             <span class="err">┃░</span>
+     <span class="err">│</span>          <span class="err">│</span>          <span class="err">│</span>                        <span class="err">└</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┘</span>             <span class="err">┗━━━━━━━━━━━━━━━━━━━━━━━┛░</span>
+     <span class="err">▼</span>          <span class="err">▼</span>          <span class="err">▼</span>                                                                 <span class="err">░░░░░░░░░░░░░░░░░░░░░░░░░</span>
+<span class="err">┌────────┐</span> <span class="err">┌────────┐</span> <span class="err">┌────────┐</span>
+<span class="err">│</span>  <span class="kt">Text</span>  <span class="err">│</span> <span class="err">│</span>  <span class="kt">List</span>  <span class="err">│</span> <span class="err">│</span><span class="kt">ForEach</span> <span class="err">│</span>
+<span class="err">└────────┘</span> <span class="err">└────────┘</span> <span class="err">└────────┘</span>
+</code></pre>
+
+                        <a href="Classes/ObservableViewModel.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(iOS 13, watchOS 6, OSX 10.15, tvOS 13, *)</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ObservableViewModel</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">StoreType</span><span class="p">,</span> <span class="kt">ObservableObject</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

@@ -1,10 +1,4 @@
-xcodebuild_arguments:
-  - -project
-  - SwiftRex.xcodeproj
-  - -scheme
-  - SwiftRex iOS Combine
 author: SwiftRex
 author_url: https://github.com/SwiftRex/SwiftRex
 github_url: https://github.com/SwiftRex/SwiftRex
-module: SwiftRex
-output: docs/api
+documentation: "docs/markdown/*.md"

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ObservableViewModel Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ObservableViewModel" class="dashAnchor"></a>
+    <a title="ObservableViewModel Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CombineRex Docs</a> (55% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CombineRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ObservableViewModel Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Cancellable.html">Cancellable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PassthroughSubject.html">PassthroughSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Publisher.html">Publisher</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Subscriber.html">Subscriber</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ObservableViewModel</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@available(iOS 13, watchOS 6, OSX 10.15, tvOS 13, *)</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ObservableViewModel</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">StoreType</span><span class="p">,</span> <span class="kt">ObservableObject</span></code></pre>
+
+                </div>
+              </div>
+            <p>A Store Projection made to be used in SwiftUI</p>
+
+<p>All you need is to create an instance of this class by projecting the main store and providing maps for state and
+actions. For the consumers, it will act as a real Store, but in fact it&rsquo;s only a proxy to the main store but working
+in types more close to what a View should know, instead of working on global domain.</p>
+<pre class="highlight swift"><code>            <span class="err">┌────────┐</span>
+            <span class="err">│</span> <span class="kt">Button</span> <span class="err">│────────┐</span>
+            <span class="err">└────────┘</span>        <span class="err">│</span>                     <span class="err">┌</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┐</span>             <span class="err">┏━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+       <span class="err">┌──────────────────┐</span>   <span class="err">│</span>         <span class="n">dispatch</span>                                            <span class="err">┃</span>                       <span class="err">┃░</span>
+       <span class="err">│</span>      <span class="kt">Toggle</span>      <span class="err">│───┼────────────────────▶│</span>   <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─▶</span>  <span class="err">│────────────▶┃</span>                       <span class="err">┃░</span>
+       <span class="err">└──────────────────┘</span>   <span class="err">│</span>         <span class="n">view</span> <span class="n">event</span>      <span class="nv">f</span><span class="p">:</span> <span class="p">(</span><span class="kt">Event</span><span class="p">)</span> <span class="err">→</span> <span class="kt">Action</span>     <span class="n">app</span> <span class="n">action</span>  <span class="err">┃</span>                       <span class="err">┃░</span>
+           <span class="err">┌──────────┐</span>       <span class="err">│</span>                     <span class="err">│</span>                         <span class="err">│</span>             <span class="err">┃</span>                       <span class="err">┃░</span>
+           <span class="err">│</span> <span class="n">onAppear</span> <span class="err">│───────┘</span>                                                             <span class="err">┃</span>                       <span class="err">┃░</span>
+           <span class="err">└──────────┘</span>                             <span class="err">│</span>   <span class="kt">ObservableViewModel</span>   <span class="err">│</span>             <span class="err">┃</span>                       <span class="err">┃░</span>
+                                                                                            <span class="err">┃</span>                       <span class="err">┃░</span>
+                                                    <span class="err">│</span>     <span class="n">a</span> <span class="n">projection</span> <span class="n">of</span>     <span class="err">│</span>  <span class="n">projection</span> <span class="err">┃</span>         <span class="kt">Store</span>         <span class="err">┃░</span>
+                                                         <span class="n">the</span> <span class="n">actual</span> <span class="n">store</span>                   <span class="err">┃</span>                       <span class="err">┃░</span>
+                                                    <span class="err">│</span>                         <span class="err">│</span>             <span class="err">┃</span>                       <span class="err">┃░</span>
+   <span class="err">┌────────────────────────┐</span>                                                               <span class="err">┃</span>                       <span class="err">┃░</span>
+   <span class="err">│</span>                        <span class="err">│</span>                       <span class="err">│</span>                         <span class="err">│</span>            <span class="err">┌┃─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┐</span>            <span class="err">┃░</span>
+   <span class="err">│</span>    <span class="kd">@ObservedObject</span>     <span class="err">│◀</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>    <span class="err">◀─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>   <span class="err">◀─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>    <span class="kt">State</span>                <span class="err">┃░</span>
+   <span class="err">│</span>                        <span class="err">│</span>           <span class="n">view</span> <span class="n">state</span>  <span class="err">│</span>   <span class="nv">f</span><span class="p">:</span> <span class="p">(</span><span class="kt">State</span><span class="p">)</span> <span class="err">→</span> <span class="kt">View</span>     <span class="err">│</span>  <span class="n">app</span> <span class="n">state</span> <span class="err">│</span> <span class="kt">Publisher</span> <span class="err">│</span>            <span class="err">┃░</span>
+   <span class="err">└────────────────────────┘</span>                                        <span class="kt">State</span>                  <span class="err">┳</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span>             <span class="err">┃░</span>
+     <span class="err">│</span>          <span class="err">│</span>          <span class="err">│</span>                        <span class="err">└</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">─</span> <span class="err">┘</span>             <span class="err">┗━━━━━━━━━━━━━━━━━━━━━━━┛░</span>
+     <span class="err">▼</span>          <span class="err">▼</span>          <span class="err">▼</span>                                                                 <span class="err">░░░░░░░░░░░░░░░░░░░░░░░░░</span>
+<span class="err">┌────────┐</span> <span class="err">┌────────┐</span> <span class="err">┌────────┐</span>
+<span class="err">│</span>  <span class="kt">Text</span>  <span class="err">│</span> <span class="err">│</span>  <span class="kt">List</span>  <span class="err">│</span> <span class="err">│</span><span class="kt">ForEach</span> <span class="err">│</span>
+<span class="err">└────────┘</span> <span class="err">└────────┘</span> <span class="err">└────────┘</span>
+</code></pre>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex19ObservableViewModelC5stateq_vp"></a>
+                    <a name="//apple_ref/swift/Property/state" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex19ObservableViewModelC5stateq_vp">state</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">state</span><span class="p">:</span> <span class="kt">ViewState</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13StateProviderP14statePublisherAA0F4TypeVy0cG0Qzs5NeverOGvp"></a>
+                    <a name="//apple_ref/swift/Property/statePublisher" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13StateProviderP14statePublisherAA0F4TypeVy0cG0Qzs5NeverOGvp">statePublisher</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">statePublisher</span><span class="p">:</span> <span class="kt">UnfailablePublisherType</span><span class="o">&lt;</span><span class="kt">ViewState</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex19ObservableViewModelC12initialState5store10emitsValueACyxq_Gq__qd__05SwiftB0010ShouldEmitJ0Vyq_Gtc10ActionTypeQyd__Rsz0gO0Qyd__Rs_AH05StoreO0Rd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(initialState:store:emitsValue:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex19ObservableViewModelC12initialState5store10emitsValueACyxq_Gq__qd__05SwiftB0010ShouldEmitJ0Vyq_Gtc10ActionTypeQyd__Rsz0gO0Qyd__Rs_AH05StoreO0Rd__lufc">init(initialState:store:emitsValue:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">S</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">ViewState</span><span class="p">,</span> <span class="nv">store</span><span class="p">:</span> <span class="kt">S</span><span class="p">,</span> <span class="nv">emitsValue</span><span class="p">:</span> <span class="kt">ShouldEmitValue</span><span class="o">&lt;</span><span class="kt">ViewState</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="k">where</span> <span class="kt">S</span><span class="p">:</span> <span class="kt">StoreType</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">ActionType</span> <span class="o">==</span> <span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">StateType</span> <span class="o">==</span> <span class="kt">ViewState</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13ActionHandlerP8dispatch_4fromy0C4TypeQz_AA0C6SourceVtF"></a>
+                    <a name="//apple_ref/swift/Method/dispatch(_:from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13ActionHandlerP8dispatch_4fromy0C4TypeQz_AA0C6SourceVtF">dispatch(_:from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ViewAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex19ObservableViewModelC4mock5state6actionACyxq_Gq__yx_05SwiftB012ActionSourceVq_ztctFZ"></a>
+                    <a name="//apple_ref/swift/Method/mock(state:action:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex19ObservableViewModelC4mock5state6actionACyxq_Gq__yx_05SwiftB012ActionSourceVq_ztctFZ">mock(state:action:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Mock for using in tests or SwiftUI previews, available in DEBUG mode only
+You can use if as a micro-redux for tests and SwiftUI previews, for example:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">mock</span> <span class="o">=</span> <span class="kt">ObservableViewModel</span><span class="o">&lt;</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">pass</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">buttonEnabled</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">),</span> <span class="kt">ViewAction</span><span class="o">&gt;.</span><span class="nf">mock</span><span class="p">(</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="s">"ozzy"</span><span class="p">,</span> <span class="nv">pass</span><span class="p">:</span> <span class="s">""</span><span class="p">,</span> <span class="nv">buttonEnabled</span><span class="p">:</span> <span class="kc">false</span><span class="p">),</span>
+    <span class="nv">action</span><span class="p">:</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">state</span> <span class="k">in</span>
+        <span class="k">switch</span> <span class="n">action</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">userChanged</span><span class="p">(</span><span class="n">newUser</span><span class="p">):</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">newUser</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">buttonEnabled</span> <span class="o">=</span> <span class="o">!</span><span class="n">state</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">isEmpty</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">state</span><span class="o">.</span><span class="n">pass</span><span class="o">.</span><span class="n">isEmpty</span>
+        <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">passwordChanged</span><span class="p">(</span><span class="n">newPass</span><span class="p">):</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">pass</span> <span class="o">=</span> <span class="n">newPass</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">buttonEnabled</span> <span class="o">=</span> <span class="o">!</span><span class="n">state</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">isEmpty</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">state</span><span class="o">.</span><span class="n">pass</span><span class="o">.</span><span class="n">isEmpty</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">buttonTapped</span><span class="p">:</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"Button tapped"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">mock</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="p">(</span><span class="kd">@escaping</span> <span class="p">(</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="k">inout</span> <span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span> <span class="p">})</span>
+    <span class="o">-&gt;</span> <span class="kt">ObservableViewModel</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>state</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Initial state mock</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a simple reducer function, of type <code>(ActionType, inout StateType) -&gt; Void</code>, useful if
+                you want to use in SwiftUI live previews and quickly change an UI property when a
+                button is tapped, for example. It&rsquo;s like a micro-redux for tests and SwiftUI previews.
+                Defaults to do nothing.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a very simple ObservableViewModel mock, that you can inject in your SwiftUI View for tests or
+       live preview.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60ViewState%60:%20%60Equatable%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `ViewState`: `Equatable`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60ViewState%60:%20%60Equatable%60"></a>
+                  <h3 class="section-name"><p>Available where <code>ViewState</code>: <code>Equatable</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex19ObservableViewModelCAASQR_rlE12initialState5storeACyxq_Gq__qd__tc10ActionTypeQyd__Rsz0gJ0Qyd__Rs_05SwiftB005StoreJ0Rd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(initialState:store:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex19ObservableViewModelCAASQR_rlE12initialState5storeACyxq_Gq__qd__tc10ActionTypeQyd__Rsz0gJ0Qyd__Rs_05SwiftB005StoreJ0Rd__lufc">init(initialState:store:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">S</span><span class="p">:</span> <span class="kt">StoreType</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">ViewState</span><span class="p">,</span> <span class="nv">store</span><span class="p">:</span> <span class="kt">S</span><span class="p">)</span>
+<span class="k">where</span> <span class="kt">S</span><span class="o">.</span><span class="kt">ActionType</span> <span class="o">==</span> <span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">StateType</span> <span class="o">==</span> <span class="kt">ViewState</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

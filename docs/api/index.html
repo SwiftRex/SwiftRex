@@ -28,6 +28,29 @@
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
+            <a href="Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
             <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
@@ -192,7 +215,7 @@
 
 <p>SwiftRex is a framework that combines Unidirectional Dataflow architecture and reactive programming (<a href="https://developer.apple.com/documentation/combine">Combine</a>, <a href="https://github.com/ReactiveX/RxSwift">RxSwift</a> or <a href="https://github.com/ReactiveCocoa/ReactiveSwift">ReactiveSwift</a>), providing a central state Store for the whole state of your app, of which your SwiftUI Views or UIViewControllers can observe and react to, as well as dispatching events coming from the user interactions.</p>
 
-<p>This pattern, also known as <a href="https://redux.js.org/basics/data-flow"><q>Redux</q></a>, allows us to rethink our app as a single <a href="https://en.wikipedia.org/wiki/Pure_function">pure function</a> that receives user events as input and returns UI changes in response. The benefits of this workflow will hopefully become clear soon.</p>
+<p>This pattern, also known as <a href="https://redux.js.org/basics/data-flow">&ldquo;Redux&rdquo;</a>, allows us to rethink our app as a single <a href="https://en.wikipedia.org/wiki/Pure_function">pure function</a> that receives user events as input and returns UI changes in response. The benefits of this workflow will hopefully become clear soon.</p>
 
 <p><a href="https://swiftrex.github.io/SwiftRex/api/index.html">API documentation can be found here</a>.</p>
 <h1 id='goals' class='heading'>Goals</h1>
@@ -329,7 +352,7 @@
 <hr>
 <h3 id='action' class='heading'>Action</h3>
 
-<p>There&rsquo;s no <q>Action</q> protocol or type in SwiftRex. However, Action will be found as a generic parameter for most core data structures, meaning that it&rsquo;s up to you to define what is the root Action type.</p>
+<p>There&rsquo;s no &ldquo;Action&rdquo; protocol or type in SwiftRex. However, Action will be found as a generic parameter for most core data structures, meaning that it&rsquo;s up to you to define what is the root Action type.</p>
 
 <p>Conceptually, we can say that an Action represents something that happens from external actors of your app, that means user interactions, timer callbacks, responses from web services, callbacks from CoreLocation and other frameworks. Some internal actors also can start actions, however. For example, when UIKit finishes loading your view we could say that <code>viewDidLoad</code> is an action, in case we&rsquo;re interested in this event.</p>
 
@@ -362,11 +385,11 @@
 <hr>
 <h3 id='state' class='heading'>State</h3>
 
-<p>There&rsquo;s no <q>State</q> protocol or type in SwiftRex. However, State will be found as a generic parameter for most core data structures, meaning that it&rsquo;s up to you to define what is the root State type.</p>
+<p>There&rsquo;s no &ldquo;State&rdquo; protocol or type in SwiftRex. However, State will be found as a generic parameter for most core data structures, meaning that it&rsquo;s up to you to define what is the root State type.</p>
 
 <p>Conceptually, we can say that state represents the whole knowledge that an app holds while is open, usually in memory and mutable; it&rsquo;s like a paper on where you write down some values, and for every action you receive you erase one value and replace it by a different value. Another way of thinking about state is in a functional programming way: the state is not persisted, but it&rsquo;s the result of a function that takes the initial condition of your app plus all the actions it received since it was launched, and calculates the current values by applying chronologically all the action changes on top of the initial state. This is known as <a href="https://martinfowler.com/eaaDev/EventSourcing.html">Event Sourcing Design Pattern</a> and it&rsquo;s becoming popular recently in some web backend services, such as <a href="https://kafka.apache.org/uses">Kafka Event Sourcing</a>.</p>
 
-<p>In a device with limited battery and memory we can&rsquo;t afford having a true event-sourcing pattern because it would be too expensive recreating the whole history of an app every time someone requests a simple boolean. So we <q>cache</q> the new state every time an action is received, and this in-memory cache is precisely what we call <q>State</q> in SwiftRex. So maybe we mix both ways of thinking about State and come up with a better generalisation for what a state is.</p>
+<p>In a device with limited battery and memory we can&rsquo;t afford having a true event-sourcing pattern because it would be too expensive recreating the whole history of an app every time someone requests a simple boolean. So we &ldquo;cache&rdquo; the new state every time an action is received, and this in-memory cache is precisely what we call &ldquo;State&rdquo; in SwiftRex. So maybe we mix both ways of thinking about State and come up with a better generalisation for what a state is.</p>
 
 <p><strong>State is the result of a function that takes two arguments: the previous (or initial) state and some action that occurred, to determine the new state.</strong> This happens incrementally as more and more actions arrive. State is useful for <strong>output</strong> data to the user.</p>
 
@@ -379,7 +402,7 @@
 <li>Formatted string (<code>&quot;$3.00&quot;</code>, <code>&quot;$3,00&quot;</code>, <code>&quot;£3.00&quot;</code> or <code>&quot;£3,00&quot;</code>)</li>
 </ul>
 
-<p>The formatted string itself is <strong>NOT</strong> state, because it can be calculated from the other properties. This can be called <q>derived state</q> and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it&rsquo;s better to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it. Luckily SwiftRex helps to keep the state consistent as we&rsquo;re about to see in the Reducer section, still, it&rsquo;s better off not duplicating information that can be easily and cheaply calculated.</p>
+<p>The formatted string itself is <strong>NOT</strong> state, because it can be calculated from the other properties. This can be called &ldquo;derived state&rdquo; and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it&rsquo;s better to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it. Luckily SwiftRex helps to keep the state consistent as we&rsquo;re about to see in the Reducer section, still, it&rsquo;s better off not duplicating information that can be easily and cheaply calculated.</p>
 
 <p>For representing the state of an app we recommend value types: structs or enums. Tuples would be acceptable as well, but unfortunately Swift currently doesn&rsquo;t allow us to conform tuples to protocols, and <strong>we want our whole state to be Equatable</strong>.</p>
 <pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">AppState</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{</span>
@@ -531,7 +554,7 @@ A Store like <code><a href="Protocols/ReduxStoreProtocol.html">ReduxStoreProtoco
 <li>Logger, Telemetry, Auditing, Analytics tracker, Crash report breadcrumbs</li>
 <li>Monitoring or debugging tools, like external apps to monitor the state and actions remotely from a different device</li>
 <li><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</li>
-<li>API calls and other <q>cold observables</q></li>
+<li>API calls and other &ldquo;cold observables&rdquo;</li>
 <li>Network Reachability</li>
 <li>Navigation through the app (Redux Coordinator pattern)</li>
 <li><code>CoreBluetooth</code> central or peripheral manager</li>
@@ -639,7 +662,7 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">currentState</span><span class="p">:</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
 </code></pre>
 
-<p>Given the current state and an action, returns the calculated state. This function will be executed in the last stage of an action handling, when all middlewares had the chance to modify or improve the action. Because a reduce function is composable monoid and also can be lifted through lenses, it&rsquo;s possible to write fine-grained <q>sub-reducer</q> that will handle only a <q>sub-state</q>, creating a pipeline of reducers.</p>
+<p>Given the current state and an action, returns the calculated state. This function will be executed in the last stage of an action handling, when all middlewares had the chance to modify or improve the action. Because a reduce function is composable monoid and also can be lifted through lenses, it&rsquo;s possible to write fine-grained &ldquo;sub-reducer&rdquo; that will handle only a &ldquo;sub-state&rdquo;, creating a pipeline of reducers.</p>
 
 <p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the <code><a href="Structs/Reducer.html">Reducer</a></code> structs or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always good to do a final sanity check before changing the state.</p>
 
@@ -733,7 +756,7 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
      ╼━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╾
 </code></pre>
 
-<p>You can think of Store as a very heavy <q>Model</q> layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transferring the <q>Massive</q> problem from a layer to another, so that&rsquo;s why the Store is nothing but a collection of composable boxes with very well defined roles and, most importantly, restrictions.</p>
+<p>You can think of Store as a very heavy &ldquo;Model&rdquo; layer, completely detached from the View and Controller, and where all the business logic stands. At a first sight it may look like transferring the &ldquo;Massive&rdquo; problem from a layer to another, so that&rsquo;s why the Store is nothing but a collection of composable boxes with very well defined roles and, most importantly, restrictions.</p>
 <pre class="highlight plaintext"><code>     ╼━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╾
     ╱░░░░░░░░░░░░░░░░░◉░░░░░░░░░░░░░░░░░░╲
   ╱░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╲
@@ -871,7 +894,7 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
         </section>
         <section id="footer">
           <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>
