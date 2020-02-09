@@ -42,7 +42,7 @@ Carthage is currently not our recommended way of using SwiftRex and its support 
 Add this to your Cartfile:
 
 ```ruby
-github "SwiftRex/SwiftRex" ~> 0.6.0
+github "SwiftRex/SwiftRex" ~> 0.7.0
 ```
 
 Run

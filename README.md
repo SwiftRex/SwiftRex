@@ -665,7 +665,7 @@ import PackageDescription
 let package = Package(
   name: "MyApp",
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.6.0")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.0")
   ],
   targets: [
     .target(name: "MyApp", dependencies: ["CombineRex"])
@@ -687,7 +687,7 @@ Carthage is currently not our recommended way of using SwiftRex and its support 
 Add this to your Cartfile:
 
 ```ruby
-github "SwiftRex/SwiftRex" ~> 0.6.0
+github "SwiftRex/SwiftRex" ~> 0.7.0
 ```
 
 Run
