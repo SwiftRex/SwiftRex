@@ -363,7 +363,7 @@ Some suggestions of middlewares:
 Middleware protocol is generic over 3 associated types:
 
 #### InputActionType:
-The Action type that this `Middleware` knowns how to handle, so the store will forward actions of this type to this middleware.
+The Action type that this `Middleware` knows how to handle, so the store will forward actions of this type to this middleware.
 Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
 
 #### OutputActionType:
