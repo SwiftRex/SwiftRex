@@ -1,5 +1,6 @@
 import Foundation
 
+/// Erases the protocol `Middleware`. Please check its documentation for more information.
 public struct AnyMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
     private let _handle: (InputActionType, ActionSource, inout AfterReducer) -> Void
     private let _receiveContext: (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void
