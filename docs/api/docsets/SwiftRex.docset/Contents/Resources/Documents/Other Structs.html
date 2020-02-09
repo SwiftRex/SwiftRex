@@ -14,7 +14,7 @@
     <a title="Other Structures  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -177,9 +177,6 @@
           <li class="nav-group-name">
             <a href="Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
               <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
@@ -439,7 +436,9 @@ those.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over subscriber/observer types from reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                         <a href="Structs/SubscriberType.html" class="slightly-smaller">See more</a>
                       </div>
@@ -467,7 +466,9 @@ those.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over publisher/observable/signal producer types from reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                         <a href="Structs/PublisherType.html" class="slightly-smaller">See more</a>
                       </div>
@@ -495,7 +496,9 @@ those.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over passthrough subject types (<code>PassthroughSubject</code>, <code>PublishSubject</code>, <code>Signal</code>) from reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                         <a href="Structs/SubjectType.html" class="slightly-smaller">See more</a>
                       </div>
@@ -523,7 +526,10 @@ those.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>, <code>Variable</code>) from
+reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                         <a href="Structs/ReplayLastSubjectType.html" class="slightly-smaller">See more</a>
                       </div>
@@ -555,7 +561,9 @@ those.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in
+case it should emit it, or false in case it should not emit it.
+It comes with some standard options like <code>.always</code>, <code>.never</code>, <code>.when(old, new) -&gt; Bool</code> and, for <code>Equatable</code> structures, <code>.whenDifferent</code>.</p>
 
                         <a href="Structs/ShouldEmitValue.html" class="slightly-smaller">See more</a>
                       </div>

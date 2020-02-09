@@ -14,7 +14,7 @@
     <a title="Other Type Aliases  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -281,7 +278,10 @@ eventually pointing to the same instance.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over subscriber/observer types from reactive frameworks.
+For this specific case, the failure/error is <code>Never</code>, meaning that this subscriber can only subscribe to publishers that don&rsquo;t emit errors.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                       </div>
                       <div class="declaration">
@@ -308,7 +308,10 @@ eventually pointing to the same instance.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over publisher/observable/signal producer types from reactive frameworks.
+For this specific case, the failure/error is <code>Never</code>, meaning that this publisher can&rsquo;t emit error.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                       </div>
                       <div class="declaration">
@@ -335,7 +338,10 @@ eventually pointing to the same instance.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over passthrough subject types (<code>PassthroughSubject</code>, <code>PublishSubject</code>, <code>Signal</code>) from reactive frameworks.
+For this specific case, the failure/error is <code>Never</code>, meaning that this subject can&rsquo;t emit error.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                       </div>
                       <div class="declaration">
@@ -362,7 +368,11 @@ eventually pointing to the same instance.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>, <code>Variable</code>) from
+reactive frameworks.
+For this specific case, the failure/error is <code>Never</code>, meaning that this subject can&rsquo;t emit error.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
                       </div>
                       <div class="declaration">
@@ -370,37 +380,6 @@ eventually pointing to the same instance.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">UnfailableReplayLastSubjectType</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span> <span class="o">=</span> <span class="kt"><a href="Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex4Nexta"></a>
-                    <a name="//apple_ref/swift/Alias/Next" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex4Nexta">Next</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Next</span> <span class="o">=</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>

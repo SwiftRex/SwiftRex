@@ -14,7 +14,7 @@
     <a title="ShouldEmitValue Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="../Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -209,7 +206,9 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in
+case it should emit it, or false in case it should not emit it.
+It comes with some standard options like <code>.always</code>, <code>.never</code>, <code>.when(old, new) -&gt; Bool</code> and, for <code>Equatable</code> structures, <code>.whenDifferent</code>.</p>
 
           </section>
           <section class="section task-group-section">
@@ -228,7 +227,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Evaluates the predicate and returns <code>true</code> in case this should be emitted, or <code>false</code> in case this change should be ignored</p>
 
                       </div>
                       <div class="declaration">
@@ -255,7 +254,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Evaluates the predicate and returns <code>true</code> in case this should be ignored, or <code>false</code> in case this change should be emitted. It&rsquo;s the exact
+inversion of <code>shouldEmit</code> and useful for operator <code>.removeDuplicates</code> that some Reactive libraries offer.</p>
 
                       </div>
                       <div class="declaration">
@@ -286,7 +286,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>It will always emit changes, regardless of previous and new state</p>
 
                       </div>
                       <div class="declaration">
@@ -313,7 +313,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>It will never emit changes, regardless of previous and new state</p>
 
                       </div>
                       <div class="declaration">
@@ -340,7 +340,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>It&rsquo;s a custom-defined predicate, you&rsquo;ll be given old and new state, and must return a Bool indicating what you&rsquo;ve decided from that change,
+being <code>true</code> when you want this change to be notified, or <code>false</code> when you want it to be ignored.</p>
 
                       </div>
                       <div class="declaration">
@@ -371,7 +372,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>For <code>Equatable</code> structures, <code>.whenDifferent</code> will run <code>==</code> operator between old and new state, and notify when they are different, or ignore
+when they are equal.</p>
 
                       </div>
                       <div class="declaration">

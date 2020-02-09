@@ -14,7 +14,7 @@
     <a title="ReplayLastSubjectType Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="../Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -209,7 +206,10 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>Abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>, <code>Variable</code>) from
+reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
           </section>
           <section class="section task-group-section">
@@ -228,7 +228,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Upstream publisher that feeds data into this subject</p>
 
                       </div>
                       <div class="declaration">
@@ -255,7 +255,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Downstream subscriber that subscribes to this subject and will receive events from it</p>
 
                       </div>
                       <div class="declaration">
@@ -282,7 +282,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Reads the most recent element emitted by this subject. This subject can be seen as a variable in stateful programming style, it holds one
+value that can be read at any point using a getter function <code>() -&gt; Element</code>. Useful for bridging with the imperative world.</p>
 
                       </div>
                       <div class="declaration">
@@ -309,7 +310,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Creates an abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>,
+<code>Variable</code>) from reactive frameworks.</p>
 
                       </div>
                       <div class="declaration">
@@ -322,6 +324,51 @@
     <span class="nv">value</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Element</span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>publisher</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Upstream publisher that feeds events into this subject</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>subscriber</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Downstream subscriber that subscribes to this subject and will receive events from it</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>value</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Reads the most recent element emitted by this subject. This subject can be seen as a variable in stateful programming style, it
+   holds one value that can be read at any point using a getter function <code>() -&gt; Element</code>. Useful for bridging with the imperative
+   world.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -343,7 +390,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Atomically mutate this subject&rsquo;s value in a closure where you can read and write the current element value</p>
 
                       </div>
                       <div class="declaration">
@@ -354,6 +401,29 @@
 <span class="kd">public</span> <span class="kd">func</span> <span class="n">mutate</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="p">(</span><span class="k">inout</span> <span class="kt">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Result</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>read and write the current value atomically, and optionally return something</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>returns whatever is returned by the action closure, allowing to chain operations</p>
                       </div>
                     </section>
                   </div>
@@ -371,7 +441,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Atomically mutate this subject&rsquo;s value in a closure where you can read and write the current element value
+Before the mutation, a condition will be evaluated and the mutation will only happen when the result of this evaluation returns <code>true</code>.
+This allows you to simulate the mutation before executing it.</p>
 
                       </div>
                       <div class="declaration">
@@ -382,6 +454,41 @@
 <span class="kd">public</span> <span class="kd">func</span> <span class="n">mutate</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&gt;</span><span class="p">(</span><span class="n">when</span> <span class="nv">condition</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="p">(</span><span class="k">inout</span> <span class="kt">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Result</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>condition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a predicate that, after simulating the mutation, allows you to decide if it should happen or not</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>read and write the current value atomically, and optionally return something</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>returns whatever is returned by the action closure, allowing to chain operations</p>
                       </div>
                     </section>
                   </div>
