@@ -14,7 +14,7 @@
     <a title="SubjectType Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="../Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -209,7 +206,9 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>Abstraction over passthrough subject types (<code>PassthroughSubject</code>, <code>PublishSubject</code>, <code>Signal</code>) from reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
           </section>
           <section class="section task-group-section">
@@ -228,7 +227,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Upstream publisher that feeds events into this subject</p>
 
                       </div>
                       <div class="declaration">
@@ -255,7 +254,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Downstream subscriber that subscribes to this subject and will receive events from it</p>
 
                       </div>
                       <div class="declaration">
@@ -282,7 +281,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Creates an abstraction over passthrough subject types (<code>PassthroughSubject</code>, <code>PublishSubject</code>, <code>Signal</code>) from reactive frameworks.</p>
 
                       </div>
                       <div class="declaration">
@@ -292,6 +291,37 @@
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">publisher</span><span class="p">:</span> <span class="kt"><a href="../Structs/PublisherType.html">PublisherType</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">ErrorType</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">subscriber</span><span class="p">:</span> <span class="kt"><a href="../Structs/SubscriberType.html">SubscriberType</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">ErrorType</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>publisher</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Upstream publisher that feeds events into this subject</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>subscriber</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Downstream subscriber that subscribes to this subject and will receive events from it</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>

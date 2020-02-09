@@ -14,7 +14,7 @@
     <a title="PublisherType Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="../Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -209,7 +206,9 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>Abstraction over publisher/observable/signal producer types from reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
           </section>
           <section class="section task-group-section">
@@ -282,7 +281,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Transforms any publishers into a Unfailable publisher with the same element type. After calling this method, a publisher will be derived
+and it won&rsquo;t emit failures or error. In case the upstream emits an error, a <code>fatalError</code> will be executed, so be careful when using this
+operator.</p>
 
                       </div>
                       <div class="declaration">
@@ -309,7 +310,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Maps elements emitted by the upstream into a new element type, given by the transform function provided by you</p>
 
                       </div>
                       <div class="declaration">
@@ -319,6 +320,29 @@
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">map</span><span class="o">&lt;</span><span class="kt">NewElement</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">transform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NewElement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">PublisherType</span><span class="o">&lt;</span><span class="kt">NewElement</span><span class="p">,</span> <span class="kt">ErrorType</span><span class="o">&gt;</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>transform</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that transforms each element emitted by the upstream into a new element</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a derived publisher that emits values of the new type, by applying the transform function provided by you</p>
                       </div>
                     </section>
                   </div>

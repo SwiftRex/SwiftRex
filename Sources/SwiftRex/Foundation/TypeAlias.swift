@@ -4,10 +4,8 @@
  */
 public typealias GetState<StateType> = () -> StateType
 
-public typealias Next = () -> Void
-
 /**
  State reducer: takes current state and an action, computes the new state. <br/>
- `(StateType, ActionProtocol) -> StateType`
+ `(ActionType, StateType) -> StateType`
  */
 public typealias ReduceFunction<ActionType, StateType> = (ActionType, StateType) -> StateType

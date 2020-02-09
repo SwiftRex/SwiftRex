@@ -14,7 +14,7 @@
     <a title="SubscriptionType Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="../Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -209,7 +206,9 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>Abstraction over subscription types from reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
           </section>
           <section class="section task-group-section">
@@ -228,7 +227,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Stops the observation and clean up all resources</p>
 
                       </div>
                       <div class="declaration">
@@ -262,7 +261,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Allow to add a subscription to a subscription collection, which is an abstraction for <code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your
+chosen reactive framework</p>
 
                       </div>
                       <div class="declaration">
@@ -272,6 +272,25 @@
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">cancelled</span><span class="o">&lt;</span><span class="kt">SC</span><span class="o">&gt;</span><span class="p">(</span><span class="n">by</span> <span class="nv">subscriptionCollection</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">SC</span><span class="p">)</span> <span class="k">where</span> <span class="kt">SC</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/SubscriptionCollection.html">SubscriptionCollection</a></span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>subscriptionCollection</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>an abstraction for <code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your chosen reactive framework</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -292,7 +311,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Allow to add a subscription to a subscription collection, which is an abstraction for <code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your
+chosen reactive framework</p>
 
                       </div>
                       <div class="declaration">
@@ -302,6 +322,25 @@
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">cancelled</span><span class="p">(</span><span class="n">by</span> <span class="nv">subscriptionCollection</span><span class="p">:</span> <span class="k">inout</span> <span class="kt"><a href="../Protocols/SubscriptionCollection.html">SubscriptionCollection</a></span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>subscriptionCollection</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a mutable abstraction for <code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your chosen reactive framework</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>

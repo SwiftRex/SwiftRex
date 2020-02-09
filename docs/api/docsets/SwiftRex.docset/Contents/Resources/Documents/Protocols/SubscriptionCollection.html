@@ -14,7 +14,7 @@
     <a title="SubscriptionCollection Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="../Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -209,7 +206,12 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>Abstraction over subscription collection (<code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your chosen reactive framework), useful for keeping
+subscriptions alive while the parent class is alive, binding the lifecycle of subscriptions to the lifecycle of views, view controllers or
+presenters. Subscriptions added to a subscription collection will be cancelled/disposed automatically once the collection gets deallocated,
+stopping any pending operation and cleaning up the resources.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
           </section>
           <section class="section task-group-section">

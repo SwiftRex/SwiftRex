@@ -14,7 +14,7 @@
     <a title="SubscriberType Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (55% documented)</p>
+        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -178,9 +178,6 @@
             <a href="../Other%20Typealiases.html">Other Type Aliases</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Other%20Typealiases.html#/s:8SwiftRex4Nexta">Next</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Other%20Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
               </li>
               <li class="nav-group-task">
@@ -209,7 +206,9 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>Abstraction over subscriber/observer types from reactive frameworks.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
 
           </section>
           <section class="section task-group-section">
@@ -228,7 +227,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Closure to handle new values received</p>
 
                       </div>
                       <div class="declaration">
@@ -255,7 +254,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Closure to handle completion, which has an optional error in case the completion happened due to an error being emitted</p>
 
                       </div>
                       <div class="declaration">
@@ -282,7 +281,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Closure to handle subscription event</p>
 
                       </div>
                       <div class="declaration">
@@ -309,7 +308,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Protocol-witness of a subscriber. Configure the behaviour of this wrapper from a concrete implementation from your favourite reactive
+framework.</p>
 
                       </div>
                       <div class="declaration">
@@ -321,6 +321,49 @@
             <span class="nv">onSubscribe</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/SubscriptionType.html">SubscriptionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onValue</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure to handle new values received</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onCompleted</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure to handle completion, which has an optional error in case the completion happened due to an error being emitted</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onSubscribe</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure to handle subscription event</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -338,7 +381,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Transforms any subscriber into a Unfailable subscriber with the same element type. After calling this method, a subscriber will be derived
+and it won&rsquo;t accept publishers that can fail.</p>
 
                       </div>
                       <div class="declaration">
