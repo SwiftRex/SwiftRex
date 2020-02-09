@@ -2,50 +2,9 @@ xcodebuild_arguments:
   - -project
   - SwiftRex.xcodeproj
   - -scheme
-  - SwiftRex macOS RxSwift
+  - SwiftRex iOS Combine
 author: SwiftRex
 author_url: https://github.com/SwiftRex/SwiftRex
 github_url: https://github.com/SwiftRex/SwiftRex
 module: SwiftRex
 output: docs/api
-
-custom_categories:
-- name: Store (contracts)
-  children:
-  - Store
-  - EventProtocol
-  - EventHandler
-  - StateProvider
-- name: Store (basic implementation)
-  children:
-  - StoreBase
-  - ActionHandler
-- name: Reducer
-  children:
-  - Reducer
-  - ActionProtocol
-- name: Middleware (basics)
-  children:
-  - Middleware
-  - BypassMiddleware
-  - DirectLineMiddleware
-  - ComposedMiddleware
-  - "<>(_:_:)"
-  - SubstateMiddleware
-  - AnyMiddleware
-- name: Side-Effects
-  children:
-  - SideEffectMiddleware
-  - SideEffectProducer
-  - SideEffectError
-  - AnySideEffectProducer
-- name: Composition helpers
-  children:
-  - Monoid
-- name: Closure type-aliases
-  children:
-  - EventEvaluation
-  - GetState
-  - NextActionHandler
-  - NextEventHandler
-  - ReduceFunction
