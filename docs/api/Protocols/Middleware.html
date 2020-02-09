@@ -272,7 +272,7 @@ apps, as long as they share some sub-state struct.</p>
 <p>Middleware protocol is generic over 3 associated types:</p>
 <h4 id='inputactiontype' class='heading'>InputActionType:</h4>
 
-<p>The Action type that this <code>Middleware</code> knowns how to handle, so the store will forward actions of this type to this middleware.
+<p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware.
 Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
 <h4 id='outputactiontype' class='heading'>OutputActionType:</h4>
 
@@ -361,7 +361,7 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The Action type that this <code>Middleware</code> knowns how to handle, so the store will forward actions of this type to this middleware.
+                        <p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware.
 Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
 action of an app. Please check <code><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF">lift(inputActionMap:outputActionMap:stateMap:)</a></code> for more details.</p>
 
