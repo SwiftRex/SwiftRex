@@ -10,11 +10,11 @@ pod 'SwiftLint'
 pod 'Sourcery'
 
 def rxswift
-  pod 'RxSwift', '5.0.0', :inhibit_warnings => true
+  pod 'RxSwift', :inhibit_warnings => true
 end
 
 def reactiveswift
-  pod 'ReactiveSwift', '6.1.0', :inhibit_warnings => true
+  pod 'ReactiveSwift', :inhibit_warnings => true
 end
 
 def tests
@@ -49,8 +49,8 @@ target 'UnitTests RxSwift' do
   platform :ios, ios_version
   rxswift
   tests
-  pod 'RxBlocking', '5.0.0'
-  pod 'RxTest', '5.0.0'
+  pod 'RxBlocking'
+  pod 'RxTest'
 end
 
 #########################

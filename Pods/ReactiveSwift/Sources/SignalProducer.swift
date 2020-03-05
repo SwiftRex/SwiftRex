@@ -310,7 +310,7 @@ private final class SignalCore<Value, Error: Swift.Error>: SignalProducerCore<Va
 /// example, when we do:
 ///
 /// ```
-/// upstream.map(transform).filterMap(filteringTransform).start()
+/// upstream.map(transform).compactMap(filteringTransform).start()
 /// ```
 ///
 /// It is contractually guaranteed that these operators would always end up producing a
@@ -875,7 +875,7 @@ extension SignalProducer {
 	///
 	/// - returns: A producer that will send new values.
 	public func map<U>(_ keyPath: KeyPath<Value, U>) -> SignalProducer<U, Error> {
-		return core.flatMapEvent(Signal.Event.filterMap { $0[keyPath: keyPath] })
+		return core.flatMapEvent(Signal.Event.compactMap { $0[keyPath: keyPath] })
 	}
 
 	/// Map errors in the producer to a new error.
@@ -926,8 +926,19 @@ extension SignalProducer {
 	///                returns a new optional value.
 	///
 	/// - returns: A producer that will send new values, that are non `nil` after the transformation.
+	public func compactMap<U>(_ transform: @escaping (Value) -> U?) -> SignalProducer<U, Error> {
+		return core.flatMapEvent(Signal.Event.compactMap(transform))
+	}
+
+	/// Applies `transform` to values from the producer and forwards values with non `nil` results unwrapped.
+	/// - parameters:
+	///   - transform: A closure that accepts a value from the `value` event and
+	///                returns a new optional value.
+	///
+	/// - returns: A producer that will send new values, that are non `nil` after the transformation.
+	@available(*, deprecated, renamed: "compactMap")
 	public func filterMap<U>(_ transform: @escaping (Value) -> U?) -> SignalProducer<U, Error> {
-		return core.flatMapEvent(Signal.Event.filterMap(transform))
+		return core.flatMapEvent(Signal.Event.compactMap(transform))
 	}
 
 	/// Yield the first `count` values from the input producer.
@@ -2169,31 +2180,23 @@ extension SignalProducer {
 		return start(producers, Signal.zip)
 	}
 
-	private static func start<S: Sequence>(_ producers: S, _ transform: @escaping (ReversedCollection<[Signal<Value, Error>]>) -> Signal<[Value], Error>) -> SignalProducer<[Value], Error> where S.Iterator.Element: SignalProducerConvertible, S.Iterator.Element.Value == Value, S.Iterator.Element.Error == Error {
+	private static func start<S: Sequence>(_ producers: S, _ transform: @escaping (AnySequence<Signal<Value, Error>>) -> Signal<[Value], Error>) -> SignalProducer<[Value], Error> where S.Iterator.Element: SignalProducerConvertible, S.Iterator.Element.Value == Value, S.Iterator.Element.Error == Error
+	{
 		return SignalProducer<[Value], Error> { observer, lifetime in
-			var producers = Array(producers)
-			var signals: [Signal<Value, Error>] = []
-
-			guard !producers.isEmpty else {
+			let setup = producers.map {
+				(producer: $0.producer, pipe: Signal<Value, Error>.pipe())
+			}
+			
+			guard !setup.isEmpty else {
 				observer.sendCompleted()
 				return
 			}
 
-			func start() {
-				guard !producers.isEmpty else {
-					transform(signals.reversed()).observe(observer)
-					return
-				}
-
-				producers.removeLast().producer.startWithSignal { signal, interruptHandle in
-					lifetime += interruptHandle
-					signals.append(signal)
-
-					start()
-				}
+			lifetime += transform(AnySequence(setup.lazy.map { $0.pipe.output })).observe(observer)
+			
+			for (producer, pipe) in setup {
+				lifetime += producer.start(pipe.input)
 			}
-
-			start()
 		}
 	}
 }

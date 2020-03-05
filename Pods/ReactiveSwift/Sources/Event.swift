@@ -229,7 +229,7 @@ extension Signal.Event {
 		}
 	}
 
-	internal static func filterMap<U>(_ transform: @escaping (Value) -> U?) -> Transformation<U, Error> {
+	internal static func compactMap<U>(_ transform: @escaping (Value) -> U?) -> Transformation<U, Error> {
 		return { action, _ in
 			return { event in
 				switch event {
@@ -527,7 +527,7 @@ extension Signal.Event where Value: ResultProtocol, Error == Never {
 
 extension Signal.Event where Value: OptionalProtocol {
 	internal static var skipNil: Transformation<Value.Wrapped, Error> {
-		return filterMap { $0.optional }
+		return compactMap { $0.optional }
 	}
 }
 
@@ -870,9 +870,8 @@ extension Signal.Event {
 	internal static func debounce(_ interval: TimeInterval, on scheduler: DateScheduler, discardWhenCompleted: Bool) -> Transformation<Value, Error> {
 		precondition(interval >= 0)
 		
-		let state: Atomic<ThrottleState<Value>> = Atomic(ThrottleState(previousDate: scheduler.currentDate, pendingValue: nil))
-
 		return { action, lifetime in
+			let state: Atomic<ThrottleState<Value>> = Atomic(ThrottleState(previousDate: scheduler.currentDate, pendingValue: nil))
 			let d = SerialDisposable()
 
 			lifetime.observeEnded {
