@@ -30,8 +30,7 @@ extension ObservableType {
 
 extension PublisherType {
     public static func lift<FromElement>(_ transform: @escaping (FromElement) -> Element) -> (PublisherType<FromElement, Error>)
-    -> PublisherType<Element, Error> {
-        return { originalPublisher in
+    -> PublisherType<Element, Error> { { originalPublisher in
             originalPublisher.map(transform).asPublisherType()
         }
     }

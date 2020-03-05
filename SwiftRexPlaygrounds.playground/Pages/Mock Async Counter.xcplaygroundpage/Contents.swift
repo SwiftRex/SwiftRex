@@ -69,7 +69,7 @@ final class CounterService: SideEffectProducer {
         let reason: String
 
         var debugDescription: String {
-            return reason
+            reason
         }
     }
 
@@ -121,7 +121,7 @@ final class CounterMiddleware: SideEffectMiddleware {
     var subscriptionOwner = DisposeBag()
 
     func sideEffect(for event: EventProtocol) -> AnySideEffectProducer<GlobalState>? {
-        return (event as? CounterEvent)
+        (event as? CounterEvent)
             .map(CounterService.init)
             .map(AnySideEffectProducer.init)
     }
@@ -210,7 +210,7 @@ struct CounterViewModel: CustomDebugStringConvertible {
     }
 
     var debugDescription: String {
-        return "\(emoji)\t| \(title): \(details)"
+        "\(emoji)\t| \(title): \(details)"
     }
 }
 
@@ -315,34 +315,33 @@ taps
 // Useful extensions
 extension ObservableType {
     public func unwrap<T>() -> Observable<T> where E == T? {
-        return self.filter { $0 != nil }.map { $0! }
+        self.filter { $0 != nil }.map { $0! }
     }
 
     public subscript<T>(_ keyPath: KeyPath<E, T>) -> Observable<T> {
-        return self.map { $0[keyPath: keyPath] }
+        self.map { $0[keyPath: keyPath] }
     }
 
     public func map<T>(_ keyPath: KeyPath<E, T>) -> Observable<T> {
-        return self.map { $0[keyPath: keyPath] }
+        self.map { $0[keyPath: keyPath] }
     }
 
     public func mapTo<T>(_ value: T) -> Observable<T> {
-        return self.map { _ in value }
+        self.map { _ in value }
     }
 
     public func distinctUntilChanged<T>(_ keyPath: KeyPath<E, T>) -> Observable<E> where T: Equatable {
-        return self.distinctUntilChanged { $0[keyPath: keyPath] == $1[keyPath: keyPath] }
+        self.distinctUntilChanged { $0[keyPath: keyPath] == $1[keyPath: keyPath] }
     }
 }
 
 extension Collection where Element: ObservableConvertibleType {
     func concat() -> Observable<Element.E> {
-        return Observable<Element.E>.concat(self.map { $0.asObservable() })
+        Observable<Element.E>.concat(self.map { $0.asObservable() })
     }
 }
 
-func delay<T>(_ time: Double) -> (Observable<T>) -> Observable<T> {
-    return { observable in
+func delay<T>(_ time: Double) -> (Observable<T>) -> Observable<T> { { observable in
         observable.asObservable().delay(RxTimeInterval(time), scheduler: MainScheduler.instance)
     }
 }

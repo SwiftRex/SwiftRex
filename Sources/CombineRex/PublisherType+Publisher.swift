@@ -28,8 +28,7 @@ extension Publisher {
 @available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
 extension PublisherType {
     public static func lift<FromOutput>(_ transform: @escaping (FromOutput) -> Output) -> (PublisherType<FromOutput, Failure>)
-    -> PublisherType<Output, Failure> {
-        return { originalPublisher in
+    -> PublisherType<Output, Failure> { { originalPublisher in
             originalPublisher.map(transform).asPublisherType()
         }
     }

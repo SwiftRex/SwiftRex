@@ -34,8 +34,7 @@ extension SignalProducerProtocol {
 
 extension PublisherType {
     public static func lift<FromValue>(_ transform: @escaping (FromValue) -> Value) -> (PublisherType<FromValue, Error>)
-    -> PublisherType<Value, Error> {
-        return { originalPublisher in
+    -> PublisherType<Value, Error> { { originalPublisher in
             originalPublisher.producer.map(transform).asPublisherType()
         }
     }

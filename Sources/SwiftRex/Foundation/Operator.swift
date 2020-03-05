@@ -1,4 +1,4 @@
-/**
+/*
  Monoidal composition precedence group
  - left associativity
  - BitwiseShiftPrecedence > MonoidAppend > MultiplicationPrecedence
@@ -9,7 +9,7 @@ precedencegroup MonoidAppend {
     lowerThan: BitwiseShiftPrecedence
 }
 
-/**
+/*
  Monoidal composition operator (aka Diamond operator, single type compose operator)
  <>
 

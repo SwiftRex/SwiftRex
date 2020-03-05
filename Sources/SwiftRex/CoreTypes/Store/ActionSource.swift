@@ -36,6 +36,6 @@ public struct ActionSource: Codable, Equatable {
 
 extension ActionSource {
     public static func here(file: String = #file, function: String = #function, line: UInt = #line, info: String? = nil) -> ActionSource {
-        return .init(file: file, function: function, line: line, info: info)
+        .init(file: file, function: function, line: line, info: info)
     }
 }

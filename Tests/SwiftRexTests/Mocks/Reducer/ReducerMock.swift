@@ -15,7 +15,7 @@ class ReducerMock<ActionType, StateType> {
 
     var reduceCallsCount = 0
     var reduceCalled: Bool {
-        return reduceCallsCount > 0
+        reduceCallsCount > 0
     }
     var reduceReceivedArguments: (action: ActionType, currentState: StateType)?
     var reduceReturnValue: StateType!
