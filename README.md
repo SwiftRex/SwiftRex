@@ -664,11 +664,20 @@ import PackageDescription
 
 let package = Package(
   name: "MyApp",
+  platforms: [
+    .macOS(SupportedPlatform.MacOSVersion.v10_15),
+    .iOS(SupportedPlatform.IOSVersion.v13),
+    .tvOS(SupportedPlatform.TVOSVersion.v13),
+    .watchOS(SupportedPlatform.WatchOSVersion.v6)
+  ],
+  products: [
+    .executable(name: "MyApp", targets: ["MyApp"])
+  ],
   dependencies: [
     .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.0")
   ],
   targets: [
-    .target(name: "MyApp", dependencies: ["CombineRex"])
+    .target(name: "MyApp", dependencies: [.product(name: "CombineRex", package: "SwiftRex")])
   ]
 )
 ```
