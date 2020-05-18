@@ -10,7 +10,8 @@ let package = Package(
         .watchOS(SupportedPlatform.WatchOSVersion.v6)
     ],
     products: [
-        .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"])
+        .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"]),
+        .library(name: "CombineRexDynamic", type: .dynamic, targets: ["SwiftRex", "CombineRex"])
     ],
     dependencies: [ ],
     targets: [
