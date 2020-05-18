@@ -656,7 +656,12 @@ $ xed .
 ## Swift Package Manager
 
 Create or modify the Package.swift at the root folder of your project. Currently, only Combine is supported by this method.
+You can use the automatic linking mode (static/dynamic), or use the project `CombineRexDynamic` to force dynamic linking and
+overcome current Xcode limitations to resolve diamond dependency issues.
 
+If you use it from only one target, automatic mode should be fine.
+
+Automatic linking mode:
 ```swift
 // swift-tools-version:5.1
 
@@ -664,20 +669,36 @@ import PackageDescription
 
 let package = Package(
   name: "MyApp",
-  platforms: [
-    .macOS(SupportedPlatform.MacOSVersion.v10_15),
-    .iOS(SupportedPlatform.IOSVersion.v13),
-    .tvOS(SupportedPlatform.TVOSVersion.v13),
-    .watchOS(SupportedPlatform.WatchOSVersion.v6)
-  ],
+  platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
   products: [
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.0")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.1")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRex", package: "SwiftRex")])
+  ]
+)
+```
+
+Dynamic linking mode:
+```swift
+// swift-tools-version:5.1
+
+import PackageDescription
+
+let package = Package(
+  name: "MyApp",
+  platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
+  products: [
+    .executable(name: "MyApp", targets: ["MyApp"])
+  ],
+  dependencies: [
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.1")
+  ],
+  targets: [
+    .target(name: "MyApp", dependencies: [.product(name: "CombineRexDynamic", package: "SwiftRex")])
   ]
 )
 ```
