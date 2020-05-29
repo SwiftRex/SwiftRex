@@ -135,8 +135,8 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriptionType+Cancellable.swift",
-      "line": 52,
-      "symbol": "Array.store(subscription:)",
+      "line": 53,
+      "symbol": "Set.store(subscription:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     }

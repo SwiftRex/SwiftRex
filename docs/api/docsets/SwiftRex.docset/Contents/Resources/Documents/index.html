@@ -13,7 +13,7 @@
     <a title="SwiftRex  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex Docs</a> (80% documented)</p>
+        <p><a href="index.html">SwiftRex 0.7.2 Docs</a> (82% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -63,9 +63,6 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Extensions/Collection.html">Collection</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Extensions/DispatchQueue.html">DispatchQueue</a>
               </li>
             </ul>
           </li>
@@ -819,7 +816,6 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
 <span class="n">use_frameworks!</span>
 
 <span class="n">target</span> <span class="s1">'MyAppTarget'</span> <span class="k">do</span>
-  <span class="n">pod</span> <span class="s1">'SwiftRex'</span>      <span class="c1"># optional line</span>
   <span class="n">pod</span> <span class="s1">'CombineRex'</span>
 <span class="k">end</span>
 </code></pre>
@@ -830,8 +826,6 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
 <span class="n">use_frameworks!</span>
 
 <span class="n">target</span> <span class="s1">'MyAppTarget'</span> <span class="k">do</span>
-  <span class="n">pod</span> <span class="s1">'RxSwift'</span>       <span class="c1"># optional line</span>
-  <span class="n">pod</span> <span class="s1">'SwiftRex'</span>      <span class="c1"># optional line</span>
   <span class="n">pod</span> <span class="s1">'RxSwiftRex'</span>
 <span class="k">end</span>
 </code></pre>
@@ -842,8 +836,6 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
 <span class="n">use_frameworks!</span>
 
 <span class="n">target</span> <span class="s1">'MyAppTarget'</span> <span class="k">do</span>
-  <span class="n">pod</span> <span class="s1">'ReactiveSwift'</span> <span class="c1"># optional line</span>
-  <span class="n">pod</span> <span class="s1">'SwiftRex'</span>      <span class="c1"># optional line</span>
   <span class="n">pod</span> <span class="s1">'ReactiveSwiftRex'</span>
 <span class="k">end</span>
 </code></pre>
@@ -856,18 +848,88 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
 </code></pre>
 <h2 id='swift-package-manager' class='heading'>Swift Package Manager</h2>
 
-<p>Create or modify the Package.swift at the root folder of your project. Currently, only Combine is supported by this method.</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.1</span>
+<p>Create or modify the Package.swift at the root folder of your project.
+You can use the automatic linking mode (static/dynamic), or use the project with suffix Dynamic to force
+dynamic linking and overcome current Xcode limitations to resolve diamond dependency issues.</p>
+
+<p>If you use it from only one target, automatic mode should be fine.</p>
+
+<p>Combine, automatic linking mode:</p>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
 <span class="k">let</span> <span class="nv">package</span> <span class="o">=</span> <span class="kt">Package</span><span class="p">(</span>
   <span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span>
+  <span class="nv">platforms</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">macOS</span><span class="p">(</span><span class="o">.</span><span class="n">v10_15</span><span class="p">),</span> <span class="o">.</span><span class="nf">iOS</span><span class="p">(</span><span class="o">.</span><span class="n">v13</span><span class="p">),</span> <span class="o">.</span><span class="nf">tvOS</span><span class="p">(</span><span class="o">.</span><span class="n">v13</span><span class="p">),</span> <span class="o">.</span><span class="nf">watchOS</span><span class="p">(</span><span class="o">.</span><span class="n">v6</span><span class="p">)],</span>
+  <span class="nv">products</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
+  <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.0"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="s">"CombineRex"</span><span class="p">])</span>
+    <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
+  <span class="p">]</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>RxSwift, automatic linking mode:</p>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
+
+<span class="kd">import</span> <span class="kt">PackageDescription</span>
+
+<span class="k">let</span> <span class="nv">package</span> <span class="o">=</span> <span class="kt">Package</span><span class="p">(</span>
+  <span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span>
+  <span class="nv">platforms</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">macOS</span><span class="p">(</span><span class="o">.</span><span class="n">v10_10</span><span class="p">),</span> <span class="o">.</span><span class="nf">iOS</span><span class="p">(</span><span class="o">.</span><span class="n">v8</span><span class="p">),</span> <span class="o">.</span><span class="nf">tvOS</span><span class="p">(</span><span class="o">.</span><span class="n">v9</span><span class="p">),</span> <span class="o">.</span><span class="nf">watchOS</span><span class="p">(</span><span class="o">.</span><span class="n">v3</span><span class="p">)],</span>
+  <span class="nv">products</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
+  <span class="p">],</span>
+  <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
+  <span class="p">],</span>
+  <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"RxSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
+  <span class="p">]</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>ReactiveSwift, automatic linking mode:</p>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
+
+<span class="kd">import</span> <span class="kt">PackageDescription</span>
+
+<span class="k">let</span> <span class="nv">package</span> <span class="o">=</span> <span class="kt">Package</span><span class="p">(</span>
+  <span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span>
+  <span class="nv">platforms</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">macOS</span><span class="p">(</span><span class="o">.</span><span class="n">v10_10</span><span class="p">),</span> <span class="o">.</span><span class="nf">iOS</span><span class="p">(</span><span class="o">.</span><span class="n">v8</span><span class="p">),</span> <span class="o">.</span><span class="nf">tvOS</span><span class="p">(</span><span class="o">.</span><span class="n">v9</span><span class="p">),</span> <span class="o">.</span><span class="nf">watchOS</span><span class="p">(</span><span class="o">.</span><span class="n">v3</span><span class="p">)],</span>
+  <span class="nv">products</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
+  <span class="p">],</span>
+  <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
+  <span class="p">],</span>
+  <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"ReactiveSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
+  <span class="p">]</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Combine, dynamic linking mode (use similar approach of appending &ldquo;Dynamic&rdquo; also for RxSwift or ReactiveSwift products):</p>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
+
+<span class="kd">import</span> <span class="kt">PackageDescription</span>
+
+<span class="k">let</span> <span class="nv">package</span> <span class="o">=</span> <span class="kt">Package</span><span class="p">(</span>
+  <span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span>
+  <span class="nv">platforms</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">macOS</span><span class="p">(</span><span class="o">.</span><span class="n">v10_15</span><span class="p">),</span> <span class="o">.</span><span class="nf">iOS</span><span class="p">(</span><span class="o">.</span><span class="n">v13</span><span class="p">),</span> <span class="o">.</span><span class="nf">tvOS</span><span class="p">(</span><span class="o">.</span><span class="n">v13</span><span class="p">),</span> <span class="o">.</span><span class="nf">watchOS</span><span class="p">(</span><span class="o">.</span><span class="n">v6</span><span class="p">)],</span>
+  <span class="nv">products</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
+  <span class="p">],</span>
+  <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
+  <span class="p">],</span>
+  <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRexDynamic"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
   <span class="p">]</span>
 <span class="p">)</span>
 </code></pre>
@@ -878,23 +940,17 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
 </code></pre>
 <h2 id='carthage' class='heading'>Carthage</h2>
 
-<p>Carthage is currently not our recommended way of using SwiftRex and its support can be dropped future versions. If this is critical for you or your company, please contact us and we will take this into account.</p>
+<p>Carthage is no longer supported due to lack of interest and high maintenance effort.</p>
 
-<p>Add this to your Cartfile:</p>
-<pre class="highlight ruby"><code><span class="n">github</span> <span class="s2">"SwiftRex/SwiftRex"</span> <span class="o">~&gt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">7</span><span class="o">.</span><span class="mi">0</span>
-</code></pre>
-
-<p>Run</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>carthage update
-</code></pre>
-
-<p>Then follow the instructions from <a href="https://github.com/Carthage/Carthage#getting-started">Carthage README</a>.</p>
+<p>In case this is REALLY critical for you, please open a Github issue and let us know, we will evaluate
+the possibility to bring it back. In meantime you can check last  Carthage compatible version, which
+was 0.7.1, and eventually target that version until we come up with a better solution.</p>
 
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

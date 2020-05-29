@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Classes  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Section/Classes" class="dashAnchor"></a>
+    <a title="Classes  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">RxSwift 0.7.2 Docs</a> (95% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">RxSwift Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Classes  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/AsyncSubject.html">AsyncSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/BehaviorSubject.html">BehaviorSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/BooleanDisposable.html">BooleanDisposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/CompositeDisposable.html">CompositeDisposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/CompositeDisposable.html#/s:7RxSwift19CompositeDisposableC10DisposeKeyV">– DisposeKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ConcurrentDispatchQueueScheduler.html">ConcurrentDispatchQueueScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ConcurrentMainScheduler.html">ConcurrentMainScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ConnectableObservable.html">ConnectableObservable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/CurrentThreadScheduler.html">CurrentThreadScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DisposeBag.html">DisposeBag</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/HistoricalScheduler.html">HistoricalScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/MainScheduler.html">MainScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Observable.html">Observable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/OperationQueueScheduler.html">OperationQueueScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/PublishSubject.html">PublishSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RefCountDisposable.html">RefCountDisposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ReplaySubject.html">ReplaySubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ScheduledDisposable.html">ScheduledDisposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SerialDispatchQueueScheduler.html">SerialDispatchQueueScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SerialDisposable.html">SerialDisposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SingleAssignmentDisposable.html">SingleAssignmentDisposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Variable.html">Variable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/VirtualTimeScheduler.html">VirtualTimeScheduler</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Global%20Variables.html">Global Variables</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Global%20Variables.html#/s:7RxSwift29maxTailRecursiveSinkStackSizeSivp">maxTailRecursiveSinkStackSize</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/CompletableEvent.html">CompletableEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums.html#/s:7RxSwift16CompletableTraitO">CompletableTrait</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/Event.html">Event</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/Hooks.html">Hooks</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/MaybeEvent.html">MaybeEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RxError.html">RxError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/SingleEvent.html">SingleEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/SubjectLifetimeScope.html">SubjectLifetimeScope</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/TakeUntilBehavior.html">TakeUntilBehavior</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/VirtualTimeComparison.html">VirtualTimeComparison</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Completable.html">Completable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions.html#/c:objc(cs)NSObject">NSObject</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/Cancelable.html">Cancelable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/ConnectableObservableType.html">ConnectableObservableType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/Disposable.html">Disposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/EventConvertible.html">EventConvertible</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/ObservableType.html">ObservableType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/ObserverType.html">ObserverType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/PrimitiveSequenceType.html">PrimitiveSequenceType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/ReactiveCompatible.html">ReactiveCompatible</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SchedulerType.html">SchedulerType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SubjectType.html">SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/VirtualTimeConverterType.html">VirtualTimeConverterType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/AnyObserver.html">AnyObserver</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/Disposables.html">Disposables</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/GroupedObservable.html">GroupedObservable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/HistoricalSchedulerTimeConverter.html">HistoricalSchedulerTimeConverter</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/PrimitiveSequence.html">PrimitiveSequence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/Reactive.html">Reactive</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/Resources.html">Resources</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:7RxSwift11Completablea">Completable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:7RxSwift5Maybea">Maybe</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:7RxSwift0A4Timea">RxTime</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:7RxSwift0A12TimeIntervala">RxTimeInterval</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:7RxSwift6Singlea">Single</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Classes</h1>
+            <p>The following classes are available globally.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift12AsyncSubjectC"></a>
+                    <a name="//apple_ref/swift/Class/AsyncSubject" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift12AsyncSubjectC">AsyncSubject</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>An AsyncSubject emits the last value (and only the last value) emitted by the source Observable,
+and only after that source Observable completes.</p>
+
+<p>(If the source Observable does not emit any values, the AsyncSubject also completes without emitting any values.)</p>
+
+                        <a href="Classes/AsyncSubject.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">AsyncSubject</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">:</span> <span class="kt"><a href="Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/SubjectType.html">SubjectType</a></span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/ObserverType.html">ObserverType</a></span>
+    <span class="p">,</span> <span class="kt">SynchronizedUnsubscribeType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift15BehaviorSubjectC"></a>
+                    <a name="//apple_ref/swift/Class/BehaviorSubject" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift15BehaviorSubjectC">BehaviorSubject</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents a value that changes over time.</p>
+
+<p>Observers can subscribe to the subject to receive the last (or initial) value and all subsequent notifications.</p>
+
+                        <a href="Classes/BehaviorSubject.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">BehaviorSubject</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">:</span> <span class="kt"><a href="Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/SubjectType.html">SubjectType</a></span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/ObserverType.html">ObserverType</a></span>
+    <span class="p">,</span> <span class="kt">SynchronizedUnsubscribeType</span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift17BooleanDisposableC"></a>
+                    <a name="//apple_ref/swift/Class/BooleanDisposable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift17BooleanDisposableC">BooleanDisposable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents a disposable resource that can be checked for disposal status.</p>
+
+                        <a href="Classes/BooleanDisposable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">BooleanDisposable</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift19CompositeDisposableC"></a>
+                    <a name="//apple_ref/swift/Class/CompositeDisposable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift19CompositeDisposableC">CompositeDisposable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents a group of disposable resources that are disposed together.</p>
+
+                        <a href="Classes/CompositeDisposable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">CompositeDisposable</span> <span class="p">:</span> <span class="kt"><a href="Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift32ConcurrentDispatchQueueSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/ConcurrentDispatchQueueScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift32ConcurrentDispatchQueueSchedulerC">ConcurrentDispatchQueueScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Abstracts the work that needs to be performed on a specific <code>dispatch_queue_t</code>. You can also pass a serial dispatch queue, it shouldn&rsquo;t cause any problems.</p>
+
+<p>This scheduler is suitable when some work needs to be performed in background.</p>
+
+                        <a href="Classes/ConcurrentDispatchQueueScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConcurrentDispatchQueueScheduler</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SchedulerType.html">SchedulerType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift23ConcurrentMainSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/ConcurrentMainScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift23ConcurrentMainSchedulerC">ConcurrentMainScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Abstracts work that needs to be performed on <code>MainThread</code>. In case <code>schedule</code> methods are called from main thread, it will perform action immediately without scheduling.</p>
+
+<p>This scheduler is optimized for <code>subscribeOn</code> operator. If you want to observe observable sequence elements on main thread using <code>observeOn</code> operator,
+<code><a href="Classes/MainScheduler.html">MainScheduler</a></code> is more suitable for that purpose.</p>
+
+                        <a href="Classes/ConcurrentMainScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ConcurrentMainScheduler</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SchedulerType.html">SchedulerType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift22CurrentThreadSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/CurrentThreadScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift22CurrentThreadSchedulerC">CurrentThreadScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents an object that schedules units of work on the current thread.</p>
+
+<p>This is the default scheduler for operators that generate elements.</p>
+
+<p>This scheduler is also sometimes called <code>trampoline scheduler</code>.</p>
+
+                        <a href="Classes/CurrentThreadScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">CurrentThreadScheduler</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift10ObservableC"></a>
+                    <a name="//apple_ref/swift/Class/Observable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift10ObservableC">Observable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A type-erased <code><a href="Protocols/ObservableType.html">ObservableType</a></code>. </p>
+
+<p>It represents a push style sequence.</p>
+
+                        <a href="Classes/Observable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ObservableType.html">ObservableType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift8VariableC"></a>
+                    <a name="//apple_ref/swift/Class/Variable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift8VariableC">Variable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Variable is a wrapper for <code><a href="Classes/BehaviorSubject.html">BehaviorSubject</a></code>.</p>
+
+<p>Unlike <code><a href="Classes/BehaviorSubject.html">BehaviorSubject</a></code> it can&rsquo;t terminate with error, and when variable is deallocated
+it will complete its observable sequence (<code>asObservable</code>).</p>
+
+<p><strong>This concept will be deprecated from RxSwift but offical migration path hasn&rsquo;t been decided yet.</strong>
+<a href="https://github.com/ReactiveX/RxSwift/issues/1501">https://github.com/ReactiveX/RxSwift/issues/1501</a></p>
+
+<p>Current recommended replacement for this API is <code>RxCocoa.BehaviorRelay</code> because:</p>
+
+<ul>
+<li><code>Variable</code> isn&rsquo;t a standard cross platform concept, hence it&rsquo;s out of place in RxSwift target.</li>
+<li>It doesn&rsquo;t have a counterpart for handling events (<code>PublishRelay</code>). It models state only.</li>
+<li>It doesn&rsquo;t have a consistent naming with *Relay or other Rx concepts.</li>
+<li>It has an inconsistent memory management model compared to other parts of RxSwift (completes on <code>deinit</code>).</li>
+</ul>
+
+<p>Once plans are finalized, official availability attribute will be added in one of upcoming versions.</p>
+
+                        <a href="Classes/Variable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, message: "Variable is deprecated. Please use `BehaviorRelay` as a replacement.")</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">Variable</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift10DisposeBagC"></a>
+                    <a name="//apple_ref/swift/Class/DisposeBag" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift10DisposeBagC">DisposeBag</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Thread safe bag that disposes added disposables on <code>deinit</code>.</p>
+
+<p>This returns ARC (RAII) like resource management to <code>RxSwift</code>.</p>
+
+<p>In case contained disposables need to be disposed, just put a different dispose bag
+or create a new one in its place.</p>
+<pre class="highlight swift"><code><span class="k">self</span><span class="o">.</span><span class="n">existingDisposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+</code></pre>
+
+<p>In case explicit disposal is necessary, there is also <code><a href="Classes/CompositeDisposable.html">CompositeDisposable</a></code>.</p>
+
+                        <a href="Classes/DisposeBag.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">DisposeBag</span> <span class="p">:</span> <span class="kt"><a href="Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift11DisposeBaseC"></a>
+                    <a name="//apple_ref/swift/Class/DisposeBase" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift11DisposeBaseC">DisposeBase</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Base class for all disposables.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DisposeBase</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift19HistoricalSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/HistoricalScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift19HistoricalSchedulerC">HistoricalScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Provides a virtual time scheduler that uses <code>Date</code> for absolute time and <code>NSTimeInterval</code> for relative time.</p>
+
+                        <a href="Classes/HistoricalScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">HistoricalScheduler</span> <span class="p">:</span> <span class="kt"><a href="Classes/VirtualTimeScheduler.html">VirtualTimeScheduler</a></span><span class="o">&lt;</span><span class="kt"><a href="Structs/HistoricalSchedulerTimeConverter.html">HistoricalSchedulerTimeConverter</a></span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift13MainSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/MainScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift13MainSchedulerC">MainScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Abstracts work that needs to be performed on <code>DispatchQueue.main</code>. In case <code>schedule</code> methods are called from <code>DispatchQueue.main</code>, it will perform action immediately without scheduling.</p>
+
+<p>This scheduler is usually used to perform UI work.</p>
+
+<p>Main scheduler is a specialization of <code><a href="Classes/SerialDispatchQueueScheduler.html">SerialDispatchQueueScheduler</a></code>.</p>
+
+<p>This scheduler is optimized for <code>observeOn</code> operator. To ensure observable sequence is subscribed on main thread using <code>subscribeOn</code>
+operator please use <code><a href="Classes/ConcurrentMainScheduler.html">ConcurrentMainScheduler</a></code> because it is more optimized for that purpose.</p>
+
+                        <a href="Classes/MainScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">MainScheduler</span> <span class="p">:</span> <span class="kt"><a href="Classes/SerialDispatchQueueScheduler.html">SerialDispatchQueueScheduler</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift21ConnectableObservableC"></a>
+                    <a name="//apple_ref/swift/Class/ConnectableObservable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift21ConnectableObservableC">ConnectableObservable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents an observable wrapper that can be connected and disconnected from its underlying observable sequence.</p>
+
+                        <a href="Classes/ConnectableObservable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConnectableObservable</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">:</span> <span class="kt"><a href="Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/ConnectableObservableType.html">ConnectableObservableType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift23OperationQueueSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/OperationQueueScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift23OperationQueueSchedulerC">OperationQueueScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Abstracts the work that needs to be performed on a specific <code>NSOperationQueue</code>.</p>
+
+<p>This scheduler is suitable for cases when there is some bigger chunk of work that needs to be performed in background and you want to fine tune concurrent processing using <code>maxConcurrentOperationCount</code>.</p>
+
+                        <a href="Classes/OperationQueueScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">OperationQueueScheduler</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14PublishSubjectC"></a>
+                    <a name="//apple_ref/swift/Class/PublishSubject" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14PublishSubjectC">PublishSubject</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents an object that is both an observable sequence as well as an observer.</p>
+
+<p>Each notification is broadcasted to all subscribed observers.</p>
+
+                        <a href="Classes/PublishSubject.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">:</span> <span class="kt"><a href="Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/SubjectType.html">SubjectType</a></span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/ObserverType.html">ObserverType</a></span>
+    <span class="p">,</span> <span class="kt">SynchronizedUnsubscribeType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift18RefCountDisposableC"></a>
+                    <a name="//apple_ref/swift/Class/RefCountDisposable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift18RefCountDisposableC">RefCountDisposable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents a disposable resource that only disposes its underlying disposable resource when all dependent disposable objects have been disposed.</p>
+
+                        <a href="Classes/RefCountDisposable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">RefCountDisposable</span> <span class="p">:</span> <span class="kt"><a href="Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift13ReplaySubjectC"></a>
+                    <a name="//apple_ref/swift/Class/ReplaySubject" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift13ReplaySubjectC">ReplaySubject</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents an object that is both an observable sequence as well as an observer.</p>
+
+<p>Each notification is broadcasted to all subscribed and future observers, subject to buffer trimming policies.</p>
+
+                        <a href="Classes/ReplaySubject.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ReplaySubject</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">:</span> <span class="kt"><a href="Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/SubjectType.html">SubjectType</a></span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/ObserverType.html">ObserverType</a></span>
+    <span class="p">,</span> <span class="kt"><a href="Protocols/Disposable.html">Disposable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift19ScheduledDisposableC"></a>
+                    <a name="//apple_ref/swift/Class/ScheduledDisposable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift19ScheduledDisposableC">ScheduledDisposable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents a disposable resource whose disposal invocation will be scheduled on the specified scheduler.</p>
+
+                        <a href="Classes/ScheduledDisposable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ScheduledDisposable</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift28SerialDispatchQueueSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/SerialDispatchQueueScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift28SerialDispatchQueueSchedulerC">SerialDispatchQueueScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Abstracts the work that needs to be performed on a specific <code>dispatch_queue_t</code>. It will make sure 
+that even if concurrent dispatch queue is passed, it&rsquo;s transformed into a serial one.</p>
+
+<p>It is extremely important that this scheduler is serial, because
+certain operator perform optimizations that rely on that property.</p>
+
+<p>Because there is no way of detecting is passed dispatch queue serial or
+concurrent, for every queue that is being passed, worst case (concurrent)
+will be assumed, and internal serial proxy dispatch queue will be created.</p>
+
+<p>This scheduler can also be used with internal serial queue alone.</p>
+
+<p>In case some customization need to be made on it before usage,
+internal serial queue can be customized using <code>serialQueueConfiguration</code>
+callback.</p>
+
+                        <a href="Classes/SerialDispatchQueueScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">SerialDispatchQueueScheduler</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SchedulerType.html">SchedulerType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift16SerialDisposableC"></a>
+                    <a name="//apple_ref/swift/Class/SerialDisposable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift16SerialDisposableC">SerialDisposable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents a disposable resource whose underlying disposable resource can be replaced by another disposable resource, causing automatic disposal of the previous underlying disposable resource.</p>
+
+                        <a href="Classes/SerialDisposable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">SerialDisposable</span> <span class="p">:</span> <span class="kt"><a href="Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift26SingleAssignmentDisposableC"></a>
+                    <a name="//apple_ref/swift/Class/SingleAssignmentDisposable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift26SingleAssignmentDisposableC">SingleAssignmentDisposable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Represents a disposable resource which only allows a single assignment of its underlying disposable resource.</p>
+
+<p>If an underlying disposable resource has already been set, future attempts to set the underlying disposable resource will throw an exception.</p>
+
+                        <a href="Classes/SingleAssignmentDisposable.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">SingleAssignmentDisposable</span> <span class="p">:</span> <span class="kt"><a href="Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/Cancelable.html">Cancelable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift20VirtualTimeSchedulerC"></a>
+                    <a name="//apple_ref/swift/Class/VirtualTimeScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift20VirtualTimeSchedulerC">VirtualTimeScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Base class for virtual time schedulers using a priority queue for scheduled items.</p>
+
+                        <a href="Classes/VirtualTimeScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">VirtualTimeScheduler</span><span class="o">&lt;</span><span class="kt">Converter</span><span class="p">:</span> <span class="kt"><a href="Protocols/VirtualTimeConverterType.html">VirtualTimeConverterType</a></span><span class="o">&gt;</span>
+    <span class="p">:</span> <span class="kt"><a href="Protocols/SchedulerType.html">SchedulerType</a></span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">VirtualTimeScheduler</span><span class="p">:</span> <span class="kt">CustomDebugStringConvertible</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

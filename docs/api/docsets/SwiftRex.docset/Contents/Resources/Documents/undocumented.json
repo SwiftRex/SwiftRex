@@ -183,27 +183,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/DispatchQueue.swift",
-      "line": 7,
-      "symbol": "DispatchQueue.isMainQueue",
-      "symbol_kind": "source.lang.swift.decl.var.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/DispatchQueue.swift",
-      "line": 15,
-      "symbol": "DispatchQueue.setMainQueueID()",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/DispatchQueue.swift",
-      "line": 19,
-      "symbol": "DispatchQueue.asap(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
       "line": 51,
       "symbol": "PublisherType.subscribe",
@@ -221,6 +200,13 @@
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ReactiveWrappers.swift",
       "line": 125,
       "symbol": "SubscriptionCollection.store(subscription:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Middlewares/LiftMiddleware.swift",
+      "line": 21,
+      "symbol": "LiftMiddleware.init(middleware:inputActionMap:outputActionMap:stateMap:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     }

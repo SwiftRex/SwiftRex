@@ -14,7 +14,7 @@
     <a title="Middleware Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex Docs</a> (80% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.7.2 Docs</a> (82% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -64,9 +64,6 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Extensions/Collection.html">Collection</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Extensions/DispatchQueue.html">DispatchQueue</a>
               </li>
             </ul>
           </li>
@@ -444,7 +441,7 @@ of an app. Please check <code><a href="../Protocols/Middleware.html#/s:8SwiftRex
                     <code>
                     <a name="/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF"></a>
                     <a name="//apple_ref/swift/Method/receiveContext(getState:output:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF">receiveContext(getState:output:)</a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF">receiveContext(getState:<wbr>output:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -507,7 +504,7 @@ unwrapped versions of <code>getState</code> and <code>output</code> as propertie
                     <code>
                     <a name="/s:8SwiftRex10MiddlewareP6handle6action4from12afterReducery15InputActionTypeQz_AA0J6SourceVAA05AfterH0VztF"></a>
                     <a name="//apple_ref/swift/Method/handle(action:from:afterReducer:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handle6action4from12afterReducery15InputActionTypeQz_AA0J6SourceVAA05AfterH0VztF">handle(action:from:afterReducer:)</a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handle6action4from12afterReducery15InputActionTypeQz_AA0J6SourceVAA05AfterH0VztF">handle(action:<wbr>from:<wbr>afterReducer:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -613,7 +610,7 @@ Setting the <code>afterReducer</code> in/out parameter is optional, if you don&r
                     <code>
                     <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF"></a>
                     <a name="//apple_ref/swift/Method/lift(inputActionMap:outputActionMap:stateMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF">lift(inputActionMap:outputActionMap:stateMap:)</a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF">lift(inputActionMap:<wbr>outputActionMap:<wbr>stateMap:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -624,7 +621,9 @@ Setting the <code>afterReducer</code> in/out parameter is optional, if you don&r
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A lenses method. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state.
+                        <p>A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
+other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that
+is a sub-state.
 So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
 <pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
    <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
@@ -632,7 +631,9 @@ So for example you may want to have a <code>GPSMiddleware</code> that knows abou
 <span class="p">}</span>
 </code></pre>
 
-<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the <code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now call <code>Whole</code>.</p>
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the
+<code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now
+call <code>Whole</code>.</p>
 <pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
    <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
    <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
@@ -642,11 +643,13 @@ So for example you may want to have a <code>GPSMiddleware</code> that knows abou
 
 <p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
 
-<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
+using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
-<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to lift it to the world of <code>Whole</code>.</p>
+<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
+lift it to the world of <code>Whole</code>.</p>
 
                       </div>
                       <div class="declaration">
@@ -668,12 +671,43 @@ So for example you may want to have a <code>GPSMiddleware</code> that knows abou
                             <tr>
                               <td>
                                 <code>
-                                <em>substatePath</em>
+                                <em>inputActionMap</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>the keyPath that goes from <code>Whole</code> to <code>Part</code></p>
+                                  <p>a function that will be executed every time a global action arrives at the global store. Then you can optionally return an
+            action of type Middleware&rsquo;s local input action type so the middleware will handle this action, or you can return nil in case
+            you want this middleware to ignore this global action. This is useful because not all middlewares will care about all global
+            actions. Usually this is a KeyPath in an enum, such as <code>\GlobalAction.someSubAction?.middlewareLocalAction</code> when you use code
+            generators to create enum properties.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>outputActionMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the local actions dispatched by this middleware into a global action type for your store.
+             Usually this is wrapping the enum in a global action tree, such as
+             <code>{ GlobalAction.someSubAction(.middlewareLocalAction($0)) }</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>stateMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the global state of your store into the local state of this middleware. Usually this is a KeyPath in
+      the global state struct, such as <code>\GlobalState.subState.middlewareLocalState</code>.</p>
                                 </div>
                               </td>
                             </tr>
@@ -682,7 +716,578 @@ So for example you may want to have a <code>GPSMiddleware</code> that knows abou
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>a <code>SubstateMiddleware</code><code>&lt;Whole, Self&gt;</code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa, by using the key path.</p>
+                        <p>a <code><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will
+       &ldquo;speak&rdquo; global types to be plugged into the main Store. Internally it will &ldquo;speak&rdquo; the types of the wrapped middleware.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_05StateK0Qzqd_1_ct05InputfK0QzRsd__r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputActionMap:stateMap:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_05StateK0Qzqd_1_ct05InputfK0QzRsd__r1_lF">lift(outputActionMap:<wbr>stateMap:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
+other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that
+is a sub-state.
+So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the
+<code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now
+call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
+using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
+lift it to the world of <code>Whole</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt">GlobalInputActionType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>outputActionMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the local actions dispatched by this middleware into a global action type for your store.
+             Usually this is wrapping the enum in a global action tree, such as
+             <code>{ GlobalAction.someSubAction(.middlewareLocalAction($0)) }</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>stateMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the global state of your store into the local state of this middleware. Usually this is a KeyPath in
+      the global state struct, such as <code>\GlobalState.subState.middlewareLocalState</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will
+       &ldquo;speak&rdquo; global types to be plugged into the main Store. Internally it will &ldquo;speak&rdquo; the types of the wrapped middleware.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_05StateK0Qzqd_1_ct06OutputfK0QzRsd_0_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputActionMap:stateMap:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_05StateK0Qzqd_1_ct06OutputfK0QzRsd_0_r1_lF">lift(inputActionMap:<wbr>stateMap:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
+other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that
+is a sub-state.
+So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the
+<code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now
+call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
+using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
+lift it to the world of <code>Whole</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
+    <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span> <span class="o">==</span> <span class="kt">GlobalOutputActionType</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>inputActionMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will be executed every time a global action arrives at the global store. Then you can optionally return an
+            action of type Middleware&rsquo;s local input action type so the middleware will handle this action, or you can return nil in case
+            you want this middleware to ignore this global action. This is useful because not all middlewares will care about all global
+            actions. Usually this is a KeyPath in an enum, such as <code>\GlobalAction.someSubAction?.middlewareLocalAction</code> when you use code
+            generators to create enum properties.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>stateMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the global state of your store into the local state of this middleware. Usually this is a KeyPath in
+      the global state struct, such as <code>\GlobalState.subState.middlewareLocalState</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will
+       &ldquo;speak&rdquo; global types to be plugged into the main Store. Internally it will &ldquo;speak&rdquo; the types of the wrapped middleware.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfK0Qzct05StateK0QzRsd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputActionMap:outputActionMap:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfK0Qzct05StateK0QzRsd_1_r1_lF">lift(inputActionMap:<wbr>outputActionMap:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
+other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that
+is a sub-state.
+So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the
+<code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now
+call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
+using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
+lift it to the world of <code>Whole</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
+    <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt">GlobalStateType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>inputActionMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will be executed every time a global action arrives at the global store. Then you can optionally return an
+            action of type Middleware&rsquo;s local input action type so the middleware will handle this action, or you can return nil in case
+            you want this middleware to ignore this global action. This is useful because not all middlewares will care about all global
+            actions. Usually this is a KeyPath in an enum, such as <code>\GlobalAction.someSubAction?.middlewareLocalAction</code> when you use code
+            generators to create enum properties.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>outputActionMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the local actions dispatched by this middleware into a global action type for your store.
+             Usually this is wrapping the enum in a global action tree, such as
+             <code>{ GlobalAction.someSubAction(.middlewareLocalAction($0)) }</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will
+       &ldquo;speak&rdquo; global types to be plugged into the main Store. Internally it will &ldquo;speak&rdquo; the types of the wrapped middleware.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_t06OutputfJ0QzRsd_0_05StateJ0QzRsd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputActionMap:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_t06OutputfJ0QzRsd_0_05StateJ0QzRsd_1_r1_lF">lift(inputActionMap:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
+other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that
+is a sub-state.
+So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the
+<code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now
+call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
+using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
+lift it to the world of <code>Whole</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span> <span class="o">==</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>inputActionMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will be executed every time a global action arrives at the global store. Then you can optionally return an
+            action of type Middleware&rsquo;s local input action type so the middleware will handle this action, or you can return nil in case
+            you want this middleware to ignore this global action. This is useful because not all middlewares will care about all global
+            actions. Usually this is a KeyPath in an enum, such as <code>\GlobalAction.someSubAction?.middlewareLocalAction</code> when you use code
+            generators to create enum properties.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will
+       &ldquo;speak&rdquo; global types to be plugged into the main Store. Internally it will &ldquo;speak&rdquo; the types of the wrapped middleware.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_t05InputfJ0QzRsd__05StateJ0QzRsd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputActionMap:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_t05InputfJ0QzRsd__05StateJ0QzRsd_1_r1_lF">lift(outputActionMap:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
+other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that
+is a sub-state.
+So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the
+<code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now
+call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
+using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
+lift it to the world of <code>Whole</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt">GlobalInputActionType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">,</span> <span class="kt">GlobalStateType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>outputActionMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the local actions dispatched by this middleware into a global action type for your store.
+             Usually this is wrapping the enum in a global action tree, such as
+             <code>{ GlobalAction.someSubAction(.middlewareLocalAction($0)) }</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will
+       &ldquo;speak&rdquo; global types to be plugged into the main Store. Internally it will &ldquo;speak&rdquo; the types of the wrapped middleware.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift8stateMapAA04LiftC0Vyqd__qd_0_qd_1_xG9StateTypeQzqd_1_c_t011InputActionI0QzRsd__06OutputkI0QzRsd_0_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(stateMap:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift8stateMapAA04LiftC0Vyqd__qd_0_qd_1_xG9StateTypeQzqd_1_c_t011InputActionI0QzRsd__06OutputkI0QzRsd_0_r1_lF">lift(stateMap:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
+other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that
+is a sub-state.
+So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Location</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">latitude</span><span class="p">:</span> <span class="kt">Double</span>
+   <span class="k">let</span> <span class="nv">longitude</span><span class="p">:</span> <span class="kt">Double</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Let&rsquo;s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the
+<code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now
+call <code>Whole</code>.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyGlobalState</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span>
+   <span class="k">let</span> <span class="nv">listOfItems</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span>
+   <span class="k">let</span> <span class="nv">currentLocation</span><span class="p">:</span> <span class="kt">Location</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p>
+
+<p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
+using:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+</code></pre>
+
+<p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
+lift it to the world of <code>Whole</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt">GlobalInputActionType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">,</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span> <span class="o">==</span> <span class="kt">GlobalOutputActionType</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>stateMap</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a function that will translate the global state of your store into the local state of this middleware. Usually this is a KeyPath in
+      the global state struct, such as <code>\GlobalState.subState.middlewareLocalState</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>a <code><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will
+       &ldquo;speak&rdquo; global types to be plugged into the main Store. Internally it will &ldquo;speak&rdquo; the types of the wrapped middleware.</p>
                       </div>
                     </section>
                   </div>
@@ -692,8 +1297,8 @@ So for example you may want to have a <code>GPSMiddleware</code> that knows abou
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-02-09)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

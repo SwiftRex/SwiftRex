@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftRex - Middleware</title>
+    <link rel="stylesheet" type="text/css" href="/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="/">
+            <strong>
+                SwiftRex
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Types Conforming to Middleware</a></li></ul></li><li><a href="#requirements">Requirements</a><ul><li><a href="#middleware.inputactiontype">Input​Action​Type</a></li><li><a href="#middleware.outputactiontype">Output​Action​Type</a></li><li><a href="#middleware.statetype">State​Type</a></li><li><a href="#middleware.receivecontext(getstate:output:)">receive​Context(get​State:​output:​)</a></li><li><a href="#middleware.handle(action:from:afterreducer:)">handle(action:​from:​after​Reducer:​)</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Protocol</small>
+    <code class="name">Middleware</code>
+</h1>
+
+<html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">protocol</span> <span class="type">Middleware</span></code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code>ReduxStoreProtocol</code> pipeline in order to handle each
+action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process.
+This happens before the <code>Reducer</code> to do its job.</p>
+
+</div>
+<div class="discussion">
+    <p>We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete,
+also being able to check the current state at any point.</p>
+
+<p>An action is a lightweight structure, typically an enum, that is dispatched into the <code>ActionHandler</code> (usually a <code>StoreProtocol</code>).
+A Store like <code>ReduxStoreProtocol</code> enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>Middleware</code>
+is class that handles actions, and has the power to dispatch more actions to the <code>ActionHandler</code> chain. The <code>Middleware</code> can also simply ignore the
+action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of
+those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of
+movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop, or perhaps some <code>Reducer</code>, as
+reducers pipeline is at the end of every middleware pipeline.</p>
+
+<p>Middlewares can schedule a callback to be executed after the reducer pipeline is done mutating the global state. At that point, the middleware
+will have access to the new state, and in case it cached the old state it can compare them, log, audit, perform analytics tracking, telemetry or
+state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.</p>
+
+<p>Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file, line,
+function and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging
+information that can help developers to trace how the information flows through the app.</p>
+
+<p>Because the <code>Middleware</code> receive all actions and accesses the state of the app at any point, anything can be done from these small and reusable
+boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different
+apps, as long as they share some sub-state struct.</p>
+
+<p>Some suggestions of middlewares:</p>
+
+<html><body><pre class="highlight"><code>                  &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;                                                                                        &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
+                  &amp;boxv;     &amp;boxv;     <span class="variable">handle</span>   &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl; <span class="variable">request</span>      &amp;boxdr; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh;  <span class="variable">response</span>     &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl; <span class="variable">dispatch</span>   &amp;boxv;     &amp;boxv;
+                  &amp;boxv;     &amp;boxv;   &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Middleware</span>&amp;boxvr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶ <span class="variable">External</span>&amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Middleware</span>&amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Store</span>&amp;boxv;&amp;boxh; &amp;boxh; ▶ ...
+                  &amp;boxv;     &amp;boxv;   &amp;boxv; <span class="variable">Action</span>   &amp;boxv; <span class="variable">Pipeline</span> &amp;boxv; <span class="variable">side</span>-<span class="variable">effects</span> &amp;boxv; <span class="variable">World</span>    <span class="variable">side</span>-<span class="variable">effects</span> &amp;boxv; <span class="variable">callback</span> &amp;boxv; <span class="variable">New</span> <span class="variable">Action</span> &amp;boxv;     &amp;boxv;
+                  &amp;boxv;     &amp;boxv;   &amp;boxv;          &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;               &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxul;              &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;            &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;
+&amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl; <span class="variable">dispatch</span> &amp;boxv;     &amp;boxv;   &amp;boxv;                ▲
+&amp;boxv;<span class="variable">Button</span>&amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Store</span>&amp;boxv;&amp;boxh;&amp;boxh;▶&amp;boxv;                &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;<span class="variable">afterReducer</span>&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;                   &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
+&amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul; <span class="variable">Action</span>   &amp;boxv;     &amp;boxv;   &amp;boxv;                                     &amp;boxv;                &amp;boxdr;&amp;boxh;▶&amp;boxv; <span class="variable">View</span> <span class="number literal">1</span> &amp;boxv;
+                  &amp;boxv;     &amp;boxv;   &amp;boxv;                                  &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;             &amp;boxv;  &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;
+                  &amp;boxv;     &amp;boxv;   &amp;boxv; <span class="variable">reduce</span>   &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;            &amp;boxv;     &amp;boxv; <span class="variable">onNext</span>      &amp;boxv;  &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
+                  &amp;boxv;     &amp;boxv;   &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv; <span class="variable">Reducer</span>  &amp;boxvr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Store</span>&amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxvr;&amp;boxh;▶&amp;boxv; <span class="variable">View</span> <span class="number literal">2</span> &amp;boxv;
+                  &amp;boxv;     &amp;boxv;     <span class="variable">Action</span>   &amp;boxv; <span class="variable">Pipeline</span> &amp;boxv; <span class="variable">New</span> <span class="variable">state</span>  &amp;boxv;     &amp;boxv; <span class="variable">New</span> <span class="variable">state</span>   &amp;boxv;  &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;
+                  &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;     +        &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;            &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;             &amp;boxv;  &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
+                              <span class="variable">State</span>                                                &amp;boxur;&amp;boxh;▶&amp;boxv; <span class="variable">View</span> <span class="number literal">3</span> &amp;boxv;
+                                                                                      &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;
+</code></pre></body></html>
+<p>Middleware protocol is generic over 3 associated types:</p>
+
+<h4>InputActionType:</h4>
+
+<p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+
+<h4>OutputActionType:</h4>
+
+<p>The Action type that this <code>Middleware</code> will eventually trigger back to the store in response of side-effects. This can be the same as <code>InputActionType</code> or different, in case you want to separate your enum in requests and responses.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+
+<h4>StateType:</h4>
+
+<p>The State part that this <code>Middleware</code> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <code>StateType</code> from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don't need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn't need to read any state, so the <code>StateType</code>can safely be set to <code>Void</code>.
+Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+
+<p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p>
+
+<p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p>
+
+<html><body><pre class="highlight"><code><span class="keyword">class</span> <span class="type">LoggerMiddleware</span>: <span class="type">Middleware</span> {
+    <span class="keyword">typealias</span> <span class="variable">InputActionType</span> = <span class="type">AppGlobalAction</span> <span class="comment">// It wants to receive all possible app actions</span>
+    <span class="keyword">typealias</span> <span class="variable">OutputActionType</span> = <span class="type">Never</span>          <span class="comment">// No action is generated from this Middleware</span>
+    <span class="keyword">typealias</span> <span class="variable">StateType</span> = <span class="type">AppGlobalState</span>        <span class="comment">// It wants to read the whole app state</span>
+ 
+    <span class="keyword">var</span> <span class="variable">getState</span>: <a href="/GetState"><span class="type">GetState</span></a>&lt;<span class="type">AppGlobalState</span>&gt;!
+ 
+    <span class="keyword">func</span> <span class="function">receiveContext</span>(<span class="variable">getState</span>: <span class="attribute">@</span><span class="attribute">escaping</span> <a href="/GetState"><span class="type">GetState</span></a>&lt;<span class="type">AppGlobalState</span>&gt;, <span class="variable">output</span>: <a href="/AnyActionHandler"><span class="type">AnyActionHandler</span></a>&lt;<span class="type">Never</span>&gt;) {
+        <span class="keyword">self</span>.<span class="type">getState</span> = <span class="variable">getState</span>
+    }
+ 
+    <span class="keyword">func</span> <span class="function">handle</span>(<span class="variable">action</span>: <span class="type">AppGlobalAction</span>, <span class="variable">from</span> <span class="variable">dispatcher</span>: <a href="/ActionSource"><span class="type">ActionSource</span></a>, <span class="variable">afterReducer</span>: <span class="keyword">inout</span> <a href="/AfterReducer"><span class="type">AfterReducer</span></a>) {
+        <span class="keyword">let</span> <span class="variable">stateBefore</span>: <span class="type">AppGlobalState</span> = <span class="variable">getState</span>()
+        <span class="keyword">let</span> <span class="variable">dateBefore</span> = <span class="variable">Date</span>()
+ 
+        <span class="variable">afterReducer</span> = .<span class="variable">do</span> {
+            <span class="keyword">let</span> <span class="variable">stateAfter</span> = <span class="keyword">self</span>.<span class="type">getState</span>()
+            <span class="keyword">let</span> <span class="variable">dateAfter</span> = <span class="variable">Date</span>()
+            <span class="keyword">let</span> <span class="variable">source</span> = <span class="string literal">"</span><span class="string literal"/>\<span class="string literal">(</span><span class="variable">dispatcher</span>.<span class="type">file</span><span class="string literal">)</span><span class="string literal">:</span>\<span class="string literal">(</span><span class="variable">dispatcher</span>.<span class="type">line</span><span class="string literal">)</span><span class="string literal"> - </span>\<span class="string literal">(</span><span class="variable">dispatcher</span>.<span class="type">function</span><span class="string literal">)</span><span class="string literal"> | </span>\<span class="string literal">(</span><span class="variable">dispatcher</span>.<span class="type">info</span> ?? <span class="string literal">"</span><span class="string literal"/><span class="string literal">"</span><span class="string literal">)</span><span class="string literal"/><span class="string literal">"</span>
+ 
+            <span class="variable">Logger</span>.<span class="type">log</span>(<span class="variable">action</span>: <span class="type">action</span>, <span class="variable">from</span>: <span class="type">source</span>, <span class="variable">before</span>: <span class="type">stateBefore</span>, <span class="variable">after</span>: <span class="type">stateAfter</span>, <span class="variable">dateBefore</span>: <span class="type">dateBefore</span>, <span class="variable">dateAfter</span>: <span class="type">dateAfter</span>)
+        }
+    }
+}
+ 
+<span class="keyword">class</span> <span class="type">FavoritesAPIMiddleware</span>: <span class="type">Middleware</span> {
+    <span class="keyword">typealias</span> <span class="variable">InputActionType</span> = <span class="type">FavoritesAction</span>  <span class="comment">// It wants to receive only actions related to Favorites</span>
+    <span class="keyword">typealias</span> <span class="variable">OutputActionType</span> = <span class="type">FavoritesAction</span> <span class="comment">// It wants to also dispatch actions related to Favorites</span>
+    <span class="keyword">typealias</span> <span class="variable">StateType</span> = <span class="type">FavoritesModel</span>         <span class="comment">// It wants to read the app state that manages favorites</span>
+ 
+    <span class="keyword">var</span> <span class="variable">getState</span>: <a href="/GetState"><span class="type">GetState</span></a>&lt;<span class="type">FavoritesModel</span>&gt;!
+    <span class="keyword">var</span> <span class="variable">output</span>: <a href="/AnyActionHandler"><span class="type">AnyActionHandler</span></a>&lt;<span class="type">FavoritesAction</span>&gt;!
+ 
+    <span class="keyword">func</span> <span class="function">receiveContext</span>(<span class="variable">getState</span>: <span class="attribute">@</span><span class="attribute">escaping</span> <a href="/GetState"><span class="type">GetState</span></a>&lt;<span class="type">FavoritesModel</span>&gt;, <span class="variable">output</span>: <a href="/AnyActionHandler"><span class="type">AnyActionHandler</span></a>&lt;<span class="type">FavoritesAction</span>&gt;) {
+        <span class="keyword">self</span>.<span class="type">getState</span> = <span class="variable">getState</span>
+        <span class="keyword">self</span>.<span class="type">output</span> = <span class="variable">output</span>
+    }
+ 
+    <span class="keyword">func</span> <span class="function">handle</span>(<span class="variable">action</span>: <span class="type">FavoritesAction</span>, <span class="variable">from</span> <span class="variable">dispatcher</span>: <a href="/ActionSource"><span class="type">ActionSource</span></a>, <span class="variable">afterReducer</span>: <span class="keyword">inout</span> <a href="/AfterReducer"><span class="type">AfterReducer</span></a>) {
+        <span class="keyword">guard</span> <span class="keyword">let</span> .<span class="variable">toggleFavorite</span>(<span class="variable">movieId</span>) = <span class="variable">action</span> <span class="keyword">else</span> { <span class="keyword">return</span> }
+ 
+        <span class="keyword">let</span> <span class="variable">favoritesList</span> = <span class="variable">getState</span>()
+        <span class="keyword">let</span> <span class="variable">makeFavorite</span> = !<span class="variable">favoritesList</span>.<span class="type">contains</span>(<span class="variable">where</span>: { <span class="variable">$0</span>.<span class="type">id</span> == <span class="variable">movieId</span> })
+ 
+        <span class="variable">API</span>.<span class="type">changeFavorite</span>(<span class="variable">id</span>: <span class="type">movieId</span>, <span class="variable">makeFavorite</span>: <span class="type">makeFavorite</span>) (<span class="variable">completion</span>: { <span class="variable">result</span> <span class="keyword">in</span>
+            <span class="keyword">switch</span> <span class="variable">result</span> {
+            <span class="keyword">case</span> <span class="keyword">let</span> .<span class="variable">success</span>(<span class="variable">value</span>):
+                <span class="keyword">self</span>.<span class="type">output</span>.<span class="type">dispatch</span>(.<span class="variable">changedFavorite</span>(<span class="variable">movieId</span>, <span class="variable">isFavorite</span>: <span class="keyword">true</span>), <span class="variable">info</span>: <span class="string literal">"</span><span class="string literal">API.changeFavorite callback</span><span class="string literal">"</span>)
+            <span class="keyword">case</span> <span class="keyword">let</span> .<span class="variable">failure</span>(<span class="variable">error</span>):
+                <span class="keyword">self</span>.<span class="type">output</span>.<span class="type">dispatch</span>(.<span class="variable">changedFavoriteHasFailed</span>(<span class="variable">movieId</span>, <span class="variable">isFavorite</span>: <span class="keyword">false</span>, <span class="variable">error</span>: <span class="type">error</span>), <span class="variable">info</span>: <span class="string literal">"</span><span class="string literal">API.changeFavorite callback</span><span class="string literal">"</span>)
+            }
+        })
+    }
+}
+</code></pre></body></html>
+<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg" alt="SwiftUI Side-Effects" /></p>
+
+</div>
+<section id="relationships">
+    <h2 hidden>Relationships</h2>
+        <figure>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.44.0 (20200408.0750)
+ -->
+<!-- Pages: 1 -->
+<svg width="1128pt" height="243pt"
+ viewBox="0.00 0.00 1128.23 243.49" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 239.49)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-239.49 1124.23,-239.49 1124.23,4 -4,4"/>
+<!-- Middleware -->
+<g id="node1" class="node protocol current">
+<title>Middleware</title>
+<g id="a_node1"><a xlink:href="/Middleware" xlink:title="Middleware">
+<path fill="none" stroke="black" stroke-width="3" d="M654.57,-136.04C654.57,-136.04 462.57,-136.04 462.57,-136.04 456.57,-136.04 450.57,-130.04 450.57,-124.04 450.57,-124.04 450.57,-112.04 450.57,-112.04 450.57,-106.04 456.57,-100.04 462.57,-100.04 462.57,-100.04 654.57,-100.04 654.57,-100.04 660.57,-100.04 666.57,-106.04 666.57,-112.04 666.57,-112.04 666.57,-124.04 666.57,-124.04 666.57,-130.04 660.57,-136.04 654.57,-136.04"/>
+<text text-anchor="middle" x="558.57" y="-114.34" font-family="Menlo" font-size="14.00">Middleware</text>
+</a>
+</g>
+</g>
+<!-- AnyMiddleware -->
+<g id="node2" class="node structure">
+<title>AnyMiddleware</title>
+<path fill="none" stroke="black" d="M1108.23,-71.16C1108.23,-71.16 916.23,-71.16 916.23,-71.16 910.23,-71.16 904.23,-65.16 904.23,-59.16 904.23,-59.16 904.23,-47.16 904.23,-47.16 904.23,-41.16 910.23,-35.16 916.23,-35.16 916.23,-35.16 1108.23,-35.16 1108.23,-35.16 1114.23,-35.16 1120.23,-41.16 1120.23,-47.16 1120.23,-47.16 1120.23,-59.16 1120.23,-59.16 1120.23,-65.16 1114.23,-71.16 1108.23,-71.16"/>
+<text text-anchor="middle" x="1012.23" y="-49.46" font-family="Menlo" font-size="14.00">AnyMiddleware</text>
+</g>
+<!-- AnyMiddleware&#45;&gt;Middleware -->
+<g id="edge1" class="edge conformsTo">
+<title>AnyMiddleware&#45;&gt;Middleware</title>
+<path fill="none" stroke="black" d="M904.15,-68.62C835.7,-78.41 747.17,-91.07 676.85,-101.13"/>
+<polygon fill="black" stroke="black" points="676.02,-97.71 666.62,-102.59 677.01,-104.64 676.02,-97.71"/>
+</g>
+<!-- ComposedMiddleware -->
+<g id="node3" class="node structure">
+<title>ComposedMiddleware</title>
+<path fill="none" stroke="black" d="M361.17,-36C361.17,-36 169.17,-36 169.17,-36 163.17,-36 157.17,-30 157.17,-24 157.17,-24 157.17,-12 157.17,-12 157.17,-6 163.17,0 169.17,0 169.17,0 361.17,0 361.17,0 367.17,0 373.17,-6 373.17,-12 373.17,-12 373.17,-24 373.17,-24 373.17,-30 367.17,-36 361.17,-36"/>
+<text text-anchor="middle" x="265.17" y="-14.3" font-family="Menlo" font-size="14.00">ComposedMiddleware</text>
+</g>
+<!-- ComposedMiddleware&#45;&gt;Middleware -->
+<g id="edge4" class="edge conformsTo">
+<title>ComposedMiddleware&#45;&gt;Middleware</title>
+<path fill="none" stroke="black" d="M317.97,-36C367.98,-53.05 443.11,-78.67 496.09,-96.73"/>
+<polygon fill="black" stroke="black" points="495.12,-100.1 505.71,-100.02 497.37,-93.48 495.12,-100.1"/>
+</g>
+<!-- LiftMiddleware -->
+<g id="node4" class="node structure">
+<title>LiftMiddleware</title>
+<path fill="none" stroke="black" d="M204,-201.78C204,-201.78 12,-201.78 12,-201.78 6,-201.78 0,-195.78 0,-189.78 0,-189.78 0,-177.78 0,-177.78 0,-171.78 6,-165.78 12,-165.78 12,-165.78 204,-165.78 204,-165.78 210,-165.78 216,-171.78 216,-177.78 216,-177.78 216,-189.78 216,-189.78 216,-195.78 210,-201.78 204,-201.78"/>
+<text text-anchor="middle" x="108" y="-180.08" font-family="Menlo" font-size="14.00">LiftMiddleware</text>
+</g>
+<!-- LiftMiddleware&#45;&gt;Middleware -->
+<g id="edge2" class="edge conformsTo">
+<title>LiftMiddleware&#45;&gt;Middleware</title>
+<path fill="none" stroke="black" d="M216.21,-167.99C283.84,-158.12 370.95,-145.41 440.38,-135.28"/>
+<polygon fill="black" stroke="black" points="441.1,-138.72 450.49,-133.81 440.09,-131.79 441.1,-138.72"/>
+</g>
+<!-- IdentityMiddleware -->
+<g id="node5" class="node structure">
+<title>IdentityMiddleware</title>
+<path fill="none" stroke="black" d="M952.83,-235.49C952.83,-235.49 760.83,-235.49 760.83,-235.49 754.83,-235.49 748.83,-229.49 748.83,-223.49 748.83,-223.49 748.83,-211.49 748.83,-211.49 748.83,-205.49 754.83,-199.49 760.83,-199.49 760.83,-199.49 952.83,-199.49 952.83,-199.49 958.83,-199.49 964.83,-205.49 964.83,-211.49 964.83,-211.49 964.83,-223.49 964.83,-223.49 964.83,-229.49 958.83,-235.49 952.83,-235.49"/>
+<text text-anchor="middle" x="856.83" y="-213.79" font-family="Menlo" font-size="14.00">IdentityMiddleware</text>
+</g>
+<!-- IdentityMiddleware&#45;&gt;Middleware -->
+<g id="edge3" class="edge conformsTo">
+<title>IdentityMiddleware&#45;&gt;Middleware</title>
+<path fill="none" stroke="black" d="M802.82,-199.48C752.09,-182.57 676.16,-157.25 622.45,-139.34"/>
+<polygon fill="black" stroke="black" points="623.28,-135.93 612.69,-136.08 621.07,-142.57 623.28,-135.93"/>
+</g>
+</g>
+</svg>
+
+
+    <figcaption hidden>Inheritance graph for Middleware.</figcaption>
+</figure>
+        <h3>Types Conforming to <code>Middleware</code></h3>
+<dl>
+    <dt class="structure"><code><a href="/AnyMiddleware">AnyMiddleware</a></code></dt>
+<dd><p>Erases the protocol <code>Middleware</code>. Please check its documentation for more information.</p>
+</dd>
+<dt class="structure"><code><a href="/ComposedMiddleware">ComposedMiddleware</a></code></dt>
+<dd><p>The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code>EventProtocol</code> or an <code>ActionProtocol</code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</p>
+</dd>
+<dt class="structure"><code><a href="/IdentityMiddleware">IdentityMiddleware</a></code></dt>
+<dd><p>The <code>IdentityMiddleware</code> won't do any operation, simply bypass actions through. It's meant to provide identity axiom
+to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware
+in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.</p>
+</dd>
+<dt class="structure"><code><a href="/LiftMiddleware">LiftMiddleware</a></code></dt>
+<dd><p>This is a container that lifts a sub-state middleware to a global state middleware.</p>
+</dd>
+</dl>
+</section>
+
+
+
+    <section id="requirements">
+        <h2>Requirements</h2>
+
+        <div role="article" class="protocol" id="middleware.inputactiontype">
+    <h3>
+        <code>Input​Action​Type</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">associatedtype</span> <span class="variable">InputActionType</span></code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
+action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+
+</div>
+</div>
+<div role="article" class="protocol" id="middleware.outputactiontype">
+    <h3>
+        <code>Output​Action​Type</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">associatedtype</span> <span class="variable">OutputActionType</span></code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>The Action type that this <code>Middleware</code> will eventually trigger back to the store in response of side-effects. This can be the same as
+<code>InputActionType</code> or different, in case you want to separate your enum in requests and responses.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
+action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+
+</div>
+</div>
+<div role="article" class="protocol" id="middleware.statetype">
+    <h3>
+        <code>State​Type</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">associatedtype</span> <span class="variable">StateType</span></code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>The State part that this <code>Middleware</code> needs to read in order to make decisions. This middleware will be able to read the most up-to-date
+<code>StateType</code> from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don't need reading the
+whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn't need to read any state, so the <code>StateType</code>can
+safely be set to <code>Void</code>.
+Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state
+of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+
+</div>
+</div>
+<div role="article" class="protocol" id="middleware.receivecontext(getstate:output:)">
+    <h3>
+        <code>receive​Context(get​State:​output:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">func</span> <span class="function">receiveContext</span>(<span class="variable">getState</span>: <span class="attribute">@</span><span class="attribute">escaping</span> <a href="/GetState"><span class="type">GetState</span></a>&lt;<span class="type">StateType</span>&gt;, <span class="variable">output</span>: <a href="/AnyActionHandler"><span class="type">AnyActionHandler</span></a>&lt;<span class="type">OutputActionType</span>&gt;)</code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>Middleware setup. This function will be called before actions are handled to the middleware, so you can configure your middleware with the given
+parameters. You can hold any of them if you plan to read the state or dispatch new actions.
+You can initialize and start timers or async tasks in here or in the <code>handle(action:next)</code> function, but never before this function is called,
+otherwise the middleware would not yet be running from a store.
+Because no actions are delivered to this middleware before the <code>receiveContext(getState:output:)</code> is called, you can safely keep implicit
+unwrapped versions of <code>getState</code> and <code>output</code> as properties of your concrete middleware, and set them from the arguments of this function.</p>
+
+</div>
+<h4>Parameters</h4>
+
+<table class="parameters">
+  <thead hidden>
+  <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <th>get​State</th>
+    <td><code class="type">@escaping Get​State&lt;State​Type&gt;</code></td></td>
+    <td><ul>
+<li>getState: a closure that allows the middleware to read the current state at any point in time</li>
+</ul>
+</td>
+</tr>
+<tr>
+    <th>output</th>
+    <td><code class="type">Any​Action​Handler&lt;Output​Action​Type&gt;</code></td></td>
+    <td><ul>
+<li>output: an action handler that allows the middleware to dispatch new actions at any point in time</li>
+</ul>
+</td>
+</tr>
+  </tbody>
+</table>
+</div>
+<div role="article" class="protocol" id="middleware.handle(action:from:afterreducer:)">
+    <h3>
+        <code>handle(action:​from:​after​Reducer:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">func</span> <span class="function">handle</span>(<span class="variable">action</span>: <span class="type">InputActionType</span>, <span class="variable">from</span> <span class="variable">dispatcher</span>: <a href="/ActionSource"><span class="type">ActionSource</span></a>, <span class="variable">afterReducer</span>: <span class="keyword">inout</span> <a href="/AfterReducer"><span class="type">AfterReducer</span></a>)</code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.
+This is also a good place for analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global
+state if you want, and/or execute things before the reducer.
+This function is only called by the store after the <code>receiveContext(getState:output:)</code> was called, so if you saved the received context from
+there you can safely use it here to get the state or dispatch new actions.
+Setting the <code>afterReducer</code> in/out parameter is optional, if you don't set it, it defaults to <code>.doNothing()</code>.</p>
+
+</div>
+<h4>Parameters</h4>
+
+<table class="parameters">
+  <thead hidden>
+  <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <th>action</th>
+    <td><code class="type">Input​Action​Type</code></td></td>
+    <td><ul>
+<li>action: the action to be handled</li>
+</ul>
+</td>
+</tr>
+<tr>
+    <th>dispatcher</th>
+    <td><code class="type">Action​Source</code></td></td>
+    <td><ul>
+<li>dispatcher: information about the action source, representing the entity that created and dispatched the action</li>
+</ul>
+</td>
+</tr>
+<tr>
+    <th>after​Reducer</th>
+    <td><code class="type">inout After​Reducer</code></td></td>
+    <td><ul>
+<li>afterReducer: it can be set to perform any operation after the reducer has changed the global state. If the function ends before you set this in/out parameter, <code>afterReducer</code> will default to <code>.doNothing()</code>.</li>
+</ul>
+</td>
+</tr>
+  </tbody>
+</table>
+</div>
+    </section>
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2020-05-29T03:19:03+0200">29. May 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+</p>
+    </footer>
+</body>
+</html>

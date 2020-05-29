@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftRex - ObservableViewModel</title>
+    <link rel="stylesheet" type="text/css" href="/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="/">
+            <strong>
+                SwiftRex
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#observableviewmodel.init(initialstate:store:emitsvalue:)">init(initial​State:​store:​emits​Value:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="property"><a href="#observableviewmodel.cancellablebinding">cancellable​Binding</a></li><li class="property"><a href="#observableviewmodel.store">store</a></li><li class="property"><a href="#observableviewmodel.state">state</a></li><li class="property"><a href="#observableviewmodel.statepublisher">state​Publisher</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="method"><a href="#observableviewmodel.dispatch(_:from:)">dispatch(_:​from:​)</a></li><li class="method"><a href="#observableviewmodel.mock(state:action:)">mock(state:​action:​)</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Observable​View​Model</code>
+</h1>
+
+<html><body><pre class="highlight"><code><span class="attribute">@</span><span class="attribute">available</span>(<span class="keyword">macOS</span> <span class="number literal">10.15</span>, <span class="keyword">iOS</span> <span class="number literal">13.0</span>, <span class="keyword">tvOS</span> <span class="number literal">13.0</span>, <span class="keyword">watchOS</span> <span class="number literal">6.0</span>, *) <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">class</span> <span class="type">ObservableViewModel</span>&lt;<span class="variable">ViewAction</span>, <span class="variable">ViewState</span>&gt;: <a href="/StoreType"><span class="type">StoreType</span></a>, <span class="type">ObservableObject</span></code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>A Store Projection made to be used in SwiftUI</p>
+
+</div>
+<div class="discussion">
+    <p>All you need is to create an instance of this class by projecting the main store and providing maps for state and
+actions. For the consumers, it will act as a real Store, but in fact it's only a proxy to the main store but working
+in types more close to what a View should know, instead of working on global domain.</p>
+
+<html><body><pre class="highlight"><code>            &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
+            &amp;boxv; <span class="variable">Button</span> &amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
+            &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;        &amp;boxv;                     &amp;boxdr; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxdl;             ┏━━━━━━━━━━━━━━━━━━━━━━━┓
+       &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;   &amp;boxv;         <span class="variable">dispatch</span>                                            ┃                       ┃&amp;blk14;
+       &amp;boxv;      <span class="variable">Toggle</span>      &amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxvh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;   &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh;▶  &amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶┃                       ┃&amp;blk14;
+       &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;   &amp;boxv;         <span class="variable">view</span> <span class="variable">event</span>      <span class="variable">f</span>: (<span class="variable">Event</span>) → <span class="variable">Action</span>     <span class="variable">app</span> <span class="variable">action</span>  ┃                       ┃&amp;blk14;
+           &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;       &amp;boxv;                     &amp;boxv;                         &amp;boxv;             ┃                       ┃&amp;blk14;
+           &amp;boxv; <span class="variable">onAppear</span> &amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;                                                             ┃                       ┃&amp;blk14;
+           &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;                             &amp;boxv;   <span class="variable">ObservableViewModel</span>   &amp;boxv;             ┃                       ┃&amp;blk14;
+                                                                                            ┃                       ┃&amp;blk14;
+                                                    &amp;boxv;     <span class="variable">a</span> <span class="variable">projection</span> <span class="variable">of</span>     &amp;boxv;  <span class="variable">projection</span> ┃         <span class="variable">Store</span>         ┃&amp;blk14;
+                                                         <span class="variable">the</span> <span class="variable">actual</span> <span class="variable">store</span>                   ┃                       ┃&amp;blk14;
+                                                    &amp;boxv;                         &amp;boxv;             ┃                       ┃&amp;blk14;
+   &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;                                                               ┃                       ┃&amp;blk14;
+   &amp;boxv;                        &amp;boxv;                       &amp;boxv;                         &amp;boxv;            &amp;boxdr;┃&amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxdl;            ┃&amp;blk14;
+   &amp;boxv;    <span class="attribute">@</span><span class="attribute">ObservedObject</span>     &amp;boxv;◀ &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh;    ◀&amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh;   ◀&amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh;    <span class="variable">State</span>                ┃&amp;blk14;
+   &amp;boxv;                        &amp;boxv;           <span class="variable">view</span> <span class="variable">state</span>  &amp;boxv;   <span class="variable">f</span>: (<span class="variable">State</span>) → <span class="variable">View</span>     &amp;boxv;  <span class="variable">app</span> <span class="variable">state</span> &amp;boxv; <span class="variable">Publisher</span> &amp;boxv;            ┃&amp;blk14;
+   &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;                                        <span class="variable">State</span>                  ┳ &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh;             ┃&amp;blk14;
+     &amp;boxv;          &amp;boxv;          &amp;boxv;                        &amp;boxur; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxul;             ┗━━━━━━━━━━━━━━━━━━━━━━━┛&amp;blk14;
+     ▼          ▼          ▼                                                                 &amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;&amp;blk14;
+&amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl; &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl; &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
+&amp;boxv;  <span class="variable">Text</span>  &amp;boxv; &amp;boxv;  <span class="variable">List</span>  &amp;boxv; &amp;boxv;<span class="variable">ForEach</span> &amp;boxv;
+&amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul; &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul; &amp;boxur;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxul;
+</code></pre></body></html>
+</div>
+<section id="relationships">
+    <h2 hidden>Relationships</h2>
+        <figure>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.44.0 (20200408.0750)
+ -->
+<!-- Pages: 1 -->
+<svg width="872pt" height="116pt"
+ viewBox="0.00 0.00 872.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 868,-112 868,4 -4,4"/>
+<!-- ObservableViewModel -->
+<g id="node1" class="node class current">
+<title>ObservableViewModel</title>
+<g id="a_node1"><a xlink:href="/ObservableViewModel" xlink:title="ObservableViewModel">
+<path fill="none" stroke="black" stroke-width="3" d="M528,-108C528,-108 336,-108 336,-108 330,-108 324,-102 324,-96 324,-96 324,-84 324,-84 324,-78 330,-72 336,-72 336,-72 528,-72 528,-72 534,-72 540,-78 540,-84 540,-84 540,-96 540,-96 540,-102 534,-108 528,-108"/>
+<text text-anchor="middle" x="432" y="-86.3" font-family="Menlo" font-size="14.00">ObservableViewModel</text>
+</a>
+</g>
+</g>
+<!-- ObservableObject -->
+<g id="node2" class="node unknown">
+<title>ObservableObject</title>
+<path fill="none" stroke="black" d="M303,-36C303,-36 111,-36 111,-36 105,-36 99,-30 99,-24 99,-24 99,-12 99,-12 99,-6 105,0 111,0 111,0 303,0 303,0 309,0 315,-6 315,-12 315,-12 315,-24 315,-24 315,-30 309,-36 303,-36"/>
+<text text-anchor="middle" x="207" y="-14.3" font-family="Menlo" font-size="14.00">ObservableObject</text>
+</g>
+<!-- ObservableViewModel&#45;&gt;ObservableObject -->
+<g id="edge2" class="edge conformsTo">
+<title>ObservableViewModel&#45;&gt;ObservableObject</title>
+<path fill="none" stroke="black" d="M377.25,-71.97C345.4,-62.06 305.08,-49.51 271.67,-39.12"/>
+<polygon fill="black" stroke="black" points="272.59,-35.74 262,-36.11 270.51,-42.42 272.59,-35.74"/>
+</g>
+<!-- StoreType -->
+<g id="node3" class="node protocol">
+<title>StoreType</title>
+<path fill="none" stroke="black" d="M753,-36C753,-36 561,-36 561,-36 555,-36 549,-30 549,-24 549,-24 549,-12 549,-12 549,-6 555,0 561,0 561,0 753,0 753,0 759,0 765,-6 765,-12 765,-12 765,-24 765,-24 765,-30 759,-36 753,-36"/>
+<text text-anchor="middle" x="657" y="-14.3" font-family="Menlo" font-size="14.00">StoreType</text>
+</g>
+<!-- ObservableViewModel&#45;&gt;StoreType -->
+<g id="edge1" class="edge conformsTo">
+<title>ObservableViewModel&#45;&gt;StoreType</title>
+<path fill="none" stroke="black" d="M486.75,-71.97C518.6,-62.06 558.92,-49.51 592.33,-39.12"/>
+<polygon fill="black" stroke="black" points="593.49,-42.42 602,-36.11 591.41,-35.74 593.49,-42.42"/>
+</g>
+</g>
+</svg>
+
+
+    <figcaption hidden>Inheritance graph for ObservableViewModel.</figcaption>
+</figure>
+        <h3>Conforms To</h3>
+<dl>
+    <dt class="protocol"><code><a href="/StoreType">StoreType</a></code></dt>
+<dd><p>🏪 <code>StoreType</code> defines a protocol for a state store.</p>
+</dd>
+<dt class="unknown"><code>ObservableObject</code></dt>
+</dl>
+</section>
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="observableviewmodel.init(initialstate:store:emitsvalue:)">
+    <h3>
+        <code>init(initial​State:​store:​emits​Value:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>&lt;<span class="variable">S</span>&gt;(<span class="variable">initialState</span>: <span class="type">ViewState</span>, <span class="variable">store</span>: <span class="type">S</span>, <span class="variable">emitsValue</span>: <a href="/ShouldEmitValue"><span class="type">ShouldEmitValue</span></a>&lt;<span class="type">ViewState</span>&gt;) <span class="keyword">where</span> <span class="type">S</span>: <a href="/StoreType"><span class="type">StoreType</span></a>, <span class="type">S</span>.<span class="type">ActionType</span> == <span class="type">ViewAction</span>, <span class="type">S</span>.<span class="type">StateType</span> == <span class="type">ViewState</span></code></pre></body></html>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="observableviewmodel.cancellablebinding">
+    <h3>
+        <code>cancellable​Binding</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">var</span> <span class="variable">cancellableBinding</span>: <span class="type">AnyCancellable</span>?</code></pre></body></html>
+</div>
+<div role="article" class="variable" id="observableviewmodel.store">
+    <h3>
+        <code>store</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">var</span> <span class="variable">store</span>: <a href="/StoreProjection"><span class="type">StoreProjection</span></a>&lt;<span class="type">ViewAction</span>, <span class="type">ViewState</span>&gt;</code></pre></body></html>
+</div>
+<div role="article" class="variable" id="observableviewmodel.state">
+    <h3>
+        <code>state</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">var</span> <span class="variable">state</span>: <span class="type">ViewState</span></code></pre></body></html>
+</div>
+<div role="article" class="variable" id="observableviewmodel.statepublisher">
+    <h3>
+        <code>state​Publisher</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">statePublisher</span>: <a href="/UnfailablePublisherType"><span class="type">UnfailablePublisherType</span></a>&lt;<span class="type">ViewState</span>&gt;</code></pre></body></html>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="observableviewmodel.dispatch(_:from:)">
+    <h3>
+        <code>dispatch(_:​from:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">dispatch</span>(<span class="keyword">_</span> <span class="variable">action</span>: <span class="type">ViewAction</span>, <span class="variable">from</span> <span class="variable">dispatcher</span>: <a href="/ActionSource"><span class="type">ActionSource</span></a>)</code></pre></body></html>
+</div>
+<div role="article" class="function" id="observableviewmodel.mock(state:action:)">
+    <h3>
+        <code>mock(state:​action:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">mock</span>(<span class="variable">state</span>: <span class="type">StateType</span>, <span class="variable">action</span>: (<span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">ActionType</span>, <a href="/ActionSource"><span class="type">ActionSource</span></a>, <span class="keyword">inout</span> <span class="type">StateType</span>) -&gt; <span class="type">Void</span>) = { <span class="keyword">_</span>, <span class="keyword">_</span>, <span class="keyword">_</span> <span class="keyword">in</span> }) -&gt; <a href="/ObservableViewModel"><span class="type">ObservableViewModel</span></a>&lt;<span class="type">ActionType</span>, <span class="type">StateType</span>&gt;</code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>Mock for using in tests or SwiftUI previews, available in DEBUG mode only
+You can use if as a micro-redux for tests and SwiftUI previews, for example:</p>
+
+</div>
+<div class="discussion">
+    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">mock</span> = <span class="variable">ObservableViewModel</span>&lt;(<span class="variable">user</span>: <span class="type">String</span>, <span class="variable">pass</span>: <span class="type">String</span>, <span class="variable">buttonEnabled</span>: <span class="type">Bool</span>), <span class="type">ViewAction</span>&gt;.<span class="type">mock</span>(
+    <span class="variable">state</span>: (<span class="variable">user</span>: <span class="string literal">"</span><span class="string literal">ozzy</span><span class="string literal">"</span>, <span class="variable">pass</span>: <span class="string literal">"</span><span class="string literal"/><span class="string literal">"</span>, <span class="variable">buttonEnabled</span>: <span class="keyword">false</span>),
+    <span class="variable">action</span>: { <span class="variable">action</span>, <span class="variable">state</span> <span class="keyword">in</span>
+        <span class="keyword">switch</span> <span class="variable">action</span> {
+        <span class="keyword">case</span> <span class="keyword">let</span> .<span class="variable">userChanged</span>(<span class="variable">newUser</span>):
+            <span class="type">state</span>.<span class="type">user</span> = <span class="variable">newUser</span>
+            <span class="variable">state</span>.<span class="type">buttonEnabled</span> = !<span class="variable">state</span>.<span class="type">user</span>.<span class="type">isEmpty</span> &amp;&amp; !<span class="variable">state</span>.<span class="type">pass</span>.<span class="type">isEmpty</span>
+        <span class="keyword">case</span> <span class="keyword">let</span> .<span class="variable">passwordChanged</span>(<span class="variable">newPass</span>):
+            <span class="type">state</span>.<span class="type">pass</span> = <span class="variable">newPass</span>
+            <span class="variable">state</span>.<span class="type">buttonEnabled</span> = !<span class="variable">state</span>.<span class="type">user</span>.<span class="type">isEmpty</span> &amp;&amp; !<span class="variable">state</span>.<span class="type">pass</span>.<span class="type">isEmpty</span>
+        <span class="keyword">case</span> .<span class="variable">buttonTapped</span>:
+            <span class="type">print</span>(<span class="string literal">"</span><span class="string literal">Button tapped</span><span class="string literal">"</span>)
+        }
+    }
+)
+</code></pre></body></html>
+</div>
+<h4>Parameters</h4>
+
+<table class="parameters">
+  <thead hidden>
+  <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <th>state</th>
+    <td><code class="type">State​Type</code></td></td>
+    <td><ul>
+<li>state: Initial state mock</li>
+</ul>
+</td>
+</tr>
+<tr>
+    <th>action</th>
+    <td><code class="type">(@escaping (Action​Type, Action​Source, inout State​Type) -&gt; Void)</code></td></td>
+    <td><ul>
+<li>action: a simple reducer function, of type <code>(ActionType, inout StateType) -&gt; Void</code>, useful if you want to use in SwiftUI live previews and quickly change an UI property when a button is tapped, for example. It's like a micro-redux for tests and SwiftUI previews. Defaults to do nothing.</li>
+</ul>
+</td>
+</tr>
+  </tbody>
+</table>
+  <h4>Returns</h4>
+  <p>a very simple ObservableViewModel mock, that you can inject in your SwiftUI View for tests or live preview.</p>
+
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2020-05-29T03:19:03+0200">29. May 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+</p>
+    </footer>
+</body>
+</html>

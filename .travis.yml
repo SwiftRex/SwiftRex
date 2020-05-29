@@ -1,4 +1,4 @@
-osx_image: xcode11.3
+osx_image: xcode11.5
 language: objective-c
 cache:
   directories:
@@ -12,6 +12,8 @@ env:
     - FRAMEWORK_NAME="SwiftRex"
 install:
   - bundle install --path vendor/bundle
+  - brew install mint
+  - mint bootstrap
 script:
   - make test
 after_success:

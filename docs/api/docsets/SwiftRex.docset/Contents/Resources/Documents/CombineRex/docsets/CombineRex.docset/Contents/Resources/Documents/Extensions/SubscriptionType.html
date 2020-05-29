@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SubscriptionType Extension Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Extension/SubscriptionType" class="dashAnchor"></a>
+    <a title="SubscriptionType Extension Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CombineRex 0.7.2 Docs</a> (57% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CombineRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        SubscriptionType Extension Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Cancellable.html">Cancellable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PassthroughSubject.html">PassthroughSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Publisher.html">Publisher</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Set.html">Set</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StoreType.html">StoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Subscriber.html">Subscriber</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriberType.html">SubscriberType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriptionType.html">SubscriptionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex/SubjectType.html">– SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex/SubscriptionType.html">– SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>SubscriptionType</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">SubscriptionType</span></code></pre>
+
+                </div>
+              </div>
+            
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16SubscriptionTypeP07CombineB0E9cancelled2byyShy0E014AnyCancellableCGz_tF"></a>
+                    <a name="//apple_ref/swift/Method/cancelled(by:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16SubscriptionTypeP07CombineB0E9cancelled2byyShy0E014AnyCancellableCGz_tF">cancelled(by:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Allow to add a subscription to a subscription collection, which is an abstraction for <code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your
+chosen reactive framework</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">cancelled</span><span class="p">(</span><span class="n">by</span> <span class="nv">subscriptionCollection</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>subscriptionCollection</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>an abstraction for <code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your chosen reactive framework</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftRex - UnfailableSubject</title>
+    <link rel="stylesheet" type="text/css" href="/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="/">
+            <strong>
+                SwiftRex
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol/>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Typealias</small>
+    <span class="name">Unfailable​Subject</span>
+</h1>
+
+<html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="variable">UnfailableSubject</span>&lt;<span class="variable">Element</span>&gt; = <a href="/SubjectType"><span class="type">SubjectType</span></a>&lt;<span class="type">Element</span>, <span class="type">Never</span>&gt;</code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>Abstraction over passthrough subject types (<code>PassthroughSubject</code>, <code>PublishSubject</code>, <code>Signal</code>) from reactive frameworks.
+For this specific case, the failure/error is <code>Never</code>, meaning that this subject can't emit error.
+This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and
+delegating to them once the wrapper funcions are called.</p>
+
+</div>
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2020-05-29T03:19:02+0200">29. May 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+</p>
+    </footer>
+</body>
+</html>

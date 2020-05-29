@@ -17,23 +17,27 @@ pod-push:
 	pod trunk push RxSwiftRex.podspec --allow-warnings
 	pod trunk push CombineRex.podspec --allow-warnings
 
+mint:
+	brew install mint
+	mint bootstrap
+
 # Unit Test
 
 test:
-	swift test
+	set -o pipefail && swift test
 
 # Lint
 
 lint-check:
-	Pods/SwiftLint/swiftlint
+	mint run swiftlint
 
 lint-autocorrect:
-	Pods/SwiftLint/swiftlint autocorrect
+	mint run swiftlint autocorrect
 
 # Sourcery
 
 sourcery:
-	Pods/Sourcery/bin/sourcery
+	mint run sourcery
 
 # CocoaPods
 pod-install:
@@ -42,13 +46,13 @@ pod-install:
 # Jazzy
 
 jazzy:
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine --build-tool-arguments -scheme,SwiftRex\ iOS\ Combine --module CombineRex --output docs/api/CombineRex
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ ReactiveSwift --build-tool-arguments -scheme,SwiftRex\ iOS\ ReactiveSwift --module ReactiveSwiftRex --output docs/api/ReactiveSwiftRex
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ RxSwift --build-tool-arguments -scheme,SwiftRex\ iOS\ RxSwift --module RxSwiftRex --output docs/api/RxSwiftRex
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine --build-tool-arguments -scheme,SwiftRex\ iOS\ Combine --module SwiftRex --output docs/api
+	bundle exec jazzy --module CombineRex        --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/CombineRex
+	bundle exec jazzy --module ReactiveSwiftRex  --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/ReactiveSwiftRex
+	bundle exec jazzy --module RxSwift           --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/RxSwiftRex
+	bundle exec jazzy --module SwiftRex          --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api
 
 swiftdoc:
-	swift doc Sources --output docs/api
+	mint run swift-doc generate Sources --module-name SwiftRex --output docs/swiftdocs --format html
 
 # Pre-Build
 
