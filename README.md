@@ -650,15 +650,15 @@ $ xed .
 
 ## Swift Package Manager
 
-Create or modify the Package.swift at the root folder of your project. Currently, only Combine is supported by this method.
-You can use the automatic linking mode (static/dynamic), or use the project `CombineRexDynamic` to force dynamic linking and
-overcome current Xcode limitations to resolve diamond dependency issues.
+Create or modify the Package.swift at the root folder of your project.
+You can use the automatic linking mode (static/dynamic), or use the project with suffix Dynamic to force
+dynamic linking and overcome current Xcode limitations to resolve diamond dependency issues.
 
 If you use it from only one target, automatic mode should be fine.
 
-Automatic linking mode:
+Combine, automatic linking mode:
 ```swift
-// swift-tools-version:5.1
+// swift-tools-version:5.2
 
 import PackageDescription
 
@@ -677,9 +677,51 @@ let package = Package(
 )
 ```
 
-Dynamic linking mode:
+RxSwift, automatic linking mode:
 ```swift
-// swift-tools-version:5.1
+// swift-tools-version:5.2
+
+import PackageDescription
+
+let package = Package(
+  name: "MyApp",
+  platforms: [.macOS(.v10_10), .iOS(.v8), .tvOS(.v9), .watchOS(.v3)],
+  products: [
+    .executable(name: "MyApp", targets: ["MyApp"])
+  ],
+  dependencies: [
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.2")
+  ],
+  targets: [
+    .target(name: "MyApp", dependencies: [.product(name: "RxSwiftRex", package: "SwiftRex")])
+  ]
+)
+```
+
+ReactiveSwift, automatic linking mode:
+```swift
+// swift-tools-version:5.2
+
+import PackageDescription
+
+let package = Package(
+  name: "MyApp",
+  platforms: [.macOS(.v10_10), .iOS(.v8), .tvOS(.v9), .watchOS(.v3)],
+  products: [
+    .executable(name: "MyApp", targets: ["MyApp"])
+  ],
+  dependencies: [
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.2")
+  ],
+  targets: [
+    .target(name: "MyApp", dependencies: [.product(name: "ReactiveSwiftRex", package: "SwiftRex")])
+  ]
+)
+```
+
+Combine, dynamic linking mode (use similar approach of appending "Dynamic" also for RxSwift or ReactiveSwift products):
+```swift
+// swift-tools-version:5.2
 
 import PackageDescription
 
