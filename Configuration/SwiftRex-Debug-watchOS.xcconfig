@@ -1,2 +1,0 @@
-#include "SwiftRex-Common-watchOS.xcconfig"
-#include? "Developer.xcconfig"

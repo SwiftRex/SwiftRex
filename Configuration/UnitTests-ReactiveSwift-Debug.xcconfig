@@ -1,2 +1,0 @@
-#include "UnitTests.xcconfig"
-#include "Pods/Target Support Files/Pods-UnitTests ReactiveSwift/Pods-UnitTests ReactiveSwift.debug.xcconfig"

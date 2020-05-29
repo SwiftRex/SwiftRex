@@ -613,7 +613,6 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 target 'MyAppTarget' do
-  pod 'SwiftRex'      # optional line
   pod 'CombineRex'
 end
 ```
@@ -625,8 +624,6 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 target 'MyAppTarget' do
-  pod 'RxSwift'       # optional line
-  pod 'SwiftRex'      # optional line
   pod 'RxSwiftRex'
 end
 ```
@@ -638,8 +635,6 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 target 'MyAppTarget' do
-  pod 'ReactiveSwift' # optional line
-  pod 'SwiftRex'      # optional line
   pod 'ReactiveSwiftRex'
 end
 ```
@@ -674,7 +669,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.1")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.2")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRex", package: "SwiftRex")])
@@ -695,7 +690,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.1")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.2")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRexDynamic", package: "SwiftRex")])
@@ -712,18 +707,8 @@ $ xed .
 
 ## Carthage
 
-Carthage is currently not our recommended way of using SwiftRex and its support can be dropped future versions. If this is critical for you or your company, please contact us and we will take this into account.
+Carthage is no longer supported due to lack of interest and high maintenance effort.
 
-Add this to your Cartfile:
-
-```ruby
-github "SwiftRex/SwiftRex" ~> 0.7.0
-```
-
-Run
-
-```shell
-$ carthage update
-```
-
-Then follow the instructions from [Carthage README](https://github.com/Carthage/Carthage#getting-started).
+In case this is REALLY critical for you, please open a Github issue and let us know, we will evaluate
+the possibility to bring it back. In meantime you can check last  Carthage compatible version, which
+was 0.7.1, and eventually target that version until we come up with a better solution.

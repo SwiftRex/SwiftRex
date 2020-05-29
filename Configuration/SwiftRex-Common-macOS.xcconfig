@@ -1,6 +1,0 @@
-#include "SwiftRex-Common.xcconfig"
-
-INFOPLIST_FILE = Sources/Metadata/Info-macOS.plist
-SDKROOT = macosx
-LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/../Frameworks' '@loader_path/../Frameworks'
-COMBINE_HIDPI_IMAGES = YES

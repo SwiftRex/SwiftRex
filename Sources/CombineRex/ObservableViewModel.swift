@@ -34,7 +34,7 @@ import SwiftRex
 /// │  Text  │ │  List  │ │ForEach │
 /// └────────┘ └────────┘ └────────┘
 /// ```
-@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public final class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     private var cancellableBinding: AnyCancellable?
     private var store: StoreProjection<ViewAction, ViewState>
@@ -55,7 +55,7 @@ public final class ObservableViewModel<ViewAction, ViewState>: StoreType, Observ
     }
 }
 
-@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ObservableViewModel where ViewState: Equatable {
     public convenience init<S: StoreType>(initialState: ViewState, store: S)
     where S.ActionType == ViewAction, S.StateType == ViewState {
@@ -67,7 +67,7 @@ extension ObservableViewModel where ViewState: Equatable {
     }
 }
 
-@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension StoreType {
     public func asObservableViewModel(
         initialState: StateType,
@@ -77,7 +77,7 @@ extension StoreType {
     }
 }
 
-@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension StoreType where StateType: Equatable {
     public func asObservableViewModel(
         initialState: StateType
@@ -87,7 +87,7 @@ extension StoreType where StateType: Equatable {
 }
 
 #if DEBUG
-@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ObservableViewModel {
     /// Mock for using in tests or SwiftUI previews, available in DEBUG mode only
     /// You can use if as a micro-redux for tests and SwiftUI previews, for example:

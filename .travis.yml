@@ -1,7 +1,5 @@
 osx_image: xcode11.3
 language: objective-c
-xcode_project: SwiftRex.xcodeproj
-xcode_scheme: BuildAndTestAll
 cache:
   directories:
     - bundler
@@ -15,6 +13,6 @@ env:
 install:
   - bundle install --path vendor/bundle
 script:
-  - make test-all
+  - make test
 after_success:
   - bundle exec slather

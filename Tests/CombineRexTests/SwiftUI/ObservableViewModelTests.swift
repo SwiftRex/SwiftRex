@@ -76,6 +76,7 @@ class MiddlewareTest: Middleware {
     }
 }
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class ObservableViewModelTests: XCTestCase {
     let reducerTest = Reducer<Action, TestState> { action, state in
         switch action {

@@ -1,3 +1,0 @@
-#include "SwiftRex-Debug-macOS.xcconfig"
-#include "SwiftRex-ReactiveSwift.xcconfig"
-#include "Pods/Target Support Files/Pods-SwiftRex macOS ReactiveSwift/Pods-SwiftRex macOS ReactiveSwift.debug.xcconfig"

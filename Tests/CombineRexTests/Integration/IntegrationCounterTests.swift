@@ -4,6 +4,7 @@ import Foundation
 import SwiftRex
 import XCTest
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class IntegrationCounterTests: XCTestCase {
     var store: TestBasicStore!
     var subscription: AnyCancellable?
@@ -123,6 +124,7 @@ enum CounterService {
     }
 }
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 final class TestBasicStore: ReduxStoreBase<AppAction, AppState> {
     init() {
         super.init(

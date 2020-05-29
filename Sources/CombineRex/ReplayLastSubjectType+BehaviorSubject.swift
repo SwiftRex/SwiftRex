@@ -3,7 +3,7 @@ import Combine
 import Foundation
 import SwiftRex
 
-@available(iOS 13, watchOS 6, macOS 10.15, tvOS 13, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ReplayLastSubjectType {
     public init(currentValueSubject: CurrentValueSubject<Element, ErrorType>,
                 willChange: ((Element) -> Void)? = nil) {
