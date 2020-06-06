@@ -3,7 +3,6 @@ language: objective-c
 cache:
   directories:
     - bundler
-    - cocoapods
     - vendor/bundle
 env:
   global:
@@ -15,6 +14,9 @@ install:
   - brew install mint
   - mint bootstrap
 script:
+  - make lint-check
   - make test
+  - make code-coverage-summary
+  - make code-coverage-file
 after_success:
-  - bundle exec slather
+  - bash <(curl -s https://codecov.io/bash) -X xcodellvm -X gcov -f coverage.txt

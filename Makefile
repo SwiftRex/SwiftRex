@@ -24,7 +24,39 @@ mint:
 # Unit Test
 
 test:
-	set -o pipefail && swift test
+	set -o pipefail && \
+	swift test --enable-code-coverage
+
+code-coverage-summary:
+	xcrun llvm-cov report \
+		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		-use-color \
+		--ignore-filename-regex \.build \
+		--ignore-filename-regex Tests\/ \
+
+code-coverage-details:
+	xcrun llvm-cov show \
+		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		-use-color \
+		--ignore-filename-regex \.build \
+		--ignore-filename-regex Tests\/ \
+
+code-coverage-file:
+	xcrun llvm-cov show \
+		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		-use-color \
+		--ignore-filename-regex \.build \
+		--ignore-filename-regex Tests\/ \
+		> coverage.txt
+
+code-coverage-upload:
+	bash <(curl -s https://codecov.io/bash) \
+		-X xcodellvm \
+		-X gcov \
+		-f coverage.txt
 
 # Lint
 
@@ -39,10 +71,6 @@ lint-autocorrect:
 sourcery:
 	mint run sourcery
 
-# CocoaPods
-pod-install:
-	bundle exec pod install
-
 # Jazzy
 
 jazzy:
@@ -56,13 +84,7 @@ swiftdoc:
 
 # Pre-Build
 
-prebuild-mac: sourcery lint-autocorrect lint-check
-
-prebuild-ios: sourcery lint-autocorrect lint-check
-
-prebuild-watchos: sourcery lint-autocorrect lint-check
-
-prebuild-tvos: sourcery lint-autocorrect lint-check
+prebuild: sourcery lint-autocorrect lint-check
 
 # Help
 
@@ -76,8 +98,23 @@ help:
 	@echo make pod-push
 	@echo -- publishes the pod on CocoaPods repository
 	@echo
+	@echo make mint
+	@echo -- bootstrap mint dependency manager
+	@echo
 	@echo make test
 	@echo -- runs all the unit tests
+	@echo
+	@echo make code-coverage-summary
+	@echo -- shows a code coverage summary
+	@echo
+	@echo make code-coverage-details
+	@echo -- shows a code coverage detailed report
+	@echo
+	@echo make code-coverage-file
+	@echo -- creates a code coverage file to be uploaded to codecov
+	@echo
+	@echo make code-coverage-upload
+	@echo -- upload code coverage file to codecov
 	@echo
 	@echo make lint-check
 	@echo -- validates the code style
@@ -91,15 +128,9 @@ help:
 	@echo make jazzy
 	@echo -- generates documentation
 	@echo
-	@echo make prebuild-mac
-	@echo -- runs the pre-build phases on macOS target
+	@echo make swiftdoc
+	@echo -- generates documentation (alternative API docs, not fully working yet)
 	@echo
-	@echo make prebuild-ios
-	@echo -- runs the pre-build phases on iOS target
-	@echo
-	@echo make prebuild-watchos
-	@echo -- runs the pre-build phases on watchOS target
-	@echo
-	@echo make prebuild-tvos
-	@echo -- runs the pre-build phases on tvOS target
+	@echo make prebuild
+	@echo -- runs the pre-build phases
 	@echo
