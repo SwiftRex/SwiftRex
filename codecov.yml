@@ -1,0 +1,11 @@
+ignore:
+    - "Tests/**/*"
+    - ".build/checkouts/**/*"
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        base: auto
