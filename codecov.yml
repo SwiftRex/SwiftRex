@@ -2,6 +2,9 @@ ignore:
     - "Tests/**/*"
     - ".build/checkouts/**/*"
 
+fixes:
+    - "/Users/travis/build/::"
+
 coverage:
   status:
     project:
