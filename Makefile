@@ -30,17 +30,23 @@ test:
 code-coverage-summary:
 	xcrun llvm-cov report \
 		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
-		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		--ignore-filename-regex \.build \
+		--ignore-filename-regex Tests\/
 
 code-coverage-details:
 	xcrun llvm-cov show \
 		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
-		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		--ignore-filename-regex \.build \
+		--ignore-filename-regex Tests\/
 
 code-coverage-file:
 	xcrun llvm-cov show \
 		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
-		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata > coverage.txt
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		--ignore-filename-regex \.build \
+		--ignore-filename-regex Tests\/ > coverage.txt
 
 code-coverage-upload:
 	bash <(curl -s https://codecov.io/bash) \

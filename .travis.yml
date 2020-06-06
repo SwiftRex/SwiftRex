@@ -20,7 +20,6 @@ install:
 script:
   - make lint-check
   - make test
-  - swift test --show-codecov-path
   - make code-coverage-summary
   - make code-coverage-file
 after_success:
