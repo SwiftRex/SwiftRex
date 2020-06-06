@@ -4,19 +4,24 @@ cache:
   directories:
     - bundler
     - vendor/bundle
+    - /Users/travis/mint
 env:
   global:
     - LC_CTYPE=en_US.UTF-8
     - LANG=en_US.UTF-8
     - FRAMEWORK_NAME="SwiftRex"
+    - MINT_PATH=/Users/travis/mint
 install:
   - gem install bundler
-  - bundle install --path vendor/bundle
+  - bundle config set path 'vendor/bundle'
+  - bundle install
   - brew install mint
   - mint bootstrap
 script:
   - make lint-check
   - make test
+  - find . -name "*.xctest"
+  - find . -name "*.profdata"
   - make code-coverage-summary
   - make code-coverage-file
 after_success:
