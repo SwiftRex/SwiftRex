@@ -1,6 +1,0 @@
-framework module Pods_UnitTests_SwiftRex {
-  umbrella header "Pods-UnitTests SwiftRex-umbrella.h"
-
-  export *
-  module * { export * }
-}

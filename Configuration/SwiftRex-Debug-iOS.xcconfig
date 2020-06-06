@@ -1,2 +1,0 @@
-#include "SwiftRex-Common-iOS.xcconfig"
-#include? "Developer.xcconfig"

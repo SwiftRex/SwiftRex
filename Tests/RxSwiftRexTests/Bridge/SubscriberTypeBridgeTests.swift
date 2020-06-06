@@ -1,4 +1,3 @@
-import Nimble
 import RxSwift
 import RxSwiftRex
 import SwiftRex

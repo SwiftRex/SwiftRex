@@ -1,6 +1,0 @@
-framework module Pods_SwiftRex_tvOS_RxSwift {
-  umbrella header "Pods-SwiftRex tvOS RxSwift-umbrella.h"
-
-  export *
-  module * { export * }
-}

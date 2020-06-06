@@ -1,4 +1,3 @@
-import Nimble
 import ReactiveSwift
 import ReactiveSwiftRex
 import SwiftRex

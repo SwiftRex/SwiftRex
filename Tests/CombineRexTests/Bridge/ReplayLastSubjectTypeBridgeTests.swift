@@ -4,6 +4,7 @@ import CombineRex
 import SwiftRex
 import XCTest
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class ReplayLastSubjectTypeBridgeTests: XCTestCase {
     func testCurrentValueSubjectToReplayLastSubjectTypeOnValue() {
         let shouldCallClosureValue = expectation(description: "Closure value should be called")

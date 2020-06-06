@@ -1,10 +1,10 @@
 {
   "warnings": [
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/PublisherType+SignalProducerProtocol.swift",
-      "line": 6,
-      "symbol": "PublisherType.producer",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/ReactiveSwift/Sources/Signal.swift",
+      "line": 5,
+      "symbol": "SignalProtocol",
+      "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {

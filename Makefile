@@ -6,7 +6,8 @@ set-version:
 else
 set-version:
 	sed -i .bkp -E "s/(s\.version.*=.*)'.*'/\1'${TO}'/" *.podspec
-	sed -i .bkp -E "s/(CURRENT_PROJECT_VERSION.*= ).*/\1${TO}/" Configuration/SwiftRex-Common.xcconfig
+	sed -i .bkp -E "s/(, from: )\".*\"\)/\1\"${TO}\")/" README.md
+	rm *.bkp
 endif
 
 # Pod push
@@ -16,110 +17,70 @@ pod-push:
 	pod trunk push RxSwiftRex.podspec --allow-warnings
 	pod trunk push CombineRex.podspec --allow-warnings
 
-# Xcodeproj
-
-xcodeproj:
-	swift package generate-xcodeproj --xcconfig-overrides=Development.xcconfig
+mint:
+	brew install mint
+	mint bootstrap
 
 # Unit Test
 
-test-all:
+test:
 	set -o pipefail && \
-		xcodebuild clean test \
-		-workspace SwiftRex.xcworkspace \
-		-scheme BuildAndTestAll \
-		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
-		CODE_SIGN_IDENTITY="" \
-		CODE_SIGNING_REQUIRED=NO \
-		ONLY_ACTIVE_ARCH=YES \
-		VALID_ARCHS=x86_64 \
-		| bundle exec xcpretty
+	swift test --enable-code-coverage --build-path .build
 
-test-common:
-	set -o pipefail && \
-		xcodebuild clean test \
-		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ iOS \
-		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
-		CODE_SIGN_IDENTITY="" \
-		CODE_SIGNING_REQUIRED=NO \
-		ONLY_ACTIVE_ARCH=YES \
-		VALID_ARCHS=x86_64 \
-		| bundle exec xcpretty
+code-coverage-summary:
+	xcrun llvm-cov report \
+		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		--ignore-filename-regex='.*build/checkouts.*' \
+		--ignore-filename-regex='Tests/.*'
 
-test-combine:
-	set -o pipefail && \
-		xcodebuild clean test \
-		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ iOS\ Combine \
-		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
-		CODE_SIGN_IDENTITY="" \
-		CODE_SIGNING_REQUIRED=NO \
-		ONLY_ACTIVE_ARCH=YES \
-		VALID_ARCHS=x86_64 \
-		| bundle exec xcpretty
+code-coverage-details:
+	xcrun llvm-cov show \
+		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		--ignore-filename-regex='.*build/checkouts.*' \
+		--ignore-filename-regex='Tests/.*'
 
-test-reactiveswift:
-	set -o pipefail && \
-		xcodebuild clean test \
-		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ iOS\ ReactiveSwift \
-		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
-		CODE_SIGN_IDENTITY="" \
-		CODE_SIGNING_REQUIRED=NO \
-		ONLY_ACTIVE_ARCH=YES \
-		VALID_ARCHS=x86_64 \
-		| bundle exec xcpretty
+code-coverage-file:
+	xcrun llvm-cov show \
+		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
+		--ignore-filename-regex='.*build/checkouts.*' \
+		--ignore-filename-regex='Tests/.*' > coverage.txt
 
-test-rxswift:
-	set -o pipefail && \
-		xcodebuild clean test \
-		-workspace SwiftRex.xcworkspace \
-		-scheme SwiftRex\ iOS\ RxSwift \
-		-destination "platform=iOS Simulator,name=iPhone 11 Pro Max" \
-		CODE_SIGN_IDENTITY="" \
-		CODE_SIGNING_REQUIRED=NO \
-		ONLY_ACTIVE_ARCH=YES \
-		VALID_ARCHS=x86_64 \
-		| bundle exec xcpretty
+code-coverage-upload:
+	bash <(curl -s https://codecov.io/bash) \
+		-X xcodellvm \
+		-X gcov \
+		-f coverage.txt
 
 # Lint
 
 lint-check:
-	Pods/SwiftLint/swiftlint
+	mint run swiftlint
 
 lint-autocorrect:
-	Pods/SwiftLint/swiftlint autocorrect
+	mint run swiftlint autocorrect
 
 # Sourcery
 
 sourcery:
-	Pods/Sourcery/bin/sourcery
-
-# CocoaPods
-pod-install:
-	bundle exec pod install
+	mint run sourcery
 
 # Jazzy
 
 jazzy:
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine --build-tool-arguments -scheme,SwiftRex\ iOS\ Combine --module CombineRex --output docs/api/CombineRex
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ ReactiveSwift --build-tool-arguments -scheme,SwiftRex\ iOS\ ReactiveSwift --module ReactiveSwiftRex --output docs/api/ReactiveSwiftRex
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ RxSwift --build-tool-arguments -scheme,SwiftRex\ iOS\ RxSwift --module RxSwiftRex --output docs/api/RxSwiftRex
-	bundle exec jazzy -x -target,SwiftRex\ iOS\ Combine --build-tool-arguments -scheme,SwiftRex\ iOS\ Combine --module SwiftRex --output docs/api
+	bundle exec jazzy --module CombineRex        --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/CombineRex
+	bundle exec jazzy --module ReactiveSwiftRex  --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/ReactiveSwiftRex
+	bundle exec jazzy --module RxSwift           --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/RxSwiftRex
+	bundle exec jazzy --module SwiftRex          --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api
 
 swiftdoc:
-	swift doc Sources --output docs/api
+	mint run swift-doc generate Sources --module-name SwiftRex --output docs/swiftdocs --format html
 
 # Pre-Build
 
-prebuild-mac: sourcery lint-autocorrect lint-check
-
-prebuild-ios: sourcery lint-autocorrect lint-check
-
-prebuild-watchos: sourcery lint-autocorrect lint-check
-
-prebuild-tvos: sourcery lint-autocorrect lint-check
+prebuild: sourcery lint-autocorrect lint-check
 
 # Help
 
@@ -133,23 +94,23 @@ help:
 	@echo make pod-push
 	@echo -- publishes the pod on CocoaPods repository
 	@echo
-	@echo make xcodeproj
-	@echo -- creates xcodeproj for those using Swift Package Manager
+	@echo make mint
+	@echo -- bootstrap mint dependency manager
 	@echo
-	@echo make test-common
-	@echo -- runs the unit tests for the macOS target common for any framework
-	@echo
-	@echo make test-combine
-	@echo -- runs the unit tests for the macOS target using Combine dependency
-	@echo
-	@echo make test-reactiveswift
-	@echo -- runs the unit tests for the macOS target using ReactiveSwift dependency
-	@echo
-	@echo make test-rxswift
-	@echo -- runs the unit tests for the macOS target using RxSwift dependency
-	@echo
-	@echo make test-all
+	@echo make test
 	@echo -- runs all the unit tests
+	@echo
+	@echo make code-coverage-summary
+	@echo -- shows a code coverage summary
+	@echo
+	@echo make code-coverage-details
+	@echo -- shows a code coverage detailed report
+	@echo
+	@echo make code-coverage-file
+	@echo -- creates a code coverage file to be uploaded to codecov
+	@echo
+	@echo make code-coverage-upload
+	@echo -- upload code coverage file to codecov
 	@echo
 	@echo make lint-check
 	@echo -- validates the code style
@@ -163,15 +124,9 @@ help:
 	@echo make jazzy
 	@echo -- generates documentation
 	@echo
-	@echo make prebuild-mac
-	@echo -- runs the pre-build phases on macOS target
+	@echo make swiftdoc
+	@echo -- generates documentation (alternative API docs, not fully working yet)
 	@echo
-	@echo make prebuild-ios
-	@echo -- runs the pre-build phases on iOS target
-	@echo
-	@echo make prebuild-watchos
-	@echo -- runs the pre-build phases on watchOS target
-	@echo
-	@echo make prebuild-tvos
-	@echo -- runs the pre-build phases on tvOS target
+	@echo make prebuild
+	@echo -- runs the pre-build phases
 	@echo

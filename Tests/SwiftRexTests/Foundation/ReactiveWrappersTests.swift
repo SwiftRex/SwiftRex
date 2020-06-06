@@ -1,5 +1,4 @@
 import Foundation
-import Nimble
 @testable import SwiftRex
 import XCTest
 

@@ -2,6 +2,7 @@
 import Combine
 import Foundation
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 struct BlockPublisher<OutputType, FailureType: Error>: Publisher {
     typealias Output = OutputType
     typealias Failure = FailureType

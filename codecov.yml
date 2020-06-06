@@ -1,0 +1,14 @@
+ignore:
+    - "Tests/**/*"
+    - ".build/checkouts/**/*"
+
+fixes:
+    - "/Users/travis/build/::"
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 10%
+        base: auto

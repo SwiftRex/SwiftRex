@@ -1,94 +1,255 @@
 {
   "warnings": [
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/PublisherType+ObservableType.swift",
-      "line": 6,
-      "symbol": "PublisherType.subscribe(_:)",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Disposables/CompositeDisposable.swift",
+      "line": 29,
+      "symbol": "CompositeDisposable.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/PublisherType+ObservableType.swift",
-      "line": 24,
-      "symbol": "ObservableType.asPublisherType()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Disposables/ScheduledDisposable.swift",
+      "line": 16,
+      "symbol": "ScheduledDisposable.scheduler",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/PublisherType+ObservableType.swift",
-      "line": 32,
-      "symbol": "PublisherType.lift(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Event.swift",
+      "line": 98,
+      "symbol": "EventConvertible.ElementType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/ReplayLastSubjectType+BehaviorSubject.swift",
-      "line": 6,
-      "symbol": "ReplayLastSubjectType.init(behaviorSubject:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/ReplayLastSubjectType+BehaviorSubject.swift",
-      "line": 14,
-      "symbol": "ReplayLastSubjectType.rx(initialValue:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubjectType+PublishSubject.swift",
-      "line": 6,
-      "symbol": "SwiftRex.SubjectType.init(publishSubject:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubjectType+PublishSubject.swift",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/ObservableConvertibleType.swift",
       "line": 15,
-      "symbol": "SwiftRex.SubjectType.init(unfailablePublishSubject:)",
+      "symbol": "ObservableConvertibleType.E",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/ObservableType+Extensions.swift",
+      "line": 89,
+      "symbol": "Hooks.DefaultErrorHandler",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/ObservableType+Extensions.swift",
+      "line": 90,
+      "symbol": "Hooks.CustomCaptureSubscriptionCallstack",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Observables/GroupBy.swift",
+      "line": 18,
+      "symbol": "ObservableType.groupBy(keySelector:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubjectType+PublishSubject.swift",
-      "line": 24,
-      "symbol": "SwiftRex.SubjectType.rx()",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/ObserverType.swift",
+      "line": 15,
+      "symbol": "ObserverType.E",
+      "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubscriberType+ObserverType.swift",
-      "line": 6,
-      "symbol": "SubscriberType.on(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Observers/TailRecursiveSink.swift",
+      "line": 15,
+      "symbol": "maxTailRecursiveSinkStackSize",
+      "symbol_kind": "source.lang.swift.decl.var.global",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubscriberType+ObserverType.swift",
-      "line": 24,
-      "symbol": "ObserverType.asSubscriberType()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Reactive.swift",
+      "line": 43,
+      "symbol": "ReactiveCompatible.CompatibleType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubscriptionType+Disposable.swift",
-      "line": 6,
-      "symbol": "SubscriptionType.asDisposable()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Rx.swift",
+      "line": 139,
+      "symbol": "Hooks.recordCallStackOnError",
+      "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubscriptionType+Disposable.swift",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/SchedulerType.swift",
       "line": 13,
-      "symbol": "Disposable.asSubscriptionType()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "symbol": "RxTimeInterval",
+      "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/RxSwiftRex/SubscriptionType+Disposable.swift",
-      "line": 42,
-      "symbol": "DisposeBag.store(subscription:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/ConcurrentDispatchQueueScheduler.swift",
+      "line": 17,
+      "symbol": "ConcurrentDispatchQueueScheduler.TimeInterval",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/ConcurrentDispatchQueueScheduler.swift",
+      "line": 18,
+      "symbol": "ConcurrentDispatchQueueScheduler.Time",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/ConcurrentMainScheduler.swift",
+      "line": 20,
+      "symbol": "ConcurrentMainScheduler.TimeInterval",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/ConcurrentMainScheduler.swift",
+      "line": 21,
+      "symbol": "ConcurrentMainScheduler.Time",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/OperationQueueScheduler.swift",
+      "line": 18,
+      "symbol": "OperationQueueScheduler.operationQueue",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/OperationQueueScheduler.swift",
+      "line": 19,
+      "symbol": "OperationQueueScheduler.queuePriority",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/SerialDispatchQueueScheduler.swift",
+      "line": 31,
+      "symbol": "SerialDispatchQueueScheduler.TimeInterval",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/SerialDispatchQueueScheduler.swift",
+      "line": 32,
+      "symbol": "SerialDispatchQueueScheduler.Time",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/VirtualTimeScheduler.swift",
+      "line": 13,
+      "symbol": "VirtualTimeScheduler.VirtualTime",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Schedulers/VirtualTimeScheduler.swift",
+      "line": 14,
+      "symbol": "VirtualTimeScheduler.VirtualTimeInterval",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Subjects/AsyncSubject.swift",
+      "line": 18,
+      "symbol": "AsyncSubject.SubjectObserverType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Subjects/BehaviorSubject.swift",
+      "line": 18,
+      "symbol": "BehaviorSubject.SubjectObserverType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Subjects/PublishSubject.swift",
+      "line": 18,
+      "symbol": "PublishSubject.SubjectObserverType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Subjects/ReplaySubject.swift",
+      "line": 17,
+      "symbol": "ReplaySubject.SubjectObserverType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Subjects/SubjectType.swift",
+      "line": 17,
+      "symbol": "SubjectType.SubjectObserverType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/SwiftSupport/SwiftSupport.swift",
+      "line": 12,
+      "symbol": "RxAbstractInteger",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/Completable.swift",
+      "line": 18,
+      "symbol": "CompletableEvent",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/Completable.swift",
+      "line": 27,
+      "symbol": "PrimitiveSequenceType.CompletableObserver",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/Maybe.swift",
+      "line": 18,
+      "symbol": "MaybeEvent",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/Maybe.swift",
+      "line": 30,
+      "symbol": "PrimitiveSequenceType.MaybeObserver",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/PrimitiveSequence.swift",
+      "line": 27,
+      "symbol": "PrimitiveSequenceType.TraitType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/PrimitiveSequence.swift",
+      "line": 30,
+      "symbol": "PrimitiveSequenceType.ElementType",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/Single.swift",
+      "line": 18,
+      "symbol": "SingleEvent",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Traits/Single.swift",
+      "line": 27,
+      "symbol": "PrimitiveSequenceType.SingleObserver",
+      "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     }
   ],

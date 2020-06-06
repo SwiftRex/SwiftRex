@@ -4,6 +4,7 @@ import CombineRex
 import SwiftRex
 import XCTest
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class SubscriptionBridgeTests: XCTestCase {
     func testCancellableToSubscriptionUnsubscribe() {
         let shouldBeDisposed = expectation(description: "should be disposed")
@@ -91,7 +92,7 @@ class SubscriptionBridgeTests: XCTestCase {
         }
 
         let subscription = cancellable.asSubscriptionType()
-        var sut: [AnyCancellable]? = [AnyCancellable]() // swiftlint:disable:this discouraged_optional_collection
+        var sut: Set<AnyCancellable>? = Set<AnyCancellable>() // swiftlint:disable:this discouraged_optional_collection
         subscription.cancelled(by: &sut!)
 
         sut = nil
