@@ -25,32 +25,22 @@ mint:
 
 test:
 	set -o pipefail && \
-	swift test --enable-code-coverage
+	swift test --enable-code-coverage --build-path .build
 
 code-coverage-summary:
 	xcrun llvm-cov report \
 		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
-		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
-		-use-color \
-		--ignore-filename-regex \.build \
-		--ignore-filename-regex Tests\/ \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata
 
 code-coverage-details:
 	xcrun llvm-cov show \
 		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
-		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
-		-use-color \
-		--ignore-filename-regex \.build \
-		--ignore-filename-regex Tests\/ \
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata
 
 code-coverage-file:
 	xcrun llvm-cov show \
 		.build/x86_64-apple-macosx/debug/SwiftRexPackageTests.xctest/Contents/MacOS/SwiftRexPackageTests \
-		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata \
-		-use-color \
-		--ignore-filename-regex \.build \
-		--ignore-filename-regex Tests\/ \
-		> coverage.txt
+		--instr-profile .build/x86_64-apple-macosx/debug/codecov/default.profdata > coverage.txt
 
 code-coverage-upload:
 	bash <(curl -s https://codecov.io/bash) \
