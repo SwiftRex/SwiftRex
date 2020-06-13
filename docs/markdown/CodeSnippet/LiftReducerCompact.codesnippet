@@ -10,9 +10,8 @@
 	</array>
 	<key>IDECodeSnippetContents</key>
 	<string>lift(
-    actionGetter: \AppAction.&lt;#something?.child#&gt;,
-    stateGetter: \AppState.&lt;#something.child#&gt;,
-    stateSetter: setter(\AppState.&lt;#something.child#&gt;)
+    action: \AppAction.&lt;#something?.child#&gt;,
+    state: \AppState.&lt;#something.child#&gt;)
 )</string>
 	<key>IDECodeSnippetIdentifier</key>
 	<string>7F43BB42-5687-481C-8D1F-D81FE19E88BF</string>
