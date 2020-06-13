@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>ReduxView</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+		<string>TopLevel</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>import SwiftUI
+
+struct &lt;#ModuleName#&gt;View: View {
+    @ObservedObject var store: &lt;#ModuleName#&gt;Presenter.ViewStore
+
+    var body: some View {
+        Text("&lt;#ModuleName#&gt;View")
+            .onAppear {
+                // self.store.dispatch(.appeared)
+            }
+            .onDisappear {
+                // self.store.dispatch(.disappeared)
+            }
+    }
+}
+
+#if DEBUG
+
+struct &lt;#ModuleName#&gt;ViewPreviews: PreviewProvider {
+    static var previews: some View {
+        &lt;#ModuleName#&gt;View(store: .mock(state: .empty))
+    }
+}
+
+#endif
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>173E7D96-4C48-4D83-89FF-D1189A9D0200</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Redux View</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>ReduxPresenter</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+		<string>TopLevel</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>import CombineRex
+import SwiftRex
+
+enum &lt;#ModuleName#&gt;Presenter {
+    // View-side
+    typealias ViewEvent = &lt;#ModuleName#&gt;ViewEvent
+    typealias ViewState = &lt;#ModuleName#&gt;ViewState
+
+    // Model-side
+    typealias Action = &lt;#AppAction#&gt;
+    typealias State = &lt;#AppState#&gt;
+
+    // Dependencies
+    typealias Dependencies = &lt;#Void#&gt;
+
+    // Store
+    typealias ViewStore = ObservableViewModel&lt;ViewEvent, ViewState&gt;
+
+    public static func viewStore&lt;S: StoreType&gt;(dependencies: Dependencies, store: S) -&gt; ViewStore
+        where S.ActionType == Action, S.StateType == State {
+            store.projection(
+                action: self.handleEvent(dependencies: dependencies),
+                state: self.handleState(dependencies: dependencies)
+            ).asObservableViewModel(
+                initialState: .empty,
+                emitsValue: .whenDifferent
+            )
+    }
+
+    static func handleEvent(dependencies: Dependencies) -&gt; ((ViewEvent) -&gt; Action?) {
+        { event in
+            switch event {
+            case .&lt;#didTap#&gt;:
+                return .&lt;#doSomething#&gt;
+            }
+        }
+    }
+
+    static func handleState(dependencies: Dependencies) -&gt; ((State) -&gt; ViewState) {
+        return { state in
+            ViewState()
+        }
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>E3AC826C-902E-41C7-BA0D-15E2DC987FC9</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Redux Presenter</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

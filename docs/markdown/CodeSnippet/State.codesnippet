@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>ReduxState</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+		<string>TopLevel</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>import Foundation
+
+public struct &lt;#Some#&gt;State: Codable, Equatable {
+    public let &lt;#variable#&gt;: &lt;#SomeType#&gt;
+
+    public init(&lt;#variable#&gt;: &lt;#SomeType#&gt;) {
+        self.&lt;#variable#&gt; = &lt;#variable#&gt;
+    }
+}
+
+extension &lt;#Some#&gt;State {
+    public static var empty: &lt;#SomeState#&gt; {
+        .init(&lt;#variable#&gt;: &lt;#.empty#&gt;)
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>9CFE0B69-FEFB-4B19-8535-11A6A56D7BAC</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Redux State</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

@@ -1,0 +1,44 @@
+{% for import in argument.imports %}
+import {{ import }}
+{% endfor %}
+{% macro associatedValueName caseAssociatedValue index %}{% if caseAssociatedValue.localName %}{{ caseAssociatedValue.localName }}{% else %}associatedValue{{ index }}{% endif %}{% endmacro %}
+{% macro expandAssociatedValues array %}{% for value in array %}{% call associatedValueName value forloop.counter0 %}{{ ', ' if not forloop.last }}{% endfor %}{% endmacro %}
+{% macro tuplifyAssociatedValues array %}{% if array.count > 1 or array[0].typeName|contains:"->" %}({% endif %}{% for value in array %}{% if array.count > 1 and value.localName %}{{ value.localName }}: {% endif %}{{ value.typeName }}{{ ', ' if not forloop.last }}{% endfor %}{% if array.count > 1 or array[0].typeName|contains:"->" %}){% endif %}{% endmacro %}
+{% macro setAssociatedValues array %}{% for value in array %}{% if value.localName %}{{ value.localName }}: {% endif %}newValue{% if array.count > 1 %}.{{ forloop.counter0 }}{% endif %}{{ ', ' if not forloop.last }}{% endfor %}{% endmacro %}
+{% macro caseOptics accessLevel case %}
+{% if case.hasAssociatedValue %}
+    {{ accessLevel }} var {{ case.name }}: {% call tuplifyAssociatedValues case.associatedValues %}? {
+        get {
+            guard case let .{{ case.name }}({% call expandAssociatedValues case.associatedValues %}) = self else { return nil }
+            return ({% call expandAssociatedValues case.associatedValues %})
+        }
+        set {
+            guard case .{{ case.name }} = self, let newValue = newValue else { return }
+            self = .{{ case.name }}({% call setAssociatedValues case.associatedValues %})
+        }
+    }
+{% else %}
+    {{ accessLevel }} var {{ case.name }}: Void? {
+        get {
+            guard case .{{ case.name }} = self else { return nil }
+            return ()
+        }
+    }
+{% endif %}
+
+{% endmacro %}
+{% macro isThisCase accessLevel case %}
+    {{ accessLevel }} var is{{ case.name|upperFirstLetter  }}: Bool {
+        self.{{ case.name }} != nil
+    }
+
+{% endmacro %}
+{% for type in types.enums where type.based.Prism or type|annotated:"Prism" %}{% if type.name != "Prism" %}
+extension {{ type.name }} {
+{% for case in type.cases %}
+    {% call caseOptics type.accessLevel case %}
+    {% call isThisCase type.accessLevel case %}
+{% endfor %}
+}
+{% endif %}
+{% endfor %}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>ReduxHandler</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+		<string>TopLevel</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>import Combine
+import Foundation
+import SwiftRex
+
+enum &lt;#Some#&gt;Handler {
+    static let reducer = Reducer&lt;AppAction, AppState&gt; { action, state in
+        switch action {
+        case .&lt;#start#&gt;:
+            var state = state
+            state.&lt;#change#&gt; = &lt;#newValue#&gt;
+            return state
+        }
+    }
+        
+    public static let middleware: Reader&lt;() -&gt; &lt;#Dependency#&gt;, &lt;#Some#&gt;Middleware&gt; = Reader(&lt;#Some#&gt;Middleware.init)
+}
+
+public final class &lt;#Some#&gt;Middleware: Middleware {
+    public typealias InputActionType = AppAction
+    public typealias OutputActionType = AppAction
+    public typealias StateType = AppState
+
+    private let &lt;#dependency#&gt;: () -&gt; &lt;#Dependency#&gt;
+    private var output: AnyActionHandler&lt;OutputActionType&gt;?
+    private var getState: GetState&lt;StateType&gt;?
+    private var cancellables = Set&lt;AnyCancellable&gt;()
+
+    public init(
+        &lt;#dependency#&gt;: @escaping () -&gt; &lt;#Dependency#&gt;
+    ) {
+        self.&lt;#dependency#&gt; = &lt;#dependency#&gt;
+    }
+
+    public func receiveContext(getState: @escaping GetState&lt;StateType&gt;, output: AnyActionHandler&lt;OutputActionType&gt;) {
+        self.getState = getState
+        self.output = output
+    }
+
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        switch action {
+        case .&lt;#start#&gt;:
+            &lt;#start#&gt;()
+        }
+    }
+
+    private func &lt;#start#&gt;() {
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>EE18F358-9282-4392-9F55-BB5350CFCAB9</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Redux Handler</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

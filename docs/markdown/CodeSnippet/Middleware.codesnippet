@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>ReduxMiddleware</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+		<string>TopLevel</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>import Combine
+import Foundation
+import SwiftRex
+
+public final class &lt;#Some#&gt;Middleware: Middleware {
+    public typealias InputActionType = &lt;#MyInputAction#&gt;
+    public typealias OutputActionType = &lt;#MyOutputAction#&gt;
+    public typealias StateType = &lt;#MyState#&gt;
+
+    private let &lt;#dependency1#&gt;: () -&gt; &lt;#DependencyType1#&gt;
+    private let &lt;#dependency2#&gt;: () -&gt; &lt;#DependencyType2#&gt;
+    private var output: AnyActionHandler&lt;OutputActionType&gt;?
+    private var getState: GetState&lt;StateType&gt;?
+    private var cancellables = Set&lt;AnyCancellable&gt;()
+
+    public init(
+        &lt;#dependency1#&gt;: @escaping () -&gt; &lt;#DependencyType1#&gt;,
+        &lt;#dependency2#&gt;: @escaping () -&gt; &lt;#DependencyType2#&gt;
+    ) {
+        self.&lt;#depedency1#&gt; = &lt;#depedency1#&gt;
+        self.&lt;#depedency2#&gt; = &lt;#depedency2#&gt;
+    }
+
+    public func receiveContext(getState: @escaping GetState&lt;StateType&gt;, output: AnyActionHandler&lt;OutputActionType&gt;) {
+        self.getState = getState
+        self.output = output
+    }
+
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        switch action {
+        case .&lt;#start#&gt;:
+            &lt;#start#&gt;()
+        }
+    }
+
+    private func &lt;#start#&gt;() {
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>88AAACEB-2A74-42FC-82EA-3764E6A50997</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Redux Middleware</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>
