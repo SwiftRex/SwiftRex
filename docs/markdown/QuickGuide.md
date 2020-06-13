@@ -281,8 +281,8 @@ class ShakeMiddleware: Middleware {
     // stuff to go very basic
     init() { }
 
-    private var getState: GetState<AppState>?
-    private var output: AnyActionHandler<AppAction>?
+    private var getState: GetState<AppState>!
+    private var output: AnyActionHandler<AppAction>!
     func receiveContext(getState: @escaping GetState<AppState>, output: AnyActionHandler<AppAction>) {
         self.getState = getState
         self.output = output
@@ -354,3 +354,201 @@ We can start the side-effect (`store.dispatch(.shake(.start))`) in response to `
 This is not required, but helps to understand where the increment came from, not from the user, but from a shake gesture. This also helps to debug possible problems with your side-effect frameworks.
 
 You can always choose a more direct approach, and that's perfectly fine!
+
+---
+
+## SwiftUI
+
+SwiftRex works for UIKit, AppKit, WatchKit, SwiftUI and probably any other presentation framework, on Mac, Linux or mobile devices.
+But because we are excited about SwiftUI functional programming style, let's implement a whole app with all features seen in this Quick Guide and some new ones, as lifting Middlewares.
+
+```swift
+import Combine
+import CombineRex
+import SwiftRex
+import SwiftUI
+import UIKit
+
+// - MARK: - Xcode Minimum Template
+@UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        true
+    }
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+}
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        let contentView = ContentView(viewModel: CounterViewModel.viewModel(from: store))
+        if let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            window.rootViewController = HostingController(rootView: contentView)
+            self.window = window
+            window.makeKeyAndVisible()
+        }
+    }
+}
+
+// MARK: - Functional helpers
+func ignore<T>(_ t: T) -> Void { }
+func identity<T>(_ t: T) -> T { t }
+func absurd<T>(_ never: Never) -> T { }
+
+// MARK: - Action / State
+struct AppState {
+    var count: Int
+}
+enum AppAction {
+    case count(CountAction)
+    case shake(ShakeAction)
+}
+enum CountAction {
+    case increment
+    case decrement
+}
+enum ShakeAction {
+    case start
+    case shaken
+    case stop
+}
+
+// MARK: - Reducer
+let counterReducer = Reducer<CountAction, Int> { action, state in
+    switch action {
+    case .decrement:
+        return state - 1
+    case .increment:
+        return state + 1
+    }
+}
+let appReducer = counterReducer.lift(
+    action: \AppAction.count,
+    state: \AppState.count
+)
+
+// MARK: - Middleware
+class ShakeMiddleware: Middleware {
+    private var shakeGesture: AnyCancellable?
+    private var getState: GetState<Void>!
+    private var output: AnyActionHandler<AppAction>!
+    func receiveContext(getState: @escaping GetState<Void>, output: AnyActionHandler<AppAction>) {
+        self.getState = getState
+        self.output = output
+    }
+
+    func handle(action: ShakeAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        switch action {
+        case .start:
+            shakeGesture = NotificationCenter.default.publisher(for: Notification.Name.ShakeGesture).sink { [weak self] _ in
+                self?.output.dispatch(.shake(.shaken))
+            }
+
+        case .stop:
+            shakeGesture = nil
+
+        case .shaken:
+            output.dispatch(.count(.increment))
+        }
+    }
+}
+extension Notification.Name {
+    public static let ShakeGesture = Notification.Name.init("ShakeGesture")
+}
+class HostingController<ContentView: View>: UIHostingController<ContentView> {
+    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        guard motion == .motionShake else { return }
+        NotificationCenter.default.post(name: NSNotification.Name.ShakeGesture, object: nil)
+    }
+}
+
+let appMiddleware: AnyMiddleware<AppAction, AppAction, AppState> = ShakeMiddleware().lift(
+    inputActionMap: \AppAction.shake,
+    outputActionMap: identity,
+    stateMap: ignore
+).eraseToAnyMiddleware()
+
+// MARK: - Action Enum Properties (use Sourcery for boilerplate code generation)
+extension AppAction {
+    public var count: CountAction? {
+        guard case let .count(value) = self else { return nil }
+        return value
+    }
+    public var shake: ShakeAction? {
+        guard case let .shake(value) = self else { return nil }
+        return value
+    }
+}
+
+// MARK: - Store
+let store = ReduxStoreBase<AppAction, AppState>(
+    subject: .combine(initialValue: AppState(count: 0)),
+    reducer: appReducer,
+    middleware: appMiddleware
+)
+
+// MARK: - ViewModel
+enum CounterViewModel {
+    static func viewModel<S: StoreType>(from store: S) -> ObservableViewModel<ViewAction, ViewState> where S.ActionType == AppAction, S.StateType == AppState {
+        store.projection(
+            action: transform(viewAction:),
+            state: transform(appState:)
+        ).asObservableViewModel(initialState: .empty)
+    }
+
+    struct ViewState: Equatable {
+        let title: String = "Welcome to the Redux counter"
+        let formattedCount: String
+        static var empty: ViewState {
+            .init(formattedCount: "")
+        }
+    }
+
+    enum ViewAction {
+        case tapPlus
+        case tapMinus
+        case onAppear
+        case onDisappear
+    }
+
+    private static func transform(viewAction: ViewAction) -> AppAction? {
+        switch viewAction {
+        case .tapPlus: return .count(.increment)
+        case .tapMinus: return .count(.decrement)
+        case .onAppear: return .shake(.start)
+        case .onDisappear: return .shake(.stop)
+        }
+    }
+
+    private static func transform(appState: AppState) -> ViewState {
+        ViewState(formattedCount: "\(appState.count)")
+    }
+}
+
+// MARK: - View
+struct ContentView: View {
+    @ObservedObject var viewModel: ObservableViewModel<CounterViewModel.ViewAction, CounterViewModel.ViewState>
+
+    var body: some View {
+        VStack {
+            Spacer()
+            Text(viewModel.state.title)
+            Spacer()
+            HStack {
+                Spacer()
+                Button("-") { self.viewModel.dispatch(.tapMinus) }
+                Spacer()
+                Text(viewModel.state.formattedCount)
+                Spacer()
+                Button("+") { self.viewModel.dispatch(.tapPlus) }
+                Spacer()
+            }
+            Spacer()
+        }
+        .padding()
+        .onAppear { self.viewModel.dispatch(.onAppear) }
+        .onDisappear { self.viewModel.dispatch(.onDisappear) }
+    }
+}
+```
