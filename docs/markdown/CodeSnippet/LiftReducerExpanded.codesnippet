@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>lift_reducer_expanded</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>lift(
+    actionGetter: { (action: AppAction) -&gt; &lt;#LocalAction#&gt;? in action.&lt;#something?.child#&gt; },
+    stateGetter: { (state: AppState) -&gt; &lt;#LocalState#&gt; in state.&lt;#something.child#&gt; },
+    stateSetter: { (state: inout AppState, &lt;#local#&gt;: &lt;#LocalState#&gt;) -&gt; Void in state.&lt;#something.child#&gt; = &lt;#local#&gt; }
+)</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>DD0A1AD1-6242-4C85-AA49-DD11E8E3C4C7</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Redux Reducer Lifting Expanded</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

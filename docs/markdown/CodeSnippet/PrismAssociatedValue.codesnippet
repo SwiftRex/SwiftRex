@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>Prism.Setter</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+		<string>TopLevel</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>extension &lt;#Result#&gt; {
+    public var &lt;#success#&gt;: &lt;#Success#&gt;? {
+        get {
+            guard case let .&lt;#success#&gt;(value) = self else { return nil }
+            return value
+        }
+        set {
+            guard case .&lt;#success#&gt; = self, let newValue = newValue else { return }
+            self = .&lt;#success#&gt;(newValue)
+        }
+    }
+
+    public var is&lt;#Success#&gt;: Bool {
+        self.&lt;#success#&gt; != nil
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>F199EE1F-21F3-4552-B74C-F73A9F9281AA</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Prism With Setter</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>
