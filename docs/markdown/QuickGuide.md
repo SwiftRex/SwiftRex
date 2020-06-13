@@ -9,6 +9,13 @@ The minimum implementation is:
 - an app `Reducer<AppAction, AppState>` (function) 
 - an app `Middleware` (class).
 
+## Index
+
+- [Very minimum Counter Example](#very-minimum-counter-example)
+- [Lifting Reducer](#lifting-reducer)
+- [Store Projection and View Models](#store-projection-and-view-models)
+- [Side Effects](#side-effects)
+- [SwiftUI Full Example](#swiftui-full-example)
 ---
 
 ## Very minimum Counter Example
@@ -357,7 +364,7 @@ You can always choose a more direct approach, and that's perfectly fine!
 
 ---
 
-## SwiftUI
+## SwiftUI Full Example
 
 SwiftRex works for UIKit, AppKit, WatchKit, SwiftUI and probably any other presentation framework, on Mac, Linux or mobile devices.
 But because we are excited about SwiftUI functional programming style, let's implement a whole app with all features seen in this Quick Guide and some new ones, as lifting Middlewares.
