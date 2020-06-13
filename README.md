@@ -20,6 +20,14 @@ This pattern, also known as ["Redux"](https://redux.js.org/basics/data-flow), al
 
 [API documentation can be found here](https://swiftrex.github.io/SwiftRex/api/index.html).
 
+# Quick Guide
+
+In a hurry? Already familiar with other redux implementations?
+
+No problem, we have a [TL;DR Quick Guide](docs/markdown/QuickGuide.md) that shows the minimum you need to know about SwiftRex in a very practical approach.
+
+We still recommend reading the full README for a deeper understanding behind SwiftRex concepts.
+
 # Goals
 
 Several architectures and design patterns for mobile development nowadays propose to solve specific issues related to [Single Responsibility Principle](https://www.youtube.com/watch?v=Gt0M_OHKhQE) (such as Massive ViewControllers), or improve testability and dependency management. Other common challenges for mobile developers such as state handling, race conditions, modularization/componentization, thread-safety or dealing properly with UI life-cycle and ownership are less explored but can be equally harmful for an app.
@@ -115,7 +123,6 @@ SwiftRex itself won't be enough, so you have to pick one of the three implementa
 # Parts
 
 Let's understand the components of SwiftRex by splitting them into 3 sections:
-- [Quick Guide](#quick-guide)
 - [Conceptual parts](#conceptual-parts)
     - [Action](#action)
     - [State](#state)
@@ -127,15 +134,6 @@ Let's understand the components of SwiftRex by splitting them into 3 sections:
     - [Store Projection](#store-projection)
     - [Lifting Middleware](#lifting-middleware)
     - [Lifting Reducer](#lifting-reducer)
-
----
-## Quick Guide
-
-In a hurry? Already familiar with other redux implementations?
-
-No problem, we have a [TL;DR Quick Guide](docs/markdown/QuickGuide.md) that shows the minimum you need to know about SwiftRex in a very practical approach.
-
-We still recommend the other topics for a deeper understanding behind SwiftRex concepts.
 
 ---
 ## Conceptual Parts
