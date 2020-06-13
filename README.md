@@ -115,6 +115,7 @@ SwiftRex itself won't be enough, so you have to pick one of the three implementa
 # Parts
 
 Let's understand the components of SwiftRex by splitting them into 3 sections:
+- [Quick Guide](#quick-guide)
 - [Conceptual parts](#conceptual-parts)
     - [Action](#action)
     - [State](#state)
@@ -126,6 +127,15 @@ Let's understand the components of SwiftRex by splitting them into 3 sections:
     - [Store Projection](#store-projection)
     - [Lifting Middleware](#lifting-middleware)
     - [Lifting Reducer](#lifting-reducer)
+
+---
+## Quick Guide
+
+In a hurry? Already familiar with other redux implementations?
+
+No problem, we have a [TL;DR Quick Guide](docs/markdown/QuickGuide.md) that shows the minimum you need to know about SwiftRex in a very practical approach.
+
+We still recommend the other topics for a deeper understanding behind SwiftRex concepts.
 
 ---
 ## Conceptual Parts
@@ -185,12 +195,12 @@ In a device with limited battery and memory we can't afford having a true event-
 However, be careful, some things may look like state but they are not. Let's assume you have an app that shows an item price to the user. This price will be shown as `"$3.00"` in US, or `"$3,00"` in Germany, or maybe this product can be listed in british pounds, so in US we should show `"£3.00"` while in Germany it would be `"£3,00"`. In this example we have:
 - Currency type (`£` or `$`)
 - Numeric value (`3`)
-- Locale (`us` or `de`)
+- Locale (`en_US` or `de_DE`)
 - Formatted string (`"$3.00"`, `"$3,00"`, `"£3.00"` or `"£3,00"`)
 
-The formatted string itself is **NOT** state, because it can be calculated from the other properties. This can be called "derived state" and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it's better to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it. Luckily SwiftRex helps to keep the state consistent as we're about to see in the Reducer section, still, it's better off not duplicating information that can be easily and cheaply calculated.
+The formatted string itself is **NOT** state, because it can be calculated from the other properties. This can be called "derived state" and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it's better off to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it. Luckily SwiftRex helps to keep the state consistent as we're about to see in the Reducer section, still, it's better off not duplicating information that can be easily and cheaply calculated.
 
-For representing the state of an app we recommend value types: structs or enums. Tuples would be acceptable as well, but unfortunately Swift currently doesn't allow us to conform tuples to protocols, and **we want our whole state to be Equatable** and sometimes Codable.
+For representing the state of an app we recommend value types: structs or enums. Tuples would be acceptable as well, but unfortunately Swift currently doesn't allow us to conform tuples to protocols, and we usually want our whole state to be Equatable and sometimes Codable.
 
 ```swift
 struct AppState: Equatable {
@@ -238,26 +248,67 @@ Annotating the whole state as Equatable helps us to reduce the UI updates in cas
 
 ### Store
 
-`Store` is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle.
+`Store` is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle. That's also why we want one and only one instance of a Store, so either you create a static instance singleton, or keep it in your AppDelegate. Be careful with SceneDelegate if your app supports multiple windows and you want to share the state between these multiple instances of your app, which you usually want. That's why AppDelegate, singleton or global variable is usually recommended for the Store, not SceneDelegate.
 
 SwiftRex will provide a protocol and a base type for helping you to create your own Store. Let's learn about them.
 
-`StoreType` is the protocol that defines the minimum implementation requirement of a Store, and it's actually composed only by two other protocols, one for the store input and one for the store output:
-- an `ActionHandler`: that's the store input, so it makes it able to receive and distribute events of generic type `ActionType`. Being an action handler means that an `UIViewController` or SwiftUI View can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`. There's only one requirement:
-    ```swift
-    func dispatch<ActionType>(_ action: ActionType)
-    ```
+#### StoreType
+`StoreType` is the protocol that defines the minimum implementation requirement of a Store, and it's actually composed only by two other protocols, one for the store input and one for the store output.
 
-- a `StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an `Observable` (`RxSwift`) or a `Publisher` (`Combine`) of state elements, and an `UIViewController` can subscribe to the store and react to state changes. There's only one requirement:
-    ```swift
-    var statePublisher<StateType>: UnfailablePublisherType<StateType> { get }
-    ```
-    The `UnfailablePublisherType<StateType>` is an abstraction that will be implemented as `Observable`, `Publisher` or `SignalProducer` according to the selected Reactive Framework, and emits the element `StateType` (your root app state) with `Never` type for failure, when the framework supports it.
+##### 1. ActionHandler
+`ActionHandler`: that's the store input, so it makes it able to receive and distribute events of generic type `ActionType`. Being an action handler means that an `UIViewController` or SwiftUI View can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`. There's only one requirement:
+
+```swift
+func dispatch(_ action: ActionType, from dispatcher: ActionSource)
+```
+
+It gives for free another dispatch function:
+```swift
+func dispatch(_ action: ActionType, file: String = #file, function: String = #function, line: UInt = #line, info: String? = nil)
+```
+
+Most of the times, users will only provide the first parameter, `action: ActionType`, and the rest will be collected automatically from where the action was dispatched from. This is useful for log and analytics purposes, we can track the source of each action.
+
+```swift
+// Usage:
+store.dispatch(.appStarted) // this collects automatically the dispatcher
+```
+
+Because `ActionType` is generic, when you dispatch you don't have to provide the full enum name, only the case. This also avoids mistakes as it's compiled-checked.
+
+##### 2. StateProvider
+`StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an `Observable` (`RxSwift`) or a `Publisher` (`Combine`) of state elements, and an `UIViewController` or SwiftUI View can subscribe to the store and react to state changes. There's only one requirement:
+
+```swift
+var statePublisher: UnfailablePublisherType<StateType> { get }
+```
+
+The `UnfailablePublisherType<StateType>` is an abstraction that will be implemented as `Observable`, `Publisher` or `SignalProducer` according to the selected Reactive Framework, and emits the element `StateType` (your root app state) with `Never` type for failure, when the framework supports it.
+
+```swift
+// Combine Usage:
+let cancellable = store.statePublisher.sink { value in
+    print("Got new state: \(value)") 
+}
+// RxSwift Usage:
+let disposable = store.statePublisher.subscribe(onNext: { value in
+    print("Got new state: \(value)") 
+})
+```
+
+There are other ways to observe a Store, such as SwiftUI ObservableObject protocol, but these tools are built on top of this very simple `StateProvider` protocol.
+
+#### StoreType Flow
+
+Either using UIKit, AppKit, WatchKit, SwiftUI or any other presentation layer, the communication between a Store and the UI will happen exclusively through these two members, `dispatch` for input actions and `statePublisher` for output state.
 
 [![ViewController and Store](https://swiftrex.github.io/SwiftRex/markdown/img/Redux1.gif)](https://www.youtube.com/watch?v=oBR94I2p2BA)
 
 As seen in the animation above, the Store only exposes an input (action) and an output (state provider), and that's all the Views need to know about the Store.
 
+> **_IMPORTANT:_** However you should only have one store, you can have multiple projections of this store and give to your views, for example, that way they will only have a limited amount of operations and state available and can't mess with things that are out of their responsibilities. This is also the perfect way to modularize an app, as multiples projections can live in different frameworks and later only assembled together in the main target. We will talk more about that on chapter [Store Projection](#store-projection), but for now it's only important to understand that Store Projections won't hold source-of-truth, but will pretend to be a real store, therefore, implement the `StoreType` protocol, and the flow above will still be valid regardless of being the real singleton Store or a simple projection of it.
+
+#### ReduxStoreBase
 `ReduxStoreBase` is an `open class` that conforms to `StoreType` and provides all we need to start using SwiftRex. You can choose to inherit from this class or use it directly. We recommend inheritance because this will allow you to better mock the Store if necessary, however there's nothing you really have to write once `ReduxStoreBase` is complete: it glues all the parts together and acts as a proxy to the non-Redux world.
 
 A suggested `Store` can be written with no more than 10 lines of code:
