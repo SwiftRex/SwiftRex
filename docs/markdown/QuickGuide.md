@@ -388,7 +388,8 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let contentView = ContentView(viewModel: CounterViewModel.viewModel(from: store))
+        let viewModel = CounterViewModel.viewModel(from: store)
+        let contentView = ContentView(viewModel: viewModel)
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             window.rootViewController = HostingController(rootView: contentView)
@@ -398,102 +399,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-// MARK: - Functional helpers
-func ignore<T>(_ t: T) -> Void { }
-func identity<T>(_ t: T) -> T { t }
-func absurd<T>(_ never: Never) -> T { }
+// MARK: - View
+struct ContentView: View {
+    @ObservedObject var viewModel: ObservableViewModel<CounterViewModel.ViewAction, CounterViewModel.ViewState>
 
-// MARK: - Action / State
-struct AppState {
-    var count: Int
-}
-enum AppAction {
-    case count(CountAction)
-    case shake(ShakeAction)
-}
-enum CountAction {
-    case increment
-    case decrement
-}
-enum ShakeAction {
-    case start
-    case shaken
-    case stop
-}
-
-// MARK: - Reducer
-let counterReducer = Reducer<CountAction, Int> { action, state in
-    switch action {
-    case .decrement:
-        return state - 1
-    case .increment:
-        return state + 1
-    }
-}
-let appReducer = counterReducer.lift(
-    action: \AppAction.count,
-    state: \AppState.count
-)
-
-// MARK: - Middleware
-class ShakeMiddleware: Middleware {
-    private var shakeGesture: AnyCancellable?
-    private var getState: GetState<Void>!
-    private var output: AnyActionHandler<AppAction>!
-    func receiveContext(getState: @escaping GetState<Void>, output: AnyActionHandler<AppAction>) {
-        self.getState = getState
-        self.output = output
-    }
-
-    func handle(action: ShakeAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        switch action {
-        case .start:
-            shakeGesture = NotificationCenter.default.publisher(for: Notification.Name.ShakeGesture).sink { [weak self] _ in
-                self?.output.dispatch(.shake(.shaken))
+    var body: some View {
+        VStack {
+            Spacer()
+            Text(viewModel.state.title)
+            Spacer()
+            HStack {
+                Spacer()
+                Button("-") { self.viewModel.dispatch(.tapMinus) }
+                Spacer()
+                Text(viewModel.state.formattedCount)
+                Spacer()
+                Button("+") { self.viewModel.dispatch(.tapPlus) }
+                Spacer()
             }
-
-        case .stop:
-            shakeGesture = nil
-
-        case .shaken:
-            output.dispatch(.count(.increment))
+            Spacer()
         }
+        .padding()
+        .onAppear { self.viewModel.dispatch(.onAppear) }
+        .onDisappear { self.viewModel.dispatch(.onDisappear) }
     }
 }
-extension Notification.Name {
-    public static let ShakeGesture = Notification.Name.init("ShakeGesture")
-}
-class HostingController<ContentView: View>: UIHostingController<ContentView> {
-    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        guard motion == .motionShake else { return }
-        NotificationCenter.default.post(name: NSNotification.Name.ShakeGesture, object: nil)
-    }
-}
-
-let appMiddleware: AnyMiddleware<AppAction, AppAction, AppState> = ShakeMiddleware().lift(
-    inputActionMap: \AppAction.shake,
-    outputActionMap: identity,
-    stateMap: ignore
-).eraseToAnyMiddleware()
-
-// MARK: - Action Enum Properties (use Sourcery for boilerplate code generation)
-extension AppAction {
-    public var count: CountAction? {
-        guard case let .count(value) = self else { return nil }
-        return value
-    }
-    public var shake: ShakeAction? {
-        guard case let .shake(value) = self else { return nil }
-        return value
-    }
-}
-
-// MARK: - Store
-let store = ReduxStoreBase<AppAction, AppState>(
-    subject: .combine(initialValue: AppState(count: 0)),
-    reducer: appReducer,
-    middleware: appMiddleware
-)
 
 // MARK: - ViewModel
 enum CounterViewModel {
@@ -533,29 +463,97 @@ enum CounterViewModel {
     }
 }
 
-// MARK: - View
-struct ContentView: View {
-    @ObservedObject var viewModel: ObservableViewModel<CounterViewModel.ViewAction, CounterViewModel.ViewState>
+// MARK: - Action / State
+struct AppState {
+    var count: Int
+}
+enum AppAction {
+    case count(CountAction)
+    case shake(ShakeAction)
+}
+enum CountAction {
+    case increment
+    case decrement
+}
+enum ShakeAction {
+    case start
+    case shaken
+    case stop
+}
 
-    var body: some View {
-        VStack {
-            Spacer()
-            Text(viewModel.state.title)
-            Spacer()
-            HStack {
-                Spacer()
-                Button("-") { self.viewModel.dispatch(.tapMinus) }
-                Spacer()
-                Text(viewModel.state.formattedCount)
-                Spacer()
-                Button("+") { self.viewModel.dispatch(.tapPlus) }
-                Spacer()
-            }
-            Spacer()
-        }
-        .padding()
-        .onAppear { self.viewModel.dispatch(.onAppear) }
-        .onDisappear { self.viewModel.dispatch(.onDisappear) }
+// MARK: - Action Enum Properties (use Sourcery for boilerplate code generation)
+extension AppAction {
+    public var count: CountAction? {
+        guard case let .count(value) = self else { return nil }
+        return value
+    }
+    public var shake: ShakeAction? {
+        guard case let .shake(value) = self else { return nil }
+        return value
     }
 }
+
+// MARK: - Store
+let store = ReduxStoreBase<AppAction, AppState>(
+    subject: .combine(initialValue: AppState(count: 0)),
+    reducer: counterReducer.lift(
+        action: \AppAction.count,
+        state: \AppState.count
+    ),
+    middleware: ShakeMiddleware().lift(
+        inputActionMap: \AppAction.shake,
+        outputActionMap: identity,
+        stateMap: ignore
+    )
+)
+
+// MARK: - Reducer
+let counterReducer = Reducer<CountAction, Int> { action, state in
+    switch action {
+    case .decrement:
+        return state - 1
+    case .increment:
+        return state + 1
+    }
+}
+
+// MARK: - Middleware
+class ShakeMiddleware: Middleware {
+    private var shakeGesture: AnyCancellable?
+    private var getState: GetState<Void>!
+    private var output: AnyActionHandler<AppAction>!
+    func receiveContext(getState: @escaping GetState<Void>, output: AnyActionHandler<AppAction>) {
+        self.getState = getState
+        self.output = output
+    }
+
+    func handle(action: ShakeAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        switch action {
+        case .start:
+            shakeGesture = NotificationCenter.default.publisher(for: Notification.Name.ShakeGesture).sink { [weak self] _ in
+                self?.output.dispatch(.shake(.shaken))
+            }
+
+        case .stop:
+            shakeGesture = nil
+
+        case .shaken:
+            output.dispatch(.count(.increment))
+        }
+    }
+}
+extension Notification.Name {
+    public static let ShakeGesture = Notification.Name.init("ShakeGesture")
+}
+class HostingController<ContentView: View>: UIHostingController<ContentView> {
+    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        guard motion == .motionShake else { return }
+        NotificationCenter.default.post(name: NSNotification.Name.ShakeGesture, object: nil)
+    }
+}
+
+// MARK: - Functional helpers
+func ignore<T>(_ t: T) -> Void { }
+func identity<T>(_ t: T) -> T { t }
+func absurd<T>(_ never: Never) -> T { }
 ```
