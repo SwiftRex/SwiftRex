@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftRex::ReactiveSwiftRex"
-               BuildableName = "ReactiveSwiftRex.framework"
-               BlueprintName = "ReactiveSwiftRex"
+               BlueprintIdentifier = "SwiftRex::RxSwiftRex"
+               BuildableName = "RxSwiftRex.framework"
+               BlueprintName = "RxSwiftRex"
                ReferencedContainer = "container:Playgrounds/Playgrounds.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftRex::RxSwiftRex"
-               BuildableName = "RxSwiftRex.framework"
-               BlueprintName = "RxSwiftRex"
+               BlueprintIdentifier = "SwiftRex::ReactiveSwiftRex"
+               BuildableName = "ReactiveSwiftRex.framework"
+               BlueprintName = "ReactiveSwiftRex"
                ReferencedContainer = "container:Playgrounds/Playgrounds.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -74,16 +74,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftRex::SwiftRexTests"
-               BuildableName = "SwiftRexTests.xctest"
-               BlueprintName = "SwiftRexTests"
-               ReferencedContainer = "container:Playgrounds/Playgrounds.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "SwiftRex::RxSwiftRexTests"
                BuildableName = "RxSwiftRexTests.xctest"
                BlueprintName = "RxSwiftRexTests"
@@ -107,6 +97,16 @@
                BlueprintIdentifier = "SwiftRex::ReactiveSwiftRexTests"
                BuildableName = "ReactiveSwiftRexTests.xctest"
                BlueprintName = "ReactiveSwiftRexTests"
+               ReferencedContainer = "container:Playgrounds/Playgrounds.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftRex::SwiftRexTests"
+               BuildableName = "SwiftRexTests.xctest"
+               BlueprintName = "SwiftRexTests"
                ReferencedContainer = "container:Playgrounds/Playgrounds.xcodeproj">
             </BuildableReference>
          </TestableReference>
