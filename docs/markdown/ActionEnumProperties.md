@@ -2,6 +2,27 @@
 
 Because enums in Swift don't have KeyPath as structs, we strongly recommend you to create enum properties for every case, so you can easily traverse enum trees as well as reading associated values. There are several ways to create enum properties, either manually or using code generation tools.
 
+Having Action enum properties will be very beneficial when lifting actions, specially when extracting a possible local action out of an AppAction for example:
+
+```swift
+// Instead of
+.lift(action: { (globalAction: AppAction) -> LocalAction? in 
+    if case let .localActionEnumCase(localAction) = globalAction { return localAction }
+    return nil
+})
+
+// You can do
+.lift(action: { $0.localActionEnumCase })
+
+// Or even
+.lift(action: \.localActionEnumCase)
+```
+
+So the shape `(AppAction) -> LocalAction?` can be used as a simple `\AppAction.enumProperty` KeyPath, usually inferred to `\.enumProperty`. It's not only a matter of syntax sugar, it's a way to avoid opening closures that can contain bugs, typos, mistakes.
+KeyPaths are compile-checked, and if you use code-generation for creating the enum properties, you reduce enormously the error possibility.
+
+Please notice that these key-paths always return Optional, that's because enum cases are mutually exclusive, and when extracting a local from a global, we return nil whenever the current instance has a different case. If you want to learn more about the Mathematics behind this, please look for `Functional Programming Optics: Prism` on your favourite search engine. :)
+
 ---
 
 ## Manually
