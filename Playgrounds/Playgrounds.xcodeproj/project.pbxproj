@@ -523,6 +523,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02C777942494EAC20013EE05 /* Simple Counter.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = "Simple Counter.playground"; path = "Playgrounds/Simple Counter.playground"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		OBJ_10 /* PublisherType+Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PublisherType+Publisher.swift"; sourceTree = "<group>"; };
 		OBJ_100 /* TestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestState.swift; sourceTree = "<group>"; };
 		OBJ_101 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
@@ -1407,6 +1408,7 @@
 		OBJ_5 /*  */ = {
 			isa = PBXGroup;
 			children = (
+				02C777942494EAC20013EE05 /* Simple Counter.playground */,
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_59 /* Tests */,
