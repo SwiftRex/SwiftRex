@@ -141,7 +141,7 @@ When we lift a reducer, we need to tell the new lifted reducer how to translate 
 - receive state (incoming)
 - return state (outgoing)
 
-That's why we need to provide these 3 closures. More details about that are shown in the [README Lifting Reducer Chapter](../../README.md#lifting-middleware). However, we can use a simplified lift syntax as long as our [AppAction has enum case properties](ActionEnumProperties.md).
+That's why we need to provide these 3 closures. More details about that are shown in the [README Lifting Reducer Chapter](../../README.md#lifting-reducer). However, we can use a simplified lift syntax as long as our [AppAction has enum case properties](ActionEnumProperties.md).
 
 ```swift
 let appReducer = counterReducer.lift(
@@ -315,6 +315,18 @@ class ShakeMiddleware: Middleware {
             // we don't care about incoming count actions
             break
         }
+    }
+}
+
+// Extra stuff for this gesture
+extension Notification.Name {
+    public static let ShakeGesture = Notification.Name.init("ShakeGesture")
+}
+// For SwiftUI this is the way to go, for UIKit you can do the same in your main UIViewController
+class HostingController<ContentView: View>: UIHostingController<ContentView> {
+    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        guard motion == .motionShake else { return }
+        NotificationCenter.default.post(name: NSNotification.Name.ShakeGesture, object: nil)
     }
 }
 ```
