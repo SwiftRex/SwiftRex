@@ -32,7 +32,8 @@ DerivedData/
 
 ## Playgrounds
 timeline.xctimeline
-playground.xcworkspace
+!Playground.xcworkspace
+!PlaygroundSwiftRexProxy.xcodeproj
 
 # Swift Package Manager
 #

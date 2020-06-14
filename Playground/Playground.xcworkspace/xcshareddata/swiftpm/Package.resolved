@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftRex",
+        "repositoryURL": "https://github.com/SwiftRex/SwiftRex.git",
+        "state": {
+          "branch": null,
+          "revision": "b90766264edc92f60dc55b2a5e48d57efca6fbcb",
+          "version": "0.7.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
