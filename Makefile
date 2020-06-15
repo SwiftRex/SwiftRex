@@ -18,7 +18,7 @@ pod-push:
 	pod trunk push CombineRex.podspec --allow-warnings
 
 mint:
-	brew install mint
+	command -v mint || brew install mint
 	mint bootstrap
 
 # Unit Test
