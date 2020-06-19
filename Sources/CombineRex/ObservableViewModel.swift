@@ -35,7 +35,7 @@ import SwiftRex
 /// └────────┘ └────────┘ └────────┘
 /// ```
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
+open class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObject {
     private var cancellableBinding: AnyCancellable?
     private var store: StoreProjection<ViewAction, ViewState>
 
@@ -50,7 +50,7 @@ public class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableOb
         self.cancellableBinding = statePublisher.assign(to: \.state, on: self)
     }
 
-    public func dispatch(_ action: ViewAction, from dispatcher: ActionSource) {
+    open func dispatch(_ action: ViewAction, from dispatcher: ActionSource) {
         store.dispatch(action, from: dispatcher)
     }
 }
