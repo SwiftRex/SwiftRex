@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:PlaygroundSwiftRexProxy/PlaygroundSwiftRexProxy.xcodeproj">
+      location = "group:Simple Counter.playground">
+   </FileRef>
+   <FileRef
+      location = "group:PlaygroundSwiftRexProxy.xcodeproj">
    </FileRef>
 </Workspace>
