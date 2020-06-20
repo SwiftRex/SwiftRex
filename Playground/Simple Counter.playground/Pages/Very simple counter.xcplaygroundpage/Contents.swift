@@ -5,6 +5,15 @@ import CombineRex
 import SwiftRex
 import UIKit
 
+/*
+ How to use:
+ - Open Playground/Playground.xcworkspace on Xcode (not the xcodeproj)
+ - Wait for SPM to resolve dependencies
+ - Select target PlaygroundSwiftRexProxy and any iOS simulator
+ - Build it
+ - Play the Playground page
+ */
+
 // MARK: - State
 struct AppState {
     let count: Int
