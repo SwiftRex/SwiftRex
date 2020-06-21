@@ -18,4 +18,3 @@ public protocol MiddlewareReaderProtocol {
     ///                     When inject is called, your MiddlewareReader materializes into a Middleware.
     init(inject: @escaping (Dependencies) -> MiddlewareType)
 }
-

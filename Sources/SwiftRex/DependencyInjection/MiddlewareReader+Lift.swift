@@ -1,3 +1,5 @@
+// swiftlint:disable file_length
+
 // MARK: - Map 4
 extension MiddlewareReaderProtocol {
     /// All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common
@@ -103,7 +105,10 @@ extension MiddlewareReaderProtocol {
         outputAction outputActionMap: @escaping (MiddlewareType.OutputActionType) -> GlobalOutputActionType,
         state stateMap: @escaping (GlobalStateType) -> MiddlewareType.StateType,
         dependencies dependenciesMap: @escaping (GlobalDependencies) -> Dependencies
-    ) -> MiddlewareReader<GlobalDependencies, LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, GlobalStateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        GlobalDependencies,
+        LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, GlobalStateType, MiddlewareType>
+    > {
         dimap(
             transformMiddleware: {
                 $0.lift(inputActionMap: { $0 },
@@ -157,7 +162,10 @@ extension MiddlewareReaderProtocol {
         inputAction inputActionMap: @escaping (GlobalInputActionType) -> MiddlewareType.InputActionType?,
         state stateMap: @escaping (GlobalStateType) -> MiddlewareType.StateType,
         dependencies dependenciesMap: @escaping (GlobalDependencies) -> Dependencies
-    ) -> MiddlewareReader<GlobalDependencies, LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        GlobalDependencies,
+        LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>
+    > {
         dimap(
             transformMiddleware: {
                 $0.lift(inputActionMap: inputActionMap,
@@ -211,7 +219,10 @@ extension MiddlewareReaderProtocol {
         inputAction inputActionMap: @escaping (GlobalInputActionType) -> MiddlewareType.InputActionType?,
         outputAction outputActionMap: @escaping (MiddlewareType.OutputActionType) -> GlobalOutputActionType,
         dependencies dependenciesMap: @escaping (GlobalDependencies) -> Dependencies
-    ) -> MiddlewareReader<GlobalDependencies, LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        GlobalDependencies,
+        LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>
+    > {
         dimap(
             transformMiddleware: {
                 $0.lift(inputActionMap: inputActionMap,
@@ -307,7 +318,10 @@ extension MiddlewareReaderProtocol {
     public func lift<GlobalDependencies, GlobalStateType>(
         state stateMap: @escaping (GlobalStateType) -> MiddlewareType.StateType,
         dependencies dependenciesMap: @escaping (GlobalDependencies) -> Dependencies
-    ) -> MiddlewareReader<GlobalDependencies, LiftMiddleware<MiddlewareType.InputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        GlobalDependencies,
+        LiftMiddleware<MiddlewareType.InputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>
+    > {
         dimap(
             transformMiddleware: {
                 $0.lift(inputActionMap: { $0 },
@@ -350,7 +364,10 @@ extension MiddlewareReaderProtocol {
     public func lift<GlobalDependencies, GlobalOutputActionType>(
         outputAction outputActionMap: @escaping (MiddlewareType.OutputActionType) -> GlobalOutputActionType,
         dependencies dependenciesMap: @escaping (GlobalDependencies) -> Dependencies
-    ) -> MiddlewareReader<GlobalDependencies, LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        GlobalDependencies,
+        LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>
+    > {
         dimap(
             transformMiddleware: {
                 $0.lift(inputActionMap: { $0 },
@@ -435,7 +452,10 @@ extension MiddlewareReaderProtocol {
     public func lift<GlobalDependencies, GlobalInputActionType>(
         inputAction inputActionMap: @escaping (GlobalInputActionType) -> MiddlewareType.InputActionType?,
         dependencies dependenciesMap: @escaping (GlobalDependencies) -> Dependencies
-    ) -> MiddlewareReader<GlobalDependencies, LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, MiddlewareType.StateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        GlobalDependencies,
+        LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, MiddlewareType.StateType, MiddlewareType>
+    > {
         dimap(
             transformMiddleware: {
                 $0.lift(inputActionMap: inputActionMap,
@@ -555,7 +575,10 @@ extension MiddlewareReaderProtocol {
     ///            even before injecting the dependencies.
     public func lift<GlobalStateType>(
         state stateMap: @escaping (GlobalStateType) -> MiddlewareType.StateType
-    ) -> MiddlewareReader<Dependencies, LiftMiddleware<MiddlewareType.InputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        Dependencies,
+        LiftMiddleware<MiddlewareType.InputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>
+    > {
         mapMiddleware {
             $0.lift(inputActionMap: { $0 },
                     outputActionMap: { $0 },
@@ -613,7 +636,10 @@ extension MiddlewareReaderProtocol {
     ///            even before injecting the dependencies.
     public func lift<GlobalOutputActionType>(
         outputAction outputActionMap: @escaping (MiddlewareType.OutputActionType) -> GlobalOutputActionType
-    ) -> MiddlewareReader<Dependencies, LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        Dependencies,
+        LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>
+    > {
         mapMiddleware {
             $0.lift(inputActionMap: { $0 },
                     outputActionMap: outputActionMap,
@@ -646,7 +672,10 @@ extension MiddlewareReaderProtocol {
     ///            even before injecting the dependencies.
     public func lift<GlobalInputActionType>(
         inputAction inputActionMap: @escaping (GlobalInputActionType) -> MiddlewareType.InputActionType?
-    ) -> MiddlewareReader<Dependencies, LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, MiddlewareType.StateType, MiddlewareType>> {
+    ) -> MiddlewareReader<
+        Dependencies,
+        LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, MiddlewareType.StateType, MiddlewareType>
+    > {
         mapMiddleware {
             $0.lift(inputActionMap: inputActionMap,
                     outputActionMap: { $0 },

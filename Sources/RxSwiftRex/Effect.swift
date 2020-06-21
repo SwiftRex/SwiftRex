@@ -156,7 +156,6 @@ extension Effect {
 }
 
 extension ObservableType {
-
     /// Erases any unfailable Observable to effect. Don't call this on eager Observables or the effect is already
     /// happening before the subscription.
     public var asEffect: Effect<Element> {

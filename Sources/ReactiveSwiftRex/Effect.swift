@@ -151,7 +151,6 @@ extension Effect {
 }
 
 extension SignalProducerProtocol where Error == Never {
-
     /// Erases any unfailable Publisher to effect. Don't call this on eager Publishers or the effect is already
     /// happening before the subscription.
     public var asEffect: Effect<Value> {

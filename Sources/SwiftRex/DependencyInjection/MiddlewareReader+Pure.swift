@@ -6,6 +6,6 @@ extension MiddlewareReaderProtocol {
     ///                    evaluated.
     /// - Returns: a `MiddlewareReader` that wraps the given Middleware until `inject` is called.
     public static func pure(_ value: MiddlewareType) -> Self {
-        return Self { _ in value }
+        Self { _ in value }
     }
 }

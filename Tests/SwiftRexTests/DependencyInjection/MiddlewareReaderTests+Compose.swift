@@ -121,8 +121,8 @@ extension MiddlewareReaderTests {
         let readers = ["m1", "m2"]
             .lazy
             .map { name in
-                MiddlewareReader<String, MonoidMiddleware<AppAction, AppAction, TestState>> {
-                    dependency -> MonoidMiddleware<AppAction, AppAction, TestState> in
+                MiddlewareReader<String, MonoidMiddleware<AppAction, AppAction, TestState>> { dependency
+                -> MonoidMiddleware<AppAction, AppAction, TestState> in
                     XCTAssertEqual("injected dependency", dependency)
                     let middleware = MonoidMiddleware<AppAction, AppAction, TestState>(string: name)
                     middleware.mock.receiveContextGetStateOutputClosure = { _, output in middlewareOutput = output }

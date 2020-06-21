@@ -5,7 +5,7 @@ extension MiddlewareReaderTests {
     func testMiddlewareReaderMap() {
         let original = MiddlewareMock<String, String, String>()
         let mapped = MonoidMiddleware<String, String, String>(string: "a")
-        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>>.init { dependency in
+        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>> { dependency in
             XCTAssertEqual("some dependency", dependency)
             return original
         }
@@ -22,7 +22,7 @@ extension MiddlewareReaderTests {
         let middleware = MiddlewareMock<String, String, String>()
         let originalDependency = 42
         let mappedDepedency = "42"
-        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>>.init { dependency in
+        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>> { dependency in
             XCTAssertEqual(mappedDepedency, dependency)
             return middleware
         }
@@ -41,7 +41,7 @@ extension MiddlewareReaderTests {
         let originalDependency = 42
         let mappedDepedency = "42"
 
-        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>>.init { dependency in
+        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>> { dependency in
             XCTAssertEqual(mappedDepedency, dependency)
             return originalMiddleware
         }
@@ -69,7 +69,7 @@ extension MiddlewareReaderTests {
             return mappedMiddleware
         }
 
-        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>>.init { dependency in
+        let reader = MiddlewareReader<String, MiddlewareMock<String, String, String>> { dependency in
             XCTAssertEqual("some dependency", dependency)
             return originalMiddleware
         }
@@ -81,5 +81,4 @@ extension MiddlewareReaderTests {
         let resultingMiddleware = mappedReader.inject("some dependency")
         XCTAssertEqual(resultingMiddleware.string, "a")
     }
-
 }

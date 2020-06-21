@@ -1,7 +1,6 @@
 import Foundation
 
 extension MiddlewareReaderProtocol {
-
     /// Maps the `Middleware` element that will eventually be produced upon dependency injection, and derives into a new `Middleware`
     ///
     /// - We start with a dependency `X` to calculate middleware `A`
@@ -67,7 +66,7 @@ extension MiddlewareReaderProtocol {
     public func dimap<NewMiddleware: Middleware, World>(transformMiddleware: @escaping (MiddlewareType) -> NewMiddleware,
                                                         extractOnlyDependenciesNeededForThisMiddleware: @escaping (World) -> Dependencies)
     -> MiddlewareReader<World, NewMiddleware> {
-        return mapMiddleware(transformMiddleware).contramapDependecies(extractOnlyDependenciesNeededForThisMiddleware)
+        mapMiddleware(transformMiddleware).contramapDependecies(extractOnlyDependenciesNeededForThisMiddleware)
     }
 }
 

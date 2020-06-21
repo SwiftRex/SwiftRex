@@ -134,7 +134,7 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, GlobalDependencies> {
         let localDependencies = self.dependencies
 
-        return EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, GlobalDependencies>.init(
+        return EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, GlobalDependencies>(
             dependencies: dependenciesMap(localDependencies),
             handle: { globalInputAction, globalState, globalContext -> Effect<GlobalOutputActionType> in
                 guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }

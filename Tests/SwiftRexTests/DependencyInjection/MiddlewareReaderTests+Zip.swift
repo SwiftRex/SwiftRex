@@ -1,21 +1,21 @@
 import SwiftRex
 import XCTest
 
+// swiftlint:disable closure_parameter_position identifier_name
 extension MiddlewareReaderTests {
     var middlewares: [MonoidMiddleware<String, String, String>] {
         (0...9)
             .map(String.init)
-            .map { MonoidMiddleware<String, String, String>.init(string: $0) }
+            .map { MonoidMiddleware<String, String, String>(string: $0) }
     }
 
-    var reader: (MonoidMiddleware<String, String, String>) -> MiddlewareReader<String, MonoidMiddleware<String, String, String>> {
-        return {
+    var reader: (MonoidMiddleware<String, String, String>) -> MiddlewareReader<String, MonoidMiddleware<String, String, String>> { {
             middleware in
             MiddlewareReader { dependency in
                 XCTAssertEqual("some dependency", dependency)
-                var m = middleware
-                m.string = dependency + " " + middleware.string
-                return m
+                var mutableMiddleware = middleware
+                mutableMiddleware.string = dependency + " " + middleware.string
+                return mutableMiddleware
             }
         }
     }
@@ -86,15 +86,11 @@ extension MiddlewareReaderTests {
             reader(middlewares[4]),
             reader(middlewares[5]),
             reader(middlewares[6]),
-            with: { (
-                m0: MonoidMiddleware<String, String, String>,
-                m1: MonoidMiddleware<String, String, String>,
-                m2: MonoidMiddleware<String, String, String>,
-                m3: MonoidMiddleware<String, String, String>,
-                m4: MonoidMiddleware<String, String, String>,
-                m5: MonoidMiddleware<String, String, String>,
-                m6: MonoidMiddleware<String, String, String>
-            ) -> MonoidMiddleware<String, String, String> in
+            with: { (m0: MonoidMiddleware<String, String, String>, m1: MonoidMiddleware<String, String, String>,
+                     m2: MonoidMiddleware<String, String, String>, m3: MonoidMiddleware<String, String, String>,
+                     m4: MonoidMiddleware<String, String, String>, m5: MonoidMiddleware<String, String, String>,
+                     m6: MonoidMiddleware<String, String, String>)
+            -> MonoidMiddleware<String, String, String> in
                 m0 <> m1 <> m2 <> m3 <> m4 <> m5 <> m6
             }
         )
@@ -114,16 +110,11 @@ extension MiddlewareReaderTests {
             reader(middlewares[5]),
             reader(middlewares[6]),
             reader(middlewares[7]),
-            with: { (
-                m0: MonoidMiddleware<String, String, String>,
-                m1: MonoidMiddleware<String, String, String>,
-                m2: MonoidMiddleware<String, String, String>,
-                m3: MonoidMiddleware<String, String, String>,
-                m4: MonoidMiddleware<String, String, String>,
-                m5: MonoidMiddleware<String, String, String>,
-                m6: MonoidMiddleware<String, String, String>,
-                m7: MonoidMiddleware<String, String, String>
-            ) -> MonoidMiddleware<String, String, String> in
+            with: { (m0: MonoidMiddleware<String, String, String>, m1: MonoidMiddleware<String, String, String>,
+                     m2: MonoidMiddleware<String, String, String>, m3: MonoidMiddleware<String, String, String>,
+                     m4: MonoidMiddleware<String, String, String>, m5: MonoidMiddleware<String, String, String>,
+                     m6: MonoidMiddleware<String, String, String>, m7: MonoidMiddleware<String, String, String>)
+            -> MonoidMiddleware<String, String, String> in
                 m0 <> m1 <> m2 <> m3 <> m4 <> m5 <> m6 <> m7
             }
         )
@@ -144,17 +135,12 @@ extension MiddlewareReaderTests {
             reader(middlewares[6]),
             reader(middlewares[7]),
             reader(middlewares[8]),
-            with: { (
-                m0: MonoidMiddleware<String, String, String>,
-                m1: MonoidMiddleware<String, String, String>,
-                m2: MonoidMiddleware<String, String, String>,
-                m3: MonoidMiddleware<String, String, String>,
-                m4: MonoidMiddleware<String, String, String>,
-                m5: MonoidMiddleware<String, String, String>,
-                m6: MonoidMiddleware<String, String, String>,
-                m7: MonoidMiddleware<String, String, String>,
-                m8: MonoidMiddleware<String, String, String>
-            ) -> MonoidMiddleware<String, String, String> in
+            with: { (m0: MonoidMiddleware<String, String, String>, m1: MonoidMiddleware<String, String, String>,
+                     m2: MonoidMiddleware<String, String, String>, m3: MonoidMiddleware<String, String, String>,
+                     m4: MonoidMiddleware<String, String, String>, m5: MonoidMiddleware<String, String, String>,
+                     m6: MonoidMiddleware<String, String, String>, m7: MonoidMiddleware<String, String, String>,
+                     m8: MonoidMiddleware<String, String, String>)
+            -> MonoidMiddleware<String, String, String> in
                 m0 <> m1 <> m2 <> m3 <> m4 <> m5 <> m6 <> m7 <> m8
             }
         )
@@ -176,18 +162,12 @@ extension MiddlewareReaderTests {
             reader(middlewares[7]),
             reader(middlewares[8]),
             reader(middlewares[9]),
-            with: { (
-                m0: MonoidMiddleware<String, String, String>,
-                m1: MonoidMiddleware<String, String, String>,
-                m2: MonoidMiddleware<String, String, String>,
-                m3: MonoidMiddleware<String, String, String>,
-                m4: MonoidMiddleware<String, String, String>,
-                m5: MonoidMiddleware<String, String, String>,
-                m6: MonoidMiddleware<String, String, String>,
-                m7: MonoidMiddleware<String, String, String>,
-                m8: MonoidMiddleware<String, String, String>,
-                m9: MonoidMiddleware<String, String, String>
-            ) -> MonoidMiddleware<String, String, String> in
+            with: { (m0: MonoidMiddleware<String, String, String>, m1: MonoidMiddleware<String, String, String>,
+                     m2: MonoidMiddleware<String, String, String>, m3: MonoidMiddleware<String, String, String>,
+                     m4: MonoidMiddleware<String, String, String>, m5: MonoidMiddleware<String, String, String>,
+                     m6: MonoidMiddleware<String, String, String>, m7: MonoidMiddleware<String, String, String>,
+                     m8: MonoidMiddleware<String, String, String>, m9: MonoidMiddleware<String, String, String>)
+            -> MonoidMiddleware<String, String, String> in
                 m0 <> m1 <> m2 <> m3 <> m4 <> m5 <> m6 <> m7 <> m8 <> m9
             }
         )

@@ -1,7 +1,6 @@
 import Foundation
 
 extension MiddlewareReaderProtocol {
-
     /// Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is
     /// injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide
     /// a way to combine there resulting Middlewares into one.
@@ -16,8 +15,8 @@ extension MiddlewareReaderProtocol {
         _ reader2: M2,
         with map: @escaping (M1.MiddlewareType, M2.MiddlewareType) -> MOutput
     ) -> MiddlewareReader<M1.Dependencies, MOutput> where M1.Dependencies == M2.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e))
+        MiddlewareReader { environment in
+            map(reader1.inject(environment), reader2.inject(environment))
         }
     }
 
@@ -37,8 +36,8 @@ extension MiddlewareReaderProtocol {
         _ reader3: M3,
         with map: @escaping (M1.MiddlewareType, M2.MiddlewareType, M3.MiddlewareType) -> MOutput
     ) -> MiddlewareReader<M1.Dependencies, MOutput> where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e))
+        MiddlewareReader { environment in
+            map(reader1.inject(environment), reader2.inject(environment), reader3.inject(environment))
         }
     }
 
@@ -53,8 +52,13 @@ extension MiddlewareReaderProtocol {
     ///   - reader4: fourth reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, M4: MiddlewareReaderProtocol,
-                           MOutput: Middleware>(
+    public static func zip<
+        M1: MiddlewareReaderProtocol,
+        M2: MiddlewareReaderProtocol,
+        M3: MiddlewareReaderProtocol,
+        M4: MiddlewareReaderProtocol,
+        MOutput: Middleware
+    > (
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -62,8 +66,8 @@ extension MiddlewareReaderProtocol {
         with map: @escaping (M1.MiddlewareType, M2.MiddlewareType, M3.MiddlewareType, M4.MiddlewareType) -> MOutput
     ) -> MiddlewareReader<M1.Dependencies, MOutput>
     where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies, M1.Dependencies == M4.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e), reader4.inject(e))
+        MiddlewareReader { environment in
+            map(reader1.inject(environment), reader2.inject(environment), reader3.inject(environment), reader4.inject(environment))
         }
     }
 
@@ -79,8 +83,14 @@ extension MiddlewareReaderProtocol {
     ///   - reader5: fifth reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, M4: MiddlewareReaderProtocol,
-                           M5: MiddlewareReaderProtocol, MOutput: Middleware>(
+    public static func zip<
+        M1: MiddlewareReaderProtocol,
+        M2: MiddlewareReaderProtocol,
+        M3: MiddlewareReaderProtocol,
+        M4: MiddlewareReaderProtocol,
+        M5: MiddlewareReaderProtocol,
+        MOutput: Middleware
+    > (
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -90,8 +100,14 @@ extension MiddlewareReaderProtocol {
     ) -> MiddlewareReader<M1.Dependencies, MOutput>
     where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies, M1.Dependencies == M4.Dependencies,
           M1.Dependencies == M5.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e), reader4.inject(e), reader5.inject(e))
+        MiddlewareReader { environment in
+            map(
+                reader1.inject(environment),
+                reader2.inject(environment),
+                reader3.inject(environment),
+                reader4.inject(environment),
+                reader5.inject(environment)
+            )
         }
     }
 
@@ -108,8 +124,15 @@ extension MiddlewareReaderProtocol {
     ///   - reader6: sixth reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, M4: MiddlewareReaderProtocol,
-                           M5: MiddlewareReaderProtocol, M6: MiddlewareReaderProtocol, MOutput: Middleware>(
+    public static func zip<
+        M1: MiddlewareReaderProtocol,
+        M2: MiddlewareReaderProtocol,
+        M3: MiddlewareReaderProtocol,
+        M4: MiddlewareReaderProtocol,
+        M5: MiddlewareReaderProtocol,
+        M6: MiddlewareReaderProtocol,
+        MOutput: Middleware
+    > (
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -122,8 +145,15 @@ extension MiddlewareReaderProtocol {
     ) -> MiddlewareReader<M1.Dependencies, MOutput>
     where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies, M1.Dependencies == M4.Dependencies,
           M1.Dependencies == M5.Dependencies, M1.Dependencies == M6.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e), reader4.inject(e), reader5.inject(e), reader6.inject(e))
+        MiddlewareReader { environment in
+            map(
+                reader1.inject(environment),
+                reader2.inject(environment),
+                reader3.inject(environment),
+                reader4.inject(environment),
+                reader5.inject(environment),
+                reader6.inject(environment)
+            )
         }
     }
 
@@ -141,8 +171,16 @@ extension MiddlewareReaderProtocol {
     ///   - reader7: seventh reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, M4: MiddlewareReaderProtocol,
-                           M5: MiddlewareReaderProtocol, M6: MiddlewareReaderProtocol, M7: MiddlewareReaderProtocol, MOutput: Middleware>(
+    public static func zip<
+        M1: MiddlewareReaderProtocol,
+        M2: MiddlewareReaderProtocol,
+        M3: MiddlewareReaderProtocol,
+        M4: MiddlewareReaderProtocol,
+        M5: MiddlewareReaderProtocol,
+        M6: MiddlewareReaderProtocol,
+        M7: MiddlewareReaderProtocol,
+        MOutput: Middleware
+    > (
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -156,8 +194,16 @@ extension MiddlewareReaderProtocol {
     ) -> MiddlewareReader<M1.Dependencies, MOutput>
     where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies, M1.Dependencies == M4.Dependencies,
           M1.Dependencies == M5.Dependencies, M1.Dependencies == M6.Dependencies, M1.Dependencies == M7.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e), reader4.inject(e), reader5.inject(e), reader6.inject(e), reader7.inject(e))
+        MiddlewareReader { environment in
+            map(
+                reader1.inject(environment),
+                reader2.inject(environment),
+                reader3.inject(environment),
+                reader4.inject(environment),
+                reader5.inject(environment),
+                reader6.inject(environment),
+                reader7.inject(environment)
+            )
         }
     }
 
@@ -176,9 +222,17 @@ extension MiddlewareReaderProtocol {
     ///   - reader8: eighth reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, M4: MiddlewareReaderProtocol,
-                           M5: MiddlewareReaderProtocol, M6: MiddlewareReaderProtocol, M7: MiddlewareReaderProtocol, M8: MiddlewareReaderProtocol,
-                           MOutput: Middleware>(
+    public static func zip<
+        M1: MiddlewareReaderProtocol,
+        M2: MiddlewareReaderProtocol,
+        M3: MiddlewareReaderProtocol,
+        M4: MiddlewareReaderProtocol,
+        M5: MiddlewareReaderProtocol,
+        M6: MiddlewareReaderProtocol,
+        M7: MiddlewareReaderProtocol,
+        M8: MiddlewareReaderProtocol,
+        MOutput: Middleware
+    > (
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -195,9 +249,17 @@ extension MiddlewareReaderProtocol {
     where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies, M1.Dependencies == M4.Dependencies,
           M1.Dependencies == M5.Dependencies, M1.Dependencies == M6.Dependencies, M1.Dependencies == M7.Dependencies,
           M1.Dependencies == M8.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e), reader4.inject(e), reader5.inject(e), reader6.inject(e), reader7.inject(e),
-                reader8.inject(e))
+        MiddlewareReader { environment in
+            map(
+                reader1.inject(environment),
+                reader2.inject(environment),
+                reader3.inject(environment),
+                reader4.inject(environment),
+                reader5.inject(environment),
+                reader6.inject(environment),
+                reader7.inject(environment),
+                reader8.inject(environment)
+            )
         }
     }
 
@@ -217,9 +279,18 @@ extension MiddlewareReaderProtocol {
     ///   - reader9: ninth reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, M4: MiddlewareReaderProtocol,
-                           M5: MiddlewareReaderProtocol, M6: MiddlewareReaderProtocol, M7: MiddlewareReaderProtocol, M8: MiddlewareReaderProtocol,
-                           M9: MiddlewareReaderProtocol, MOutput: Middleware>(
+    public static func zip<
+        M1: MiddlewareReaderProtocol,
+        M2: MiddlewareReaderProtocol,
+        M3: MiddlewareReaderProtocol,
+        M4: MiddlewareReaderProtocol,
+        M5: MiddlewareReaderProtocol,
+        M6: MiddlewareReaderProtocol,
+        M7: MiddlewareReaderProtocol,
+        M8: MiddlewareReaderProtocol,
+        M9: MiddlewareReaderProtocol,
+        MOutput: Middleware
+    > (
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -237,9 +308,18 @@ extension MiddlewareReaderProtocol {
     where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies, M1.Dependencies == M4.Dependencies,
           M1.Dependencies == M5.Dependencies, M1.Dependencies == M6.Dependencies, M1.Dependencies == M7.Dependencies,
           M1.Dependencies == M8.Dependencies, M1.Dependencies == M9.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e), reader4.inject(e), reader5.inject(e), reader6.inject(e), reader7.inject(e),
-                reader8.inject(e), reader9.inject(e))
+        MiddlewareReader { environment in
+            map(
+                reader1.inject(environment),
+                reader2.inject(environment),
+                reader3.inject(environment),
+                reader4.inject(environment),
+                reader5.inject(environment),
+                reader6.inject(environment),
+                reader7.inject(environment),
+                reader8.inject(environment),
+                reader9.inject(environment)
+            )
         }
     }
 
@@ -260,9 +340,19 @@ extension MiddlewareReaderProtocol {
     ///   - reader10: tenth reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, M4: MiddlewareReaderProtocol,
-                           M5: MiddlewareReaderProtocol, M6: MiddlewareReaderProtocol, M7: MiddlewareReaderProtocol, M8: MiddlewareReaderProtocol,
-                           M9: MiddlewareReaderProtocol, M10: MiddlewareReaderProtocol, MOutput: Middleware>(
+    public static func zip<
+        M1: MiddlewareReaderProtocol,
+        M2: MiddlewareReaderProtocol,
+        M3: MiddlewareReaderProtocol,
+        M4: MiddlewareReaderProtocol,
+        M5: MiddlewareReaderProtocol,
+        M6: MiddlewareReaderProtocol,
+        M7: MiddlewareReaderProtocol,
+        M8: MiddlewareReaderProtocol,
+        M9: MiddlewareReaderProtocol,
+        M10: MiddlewareReaderProtocol,
+        MOutput: Middleware
+    > (
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -281,9 +371,19 @@ extension MiddlewareReaderProtocol {
     where M1.Dependencies == M2.Dependencies, M1.Dependencies == M3.Dependencies, M1.Dependencies == M4.Dependencies,
           M1.Dependencies == M5.Dependencies, M1.Dependencies == M6.Dependencies, M1.Dependencies == M7.Dependencies,
           M1.Dependencies == M8.Dependencies, M1.Dependencies == M9.Dependencies, M1.Dependencies == M10.Dependencies {
-        MiddlewareReader { e in
-            map(reader1.inject(e), reader2.inject(e), reader3.inject(e), reader4.inject(e), reader5.inject(e), reader6.inject(e), reader7.inject(e),
-                reader8.inject(e), reader9.inject(e), reader10.inject(e))
+        MiddlewareReader { environment in
+            map(
+                reader1.inject(environment),
+                reader2.inject(environment),
+                reader3.inject(environment),
+                reader4.inject(environment),
+                reader5.inject(environment),
+                reader6.inject(environment),
+                reader7.inject(environment),
+                reader8.inject(environment),
+                reader9.inject(environment),
+                reader10.inject(environment)
+            )
         }
     }
 }

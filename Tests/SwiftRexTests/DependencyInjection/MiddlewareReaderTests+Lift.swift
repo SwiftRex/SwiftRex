@@ -1,6 +1,7 @@
 @testable import SwiftRex
 import XCTest
 
+// swiftlint:disable file_length
 extension MiddlewareReaderTests {
     private var globalInputActions: [Int] { fiboInts }
     private var globalOutputActions: [String] { primesString }

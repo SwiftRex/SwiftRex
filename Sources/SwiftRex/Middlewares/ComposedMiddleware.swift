@@ -113,7 +113,6 @@ public func <> <M1: Middleware, M2: Middleware>(lhs: M1, rhs: M2) -> ComposedMid
 }
 
 extension ComposedMiddleware: Monoid {
-
     /// Composed middleware identity is an empty composed middleware collection
     public static var identity: ComposedMiddleware<InputActionType, OutputActionType, StateType> {
         .init()

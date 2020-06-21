@@ -76,7 +76,7 @@ public struct Effect<OutputAction>: Publisher {
     /// - Parameters:
     ///     - subscriber: The subscriber to attach to this `Publisher`.
     ///                   once attached it can begin to receive values.
-    public func receive<S>(subscriber: S) where S : Subscriber, Self.Failure == S.Failure, Self.Output == S.Input {
+    public func receive<S>(subscriber: S) where S: Subscriber, Self.Failure == S.Failure, Self.Output == S.Input {
         upstream.subscribe(subscriber)
     }
 }
@@ -163,7 +163,6 @@ extension Effect {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Publisher where Failure == Never {
-
     /// Erases any unfailable Publisher to effect. Don't call this on eager Publishers or the effect is already
     /// happening before the subscription.
     public var asEffect: Effect<Output> {
