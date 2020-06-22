@@ -17,7 +17,7 @@ import RxSwift
 /// communication units between different middlewares and reducers.
 ///
 /// That's also the reason why `.asEffect` and `.asEffect<H: Hashable>(cancellationToken: H)` extensions should
-/// only be used on observables that won't fail.
+/// be used on observables that won't fail.
 ///
 /// An Effect can be a single-shot sync or async, or a long-lasting one such as a timer. That's why
 /// cancellation token is so important. The option `.doNothing` is an `.empty()` observable useful for when the
@@ -27,40 +27,39 @@ public struct Effect<OutputAction>: ObservableType {
     public typealias Element = OutputAction
 
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-    /// Once this effect is subscribed to, the subscription (in form of `Disposable`) will be kept in a
+    /// Once this effect is subscribed to, the subscription (in form of `DisposeBag`) will be kept in a
     /// dictionary where the key is this cancellation token. If another effect with the same cancellation
     /// token arrives, the former will be immediately disposed and replaced in the dictionary.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     public let cancellationToken: AnyHashable?
     private let upstream: Observable<Element>
 
-    /// Create an effect with any upstream as long as it can't fail. Don't use eager observables as upstream,
-    /// such as Future, as they will unexpectedly start the side-effect before the subscription.
-    /// - Parameter upstream: an upstream Observable that can't fail and should not be eager.
+    /// Create an effect with any upstream, please make sure it doesn't fail.
+    /// - Parameter upstream: an upstream Observable that shouldn't fail.
     public init<P: ObservableType>(upstream: P) where P.Element == Element {
         self.upstream = upstream.asObservable()
         self.cancellationToken = nil
     }
 
-    /// Create an effect with any upstream as long as it can't fail. Don't use eager observables as upstream,
-    /// such as Future, as they will unexpectedly start the side-effect before the subscription.
+    /// Create an effect with any upstream. Please be sure it neves fails.
     /// - Parameters:
-    ///   - upstream: an upstream Observable that can't fail and should not be eager.
-    ///   - cancellationToken: Cancellation token is any hashable used later to eventually cancel this effect
-    ///                        before its completion. Once this effect is subscribed to, the subscription (in
-    ///                        form of `AnyCancellable`) will be kept in a dictionary where the key is this
-    ///                        cancellation token. If another effect with the same cancellation token arrives,
-    ///                        the former will be immediately replaced in the dictionary and, therefore,
-    ///                        cancelled. If you don't want this, not providing a cancellation token will only
-    ///                        cancel your Effect in the very unlike scenario where the EffectMiddleware itself
-    ///                        gets deallocated. Cancellation tokens can also be provided to the
-    ///                        EffectMiddleware to force cancellation of running effects, that way, the
-    ///                        dictionary keeping the effects will cleanup the key with that token.
+    ///   - upstream: an upstream Observable. Please be sure it doesn't fail.
+    ///   - cancellationToken: Cancellation token is any hashable used later to eventually cancel this
+    ///                        effect before its completion. Once this effect is subscribed to, the
+    ///                        subscription (in form of `DisposeBag`) will be kept in a dictionary where
+    ///                        the key is this cancellation token. If another effect with the same
+    ///                        cancellation token arrives, the former will be immediately disposed and
+    ///                        replaced in the dictionary. If you don't want this, not providing a
+    ///                        cancellation token will only cancel your Effect in the very unlike scenario
+    ///                        where the `EffectMiddleware` itself gets deallocated. Cancellation tokens
+    ///                        can also be provided to the `EffectMiddleware` to force cancellation of
+    ///                        running effects, that way, the dictionary keeping the effects will cleanup
+    ///                        the key with that token.
     public init<P: ObservableType, H: Hashable>(upstream: P, cancellationToken: H)
     where P.Element == Element {
         self.upstream = upstream.asObservable()
@@ -82,14 +81,14 @@ extension Effect {
     /// cancellation token.
     ///
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-    /// Once this effect is subscribed to, the subscription (in form of `AnyCancellable`) will be kept in a
+    /// Once this effect is subscribed to, the subscription (in form of `DisposeBag`) will be kept in a
     /// dictionary where the key is this cancellation token. If another effect with the same cancellation
-    /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
+    /// token arrives, the former will be immediately disposed and replaced in the dictionary.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     ///
     /// - Parameter token: any hashable you want.
@@ -133,15 +132,15 @@ extension Effect {
     /// You can create an Effect promise like this:
     /// ```
     /// Effect<String>.promise { completion in
-    ///     doSomethingAsync { outputString in
+    ///     let task = doSomethingAsync { outputString in
     ///         completion(outputString)
     ///     }
+    ///     return Disposables.create() // Or a way to cancel the ongoing task
     /// }
     /// ```
-    /// Internally creates a `Deferred<Future<Output, Never>>`
     ///
     /// - Parameter operation: a closure that gives you a completion handler to be called once the async task is
-    ///                        done
+    ///                        done, and returns a Disposable object that can be used for cancellation purposes
     /// - Returns: an `Effect` that will eventually publish the given output when you call the completion handler.
     ///            and that will only call your async task once it's subscribed by the Effect Middleware. Then, it
     ///            will complete immediately as soon as it emits the first value.
@@ -156,24 +155,22 @@ extension Effect {
 }
 
 extension ObservableType {
-    /// Erases any unfailable Observable to effect. Don't call this on eager Observables or the effect is already
-    /// happening before the subscription.
+    /// Erases any Observable to effect. Please be sure it doesn't fail.
     public var asEffect: Effect<Element> {
         Effect(upstream: self)
     }
 
-    /// Erases any unfailable Observable to effect. Don't call this on eager Observables or the effect is already
-    /// happening before the subscription. Also contains a cancellation token.
+    /// Erases any Observable to effect. Please be sure it doesn't fail. Also contains a cancellation token.
     ///
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-    /// Once this effect is subscribed to, the subscription (in form of `AnyCancellable`) will be kept in a
+    /// Once this effect is subscribed to, the subscription (in form of `DisposeBag`) will be kept in a
     /// dictionary where the key is this cancellation token. If another effect with the same cancellation
-    /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
+    /// token arrives, the former will be immediately disposed and replaced in the dictionary.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     ///
     /// - Parameter cancellationToken: cancellation token for this effect, as explained in the method

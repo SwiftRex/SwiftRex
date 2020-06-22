@@ -36,9 +36,9 @@ public struct Effect<OutputAction>: Publisher {
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     public let cancellationToken: AnyHashable?
     private let upstream: AnyPublisher<Output, Failure>
@@ -61,9 +61,9 @@ public struct Effect<OutputAction>: Publisher {
     ///                        cancellation token. If another effect with the same cancellation token arrives,
     ///                        the former will be immediately replaced in the dictionary and, therefore,
     ///                        cancelled. If you don't want this, not providing a cancellation token will only
-    ///                        cancel your Effect in the very unlike scenario where the EffectMiddleware itself
+    ///                        cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself
     ///                        gets deallocated. Cancellation tokens can also be provided to the
-    ///                        EffectMiddleware to force cancellation of running effects, that way, the
+    ///                        `EffectMiddleware` to force cancellation of running effects, that way, the
     ///                        dictionary keeping the effects will cleanup the key with that token.
     public init<P: Publisher, H: Hashable>(upstream: P, cancellationToken: H) where P.Output == Output, P.Failure == Failure {
         self.upstream = upstream.eraseToAnyPublisher()
@@ -92,9 +92,9 @@ extension Effect {
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     ///
     /// - Parameter token: any hashable you want.
@@ -178,9 +178,9 @@ extension Publisher where Failure == Never {
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     ///
     /// - Parameter cancellationToken: cancellation token for this effect, as explained in the method

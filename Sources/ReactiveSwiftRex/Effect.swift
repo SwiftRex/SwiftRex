@@ -17,15 +17,15 @@ import ReactiveSwift
 /// communication units between different middlewares and reducers.
 ///
 /// That's also the reason why `.asEffect` and `.asEffect<H: Hashable>(cancellationToken: H)` extensions are
-/// only available for publishers that have `Error == Never`.
+/// only available for `SignalProducers` that have `Error == Never`.
 ///
 /// An Effect can be a single-shot sync or async, or a long-lasting one such as a timer. That's why
-/// cancellation token is so important. The option `.doNothing` is an `Empty` publisher useful for when the
-/// middleware decides that certain conditions don't require any side-effect.
+/// cancellation token is so important. The option `.doNothing` is an `.empty` `SignalProducer` useful for when
+/// the middleware decides that certain conditions don't require any side-effect.
 public struct Effect<OutputAction>: SignalProducerProtocol {
     /// Output action matching middleware's `OutputActionType`
     public typealias Value = OutputAction
-    /// `Effect` publisher can't fail.
+    /// `Effect` SignalProducer can't fail.
     public typealias Error = Never
 
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
@@ -34,34 +34,32 @@ public struct Effect<OutputAction>: SignalProducerProtocol {
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     public let cancellationToken: AnyHashable?
     private let upstream: SignalProducer<Value, Never>
 
-    /// Create an effect with any upstream as long as it can't fail. Don't use eager publishers as upstream,
-    /// such as Future, as they will unexpectedly start the side-effect before the subscription.
-    /// - Parameter upstream: an upstream Publisher that can't fail and should not be eager.
+    /// Create an effect with any upstream as long as it can't fail.
+    /// - Parameter upstream: an upstream SignalProducerProtocol that can't fail.
     public init<P: SignalProducerProtocol>(upstream: P) where P.Value == Value, P.Error == Never {
         self.upstream = upstream.producer
         self.cancellationToken = nil
     }
 
-    /// Create an effect with any upstream as long as it can't fail. Don't use eager publishers as upstream,
-    /// such as Future, as they will unexpectedly start the side-effect before the subscription.
+    /// Create an effect with any upstream as long as it can't fail.
     /// - Parameters:
-    ///   - upstream: an upstream Publisher that can't fail and should not be eager.
+    ///   - upstream: an upstream `SignalProducer` that can't fail.
     ///   - cancellationToken: Cancellation token is any hashable used later to eventually cancel this effect
     ///                        before its completion. Once this effect is subscribed to, the subscription (in
     ///                        form of `Lifetime.Token`) will be kept in a dictionary where the key is this
     ///                        cancellation token. If another effect with the same cancellation token arrives,
     ///                        the former will be immediately replaced in the dictionary and, therefore,
     ///                        cancelled. If you don't want this, not providing a cancellation token will only
-    ///                        cancel your Effect in the very unlike scenario where the EffectMiddleware itself
+    ///                        cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself
     ///                        gets deallocated. Cancellation tokens can also be provided to the
-    ///                        EffectMiddleware to force cancellation of running effects, that way, the
+    ///                        `EffectMiddleware` to force cancellation of running effects, that way, the
     ///                        dictionary keeping the effects will cleanup the key with that token.
     public init<P: SignalProducerProtocol, H: Hashable>(upstream: P, cancellationToken: H)
     where P.Value == Value, P.Error == Never {
@@ -82,9 +80,9 @@ extension Effect {
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     ///
     /// - Parameter token: any hashable you want.
@@ -94,8 +92,8 @@ extension Effect {
         Effect(upstream: self.upstream, cancellationToken: token)
     }
 
-    /// An Empty effect that will complete immediately without emitting any output. Useful for when the Middleware
-    /// doesn't want to perform any side-effect.
+    /// A `SignalProducer.empty` effect that will complete immediately without emitting any output. Useful for when
+    /// the Middleware doesn't want to perform any side-effect.
     public static var doNothing: Effect {
         SignalProducer.empty.asEffect
     }
@@ -128,15 +126,15 @@ extension Effect {
     /// You can create an Effect promise like this:
     /// ```
     /// Effect<String>.promise { completion in
-    ///     doSomethingAsync { outputString in
+    ///     let task = doSomethingAsync { outputString in
     ///         completion(outputString)
     ///     }
+    ///     return AnyDisposable() // Or a way to cancel the ongoing task
     /// }
     /// ```
-    /// Internally creates a `Deferred<Future<Output, Never>>`
     ///
     /// - Parameter operation: a closure that gives you a completion handler to be called once the async task is
-    ///                        done
+    ///                        done, and returns a Disposable object that can be used for cancellation purposes
     /// - Returns: an `Effect` that will eventually publish the given output when you call the completion handler.
     ///            and that will only call your async task once it's subscribed by the Effect Middleware. Then, it
     ///            will complete immediately as soon as it emits the first value.
@@ -151,14 +149,12 @@ extension Effect {
 }
 
 extension SignalProducerProtocol where Error == Never {
-    /// Erases any unfailable Publisher to effect. Don't call this on eager Publishers or the effect is already
-    /// happening before the subscription.
+    /// Erases any unfailable `SignalProducer` to effect.
     public var asEffect: Effect<Value> {
         Effect(upstream: self)
     }
 
-    /// Erases any unfailable Publisher to effect. Don't call this on eager Publishers or the effect is already
-    /// happening before the subscription. Also contains a cancellation token.
+    /// Erases any unfailable `SignalProducer` to effect. Also contains a cancellation token.
     ///
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
     /// Once this effect is subscribed to, the subscription (in form of `Lifetime.Token`) will be kept in a
@@ -166,14 +162,14 @@ extension SignalProducerProtocol where Error == Never {
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the EffectMiddleware itself gets deallocated.
+    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
     ///
-    /// Cancellation tokens can also be provided to the EffectMiddleware to force cancellation of running
+    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
     /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     ///
     /// - Parameter cancellationToken: cancellation token for this effect, as explained in the method
     ///                                description
-    /// - Returns: an `Effect` wrapping this Publisher as its upstream, plus a cancellation token.
+    /// - Returns: an `Effect` wrapping this `SignalProducer` as its upstream, plus a cancellation token.
     public func asEffect<H: Hashable>(cancellationToken: H) -> Effect<Value> {
         Effect(upstream: self, cancellationToken: cancellationToken)
     }
