@@ -1,3 +1,5 @@
+// swiftlint:disable file_length function_body_length type_body_length
+
 import ReactiveSwift
 import ReactiveSwiftRex
 @testable import SwiftRex
@@ -21,7 +23,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { currentState },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -65,7 +67,7 @@ class EffectMiddlewareTests: XCTestCase {
         var receivedState = [String]()
         var currentState = "s0"
 
-        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, state, context in
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, state, _ in
             receivedActions.append(action)
             receivedState.append(state)
             return .doNothing
@@ -73,7 +75,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { currentState },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -110,12 +112,12 @@ class EffectMiddlewareTests: XCTestCase {
         var currentDependency = "d0"
 
         let sut = EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-            return .just("dispatched \(action) \(state) \(context.dependencies())")
+            .just("dispatched \(action) \(state) \(context.dependencies())")
         }.inject({ currentDependency })
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -143,7 +145,7 @@ class EffectMiddlewareTests: XCTestCase {
         let expectedSubscription = expectation(description: "should have been subscribed")
         let expectedCancellation = expectation(description: "should have been cancelled")
 
-        let sut = EffectMiddleware<String, String, String, String>.onAction { action, state, context in
+        let sut = EffectMiddleware<String, String, String, String>.onAction { action, _, context in
             if action == "cancel" {
                 context.toCancel("token")
                 return .doNothing
@@ -164,7 +166,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ _, _ in
+            output: .init { _, _ in
                 XCTFail("should not have received values")
             }
         )
@@ -189,7 +191,7 @@ class EffectMiddlewareTests: XCTestCase {
         let expectedCancellation2 = expectation(description: "should have been cancelled")
         let expectedValue3 = expectation(description: "should have received value 3")
 
-        let sut = EffectMiddleware<String, String, String, String>.onAction { action, state, context in
+        let sut = EffectMiddleware<String, String, String, String>.onAction { action, _, context in
             switch action {
             case "first":
                 return SignalProducer<String, Never>({ "output1" })
@@ -223,7 +225,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -258,15 +260,15 @@ class EffectMiddlewareTests: XCTestCase {
 
         let sut =
             EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched A \(action) \(state) \(context.dependencies())")
+                .just("dispatched A \(action) \(state) \(context.dependencies())")
             }.inject({ currentDependencyA })
             <> EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched B \(action) \(state) \(context.dependencies())")
+                .just("dispatched B \(action) \(state) \(context.dependencies())")
             }.inject({ currentDependencyB })
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -311,18 +313,18 @@ class EffectMiddlewareTests: XCTestCase {
 
         let sut =
             EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched A \(action) \(state) \(context.dependencies())")
+                .just("dispatched A \(action) \(state) \(context.dependencies())")
             }.inject({ currentDependencyA })
             <> EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched B \(action) \(state) \(context.dependencies())")
+                .just("dispatched B \(action) \(state) \(context.dependencies())")
             }.inject({ currentDependencyB })
-            <> EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .doNothing
+            <> EffectMiddleware<String, String, String, () -> String>.onAction { _, _, _ in
+                .doNothing
             }.inject({ "bla" })
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -367,16 +369,16 @@ class EffectMiddlewareTests: XCTestCase {
 
         let sut =
             EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched A \(action) \(state) \(context.dependencies())")
+                .just("dispatched A \(action) \(state) \(context.dependencies())")
             }.inject({ currentDependencyA })
             <> EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched B \(action) \(state) \(context.dependencies())")
+                .just("dispatched B \(action) \(state) \(context.dependencies())")
             }.inject({ currentDependencyB })
             <> EffectMiddleware.identity
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -420,16 +422,16 @@ class EffectMiddlewareTests: XCTestCase {
 
         let sut = (
             EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched A \(action) \(state) \(context.dependencies())")
+                .just("dispatched A \(action) \(state) \(context.dependencies())")
             }
             <> EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched B \(action) \(state) \(context.dependencies())")
+                .just("dispatched B \(action) \(state) \(context.dependencies())")
             }
         ).inject({ currentDependency })
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -471,19 +473,19 @@ class EffectMiddlewareTests: XCTestCase {
 
         let sut = (
             EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched A \(action) \(state) \(context.dependencies())")
+                .just("dispatched A \(action) \(state) \(context.dependencies())")
             }
             <> EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .just("dispatched B \(action) \(state) \(context.dependencies())")
+                .just("dispatched B \(action) \(state) \(context.dependencies())")
             }
-            <> EffectMiddleware<String, String, String, () -> String>.onAction { action, state, context in
-                return .doNothing
+            <> EffectMiddleware<String, String, String, () -> String>.onAction { _, _, _ in
+                .doNothing
             }
         ).inject({ currentDependency })
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -535,7 +537,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
@@ -595,7 +597,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { currentState },
-            output: .init{ action, _ in
+            output: .init { action, _ in
                 dispatchedActions.append(action)
             }
         )
