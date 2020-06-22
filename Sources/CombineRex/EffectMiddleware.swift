@@ -80,7 +80,7 @@ extension EffectMiddleware where Dependencies == Void {
 extension EffectMiddleware {
     private func run(effect: Effect<OutputAction>) {
         let subscription = effect
-            .sink(receiveValue: { [weak self] in self?.output?.dispatch($0) })
+            .sink { [weak self] in self?.output?.dispatch($0) }
 
         if let token = effect.cancellationToken {
             cancellables[token] = subscription
@@ -126,16 +126,13 @@ extension EffectMiddleware: Monoid where Dependencies == Void {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware {
-    public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, GlobalDependencies>(
+    public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
         inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
         outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        state stateMap: @escaping (GlobalStateType) -> StateType,
-        dependencies dependenciesMap: @escaping (Dependencies) -> GlobalDependencies
-    ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, GlobalDependencies> {
-        let localDependencies = self.dependencies
-
-        return EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, GlobalDependencies>(
-            dependencies: dependenciesMap(localDependencies),
+        state stateMap: @escaping (GlobalStateType) -> StateType
+    ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies> {
+        EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies>(
+            dependencies: self.dependencies,
             handle: { globalInputAction, globalState, globalContext -> Effect<GlobalOutputActionType> in
                 guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
                 return self.onAction(
@@ -143,7 +140,7 @@ extension EffectMiddleware {
                     stateMap(globalState),
                     Context(
                         dispatcher: globalContext.dispatcher,
-                        dependencies: localDependencies,
+                        dependencies: globalContext.dependencies,
                         toCancel: globalContext.toCancel
                     )
                 ).map(outputActionMap).asEffect

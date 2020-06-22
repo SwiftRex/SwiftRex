@@ -1,7 +1,7 @@
 import Foundation
 import ReactiveSwift
 
-/// Effect is a Combine Publisher to be returned by Middlewares so they can dispatch Actions back to a Store.
+/// Effect is a Signal Producer to be returned by Middlewares so they can dispatch Actions back to a Store.
 /// Every effect will have a cancellation token to be later cancelled by new action arrivals, such as in the
 /// case when the user is no longer interested in certain HTTP Request or wants to stop a timer. When
 /// cancellation token is not provided during the initialization of an Effect, it still can be passed later,
@@ -17,7 +17,7 @@ import ReactiveSwift
 /// communication units between different middlewares and reducers.
 ///
 /// That's also the reason why `.asEffect` and `.asEffect<H: Hashable>(cancellationToken: H)` extensions are
-/// only available for publishers that have `Failure == Never`.
+/// only available for publishers that have `Error == Never`.
 ///
 /// An Effect can be a single-shot sync or async, or a long-lasting one such as a timer. That's why
 /// cancellation token is so important. The option `.doNothing` is an `Empty` publisher useful for when the
@@ -29,7 +29,7 @@ public struct Effect<OutputAction>: SignalProducerProtocol {
     public typealias Error = Never
 
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-    /// Once this effect is subscribed to, the subscription (in form of `AnyCancellable`) will be kept in a
+    /// Once this effect is subscribed to, the subscription (in form of `Lifetime.Token`) will be kept in a
     /// dictionary where the key is this cancellation token. If another effect with the same cancellation
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
@@ -55,7 +55,7 @@ public struct Effect<OutputAction>: SignalProducerProtocol {
     ///   - upstream: an upstream Publisher that can't fail and should not be eager.
     ///   - cancellationToken: Cancellation token is any hashable used later to eventually cancel this effect
     ///                        before its completion. Once this effect is subscribed to, the subscription (in
-    ///                        form of `AnyCancellable`) will be kept in a dictionary where the key is this
+    ///                        form of `Lifetime.Token`) will be kept in a dictionary where the key is this
     ///                        cancellation token. If another effect with the same cancellation token arrives,
     ///                        the former will be immediately replaced in the dictionary and, therefore,
     ///                        cancelled. If you don't want this, not providing a cancellation token will only
@@ -77,7 +77,7 @@ extension Effect {
     /// cancellation token.
     ///
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-    /// Once this effect is subscribed to, the subscription (in form of `AnyCancellable`) will be kept in a
+    /// Once this effect is subscribed to, the subscription (in form of `Lifetime.Token`) will be kept in a
     /// dictionary where the key is this cancellation token. If another effect with the same cancellation
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
@@ -161,7 +161,7 @@ extension SignalProducerProtocol where Error == Never {
     /// happening before the subscription. Also contains a cancellation token.
     ///
     /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-    /// Once this effect is subscribed to, the subscription (in form of `AnyCancellable`) will be kept in a
+    /// Once this effect is subscribed to, the subscription (in form of `Lifetime.Token`) will be kept in a
     /// dictionary where the key is this cancellation token. If another effect with the same cancellation
     /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
     ///
