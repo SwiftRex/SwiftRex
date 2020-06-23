@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftRex",
-    platforms: [.macOS(.v10_10), .iOS(.v8), .tvOS(.v9), .watchOS(.v3)],
+    platforms: [.macOS(.v10_10), .iOS(.v9), .tvOS(.v9), .watchOS(.v3)],
     products: [
         .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"]),
         .library(name: "ReactiveSwiftRex", targets: ["SwiftRex", "ReactiveSwiftRex"]),
