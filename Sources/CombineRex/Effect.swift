@@ -1,6 +1,31 @@
 #if canImport(Combine)
 import Combine
 import Foundation
+import SwiftRex
+
+public protocol EffectOutputProtocol {
+    associatedtype Action
+    var action: Action { get }
+    var dispatcher: ActionSource { get }
+}
+
+public enum EffectOutput<Action> {
+    case dispatch(Action, from: ActionSource = .here())
+}
+
+extension EffectOutput: EffectOutputProtocol {
+    public var action: Action {
+        switch self {
+        case let .dispatch(action, _): return action
+        }
+    }
+
+    public var dispatcher: ActionSource {
+        switch self {
+        case let .dispatch(_, dispatcher): return dispatcher
+        }
+    }
+}
 
 /// Effect is a Combine Publisher to be returned by Middlewares so they can dispatch Actions back to a Store.
 /// Every effect will have a cancellation token to be later cancelled by new action arrivals, such as in the
@@ -26,7 +51,7 @@ import Foundation
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public struct Effect<OutputAction>: Publisher {
     /// Output action matching middleware's `OutputActionType`
-    public typealias Output = OutputAction
+    public typealias Output = EffectOutput<OutputAction>
     /// `Effect` publisher can't fail.
     public typealias Failure = Never
 
@@ -107,31 +132,31 @@ extension Effect {
     /// An Empty effect that will complete immediately without emitting any output. Useful for when the Middleware
     /// doesn't want to perform any side-effect.
     public static var doNothing: Effect {
-        Empty().asEffect
+        Empty().asEffect(dispatcher: .here())
     }
 
     /// A synchronous side-effect that just wraps a single value to be published before the completion.
     /// It lifts a plain value into an `Effect`.
     /// - Parameter value: the one and only output to be published, synchronously, before the effect completes.
     /// - Returns: an `Effect` that will publish the given value upon subscription, and then complete, immediately.
-    public static func just(_ value: Output) -> Effect {
-        Just(value).asEffect
+    public static func just(_ value: OutputAction, from dispatcher: ActionSource = .here()) -> Effect {
+        Just(value).asEffect(dispatcher: dispatcher)
     }
 
     /// A synchronous side-effect that just wraps a sequence of values to be published before the completion.
     /// It lifts a plain sequence of values into an `Effect`.
     /// - Parameter values: the sequence of output values to be published, synchronously, before the effect completes.
     /// - Returns: an `Effect` that will publish the given values upon subscription, and then complete, immediately.
-    public static func sequence(_ values: Output...) -> Effect {
-        Publishers.Sequence(sequence: values).asEffect
+    public static func sequence(_ values: OutputAction..., from dispatcher: ActionSource = .here()) -> Effect {
+        Publishers.Sequence(sequence: values).asEffect(dispatcher: dispatcher)
     }
 
     /// A synchronous side-effect that just wraps an Array of values to be published before the completion.
     /// It lifts a plain Array of values into an `Effect`.
     /// - Parameter values: the Array of output values to be published, synchronously, before the effect completes.
     /// - Returns: an `Effect` that will publish the given values upon subscription, and then complete, immediately.
-    public static func sequence(_ values: [Output]) -> Effect {
-        Publishers.Sequence(sequence: values).asEffect
+    public static func sequence(_ values: [OutputAction], from dispatcher: ActionSource = .here()) -> Effect {
+        Publishers.Sequence(sequence: values).asEffect(dispatcher: dispatcher)
     }
 
     /// An async task that will start upon subscription and needs to call a completion handler once when it's done.
@@ -165,8 +190,8 @@ extension Effect {
 extension Publisher where Failure == Never {
     /// Erases any unfailable Publisher to effect. Don't call this on eager Publishers or the effect is already
     /// happening before the subscription.
-    public var asEffect: Effect<Output> {
-        Effect(upstream: self)
+    public func asEffect(dispatcher: ActionSource) -> Effect<Self.Output> {
+        Effect(upstream: self.map { EffectOutput.dispatch($0, from: dispatcher) })
     }
 
     /// Erases any unfailable Publisher to effect. Don't call this on eager Publishers or the effect is already
@@ -186,8 +211,20 @@ extension Publisher where Failure == Never {
     /// - Parameter cancellationToken: cancellation token for this effect, as explained in the method
     ///                                description
     /// - Returns: an `Effect` wrapping this Publisher as its upstream, plus a cancellation token.
-    public func asEffect<H: Hashable>(cancellationToken: H) -> Effect<Output> {
-        Effect(upstream: self, cancellationToken: cancellationToken)
+    public func asEffect<H: Hashable>(dispatcher: ActionSource, cancellationToken: H) -> Effect<Self.Output> {
+        Effect(upstream: self.map { EffectOutput.dispatch($0, from: dispatcher)}, cancellationToken: cancellationToken)
+    }
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Publisher where Output: EffectOutputProtocol, Failure == Never {
+    public var asEffect: Effect<Self.Output.Action> {
+        Effect<Self.Output.Action>(upstream: self.map { EffectOutput.dispatch($0.action, from: $0.dispatcher) })
+    }
+
+    public func asEffect<H: Hashable>(cancellationToken: H) -> Effect<Self.Output.Action> {
+        Effect<Self.Output.Action>(upstream: self.map { EffectOutput.dispatch($0.action, from: $0.dispatcher) },
+                                   cancellationToken: cancellationToken)
     }
 }
 #endif

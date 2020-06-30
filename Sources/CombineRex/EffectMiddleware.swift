@@ -162,7 +162,7 @@ extension EffectMiddleware where Dependencies == Void {
 extension EffectMiddleware {
     private func run(effect: Effect<OutputAction>) {
         let subscription = effect
-            .sink { [weak self] in self?.output?.dispatch($0) }
+            .sink { [weak self] in self?.output?.dispatch($0.action, from: $0.dispatcher) }
 
         if let token = effect.cancellationToken {
             cancellables[token] = subscription
@@ -229,7 +229,7 @@ extension EffectMiddleware {
                         dependencies: globalContext.dependencies,
                         toCancel: globalContext.toCancel
                     )
-                ).map(outputActionMap).asEffect
+                ).map { EffectOutput.dispatch(outputActionMap($0.action), from: $0.dispatcher) }.asEffect
             }
         )
     }

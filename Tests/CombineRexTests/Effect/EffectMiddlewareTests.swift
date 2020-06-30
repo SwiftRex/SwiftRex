@@ -161,7 +161,7 @@ class EffectMiddlewareTests: XCTestCase {
             return Deferred {
                 Future { completion in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        completion(.success("output1"))
+                        completion(.success(EffectOutput.dispatch("output1")))
                     }
                 }
             }
@@ -206,7 +206,7 @@ class EffectMiddlewareTests: XCTestCase {
                 return Deferred {
                     Future { completion in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            completion(.success("output1"))
+                            completion(.success(EffectOutput.dispatch("output1")))
                         }
                     }
                 }
@@ -218,7 +218,7 @@ class EffectMiddlewareTests: XCTestCase {
                 return Deferred {
                     Future { completion in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            completion(.success("output2"))
+                            completion(.success(EffectOutput.dispatch("output2")))
                         }
                     }
                 }
@@ -230,7 +230,7 @@ class EffectMiddlewareTests: XCTestCase {
                 return Deferred {
                     Future { completion in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            completion(.success("output3"))
+                            completion(.success(EffectOutput.dispatch("output3")))
                         }
                     }
                 }
