@@ -187,6 +187,25 @@ extension Effect {
 }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Effect {
+    public static func merge(_ a: Effect, _ b: Effect) -> Effect {
+        a.merge(with: b).asEffect
+    }
+
+    public static func merge(_ a: Effect, _ b: Effect, _ c: Effect) -> Effect {
+        a.merge(with: b).merge(with: c).asEffect
+    }
+
+    public static func merge(_ a: Effect, _ b: Effect, _ c: Effect, _ d: Effect) -> Effect {
+        a.merge(with: b, c, d).asEffect
+    }
+
+    public static func merge(_ a: Effect, _ b: Effect, _ c: Effect, _ d: Effect, _ e: Effect) -> Effect {
+        a.merge(with: b, c, d, e).asEffect
+    }
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Publisher where Failure == Never {
     /// Erases any unfailable Publisher to effect. Don't call this on eager Publishers or the effect is already
     /// happening before the subscription.
