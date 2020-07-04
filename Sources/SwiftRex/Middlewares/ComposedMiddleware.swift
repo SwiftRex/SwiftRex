@@ -8,7 +8,7 @@
  ```
  */
 public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
-    private var middlewares: [AnyMiddleware<InputActionType, OutputActionType, StateType>] = []
+    var middlewares: [AnyMiddleware<InputActionType, OutputActionType, StateType>] = []
 
     /**
      Default initializer for `ComposedMiddleware`, use this only if you don't like custom operators, otherwise create a `ComposedMiddleware` by composing two or more middlewares using the diamond operator, as shown below:
@@ -35,6 +35,27 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
         where M.InputActionType == InputActionType,
               M.OutputActionType == OutputActionType,
               M.StateType == StateType {
+
+        // Some special cases, for performance reasons:
+
+        // Identity is not added to the array
+        if middleware is IdentityMiddleware<InputActionType, OutputActionType, StateType> { return }
+
+        // Even if the identity was erased (special case in erasure to handle that)
+        if (middleware as? AnyMiddleware<InputActionType, OutputActionType, StateType>)?.isIdentity == true { return }
+
+        // Adding composed middleware will, in fact, join both middleware arrays together in a flat composed middleware
+        if let composedAlready = middleware as? ComposedMiddleware<InputActionType, OutputActionType, StateType> {
+            middlewares.append(contentsOf: composedAlready.middlewares)
+            return
+        }
+
+        // Even if the composed middleware was erased (special case in erasure to handle that)
+        if let composedAlready = (middleware as? AnyMiddleware<InputActionType, OutputActionType, StateType>)?.isComposed {
+            middlewares.append(contentsOf: composedAlready.middlewares)
+            return
+        }
+
         middlewares.append(middleware.eraseToAnyMiddleware())
     }
 
@@ -102,11 +123,14 @@ public func <> <M1: Middleware, M2: Middleware>(lhs: M1, rhs: M2) -> ComposedMid
     where M1.InputActionType == M2.InputActionType,
           M1.OutputActionType == M2.OutputActionType,
           M1.StateType == M2.StateType {
-    var container = lhs as? ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> ?? {
-        var newContainer: ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> = .init()
-        newContainer.append(middleware: lhs)
-        return newContainer
-    }()
+    var container =
+        lhs as? ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType>
+        ?? (lhs as? AnyMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType>)?.isComposed
+        ?? {
+            var newContainer: ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> = .init()
+            newContainer.append(middleware: lhs)
+            return newContainer
+        }()
 
     container.append(middleware: rhs)
     return container
