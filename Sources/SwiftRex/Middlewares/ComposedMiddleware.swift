@@ -35,7 +35,6 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
         where M.InputActionType == InputActionType,
               M.OutputActionType == OutputActionType,
               M.StateType == StateType {
-
         // Some special cases, for performance reasons:
 
         // Identity is not added to the array

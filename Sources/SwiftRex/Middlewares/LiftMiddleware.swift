@@ -62,4 +62,3 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
         return partMiddleware.handle(action: localAction, from: dispatcher, afterReducer: &afterReducer)
     }
 }
-

@@ -1,6 +1,7 @@
 @testable import SwiftRex
 import XCTest
 
+// swiftlint:disable:next type_body_length
 class ComposedMiddlewareTests: XCTestCase {
     func testComposedMiddlewareAction() {
         var sut = ComposedMiddleware<AppAction, AppAction, TestState>()
@@ -128,14 +129,18 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            m1ShouldBeCalled,
-            m2ShouldBeCalled,
-            m3ShouldBeCalled,
-            m3ShouldBeCalledAfterReducer,
-            m2ShouldBeCalledAfterReducer,
-            m1ShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                m1ShouldBeCalled,
+                m2ShouldBeCalled,
+                m3ShouldBeCalled,
+                m3ShouldBeCalledAfterReducer,
+                m2ShouldBeCalledAfterReducer,
+                m1ShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareWhenRightIsAlreadyComposedKeepsFlat() {
@@ -175,14 +180,18 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            m1ShouldBeCalled,
-            m2ShouldBeCalled,
-            m3ShouldBeCalled,
-            m3ShouldBeCalledAfterReducer,
-            m2ShouldBeCalledAfterReducer,
-            m1ShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                m1ShouldBeCalled,
+                m2ShouldBeCalled,
+                m3ShouldBeCalled,
+                m3ShouldBeCalledAfterReducer,
+                m2ShouldBeCalledAfterReducer,
+                m1ShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareWhenLeftIsAlreadyComposedButErasedKeepsFlat() {
@@ -221,14 +230,18 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            m1ShouldBeCalled,
-            m2ShouldBeCalled,
-            m3ShouldBeCalled,
-            m3ShouldBeCalledAfterReducer,
-            m2ShouldBeCalledAfterReducer,
-            m1ShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                m1ShouldBeCalled,
+                m2ShouldBeCalled,
+                m3ShouldBeCalled,
+                m3ShouldBeCalledAfterReducer,
+                m2ShouldBeCalledAfterReducer,
+                m1ShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareWhenRightIsAlreadyComposedButErasedKeepsFlat() {
@@ -268,14 +281,18 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            m1ShouldBeCalled,
-            m2ShouldBeCalled,
-            m3ShouldBeCalled,
-            m3ShouldBeCalledAfterReducer,
-            m2ShouldBeCalledAfterReducer,
-            m1ShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                m1ShouldBeCalled,
+                m2ShouldBeCalled,
+                m3ShouldBeCalled,
+                m3ShouldBeCalledAfterReducer,
+                m2ShouldBeCalledAfterReducer,
+                m1ShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareWhenLeftIsIdentityIgnoresIt() {
@@ -297,10 +314,14 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            middlewareShouldBeCalled,
-            middlewareShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                middlewareShouldBeCalled,
+                middlewareShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareWhenRightIsIdentityIgnoresIt() {
@@ -322,10 +343,14 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            middlewareShouldBeCalled,
-            middlewareShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                middlewareShouldBeCalled,
+                middlewareShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareWhenLeftIsIdentityButErasedIgnoresIt() {
@@ -347,10 +372,14 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            middlewareShouldBeCalled,
-            middlewareShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                middlewareShouldBeCalled,
+                middlewareShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareWhenRightIsIdentityButErasedIgnoresIt() {
@@ -372,10 +401,14 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            middlewareShouldBeCalled,
-            middlewareShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                middlewareShouldBeCalled,
+                middlewareShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 
     func testComposedMiddlewareCannotAppendIdentityEvenErased() {
@@ -410,9 +443,13 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
-        wait(for: [
-            middlewareShouldBeCalled,
-            middlewareShouldBeCalledAfterReducer
-        ], timeout: 0.1, enforceOrder: true)
+        wait(
+            for: [
+                middlewareShouldBeCalled,
+                middlewareShouldBeCalledAfterReducer
+            ],
+            timeout: 0.1,
+            enforceOrder: true
+        )
     }
 }

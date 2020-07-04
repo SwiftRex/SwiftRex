@@ -35,6 +35,7 @@ cyclomatic_complexity:
   warning: 12
   error: 14
 disabled_rules:
+  - todo
   - force_try
   - force_cast
   - function_parameter_count

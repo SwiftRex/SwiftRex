@@ -107,4 +107,3 @@ extension ComposedMiddleware {
         return composed
     }
 }
-

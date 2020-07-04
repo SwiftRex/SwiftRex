@@ -188,20 +188,20 @@ extension Effect {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Effect {
-    public static func merge(_ a: Effect, _ b: Effect) -> Effect {
-        a.merge(with: b).asEffect
+    public static func merge(_ first: Effect, _ second: Effect) -> Effect {
+        first.merge(with: second).asEffect
     }
 
-    public static func merge(_ a: Effect, _ b: Effect, _ c: Effect) -> Effect {
-        a.merge(with: b).merge(with: c).asEffect
+    public static func merge(_ first: Effect, _ second: Effect, _ third: Effect) -> Effect {
+        first.merge(with: second).merge(with: third).asEffect
     }
 
-    public static func merge(_ a: Effect, _ b: Effect, _ c: Effect, _ d: Effect) -> Effect {
-        a.merge(with: b, c, d).asEffect
+    public static func merge(_ first: Effect, _ second: Effect, _ third: Effect, _ fourth: Effect) -> Effect {
+        first.merge(with: second, third, fourth).asEffect
     }
 
-    public static func merge(_ a: Effect, _ b: Effect, _ c: Effect, _ d: Effect, _ e: Effect) -> Effect {
-        a.merge(with: b, c, d, e).asEffect
+    public static func merge(_ first: Effect, _ second: Effect, _ third: Effect, _ fourth: Effect, _ fifth: Effect) -> Effect {
+        first.merge(with: second, third, fourth, fifth).asEffect
     }
 }
 
@@ -231,7 +231,7 @@ extension Publisher where Failure == Never {
     ///                                description
     /// - Returns: an `Effect` wrapping this Publisher as its upstream, plus a cancellation token.
     public func asEffect<H: Hashable>(dispatcher: ActionSource, cancellationToken: H) -> Effect<Self.Output> {
-        Effect(upstream: self.map { EffectOutput.dispatch($0, from: dispatcher)}, cancellationToken: cancellationToken)
+        Effect(upstream: self.map { EffectOutput.dispatch($0, from: dispatcher) }, cancellationToken: cancellationToken)
     }
 }
 

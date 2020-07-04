@@ -57,7 +57,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
     func testAnyMiddlewareFromInitIgnoringContextHandleAction() {
         let calledBeforeReducer = expectation(description: "before reducer was called")
         let calledAfterReducer = expectation(description: "after reducer was called")
-        let erased = AnyMiddleware<AppAction, AppAction, TestState> { action, dispatcher, afterReducer in
+        let erased = AnyMiddleware<AppAction, AppAction, TestState> { _, _, afterReducer in
             calledBeforeReducer.fulfill()
             afterReducer = .do { calledAfterReducer.fulfill() }
         }
