@@ -377,4 +377,42 @@ class ComposedMiddlewareTests: XCTestCase {
             middlewareShouldBeCalledAfterReducer
         ], timeout: 0.1, enforceOrder: true)
     }
+
+    func testComposedMiddlewareCannotAppendIdentityEvenErased() {
+        let middlewareShouldBeCalled = expectation(description: "middleware should have been called")
+        let middlewareShouldBeCalledAfterReducer = expectation(description: "middleware should have been called after reducer")
+
+        let lhs = MiddlewareMock<String, String, String>()
+        lhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+            middlewareShouldBeCalled.fulfill()
+            afterReducer = .do { middlewareShouldBeCalledAfterReducer.fulfill() }
+        }
+
+        var sut = lhs.eraseToAnyMiddleware() <> IdentityMiddleware<String, String, String>()
+        sut.append(middleware: IdentityMiddleware<String, String, String>())
+        sut.append(middleware: IdentityMiddleware<String, String, String>())
+        sut.append(middleware: IdentityMiddleware<String, String, String>().eraseToAnyMiddleware())
+        sut.append(middleware: IdentityMiddleware<String, String, String>().eraseToAnyMiddleware())
+        sut.append(middleware: AnyMiddleware(IdentityMiddleware<String, String, String>()))
+        sut.append(middleware: AnyMiddleware(IdentityMiddleware<String, String, String>()))
+        sut.append(middleware: AnyMiddleware(IdentityMiddleware<String, String, String>()).eraseToAnyMiddleware())
+        sut.append(middleware: AnyMiddleware(IdentityMiddleware<String, String, String>()).eraseToAnyMiddleware())
+        sut.append(middleware: IdentityMiddleware<String, String, String>().eraseToAnyMiddleware().eraseToAnyMiddleware())
+        sut.append(middleware:
+            IdentityMiddleware<String, String, String>().eraseToAnyMiddleware().eraseToAnyMiddleware()
+            <> IdentityMiddleware<String, String, String>().eraseToAnyMiddleware().eraseToAnyMiddleware()
+            <> AnyMiddleware(IdentityMiddleware<String, String, String>().eraseToAnyMiddleware())
+        )
+
+        XCTAssertEqual(sut.middlewares.count, 1)
+
+        var afterReducer = AfterReducer.doNothing()
+        sut.handle(action: "", from: .here(), afterReducer: &afterReducer)
+        afterReducer.reducerIsDone()
+
+        wait(for: [
+            middlewareShouldBeCalled,
+            middlewareShouldBeCalledAfterReducer
+        ], timeout: 0.1, enforceOrder: true)
+    }
 }
