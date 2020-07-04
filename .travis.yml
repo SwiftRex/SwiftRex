@@ -19,3 +19,5 @@ script:
   - make code-coverage-file
 after_success:
   - bash <(curl -s https://codecov.io/bash) -X xcodellvm -X gcov -f coverage.txt
+after_script:
+  - bash ./.travis-notification.sh
