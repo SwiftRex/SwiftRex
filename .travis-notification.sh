@@ -10,13 +10,13 @@ PARSE_MODE="Markdown"
 
 # Use built-in Travis variables to check if all previous steps passed:
 if [[ $TRAVIS_TEST_RESULT -ne 0 ]]; then
-    emoji="👍"
-    build_status="failed"
-    link=""
-else
     emoji="💣"
-    build_status="succeeded"
+    build_status="failed"
     link="[Job Log here](${TRAVIS_JOB_WEB_URL})"
+else
+    emoji="👍"
+    build_status="succeeded"
+    link=""
 fi
 
 # Define send message function. parse_mode can be changed to
