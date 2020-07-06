@@ -27,69 +27,24 @@ extension EffectOutput: EffectOutputProtocol {
     }
 }
 
-/// Effect is a Combine Publisher to be returned by Middlewares so they can dispatch Actions back to a Store.
-/// Every effect will have a cancellation token to be later cancelled by new action arrivals, such as in the
-/// case when the user is no longer interested in certain HTTP Request or wants to stop a timer. When
-/// cancellation token is not provided during the initialization of an Effect, it still can be passed later,
-/// which will rewrap the upstream again in a new Effect, but this time containing the cancellation token.
-/// Some static constructors are available, such as `.doNothing`, `.just(_: Output)`, `.sequence(_: Output...)`,
-/// `.sequence(_: [Output]`, `.promise(_: CompletionHandler)`, etc.
-///
-/// An Effect can never Fail, so any possible failure of its upstream must be caught and treated before the
-/// Effect is created. For example, if you have an effect that uses URLSession to fetch some data from an URL,
-/// once you get your data back you can dispatch a successful action. But in case the task returns an URLError
-/// or some unexpected URLResponse, you should not fail, but instead, replace the error with an action to be
-/// dispatched telling your store that the request has failed. This will enforce the usage of Actions as
-/// communication units between different middlewares and reducers.
-///
-/// That's also the reason why `.asEffect` and `.asEffect<H: Hashable>(cancellationToken: H)` extensions are
-/// only available for publishers that have `Failure == Never`.
-///
-/// An Effect can be a single-shot sync or async, or a long-lasting one such as a timer. That's why
-/// cancellation token is so important. The option `.doNothing` is an `Empty` publisher useful for when the
-/// middleware decides that certain conditions don't require any side-effect.
+// markdown: effect.md
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public struct Effect<OutputAction>: Publisher {
-    /// Output action matching middleware's `OutputActionType`
+    // markdown: effect-output.md
     public typealias Output = EffectOutput<OutputAction>
-    /// `Effect` publisher can't fail.
+    // markdown: effect-failure.md
     public typealias Failure = Never
-
-    /// Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-    /// Once this effect is subscribed to, the subscription (in form of `AnyCancellable`) will be kept in a
-    /// dictionary where the key is this cancellation token. If another effect with the same cancellation
-    /// token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.
-    ///
-    /// If you don't want this, not providing a cancellation token will only cancel your Effect in the
-    /// very unlike scenario where the `EffectMiddleware` itself gets deallocated.
-    ///
-    /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running
-    /// effects, that way, the dictionary keeping the effects will cleanup the key with that token.
+    // markdown: effect-cancellation-token.md
     public let cancellationToken: AnyHashable?
     private let upstream: AnyPublisher<Output, Failure>
 
-    /// Create an effect with any upstream as long as it can't fail. Don't use eager publishers as upstream,
-    /// such as Future, as they will unexpectedly start the side-effect before the subscription.
-    /// - Parameter upstream: an upstream Publisher that can't fail and should not be eager.
+    // markdown: effect-init.md
     public init<P: Publisher>(upstream: P) where P.Output == Output, P.Failure == Failure {
         self.upstream = upstream.eraseToAnyPublisher()
         self.cancellationToken = nil
     }
 
-    /// Create an effect with any upstream as long as it can't fail. Don't use eager publishers as upstream,
-    /// such as Future, as they will unexpectedly start the side-effect before the subscription.
-    /// - Parameters:
-    ///   - upstream: an upstream Publisher that can't fail and should not be eager.
-    ///   - cancellationToken: Cancellation token is any hashable used later to eventually cancel this effect
-    ///                        before its completion. Once this effect is subscribed to, the subscription (in
-    ///                        form of `AnyCancellable`) will be kept in a dictionary where the key is this
-    ///                        cancellation token. If another effect with the same cancellation token arrives,
-    ///                        the former will be immediately replaced in the dictionary and, therefore,
-    ///                        cancelled. If you don't want this, not providing a cancellation token will only
-    ///                        cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself
-    ///                        gets deallocated. Cancellation tokens can also be provided to the
-    ///                        `EffectMiddleware` to force cancellation of running effects, that way, the
-    ///                        dictionary keeping the effects will cleanup the key with that token.
+    // markdown: effect-init.md
     public init<P: Publisher, H: Hashable>(upstream: P, cancellationToken: H) where P.Output == Output, P.Failure == Failure {
         self.upstream = upstream.eraseToAnyPublisher()
         self.cancellationToken = cancellationToken
@@ -182,26 +137,26 @@ extension Effect {
                     completion(.success(callback))
                 }
             }
-        }.asEffect
+        }.asEffect()
     }
 }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Effect {
     public static func merge(_ first: Effect, _ second: Effect) -> Effect {
-        first.merge(with: second).asEffect
+        first.merge(with: second).asEffect()
     }
 
     public static func merge(_ first: Effect, _ second: Effect, _ third: Effect) -> Effect {
-        first.merge(with: second).merge(with: third).asEffect
+        first.merge(with: second).merge(with: third).asEffect()
     }
 
     public static func merge(_ first: Effect, _ second: Effect, _ third: Effect, _ fourth: Effect) -> Effect {
-        first.merge(with: second, third, fourth).asEffect
+        first.merge(with: second, third, fourth).asEffect()
     }
 
     public static func merge(_ first: Effect, _ second: Effect, _ third: Effect, _ fourth: Effect, _ fifth: Effect) -> Effect {
-        first.merge(with: second, third, fourth, fifth).asEffect
+        first.merge(with: second, third, fourth, fifth).asEffect()
     }
 }
 
@@ -237,7 +192,7 @@ extension Publisher where Failure == Never {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Publisher where Output: EffectOutputProtocol, Failure == Never {
-    public var asEffect: Effect<Self.Output.Action> {
+    public func asEffect() -> Effect<Self.Output.Action> {
         Effect<Self.Output.Action>(upstream: self.map { EffectOutput.dispatch($0.action, from: $0.dispatcher) })
     }
 

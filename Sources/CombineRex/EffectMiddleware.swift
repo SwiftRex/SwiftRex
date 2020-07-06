@@ -198,7 +198,7 @@ extension EffectMiddleware: Semigroup {
             // cancelled individually anyway. So each effect should run in the context of the own EffectMiddleware, not in the context of composed
             // middleware. To write a test for that.
             // https://github.com/SwiftRex/SwiftRex/issues/62
-            return leftEffect.merge(with: rightEffect).asEffect
+            return leftEffect.merge(with: rightEffect).asEffect()
         }.inject(lhs.dependencies)
     }
 }
@@ -229,7 +229,7 @@ extension EffectMiddleware {
                         dependencies: globalContext.dependencies,
                         toCancel: globalContext.toCancel
                     )
-                ).map { EffectOutput.dispatch(outputActionMap($0.action), from: $0.dispatcher) }.asEffect
+                ).map { EffectOutput.dispatch(outputActionMap($0.action), from: $0.dispatcher) }.asEffect()
             }
         )
     }
