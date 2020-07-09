@@ -1,0 +1,1 @@
+Output action matching middleware's `OutputActionType`, wrapped in a `EffectOutput<OutputActionType>` so the action dispatcher can also be collected.

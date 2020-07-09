@@ -1,0 +1,10 @@
+`Effect` is a Publisher/Observable/SignalProducer to be returned by Middlewares so they can dispatch Actions back to a Store. Every effect may have a cancellation token to be later cancelled by new action arrivals, such as in the case when the user is no longer interested in certain HTTP Request or wants to stop a timer. When cancellation token is not provided during the initialization of an Effect, it still can be passed later, which will re-wrap the upstream again in a new Effect, but this time containing the cancellation token. Some static constructors are available, such as `.doNothing`, `.just(_: Output)`, `.sequence(_: Output...)`, `.sequence(_: [Output]`, `.promise(_: CompletionHandler)`, etc.
+
+`Effect` is a stream of the type `EffectOutput`, which contains the action and the action source. Most of the times you want to create the `EffectOutput` by simply calling `EffectOutput.dispatch(myAction)`, where myAction matches the `OutputActionType` of this middleware.
+
+An Effect should never Fail, so any possible failure of its upstream must be caught and treated before the Effect is created. For example, if you have an upstream that uses URLSession to fetch some data from an URL, once you get your data back you can dispatch a successful action. But in case the task returns an URLError or some unexpected URLResponse, you should not fail, but instead, replace the error with an action to be dispatched telling your store that the request has failed. This will enforce the usage of Actions as communication units between different middlewares and reducers.
+
+That's also the reason why `.asEffect()`, `.asEffect<H: Hashable>(cancellationToken: H)` and
+`.asEffect<H: Hashable>(dispatcher: ActionSource, cancellationToken: H)` extensions are only available for publishers that have `Failure == Never`, when the reactive framework supports Failure constraints.
+
+An Effect can be a single-shot sync or async, or a long-lasting one such as a timer. That's why cancellation token is so important. The option `.doNothing` is an `Empty` publisher useful for when the middleware decides that certain conditions don't require any side-effect.
