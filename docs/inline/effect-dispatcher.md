@@ -1,0 +1,1 @@
+The action source, so the Store and other middlewares know where this action is coming from. Default value is `ActionSource.here()`, referring to this line as the source. It can be customized for better logging results.
