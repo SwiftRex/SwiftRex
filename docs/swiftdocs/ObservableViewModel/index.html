@@ -37,7 +37,7 @@
     <code class="name">Observable​View​Model</code>
 </h1>
 
-<html><body><pre class="highlight"><code><span class="attribute">@</span><span class="attribute">available</span>(<span class="keyword">macOS</span> <span class="number literal">10.15</span>, <span class="keyword">iOS</span> <span class="number literal">13.0</span>, <span class="keyword">tvOS</span> <span class="number literal">13.0</span>, <span class="keyword">watchOS</span> <span class="number literal">6.0</span>, *) <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">class</span> <span class="type">ObservableViewModel</span>&lt;<span class="variable">ViewAction</span>, <span class="variable">ViewState</span>&gt;: <a href="/StoreType"><span class="type">StoreType</span></a>, <span class="type">ObservableObject</span></code></pre></body></html>
+<html><body><pre class="highlight"><code><span class="attribute">@</span><span class="attribute">available</span>(<span class="keyword">macOS</span> <span class="number literal">10.15</span>, <span class="keyword">iOS</span> <span class="number literal">13.0</span>, <span class="keyword">tvOS</span> <span class="number literal">13.0</span>, <span class="keyword">watchOS</span> <span class="number literal">6.0</span>, *) <span class="attribute">open</span> <span class="keyword">class</span> <span class="type">ObservableViewModel</span>&lt;<span class="variable">ViewAction</span>, <span class="variable">ViewState</span>&gt;: <a href="/StoreType"><span class="type">StoreType</span></a>, <span class="type">ObservableObject</span></code></pre></body></html>
 <div class="summary" role="doc-abstract">
     <p>A Store Projection made to be used in SwiftUI</p>
 
@@ -101,7 +101,7 @@ in types more close to what a View should know, instead of working on global dom
 <text text-anchor="middle" x="207" y="-14.3" font-family="Menlo" font-size="14.00">ObservableObject</text>
 </g>
 <!-- ObservableViewModel&#45;&gt;ObservableObject -->
-<g id="edge2" class="edge conformsTo">
+<g id="edge1" class="edge conformsTo">
 <title>ObservableViewModel&#45;&gt;ObservableObject</title>
 <path fill="none" stroke="black" d="M377.25,-71.97C345.4,-62.06 305.08,-49.51 271.67,-39.12"/>
 <polygon fill="black" stroke="black" points="272.59,-35.74 262,-36.11 270.51,-42.42 272.59,-35.74"/>
@@ -113,7 +113,7 @@ in types more close to what a View should know, instead of working on global dom
 <text text-anchor="middle" x="657" y="-14.3" font-family="Menlo" font-size="14.00">StoreType</text>
 </g>
 <!-- ObservableViewModel&#45;&gt;StoreType -->
-<g id="edge1" class="edge conformsTo">
+<g id="edge2" class="edge conformsTo">
 <title>ObservableViewModel&#45;&gt;StoreType</title>
 <path fill="none" stroke="black" d="M486.75,-71.97C518.6,-62.06 558.92,-49.51 592.33,-39.12"/>
 <polygon fill="black" stroke="black" points="593.49,-42.42 602,-36.11 591.41,-35.74 593.49,-42.42"/>
@@ -177,7 +177,7 @@ in types more close to what a View should know, instead of working on global dom
     <h3>
         <code>dispatch(_:​from:​)</code>
     </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">dispatch</span>(<span class="keyword">_</span> <span class="variable">action</span>: <span class="type">ViewAction</span>, <span class="variable">from</span> <span class="variable">dispatcher</span>: <a href="/ActionSource"><span class="type">ActionSource</span></a>)</code></pre></body></html>
+    <html><body><pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">dispatch</span>(<span class="keyword">_</span> <span class="variable">action</span>: <span class="type">ViewAction</span>, <span class="variable">from</span> <span class="variable">dispatcher</span>: <a href="/ActionSource"><span class="type">ActionSource</span></a>)</code></pre></body></html>
 </div>
 <div role="article" class="function" id="observableviewmodel.mock(state:action:)">
     <h3>
@@ -249,7 +249,7 @@ You can use if as a micro-redux for tests and SwiftUI previews, for example:</p>
 
     <footer>
         <p>
-    Generated on <time datetime="2020-05-29T03:19:03+0200">29. May 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-07-13T23:51:35+0200">13. July 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
 </p>
     </footer>
 </body>

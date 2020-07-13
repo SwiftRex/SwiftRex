@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MiddlewareReader Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/MiddlewareReader" class="dashAnchor"></a>
+    <a title="MiddlewareReader Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">SwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        MiddlewareReader Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Collection.html">Collection</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Monoid.html">Monoid</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ReduxStoreProtocol.html">ReduxStoreProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Semigroup.html">Semigroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StateProvider.html">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StoreType.html">StoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SubscriptionCollection.html">SubscriptionCollection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SubscriptionType.html">SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/MiddlewareReader.html">MiddlewareReader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Reducer.html">Reducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ReduxPipelineWrapper.html">ReduxPipelineWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SubjectType.html">SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SubscriberType.html">SubscriberType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex31UnfailableReplayLastSubjectTypea">UnfailableReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex17UnfailableSubjecta">UnfailableSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex24UnfailableSubscriberTypea">UnfailableSubscriberType</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>MiddlewareReader</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">MiddlewareReader</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">MiddlewareType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a></span> <span class="k">where</span> <span class="kt">MiddlewareType</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/Middleware.html">Middleware</a></span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">MiddlewareReader</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Semigroup.html">Semigroup</a></span> <span class="k">where</span> <span class="kt">MiddlewareType</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Semigroup.html">Semigroup</a></span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">MiddlewareReader</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Monoid.html">Monoid</a></span> <span class="k">where</span> <span class="kt">MiddlewareType</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Monoid.html">Monoid</a></span></code></pre>
+
+                </div>
+              </div>
+            <p>A MiddlewareReader is a way to lazily inject dependencies into a Middleware. For example, you may want to compose multiple middlewares but from
+a library, and in this library you don&rsquo;t have the dependencies to inject just yet, because these dependencies are only present in the main target.
+That way, instead of creating the middlewares (which would require all the dependencies), you can wrap their initializers in a MiddlewareReader.
+The middleware reader is not a middleware, is a a factory (in OOP terms) from <code>(Dependencies) -&gt; MiddlewareType</code> (in FP approach). The benefit
+of wrapping the middleware initializers in a MiddlewareReader is that, for all means, MiddlewareReaders can be composed as Middlewares, can be
+lifted as Middlewares, but all of this without in fact creating the Middlewares.
+Your library can then expose a single MiddlewareReader as public, and you keep all its middlewares as internal classes. From the main target you
+compose this MiddlewareReader with other MiddlewareReaders coming from other libraries and from the main target itself. Somewhere where you create
+the Store, you finally inject the dependencies at once and you materialize all your middlewares at the same time.
+Remember that &ldquo;inject then compose&rdquo; is the same as &ldquo;compose then inject&rdquo;, but while the former needs dependencies upfront, the latter is more
+flexible for being lazy.
+For those familiar with Functional Programming, this is similar to Reader Monad, but as SwiftRex recommends dependencies only on Middlewares,
+this Reader works specifically with Middlewares.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16MiddlewareReaderV6injectyq_xcvp"></a>
+                    <a name="//apple_ref/swift/Property/inject" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16MiddlewareReaderV6injectyq_xcvp">inject</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>An initializer function that, given the dependencies in the Middleware&rsquo;s init, will give the Middleware instance
+When inject is called, your MiddlewareReader materializes into a Middleware.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">inject</span><span class="p">:</span> <span class="p">(</span><span class="kt">Dependencies</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MiddlewareType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16MiddlewareReaderV6injectACyxq_Gq_xc_tcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(inject:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16MiddlewareReaderV6injectACyxq_Gq_xc_tcfc">init(inject:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Allows to define a middleware initializer and store this initializer function until we have the dependencies to call it.
+This allows us to postpone the dependency injection and compose middlewares that are not even materialized yet.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">inject</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Dependencies</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MiddlewareType</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>inject</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An initializer function that, given the dependencies in the Middleware&rsquo;s init, will give the Middleware instance
+                When inject is called, your MiddlewareReader materializes into a Middleware.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

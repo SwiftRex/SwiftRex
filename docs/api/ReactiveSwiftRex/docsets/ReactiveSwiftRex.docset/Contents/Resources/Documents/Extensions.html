@@ -14,7 +14,7 @@
     <a title="Extensions  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">ReactiveSwiftRex 0.7.2 Docs</a> (45% documented)</p>
+        <p><a href="index.html">ReactiveSwiftRex 0.7.4 Docs</a> (68% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,7 +32,13 @@
             <a href="Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -48,6 +54,17 @@
               </li>
               <li class="nav-group-task">
                 <a href="uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/EffectMiddleware/Context.html">– Context</a>
               </li>
             </ul>
           </li>
@@ -89,6 +106,25 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/Effect.html">Effect</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:16ReactiveSwiftRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:16ReactiveSwiftRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -101,33 +137,6 @@
           <section class="section task-group-section">
             <div class="task-group">
               <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex13PublisherTypeV"></a>
-                    <a name="//apple_ref/swift/Extension/PublisherType" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex13PublisherTypeV">PublisherType</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                        <a href="Extensions/PublisherType.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">PublisherType</span><span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="p">,</span> <span class="kt">SignalProducerConvertible</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
                 <li class="item">
                   <div>
                     <code>
@@ -149,6 +158,34 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">SignalProducerProtocol</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">SignalProducerProtocol</span> <span class="k">where</span> <span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13PublisherTypeV"></a>
+                    <a name="//apple_ref/swift/Extension/PublisherType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13PublisherTypeV">PublisherType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                        <a href="Extensions/PublisherType.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">PublisherType</span><span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="p">,</span> <span class="kt">SignalProducerConvertible</span></code></pre>
 
                         </div>
                       </div>
@@ -369,7 +406,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

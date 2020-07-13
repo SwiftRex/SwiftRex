@@ -14,7 +14,7 @@
     <a title="SignalProducerProtocol Extension Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">ReactiveSwiftRex 0.7.2 Docs</a> (45% documented)</p>
+        <p><a href="../index.html">ReactiveSwiftRex 0.7.4 Docs</a> (68% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,7 +32,13 @@
             <a href="../Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -48,6 +54,17 @@
               </li>
               <li class="nav-group-task">
                 <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware/Context.html">– Context</a>
               </li>
             </ul>
           </li>
@@ -89,6 +106,25 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Effect.html">Effect</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:16ReactiveSwiftRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:16ReactiveSwiftRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -98,6 +134,7 @@
               <div class="declaration">
                 <div class="language">
                   <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">SignalProducerProtocol</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">SignalProducerProtocol</span> <span class="k">where</span> <span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
 
                 </div>
               </div>
@@ -135,10 +172,112 @@
                 </li>
               </ul>
             </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60Error%60%20==%20%60Never%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Error` == `Never`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Error%60%20==%20%60Never%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Error</code> == <code>Never</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffectAD0J0Vy5ValueQzGvp"></a>
+                    <a name="//apple_ref/swift/Property/asEffect" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffectAD0J0Vy5ValueQzGvp">asEffect</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Erases any unfailable <code>SignalProducer</code> to effect.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">asEffect</span><span class="p">:</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Value</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect17cancellationTokenAD0J0Vy5ValueQzGqd___tSHRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(cancellationToken:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect17cancellationTokenAD0J0Vy5ValueQzGqd___tSHRd__lF">asEffect(cancellationToken:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Erases any unfailable <code>SignalProducer</code> to effect. Also contains a cancellation token.</p>
+
+<p>Cancellation token is any hashable used later to eventually cancel this effect before its completion.
+Once this effect is subscribed to, the subscription (in form of <code>Lifetime.Token</code>) will be kept in a
+dictionary where the key is this cancellation token. If another effect with the same cancellation
+token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.</p>
+
+<p>If you don&rsquo;t want this, not providing a cancellation token will only cancel your Effect in the
+very unlike scenario where the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets deallocated.</p>
+
+<p>Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running
+effects, that way, the dictionary keeping the effects will cleanup the key with that token.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n"><a href="../Extensions/SignalProducerProtocol.html#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffectAD0J0Vy5ValueQzGvp">asEffect</a></span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">cancellationToken</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Value</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cancellationToken</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>cancellation token for this effect, as explained in the method
+                           description</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an <code><a href="../Structs/Effect.html">Effect</a></code> wrapping this <code>SignalProducer</code> as its upstream, plus a cancellation token.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

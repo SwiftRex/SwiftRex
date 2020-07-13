@@ -14,7 +14,7 @@
     <a title="Publisher Extension Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">CombineRex 0.7.2 Docs</a> (57% documented)</p>
+        <p><a href="../index.html">CombineRex 0.7.4 Docs</a> (64% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,7 +32,13 @@
             <a href="../Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -55,7 +61,21 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware/Context.html">– Context</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/EffectOutput.html">EffectOutput</a>
               </li>
             </ul>
           </li>
@@ -103,6 +123,33 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Effect.html">Effect</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -112,6 +159,8 @@
               <div class="declaration">
                 <div class="language">
                   <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Publisher</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Publisher</span> <span class="k">where</span> <span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Publisher</span> <span class="k">where</span> <span class="kt">Output</span><span class="p">:</span> <span class="kt"><a href="../Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a></span><span class="p">,</span> <span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
 
                 </div>
               </div>
@@ -149,10 +198,291 @@
                 </li>
               </ul>
             </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60Failure%60%20==%20%60Never%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Failure` == `Never`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Failure%60%20==%20%60Never%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Failure</code> == <code>Never</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzrlE8asEffect10dispatcherAD0G0Vy6OutputQzG05SwiftC012ActionSourceV_tF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(dispatcher:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzrlE8asEffect10dispatcherAD0G0Vy6OutputQzG05SwiftC012ActionSourceV_tF">asEffect(dispatcher:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Erases any unfailable Publisher to effect. Don&rsquo;t call this on eager Publishers or the effect is already happening before the subscription.</p>
+
+<p>An optional cancellation token can be provided to avoid duplicated effect of the same time, or for manual cancellation at any point later.</p>
+
+<p>Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect is subscribed to, the 
+subscription (in form of <code>AnyCancellable</code>) will be kept in a dictionary where the key is this cancellation token. If another effect with the 
+same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don&rsquo;t want this, 
+not providing a cancellation token will only cancel your Effect in the very unlike scenario where the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets 
+deallocated.  Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running effects, that way, the 
+dictionary keeping the effects will cleanup the key with that token. </p>
+
+<p>If the Publisher outputs some <code><a href="../Enums/EffectOutput.html">EffectOutput&lt;OutputAction&gt;</a></code> events, then the action source (dispatcher) is already known, it&rsquo;s the line that 
+created the EffectOutput instance. However, if the upstream Publisher outputs only <code>OutputAction</code>, then a <code>dispatcher: ActionSource</code> must also 
+be provided so the Store knows where this action is coming from. In that case you can provide <code>ActionSource.here()</code> if this line of code is to 
+be referred as the source.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">asEffect</span><span class="p">(</span><span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="k">Self</span><span class="o">.</span><span class="kt">Output</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dispatcher</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the action source, so the Store and other middlewares know where this action is coming from. You can provide 
+<code>ActionSource.here()</code> if this line of code is to be referred as the source. A better way is to set the upstream Publisher Output Type as 
+<code><a href="../Enums/EffectOutput.html">EffectOutput&lt;OutputAction&gt;</a></code>, not <code>OutputAction</code>, so once you create the <code><a href="../Enums/EffectOutput.html">EffectOutput</a></code> is set as the action source, providing a better 
+logging results for you.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an <code><a href="../Structs/Effect.html">Effect</a></code> wrapping this Publisher as its upstream.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzrlE8asEffect10dispatcher17cancellationTokenAD0G0Vy6OutputQzG05SwiftC012ActionSourceV_qd__tSHRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(dispatcher:cancellationToken:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzrlE8asEffect10dispatcher17cancellationTokenAD0G0Vy6OutputQzG05SwiftC012ActionSourceV_qd__tSHRd__lF">asEffect(dispatcher:<wbr>cancellationToken:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Erases any unfailable Publisher to effect. Don&rsquo;t call this on eager Publishers or the effect is already happening before the subscription.</p>
+
+<p>An optional cancellation token can be provided to avoid duplicated effect of the same time, or for manual cancellation at any point later.</p>
+
+<p>Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect is subscribed to, the 
+subscription (in form of <code>AnyCancellable</code>) will be kept in a dictionary where the key is this cancellation token. If another effect with the 
+same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don&rsquo;t want this, 
+not providing a cancellation token will only cancel your Effect in the very unlike scenario where the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets 
+deallocated.  Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running effects, that way, the 
+dictionary keeping the effects will cleanup the key with that token. </p>
+
+<p>If the Publisher outputs some <code><a href="../Enums/EffectOutput.html">EffectOutput&lt;OutputAction&gt;</a></code> events, then the action source (dispatcher) is already known, it&rsquo;s the line that 
+created the EffectOutput instance. However, if the upstream Publisher outputs only <code>OutputAction</code>, then a <code>dispatcher: ActionSource</code> must also 
+be provided so the Store knows where this action is coming from. In that case you can provide <code>ActionSource.here()</code> if this line of code is to 
+be referred as the source.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">asEffect</span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">cancellationToken</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="k">Self</span><span class="o">.</span><span class="kt">Output</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dispatcher</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the action source, so the Store and other middlewares know where this action is coming from. You can provide 
+<code>ActionSource.here()</code> if this line of code is to be referred as the source. A better way is to set the upstream Publisher Output Type as 
+<code><a href="../Enums/EffectOutput.html">EffectOutput&lt;OutputAction&gt;</a></code>, not <code>OutputAction</code>, so once you create the <code><a href="../Enums/EffectOutput.html">EffectOutput</a></code> is set as the action source, providing a better 
+logging results for you.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cancellationToken</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>cancellation token for this effect, as explained in the method description</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an <code><a href="../Structs/Effect.html">Effect</a></code> wrapping this Publisher as its upstream.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60Output%60:%20%60EffectOutputProtocol%60,%20%60Failure%60%20==%20%60Never%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Output`: `EffectOutputProtocol`, `Failure` == `Never`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Output%60:%20%60EffectOutputProtocol%60,%20%60Failure%60%20==%20%60Never%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Output</code>: <code><a href="../Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a></code>, <code>Failure</code> == <code>Never</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzAD20EffectOutputProtocol0G0RpzrlE02asF0AD0F0VyAJ_6ActionQZGyF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzAD20EffectOutputProtocol0G0RpzrlE02asF0AD0F0VyAJ_6ActionQZGyF">asEffect()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Erases any unfailable Publisher to effect. Don&rsquo;t call this on eager Publishers or the effect is already happening before the subscription.</p>
+
+<p>An optional cancellation token can be provided to avoid duplicated effect of the same time, or for manual cancellation at any point later.</p>
+
+<p>Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect is subscribed to, the 
+subscription (in form of <code>AnyCancellable</code>) will be kept in a dictionary where the key is this cancellation token. If another effect with the 
+same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don&rsquo;t want this, 
+not providing a cancellation token will only cancel your Effect in the very unlike scenario where the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets 
+deallocated.  Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running effects, that way, the 
+dictionary keeping the effects will cleanup the key with that token. </p>
+
+<p>If the Publisher outputs some <code><a href="../Enums/EffectOutput.html">EffectOutput&lt;OutputAction&gt;</a></code> events, then the action source (dispatcher) is already known, it&rsquo;s the line that 
+created the EffectOutput instance. However, if the upstream Publisher outputs only <code>OutputAction</code>, then a <code>dispatcher: ActionSource</code> must also 
+be provided so the Store knows where this action is coming from. In that case you can provide <code>ActionSource.here()</code> if this line of code is to 
+be referred as the source.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">asEffect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="k">Self</span><span class="o">.</span><span class="kt">Output</span><span class="o">.</span><span class="kt">Action</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an <code><a href="../Structs/Effect.html">Effect</a></code> wrapping this Publisher as its upstream.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzAD20EffectOutputProtocol0G0RpzrlE02asF017cancellationTokenAD0F0VyAJ_6ActionQZGqd___tSHRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(cancellationToken:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Combine9PublisherP0A3Rexs5NeverO7FailureRtzAD20EffectOutputProtocol0G0RpzrlE02asF017cancellationTokenAD0F0VyAJ_6ActionQZGqd___tSHRd__lF">asEffect(cancellationToken:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Erases any unfailable Publisher to effect. Don&rsquo;t call this on eager Publishers or the effect is already happening before the subscription.</p>
+
+<p>An optional cancellation token can be provided to avoid duplicated effect of the same time, or for manual cancellation at any point later.</p>
+
+<p>Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect is subscribed to, the 
+subscription (in form of <code>AnyCancellable</code>) will be kept in a dictionary where the key is this cancellation token. If another effect with the 
+same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don&rsquo;t want this, 
+not providing a cancellation token will only cancel your Effect in the very unlike scenario where the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets 
+deallocated.  Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running effects, that way, the 
+dictionary keeping the effects will cleanup the key with that token. </p>
+
+<p>If the Publisher outputs some <code><a href="../Enums/EffectOutput.html">EffectOutput&lt;OutputAction&gt;</a></code> events, then the action source (dispatcher) is already known, it&rsquo;s the line that 
+created the EffectOutput instance. However, if the upstream Publisher outputs only <code>OutputAction</code>, then a <code>dispatcher: ActionSource</code> must also 
+be provided so the Store knows where this action is coming from. In that case you can provide <code>ActionSource.here()</code> if this line of code is to 
+be referred as the source.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">asEffect</span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">cancellationToken</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="k">Self</span><span class="o">.</span><span class="kt">Output</span><span class="o">.</span><span class="kt">Action</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cancellationToken</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>cancellation token for this effect, as explained in the method description</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an <code><a href="../Structs/Effect.html">Effect</a></code> wrapping this Publisher as its upstream.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

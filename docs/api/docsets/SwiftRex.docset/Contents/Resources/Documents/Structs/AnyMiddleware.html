@@ -14,7 +14,7 @@
     <a title="AnyMiddleware Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.7.2 Docs</a> (82% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,7 +32,13 @@
             <a href="../Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -88,6 +94,9 @@
                 <a href="../Protocols/Middleware.html">Middleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Protocols/Monoid.html">Monoid</a>
               </li>
               <li class="nav-group-task">
@@ -135,10 +144,16 @@
                 <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/MiddlewareReader.html">MiddlewareReader</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/PublisherType.html">PublisherType</a>
@@ -210,9 +225,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex13AnyMiddlewareV6handle14receiveContextACyxq_q0_Gyx_AA12ActionSourceVAA12AfterReducerVztc_yq0_yc_AA0cH7HandlerVyq_Gtctcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(handle:receiveContext:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV6handle14receiveContextACyxq_q0_Gyx_AA12ActionSourceVAA12AfterReducerVztc_yq0_yc_AA0cH7HandlerVyq_Gtctcfc">init(handle:<wbr>receiveContext:<wbr>)</a>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV14receiveContext6handleACyxq_q0_Gyq0_yc_AA0C13ActionHandlerVyq_Gtc_yx_AA0H6SourceVAA12AfterReducerVztctcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(receiveContext:handle:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV14receiveContext6handleACyxq_q0_Gyq0_yc_AA0C13ActionHandlerVyq_Gtc_yx_AA0H6SourceVAA12AfterReducerVztctcfc">init(receiveContext:<wbr>handle:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -227,8 +242,8 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">handle</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt"><a href="../Structs/ActionSource.html">ActionSource</a></span><span class="p">,</span> <span class="k">inout</span> <span class="kt"><a href="../Structs/AfterReducer.html">AfterReducer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
-            <span class="nv">receiveContext</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt"><a href="../Structs/AnyActionHandler.html">AnyActionHandler</a></span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">receiveContext</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt"><a href="../Structs/AnyActionHandler.html">AnyActionHandler</a></span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span> <span class="p">},</span>
+            <span class="nv">handle</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt"><a href="../Structs/ActionSource.html">ActionSource</a></span><span class="p">,</span> <span class="k">inout</span> <span class="kt"><a href="../Structs/AfterReducer.html">AfterReducer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -315,12 +330,220 @@
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV4lift11inputAction06outputG05stateACyqd__qd_0_qd_1_GxSgqd__c_qd_0_q_cq0_qd_1_ctr1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:outputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV4lift11inputAction06outputG05stateACyqd__qd_0_qd_1_GxSgqd__c_qd_0_q_cq0_qd_1_ctr1_lF">lift(inputAction:<wbr>outputAction:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV4lift12outputAction5stateACyxqd__qd_0_Gqd__q_c_q0_qd_0_ctr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV4lift12outputAction5stateACyxqd__qd_0_Gqd__q_c_q0_qd_0_ctr0_lF">lift(outputAction:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV4lift11inputAction5stateACyqd__q_qd_0_GxSgqd__c_q0_qd_0_ctr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV4lift11inputAction5stateACyqd__q_qd_0_GxSgqd__c_q0_qd_0_ctr0_lF">lift(inputAction:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV4lift11inputAction06outputG0ACyqd__qd_0_q0_GxSgqd__c_qd_0_q_ctr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:outputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV4lift11inputAction06outputG0ACyqd__qd_0_q0_GxSgqd__c_qd_0_q_ctr0_lF">lift(inputAction:<wbr>outputAction:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV4lift11inputActionACyqd__q_q0_GxSgqd__c_tlF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV4lift11inputActionACyqd__q_q0_GxSgqd__c_tlF">lift(inputAction:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV4lift12outputActionACyxqd__q0_Gqd__q_c_tlF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV4lift12outputActionACyxqd__q0_Gqd__q_c_tlF">lift(outputAction:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalOutputActionType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV4lift5stateACyxq_qd__Gq0_qd__c_tlF"></a>
+                    <a name="//apple_ref/swift/Method/lift(state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV4lift5stateACyxq_qd__Gq0_qd__c_tlF">lift(state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

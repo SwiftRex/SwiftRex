@@ -14,7 +14,7 @@
     <a title="Extensions  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">CombineRex 0.7.2 Docs</a> (57% documented)</p>
+        <p><a href="index.html">CombineRex 0.7.4 Docs</a> (64% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,7 +32,13 @@
             <a href="Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -55,7 +61,21 @@
             <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/EffectMiddleware/Context.html">– Context</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/EffectOutput.html">EffectOutput</a>
               </li>
             </ul>
           </li>
@@ -103,6 +123,33 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/Effect.html">Effect</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:10CombineRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:10CombineRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -115,6 +162,35 @@
           <section class="section task-group-section">
             <div class="task-group">
               <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Combine9PublisherP"></a>
+                    <a name="//apple_ref/swift/Extension/Publisher" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Combine9PublisherP">Publisher</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                        <a href="Extensions/Publisher.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Publisher</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Publisher</span> <span class="k">where</span> <span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Publisher</span> <span class="k">where</span> <span class="kt">Output</span><span class="p">:</span> <span class="kt"><a href="Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a></span><span class="p">,</span> <span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
                 <li class="item">
                   <div>
                     <code>
@@ -164,33 +240,6 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">PublisherType</span><span class="p">:</span> <span class="kt">Publisher</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7Combine9PublisherP"></a>
-                    <a name="//apple_ref/swift/Extension/Publisher" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7Combine9PublisherP">Publisher</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                        <a href="Extensions/Publisher.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Publisher</span></code></pre>
 
                         </div>
                       </div>
@@ -410,7 +459,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

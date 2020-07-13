@@ -14,7 +14,7 @@
     <a title="Middleware Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.7.2 Docs</a> (82% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,7 +32,13 @@
             <a href="../Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -88,6 +94,9 @@
                 <a href="../Protocols/Middleware.html">Middleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Protocols/Monoid.html">Monoid</a>
               </li>
               <li class="nav-group-task">
@@ -135,10 +144,16 @@
                 <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/MiddlewareReader.html">MiddlewareReader</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/PublisherType.html">PublisherType</a>
@@ -360,7 +375,7 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
                       <div class="abstract">
                         <p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware.
 Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
-action of an app. Please check <code><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF">lift(inputActionMap:outputActionMap:stateMap:)</a></code> for more details.</p>
+action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
 
                       </div>
                       <div class="declaration">
@@ -390,7 +405,7 @@ action of an app. Please check <code><a href="../Protocols/Middleware.html#/s:8S
                         <p>The Action type that this <code>Middleware</code> will eventually trigger back to the store in response of side-effects. This can be the same as
 <code><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></code> or different, in case you want to separate your enum in requests and responses.
 Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
-action of an app. Please check <code><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF">lift(inputActionMap:outputActionMap:stateMap:)</a></code> for more details.</p>
+action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
 
                       </div>
                       <div class="declaration">
@@ -422,7 +437,7 @@ action of an app. Please check <code><a href="../Protocols/Middleware.html#/s:8S
 whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn&rsquo;t need to read any state, so the <code>StateType</code>can
 safely be set to <code>Void</code>.
 Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state
-of an app. Please check <code><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF">lift(inputActionMap:outputActionMap:stateMap:)</a></code> for more details.</p>
+of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
 
                       </div>
                       <div class="declaration">
@@ -608,9 +623,9 @@ Setting the <code>afterReducer</code> in/out parameter is optional, if you don&r
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF"></a>
-                    <a name="//apple_ref/swift/Method/lift(inputActionMap:outputActionMap:stateMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG005stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfL0Qzc05StateL0Qzqd_1_ctr1_lF">lift(inputActionMap:<wbr>outputActionMap:<wbr>stateMap:<wbr>)</a>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift11inputAction06outputF05stateAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfK0Qzc05StateK0Qzqd_1_ctr1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:outputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift11inputAction06outputF05stateAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfK0Qzc05StateK0Qzqd_1_ctr1_lF">lift(inputAction:<wbr>outputAction:<wbr>state:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -645,7 +660,7 @@ call <code>Whole</code>.</p>
 
 <p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
 using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
 <p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
@@ -657,9 +672,9 @@ lift it to the world of <code>Whole</code>.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
-    <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
-    <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -725,9 +740,9 @@ lift it to the world of <code>Whole</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_05StateK0Qzqd_1_ct05InputfK0QzRsd__r1_lF"></a>
-                    <a name="//apple_ref/swift/Method/lift(outputActionMap:stateMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_05StateK0Qzqd_1_ct05InputfK0QzRsd__r1_lF">lift(outputActionMap:<wbr>stateMap:<wbr>)</a>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift12outputAction5stateAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_05StateJ0Qzqd_1_ct05InputfJ0QzRsd__r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift12outputAction5stateAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_05StateJ0Qzqd_1_ct05InputfJ0QzRsd__r1_lF">lift(outputAction:<wbr>state:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -762,7 +777,7 @@ call <code>Whole</code>.</p>
 
 <p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
 using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
 <p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
@@ -774,8 +789,8 @@ lift it to the world of <code>Whole</code>.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
-    <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
 <span class="k">where</span> <span class="kt">GlobalInputActionType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span></code></pre>
 
@@ -826,9 +841,9 @@ lift it to the world of <code>Whole</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_05StateK0Qzqd_1_ct06OutputfK0QzRsd_0_r1_lF"></a>
-                    <a name="//apple_ref/swift/Method/lift(inputActionMap:stateMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap05stateG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_05StateK0Qzqd_1_ct06OutputfK0QzRsd_0_r1_lF">lift(inputActionMap:<wbr>stateMap:<wbr>)</a>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift11inputAction5stateAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_05StateJ0Qzqd_1_ct06OutputfJ0QzRsd_0_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift11inputAction5stateAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_05StateJ0Qzqd_1_ct06OutputfJ0QzRsd_0_r1_lF">lift(inputAction:<wbr>state:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -863,7 +878,7 @@ call <code>Whole</code>.</p>
 
 <p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
 using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
 <p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
@@ -875,8 +890,8 @@ lift it to the world of <code>Whole</code>.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
-    <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
 <span class="k">where</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span> <span class="o">==</span> <span class="kt">GlobalOutputActionType</span></code></pre>
 
@@ -929,9 +944,9 @@ lift it to the world of <code>Whole</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfK0Qzct05StateK0QzRsd_1_r1_lF"></a>
-                    <a name="//apple_ref/swift/Method/lift(inputActionMap:outputActionMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMap06outputfG0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfK0Qzct05StateK0QzRsd_1_r1_lF">lift(inputActionMap:<wbr>outputActionMap:<wbr>)</a>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift11inputAction06outputF0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfJ0Qzct05StateJ0QzRsd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:outputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift11inputAction06outputF0AA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_qd_0_06OutputfJ0Qzct05StateJ0QzRsd_1_r1_lF">lift(inputAction:<wbr>outputAction:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -966,7 +981,7 @@ call <code>Whole</code>.</p>
 
 <p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
 using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
 <p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
@@ -978,8 +993,8 @@ lift it to the world of <code>Whole</code>.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
-    <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
 <span class="k">where</span> <span class="kt">GlobalStateType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span></code></pre>
 
@@ -1033,9 +1048,9 @@ lift it to the world of <code>Whole</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_t06OutputfJ0QzRsd_0_05StateJ0QzRsd_1_r1_lF"></a>
-                    <a name="//apple_ref/swift/Method/lift(inputActionMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift14inputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_t06OutputfJ0QzRsd_0_05StateJ0QzRsd_1_r1_lF">lift(inputActionMap:<wbr>)</a>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift11inputActionAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_t06OutputfI0QzRsd_0_05StateI0QzRsd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift11inputActionAA04LiftC0Vyqd__qd_0_qd_1_xG05InputF4TypeQzSgqd__c_t06OutputfI0QzRsd_0_05StateI0QzRsd_1_r1_lF">lift(inputAction:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -1070,7 +1085,7 @@ call <code>Whole</code>.</p>
 
 <p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
 using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
 <p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
@@ -1082,7 +1097,7 @@ lift it to the world of <code>Whole</code>.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">?</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
 <span class="k">where</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span> <span class="o">==</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span></code></pre>
 
@@ -1122,9 +1137,9 @@ lift it to the world of <code>Whole</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_t05InputfJ0QzRsd__05StateJ0QzRsd_1_r1_lF"></a>
-                    <a name="//apple_ref/swift/Method/lift(outputActionMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift15outputActionMapAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_t05InputfJ0QzRsd__05StateJ0QzRsd_1_r1_lF">lift(outputActionMap:<wbr>)</a>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift12outputActionAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_t05InputfI0QzRsd__05StateI0QzRsd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift12outputActionAA04LiftC0Vyqd__qd_0_qd_1_xGqd_0_06OutputF4TypeQzc_t05InputfI0QzRsd__05StateI0QzRsd_1_r1_lF">lift(outputAction:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -1159,7 +1174,7 @@ call <code>Whole</code>.</p>
 
 <p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
 using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
 <p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
@@ -1171,7 +1186,7 @@ lift it to the world of <code>Whole</code>.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
 <span class="k">where</span> <span class="kt">GlobalInputActionType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">,</span> <span class="kt">GlobalStateType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span></code></pre>
 
@@ -1209,9 +1224,9 @@ lift it to the world of <code>Whole</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift8stateMapAA04LiftC0Vyqd__qd_0_qd_1_xG9StateTypeQzqd_1_c_t011InputActionI0QzRsd__06OutputkI0QzRsd_0_r1_lF"></a>
-                    <a name="//apple_ref/swift/Method/lift(stateMap:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift8stateMapAA04LiftC0Vyqd__qd_0_qd_1_xG9StateTypeQzqd_1_c_t011InputActionI0QzRsd__06OutputkI0QzRsd_0_r1_lF">lift(stateMap:<wbr>)</a>
+                    <a name="/s:8SwiftRex10MiddlewarePAAE4lift5stateAA04LiftC0Vyqd__qd_0_qd_1_xG9StateTypeQzqd_1_c_t011InputActionH0QzRsd__06OutputjH0QzRsd_0_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewarePAAE4lift5stateAA04LiftC0Vyqd__qd_0_qd_1_xG9StateTypeQzqd_1_c_t011InputActionH0QzRsd__06OutputjH0QzRsd_0_r1_lF">lift(state:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -1246,7 +1261,7 @@ call <code>Whole</code>.</p>
 
 <p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by
 using:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">stateMap</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">globalStateMiddleware</span> <span class="o">=</span> <span class="n">gpsMiddleware</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">MyGlobalState</span><span class="o">.</span><span class="n">currentLocation</span><span class="p">)</span>
 </code></pre>
 
 <p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to
@@ -1258,7 +1273,7 @@ lift it to the world of <code>Whole</code>.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP9StateTypeQa">StateType</a></span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftMiddleware.html">LiftMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span>
 <span class="k">where</span> <span class="kt">GlobalInputActionType</span> <span class="o">==</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP15InputActionTypeQa">InputActionType</a></span><span class="p">,</span> <span class="kt"><a href="../Protocols/Middleware.html#/s:8SwiftRex10MiddlewareP16OutputActionTypeQa">OutputActionType</a></span> <span class="o">==</span> <span class="kt">GlobalOutputActionType</span></code></pre>
 
@@ -1297,7 +1312,7 @@ lift it to the world of <code>Whole</code>.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

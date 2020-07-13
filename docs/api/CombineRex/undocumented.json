@@ -1,6 +1,153 @@
 {
   "warnings": [
     {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 6,
+      "symbol": "EffectOutputProtocol",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 7,
+      "symbol": "EffectOutputProtocol.Action",
+      "symbol_kind": "source.lang.swift.decl.associatedtype",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 8,
+      "symbol": "EffectOutputProtocol.action",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 9,
+      "symbol": "EffectOutputProtocol.dispatcher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 12,
+      "symbol": "EffectOutput",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 13,
+      "symbol": "EffectOutput.dispatch(_:from:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 16,
+      "symbol": "EffectOutput",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 17,
+      "symbol": "EffectOutput.map(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 25,
+      "symbol": "EffectOutput",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 26,
+      "symbol": "EffectOutput.action",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect.swift",
+      "line": 32,
+      "symbol": "EffectOutput.dispatcher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 105,
+      "symbol": "EffectMiddleware.Context",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 106,
+      "symbol": "EffectMiddleware.Context.dispatcher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 107,
+      "symbol": "EffectMiddleware.Context.dependencies",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 108,
+      "symbol": "EffectMiddleware.Context.toCancel",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 141,
+      "symbol": "EffectMiddleware.onAction(do:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 152,
+      "symbol": "EffectMiddleware.onAction(do:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 215,
+      "symbol": "EffectMiddleware.lift(inputAction:outputAction:state:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 240,
+      "symbol": "EffectMiddleware.lift(action:state:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 270,
+      "symbol": "EffectMiddleware.liftToCollection(inputAction:outputAction:stateCollection:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/EffectMiddleware.swift",
+      "line": 300,
+      "symbol": "EffectMiddleware.liftToCollection(action:stateCollection:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
       "line": 42,
       "symbol": "ObservableViewModel.state",
@@ -82,13 +229,6 @@
       "line": 25,
       "symbol": "PassthroughSubject.asSubscriberType()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SubscriberType+Subscriber.swift",
-      "line": 8,
-      "symbol": "SubscriberType.combineIdentifier",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {

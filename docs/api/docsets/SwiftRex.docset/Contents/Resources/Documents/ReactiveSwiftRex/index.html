@@ -13,7 +13,7 @@
     <a title="ReactiveSwiftRex  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">ReactiveSwiftRex 0.7.2 Docs</a> (45% documented)</p>
+        <p><a href="index.html">ReactiveSwiftRex 0.7.4 Docs</a> (68% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -31,7 +31,13 @@
             <a href="Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -47,6 +53,17 @@
               </li>
               <li class="nav-group-task">
                 <a href="uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/EffectMiddleware/Context.html">– Context</a>
               </li>
             </ul>
           </li>
@@ -88,6 +105,25 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/Effect.html">Effect</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:16ReactiveSwiftRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:16ReactiveSwiftRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -99,14 +135,13 @@
     Unidirectional Dataflow for your favourite reactive framework<br /><br />
 </p>
 
-<p><a href="https://travis-ci.org/SwiftRex/SwiftRex"><img src="https://api.travis-ci.org/SwiftRex/SwiftRex.svg?branch=develop&maxAge=600" alt="Build Status"></a>
-<a href="https://coveralls.io/github/SwiftRex/SwiftRex?branch=develop"><img src="https://img.shields.io/coveralls/github/SwiftRex/SwiftRex/develop.svg" alt="Coverage Status"></a>
+<p><a href="https://travis-ci.org/SwiftRex/SwiftRex"><img src="https://travis-ci.org/SwiftRex/SwiftRex.svg?branch=develop" alt="Build Status"></a>
+<a href="https://codecov.io/gh/SwiftRex/SwiftRex"><img src="https://codecov.io/gh/SwiftRex/SwiftRex/branch/develop/graph/badge.svg" alt="codecov"></a>
 <a href="https://swiftrex.github.io/SwiftRex/api/index.html"><img src="https://swiftrex.github.io/SwiftRex/api/badge.svg" alt="Jazzy Documentation"></a>
-<a href="https://github.com/Carthage/Carthage"><img src="https://img.shields.io/badge/Carthage-compatible-orange.svg" alt="Carthage compatible"></a>
 <a href="https://cocoapods.org/pods/SwiftRex"><img src="https://img.shields.io/cocoapods/v/SwiftRex.svg" alt="CocoaPods compatible"></a>
-<a href="https://github.com/apple/swift-package-manager"><img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg" alt="Swift Package Manager compatible"></a>
-<img src="https://img.shields.io/badge/Swift-5.1-orange.svg" alt="Swift">
-<a href="https://github.com/SwiftRex/SwiftRex"><img src="https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS-252532.svg" alt="Platform support"></a>
+<a href="https://swiftpackageindex.com/SwiftRex/SwiftRex"><img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg" alt="Swift Package Manager compatible"></a>
+<img src="https://img.shields.io/badge/Swift-5.2-orange.svg" alt="Swift">
+<a href="https://github.com/SwiftRex/SwiftRex"><img src="https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20Catalyst-252532.svg" alt="Platform support"></a>
 <a href="https://github.com/SwiftRex/SwiftRex/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License Apache 2.0"></a></p>
 <h1 id='introduction' class='heading'>Introduction</h1>
 
@@ -115,9 +150,16 @@
 <p>This pattern, also known as <a href="https://redux.js.org/basics/data-flow">&ldquo;Redux&rdquo;</a>, allows us to rethink our app as a single <a href="https://en.wikipedia.org/wiki/Pure_function">pure function</a> that receives user events as input and returns UI changes in response. The benefits of this workflow will hopefully become clear soon.</p>
 
 <p><a href="https://swiftrex.github.io/SwiftRex/api/index.html">API documentation can be found here</a>.</p>
+<h1 id='quick-guide' class='heading'>Quick Guide</h1>
+
+<p>In a hurry? Already familiar with other redux implementations?</p>
+
+<p>No problem, we have a <a href="docs/markdown/QuickGuide.md">TL;DR Quick Guide</a> that shows the minimum you need to know about SwiftRex in a very practical approach.</p>
+
+<p>We still recommend reading the full README for a deeper understanding behind SwiftRex concepts.</p>
 <h1 id='goals' class='heading'>Goals</h1>
 
-<p>Several architectures and design patterns for mobile development nowadays propose to solve specific issues related to <a href="https://www.youtube.com/watch?v=Gt0M_OHKhQE">Single Responsibility Principle</a> (such as Massive ViewControllers), or improve testability and dependency management. Other common challenges for mobile developers such as handling state, race conditions, thread-safety or dealing properly with UI life-cycle and ownership are less explored but can be equally harmful for an app.</p>
+<p>Several architectures and design patterns for mobile development nowadays propose to solve specific issues related to <a href="https://www.youtube.com/watch?v=Gt0M_OHKhQE">Single Responsibility Principle</a> (such as Massive ViewControllers), or improve testability and dependency management. Other common challenges for mobile developers such as state handling, race conditions, modularization/componentization, thread-safety or dealing properly with UI life-cycle and ownership are less explored but can be equally harmful for an app.</p>
 
 <p>Managing all of these problems may sound like an impossible task that would require lots of patterns and really complex test scenarios. After all, how to to reproduce a rare but critical error that happens only with some of your users but never in developers&rsquo; equipment? This can be frustrating and most of us has probably faced such problems from time to time.</p>
 
@@ -130,10 +172,11 @@
 </details>
 
 <details>
-    <summary>offers a clear test strategy for each layer [tap to expand]</summary>
+    <summary>offers a clear test strategy for each layer (<a href="https://github.com/SwiftRex/TestingExtensions">also check TestingExtensions</a>) [tap to expand]</summary>
     <p>We believe that an architecture must not only be very testable, but also offer a clear guideline of how to test each of its layers. If a layer has only one job, and this job can be verified by assertions of expected outputs based on given input all the times, the tests can be more meaningful and broad, so no regressions are introduced when a new feature is created.</p>
     <p>Most layers in SwiftRex architecture will be pure functions, that means all its computation is done solely from the input parameters, and all its results will be exposed on the output, no implicit effect or access to global scope. Testing that won&rsquo;t require mocks, stubs, dependency injection or any kind of preparation, you call a function with a value, you check the result and that&rsquo;s it.</p>
     <p>This is true for the UI Layer, presentation layer, reducers and state publishers, because this whole chain is a composition of pure functions. The only layer that needs dependency injection, therefore mocks, is the middleware, once it&rsquo;s the only layer that depends on services and triggers side-effects to the outside world. Luckily because middlewares are composable, we can break them into very small pieces that do only one job, and testing that becomes more pleasant and easy, because instead of mocking hundreds of components you only have to inject one.</p>
+    <p>We also offer <a href="https://github.com/SwiftRex/TestingExtensions">TestingExtensions</a> that allows us to test the whole use case using a DSL syntax that will validate all SwiftRex layers, ensuring that no unexpected side-effect or action happened, and the state was mutated step-by-step as expected. This is a powerful and fun way to test the whole app with few and easy-to-write lines.</p>
 </details>
 
 <details>
@@ -142,7 +185,7 @@
     <p>Along the years, both Apple and the community created amazing frameworks to access services in the web or network and sensors in the device. Unfortunately some of these frameworks rely on delegate pattern, some use closures/callbacks, some use Notification Center, KVO or reactive streams. Composing this mixture of notification forms will require boolean flags, counters, and other implicit state that will eventually break due to race conditions.</p>
     <p>Reactive frameworks help to make this more uniform and composable, especially when used together with their Cocoa extensions, and in fact even Apple realised that and a significant part of <a href="https://developer.apple.com/videos/play/wwdc2019/226/">WWDC 2019</a> was focused on demonstrating and fixing this problem, with the help of newly introduced frameworks Combine and SwiftUI.</p>
     <p>But composing lots of services in reactive pipelines is not always easy and has its own pitfalls, like full pipeline cancellation because one stream emitted an error, event reentrancy and, last but not least, steep learning curve on mastering the several operators.</p>
-    <p>SwiftRex uses reactive-programming a lot, and allows you to use it as much as you feel comfortable. However we also offer a more uniform way to compose different services with only 1 data type and 2 operators: middleware, `<>` operator and `liff` operator, all the other operations can be simplified by triggering actions to itself, other middlewares or state reducers. You still have the option to create a larger middleware and handle multiple sources in a traditional reactive-stream fashion, if you like, but this can be overwhelming for un-experienced developers, harder to test and harder to reuse in different apps.</p>
+    <p>SwiftRex uses reactive-programming a lot, and allows you to use it as much as you feel comfortable. However we also offer a more uniform way to compose different services with only 1 data type and 2 operators: middleware, `<>` operator and `lift` operator, all the other operations can be simplified by triggering actions to itself, other middlewares or state reducers. You still have the option to create a larger middleware and handle multiple sources in a traditional reactive-stream fashion, if you like, but this can be overwhelming for un-experienced developers, harder to test and harder to reuse in different apps.</p>
     <p>Because this topic is very wide it&rsquo;s going to be better explained in the Middleware documentation.</p>
 </details>
 
@@ -159,6 +202,7 @@
     <summary>detaches state, services, mutation and other side-effects completely from the UI life-cycle and its ownership tree [tap to expand]</summary>
     <p>UIViewControllers have a very peculiar ownership model: you don&rsquo;t control it. The view controllers are kept in memory while they are in the navigation stack, or if a tab is presented, or while a modal view is shown, but they can be released at any point, and with it, anything you put the ownership under view controller umbrella. All those [weak self] we&rsquo;ve been using and loving can actually be weak sometimes, and it&rsquo;s very easy to not reason about that when we &ldquo;guard that else return&rdquo;. Any important task that MUST be completed, regardless of your view being shown or not, should not be under the view controller life-cycle, as the user can easily dismiss your modal or pop your view. SwiftUI that has improved that but it&rsquo;s still possible to start async tasks from views&rsquo; closures, and although now that view is a value-type it&rsquo;s a bit harder to make those mistakes, it&rsquo;s still possible.</p>
     <p>SwiftRex solves this problem by enforcing that all and every side-effect or async task should be done by the middleware, not the views. And middleware life-cycle is owned by the store, so we shouldn&rsquo;t expect any unfortunate surprise as long as the store lives while the app lives.</p>
+    <p>You still can dispatch &ldquo;viewDidLoad&rdquo;, &ldquo;onAppear&rdquo;, &ldquo;onDisappear&rdquo; events from your views, in order to perform task cancellations, so you gain more control, not less.</>
     <p>For more information <a href="docs/markdown/UIKitLifetimeManagement.md">please check this link</a></p>
 </details>
 
@@ -166,19 +210,19 @@
     <summary>eliminates race conditions [tap to expand]</summary>
     <p>When an app has to deal with information coming from different services and sources it&rsquo;s common the need for small boolean flags here and there to check when something has completed or failed. Usually this is due to the fact that some services report back via delegates, some via closures, and several other creative ways. Synchronising these multiple sources by using flags, or mutating the same variables or array from concurrent tasks can lead to really strange bugs and crashes, usually the most difficult sort of bugs to catch, understand and fix.</p>
     <p>Dealing with locks and dispatch queues can help on that, but doing this over and over again in a ad-hoc manner is tedious and dangerous, tests must be written that consider all possible paths and timings, and some of these tests will eventually become flaky in case the race condition still exists.</p>
-    <p>By enforcing all events of the app to go through the same queue which, by the end, mutates uniformly the global state in a consistent manner, SwiftRex will prevent race conditions. First because having middlewares as the only source of side-effects and async tasks will simplify testing for race conditions, especially if you keep them small and focused on a single task. In that case, your responses will come in a queue following a FIFO order and will be handled by all the reducers at once. Second because the reducers are the gatekeepers for state mutation, keeping them free of side-effects is crucial to have a successful and consistent mutation.</p>
+    <p>By enforcing all events of the app to go through the same queue which, by the end, mutates uniformly the global state in a consistent manner, SwiftRex will prevent race conditions. First because having middlewares as the only source of side-effects and async tasks will simplify testing for race conditions, especially if you keep them small and focused on a single task. In that case, your responses will come in a queue following a FIFO order and will be handled by all the reducers at once. Second because the reducers are the gatekeepers for state mutation, keeping them free of side-effects is crucial to have a successful and consistent mutation. Last but not least, everything happens in response to actions, and actions can be easily logged in or put in your crash reports, including who dispatched that action, so if you still find a race condition happening you can easily understand what actions are mutating the state and where these actions come from.</p>
 </details>
 
 <details>
     <summary>allows a more type-safe coding style [tap to expand]</summary>
-    <p>Swift generics are a bit hard to learn, and also are protocols associated types. SwiftRex doesn&rsquo;t require that you master generics, understand covariance or type-erasure, but more you dive into this world certainly you will write apps that are validated by the compiler and not by unit-tests. Bringing bugs from the runtime to the compile time is a very important goal that we all should embrace as good developers. It&rsquo;s probably better to struggle Swift type system (and sometimes SourceKit crashes) than checking crash-reports after your app was released to the wild. This is exactly the mindset Swift brought as a static-typed language, a language where even nullability is type-safe, and thanks to Optional<Wrapped> we can now rest peacefully knowing that we won&rsquo;t access null pointers unless we unsafely - and explicitly - choose that.</p>
-    <p>SwiftRex enforces the use of strongly-typed events/actions and state everywhere: store&rsquo;s action dispatcher, middleware&rsquo;s action handler, middleware&rsquo;s action output, reducer&rsquo;s actions and states inputs and output and finally store&rsquo;s state observation, the whole flow is strongly-typed so the compiler can prevent mistakes or runtime bugs.</p>
+    <p>Swift generics are a bit hard to learn, and also are protocols associated types. SwiftRex doesn&rsquo;t require that you master generics, understand covariance or type-erasure, but more you dive into this world certainly you will write apps that are validated by the compiler and not by unit-tests. Bringing bugs from the runtime to the compile time is a very important goal that we all should embrace as good developers. It&rsquo;s probably better to struggle Swift type system than checking crash-reports after your app was released to the wild. This is exactly the mindset Swift brought as a static-typed language, a language where even nullability is type-safe, and thanks to Optional<Wrapped> we can now rest peacefully knowing that we won&rsquo;t access null pointers unless we unsafely - and explicitly - choose that.</p>
+    <p>SwiftRex enforces the use of strongly-typed events/actions and state everywhere: store&rsquo;s action dispatcher, middleware&rsquo;s action handler, middleware&rsquo;s action output, reducer&rsquo;s actions and states inputs and outputs and finally store&rsquo;s state observation, the whole flow is strongly-typed so the compiler can prevent mistakes or runtime bugs.</p>
     <p>Furthermore, Middlewares, Reducers and Store all can be &ldquo;lifted&rdquo; from a partial state and action to a global state and action. What does that mean? It means that you can write a strongly-typed module that operates in an specific domain, like network reachability. Your middleware and reducer will &ldquo;speak&rdquo; network domain state and actions, things like it&rsquo;s connected or not, it&rsquo;s wi-fi or LTE, did change connectivity action, etc. Then you can &ldquo;lift&rdquo; these two components - middleware and reducer - to a global state of your app, by providing two map functions: one for lifting the state and the other for lifting the action. Thanks to generics, this whole operation is completely type-safe. The same can be done by &ldquo;deriving&rdquo; a store projection from the main store. A store projection implements the two methods that a Store must have (input action and output state), but instead of being a real store it only projects the global state and actions into more localised domain, that means, view events translated to actions and view state translated to domain state.</p>
     <p>With these tools we believe you can write, if you want, an app that is type-safe from edge to edge.</p>
 </details>
 
 <details>
-    <summary>helps to achieve modularity and code reuse between projects [tap to expand]</summary>
+    <summary>helps to achieve modularity, componentization and code reuse between projects [tap to expand]</summary>
     <p>Middlewares should be focused in a very very small domain, performing only one type of work and reporting back in form of actions. Reducers should be focused in a very tiny combination of action and state. Views should have access to a really tiny portion of the state, or ideally to a view state that is a flat representation of the app global state using primitives that map directly to text field&rsquo;s string, toggle&rsquo;s boolean, progress bar&rsquo;s double from 0.0 to 1.0 and so on and so forth.</p>
     <p>Then, you can &ldquo;lift&rdquo; these three pieces - middleware, reducer, store projection - into the global state and action your app actually needs.</p>
     <p>SwiftRex allows us to create small units-of-work that can be lifted to a global domain only when needed, so we can have Swift frameworks operating in a very specific domain, and covered with tests and Playgrounds/SwiftUI Previews to be used without having to launch the full app. Once this framework is ready, we just plug in our app, or even better, apps. Focusing on small domains will unlock better abstractions, and when this goes from middlewares (side-effect) to views, you have a powerful tool to define your building blocks.</p>
@@ -190,6 +234,13 @@
     <p>In fact, when you gather your whole app state in a unified tree, you start getting rid of lots of things you don&rsquo;t need any more and your final state will be smaller than the messy one.</p>
     <p>Writing the global state and the global action tree correctly can be challenging, but this is the app domain and reasoning about that is probably the most important task an engineer has to do.</p>
     <p>For more information <a href="docs/markdown/StateManagement.md">please check this link</a></p>
+</details>
+
+<details>
+  <summary>offers tooling for development, tests and debugging [tap to expand]</summary>
+  <p>Several projects offer SwiftRex tools to help developers when writing apps, tests, debugging it or evaluating crash reports.</p>
+  <p><a href="https://github.com/SwiftRex/CombineRextensions">CombineRextensions</a> offers SwiftUI extensions to work with CombineRex, <a href="https://github.com/SwiftRex/TestingExtensions">TestingExtensions</a> has &ldquo;test asserts&rdquo; that will unlock testability of use cases in a fun and easy way, <a href="https://github.com/SwiftRex/InstrumentationMiddleware">InstrumentationMiddleware</a> allows you to use Instruments to see what&rsquo;s happening in a SwiftRex app, <a href="https://github.com/SwiftRex/SwiftRexMonitor">SwiftRexMonitor</a> will be a Swift version of well-known Redux DevTools where you can remotely monitor state and actions of an app from an external Mac or iOS device, and even inject actions to simulate side-effects (useful for UITests, for example), <a href="https://github.com/SwiftRex/GatedMiddleware">GatedMiddleware</a> is a middleware wrapper that can be used to enable or disable other middlewares in runtime, <a href="https://github.com/SwiftRex/LoggerMiddleware">LoggerMiddleware</a> is a very powerful logger to be used by developers to easily understand what&rsquo;s happening in runtime. More Middlewares will be open-sourced soon allowing, for example, to create good Crashlytics reports that tell the story of a crash as you&rsquo;ve never had access before, and that way, recreate crashes or user reports. Also tools for generating code (Sourcery templates, Xcode snippets and templates, console tools), and also higher level APIs such as EffectMiddlewares that allow us to create Middlewares with a single function, as easy as Reducers are, or Handler that will allow to group Middlewares and Reducers under a same structure to be able to lift both together. New dependency injection strategies are about to be released as well.</p>
+  <p>All these tools are already done and will be released any time soon, and more are expected for the future.</p>
 </details>
 
 <p>I&rsquo;m not gonna lie, it&rsquo;s a completely different way of writing apps, as most reactive approaches are; but once you get used to, it makes more sense and enables you to reuse much more code between your projects, gives you better tooling for writing software, testing, debugging, logging and finally thinking about events, state and mutation as you&rsquo;ve never done before. And I promise you, it&rsquo;s gonna be a way with no return, an Unidirectional journey.</p>
@@ -231,7 +282,7 @@
 <li><a href="#middleware">Middleware</a></li>
 <li><a href="#reducer">Reducer</a></li>
 </ul></li>
-<li><a href="projection-and-lifting">Projection and Lifting</a>
+<li><a href="#projection-and-lifting">Projection and Lifting</a>
 
 <ul>
 <li><a href="#store-projection">Store Projection</a></li>
@@ -239,45 +290,51 @@
 <li><a href="#lifting-reducer">Lifting Reducer</a></li>
 </ul></li>
 </ul>
+
+<hr>
 <h2 id='conceptual-parts' class='heading'>Conceptual Parts</h2>
 
 <ul>
 <li><a href="#action">Action</a></li>
-<li><a href="#state">State</a></li>
 </ul>
-
-<hr>
+<h2 id='a-href-state-state-a' class='heading'>- <a href="#state">State</a></h2>
 <h3 id='action' class='heading'>Action</h3>
 
 <p>There&rsquo;s no &ldquo;Action&rdquo; protocol or type in SwiftRex. However, Action will be found as a generic parameter for most core data structures, meaning that it&rsquo;s up to you to define what is the root Action type.</p>
 
-<p>Conceptually, we can say that an Action represents something that happens from external actors of your app, that means user interactions, timer callbacks, responses from web services, callbacks from CoreLocation and other frameworks. Some internal actors also can start actions, however. For example, when UIKit finishes loading your view we could say that <code>viewDidLoad</code> is an action, in case we&rsquo;re interested in this event.</p>
+<p>Conceptually, we can say that an Action represents something that happens from external actors of your app, that means user interactions, timer callbacks, responses from web services, callbacks from CoreLocation and other frameworks. Some internal actors also can start actions, however. For example, when UIKit finishes loading your view we could say that <code>viewDidLoad</code> is an action, in case we&rsquo;re interested in this event. Same for SwiftUI View (<code>.onAppear</code>, <code>.onDisappear</code>, <code>.onTap</code>) or Gesture (<code>.onEnded</code>, <code>.onChanged</code>, <code>.updating</code>) modifiers, they all can be considered actions. When URLSession replies with a Data that we were able to parse into a struct, this can be a successful action, but when the response is a 404, or JSONDecoder can&rsquo;t understand the payload, this should also become a failure Action. NotificationCenter does nothing else but notifying actions from all over the system, such as keyboard dismissal or device rotation. CoreData and other realtime databases have mechanism to notify when something changed, and this should become an action as well.</p>
 
 <p><strong>Actions are about INPUT events that are relevant for an app.</strong></p>
 
 <p>For representing an action in your app you can use structs, classes or enums, and organize the list of possible actions the way you think it&rsquo;s better. But we have a recommended way that will enable you to fully use type-safety and avoid problems, and this way is by using a tree structure created with enums and associated values.</p>
 <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">AppAction</span> <span class="p">{</span>
     <span class="k">case</span> <span class="n">started</span>
-    <span class="k">case</span> <span class="nf">movieAction</span><span class="p">(</span><span class="kt">MovieAction</span><span class="p">)</span>
-    <span class="k">case</span> <span class="nf">castAction</span><span class="p">(</span><span class="kt">CastAction</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">movie</span><span class="p">(</span><span class="kt">MovieAction</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">cast</span><span class="p">(</span><span class="kt">CastAction</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="kd">enum</span> <span class="kt">MovieAction</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="n">didRequestList</span>
-    <span class="k">case</span> <span class="nf">didGetList</span><span class="p">(</span><span class="nv">movies</span><span class="p">:</span> <span class="p">[</span><span class="kt">Movie</span><span class="p">])</span>
-    <span class="k">case</span> <span class="nf">didSelectMovie</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">requestMovieList</span>
+    <span class="k">case</span> <span class="nf">gotMovieList</span><span class="p">(</span><span class="nv">movies</span><span class="p">:</span> <span class="p">[</span><span class="kt">Movie</span><span class="p">])</span>
+    <span class="k">case</span> <span class="nf">movieListResponseError</span><span class="p">(</span><span class="kt">MovieResponseError</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">selectMovie</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="kd">enum</span> <span class="kt">CastAction</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="nf">didRequestList</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
-    <span class="k">case</span> <span class="nf">didGetList</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">,</span> <span class="nv">cast</span><span class="p">:</span> <span class="p">[</span><span class="kt">Person</span><span class="p">])</span>
-    <span class="k">case</span> <span class="nf">didSelectPerson</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">requestCastList</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">gotCastList</span><span class="p">(</span><span class="nv">movieId</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">,</span> <span class="nv">cast</span><span class="p">:</span> <span class="p">[</span><span class="kt">Person</span><span class="p">])</span>
+    <span class="k">case</span> <span class="nf">castListResponseError</span><span class="p">(</span><span class="kt">CastResponseError</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">selectPerson</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre>
 
 <p>All possible events in your app should be listed in these enums and grouped the way you consider more relevant. When grouping these enums one thing to consider is modularity: you can split some or all these enums in different frameworks if you want strict boundaries between your modules and/or reuse the same group of actions among different apps.</p>
 
 <p>For example, all apps will have common actions that represent life-cycle of any iOS app, such as <code>willResignActive</code>, <code>didBecomeActive</code>, <code>didEnterBackground</code>, <code>willEnterForeground</code>. If multiples apps need to know this life-cycle, maybe it&rsquo;s convenient to create an enum for this specific domain. The same for network reachability, we should consider creating an enum to represent all possible events we get from the system when our connection state changes, and this can be used in a wide variety of apps.</p>
+
+<blockquote>
+<p><strong><em>IMPORTANT:</em></strong> Because enums in Swift don&rsquo;t have KeyPath as structs do, we strongly recommend reading <a href="docs/markdown/ActionEnumProperties.md">Action Enum Properties</a> document and implementing properties for each case, either manually or using code generators, so later you avoid writing lots and lots of error-prone switch/case. We also offer some templates to help you on that.</p>
+</blockquote>
 
 <hr>
 <h3 id='state' class='heading'>State</h3>
@@ -288,31 +345,27 @@
 
 <p>In a device with limited battery and memory we can&rsquo;t afford having a true event-sourcing pattern because it would be too expensive recreating the whole history of an app every time someone requests a simple boolean. So we &ldquo;cache&rdquo; the new state every time an action is received, and this in-memory cache is precisely what we call &ldquo;State&rdquo; in SwiftRex. So maybe we mix both ways of thinking about State and come up with a better generalisation for what a state is.</p>
 
-<p><strong>State is the result of a function that takes two arguments: the previous (or initial) state and some action that occurred, to determine the new state.</strong> This happens incrementally as more and more actions arrive. State is useful for <strong>output</strong> data to the user.</p>
+<blockquote>
+<p><strong>STATE</strong> is the result of a function that takes two arguments: the previous (or initial) state and some action that occurred, to determine the new state. This happens incrementally as more and more actions arrive. State is useful for <strong>output</strong> data to the user.</p>
+</blockquote>
 
 <p>However, be careful, some things may look like state but they are not. Let&rsquo;s assume you have an app that shows an item price to the user. This price will be shown as <code>&quot;$3.00&quot;</code> in US, or <code>&quot;$3,00&quot;</code> in Germany, or maybe this product can be listed in british pounds, so in US we should show <code>&quot;£3.00&quot;</code> while in Germany it would be <code>&quot;£3,00&quot;</code>. In this example we have:</p>
 
 <ul>
 <li>Currency type (<code>£</code> or <code>$</code>)</li>
 <li>Numeric value (<code>3</code>)</li>
-<li>Locale (<code>us</code> or <code>de</code>)</li>
+<li>Locale (<code>en_US</code> or <code>de_DE</code>)</li>
 <li>Formatted string (<code>&quot;$3.00&quot;</code>, <code>&quot;$3,00&quot;</code>, <code>&quot;£3.00&quot;</code> or <code>&quot;£3,00&quot;</code>)</li>
 </ul>
 
-<p>The formatted string itself is <strong>NOT</strong> state, because it can be calculated from the other properties. This can be called &ldquo;derived state&rdquo; and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it&rsquo;s better to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it. Luckily SwiftRex helps to keep the state consistent as we&rsquo;re about to see in the Reducer section, still, it&rsquo;s better off not duplicating information that can be easily and cheaply calculated.</p>
+<p>The formatted string itself is <strong>NOT</strong> state, because it can be calculated from the other properties. This can be called &ldquo;derived state&rdquo; and holding that is asking for inconsistency. We would have to remember to update this value every time one of the others change. So it&rsquo;s better off to represent this String either as a calculated property or a function of the other 3 values. The best place for this sort of derived state is in presenters or controllers, unless you have a high cost to recalculate it and in this case you could store in the state and be very careful about it. Luckily SwiftRex helps to keep the state consistent as we&rsquo;re about to see in the Reducer section, still, it&rsquo;s better off not duplicating information that can be easily and cheaply calculated.</p>
 
-<p>For representing the state of an app we recommend value types: structs or enums. Tuples would be acceptable as well, but unfortunately Swift currently doesn&rsquo;t allow us to conform tuples to protocols, and <strong>we want our whole state to be Equatable</strong>.</p>
+<p>For representing the state of an app we recommend value types: structs or enums. Tuples would be acceptable as well, but unfortunately Swift currently doesn&rsquo;t allow us to conform tuples to protocols, and we usually want our whole state to be Equatable and sometimes Codable.</p>
 <pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">AppState</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{</span>
     <span class="k">var</span> <span class="nv">appLifecycle</span><span class="p">:</span> <span class="kt">AppLifecycle</span>
     <span class="k">var</span> <span class="nv">movies</span><span class="p">:</span> <span class="kt">Loadable</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">Movie</span><span class="p">]</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">.</span><span class="n">neverLoaded</span>
     <span class="k">var</span> <span class="nv">currentFilter</span><span class="p">:</span> <span class="kt">MovieFilter</span>
     <span class="k">var</span> <span class="nv">selectedMovie</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">?</span>
-<span class="p">}</span>
-
-<span class="kd">enum</span> <span class="kt">Loadable</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt">Equatable</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="n">neverLoaded</span>
-    <span class="k">case</span> <span class="n">loading</span>
-    <span class="k">case</span> <span class="nf">loaded</span><span class="p">(</span><span class="kt">T</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="kd">struct</span> <span class="kt">MovieFilter</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{</span>
@@ -329,11 +382,18 @@
     <span class="k">case</span> <span class="n">foregroundActive</span>
     <span class="k">case</span> <span class="n">foregroundInactive</span>
 <span class="p">}</span>
+
+<span class="kd">enum</span> <span class="kt">Loadable</span><span class="o">&lt;</span><span class="kt">T</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">neverLoaded</span>
+    <span class="k">case</span> <span class="n">loading</span>
+    <span class="k">case</span> <span class="nf">loaded</span><span class="p">(</span><span class="kt">T</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="kd">extension</span> <span class="kt">Loadable</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="k">where</span> <span class="kt">T</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{}</span>
 </code></pre>
 
 <p>Some properties represent a state-machine, for example the <code>Loadable</code> enum will eventually change from <code>.neverLoaded</code> to <code>.loading</code> and then to <code>.loaded([Movie])</code> in our <code>movies</code> property. Learning when and how to represent properties in this shape is a matter of experimenting more and more with SwiftRex and getting used to this architecture. Eventually this will become natural and you can start writing your own data structures to represent such state-machines, that will be very useful in countless situations.</p>
 
-<p>Annotating the whole state as Equatable allows us to reduce the UI updates. Use of <code>let</code> instead of <code>var</code> is also possible, however this is a more advanced topic.</p>
+<p>Annotating the whole state as Equatable helps us to reduce the UI updates in case view models are not used, but this is not a strong requirement and there are other ways to also avoid that, although we still recommend it. Annotating the state as Codable can be useful for logging, debugging, crash reports, monitors, etc and this is also recommended if possible.</p>
 
 <hr>
 <h2 id='core-parts' class='heading'>Core Parts</h2>
@@ -347,26 +407,58 @@
 <hr>
 <h3 id='store' class='heading'>Store</h3>
 
-<p><code>Store</code> is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle.</p>
+<p><code>Store</code> is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle. That&rsquo;s also why we want one and only one instance of a Store, so either you create a static instance singleton, or keep it in your AppDelegate. Be careful with SceneDelegate if your app supports multiple windows and you want to share the state between these multiple instances of your app, which you usually want. That&rsquo;s why AppDelegate, singleton or global variable is usually recommended for the Store, not SceneDelegate.</p>
 
 <p>SwiftRex will provide a protocol and a base type for helping you to create your own Store. Let&rsquo;s learn about them.</p>
+<h4 id='storetype' class='heading'>StoreType</h4>
 
-<p><code>StoreType</code> is the protocol that defines the minimum implementation requirement of a Store, and it&rsquo;s actually composed only by two other protocols, one for the store input and one for the store output:</p>
+<p><code>StoreType</code> is the protocol that defines the minimum implementation requirement of a Store, and it&rsquo;s actually composed only by two other protocols, one for the store input and one for the store output.</p>
+<h5 id='1-actionhandler' class='heading'>1. ActionHandler</h5>
 
-<ul>
-<li><p>an <code>ActionHandler</code>: that&rsquo;s the store input, so it makes it able to receive and distribute events of generic type <code>ActionType</code>. Being an action handler means that an <code>UIViewController</code> or SwiftUI View can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>. There&rsquo;s only one requirement:</p>
-<pre class="highlight swift"><code><span class="kd">func</span> <span class="n">dispatch</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ActionType</span><span class="p">)</span>
-</code></pre></li>
-<li><p>a <code>StateProvider</code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an <code>Observable</code> (<code>RxSwift</code>) or a <code>Publisher</code> (<code>Combine</code>) of state elements, and an <code>UIViewController</code> can subscribe to the store and react to state changes. There&rsquo;s only one requirement:</p>
-<pre class="highlight swift"><code><span class="k">var</span> <span class="nv">statePublisher</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt">UnfailablePublisherType</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+<p><code>ActionHandler</code>: that&rsquo;s the store input, so it makes it able to receive and distribute events of generic type <code>ActionType</code>. Being an action handler means that an <code>UIViewController</code> or SwiftUI View can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>. There&rsquo;s only one requirement:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span>
 </code></pre>
 
-<p>The <code>UnfailablePublisherType&lt;StateType&gt;</code> is an abstraction that will be implemented as <code>Observable</code>, <code>Publisher</code> or <code>SignalProducer</code> according to the selected Reactive Framework, and emits the element <code>StateType</code> (your root app state) with <code>Never</code> type for failure, when the framework supports it.</p></li>
-</ul>
+<p>It gives for free another dispatch function:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ActionType</span><span class="p">,</span> <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span> <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span> <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span> <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span>
+</code></pre>
+
+<p>Most of the times, users will only provide the first parameter, <code>action: ActionType</code>, and the rest will be collected automatically from where the action was dispatched from. This is useful for log and analytics purposes, we can track the source of each action.</p>
+<pre class="highlight swift"><code><span class="c1">// Usage:</span>
+<span class="n">store</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="n">appStarted</span><span class="p">)</span> <span class="c1">// this collects automatically the dispatcher</span>
+</code></pre>
+
+<p>Because <code>ActionType</code> is generic, when you dispatch you don&rsquo;t have to provide the full enum name, only the case. This also avoids mistakes as it&rsquo;s compiled-checked.</p>
+<h5 id='2-stateprovider' class='heading'>2. StateProvider</h5>
+
+<p><code>StateProvider</code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an <code>Observable</code> (<code>RxSwift</code>) or a <code>Publisher</code> (<code>Combine</code>) of state elements, and an <code>UIViewController</code> or SwiftUI View can subscribe to the store and react to state changes. There&rsquo;s only one requirement:</p>
+<pre class="highlight swift"><code><span class="k">var</span> <span class="nv">statePublisher</span><span class="p">:</span> <span class="kt">UnfailablePublisherType</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+</code></pre>
+
+<p>The <code>UnfailablePublisherType&lt;StateType&gt;</code> is an abstraction that will be implemented as <code>Observable</code>, <code>Publisher</code> or <code>SignalProducer</code> according to the selected Reactive Framework, and emits the element <code>StateType</code> (your root app state) with <code>Never</code> type for failure, when the framework supports it.</p>
+<pre class="highlight swift"><code><span class="c1">// Combine Usage:</span>
+<span class="k">let</span> <span class="nv">cancellable</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">statePublisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Got new state: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span> 
+<span class="p">}</span>
+<span class="c1">// RxSwift Usage:</span>
+<span class="k">let</span> <span class="nv">disposable</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">statePublisher</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Got new state: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span> 
+<span class="p">})</span>
+</code></pre>
+
+<p>There are other ways to observe a Store, such as SwiftUI ObservableObject protocol, but these tools are built on top of this very simple <code>StateProvider</code> protocol.</p>
+<h4 id='storetype-flow' class='heading'>StoreType Flow</h4>
+
+<p>Either using UIKit, AppKit, WatchKit, SwiftUI or any other presentation layer, the communication between a Store and the UI will happen exclusively through these two members, <code>dispatch</code> for input actions and <code>statePublisher</code> for output state.</p>
 
 <p><a href="https://www.youtube.com/watch?v=oBR94I2p2BA"><img src="https://swiftrex.github.io/SwiftRex/markdown/img/Redux1.gif" alt="ViewController and Store"></a></p>
 
 <p>As seen in the animation above, the Store only exposes an input (action) and an output (state provider), and that&rsquo;s all the Views need to know about the Store.</p>
+
+<blockquote>
+<p><strong><em>IMPORTANT:</em></strong> However you should only have one store, you can have multiple projections of this store and give to your views, for example, that way they will only have a limited amount of operations and state available and can&rsquo;t mess with things that are out of their responsibilities. This is also the perfect way to modularize an app, as multiples projections can live in different frameworks and later only assembled together in the main target. We will talk more about that on chapter <a href="#store-projection">Store Projection</a>, but for now it&rsquo;s only important to understand that Store Projections won&rsquo;t hold source-of-truth, but will pretend to be a real store, therefore, implement the <code>StoreType</code> protocol, and the flow above will still be valid regardless of being the real singleton Store or a simple projection of it.</p>
+</blockquote>
+<h4 id='reduxstorebase' class='heading'>ReduxStoreBase</h4>
 
 <p><code>ReduxStoreBase</code> is an <code>open class</code> that conforms to <code>StoreType</code> and provides all we need to start using SwiftRex. You can choose to inherit from this class or use it directly. We recommend inheritance because this will allow you to better mock the Store if necessary, however there&rsquo;s nothing you really have to write once <code>ReduxStoreBase</code> is complete: it glues all the parts together and acts as a proxy to the non-Redux world.</p>
 
@@ -483,15 +575,15 @@ A Store like <code>ReduxStoreProtocol</code> enqueues a new action that arrives 
 <h4 id='inputactiontype' class='heading'>InputActionType:</h4>
 
 <p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputAction:outputAction:state:)</code> for more details.</p>
 <h4 id='outputactiontype' class='heading'>OutputActionType:</h4>
 
 <p>The Action type that this <code>Middleware</code> will eventually trigger back to the store in response of side-effects. This can be the same as <code>InputActionType</code> or different, in case you want to separate your enum in requests and responses.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputAction:outputAction:state:)</code> for more details.</p>
 <h4 id='statetype' class='heading'>StateType:</h4>
 
 <p>The State part that this <code>Middleware</code> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <code>StateType</code> from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don&rsquo;t need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn&rsquo;t need to read any state, so the <code>StateType</code>can safely be set to <code>Void</code>.
-Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <code>lift(inputAction:outputAction:state:)</code> for more details.</p>
 
 <p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p>
 <pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">LoggerMiddleware</span><span class="p">:</span> <span class="kt">Middleware</span> <span class="p">{</span>
@@ -766,7 +858,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.4"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -786,7 +878,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.4"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"RxSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -806,7 +898,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.4"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"ReactiveSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -826,7 +918,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.2"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.7.4"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRexDynamic"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -849,7 +941,7 @@ was 0.7.1, and eventually target that version until we come up with a better sol
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -14,7 +14,7 @@
     <a title="ObservableViewModel Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">CombineRex 0.7.2 Docs</a> (57% documented)</p>
+        <p><a href="../index.html">CombineRex 0.7.4 Docs</a> (64% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,7 +32,13 @@
             <a href="../Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
               </li>
               <li class="nav-group-task">
                 <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
@@ -55,7 +61,21 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware/Context.html">– Context</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/EffectOutput.html">EffectOutput</a>
               </li>
             </ul>
           </li>
@@ -103,6 +123,33 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Effect.html">Effect</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -112,7 +159,7 @@
               <div class="declaration">
                 <div class="language">
                   <pre class="highlight swift"><code><span class="kd">@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)</span>
-<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ObservableViewModel</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">StoreType</span><span class="p">,</span> <span class="kt">ObservableObject</span></code></pre>
+<span class="kd">open</span> <span class="kd">class</span> <span class="kt">ObservableViewModel</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">StoreType</span><span class="p">,</span> <span class="kt">ObservableObject</span></code></pre>
 
                 </div>
               </div>
@@ -251,7 +298,7 @@ in types more close to what a View should know, instead of working on global dom
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ViewAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ViewAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -388,7 +435,7 @@ You can use if as a micro-redux for tests and SwiftUI previews, for example:</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-05-29)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
