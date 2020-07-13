@@ -234,4 +234,65 @@ extension EffectMiddleware {
         )
     }
 }
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension EffectMiddleware where StateType: Identifiable {
+    public func liftToCollection<GlobalAction, GlobalState, CollectionState: MutableCollection>(
+        inputAction actionMap: KeyPath<GlobalAction, ElementIDAction<StateType.ID, InputAction>?>,
+        outputAction outputMap: @escaping (ElementIDAction<StateType.ID, OutputAction>) -> GlobalAction,
+        stateCollection: KeyPath<GlobalState, CollectionState>
+    ) -> EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies> where CollectionState.Element == StateType {
+        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
+            guard let itemAction = action[keyPath: actionMap] else { return .doNothing }
+            guard let itemState = state[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) else { return .doNothing }
+
+            let effectForItem = self.onAction(
+                itemAction.action,
+                itemState, .init(
+                    dispatcher: context.dispatcher,
+                    dependencies: context.dependencies,
+                    toCancel: context.toCancel
+                )
+            )
+
+            return effectForItem.map { (effectOutputForItem: EffectOutput<OutputAction>) in
+                effectOutputForItem.map { (outputAction: OutputAction) in
+                    outputMap(.init(id: itemAction.id, action: outputAction))
+                }
+            }
+            .asEffect()
+        }.inject(self.dependencies)
+    }
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension EffectMiddleware where StateType: Identifiable, InputAction == OutputAction {
+    public func liftToCollection<GlobalAction, GlobalState, CollectionState: MutableCollection>(
+        action actionMap: WritableKeyPath<GlobalAction, ElementIDAction<StateType.ID, InputAction>?>,
+        stateCollection: KeyPath<GlobalState, CollectionState>
+    ) -> EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies> where CollectionState.Element == StateType {
+        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
+            guard let itemAction = action[keyPath: actionMap] else { return .doNothing }
+            guard let itemState = state[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) else { return .doNothing }
+
+            let effectForItem = self.onAction(
+                itemAction.action,
+                itemState, .init(
+                    dispatcher: context.dispatcher,
+                    dependencies: context.dependencies,
+                    toCancel: context.toCancel
+                )
+            )
+
+            return effectForItem.map { (effectOutputForItem: EffectOutput<OutputAction>) in
+                effectOutputForItem.map { (outputAction: OutputAction) in
+                    var newAction = action
+                    newAction[keyPath: actionMap] = .init(id: itemAction.id, action: outputAction)
+                    return newAction
+                }
+            }
+            .asEffect()
+        }.inject(self.dependencies)
+    }
+}
 #endif

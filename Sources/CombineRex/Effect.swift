@@ -13,6 +13,15 @@ public enum EffectOutput<Action> {
     case dispatch(Action, from: ActionSource = .here())
 }
 
+extension EffectOutput {
+    public func map<NewAction>(_ transform: (Action) -> NewAction) -> EffectOutput<NewAction> {
+        switch self {
+        case let .dispatch(action, dispatcher):
+            return .dispatch(transform(action), from: dispatcher)
+        }
+    }
+}
+
 extension EffectOutput: EffectOutputProtocol {
     public var action: Action {
         switch self {
@@ -68,6 +77,7 @@ public struct Effect<OutputAction>: Publisher {
     /// 
     /// Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running effects, that way, the dictionary keeping 
     /// the effects will cleanup the key with that token.
+    /// 
     public let cancellationToken: AnyHashable?
     private let upstream: AnyPublisher<Output, Failure>
 
@@ -76,12 +86,6 @@ public struct Effect<OutputAction>: Publisher {
     /// start the side-effect before the subscription.
     /// - Parameters:
     ///   - upstream: an upstream Publisher that can't fail and should not be eager.
-    ///   - cancellationToken: Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect 
-    /// is subscribed to, the subscription (in form of `AnyCancellable`) will be kept in a dictionary where the key is this cancellation token. If 
-    /// another effect with the same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  
-    /// If you don't want this, not providing a cancellation token will only cancel your Effect in the very unlike scenario where the 
-    /// `EffectMiddleware` itself gets deallocated.  Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of 
-    /// running effects, that way, the dictionary keeping the effects will cleanup the key with that token.
     public init<P: Publisher>(upstream: P) where P.Output == Output, P.Failure == Failure {
         self.upstream = upstream.eraseToAnyPublisher()
         self.cancellationToken = nil
@@ -97,7 +101,7 @@ public struct Effect<OutputAction>: Publisher {
     /// another effect with the same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  
     /// If you don't want this, not providing a cancellation token will only cancel your Effect in the very unlike scenario where the 
     /// `EffectMiddleware` itself gets deallocated.  Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of 
-    /// running effects, that way, the dictionary keeping the effects will cleanup the key with that token.
+    /// running effects, that way, the dictionary keeping the effects will cleanup the key with that token. 
     public init<P: Publisher, H: Hashable>(upstream: P, cancellationToken: H) where P.Output == Output, P.Failure == Failure {
         self.upstream = upstream.eraseToAnyPublisher()
         self.cancellationToken = cancellationToken
@@ -124,7 +128,7 @@ extension Effect {
     /// same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don't want this, 
     /// not providing a cancellation token will only cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself gets 
     /// deallocated.  Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running effects, that way, the 
-    /// dictionary keeping the effects will cleanup the key with that token.
+    /// dictionary keeping the effects will cleanup the key with that token. 
     /// 
     /// - Parameters:
     ///   - token: any hashable you want.
@@ -148,6 +152,7 @@ extension Effect {
     ///   - dispatcher: The action source, so the Store and other middlewares know where this action is coming from. Default value is 
     /// `ActionSource.here()`, referring to this line as the source. It can be customized for better logging results.
     /// - Returns: an `Effect` that will publish the given value upon subscription, and then complete, immediately.
+    /// 
     public static func just(_ value: OutputAction, from dispatcher: ActionSource = .here()) -> Effect {
         Just(value).asEffect(dispatcher: dispatcher)
     }
@@ -212,9 +217,6 @@ extension Effect {
     /// - Parameters:
     ///   - first: any effect to have its elements merged into the final effect stream
     ///   - second: any effect to have its elements merged into the final effect stream
-    ///   - third: any effect to have its elements merged into the final effect stream
-    ///   - fourth: any effect to have its elements merged into the final effect stream
-    ///   - fifth: any effect to have its elements merged into the final effect stream
     /// - Returns: an Effect that will subscribe to all upstream effects provided above, and will combine their elements as they arrive.
     public static func merge(_ first: Effect, _ second: Effect) -> Effect {
         first.merge(with: second).asEffect()
@@ -228,8 +230,6 @@ extension Effect {
     ///   - first: any effect to have its elements merged into the final effect stream
     ///   - second: any effect to have its elements merged into the final effect stream
     ///   - third: any effect to have its elements merged into the final effect stream
-    ///   - fourth: any effect to have its elements merged into the final effect stream
-    ///   - fifth: any effect to have its elements merged into the final effect stream
     /// - Returns: an Effect that will subscribe to all upstream effects provided above, and will combine their elements as they arrive.
     public static func merge(_ first: Effect, _ second: Effect, _ third: Effect) -> Effect {
         first.merge(with: second).merge(with: third).asEffect()
@@ -244,7 +244,6 @@ extension Effect {
     ///   - second: any effect to have its elements merged into the final effect stream
     ///   - third: any effect to have its elements merged into the final effect stream
     ///   - fourth: any effect to have its elements merged into the final effect stream
-    ///   - fifth: any effect to have its elements merged into the final effect stream
     /// - Returns: an Effect that will subscribe to all upstream effects provided above, and will combine their elements as they arrive.
     public static func merge(_ first: Effect, _ second: Effect, _ third: Effect, _ fourth: Effect) -> Effect {
         first.merge(with: second, third, fourth).asEffect()
@@ -278,7 +277,7 @@ extension Publisher where Failure == Never {
     /// same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don't want this, 
     /// not providing a cancellation token will only cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself gets 
     /// deallocated.  Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running effects, that way, the 
-    /// dictionary keeping the effects will cleanup the key with that token.
+    /// dictionary keeping the effects will cleanup the key with that token. 
     /// 
     /// If the Publisher outputs some `EffectOutput<OutputAction>` events, then the action source (dispatcher) is already known, it's the line that 
     /// created the EffectOutput instance. However, if the upstream Publisher outputs only `OutputAction`, then a `dispatcher: ActionSource` must also 
@@ -290,7 +289,6 @@ extension Publisher where Failure == Never {
     /// `ActionSource.here()` if this line of code is to be referred as the source. A better way is to set the upstream Publisher Output Type as 
     /// `EffectOutput<OutputAction>`, not `OutputAction`, so once you create the `EffectOutput` is set as the action source, providing a better 
     /// logging results for you.
-    ///   - cancellationToken: cancellation token for this effect, as explained in the method description
     /// - Returns: an `Effect` wrapping this Publisher as its upstream.
     public func asEffect(dispatcher: ActionSource) -> Effect<Self.Output> {
         Effect(upstream: self.map { EffectOutput.dispatch($0, from: dispatcher) })
@@ -306,7 +304,7 @@ extension Publisher where Failure == Never {
     /// same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don't want this, 
     /// not providing a cancellation token will only cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself gets 
     /// deallocated.  Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running effects, that way, the 
-    /// dictionary keeping the effects will cleanup the key with that token.
+    /// dictionary keeping the effects will cleanup the key with that token. 
     /// 
     /// If the Publisher outputs some `EffectOutput<OutputAction>` events, then the action source (dispatcher) is already known, it's the line that 
     /// created the EffectOutput instance. However, if the upstream Publisher outputs only `OutputAction`, then a `dispatcher: ActionSource` must also 
@@ -337,19 +335,13 @@ extension Publisher where Output: EffectOutputProtocol, Failure == Never {
     /// same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don't want this, 
     /// not providing a cancellation token will only cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself gets 
     /// deallocated.  Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running effects, that way, the 
-    /// dictionary keeping the effects will cleanup the key with that token.
+    /// dictionary keeping the effects will cleanup the key with that token. 
     /// 
     /// If the Publisher outputs some `EffectOutput<OutputAction>` events, then the action source (dispatcher) is already known, it's the line that 
     /// created the EffectOutput instance. However, if the upstream Publisher outputs only `OutputAction`, then a `dispatcher: ActionSource` must also 
     /// be provided so the Store knows where this action is coming from. In that case you can provide `ActionSource.here()` if this line of code is to 
     /// be referred as the source.
     /// 
-    /// - Parameters:
-    ///   - dispatcher: the action source, so the Store and other middlewares know where this action is coming from. You can provide 
-    /// `ActionSource.here()` if this line of code is to be referred as the source. A better way is to set the upstream Publisher Output Type as 
-    /// `EffectOutput<OutputAction>`, not `OutputAction`, so once you create the `EffectOutput` is set as the action source, providing a better 
-    /// logging results for you.
-    ///   - cancellationToken: cancellation token for this effect, as explained in the method description
     /// - Returns: an `Effect` wrapping this Publisher as its upstream.
     public func asEffect() -> Effect<Self.Output.Action> {
         Effect<Self.Output.Action>(upstream: self.map { EffectOutput.dispatch($0.action, from: $0.dispatcher) })
@@ -365,7 +357,7 @@ extension Publisher where Output: EffectOutputProtocol, Failure == Never {
     /// same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don't want this, 
     /// not providing a cancellation token will only cancel your Effect in the very unlike scenario where the `EffectMiddleware` itself gets 
     /// deallocated.  Cancellation tokens can also be provided to the `EffectMiddleware` to force cancellation of running effects, that way, the 
-    /// dictionary keeping the effects will cleanup the key with that token.
+    /// dictionary keeping the effects will cleanup the key with that token. 
     /// 
     /// If the Publisher outputs some `EffectOutput<OutputAction>` events, then the action source (dispatcher) is already known, it's the line that 
     /// created the EffectOutput instance. However, if the upstream Publisher outputs only `OutputAction`, then a `dispatcher: ActionSource` must also 
@@ -373,10 +365,6 @@ extension Publisher where Output: EffectOutputProtocol, Failure == Never {
     /// be referred as the source.
     /// 
     /// - Parameters:
-    ///   - dispatcher: the action source, so the Store and other middlewares know where this action is coming from. You can provide 
-    /// `ActionSource.here()` if this line of code is to be referred as the source. A better way is to set the upstream Publisher Output Type as 
-    /// `EffectOutput<OutputAction>`, not `OutputAction`, so once you create the `EffectOutput` is set as the action source, providing a better 
-    /// logging results for you.
     ///   - cancellationToken: cancellation token for this effect, as explained in the method description
     /// - Returns: an `Effect` wrapping this Publisher as its upstream.
     public func asEffect<H: Hashable>(cancellationToken: H) -> Effect<Self.Output.Action> {
