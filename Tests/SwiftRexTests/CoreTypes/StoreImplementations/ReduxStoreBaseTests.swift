@@ -80,9 +80,9 @@ class ReduxStoreBaseTests: XCTestCase {
             subject: subjectMock.subject,
             reducer: reducer,
             middleware: fooMiddleware <> barMiddleware.lift(
-                inputActionMap: { $0.bar },
-                outputActionMap: { AppAction.bar($0) },
-                stateMap: { $0.name }
+                inputAction: { $0.bar },
+                outputAction: { AppAction.bar($0) },
+                state: { $0.name }
             )
         )
 

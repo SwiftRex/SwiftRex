@@ -229,7 +229,37 @@ extension EffectMiddleware {
                         dependencies: globalContext.dependencies,
                         toCancel: globalContext.toCancel
                     )
-                ).map { EffectOutput.dispatch(outputActionMap($0.action), from: $0.dispatcher) }.asEffect()
+                ).map { $0.map(outputActionMap) }.asEffect()
+            }
+        )
+    }
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension EffectMiddleware where InputAction == OutputAction {
+    public func lift<GlobalActionType, GlobalStateType>(
+        action actionMap: WritableKeyPath<GlobalActionType, InputAction?>,
+        state stateMap: KeyPath<GlobalStateType, StateType>
+    ) -> EffectMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, Dependencies> {
+        EffectMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, Dependencies>(
+            dependencies: self.dependencies,
+            handle: { globalInputAction, globalState, globalContext -> Effect<GlobalActionType> in
+                guard let localInputAction = globalInputAction[keyPath: actionMap] else { return .doNothing }
+                return self.onAction(
+                    localInputAction,
+                    globalState[keyPath: stateMap],
+                    Context(
+                        dispatcher: globalContext.dispatcher,
+                        dependencies: globalContext.dependencies,
+                        toCancel: globalContext.toCancel
+                    )
+                ).map { localEffectOutput in
+                    localEffectOutput.map { localOutputAction in
+                        var globalAction = globalInputAction
+                        globalAction[keyPath: actionMap] = localOutputAction
+                        return globalAction
+                    }
+                }.asEffect()
             }
         )
     }

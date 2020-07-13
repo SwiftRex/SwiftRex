@@ -1,16 +1,16 @@
 extension ComposedMiddleware {
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> ComposedMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType> {
         var composed = ComposedMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>()
 
         middlewares.lazy.map {
             $0.lift(
-                inputActionMap: inputActionMap,
-                outputActionMap: outputActionMap,
-                stateMap: stateMap
+                inputAction: inputActionMap,
+                outputAction: outputActionMap,
+                state: stateMap
             )
         }.forEach { composed.append(middleware: $0) }
 
@@ -18,15 +18,15 @@ extension ComposedMiddleware {
     }
 
     public func lift<GlobalOutputActionType, GlobalStateType>(
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> ComposedMiddleware<InputActionType, GlobalOutputActionType, GlobalStateType> {
         var composed = ComposedMiddleware<InputActionType, GlobalOutputActionType, GlobalStateType>()
 
         middlewares.lazy.map {
             $0.lift(
-                outputActionMap: outputActionMap,
-                stateMap: stateMap
+                outputAction: outputActionMap,
+                state: stateMap
             )
         }.forEach { composed.append(middleware: $0) }
 
@@ -34,15 +34,15 @@ extension ComposedMiddleware {
     }
 
     public func lift<GlobalInputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> ComposedMiddleware<GlobalInputActionType, OutputActionType, GlobalStateType> {
         var composed = ComposedMiddleware<GlobalInputActionType, OutputActionType, GlobalStateType>()
 
         middlewares.lazy.map {
             $0.lift(
-                inputActionMap: inputActionMap,
-                stateMap: stateMap
+                inputAction: inputActionMap,
+                state: stateMap
             )
         }.forEach { composed.append(middleware: $0) }
 
@@ -50,15 +50,15 @@ extension ComposedMiddleware {
     }
 
     public func lift<GlobalInputActionType, GlobalOutputActionType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
     ) -> ComposedMiddleware<GlobalInputActionType, GlobalOutputActionType, StateType> {
         var composed = ComposedMiddleware<GlobalInputActionType, GlobalOutputActionType, StateType>()
 
         middlewares.lazy.map {
             $0.lift(
-                inputActionMap: inputActionMap,
-                outputActionMap: outputActionMap
+                inputAction: inputActionMap,
+                outputAction: outputActionMap
             )
         }.forEach { composed.append(middleware: $0) }
 
@@ -66,13 +66,13 @@ extension ComposedMiddleware {
     }
 
     public func lift<GlobalInputActionType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?
     ) -> ComposedMiddleware<GlobalInputActionType, OutputActionType, StateType> {
         var composed = ComposedMiddleware<GlobalInputActionType, OutputActionType, StateType>()
 
         middlewares.lazy.map {
             $0.lift(
-                inputActionMap: inputActionMap
+                inputAction: inputActionMap
             )
         }.forEach { composed.append(middleware: $0) }
 
@@ -80,13 +80,13 @@ extension ComposedMiddleware {
     }
 
     public func lift<GlobalOutputActionType>(
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
     ) -> ComposedMiddleware<InputActionType, GlobalOutputActionType, StateType> {
         var composed = ComposedMiddleware<InputActionType, GlobalOutputActionType, StateType>()
 
         middlewares.lazy.map {
             $0.lift(
-                outputActionMap: outputActionMap
+                outputAction: outputActionMap
             )
         }.forEach { composed.append(middleware: $0) }
 
@@ -94,13 +94,13 @@ extension ComposedMiddleware {
     }
 
     public func lift<GlobalStateType>(
-        stateMap: @escaping (GlobalStateType) -> StateType
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> ComposedMiddleware<InputActionType, OutputActionType, GlobalStateType> {
         var composed = ComposedMiddleware<InputActionType, OutputActionType, GlobalStateType>()
 
         middlewares.lazy.map {
             $0.lift(
-                stateMap: stateMap
+                state: stateMap
             )
         }.forEach { composed.append(middleware: $0) }
 

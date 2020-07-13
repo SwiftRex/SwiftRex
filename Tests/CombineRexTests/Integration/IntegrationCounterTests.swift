@@ -136,9 +136,9 @@ final class TestBasicStore: ReduxStoreBase<AppAction, AppState> {
                 ),
             middleware:
                 CounterService.middleware.lift(
-                    inputActionMap: { $0.event },
-                    outputActionMap: { AppAction.action($0) },
-                    stateMap: { $0.currentNumber }
+                    inputAction: { $0.event },
+                    outputAction: { AppAction.action($0) },
+                    state: { $0.currentNumber }
                 ),
             emitsValue: .whenDifferent
         )

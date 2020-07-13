@@ -196,7 +196,7 @@ class EffectMiddlewareTests: XCTestCase {
             switch action {
             case "first":
                 return Observable<String>.just("output1")
-                    .delay(.milliseconds(300), scheduler: MainScheduler.instance)
+                    .delay(.milliseconds(200), scheduler: MainScheduler.instance)
                     .do(onNext: { _ in expectedValue1.fulfill() },
                         onError: { _ in XCTFail("should not have received error") },
                         onSubscribed: { expectedSubscription1.fulfill() },
@@ -204,7 +204,7 @@ class EffectMiddlewareTests: XCTestCase {
                     .asEffect(cancellationToken: "token1")
             case "second":
                 return Observable<String>.just("output2")
-                    .delay(.milliseconds(300), scheduler: MainScheduler.instance)
+                    .delay(.milliseconds(200), scheduler: MainScheduler.instance)
                     .do(onNext: { _ in XCTFail("should not have received values") },
                         onError: { _ in XCTFail("should not have received error") },
                         onSubscribed: { expectedSubscription2.fulfill() },
@@ -212,7 +212,7 @@ class EffectMiddlewareTests: XCTestCase {
                     .asEffect(cancellationToken: "token2")
             case "third":
                 return Observable<String>.just("output3")
-                    .delay(.milliseconds(300), scheduler: MainScheduler.instance)
+                    .delay(.milliseconds(200), scheduler: MainScheduler.instance)
                     .do(onNext: { _ in expectedValue3.fulfill() },
                         onError: { _ in XCTFail("should not have received error") },
                         onSubscribed: { expectedSubscription3.fulfill() },

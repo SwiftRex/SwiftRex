@@ -5,9 +5,9 @@ class LiftAnyMiddlewareWrappingIdentityTests: XCTestCase {
     func testLiftInputActionOutputActionStateFromIdentity() {
         let identityBefore = IdentityMiddleware<AppAction.Bar, AppAction.Bar, String>().eraseToAnyMiddleware()
         let identityLifted = identityBefore.lift(
-            inputActionMap: { (global: AppAction) in global.bar },
-            outputActionMap: { bar in AppAction.bar(bar) },
-            stateMap: { (global: TestState) in global.name }
+            inputAction: { (global: AppAction) in global.bar },
+            outputAction: { bar in AppAction.bar(bar) },
+            state: { (global: TestState) in global.name }
         )
         XCTAssertTrue(identityLifted.isIdentity)
         XCTAssertNotNil((identityLifted as Any) as? AnyMiddleware<AppAction, AppAction, TestState>)
@@ -16,8 +16,8 @@ class LiftAnyMiddlewareWrappingIdentityTests: XCTestCase {
     func testLiftOutputActionStateFromIdentity() {
         let identityBefore = IdentityMiddleware<AppAction.Bar, AppAction.Bar, String>().eraseToAnyMiddleware()
         let identityLifted = identityBefore.lift(
-            outputActionMap: { bar in AppAction.bar(bar) },
-            stateMap: { (global: TestState) in global.name }
+            outputAction: { bar in AppAction.bar(bar) },
+            state: { (global: TestState) in global.name }
         )
         XCTAssertTrue(identityLifted.isIdentity)
         XCTAssertNotNil((identityLifted as Any) as? AnyMiddleware<AppAction.Bar, AppAction, TestState>)
@@ -26,8 +26,8 @@ class LiftAnyMiddlewareWrappingIdentityTests: XCTestCase {
     func testLiftInputActionStateFromIdentity() {
         let identityBefore = IdentityMiddleware<AppAction.Bar, AppAction.Bar, String>().eraseToAnyMiddleware()
         let identityLifted = identityBefore.lift(
-            inputActionMap: { (global: AppAction) in global.bar },
-            stateMap: { (global: TestState) in global.name }
+            inputAction: { (global: AppAction) in global.bar },
+            state: { (global: TestState) in global.name }
         )
         XCTAssertTrue(identityLifted.isIdentity)
         XCTAssertNotNil((identityLifted as Any) as? AnyMiddleware<AppAction, AppAction.Bar, TestState>)
@@ -36,8 +36,8 @@ class LiftAnyMiddlewareWrappingIdentityTests: XCTestCase {
     func testLiftInputActionOutputActionFromIdentity() {
         let identityBefore = IdentityMiddleware<AppAction.Bar, AppAction.Bar, String>().eraseToAnyMiddleware()
         let identityLifted = identityBefore.lift(
-            inputActionMap: { (global: AppAction) in global.bar },
-            outputActionMap: { bar in AppAction.bar(bar) }
+            inputAction: { (global: AppAction) in global.bar },
+            outputAction: { bar in AppAction.bar(bar) }
         )
         XCTAssertTrue(identityLifted.isIdentity)
         XCTAssertNotNil((identityLifted as Any) as? AnyMiddleware<AppAction, AppAction, String>)
@@ -46,7 +46,7 @@ class LiftAnyMiddlewareWrappingIdentityTests: XCTestCase {
     func testLiftInputActionFromIdentity() {
         let identityBefore = IdentityMiddleware<AppAction.Bar, AppAction.Bar, String>().eraseToAnyMiddleware()
         let identityLifted = identityBefore.lift(
-            inputActionMap: { (global: AppAction) in global.bar }
+            inputAction: { (global: AppAction) in global.bar }
         )
         XCTAssertTrue(identityLifted.isIdentity)
         XCTAssertNotNil((identityLifted as Any) as? AnyMiddleware<AppAction, AppAction.Bar, String>)
@@ -55,7 +55,7 @@ class LiftAnyMiddlewareWrappingIdentityTests: XCTestCase {
     func testLiftOutputActionFromIdentity() {
         let identityBefore = IdentityMiddleware<AppAction.Bar, AppAction.Bar, String>().eraseToAnyMiddleware()
         let identityLifted = identityBefore.lift(
-            outputActionMap: { bar in AppAction.bar(bar) }
+            outputAction: { bar in AppAction.bar(bar) }
         )
         XCTAssertTrue(identityLifted.isIdentity)
         XCTAssertNotNil((identityLifted as Any) as? AnyMiddleware<AppAction.Bar, AppAction, String>)
@@ -64,7 +64,7 @@ class LiftAnyMiddlewareWrappingIdentityTests: XCTestCase {
     func testLiftStateFromIdentity() {
         let identityBefore = IdentityMiddleware<AppAction.Bar, AppAction.Bar, String>().eraseToAnyMiddleware()
         let identityLifted = identityBefore.lift(
-            stateMap: { (global: TestState) in global.name }
+            state: { (global: TestState) in global.name }
         )
         XCTAssertTrue(identityLifted.isIdentity)
         XCTAssertNotNil((identityLifted as Any) as? AnyMiddleware<AppAction.Bar, AppAction.Bar, TestState>)

@@ -1,16 +1,16 @@
 extension AnyMiddleware {
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> AnyMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType> {
         if isIdentity { return IdentityMiddleware().eraseToAnyMiddleware() }
 
         if let composed = isComposed {
             return composed.lift(
-                inputActionMap: inputActionMap,
-                outputActionMap: outputActionMap,
-                stateMap: stateMap
+                inputAction: inputActionMap,
+                outputAction: outputActionMap,
+                state: stateMap
             ).eraseToAnyMiddleware()
         }
 
@@ -23,15 +23,15 @@ extension AnyMiddleware {
     }
 
     public func lift<GlobalOutputActionType, GlobalStateType>(
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> AnyMiddleware<InputActionType, GlobalOutputActionType, GlobalStateType> {
         if isIdentity { return IdentityMiddleware().eraseToAnyMiddleware() }
 
         if let composed = isComposed {
             return composed.lift(
-                outputActionMap: outputActionMap,
-                stateMap: stateMap
+                outputAction: outputActionMap,
+                state: stateMap
             ).eraseToAnyMiddleware()
         }
 
@@ -44,15 +44,15 @@ extension AnyMiddleware {
     }
 
     public func lift<GlobalInputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> AnyMiddleware<GlobalInputActionType, OutputActionType, GlobalStateType> {
         if isIdentity { return IdentityMiddleware().eraseToAnyMiddleware() }
 
         if let composed = isComposed {
             return composed.lift(
-                inputActionMap: inputActionMap,
-                stateMap: stateMap
+                inputAction: inputActionMap,
+                state: stateMap
             ).eraseToAnyMiddleware()
         }
 
@@ -65,15 +65,15 @@ extension AnyMiddleware {
     }
 
     public func lift<GlobalInputActionType, GlobalOutputActionType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
     ) -> AnyMiddleware<GlobalInputActionType, GlobalOutputActionType, StateType> {
         if isIdentity { return IdentityMiddleware().eraseToAnyMiddleware() }
 
         if let composed = isComposed {
             return composed.lift(
-                inputActionMap: inputActionMap,
-                outputActionMap: outputActionMap
+                inputAction: inputActionMap,
+                outputAction: outputActionMap
             ).eraseToAnyMiddleware()
         }
 
@@ -86,13 +86,13 @@ extension AnyMiddleware {
     }
 
     public func lift<GlobalInputActionType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?
     ) -> AnyMiddleware<GlobalInputActionType, OutputActionType, StateType> {
         if isIdentity { return IdentityMiddleware().eraseToAnyMiddleware() }
 
         if let composed = isComposed {
             return composed.lift(
-                inputActionMap: inputActionMap
+                inputAction: inputActionMap
             ).eraseToAnyMiddleware()
         }
 
@@ -105,13 +105,13 @@ extension AnyMiddleware {
     }
 
     public func lift<GlobalOutputActionType>(
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
     ) -> AnyMiddleware<InputActionType, GlobalOutputActionType, StateType> {
         if isIdentity { return IdentityMiddleware().eraseToAnyMiddleware() }
 
         if let composed = isComposed {
             return composed.lift(
-                outputActionMap: outputActionMap
+                outputAction: outputActionMap
             ).eraseToAnyMiddleware()
         }
 
@@ -124,13 +124,13 @@ extension AnyMiddleware {
     }
 
     public func lift<GlobalStateType>(
-        stateMap: @escaping (GlobalStateType) -> StateType
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> AnyMiddleware<InputActionType, OutputActionType, GlobalStateType> {
         if isIdentity { return IdentityMiddleware().eraseToAnyMiddleware() }
 
         if let composed = isComposed {
             return composed.lift(
-                stateMap: stateMap
+                state: stateMap
             ).eraseToAnyMiddleware()
         }
 

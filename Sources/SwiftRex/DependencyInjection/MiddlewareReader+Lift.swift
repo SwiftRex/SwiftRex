@@ -54,9 +54,9 @@ extension MiddlewareReaderProtocol {
     ) -> MiddlewareReader<GlobalDependencies, LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, MiddlewareType>> {
         dimap(
             transformMiddleware: {
-                $0.lift(inputActionMap: inputActionMap,
-                        outputActionMap: outputActionMap,
-                        stateMap: stateMap)
+                $0.lift(inputAction: inputActionMap,
+                        outputAction: outputActionMap,
+                        state: stateMap)
             },
             extractOnlyDependenciesNeededForThisMiddleware: dependenciesMap
         )
@@ -111,9 +111,9 @@ extension MiddlewareReaderProtocol {
     > {
         dimap(
             transformMiddleware: {
-                $0.lift(inputActionMap: { $0 },
-                        outputActionMap: outputActionMap,
-                        stateMap: stateMap)
+                $0.lift(inputAction: { $0 },
+                        outputAction: outputActionMap,
+                        state: stateMap)
             },
             extractOnlyDependenciesNeededForThisMiddleware: dependenciesMap
         )
@@ -168,9 +168,9 @@ extension MiddlewareReaderProtocol {
     > {
         dimap(
             transformMiddleware: {
-                $0.lift(inputActionMap: inputActionMap,
-                        outputActionMap: { $0 },
-                        stateMap: stateMap)
+                $0.lift(inputAction: inputActionMap,
+                        outputAction: { $0 },
+                        state: stateMap)
             },
             extractOnlyDependenciesNeededForThisMiddleware: dependenciesMap
         )
@@ -225,9 +225,9 @@ extension MiddlewareReaderProtocol {
     > {
         dimap(
             transformMiddleware: {
-                $0.lift(inputActionMap: inputActionMap,
-                        outputActionMap: outputActionMap,
-                        stateMap: { $0 })
+                $0.lift(inputAction: inputActionMap,
+                        outputAction: outputActionMap,
+                        state: { $0 })
             },
             extractOnlyDependenciesNeededForThisMiddleware: dependenciesMap
         )
@@ -278,9 +278,9 @@ extension MiddlewareReaderProtocol {
         state stateMap: @escaping (GlobalStateType) -> MiddlewareType.StateType
     ) -> MiddlewareReader<Dependencies, LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, MiddlewareType>> {
         mapMiddleware {
-            $0.lift(inputActionMap: inputActionMap,
-                    outputActionMap: outputActionMap,
-                    stateMap: stateMap)
+            $0.lift(inputAction: inputActionMap,
+                    outputAction: outputActionMap,
+                    state: stateMap)
         }
     }
 }
@@ -324,9 +324,9 @@ extension MiddlewareReaderProtocol {
     > {
         dimap(
             transformMiddleware: {
-                $0.lift(inputActionMap: { $0 },
-                        outputActionMap: { $0 },
-                        stateMap: stateMap)
+                $0.lift(inputAction: { $0 },
+                        outputAction: { $0 },
+                        state: stateMap)
             },
             extractOnlyDependenciesNeededForThisMiddleware: dependenciesMap
         )
@@ -370,9 +370,9 @@ extension MiddlewareReaderProtocol {
     > {
         dimap(
             transformMiddleware: {
-                $0.lift(inputActionMap: { $0 },
-                        outputActionMap: outputActionMap,
-                        stateMap: { $0 })
+                $0.lift(inputAction: { $0 },
+                        outputAction: outputActionMap,
+                        state: { $0 })
             },
             extractOnlyDependenciesNeededForThisMiddleware: dependenciesMap
         )
@@ -412,9 +412,9 @@ extension MiddlewareReaderProtocol {
         state stateMap: @escaping (GlobalStateType) -> MiddlewareType.StateType
     ) -> MiddlewareReader<Dependencies, LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, GlobalStateType, MiddlewareType>> {
         mapMiddleware {
-            $0.lift(inputActionMap: { $0 },
-                    outputActionMap: outputActionMap,
-                    stateMap: stateMap)
+            $0.lift(inputAction: { $0 },
+                    outputAction: outputActionMap,
+                    state: stateMap)
         }
     }
 }
@@ -458,9 +458,9 @@ extension MiddlewareReaderProtocol {
     > {
         dimap(
             transformMiddleware: {
-                $0.lift(inputActionMap: inputActionMap,
-                        outputActionMap: { $0 },
-                        stateMap: { $0 })
+                $0.lift(inputAction: inputActionMap,
+                        outputAction: { $0 },
+                        state: { $0 })
             },
             extractOnlyDependenciesNeededForThisMiddleware: dependenciesMap
         )
@@ -502,9 +502,9 @@ extension MiddlewareReaderProtocol {
         state stateMap: @escaping (GlobalStateType) -> MiddlewareType.StateType
     ) -> MiddlewareReader<Dependencies, LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>> {
         mapMiddleware {
-            $0.lift(inputActionMap: inputActionMap,
-                    outputActionMap: { $0 },
-                    stateMap: stateMap)
+            $0.lift(inputAction: inputActionMap,
+                    outputAction: { $0 },
+                    state: stateMap)
         }
     }
 }
@@ -544,9 +544,9 @@ extension MiddlewareReaderProtocol {
         outputAction outputActionMap: @escaping (MiddlewareType.OutputActionType) -> GlobalOutputActionType
     ) -> MiddlewareReader<Dependencies, LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>> {
         mapMiddleware {
-            $0.lift(inputActionMap: inputActionMap,
-                    outputActionMap: outputActionMap,
-                    stateMap: { $0 })
+            $0.lift(inputAction: inputActionMap,
+                    outputAction: outputActionMap,
+                    state: { $0 })
         }
     }
 }
@@ -580,9 +580,9 @@ extension MiddlewareReaderProtocol {
         LiftMiddleware<MiddlewareType.InputActionType, MiddlewareType.OutputActionType, GlobalStateType, MiddlewareType>
     > {
         mapMiddleware {
-            $0.lift(inputActionMap: { $0 },
-                    outputActionMap: { $0 },
-                    stateMap: stateMap)
+            $0.lift(inputAction: { $0 },
+                    outputAction: { $0 },
+                    state: stateMap)
         }
     }
 }
@@ -641,9 +641,9 @@ extension MiddlewareReaderProtocol {
         LiftMiddleware<MiddlewareType.InputActionType, GlobalOutputActionType, MiddlewareType.StateType, MiddlewareType>
     > {
         mapMiddleware {
-            $0.lift(inputActionMap: { $0 },
-                    outputActionMap: outputActionMap,
-                    stateMap: { $0 })
+            $0.lift(inputAction: { $0 },
+                    outputAction: outputActionMap,
+                    state: { $0 })
         }
     }
 }
@@ -677,9 +677,9 @@ extension MiddlewareReaderProtocol {
         LiftMiddleware<GlobalInputActionType, MiddlewareType.OutputActionType, MiddlewareType.StateType, MiddlewareType>
     > {
         mapMiddleware {
-            $0.lift(inputActionMap: inputActionMap,
-                    outputActionMap: { $0 },
-                    stateMap: { $0 })
+            $0.lift(inputAction: inputActionMap,
+                    outputAction: { $0 },
+                    state: { $0 })
         }
     }
 }

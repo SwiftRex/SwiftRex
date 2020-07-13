@@ -15,9 +15,9 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                outputActionMap: { bar in AppAction.bar(bar) },
-                stateMap: { (global: TestState) in global.name }
+                inputAction: { (global: AppAction) in global.bar },
+                outputAction: { bar in AppAction.bar(bar) },
+                state: { (global: TestState) in global.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -41,9 +41,9 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                outputActionMap: { bar in AppAction.bar(bar) },
-                stateMap: { (global: TestState) in global.name }
+                inputAction: { (global: AppAction) in global.bar },
+                outputAction: { bar in AppAction.bar(bar) },
+                state: { (global: TestState) in global.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -65,9 +65,9 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                outputActionMap: { bar in AppAction.bar(bar) },
-                stateMap: { (global: TestState) in global.name }
+                inputAction: { (global: AppAction) in global.bar },
+                outputAction: { bar in AppAction.bar(bar) },
+                state: { (global: TestState) in global.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
@@ -88,8 +88,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                outputActionMap: { bar in AppAction.bar(bar) }
+                inputAction: { (global: AppAction) in global.bar },
+                outputAction: { bar in AppAction.bar(bar) }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -113,8 +113,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                outputActionMap: { bar in AppAction.bar(bar) }
+                inputAction: { (global: AppAction) in global.bar },
+                outputAction: { bar in AppAction.bar(bar) }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -136,8 +136,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                outputActionMap: { bar in AppAction.bar(bar) }
+                inputAction: { (global: AppAction) in global.bar },
+                outputAction: { bar in AppAction.bar(bar) }
             )
 
         let uuid = UUID()
@@ -158,8 +158,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                stateMap: { (global: TestState) in global.name }
+                inputAction: { (global: AppAction) in global.bar },
+                state: { (global: TestState) in global.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -183,8 +183,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         }
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                stateMap: { (global: TestState) in global.name }
+                inputAction: { (global: AppAction) in global.bar },
+                state: { (global: TestState) in global.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -207,8 +207,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
 
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar },
-                stateMap: { (global: TestState) in global.name }
+                inputAction: { (global: AppAction) in global.bar },
+                state: { (global: TestState) in global.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
@@ -229,8 +229,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                outputActionMap: { bar in AppAction.bar(bar) },
-                stateMap: { (global: TestState) in global.name }
+                outputAction: { bar in AppAction.bar(bar) },
+                state: { (global: TestState) in global.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -254,8 +254,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         }
         let generalMiddleware =
             composed.lift(
-                outputActionMap: { bar in AppAction.bar(bar) },
-                stateMap: { (global: TestState) in global.name }
+                outputAction: { bar in AppAction.bar(bar) },
+                state: { (global: TestState) in global.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -278,8 +278,8 @@ extension LiftAnyMiddlewareWrappingComposedTests {
 
         let generalMiddleware =
             composed.lift(
-                outputActionMap: { bar in AppAction.bar(bar) },
-                stateMap: { (global: TestState) in global.name }
+                outputAction: { bar in AppAction.bar(bar) },
+                state: { (global: TestState) in global.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
@@ -300,7 +300,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar }
+                inputAction: { (global: AppAction) in global.bar }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -324,7 +324,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         }
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar }
+                inputAction: { (global: AppAction) in global.bar }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -347,7 +347,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
 
         let generalMiddleware =
             composed.lift(
-                inputActionMap: { (global: AppAction) in global.bar }
+                inputAction: { (global: AppAction) in global.bar }
             )
 
         let uuid = UUID()
@@ -369,7 +369,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                outputActionMap: { bar in AppAction.bar(bar) }
+                outputAction: { bar in AppAction.bar(bar) }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -393,7 +393,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         }
         let generalMiddleware =
             composed.lift(
-                outputActionMap: { bar in AppAction.bar(bar) }
+                outputAction: { bar in AppAction.bar(bar) }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -416,7 +416,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
 
         let generalMiddleware =
             composed.lift(
-                outputActionMap: { bar in AppAction.bar(bar) }
+                outputAction: { bar in AppAction.bar(bar) }
             )
 
         let uuid = UUID()
@@ -438,7 +438,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                stateMap: { (global: TestState) in global.name }
+                state: { (global: TestState) in global.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -462,7 +462,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
         let composed = (nameMiddleware <> IdentityMiddleware()).eraseToAnyMiddleware()
         let generalMiddleware =
             composed.lift(
-                stateMap: { (global: TestState) in global.name }
+                state: { (global: TestState) in global.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -485,7 +485,7 @@ extension LiftAnyMiddlewareWrappingComposedTests {
 
         let generalMiddleware =
             composed.lift(
-                stateMap: { (global: TestState) in global.name }
+                state: { (global: TestState) in global.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })

@@ -14,9 +14,9 @@ extension LiftMiddlewareTests {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                outputActionMap: { bar in .bar(bar) },
-                stateMap: { $0.name }
+                inputAction: { $0.bar },
+                outputAction: { bar in .bar(bar) },
+                state: { $0.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -38,9 +38,9 @@ extension LiftMiddlewareTests {
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                outputActionMap: { bar in .bar(bar) },
-                stateMap: { $0.name }
+                inputAction: { $0.bar },
+                outputAction: { bar in .bar(bar) },
+                state: { $0.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -61,9 +61,9 @@ extension LiftMiddlewareTests {
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                outputActionMap: { bar in .bar(bar) },
-                stateMap: { $0.name }
+                inputAction: { $0.bar },
+                outputAction: { bar in .bar(bar) },
+                state: { $0.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
@@ -82,8 +82,8 @@ extension LiftMiddlewareTests {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, TestState>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, TestState>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                outputActionMap: { bar in .bar(bar) }
+                inputAction: { $0.bar },
+                outputAction: { bar in .bar(bar) }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -105,8 +105,8 @@ extension LiftMiddlewareTests {
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, TestState>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                outputActionMap: { bar in .bar(bar) }
+                inputAction: { $0.bar },
+                outputAction: { bar in .bar(bar) }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -127,8 +127,8 @@ extension LiftMiddlewareTests {
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, TestState>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                outputActionMap: { bar in .bar(bar) }
+                inputAction: { $0.bar },
+                outputAction: { bar in .bar(bar) }
             )
 
         let uuid = UUID()
@@ -148,8 +148,8 @@ extension LiftMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, String>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction.Bar, AppAction, String>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                stateMap: { $0.name }
+                inputAction: { $0.bar },
+                state: { $0.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -171,8 +171,8 @@ extension LiftMiddlewareTests {
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction.Bar, AppAction, String>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                stateMap: { $0.name }
+                inputAction: { $0.bar },
+                state: { $0.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -193,8 +193,8 @@ extension LiftMiddlewareTests {
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction.Bar, AppAction, String>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar },
-                stateMap: { $0.name }
+                inputAction: { $0.bar },
+                state: { $0.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
@@ -213,8 +213,8 @@ extension LiftMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, String>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction.Bar, String>> =
             nameMiddleware.lift(
-                outputActionMap: { bar in .bar(bar) },
-                stateMap: { $0.name }
+                outputAction: { bar in .bar(bar) },
+                state: { $0.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -236,8 +236,8 @@ extension LiftMiddlewareTests {
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction.Bar, String>> =
             nameMiddleware.lift(
-                outputActionMap: { bar in .bar(bar) },
-                stateMap: { $0.name }
+                outputAction: { bar in .bar(bar) },
+                state: { $0.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -258,8 +258,8 @@ extension LiftMiddlewareTests {
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction.Bar, String>> =
             nameMiddleware.lift(
-                outputActionMap: { bar in .bar(bar) },
-                stateMap: { $0.name }
+                outputAction: { bar in .bar(bar) },
+                state: { $0.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
@@ -278,7 +278,7 @@ extension LiftMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, TestState>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction.Bar, AppAction, TestState>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar }
+                inputAction: { $0.bar }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -300,7 +300,7 @@ extension LiftMiddlewareTests {
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction.Bar, AppAction, TestState>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar }
+                inputAction: { $0.bar }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -321,7 +321,7 @@ extension LiftMiddlewareTests {
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction.Bar, AppAction, TestState>> =
             nameMiddleware.lift(
-                inputActionMap: { $0.bar }
+                inputAction: { $0.bar }
             )
 
         let uuid = UUID()
@@ -341,7 +341,7 @@ extension LiftMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, TestState>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction.Bar, TestState>> =
             nameMiddleware.lift(
-                outputActionMap: { bar in .bar(bar) }
+                outputAction: { bar in .bar(bar) }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -363,7 +363,7 @@ extension LiftMiddlewareTests {
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction.Bar, TestState>> =
             nameMiddleware.lift(
-                outputActionMap: { bar in .bar(bar) }
+                outputAction: { bar in .bar(bar) }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -384,7 +384,7 @@ extension LiftMiddlewareTests {
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction.Bar, TestState>> =
             nameMiddleware.lift(
-                outputActionMap: { bar in .bar(bar) }
+                outputAction: { bar in .bar(bar) }
             )
 
         let uuid = UUID()
@@ -404,7 +404,7 @@ extension LiftMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction, String>()
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction, String>> =
             nameMiddleware.lift(
-                stateMap: { $0.name }
+                state: { $0.name }
             )
         nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
         generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
@@ -426,7 +426,7 @@ extension LiftMiddlewareTests {
         }
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction, String>> =
             nameMiddleware.lift(
-                stateMap: { $0.name }
+                state: { $0.name }
             )
 
         var afterReducer: AfterReducer = .identity
@@ -447,7 +447,7 @@ extension LiftMiddlewareTests {
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, MiddlewareMock<AppAction, AppAction, String>> =
             nameMiddleware.lift(
-                stateMap: { $0.name }
+                state: { $0.name }
             )
 
         generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })

@@ -29,7 +29,7 @@ extension Middleware {
      using:
 
      ```
-     let globalStateMiddleware = gpsMiddleware.lift(stateMap: \MyGlobalState.currentLocation)
+     let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)
      ```
 
      Now this middleware can be used within our `Store` or even composed with others. It also can be used in other apps as long as we have a way to
@@ -50,9 +50,9 @@ extension Middleware {
                 "speak" global types to be plugged into the main Store. Internally it will "speak" the types of the wrapped middleware.
      */
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self> {
         .init(
             middleware: self,
@@ -92,7 +92,7 @@ extension Middleware {
      using:
 
      ```
-     let globalStateMiddleware = gpsMiddleware.lift(stateMap: \MyGlobalState.currentLocation)
+     let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)
      ```
 
      Now this middleware can be used within our `Store` or even composed with others. It also can be used in other apps as long as we have a way to
@@ -108,8 +108,8 @@ extension Middleware {
                 "speak" global types to be plugged into the main Store. Internally it will "speak" the types of the wrapped middleware.
      */
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self>
     where GlobalInputActionType == InputActionType {
         .init(
@@ -150,7 +150,7 @@ extension Middleware {
      using:
 
      ```
-     let globalStateMiddleware = gpsMiddleware.lift(stateMap: \MyGlobalState.currentLocation)
+     let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)
      ```
 
      Now this middleware can be used within our `Store` or even composed with others. It also can be used in other apps as long as we have a way to
@@ -168,8 +168,8 @@ extension Middleware {
                 "speak" global types to be plugged into the main Store. Internally it will "speak" the types of the wrapped middleware.
      */
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        stateMap: @escaping (GlobalStateType) -> StateType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self>
     where OutputActionType == GlobalOutputActionType {
         .init(
@@ -210,7 +210,7 @@ extension Middleware {
      using:
 
      ```
-     let globalStateMiddleware = gpsMiddleware.lift(stateMap: \MyGlobalState.currentLocation)
+     let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)
      ```
 
      Now this middleware can be used within our `Store` or even composed with others. It also can be used in other apps as long as we have a way to
@@ -229,8 +229,8 @@ extension Middleware {
                 "speak" global types to be plugged into the main Store. Internally it will "speak" the types of the wrapped middleware.
      */
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
     ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self>
     where GlobalStateType == StateType {
         .init(
@@ -271,7 +271,7 @@ extension Middleware {
      using:
 
      ```
-     let globalStateMiddleware = gpsMiddleware.lift(stateMap: \MyGlobalState.currentLocation)
+     let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)
      ```
 
      Now this middleware can be used within our `Store` or even composed with others. It also can be used in other apps as long as we have a way to
@@ -287,7 +287,7 @@ extension Middleware {
                 "speak" global types to be plugged into the main Store. Internally it will "speak" the types of the wrapped middleware.
      */
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?
+        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?
     ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self>
     where OutputActionType == GlobalOutputActionType, GlobalStateType == StateType {
         .init(
@@ -328,7 +328,7 @@ extension Middleware {
      using:
 
      ```
-     let globalStateMiddleware = gpsMiddleware.lift(stateMap: \MyGlobalState.currentLocation)
+     let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)
      ```
 
      Now this middleware can be used within our `Store` or even composed with others. It also can be used in other apps as long as we have a way to
@@ -342,7 +342,7 @@ extension Middleware {
                 "speak" global types to be plugged into the main Store. Internally it will "speak" the types of the wrapped middleware.
      */
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
+        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType
     ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self>
     where GlobalInputActionType == InputActionType, GlobalStateType == StateType {
         .init(
@@ -383,7 +383,7 @@ extension Middleware {
      using:
 
      ```
-     let globalStateMiddleware = gpsMiddleware.lift(stateMap: \MyGlobalState.currentLocation)
+     let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)
      ```
 
      Now this middleware can be used within our `Store` or even composed with others. It also can be used in other apps as long as we have a way to
@@ -396,7 +396,7 @@ extension Middleware {
                 "speak" global types to be plugged into the main Store. Internally it will "speak" the types of the wrapped middleware.
      */
     public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        stateMap: @escaping (GlobalStateType) -> StateType
+        state stateMap: @escaping (GlobalStateType) -> StateType
     ) -> LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self>
     where GlobalInputActionType == InputActionType, OutputActionType == GlobalOutputActionType {
         .init(
