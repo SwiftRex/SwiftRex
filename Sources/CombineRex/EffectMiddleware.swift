@@ -99,8 +99,8 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
 
     private var cancellables = [AnyHashable: AnyCancellable]()
     private var cancellableButNotViaToken = Set<AnyCancellable>()
-    private var onAction: (InputActionType, StateType, Context) -> Effect<OutputActionType>
-    private var dependencies: Dependencies
+    var onAction: (InputActionType, StateType, Context) -> Effect<OutputActionType>
+    var dependencies: Dependencies
 
     public struct Context {
         public let dispatcher: ActionSource
@@ -108,7 +108,7 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
         public let toCancel: (AnyHashable) -> Void
     }
 
-    private init(
+    init(
         dependencies: Dependencies,
         handle: @escaping (InputActionType, StateType, Context) -> Effect<OutputActionType>
     ) {
@@ -207,122 +207,6 @@ extension EffectMiddleware: Semigroup {
 extension EffectMiddleware: Monoid where Dependencies == Void {
     public static var identity: EffectMiddleware<InputAction, OutputAction, State, Dependencies> {
         Self.onAction { _, _, _ in .doNothing }
-    }
-}
-
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension EffectMiddleware {
-    public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        state stateMap: @escaping (GlobalStateType) -> StateType
-    ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies> {
-        EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies>(
-            dependencies: self.dependencies,
-            handle: { globalInputAction, globalState, globalContext -> Effect<GlobalOutputActionType> in
-                guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    stateMap(globalState),
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
-                    )
-                ).map { $0.map(outputActionMap) }.asEffect()
-            }
-        )
-    }
-}
-
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension EffectMiddleware where InputAction == OutputAction {
-    public func lift<GlobalActionType, GlobalStateType>(
-        action actionMap: WritableKeyPath<GlobalActionType, InputAction?>,
-        state stateMap: KeyPath<GlobalStateType, StateType>
-    ) -> EffectMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, Dependencies> {
-        EffectMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, Dependencies>(
-            dependencies: self.dependencies,
-            handle: { globalInputAction, globalState, globalContext -> Effect<GlobalActionType> in
-                guard let localInputAction = globalInputAction[keyPath: actionMap] else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    globalState[keyPath: stateMap],
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
-                    )
-                ).map { localEffectOutput in
-                    localEffectOutput.map { localOutputAction in
-                        var globalAction = globalInputAction
-                        globalAction[keyPath: actionMap] = localOutputAction
-                        return globalAction
-                    }
-                }.asEffect()
-            }
-        )
-    }
-}
-
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension EffectMiddleware where StateType: Identifiable {
-    public func liftToCollection<GlobalAction, GlobalState, CollectionState: MutableCollection>(
-        inputAction actionMap: KeyPath<GlobalAction, ElementIDAction<StateType.ID, InputAction>?>,
-        outputAction outputMap: @escaping (ElementIDAction<StateType.ID, OutputAction>) -> GlobalAction,
-        stateCollection: KeyPath<GlobalState, CollectionState>
-    ) -> EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies> where CollectionState.Element == StateType {
-        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
-            guard let itemAction = action[keyPath: actionMap] else { return .doNothing }
-            guard let itemState = state[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) else { return .doNothing }
-
-            let effectForItem = self.onAction(
-                itemAction.action,
-                itemState, .init(
-                    dispatcher: context.dispatcher,
-                    dependencies: context.dependencies,
-                    toCancel: context.toCancel
-                )
-            )
-
-            return effectForItem.map { (effectOutputForItem: EffectOutput<OutputAction>) in
-                effectOutputForItem.map { (outputAction: OutputAction) in
-                    outputMap(.init(id: itemAction.id, action: outputAction))
-                }
-            }
-            .asEffect()
-        }.inject(self.dependencies)
-    }
-}
-
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension EffectMiddleware where StateType: Identifiable, InputAction == OutputAction {
-    public func liftToCollection<GlobalAction, GlobalState, CollectionState: MutableCollection>(
-        action actionMap: WritableKeyPath<GlobalAction, ElementIDAction<StateType.ID, InputAction>?>,
-        stateCollection: KeyPath<GlobalState, CollectionState>
-    ) -> EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies> where CollectionState.Element == StateType {
-        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
-            guard let itemAction = action[keyPath: actionMap] else { return .doNothing }
-            guard let itemState = state[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) else { return .doNothing }
-
-            let effectForItem = self.onAction(
-                itemAction.action,
-                itemState, .init(
-                    dispatcher: context.dispatcher,
-                    dependencies: context.dependencies,
-                    toCancel: context.toCancel
-                )
-            )
-
-            return effectForItem.map { (effectOutputForItem: EffectOutput<OutputAction>) in
-                effectOutputForItem.map { (outputAction: OutputAction) in
-                    var newAction = action
-                    newAction[keyPath: actionMap] = .init(id: itemAction.id, action: outputAction)
-                    return newAction
-                }
-            }
-            .asEffect()
-        }.inject(self.dependencies)
     }
 }
 #endif
