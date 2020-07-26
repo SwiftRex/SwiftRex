@@ -249,4 +249,207 @@ class ReducerTests: XCTestCase {
 
         XCTAssertEqual("a-foo-alpha-foo--bravo--foo", reduced.name)
     }
+
+    func testLiftReducerToCollectionIdentifiableRelevantAction() {
+        let original = AppState(
+            testState: TestState(value: UUID(), name: "a"),
+            list: [
+                .init(id: 1, name: "a"),
+                .init(id: 2, name: "b"),
+                .init(id: 4, name: "d"),
+                .init(id: 3, name: "c"),
+                .init(id: 5, name: "e")
+            ]
+        )
+
+        let reducer = Reducer<String, AppState.Item> { action, state in
+            .init(id: state.id, name: state.name + "_" + action)
+        }
+
+        let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
+            .liftToCollection(action: \.somethingScopedById, stateCollection: \.list)
+
+        var reduced = original
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 2, action: "first")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 5, action: "second")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 1, action: "third")), reduced)
+
+        XCTAssertEqual(original.testState, reduced.testState)
+        XCTAssertEqual([
+            .init(id: 1, name: "a_third"),
+            .init(id: 2, name: "b_first"),
+            .init(id: 4, name: "d"),
+            .init(id: 3, name: "c"),
+            .init(id: 5, name: "e_second")
+        ], reduced.list)
+    }
+
+    func testLiftReducerToCollectionIdentifiableIrrelevantAction() {
+        let original = AppState(
+            testState: TestState(value: UUID(), name: "a"),
+            list: [
+                .init(id: 1, name: "a"),
+                .init(id: 2, name: "b"),
+                .init(id: 4, name: "d"),
+                .init(id: 3, name: "c"),
+                .init(id: 5, name: "e")
+            ]
+        )
+
+        let reducer = Reducer<String, AppState.Item> { _, state in
+            XCTFail("This reducer should not be called for this action")
+            return state
+        }
+
+        let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
+            .liftToCollection(action: \.somethingScopedById, stateCollection: \.list)
+
+        var reduced = original
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 9, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+
+        XCTAssertEqual(original, reduced)
+    }
+
+    func testLiftReducerToCollectionKeyPathIdentifierRelevantAction() {
+        let original = AppState(
+            testState: TestState(value: UUID(), name: "a"),
+            list: [
+                .init(id: 1, name: "a"),
+                .init(id: 2, name: "b"),
+                .init(id: 4, name: "d"),
+                .init(id: 3, name: "c"),
+                .init(id: 5, name: "e")
+            ]
+        )
+
+        let reducer = Reducer<String, AppState.Item> { action, state in
+            .init(id: state.id, name: state.name + "_" + action)
+        }
+
+        let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
+            .liftToCollection(
+                action: \.somethingScopedById,
+                stateCollection: \.list,
+                identifier: \.id
+            )
+
+        var reduced = original
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 2, action: "first")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 5, action: "second")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 1, action: "third")), reduced)
+
+        XCTAssertEqual(original.testState, reduced.testState)
+        XCTAssertEqual([
+            .init(id: 1, name: "a_third"),
+            .init(id: 2, name: "b_first"),
+            .init(id: 4, name: "d"),
+            .init(id: 3, name: "c"),
+            .init(id: 5, name: "e_second")
+        ], reduced.list)
+    }
+
+    func testLiftReducerToCollectionKeyPathIdentifierIrrelevantAction() {
+        let original = AppState(
+            testState: TestState(value: UUID(), name: "a"),
+            list: [
+                .init(id: 1, name: "a"),
+                .init(id: 2, name: "b"),
+                .init(id: 4, name: "d"),
+                .init(id: 3, name: "c"),
+                .init(id: 5, name: "e")
+            ]
+        )
+
+        let reducer = Reducer<String, AppState.Item> { _, state in
+            XCTFail("This reducer should not be called for this action")
+            return state
+        }
+
+        let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
+            .liftToCollection(
+                action: \.somethingScopedById,
+                stateCollection: \.list,
+                identifier: \.id
+            )
+
+        var reduced = original
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 9, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+
+        XCTAssertEqual(original, reduced)
+    }
+
+    func testLiftReducerToCollectionIndexedRelevantAction() {
+        let original = AppState(
+            testState: TestState(value: UUID(), name: "a"),
+            list: [
+                .init(id: 1, name: "a"),
+                .init(id: 2, name: "b"),
+                .init(id: 4, name: "d"),
+                .init(id: 3, name: "c"),
+                .init(id: 5, name: "e")
+            ]
+        )
+
+        let reducer = Reducer<String, AppState.Item> { action, state in
+            .init(id: state.id, name: state.name + "_" + action)
+        }
+
+        let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
+            .liftToCollection(action: \.somethingScopedByIndex, stateCollection: \.list)
+
+        var reduced = original
+        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 1, action: "first")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 4, action: "second")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 5, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 0, action: "third")), reduced)
+
+        XCTAssertEqual(original.testState, reduced.testState)
+        XCTAssertEqual([
+            .init(id: 1, name: "a_third"),
+            .init(id: 2, name: "b_first"),
+            .init(id: 4, name: "d"),
+            .init(id: 3, name: "c"),
+            .init(id: 5, name: "e_second")
+        ], reduced.list)
+    }
+
+    func testLiftReducerToCollectionIndexedIrrelevantAction() {
+        let original = AppState(
+            testState: TestState(value: UUID(), name: "a"),
+            list: [
+                .init(id: 1, name: "a"),
+                .init(id: 2, name: "b"),
+                .init(id: 4, name: "d"),
+                .init(id: 3, name: "c"),
+                .init(id: 5, name: "e")
+            ]
+        )
+
+        let reducer = Reducer<String, AppState.Item> { _, state in
+            XCTFail("This reducer should not be called for this action")
+            return state
+        }
+
+        let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
+            .liftToCollection(action: \.somethingScopedByIndex, stateCollection: \.list)
+
+        var reduced = original
+        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 5, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 8, action: "no_item")), reduced)
+        reduced = liftedReducer.reduce(.toIgnore, reduced)
+
+        XCTAssertEqual(original, reduced)
+    }
 }
