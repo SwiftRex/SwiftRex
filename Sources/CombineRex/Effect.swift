@@ -206,6 +206,43 @@ extension Effect {
             }
         }.asEffect()
     }
+
+    public static func fireAndForget(_ operation: @escaping () -> Void) -> Effect {
+        Empty()
+            .handleEvents(receiveSubscription: { _ in operation() })
+            .asEffect(dispatcher: .here())
+    }
+
+    public static func fireAndForget<P: Publisher>(_ publisher: P) -> Effect where P.Failure == Never {
+        publisher
+            .ignoreOutput()
+            .map { _ -> Output in }
+            .asEffect()
+    }
+
+    public static func fireIgnoreOutput<P: Publisher>(_ publisher: P, catchErrors: @escaping (P.Failure) -> Output?) -> Effect {
+        publisher
+            .ignoreOutput()
+            .map { _ -> Output? in }
+            .catch { error -> Just<Output?> in
+                Just(catchErrors(error))
+            }
+            .compactMap { $0 }
+            .asEffect()
+    }
+
+    public func prepend(_ effect: Effect) -> Effect {
+        .merge(effect, self)
+    }
+
+    public func append(_ effect: Effect) -> Effect {
+        .merge(self, effect)
+    }
+
+    public func fmap<NewOutputAction>(_ transform: @escaping (OutputAction) -> NewOutputAction) -> Effect<NewOutputAction> {
+        .init(upstream: map { effectOutput in effectOutput.map(transform) },
+              cancellationToken: cancellationToken)
+    }
 }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)

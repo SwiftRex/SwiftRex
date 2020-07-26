@@ -86,8 +86,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///         .asEffect(cancellationToken: "image-for-user-\(userId)") // this will automatically cancel any pending download for the same image
 ///                                                                  // using the URL would also be possible
 ///     case let .cancelImageDownload(userId):
-///       context.toCancel("image-for-user-\(userId)")               // alternatively you can explicitly cancel tasks by token
-///       return .doNothing
+///       return context.toCancel("image-for-user-\(userId)")        // alternatively you can explicitly cancel tasks by token
 ///     }
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
@@ -105,7 +104,7 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
     public struct Context {
         public let dispatcher: ActionSource
         public let dependencies: Dependencies
-        public let toCancel: (AnyHashable) -> Void
+        public let toCancel: (AnyHashable) -> Effect<OutputAction>
     }
 
     init(
@@ -128,7 +127,9 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
             guard let self = self else { return }
             guard let state = self.getState?() else { return }
             let context = Context(dispatcher: dispatcher, dependencies: self.dependencies) { [weak self] cancellingToken in
-                self?.cancellables.removeValue(forKey: cancellingToken)
+                .fireAndForget { [weak self] in
+                    self?.cancellables.removeValue(forKey: cancellingToken)
+                }
             }
             let effect = self.onAction(action, state, context)
             self.run(effect: effect)

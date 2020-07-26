@@ -149,8 +149,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         let sut = EffectMiddleware<String, String, String, String>.onAction { action, _, context in
             if action == "cancel" {
-                context.toCancel("token")
-                return .doNothing
+                return context.toCancel("token")
             }
 
             guard action == "create" else {
@@ -239,8 +238,7 @@ class EffectMiddlewareTests: XCTestCase {
                               receiveCancel: { XCTFail("should not have received cancellation") })
                 .asEffect(cancellationToken: "token3")
             case "cancel second":
-                context.toCancel("token2")
-                return .doNothing
+                return context.toCancel("token2")
             default:
                 XCTFail("unexpected action")
                 return .doNothing

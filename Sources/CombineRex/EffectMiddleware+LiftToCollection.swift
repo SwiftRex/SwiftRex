@@ -19,7 +19,7 @@ extension EffectMiddleware where StateType: Identifiable {
                 itemState, .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
-                    toCancel: context.toCancel
+                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
                 )
             )
 
@@ -48,7 +48,7 @@ extension EffectMiddleware where StateType: Identifiable, InputAction == OutputA
                 itemState, .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
-                    toCancel: context.toCancel
+                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
                 )
             )
 
@@ -83,7 +83,7 @@ extension MiddlewareReader {
                 itemState, .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
-                    toCancel: context.toCancel
+                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
                 )
             )
 
@@ -115,7 +115,7 @@ extension MiddlewareReader {
                 itemState, .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
-                    toCancel: context.toCancel
+                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
                 )
             )
 

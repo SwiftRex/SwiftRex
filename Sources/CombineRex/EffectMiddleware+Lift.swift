@@ -20,7 +20,7 @@ extension EffectMiddleware {
                     Context(
                         dispatcher: globalContext.dispatcher,
                         dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
+                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
                     )
                 ).map { $0.map(outputActionMap) }.asEffect()
             }
@@ -41,7 +41,7 @@ extension EffectMiddleware {
                     Context(
                         dispatcher: globalContext.dispatcher,
                         dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
+                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
                     )
                 ).map { $0.map(outputActionMap) }.asEffect()
             }
@@ -82,7 +82,7 @@ extension EffectMiddleware {
                     Context(
                         dispatcher: globalContext.dispatcher,
                         dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
+                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
                     )
                 ).map { $0.map(outputActionMap) }.asEffect()
             }
@@ -121,7 +121,7 @@ extension EffectMiddleware {
                     Context(
                         dispatcher: globalContext.dispatcher,
                         dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
+                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
                     )
                 ).map { $0.map(outputActionMap) }.asEffect()
             }
@@ -164,7 +164,7 @@ extension EffectMiddleware where InputAction == OutputAction {
                     Context(
                         dispatcher: globalContext.dispatcher,
                         dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
+                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
                     )
                 ).map { localEffectOutput in
                     localEffectOutput.map { localOutputAction in
