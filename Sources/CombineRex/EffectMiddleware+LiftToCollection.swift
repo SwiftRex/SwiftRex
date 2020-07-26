@@ -16,7 +16,8 @@ extension EffectMiddleware where StateType: Identifiable {
 
             let effectForItem = self.onAction(
                 itemAction.action,
-                itemState, .init(
+                itemState,
+                .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
                     toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
@@ -45,7 +46,8 @@ extension EffectMiddleware where StateType: Identifiable, InputAction == OutputA
 
             let effectForItem = self.onAction(
                 itemAction.action,
-                itemState, .init(
+                itemState,
+                .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
                     toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
@@ -66,12 +68,13 @@ extension EffectMiddleware where StateType: Identifiable, InputAction == OutputA
 
 extension MiddlewareReader {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    public func liftToCollection<ItemInputActionType, ItemOutputActionType, ItemStateType, GlobalAction, GlobalState, CollectionState: MutableCollection>(
+    public func liftToCollection<ItemInputActionType, ItemOutputActionType, ItemStateType, GlobalAction, GlobalState, CollectionState>(
         inputAction actionMap: @escaping (GlobalAction) -> ElementIDAction<ItemStateType.ID, ItemInputActionType>?,
         outputAction outputMap: @escaping (ElementIDAction<ItemStateType.ID, ItemOutputActionType>) -> GlobalAction,
         stateCollection: @escaping (GlobalState) -> CollectionState
     ) -> MiddlewareReader<Dependencies, EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>>
-    where CollectionState.Element == ItemStateType,
+    where CollectionState: MutableCollection,
+          CollectionState.Element == ItemStateType,
           MiddlewareType == EffectMiddleware<ItemInputActionType, ItemOutputActionType, ItemStateType, Dependencies>,
           ItemStateType: Identifiable {
         EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
@@ -80,7 +83,8 @@ extension MiddlewareReader {
 
             let effectForItem = self.inject(context.dependencies).onAction(
                 itemAction.action,
-                itemState, .init(
+                itemState,
+                .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
                     toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
@@ -112,7 +116,8 @@ extension MiddlewareReader {
 
             let effectForItem = self.inject(context.dependencies).onAction(
                 itemAction.action,
-                itemState, .init(
+                itemState,
+                .init(
                     dispatcher: context.dispatcher,
                     dependencies: context.dependencies,
                     toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
