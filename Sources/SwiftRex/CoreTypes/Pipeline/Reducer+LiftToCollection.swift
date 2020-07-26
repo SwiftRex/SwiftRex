@@ -52,9 +52,3 @@ extension Reducer {
         }
     }
 }
-
-extension Collection {
-    fileprivate func inBounds(_ index: Index) -> Bool {
-        index < endIndex && index >= startIndex
-    }
-}

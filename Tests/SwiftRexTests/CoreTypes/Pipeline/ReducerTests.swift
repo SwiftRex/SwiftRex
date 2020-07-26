@@ -250,6 +250,7 @@ class ReducerTests: XCTestCase {
         XCTAssertEqual("a-foo-alpha-foo--bravo--foo", reduced.name)
     }
 
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     func testLiftReducerToCollectionIdentifiableRelevantAction() {
         let original = AppState(
             testState: TestState(value: UUID(), name: "a"),
@@ -285,6 +286,7 @@ class ReducerTests: XCTestCase {
         ], reduced.list)
     }
 
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     func testLiftReducerToCollectionIdentifiableIrrelevantAction() {
         let original = AppState(
             testState: TestState(value: UUID(), name: "a"),
