@@ -12,7 +12,8 @@ class ReducerTests: XCTestCase {
         reducerMock.reduceReturnValue = stateExpected
 
         // Then
-        let stateAfter = sut.reduce(action, stateBefore)
+        var stateAfter = stateBefore
+        sut.reduce(action, &stateAfter)
 
         // Expect
         XCTAssertEqual(1, reducerMock.reduceCallsCount)
@@ -28,7 +29,8 @@ class ReducerTests: XCTestCase {
         let previousState = TestState()
 
         // Then
-        let state = sut.reduce(.foo, previousState)
+        var state = previousState
+        sut.reduce(.foo, &state)
 
         // Expect
         XCTAssertEqual(previousState.value, state.value)
@@ -41,7 +43,8 @@ class ReducerTests: XCTestCase {
         let previousState = TestState()
 
         // Then
-        let state = sut.reduce(.bar(.alpha), previousState)
+        var state = previousState
+        sut.reduce(.bar(.alpha), &state)
 
         // Expect
         XCTAssertEqual(previousState.value, state.value)
@@ -63,7 +66,8 @@ class ReducerTests: XCTestCase {
 
         let sut = reducer1 <> reducer2
 
-        let result = sut.reduce(.foo, TestState(value: UUID(), name: "0"))
+        var result = TestState(value: UUID(), name: "0")
+        sut.reduce(.foo, &result)
 
         XCTAssertEqual("012", result.name)
     }
@@ -89,7 +93,8 @@ class ReducerTests: XCTestCase {
 
         let sut = reducer1 <> reducer2 <> reducer3
 
-        let result = sut.reduce(.foo, TestState(value: UUID(), name: "0"))
+        var result = TestState(value: UUID(), name: "0")
+        sut.reduce(.foo, &result)
 
         XCTAssertEqual("0123", result.name)
     }
@@ -121,7 +126,8 @@ class ReducerTests: XCTestCase {
 
         let sut = (reducer1 <> reducer2) <> (reducer3 <> reducer4)
 
-        let result = sut.reduce(.foo, TestState(value: UUID(), name: "0"))
+        var result = TestState(value: UUID(), name: "0")
+        sut.reduce(.foo, &result)
 
         XCTAssertEqual("01234", result.name)
     }
@@ -129,7 +135,8 @@ class ReducerTests: XCTestCase {
     func testEmptyReducer() {
         let original = TestState()
         let reducer = Reducer<AppAction, TestState>.identity
-        let reduced = reducer.reduce(.foo, original)
+        var reduced = original
+        reducer.reduce(.foo, &reduced)
 
         XCTAssertEqual(original, reduced)
     }
@@ -150,7 +157,8 @@ class ReducerTests: XCTestCase {
                 }
         )
 
-        let reduced = liftedReducer.reduce(.bar(.charlie), original)
+        var reduced = original
+        liftedReducer.reduce(.bar(.charlie), &reduced)
 
         XCTAssertEqual(original.value, reduced.value)
         XCTAssertEqual("ab", reduced.name)
@@ -172,7 +180,8 @@ class ReducerTests: XCTestCase {
                 }
         )
 
-        let reduced = liftedReducer.reduce(.foo, original)
+        var reduced = original
+        liftedReducer.reduce(.foo, &reduced)
 
         XCTAssertEqual(original.value, reduced.value)
         XCTAssertEqual("a", reduced.name)
@@ -188,7 +197,8 @@ class ReducerTests: XCTestCase {
         let liftedReducer: Reducer<AppAction, TestState> = reducer
             .lift(action: \.bar, state: \.name)
 
-        let reduced = liftedReducer.reduce(.bar(.charlie), original)
+        var reduced = original
+        liftedReducer.reduce(.bar(.charlie), &reduced)
 
         XCTAssertEqual(original.value, reduced.value)
         XCTAssertEqual("ab", reduced.name)
@@ -204,7 +214,8 @@ class ReducerTests: XCTestCase {
         let liftedReducer: Reducer<AppAction, TestState> = reducer
             .lift(action: \.bar, state: \.name)
 
-        let reduced = liftedReducer.reduce(.foo, original)
+        var reduced = original
+        liftedReducer.reduce(.foo, &reduced)
 
         XCTAssertEqual(original.value, reduced.value)
         XCTAssertEqual("a", reduced.name)
@@ -243,8 +254,9 @@ class ReducerTests: XCTestCase {
             <> reducerBravo.lift(action: \.bar)
 
         let actions = [AppAction.foo, .bar(.alpha), .foo, .bar(.echo), .bar(.bravo), .bar(.delta), .foo]
-        let reduced = actions.reduce(original) { accumulatedState, currentAction in
-            reducerChain.reduce(currentAction, accumulatedState)
+
+        let reduced = actions.reduce(into: original) { accumulatedState, currentAction in
+            reducerChain.reduce(currentAction, &accumulatedState)
         }
 
         XCTAssertEqual("a-foo-alpha-foo--bravo--foo", reduced.name)
@@ -271,10 +283,10 @@ class ReducerTests: XCTestCase {
             .liftToCollection(action: \.somethingScopedById, stateCollection: \.list)
 
         var reduced = original
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 2, action: "first")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 5, action: "second")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 1, action: "third")), reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 2, action: "first")), &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 5, action: "second")), &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 1, action: "third")), &reduced)
 
         XCTAssertEqual(original.testState, reduced.testState)
         XCTAssertEqual([
@@ -308,11 +320,11 @@ class ReducerTests: XCTestCase {
             .liftToCollection(action: \.somethingScopedById, stateCollection: \.list)
 
         var reduced = original
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 9, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 9, action: "no_item")), &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
 
         XCTAssertEqual(original, reduced)
     }
@@ -341,10 +353,10 @@ class ReducerTests: XCTestCase {
             )
 
         var reduced = original
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 2, action: "first")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 5, action: "second")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 1, action: "third")), reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 2, action: "first")), &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 5, action: "second")), &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 1, action: "third")), &reduced)
 
         XCTAssertEqual(original.testState, reduced.testState)
         XCTAssertEqual([
@@ -381,11 +393,11 @@ class ReducerTests: XCTestCase {
             )
 
         var reduced = original
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
-        reduced = liftedReducer.reduce(.somethingScopedById(.init(id: 9, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 6, action: "no_item")), &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
+        liftedReducer.reduce(.somethingScopedById(.init(id: 9, action: "no_item")), &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
 
         XCTAssertEqual(original, reduced)
     }
@@ -410,10 +422,10 @@ class ReducerTests: XCTestCase {
             .liftToCollection(action: \.somethingScopedByIndex, stateCollection: \.list)
 
         var reduced = original
-        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 1, action: "first")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 4, action: "second")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 5, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 0, action: "third")), reduced)
+        liftedReducer.reduce(.somethingScopedByIndex(.init(index: 1, action: "first")), &reduced)
+        liftedReducer.reduce(.somethingScopedByIndex(.init(index: 4, action: "second")), &reduced)
+        liftedReducer.reduce(.somethingScopedByIndex(.init(index: 5, action: "no_item")), &reduced)
+        liftedReducer.reduce(.somethingScopedByIndex(.init(index: 0, action: "third")), &reduced)
 
         XCTAssertEqual(original.testState, reduced.testState)
         XCTAssertEqual([
@@ -446,11 +458,11 @@ class ReducerTests: XCTestCase {
             .liftToCollection(action: \.somethingScopedByIndex, stateCollection: \.list)
 
         var reduced = original
-        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 5, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
-        reduced = liftedReducer.reduce(.somethingScopedByIndex(.init(index: 8, action: "no_item")), reduced)
-        reduced = liftedReducer.reduce(.toIgnore, reduced)
+        liftedReducer.reduce(.somethingScopedByIndex(.init(index: 5, action: "no_item")), &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
+        liftedReducer.reduce(.somethingScopedByIndex(.init(index: 8, action: "no_item")), &reduced)
+        liftedReducer.reduce(.toIgnore, &reduced)
 
         XCTAssertEqual(original, reduced)
     }

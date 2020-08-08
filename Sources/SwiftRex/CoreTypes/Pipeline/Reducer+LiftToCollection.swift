@@ -6,14 +6,12 @@ extension Reducer where StateType: Identifiable {
         action actionMap: KeyPath<GlobalAction, ElementIDAction<StateType.ID, ActionType>?>,
         stateCollection: WritableKeyPath<GlobalState, CollectionState>
     ) -> Reducer<GlobalAction, GlobalState> where CollectionState.Element == StateType {
-        Reducer<GlobalAction, GlobalState> { action, state in
+        Reducer<GlobalAction, GlobalState>.reduce { action, state in
             guard let itemAction = action[keyPath: actionMap],
                   let itemIndex = state[keyPath: stateCollection].firstIndex(where: { $0.id == itemAction.id })
-            else { return state }
+            else { return }
 
-            var state = state
-            state[keyPath: stateCollection][itemIndex] = self.reduce(itemAction.action, state[keyPath: stateCollection][itemIndex])
-            return state
+            self.reduce(itemAction.action, &state[keyPath: stateCollection][itemIndex])
         }
     }
 }
@@ -24,14 +22,12 @@ extension Reducer {
         stateCollection: WritableKeyPath<GlobalState, CollectionState>,
         identifier: KeyPath<StateType, ID>
     ) -> Reducer<GlobalAction, GlobalState> where CollectionState.Element == StateType {
-        Reducer<GlobalAction, GlobalState> { action, state in
+        Reducer<GlobalAction, GlobalState>.reduce { action, state in
             guard let itemAction = action[keyPath: actionMap],
                   let itemIndex = state[keyPath: stateCollection].firstIndex(where: { $0[keyPath: identifier] == itemAction.id })
-            else { return state }
+            else { return }
 
-            var state = state
-            state[keyPath: stateCollection][itemIndex] = self.reduce(itemAction.action, state[keyPath: stateCollection][itemIndex])
-            return state
+             self.reduce(itemAction.action, &state[keyPath: stateCollection][itemIndex])
         }
     }
 }
@@ -41,14 +37,12 @@ extension Reducer {
         action actionMap: KeyPath<GlobalAction, ElementIndexAction<CollectionState.Index, ActionType>?>,
         stateCollection: WritableKeyPath<GlobalState, CollectionState>
     ) -> Reducer<GlobalAction, GlobalState> where CollectionState.Element == StateType {
-        Reducer<GlobalAction, GlobalState> { action, state in
+        Reducer<GlobalAction, GlobalState>.reduce { action, state in
             guard let itemAction = action[keyPath: actionMap],
                   state[keyPath: stateCollection].inBounds(itemAction.index)
-            else { return state }
+            else { return }
 
-            var state = state
-            state[keyPath: stateCollection][itemAction.index] = self.reduce(itemAction.action, state[keyPath: stateCollection][itemAction.index])
-            return state
+            self.reduce(itemAction.action, &state[keyPath: stateCollection][itemAction.index])
         }
     }
 }

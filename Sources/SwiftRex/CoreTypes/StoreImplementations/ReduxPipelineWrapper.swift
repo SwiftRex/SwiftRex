@@ -22,7 +22,8 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
             state.mutate(
                 when: { $0 },
                 action: { value -> Bool in
-                    let newValue = reducer.reduce(action, value)
+                    var newValue = value
+                    reducer.reduce(action, &newValue)
                     guard emitsValue.shouldEmit(previous: value, new: newValue) else { return false }
                     value = newValue
                     return true

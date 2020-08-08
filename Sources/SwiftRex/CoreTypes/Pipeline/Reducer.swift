@@ -82,10 +82,11 @@
 public struct Reducer<ActionType, StateType> {
     /**
      Execute the wrapped reduce function. You must provide the parameters `action: ActionType` (the action to be
-     evaluated during the reducing process) and the latest `state: StateType` (the current state in your single
-     source-of-truth). The result of this call will be a `StateType` with the calculated new state.
+     evaluated during the reducing process) and an `inout` version of the latest `state: StateType`, (the current
+     state in your single source-of-truth).
+     State will be mutated in place (`inout`) and finish with the calculated new state.
      */
-    public let reduce: ReduceFunction<ActionType, StateType>
+    public let reduce: MutableReduceFunction<ActionType, StateType>
 
     /**
      Reducer initializer takes only the underlying function `(ActionType, StateType) -> StateType` that is the reducer
@@ -95,6 +96,23 @@ public struct Reducer<ActionType, StateType> {
                  an action and the old state.
      */
     public init(_ reduce: @escaping ReduceFunction<ActionType, StateType>) {
+        self.init { action, state in
+            state = reduce(action, state)
+        }
+    }
+
+    /**
+     Reducer initializer takes only the underlying function `(ActionType, inout StateType) -> Void` that is the reducer
+     function itself.
+     - Parameters:
+       - reduce: a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from
+                 an action and the old state.
+     */
+    public static func reduce(_ reduce: @escaping MutableReduceFunction<ActionType, StateType>) -> Reducer {
+        Reducer.init(reduce: reduce)
+    }
+
+    private init(reduce: @escaping MutableReduceFunction<ActionType, StateType>) {
         self.reduce = reduce
     }
 }
@@ -114,7 +132,7 @@ extension Reducer: Monoid {
      The implementation of this reducer, as one should expect, simply ignores the action and returns the state unchanged
      */
     public static var identity: Reducer<ActionType, StateType> {
-        .init { _, state in state }
+        .init { _, _ in }
     }
 
     /**
@@ -136,8 +154,9 @@ extension Reducer: Monoid {
      - Returns: a composed monoid `(ActionType, StateType) -> StateType` equivalent to `g(f(x))`
      */
     public static func <> (lhs: Reducer<ActionType, StateType>, rhs: Reducer<ActionType, StateType>) -> Reducer<ActionType, StateType> {
-        .init { action, state in
-            rhs.reduce(action, lhs.reduce(action, state))
+        .reduce { action, state in
+            lhs.reduce(action, &state)
+            rhs.reduce(action, &state)
         }
     }
 }
@@ -208,13 +227,11 @@ extension Reducer {
         stateGetter: @escaping (GlobalStateType) -> StateType,
         stateSetter: @escaping (inout GlobalStateType, StateType) -> Void)
         -> Reducer<GlobalActionType, GlobalStateType> {
-        .init { globalAction, globalState in
-            guard let localAction = actionGetter(globalAction) else { return globalState }
-            let localStatePrevious = stateGetter(globalState)
-            let localStateAfter = self.reduce(localAction, localStatePrevious)
-            var globalState = globalState
-            stateSetter(&globalState, localStateAfter)
-            return globalState
+        .reduce { globalAction, globalState in
+            guard let localAction = actionGetter(globalAction) else { return }
+            var localState = stateGetter(globalState)
+            self.reduce(localAction, &localState)
+            stateSetter(&globalState, localState)
         }
     }
 
@@ -276,11 +293,10 @@ extension Reducer {
         action: KeyPath<GlobalActionType, ActionType?>,
         state: WritableKeyPath<GlobalStateType, StateType>)
         -> Reducer<GlobalActionType, GlobalStateType> {
-        lift(
-            actionGetter: { $0[keyPath: action] },
-            stateGetter: { $0[keyPath: state] },
-            stateSetter: { $0[keyPath: state] = $1 }
-        )
+        .reduce { globalAction, globalState in
+            guard let localAction = globalAction[keyPath: action] else { return }
+            self.reduce(localAction, &globalState[keyPath: state])
+        }
     }
 
     /**
@@ -329,14 +345,13 @@ extension Reducer {
                 state once the reducer finishes it's operation. For example: `\.currentGame.scoreBoard`.
      - Returns: a `Reducer<ActionType, GlobalState>` that maps actions and states from the original specialized
                 reducer into a more generic and global reducer, to be used in a larger context.
-     */    public func lift<GlobalStateType>(
-        state: WritableKeyPath<GlobalStateType, StateType>)
-        -> Reducer<ActionType, GlobalStateType> {
-        lift(
-            actionGetter: { $0 },
-            stateGetter: { $0[keyPath: state] },
-            stateSetter: { $0[keyPath: state] = $1 }
-        )
+     */
+    public func lift<GlobalStateType>(
+        state: WritableKeyPath<GlobalStateType, StateType>
+    ) -> Reducer<ActionType, GlobalStateType> {
+        .reduce { action, globalState in
+            self.reduce(action, &globalState[keyPath: state])
+        }
     }
 
     /**
