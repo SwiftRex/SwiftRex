@@ -7,90 +7,91 @@ import XCTest
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class EffectTests: XCTestCase {
     func testInitWithCancellation() {
-        let sut = Effect(upstream: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { .dispatch($0) }.publisher, cancellationToken: "token")
+        let sut = Effect<Void, Int>(token: "token") { _ in [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher }
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertEqual("token", sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertEqual("token", sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testInitWithoutCancellation() {
-        let sut = Effect(upstream: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { .dispatch($0) }.publisher)
+        let sut = Effect<Void, Int> { _ in [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher }
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
-        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
-        XCTAssertEqual([.finished], completion)
-    }
-
-    func testInitWithoutCancellationButAddItLater() {
-        let sut = Effect(upstream: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { .dispatch($0) }.publisher).cancellation(token: "token")
-        var completion = [Subscribers.Completion<Never>]()
-        var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertEqual("token", sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testDoNothing() {
-        let sut = Effect<Int>.doNothing
-        var completion = [Subscribers.Completion<Never>]()
-        var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertEqual([], received)
-        XCTAssertEqual([.finished], completion)
+        let sut = Effect<Void, Int>.doNothing
+        XCTAssertNil(sut.token)
+        XCTAssertNil(sut.run((dependencies: (), toCancel: { _ in FireAndForget { } })))
     }
 
     func testJust() {
-        let sut = Effect<Int>.just(42)
+        let sut = Effect<Void, Int>.just(42)
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
         XCTAssertEqual([42], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testSequenceArray() {
-        let sut = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
+        let sut = Effect<Void, Int>.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testSequenceVariadics() {
-        let sut = Effect.sequence(1, 1, 2, 3, 5, 8, 13, 21, 34, 55)
+        let sut = Effect<Void, Int>.sequence(1, 1, 2, 3, 5, 8, 13, 21, 34, 55)
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testPromise() {
-        let sut = Effect<Int>.promise { callback in
-            callback(.dispatch(42))
+        let sut = Effect<Int, String>.promise(token: "token") { context, callback in
+            callback(String(context.dependencies + 1))
         }
         var completion = [Subscribers.Completion<Never>]()
-        var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertEqual([42], received)
+        var received = [String]()
+        _ = sut
+            .run((dependencies: 42, toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertEqual(["43"], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testAsEffectWithCancellation() {
-        let sut = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].publisher.asEffect(dispatcher: .here(), cancellationToken: "token")
+        let sut = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].publisher.asEffect(token: "token")
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertEqual("token", sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertEqual("token", sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
         XCTAssertEqual([.finished], completion)
     }
@@ -99,21 +100,25 @@ class EffectTests: XCTestCase {
         let sut = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].publisher.asEffect(dispatcher: .here())
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testFireAndForgetClosure() {
         let calledClosure = expectation(description: "should have called fire and forget closure")
-        let sut = Effect<Int>.fireAndForget {
+        let sut = Effect<Void, Int>.fireAndForget {
             calledClosure.fulfill()
         }
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
 
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
         wait(for: [calledClosure], timeout: 0.1)
         XCTAssertEqual([], received)
         XCTAssertEqual([.finished], completion)
@@ -125,10 +130,12 @@ class EffectTests: XCTestCase {
             XCTAssertEqual(value, "test")
             calledClosure.fulfill()
         })
-        let sut = Effect<Int>.fireAndForget(publisher)
+        let sut = Effect<Void, Int>.fireAndForget(publisher)
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
         wait(for: [calledClosure], timeout: 0.1)
         XCTAssertEqual([], received)
         XCTAssertEqual([.finished], completion)
@@ -140,7 +147,7 @@ class EffectTests: XCTestCase {
             XCTAssertEqual(value, "test")
             calledClosure.fulfill()
         })
-        let sut = Effect<Int>.fireIgnoreOutput(
+        let sut = Effect<Void, Int>.fireAndForget(
             publisher,
             catchErrors: { error in
                 XCTFail(error.localizedDescription)
@@ -149,7 +156,9 @@ class EffectTests: XCTestCase {
         )
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
         wait(for: [calledClosure], timeout: 0.1)
         XCTAssertEqual([], received)
         XCTAssertEqual([.finished], completion)
@@ -172,109 +181,91 @@ class EffectTests: XCTestCase {
                 calledClosure.fulfill()
             }
         )
-        let sut = Effect<Int>.fireIgnoreOutput(
+        let sut = Effect<Void, Int>.fireAndForget(
             publisher,
             catchErrors: { error in
                 XCTAssertEqual(error as? SomeError, someError)
-                return .dispatch(42)
+                return .init(42)
             }
         )
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
         wait(for: [calledClosure], timeout: 0.1)
         XCTAssertEqual([42], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testMergeTwo() {
-        let first = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
-        let second = Effect.just(89)
-        let sut = Effect.merge(first, second)
+        let first = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher
+        let second = Just(DispatchedAction(89))
+        let sut = Effect<Void, Int>(Publishers.Merge(first, second))
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testMergeThree() {
-        let first = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21])
-        let second = Effect.just(34)
-        let third = Effect.sequence([55, 89])
-        let sut = Effect.merge(first, second, third)
+        let first = [1, 1, 2, 3, 5, 8, 13, 21].map { DispatchedAction($0) }.publisher
+        let second = Just(DispatchedAction(34))
+        let third = [55, 89].map { DispatchedAction($0) }.publisher
+        let sut = Effect<Void, Int>(Publishers.Merge3(first, second, third))
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89], received)
         XCTAssertEqual([.finished], completion)
     }
 
-    func testMergeFour() {
-        let first = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21])
-        let second = Effect.just(34)
-        let third = Effect.sequence([55, 89])
-        let fourth = Effect.sequence([144])
-        let sut = Effect.merge(first, second, third, fourth)
-        var completion = [Subscribers.Completion<Never>]()
-        var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
-        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144], received)
-        XCTAssertEqual([.finished], completion)
-    }
-
-    func testMergeFive() {
-        let first = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21])
-        let second = Effect.just(34)
-        let third = Effect.sequence([55, 89])
-        let fourth = Effect.sequence([144])
-        let fifth = Effect.just(233)
-        let sut = Effect.merge(first, second, third, fourth, fifth)
-        var completion = [Subscribers.Completion<Never>]()
-        var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
-        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233], received)
-        XCTAssertEqual([.finished], completion)
-    }
-
     func testPrepend() {
-        let first = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
-        let second = Effect.just(89)
-        let sut = second.prepend(first)
+        let first = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher
+        let second = Just(DispatchedAction(89))
+        let sut = Effect(second.prepend(first))
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testAppend() {
-        let first = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
-        let second = Effect.just(89)
-        let sut = first.append(second)
+        let first = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher
+        let second = Just(DispatchedAction(89))
+        let sut = Effect(first.append(second))
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89], received)
         XCTAssertEqual([.finished], completion)
     }
 
     func testFMap() {
-        let numbers = Effect.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
-        let sut = numbers.fmap(String.init)
+        let numbers = Effect<Void, Int>.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
+        let sut = numbers.map(String.init)
         var completion = [Subscribers.Completion<Never>]()
         var received = [String]()
-        _ = sut.sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
-        XCTAssertNil(sut.cancellationToken)
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
         XCTAssertEqual(["1", "1", "2", "3", "5", "8", "13", "21", "34", "55"], received)
         XCTAssertEqual([.finished], completion)
     }
-
 }
 #endif

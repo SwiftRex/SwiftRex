@@ -12,17 +12,12 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies> {
         EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { globalInputAction, globalState, globalContext -> Effect<GlobalOutputActionType> in
+            onReceiveContext: { getState, output in
+                self.receiveContext(getState: { stateMap(getState()) }, output: output.contramap(outputActionMap))
+            },
+            onAction: { globalInputAction, dispatcher, globalState -> Effect<Dependencies, GlobalOutputActionType> in
                 guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    stateMap(globalState),
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
-                    )
-                ).map { $0.map(outputActionMap) }.asEffect()
+                return self.onAction(localInputAction, dispatcher, { stateMap(globalState()) }).map(outputActionMap)
             }
         )
     }
@@ -33,17 +28,12 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, StateType, Dependencies> {
         EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, StateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { globalInputAction, state, globalContext -> Effect<GlobalOutputActionType> in
+            onReceiveContext: { getState, output in
+                self.receiveContext(getState: getState, output: output.contramap(outputActionMap))
+            },
+            onAction: { globalInputAction, dispatcher, state -> Effect<Dependencies, GlobalOutputActionType> in
                 guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    state,
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
-                    )
-                ).map { $0.map(outputActionMap) }.asEffect()
+                return self.onAction(localInputAction, dispatcher, state).map(outputActionMap)
             }
         )
     }
@@ -54,17 +44,12 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<GlobalInputActionType, OutputActionType, GlobalStateType, Dependencies> {
         EffectMiddleware<GlobalInputActionType, OutputActionType, GlobalStateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { globalInputAction, globalState, globalContext -> Effect<OutputActionType> in
+            onReceiveContext: { getState, output in
+                self.receiveContext(getState: { stateMap(getState()) }, output: output)
+            },
+            onAction: { globalInputAction, dispatcher, globalState -> Effect<Dependencies, OutputActionType> in
                 guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    stateMap(globalState),
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
-                    )
-                ).asEffect()
+                return self.onAction(localInputAction, dispatcher, { stateMap(globalState()) })
             }
         )
     }
@@ -75,16 +60,11 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<InputActionType, GlobalOutputActionType, GlobalStateType, Dependencies> {
         EffectMiddleware<InputActionType, GlobalOutputActionType, GlobalStateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { inputAction, globalState, globalContext -> Effect<GlobalOutputActionType> in
-                self.onAction(
-                    inputAction,
-                    stateMap(globalState),
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
-                    )
-                ).map { $0.map(outputActionMap) }.asEffect()
+            onReceiveContext: { getState, output in
+                self.receiveContext(getState: { stateMap(getState()) }, output: output.contramap(outputActionMap))
+            },
+            onAction: { inputAction, dispatcher, globalState -> Effect<Dependencies, GlobalOutputActionType> in
+                return self.onAction(inputAction, dispatcher, { stateMap(globalState()) }).map(outputActionMap)
             }
         )
     }
@@ -94,17 +74,12 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<GlobalInputActionType, OutputActionType, StateType, Dependencies> {
         EffectMiddleware<GlobalInputActionType, OutputActionType, StateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { globalInputAction, state, globalContext -> Effect<OutputActionType> in
+            onReceiveContext: { getState, output in
+                self.receiveContext(getState: getState, output: output)
+            },
+            onAction: { globalInputAction, dispatcher, state -> Effect<Dependencies, OutputActionType> in
                 guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    state,
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
-                    )
-                ).asEffect()
+                return self.onAction(localInputAction, dispatcher, state)
             }
         )
     }
@@ -114,16 +89,11 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<InputActionType, GlobalOutputActionType, StateType, Dependencies> {
         EffectMiddleware<InputActionType, GlobalOutputActionType, StateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { inputAction, state, globalContext -> Effect<GlobalOutputActionType> in
-                self.onAction(
-                    inputAction,
-                    state,
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
-                    )
-                ).map { $0.map(outputActionMap) }.asEffect()
+            onReceiveContext: { getState, output in
+                self.receiveContext(getState: getState, output: output.contramap(outputActionMap))
+            },
+            onAction: { inputAction, dispatcher, state -> Effect<Dependencies, GlobalOutputActionType> in
+                return self.onAction(inputAction, dispatcher, state).map(outputActionMap)
             }
         )
     }
@@ -133,46 +103,48 @@ extension EffectMiddleware {
     ) -> EffectMiddleware<InputActionType, OutputActionType, GlobalStateType, Dependencies> {
         EffectMiddleware<InputActionType, OutputActionType, GlobalStateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { inputAction, globalState, globalContext -> Effect<OutputActionType> in
-                self.onAction(
-                    inputAction,
-                    stateMap(globalState),
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
-                    )
-                ).asEffect()
+            onReceiveContext: { getState, output in
+                self.receiveContext(getState: { stateMap(getState()) }, output: output)
+            },
+            onAction: { inputAction, dispatcher, globalState -> Effect<Dependencies, OutputActionType> in
+                return self.onAction(inputAction, dispatcher, { stateMap(globalState()) })
             }
         )
     }
 }
 
+
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension EffectMiddleware where InputAction == OutputAction {
+extension EffectMiddleware where InputActionType == OutputActionType {
     public func lift<GlobalActionType, GlobalStateType>(
-        action actionMap: WritableKeyPath<GlobalActionType, InputAction?>,
+        action actionMap: WritableKeyPath<GlobalActionType, InputActionType?>,
         state stateMap: KeyPath<GlobalStateType, StateType>
     ) -> EffectMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, Dependencies> {
-        EffectMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, Dependencies>(
+        var hasTransferredContext = false
+        var output: AnyActionHandler<GlobalActionType>?
+
+        return EffectMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, Dependencies>(
             dependencies: self.dependencies,
-            handle: { globalInputAction, globalState, globalContext -> Effect<GlobalActionType> in
-                guard let localInputAction = globalInputAction[keyPath: actionMap] else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    globalState[keyPath: stateMap],
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: { hashable in .fireAndForget(globalContext.toCancel(hashable)) }
-                    )
-                ).map { localEffectOutput in
-                    localEffectOutput.map { localOutputAction in
-                        var globalAction = globalInputAction
-                        globalAction[keyPath: actionMap] = localOutputAction
-                        return globalAction
-                    }
-                }.asEffect()
+            onReceiveContext: { _, receivedOutput in
+                output = receivedOutput
+                hasTransferredContext = false
+            },
+            onAction: { globalInputAction, dispatcher, globalState -> Effect<Dependencies, GlobalActionType> in
+                guard let localInputAction = globalInputAction[keyPath: actionMap],
+                      let output = output else { return .doNothing }
+
+                let contramapOutput: (OutputActionType) -> GlobalActionType = { localAction in
+                    var mutableGlobal = globalInputAction
+                    mutableGlobal[keyPath: actionMap] = localAction
+                    return mutableGlobal
+                }
+
+                if !hasTransferredContext {
+                    hasTransferredContext = true
+                    self.receiveContext(getState: { globalState()[keyPath: stateMap] }, output: output.contramap(contramapOutput))
+                }
+
+                return self.onAction(localInputAction, dispatcher, { globalState()[keyPath: stateMap] }).map(contramapOutput)
             }
         )
     }

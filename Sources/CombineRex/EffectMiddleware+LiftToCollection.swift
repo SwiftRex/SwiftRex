@@ -6,62 +6,46 @@ import SwiftRex
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware where StateType: Identifiable {
     public func liftToCollection<GlobalAction, GlobalState, CollectionState: MutableCollection>(
-        inputAction actionMap: @escaping (GlobalAction) -> ElementIDAction<StateType.ID, InputAction>?,
-        outputAction outputMap: @escaping (ElementIDAction<StateType.ID, OutputAction>) -> GlobalAction,
+        inputAction actionMap: @escaping (GlobalAction) -> ElementIDAction<StateType.ID, InputActionType>?,
+        outputAction outputMap: @escaping (ElementIDAction<StateType.ID, OutputActionType>) -> GlobalAction,
         stateCollection: @escaping (GlobalState) -> CollectionState
     ) -> EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies> where CollectionState.Element == StateType {
-        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
+        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, dispatcher, state in
             guard let itemAction = actionMap(action) else { return .doNothing }
-            guard let itemState = stateCollection(state).first(where: { $0.id == itemAction.id }) else { return .doNothing }
+            let getStateItem = { stateCollection(state()).first(where: { $0.id == itemAction.id }) }
+            guard let itemState = getStateItem() else { return .doNothing }
 
-            let effectForItem = self.onAction(
+            return self.onAction(
                 itemAction.action,
-                itemState,
-                .init(
-                    dispatcher: context.dispatcher,
-                    dependencies: context.dependencies,
-                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
-                )
-            )
-
-            return effectForItem.map { (effectOutputForItem: EffectOutput<OutputAction>) in
-                effectOutputForItem.map { (outputAction: OutputAction) in
-                    outputMap(.init(id: itemAction.id, action: outputAction))
-                }
+                dispatcher,
+                { getStateItem() ?? itemState }
+            ).map { (outputAction: OutputActionType) -> GlobalAction in
+                outputMap(.init(id: itemAction.id, action: outputAction))
             }
-            .asEffect()
         }.inject(self.dependencies)
     }
 }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension EffectMiddleware where StateType: Identifiable, InputAction == OutputAction {
+extension EffectMiddleware where StateType: Identifiable, InputActionType == OutputActionType {
     public func liftToCollection<GlobalAction, GlobalState, CollectionState: MutableCollection>(
-        action actionMap: WritableKeyPath<GlobalAction, ElementIDAction<StateType.ID, InputAction>?>,
+        action actionMap: WritableKeyPath<GlobalAction, ElementIDAction<StateType.ID, InputActionType>?>,
         stateCollection: KeyPath<GlobalState, CollectionState>
     ) -> EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies> where CollectionState.Element == StateType {
-        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
+        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, dispatcher, state in
             guard let itemAction = action[keyPath: actionMap] else { return .doNothing }
-            guard let itemState = state[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) else { return .doNothing }
+            let getStateItem = { state()[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) }
+            guard let itemState = getStateItem() else { return .doNothing }
 
-            let effectForItem = self.onAction(
+            return self.onAction(
                 itemAction.action,
-                itemState,
-                .init(
-                    dispatcher: context.dispatcher,
-                    dependencies: context.dependencies,
-                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
-                )
-            )
-
-            return effectForItem.map { (effectOutputForItem: EffectOutput<OutputAction>) in
-                effectOutputForItem.map { (outputAction: OutputAction) in
-                    var newAction = action
-                    newAction[keyPath: actionMap] = .init(id: itemAction.id, action: outputAction)
-                    return newAction
-                }
+                dispatcher,
+                { getStateItem() ?? itemState }
+            ).map { (outputAction: OutputActionType) -> GlobalAction in
+                var newAction = action
+                newAction[keyPath: actionMap] = .init(id: itemAction.id, action: outputAction)
+                return newAction
             }
-            .asEffect()
         }.inject(self.dependencies)
     }
 }
@@ -77,26 +61,38 @@ extension MiddlewareReader {
           CollectionState.Element == ItemStateType,
           MiddlewareType == EffectMiddleware<ItemInputActionType, ItemOutputActionType, ItemStateType, Dependencies>,
           ItemStateType: Identifiable {
-        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
-            guard let itemAction = actionMap(action) else { return .doNothing }
-            guard let itemState = stateCollection(state).first(where: { $0.id == itemAction.id }) else { return .doNothing }
+        .init { dependencies in
+            let itemMiddleware = self.inject(dependencies)
+            var hasTransferredContext = false
+            var output: AnyActionHandler<GlobalAction>?
 
-            let effectForItem = self.inject(context.dependencies).onAction(
-                itemAction.action,
-                itemState,
-                .init(
-                    dispatcher: context.dispatcher,
-                    dependencies: context.dependencies,
-                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
-                )
-            )
+            return EffectMiddleware(
+                dependencies: dependencies,
+                onReceiveContext: { _, receivedOutput in
+                    output = receivedOutput
+                    hasTransferredContext = false
+                }
+            ) { action, dispatcher, state in
+                guard let itemAction = actionMap(action),
+                      let output = output else { return .doNothing }
+                let getStateItem = { stateCollection(state()).first(where: { $0.id == itemAction.id }) }
+                guard let itemState = getStateItem() else { return .doNothing }
 
-            return effectForItem.map { (effectOutputForItem: EffectOutput<ItemOutputActionType>) in
-                effectOutputForItem.map { (outputAction: ItemOutputActionType) in
+                let outputContramap = { (outputAction: ItemOutputActionType) -> GlobalAction in
                     outputMap(.init(id: itemAction.id, action: outputAction))
                 }
+
+                if !hasTransferredContext {
+                    hasTransferredContext = true
+                    itemMiddleware.receiveContext(getState: { getStateItem() ?? itemState }, output: output.contramap(outputContramap))
+                }
+
+                return itemMiddleware.onAction(
+                    itemAction.action,
+                    dispatcher,
+                    { getStateItem() ?? itemState }
+                ).map(outputContramap)
             }
-            .asEffect()
         }
     }
 }
@@ -110,28 +106,40 @@ extension MiddlewareReader {
     where CollectionState.Element == ItemStateType,
           MiddlewareType == EffectMiddleware<ItemActionType, ItemActionType, ItemStateType, Dependencies>,
           ItemStateType: Identifiable {
-        EffectMiddleware<GlobalAction, GlobalAction, GlobalState, Dependencies>.onAction { action, state, context in
-            guard let itemAction = action[keyPath: actionMap] else { return .doNothing }
-            guard let itemState = state[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) else { return .doNothing }
+        .init { dependencies in
+            let itemMiddleware = self.inject(dependencies)
+            var hasTransferredContext = false
+            var output: AnyActionHandler<GlobalAction>?
 
-            let effectForItem = self.inject(context.dependencies).onAction(
-                itemAction.action,
-                itemState,
-                .init(
-                    dispatcher: context.dispatcher,
-                    dependencies: context.dependencies,
-                    toCancel: { hashable in .fireAndForget(context.toCancel(hashable)) }
-                )
-            )
+            return EffectMiddleware(
+                dependencies: dependencies,
+                onReceiveContext: { _, receivedOutput in
+                    output = receivedOutput
+                    hasTransferredContext = false
+                }
+            ) { action, dispatcher, state in
+                guard let itemAction = action[keyPath: actionMap],
+                      let output = output else { return .doNothing }
+                let getStateItem = { state()[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) }
+                guard let itemState = getStateItem() else { return .doNothing }
 
-            return effectForItem.map { (effectOutputForItem: EffectOutput<ItemActionType>) in
-                effectOutputForItem.map { (outputAction: ItemActionType) in
+                let outputContramap = { (outputAction: ItemActionType) -> GlobalAction in
                     var newAction = action
                     newAction[keyPath: actionMap] = .init(id: itemAction.id, action: outputAction)
                     return newAction
                 }
+
+                if !hasTransferredContext {
+                    hasTransferredContext = true
+                    itemMiddleware.receiveContext(getState: { getStateItem() ?? itemState }, output: output.contramap(outputContramap))
+                }
+
+                return itemMiddleware.onAction(
+                    itemAction.action,
+                    dispatcher,
+                    { getStateItem() ?? itemState }
+                ).map(outputContramap)
             }
-            .asEffect()
         }
     }
 }
