@@ -18,7 +18,7 @@ extension EffectMiddleware where StateType: Identifiable {
             return self.onAction(
                 itemAction.action,
                 dispatcher,
-                { getStateItem() ?? itemState }
+                { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
             ).map { (outputAction: OutputActionType) -> GlobalAction in
                 outputMap(.init(id: itemAction.id, action: outputAction))
             }
@@ -40,7 +40,7 @@ extension EffectMiddleware where StateType: Identifiable, InputActionType == Out
             return self.onAction(
                 itemAction.action,
                 dispatcher,
-                { getStateItem() ?? itemState }
+                { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
             ).map { (outputAction: OutputActionType) -> GlobalAction in
                 var newAction = action
                 newAction[keyPath: actionMap] = .init(id: itemAction.id, action: outputAction)
@@ -90,7 +90,7 @@ extension MiddlewareReader {
                 return itemMiddleware.onAction(
                     itemAction.action,
                     dispatcher,
-                    { getStateItem() ?? itemState }
+                    { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
                 ).map(outputContramap)
             }
         }
@@ -137,7 +137,7 @@ extension MiddlewareReader {
                 return itemMiddleware.onAction(
                     itemAction.action,
                     dispatcher,
-                    { getStateItem() ?? itemState }
+                    { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
                 ).map(outputContramap)
             }
         }

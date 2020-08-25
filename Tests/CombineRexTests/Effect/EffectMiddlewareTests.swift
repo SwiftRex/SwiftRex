@@ -141,7 +141,7 @@ class EffectMiddlewareTests: XCTestCase {
         let expectedSubscription = expectation(description: "should have been subscribed")
         let expectedCancellation = expectation(description: "should have been cancelled")
 
-        let sut = EffectMiddleware<String, String, String, String>.onAction { action, _, state in
+        let sut = EffectMiddleware<String, String, String, String>.onAction { action, _, _ in
             if action == "cancel" {
                 return Effect<String, String> { context in
                     context.toCancel("token")
@@ -153,7 +153,7 @@ class EffectMiddlewareTests: XCTestCase {
                 return .doNothing
             }
 
-            return Effect(token: "token") { context in
+            return Effect(token: "token") { _ in
                 Deferred {
                     Future { completion in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -196,10 +196,10 @@ class EffectMiddlewareTests: XCTestCase {
         let expectedCancellation2 = expectation(description: "should have been cancelled")
         let expectedValue3 = expectation(description: "should have received value 3")
 
-        let sut = EffectMiddleware<String, String, String, String>.onAction { action, _, context in
+        let sut = EffectMiddleware<String, String, String, String>.onAction { action, _, _ in
             switch action {
             case "first":
-                return Effect(token: "token1") { context in
+                return Effect(token: "token1") { _ in
                     Deferred {
                         Future { completion in
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -212,7 +212,7 @@ class EffectMiddlewareTests: XCTestCase {
                                   receiveCancel: { XCTFail("should not have received cancellation") })
                 }
             case "second":
-                return Effect(token: "token2") { context in
+                return Effect(token: "token2") { _ in
                     Deferred {
                         Future { completion in
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -225,7 +225,7 @@ class EffectMiddlewareTests: XCTestCase {
                                   receiveCancel: { expectedCancellation2.fulfill() })
                 }
             case "third":
-                return Effect(token: "token3") { context in
+                return Effect(token: "token3") { _ in
                     Deferred {
                         Future { completion in
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

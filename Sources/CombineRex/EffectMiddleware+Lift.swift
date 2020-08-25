@@ -64,7 +64,7 @@ extension EffectMiddleware {
                 self.receiveContext(getState: { stateMap(getState()) }, output: output.contramap(outputActionMap))
             },
             onAction: { inputAction, dispatcher, globalState -> Effect<Dependencies, GlobalOutputActionType> in
-                return self.onAction(inputAction, dispatcher, { stateMap(globalState()) }).map(outputActionMap)
+                self.onAction(inputAction, dispatcher, { stateMap(globalState()) }).map(outputActionMap)
             }
         )
     }
@@ -93,7 +93,7 @@ extension EffectMiddleware {
                 self.receiveContext(getState: getState, output: output.contramap(outputActionMap))
             },
             onAction: { inputAction, dispatcher, state -> Effect<Dependencies, GlobalOutputActionType> in
-                return self.onAction(inputAction, dispatcher, state).map(outputActionMap)
+                self.onAction(inputAction, dispatcher, state).map(outputActionMap)
             }
         )
     }
@@ -107,12 +107,11 @@ extension EffectMiddleware {
                 self.receiveContext(getState: { stateMap(getState()) }, output: output)
             },
             onAction: { inputAction, dispatcher, globalState -> Effect<Dependencies, OutputActionType> in
-                return self.onAction(inputAction, dispatcher, { stateMap(globalState()) })
+                self.onAction(inputAction, dispatcher, { stateMap(globalState()) })
             }
         )
     }
 }
-
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware where InputActionType == OutputActionType {

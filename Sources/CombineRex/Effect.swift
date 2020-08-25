@@ -42,7 +42,7 @@ public struct Effect<Dependencies, OutputAction> {
         func map(creator: @escaping (Effect<Dependencies, OutputAction>.Context) -> AnyPublisher<DispatchedAction<OutputAction>, Never>)
         -> (Effect<Dependencies, NewOutputAction>.Context)
         -> Publishers.Map<AnyPublisher<DispatchedAction<OutputAction>, Never>, DispatchedAction<NewOutputAction>> {
-            return { newContext in
+            { newContext in
                 let oldContext = Effect<Dependencies, OutputAction>.Context(
                     dependencies: newContext.dependencies,
                     toCancel: { token in FireAndForget(newContext.toCancel(token)) }
@@ -90,14 +90,17 @@ extension Effect where Dependencies == Void {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Effect {
-    public static func fireAndForget<P: Publisher>(_ upstream: @escaping (Context) -> P) -> Effect<Dependencies, OutputAction> where P.Failure == Never {
+    public static func fireAndForget<P: Publisher>(_ upstream: @escaping (Context) -> P) -> Effect<Dependencies, OutputAction>
+    where P.Failure == Never {
         Effect { context in
             FireAndForget(upstream(context))
         }
     }
 
-    public static func fireAndForget<P: Publisher>(_ upstream: @escaping (Context) -> P, catchErrors: @escaping (P.Failure) -> DispatchedAction<OutputAction>?)
-    -> Effect<Dependencies, OutputAction> {
+    public static func fireAndForget<P: Publisher>(
+        _ upstream: @escaping (Context) -> P,
+        catchErrors: @escaping (P.Failure) -> DispatchedAction<OutputAction>?
+    ) -> Effect<Dependencies, OutputAction> {
         Effect { context in
             FireAndForget(upstream(context), catchErrors: catchErrors)
         }
@@ -126,7 +129,7 @@ extension Effect where Dependencies == Void {
     }
 
     public static func fireAndForget(_ operation: @escaping () -> Void) -> Effect<Dependencies, OutputAction> {
-        Effect { context in
+        Effect { _ in
             FireAndForget(operation)
         }
     }
@@ -161,7 +164,7 @@ extension Effect {
             Deferred<Future<DispatchedAction<OutputAction>, Never>> {
                 Future { completion in
                     perform(context) { outputAction in
-                        completion(.success(DispatchedAction.init(outputAction, dispatcher: dispatcher)))
+                        completion(.success(DispatchedAction(outputAction, dispatcher: dispatcher)))
                     }
                 }
             }
@@ -178,11 +181,11 @@ extension Effect {
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Publisher where Failure == Never {
     public func asEffect<H: Hashable>(token: H, dispatcher: ActionSource = .here()) -> Effect<Void, Output> {
-        Effect.init(token: token, effect: { _ in self.map { DispatchedAction($0, dispatcher: dispatcher) } })
+        Effect(token: token, effect: { _ in self.map { DispatchedAction($0, dispatcher: dispatcher) } })
     }
 
     public func asEffect(dispatcher: ActionSource = .here()) -> Effect<Void, Output> {
-        Effect.init(effect: { _ in self.map { DispatchedAction($0, dispatcher: dispatcher) } })
+        Effect(effect: { _ in self.map { DispatchedAction($0, dispatcher: dispatcher) } })
     }
 }
 #endif

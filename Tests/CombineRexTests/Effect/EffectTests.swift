@@ -168,7 +168,7 @@ class EffectTests: XCTestCase {
         let calledClosure = expectation(description: "should have called fire and forget error closure")
         let someError = SomeError()
         let publisher = Result<String, Error>.failure(someError).publisher.handleEvents(
-            receiveOutput: { value in
+            receiveOutput: { _ in
                 XCTFail("Success was not expected")
             },
             receiveCompletion: { completion in

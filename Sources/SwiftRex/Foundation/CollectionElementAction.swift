@@ -22,4 +22,3 @@ public struct ElementIndexAction<Index: Comparable, Action> {
         self.action = action
     }
 }
-

@@ -109,7 +109,7 @@ public struct Reducer<ActionType, StateType> {
                  an action and the old state.
      */
     public static func reduce(_ reduce: @escaping MutableReduceFunction<ActionType, StateType>) -> Reducer {
-        Reducer.init(reduce: reduce)
+        Reducer(reduce: reduce)
     }
 
     private init(reduce: @escaping MutableReduceFunction<ActionType, StateType>) {

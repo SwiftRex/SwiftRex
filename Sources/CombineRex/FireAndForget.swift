@@ -31,7 +31,7 @@ public struct FireAndForget<IgnoringOutput>: Publisher {
             .eraseToAnyPublisher()
     }
 
-    public func receive<S>(subscriber: S) where S : Subscriber, Failure == S.Failure, Output == S.Input {
+    public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
         innerPublisher.receive(subscriber: subscriber)
     }
 }
