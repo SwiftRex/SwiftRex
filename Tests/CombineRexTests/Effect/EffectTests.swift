@@ -30,6 +30,30 @@ class EffectTests: XCTestCase {
         XCTAssertEqual([.finished], completion)
     }
 
+    func testInitWithoutCancellationNoDependencies() {
+        let sut = Effect<Void, Int>([1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher)
+        var completion = [Subscribers.Completion<Never>]()
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
+        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
+        XCTAssertEqual([.finished], completion)
+    }
+
+    func testInitWithoutCancellationIgnoringDependencies() {
+        let sut: Effect<Int, Int> = Effect<Void, Int>([1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher).ignoringDependencies()
+        var completion = [Subscribers.Completion<Never>]()
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: (42), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertNil(sut.token)
+        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
+        XCTAssertEqual([.finished], completion)
+    }
+
     func testDoNothing() {
         let sut = Effect<Void, Int>.doNothing
         XCTAssertNil(sut.token)
