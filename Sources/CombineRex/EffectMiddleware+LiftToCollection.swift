@@ -15,10 +15,12 @@ extension EffectMiddleware where StateType: Identifiable {
             let getStateItem = { stateCollection(state()).first(where: { $0.id == itemAction.id }) }
             guard let itemState = getStateItem() else { return .doNothing }
 
+            let getState = { getStateItem() ?? itemState }
+
             return self.onAction(
                 itemAction.action,
                 dispatcher,
-                { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
+                getState
             ).map { (outputAction: OutputActionType) -> GlobalAction in
                 outputMap(.init(id: itemAction.id, action: outputAction))
             }
@@ -37,10 +39,12 @@ extension EffectMiddleware where StateType: Identifiable, InputActionType == Out
             let getStateItem = { state()[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) }
             guard let itemState = getStateItem() else { return .doNothing }
 
+            let getState = { getStateItem() ?? itemState }
+
             return self.onAction(
                 itemAction.action,
                 dispatcher,
-                { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
+                getState
             ).map { (outputAction: OutputActionType) -> GlobalAction in
                 var newAction = action
                 newAction[keyPath: actionMap] = .init(id: itemAction.id, action: outputAction)
@@ -82,15 +86,17 @@ extension MiddlewareReader {
                     outputMap(.init(id: itemAction.id, action: outputAction))
                 }
 
+                let getState = { getStateItem() ?? itemState }
+
                 if !hasTransferredContext {
                     hasTransferredContext = true
-                    itemMiddleware.receiveContext(getState: { getStateItem() ?? itemState }, output: output.contramap(outputContramap))
+                    itemMiddleware.receiveContext(getState: getState, output: output.contramap(outputContramap))
                 }
 
                 return itemMiddleware.onAction(
                     itemAction.action,
                     dispatcher,
-                    { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
+                    getState
                 ).map(outputContramap)
             }
         }
@@ -129,15 +135,17 @@ extension MiddlewareReader {
                     return newAction
                 }
 
+                let getState = { getStateItem() ?? itemState }
+
                 if !hasTransferredContext {
                     hasTransferredContext = true
-                    itemMiddleware.receiveContext(getState: { getStateItem() ?? itemState }, output: output.contramap(outputContramap))
+                    itemMiddleware.receiveContext(getState: getState, output: output.contramap(outputContramap))
                 }
 
                 return itemMiddleware.onAction(
                     itemAction.action,
                     dispatcher,
-                    { getStateItem() ?? itemState } // swiftlint:disable:this opening_brace
+                    getState
                 ).map(outputContramap)
             }
         }

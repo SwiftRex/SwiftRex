@@ -43,7 +43,9 @@ class EffectTests: XCTestCase {
     }
 
     func testInitWithoutCancellationIgnoringDependencies() {
-        let sut: Effect<Int, Int> = Effect<Void, Int>([1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher).ignoringDependencies()
+        let sut: Effect<Int, Int> = Effect<Void, Int>(
+            [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher
+        ).ignoringDependencies()
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
         _ = sut
