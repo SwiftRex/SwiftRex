@@ -92,7 +92,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 /// ```
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
-    private var cancellables = [AnyHashable: AnyCancellable]()
+    private var cancellables = [Int: AnyCancellable]()
     private var cancellableButNotViaToken = Set<AnyCancellable>()
     private var getState: GetState<StateType>?
     private var output: AnyActionHandler<OutputActionType>?
@@ -131,12 +131,12 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
 
         let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
             .init { [weak self] in
-                self?.cancellables.removeValue(forKey: cancellingToken)
+                self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
             }
         }
 
         if let token = effect.token {
-            self.cancellables[token] =
+            self.cancellables[token.hashValue] =
                 effect.run((dependencies: self.dependencies, toCancel: toCancel))?
                 .sink { output.dispatch($0.action, from: $0.dispatcher) }
         } else {

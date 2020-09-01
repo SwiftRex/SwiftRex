@@ -94,7 +94,7 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
     public typealias OutputActionType = OutputAction
     public typealias StateType = State
 
-    private var cancellables = [AnyHashable: Lifetime.Token]()
+    private var cancellables = [Int: Lifetime.Token]()
     private var cancellableButNotViaToken = CompositeDisposable()
     private var onAction: (InputActionType, StateType, Context) -> Effect<OutputActionType>
     private var dependencies: Dependencies
@@ -125,7 +125,7 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
             guard let self = self else { return }
             guard let state = self.getState?() else { return }
             let context = Context(dispatcher: dispatcher, dependencies: self.dependencies) { [weak self] cancellingToken in
-                self?.cancellables.removeValue(forKey: cancellingToken)
+                self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
             }
             let effect = self.onAction(action, state, context)
             self.run(effect: effect)
@@ -161,7 +161,7 @@ extension EffectMiddleware {
         if let token = effect.cancellationToken {
             let (lifetime, lifetimeToken) = Lifetime.make()
             lifetime += subscription
-            cancellables[token] = lifetimeToken
+            cancellables[token.hashValue] = lifetimeToken
         } else {
             cancellableButNotViaToken += subscription
         }

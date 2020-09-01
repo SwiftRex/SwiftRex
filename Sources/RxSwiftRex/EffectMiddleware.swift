@@ -94,7 +94,7 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
     public typealias OutputActionType = OutputAction
     public typealias StateType = State
 
-    private var cancellables = [AnyHashable: DisposeBag]()
+    private var cancellables = [Int: DisposeBag]()
     private var cancellableButNotViaToken = DisposeBag()
     private var onAction: (InputActionType, StateType, Context) -> Effect<OutputActionType>
     private var dependencies: Dependencies
@@ -125,7 +125,7 @@ public final class EffectMiddleware<InputAction, OutputAction, State, Dependenci
             guard let self = self else { return }
             guard let state = self.getState?() else { return }
             let context = Context(dispatcher: dispatcher, dependencies: self.dependencies) { [weak self] cancellingToken in
-                self?.cancellables.removeValue(forKey: cancellingToken)
+                self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
             }
             let effect = self.onAction(action, state, context)
             self.run(effect: effect)
@@ -159,7 +159,7 @@ extension EffectMiddleware {
             .subscribe(onNext: { [weak self] in self?.output?.dispatch($0) })
 
         if let token = effect.cancellationToken {
-            cancellables[token] = DisposeBag(disposing: subscription)
+            cancellables[token.hashValue] = DisposeBag(disposing: subscription)
         } else {
             subscription.disposed(by: cancellableButNotViaToken)
         }
