@@ -140,4 +140,23 @@ class ReduxPipelineWrapperTests: XCTestCase {
         XCTAssertEqual(reducedState, stateSubjectMock.currentValue)
         XCTAssertNotEqual(initialState, stateSubjectMock.currentValue)
     }
+
+    func testMiddlewareShouldNotLeak() {
+        weak var middlewareRef: IsoMiddlewareMock<AppAction, TestState>?
+
+        autoreleasepool {
+            let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
+            middlewareRef = middlewareMock
+
+            let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
+            let reducerMock = createReducerMock()
+            _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
+                state: stateSubjectMock.subject,
+                reducer: reducerMock.0,
+                middleware: middlewareMock
+            )
+        }
+
+        XCTAssertTrue(middlewareRef == nil, "middleware should be freed")
+    }
 }
