@@ -1,8 +1,7 @@
 import Foundation
 
 public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
-    where MiddlewareType.InputActionType == MiddlewareType.OutputActionType
-{
+where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
     public typealias ActionType = MiddlewareType.InputActionType
     public typealias StateType = MiddlewareType.StateType
 
@@ -20,11 +19,11 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
     public init(
         state: UnfailableReplayLastSubjectType<StateType>,
         reducer: Reducer<ActionType, StateType>,
-        middleware m: MiddlewareType,
+        middleware: MiddlewareType,
         emitsValue: ShouldEmitValue<StateType>
     ) {
         DispatchQueue.setMainQueueID()
-        let middlewareWrapper = MiddlewareWrapper(middleware: m)
+        let middlewareWrapper = MiddlewareWrapper(middleware: middleware)
         self.middleware = middlewareWrapper
 
         let onAction: (ActionType, ActionSource) -> Void = { [weak middlewareWrapper] action, dispatcher in
