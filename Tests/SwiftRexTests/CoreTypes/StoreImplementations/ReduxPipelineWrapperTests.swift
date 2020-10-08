@@ -42,7 +42,10 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
         let reducerMock = createReducerMock()
         reducerMock.1.reduceClosure = { _, state in state }
-        _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
+
+        // we have to hold the wrapper here
+        // otherwise middleware will be freed immediately and fail the test
+        let wrapperHolder = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: stateSubjectMock.subject,
             reducer: reducerMock.0,
             middleware: middlewareMock)
@@ -139,5 +142,24 @@ class ReduxPipelineWrapperTests: XCTestCase {
         wait(for: [shouldCallReducerActionHandler], timeout: 0.1)
         XCTAssertEqual(reducedState, stateSubjectMock.currentValue)
         XCTAssertNotEqual(initialState, stateSubjectMock.currentValue)
+    }
+
+    func testMiddlewareShouldNotLeak() {
+        weak var middlewareRef: IsoMiddlewareMock<AppAction, TestState>?
+
+        autoreleasepool {
+            let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
+            middlewareRef = middlewareMock
+
+            let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
+            let reducerMock = createReducerMock()
+            _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
+                state: stateSubjectMock.subject,
+                reducer: reducerMock.0,
+                middleware: middlewareMock
+            )
+        }
+
+        XCTAssertTrue(middlewareRef == nil, "middleware should be freed")
     }
 }

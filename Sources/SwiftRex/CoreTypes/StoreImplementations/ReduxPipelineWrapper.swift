@@ -1,23 +1,35 @@
 import Foundation
 
 public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
-    where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
+    where MiddlewareType.InputActionType == MiddlewareType.OutputActionType
+{
     public typealias ActionType = MiddlewareType.InputActionType
     public typealias StateType = MiddlewareType.StateType
 
     private var onAction: (ActionType, ActionSource) -> Void
+    private let middleware: MiddlewareWrapper
+
+    private class MiddlewareWrapper {
+        let middleware: MiddlewareType
+
+        init(middleware: MiddlewareType) {
+            self.middleware = middleware
+        }
+    }
 
     public init(
         state: UnfailableReplayLastSubjectType<StateType>,
         reducer: Reducer<ActionType, StateType>,
-        middleware: MiddlewareType,
+        middleware m: MiddlewareType,
         emitsValue: ShouldEmitValue<StateType>
     ) {
         DispatchQueue.setMainQueueID()
+        let middlewareWrapper = MiddlewareWrapper(middleware: m)
+        self.middleware = middlewareWrapper
 
-        let onAction: (ActionType, ActionSource) -> Void = { action, dispatcher in
+        let onAction: (ActionType, ActionSource) -> Void = { [weak middlewareWrapper] action, dispatcher in
             var afterReducer: AfterReducer = .doNothing()
-            middleware.handle(action: action, from: dispatcher, afterReducer: &afterReducer)
+            middlewareWrapper?.middleware.handle(action: action, from: dispatcher, afterReducer: &afterReducer)
 
             state.mutate(
                 when: { $0 },
@@ -41,7 +53,7 @@ public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
             afterReducer.reducerIsDone()
         }
 
-        middleware.receiveContext(
+        middlewareWrapper.middleware.receiveContext(
             getState: { state.value() },
             output: .init { action, dispatcher in
                 DispatchQueue.main.async {
