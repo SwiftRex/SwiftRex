@@ -46,8 +46,16 @@ open class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObje
     where S: StoreType, S.ActionType == ViewAction, S.StateType == ViewState {
         self.state = initialState
         self.store = store.eraseToAnyStoreType()
-        self.statePublisher = store.statePublisher.removeDuplicates(by: emitsValue.shouldRemove).asPublisherType()
-        self.cancellableBinding = statePublisher.assign(to: \.state, on: self)
+        self.statePublisher = store
+            .statePublisher
+            .removeDuplicates(by: emitsValue.shouldRemove)
+            .asPublisherType()
+        self.cancellableBinding =
+            self.statePublisher.sink(
+                receiveValue: { [weak self] value in
+                    self?.state = value
+                }
+            )
     }
 
     open func dispatch(_ action: ViewAction, from dispatcher: ActionSource) {
