@@ -192,6 +192,28 @@ class ObservableViewModelTests: XCTestCase {
         XCTAssertNotNil(subscription)
     }
 
+    func testObservableViewModelShouldNotLeak() {
+        weak var obVMWeakRef: ObservableViewModel<String, String>?
+        weak var storeWeakRef: ReduxStoreBase<String, String>?
+
+        autoreleasepool {
+            let store = ReduxStoreBase(
+                subject: .combine(initialValue: ""),
+                reducer: Reducer<String, String>.identity,
+                middleware: IdentityMiddleware<String, String, String>(),
+                emitsValue: .whenDifferent
+            )
+            storeWeakRef = store
+
+            let obVMStrongRef = store.asObservableViewModel(initialState: "")
+            obVMWeakRef = obVMStrongRef
+            XCTAssertNotNil(obVMWeakRef)
+        }
+
+        XCTAssertNil(storeWeakRef)
+        XCTAssertNil(obVMWeakRef, "middleware should be freed")
+    }
+
 //    func testWillChangePublisherCanHaveMultipleSubscriptions() {
 //        let shouldBeNotifiedByWillChangePublisher3 = expectation(description: "should be notified by will change publisher 1")
 //        let shouldBeNotifiedByWillChangePublisher4 = expectation(description: "should be notified by will change publisher 2")
