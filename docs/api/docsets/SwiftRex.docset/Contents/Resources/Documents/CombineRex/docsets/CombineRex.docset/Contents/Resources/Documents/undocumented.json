@@ -16,21 +16,21 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
-      "line": 60,
+      "line": 68,
       "symbol": "ObservableViewModel.init(initialState:store:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
-      "line": 72,
+      "line": 80,
       "symbol": "StoreType.asObservableViewModel(initialState:emitsValue:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/ObservableViewModel.swift",
-      "line": 82,
+      "line": 90,
       "symbol": "StoreType.asObservableViewModel(initialState:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
