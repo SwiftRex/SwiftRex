@@ -730,7 +730,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.5")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.6")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRex", package: "SwiftRex")])
@@ -751,7 +751,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.5")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.6")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "RxSwiftRex", package: "SwiftRex")])
@@ -772,7 +772,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.5")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.6")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "ReactiveSwiftRex", package: "SwiftRex")])
@@ -793,7 +793,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.5")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.6")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRexDynamic", package: "SwiftRex")])

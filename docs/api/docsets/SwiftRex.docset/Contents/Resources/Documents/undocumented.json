@@ -135,21 +135,21 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/StoreImplementations/ReduxPipelineWrapper.swift",
-      "line": 10,
+      "line": 19,
       "symbol": "ReduxPipelineWrapper.init(state:reducer:middleware:emitsValue:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/StoreImplementations/ReduxPipelineWrapper.swift",
-      "line": 54,
+      "line": 65,
       "symbol": "ReduxPipelineWrapper",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/StoreImplementations/ReduxPipelineWrapper.swift",
-      "line": 55,
+      "line": 66,
       "symbol": "ReduxPipelineWrapper.init(state:reducer:middleware:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
