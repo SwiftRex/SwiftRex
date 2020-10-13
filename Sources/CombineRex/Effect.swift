@@ -137,27 +137,57 @@ extension Effect where Dependencies == Void {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Effect {
-    public static func just(_ value: OutputAction, from dispatcher: ActionSource = .here()) -> Effect {
+    public static func just(_ value: OutputAction, from dispatcher: ActionSource) -> Effect {
         Effect { _ in
             Just(DispatchedAction(value, dispatcher: dispatcher))
         }
     }
 
-    public static func sequence(_ values: OutputAction..., from dispatcher: ActionSource = .here()) -> Effect {
+    public static func just(
+        _ value: OutputAction,
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        info: String? = nil
+    ) -> Effect {
+        just(value, from: ActionSource(file: file, function: function, line: line, info: info))
+    }
+
+    public static func sequence(_ values: OutputAction..., from dispatcher: ActionSource) -> Effect {
         Effect { _ in
             values.publisher.map { DispatchedAction($0, dispatcher: dispatcher) }
         }
     }
 
-    public static func sequence(_ values: [OutputAction], from dispatcher: ActionSource = .here()) -> Effect {
+    public static func sequence(
+        _ values: OutputAction...,
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        info: String? = nil
+    ) -> Effect {
+        sequence(values, from: ActionSource(file: file, function: function, line: line, info: info))
+    }
+
+    public static func sequence(_ values: [OutputAction], from dispatcher: ActionSource) -> Effect {
         Effect { _ in
             values.publisher.map { DispatchedAction($0, dispatcher: dispatcher) }
         }
+    }
+
+    public static func sequence(
+        _ values: [OutputAction],
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        info: String? = nil
+    ) -> Effect {
+        sequence(values, from: ActionSource(file: file, function: function, line: line, info: info))
     }
 
     public static func promise<H: Hashable>(
         token: H,
-        from dispatcher: ActionSource = .here(),
+        from dispatcher: ActionSource,
         perform: @escaping (Context, (OutputAction) -> Void) -> Void
     ) -> Effect {
         Effect<Dependencies, OutputAction> { context in
@@ -171,6 +201,19 @@ extension Effect {
         }
     }
 
+    public static func promise<H: Hashable>(
+        token: H,
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        info: String? = nil,
+        perform: @escaping (Context, (OutputAction) -> Void) -> Void
+    ) -> Effect {
+        promise(token: token,
+                from: ActionSource(file: file, function: function, line: line, info: info),
+                perform: perform)
+    }
+
     public static func toCancel<H: Hashable>(_ token: H) -> Effect {
         Effect<Dependencies, OutputAction> { context in
             context.toCancel(token)
@@ -180,12 +223,31 @@ extension Effect {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Publisher where Failure == Never {
-    public func asEffect<H: Hashable>(token: H, dispatcher: ActionSource = .here()) -> Effect<Void, Output> {
+    public func asEffect<H: Hashable>(token: H, dispatcher: ActionSource) -> Effect<Void, Output> {
         Effect(token: token, effect: { _ in self.map { DispatchedAction($0, dispatcher: dispatcher) } })
     }
 
-    public func asEffect(dispatcher: ActionSource = .here()) -> Effect<Void, Output> {
+    public func asEffect<H: Hashable>(
+        token: H,
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        info: String? = nil
+    ) -> Effect<Void, Output> {
+        asEffect(token: token, dispatcher: ActionSource(file: file, function: function, line: line, info: info))
+    }
+
+    public func asEffect(dispatcher: ActionSource) -> Effect<Void, Output> {
         Effect(effect: { _ in self.map { DispatchedAction($0, dispatcher: dispatcher) } })
+    }
+
+    public func asEffect(
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        info: String? = nil
+    ) -> Effect<Void, Output> {
+        asEffect(dispatcher: ActionSource(file: file, function: function, line: line, info: info))
     }
 }
 #endif
