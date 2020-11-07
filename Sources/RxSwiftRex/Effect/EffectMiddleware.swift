@@ -1,14 +1,11 @@
-#if canImport(Combine)
-import Combine
 import Foundation
+import RxSwift
 import SwiftRex
 
 /// An `EffectMiddleware` with no dependencies (Void) and having Input and Output Actions as the same type (`SymmetricalEffectMiddleware`).
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias SimpleEffectMiddleware<Action, State> = EffectMiddleware<Action, Action, State, Void>
 
 /// An `EffectMiddleware` having Input and Output Actions as the same type.
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = EffectMiddleware<Action, Action, State, Dependencies>
 
 /// Easiest way to implement a `Middleware`, with a single function that gives you all you need, and from which you can return an `Effect`.
@@ -41,6 +38,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///       DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
 ///         completion(ApiResponseAction.someResponse("42"))
 ///       }
+///       return Disposables.create() // Or a way to cancel the ongoing task
 ///     }
 ///   case .somethingIDontCare:
 ///     return .doNothing
@@ -90,10 +88,9 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///     }
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
-    private var cancellables = [Int: AnyCancellable]()
-    private var cancellableButNotViaToken = Set<AnyCancellable>()
+    private var cancellables = [Int: DisposeBag]()
+    private var cancellableButNotViaToken = DisposeBag()
     private var getState: GetState<StateType>?
     private var output: AnyActionHandler<OutputActionType>?
     fileprivate let onReceiveContext: (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void
@@ -135,19 +132,17 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
             }
         }
 
+        let subscription = effect.run((dependencies: self.dependencies, toCancel: toCancel))?
+            .subscribe(onNext: { output.dispatch($0.action, from: $0.dispatcher) })
+
         if let token = effect.token {
-            self.cancellables[token.hashValue] =
-                effect.run((dependencies: self.dependencies, toCancel: toCancel))?
-                .sink { output.dispatch($0.action, from: $0.dispatcher) }
+            cancellables[token.hashValue] = subscription.map { DisposeBag(disposing: $0) } ?? DisposeBag()
         } else {
-            effect.run((dependencies: self.dependencies, toCancel: toCancel))?
-                .sink { output.dispatch($0.action, from: $0.dispatcher) }
-                .store(in: &self.cancellableButNotViaToken)
+            subscription?.disposed(by: cancellableButNotViaToken)
         }
     }
 }
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware {
     public static func onAction(
         do onAction: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
@@ -158,7 +153,6 @@ extension EffectMiddleware {
     }
 }
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware where Dependencies == Void {
     public static func onAction(
         do onAction: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
@@ -167,7 +161,6 @@ extension EffectMiddleware where Dependencies == Void {
     }
 }
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware: Semigroup {
     public static func <> (lhs: EffectMiddleware, rhs: EffectMiddleware) -> EffectMiddleware {
         EffectMiddleware(
@@ -199,11 +192,8 @@ extension EffectMiddleware: Semigroup {
     }
 }
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware: Monoid where Dependencies == Void {
     public static var identity: EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies> {
         Self.onAction { _, _, _ in .doNothing }
     }
 }
-
-#endif

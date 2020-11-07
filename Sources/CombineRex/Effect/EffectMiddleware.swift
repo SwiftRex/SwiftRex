@@ -1,11 +1,14 @@
+#if canImport(Combine)
+import Combine
 import Foundation
-import RxSwift
 import SwiftRex
 
 /// An `EffectMiddleware` with no dependencies (Void) and having Input and Output Actions as the same type (`SymmetricalEffectMiddleware`).
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias SimpleEffectMiddleware<Action, State> = EffectMiddleware<Action, Action, State, Void>
 
 /// An `EffectMiddleware` having Input and Output Actions as the same type.
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = EffectMiddleware<Action, Action, State, Dependencies>
 
 /// Easiest way to implement a `Middleware`, with a single function that gives you all you need, and from which you can return an `Effect`.
@@ -38,7 +41,6 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///       DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
 ///         completion(ApiResponseAction.someResponse("42"))
 ///       }
-///       return Disposables.create() // Or a way to cancel the ongoing task
 ///     }
 ///   case .somethingIDontCare:
 ///     return .doNothing
@@ -84,144 +86,123 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///         .asEffect(cancellationToken: "image-for-user-\(userId)") // this will automatically cancel any pending download for the same image
 ///                                                                  // using the URL would also be possible
 ///     case let .cancelImageDownload(userId):
-///       context.toCancel("image-for-user-\(userId)")               // alternatively you can explicitly cancel tasks by token
-///       return .doNothing
+///       return context.toCancel("image-for-user-\(userId)")        // alternatively you can explicitly cancel tasks by token
 ///     }
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
-public final class EffectMiddleware<InputAction, OutputAction, State, Dependencies>: Middleware {
-    public typealias InputActionType = InputAction
-    public typealias OutputActionType = OutputAction
-    public typealias StateType = State
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
+    private var cancellables = [Int: AnyCancellable]()
+    private var cancellableButNotViaToken = Set<AnyCancellable>()
+    private var getState: GetState<StateType>?
+    private var output: AnyActionHandler<OutputActionType>?
+    fileprivate let onReceiveContext: (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void
+    let onAction: (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
+    let dependencies: Dependencies
 
-    private var cancellables = [Int: DisposeBag]()
-    private var cancellableButNotViaToken = DisposeBag()
-    private var onAction: (InputActionType, StateType, Context) -> Effect<OutputActionType>
-    private var dependencies: Dependencies
-
-    public struct Context {
-        public let dispatcher: ActionSource
-        public let dependencies: Dependencies
-        public let toCancel: (AnyHashable) -> Void
-    }
-
-    private init(
+    init(
         dependencies: Dependencies,
-        handle: @escaping (InputActionType, StateType, Context) -> Effect<OutputActionType>
+        onReceiveContext: @escaping (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void,
+        onAction handle: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
     ) {
         self.dependencies = dependencies
+        self.onReceiveContext = onReceiveContext
         self.onAction = handle
     }
 
-    private var getState: GetState<StateType>?
-    private var output: AnyActionHandler<OutputActionType>?
     public func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
         self.getState = getState
         self.output = output
+        self.onReceiveContext(getState, output)
     }
 
     public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
         afterReducer = .do { [weak self] in
-            guard let self = self else { return }
-            guard let state = self.getState?() else { return }
-            let context = Context(dispatcher: dispatcher, dependencies: self.dependencies) { [weak self] cancellingToken in
+            guard let self = self, let getState = self.getState else { return }
+
+            let effect = self.onAction(action, dispatcher, getState)
+            self.runOptionalEffect(effect)
+        }
+    }
+
+    func runOptionalEffect(_ effect: Effect<Dependencies, OutputActionType>) {
+        guard let output = self.output,
+              effect.doesSomething else { return }
+
+        let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
+            .init { [weak self] in
                 self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
             }
-            let effect = self.onAction(action, state, context)
-            self.run(effect: effect)
+        }
+
+        let subscription = effect.run((dependencies: self.dependencies, toCancel: toCancel))?
+            .sink { output.dispatch($0.action, from: $0.dispatcher) }
+
+        if let token = effect.token {
+            self.cancellables[token.hashValue] = subscription
+        } else {
+            subscription?.store(in: &self.cancellableButNotViaToken)
         }
     }
 }
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware {
     public static func onAction(
-        do handler: @escaping (InputActionType, StateType, Context) -> Effect<OutputActionType>
+        do onAction: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
     ) -> MiddlewareReader<Dependencies, EffectMiddleware> {
         MiddlewareReader { dependencies in
-            EffectMiddleware(dependencies: dependencies, handle: handler)
+            EffectMiddleware(dependencies: dependencies, onReceiveContext: { _, _ in }, onAction: onAction)
         }
     }
 }
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware where Dependencies == Void {
     public static func onAction(
-        do handler: @escaping (InputActionType, StateType, Context) -> Effect<OutputActionType>
+        do onAction: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
     ) -> EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies> {
-        EffectMiddleware(dependencies: ()) { action, state, context in
-            handler(action, state, context)
-        }
+        EffectMiddleware(dependencies: (), onReceiveContext: { _, _ in }, onAction: onAction)
     }
 }
 
-extension EffectMiddleware {
-    private func run(effect: Effect<OutputAction>) {
-        let subscription = effect
-            .subscribe(onNext: { [weak self] in self?.output?.dispatch($0) })
-
-        if let token = effect.cancellationToken {
-            cancellables[token.hashValue] = DisposeBag(disposing: subscription)
-        } else {
-            subscription.disposed(by: cancellableButNotViaToken)
-        }
-    }
-}
-
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension EffectMiddleware: Semigroup {
     public static func <> (lhs: EffectMiddleware, rhs: EffectMiddleware) -> EffectMiddleware {
-        Self.onAction { action, state, context -> Effect<OutputActionType> in
-            let leftEffect = lhs.onAction(
-                action,
-                state,
-                Context(
-                    dispatcher: context.dispatcher,
-                    dependencies: lhs.dependencies,
-                    toCancel: context.toCancel
+        EffectMiddleware(
+            dependencies: lhs.dependencies,
+            onReceiveContext: { getState, output in
+                lhs.receiveContext(getState: getState, output: output)
+                rhs.receiveContext(getState: getState, output: output)
+            },
+            onAction: { action, dispatcher, getState in
+                let leftEffect: Effect<Dependencies, OutputActionType> = lhs.onAction(
+                    action,
+                    dispatcher,
+                    getState
                 )
-            )
-            let rightEffect = rhs.onAction(
-                action,
-                state,
-                Context(
-                    dispatcher: context.dispatcher,
-                    dependencies: rhs.dependencies,
-                    toCancel: context.toCancel
+
+                lhs.runOptionalEffect(leftEffect)
+
+                let rightEffect: Effect<Dependencies, OutputActionType> = rhs.onAction(
+                    action,
+                    dispatcher,
+                    getState
                 )
-            )
-            return Observable.merge(leftEffect.asObservable(), rightEffect.asObservable()).asEffect
-            // TODO: Fix cancellation on merge. The merged Publisher has no cancellation token, and once the publishers are merge they can't be
-            // cancelled individually anyway. So each effect should run in the context of the own EffectMiddleware, not in the context of composed
-            // middleware. To write a test for that.
-            // https://github.com/SwiftRex/SwiftRex/issues/62
-        }.inject(lhs.dependencies)
-    }
-}
 
-extension EffectMiddleware: Monoid where Dependencies == Void {
-    public static var identity: EffectMiddleware<InputAction, OutputAction, State, Dependencies> {
-        Self.onAction { _, _, _ in .doNothing }
-    }
-}
+                rhs.runOptionalEffect(rightEffect)
 
-extension EffectMiddleware {
-    public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        state stateMap: @escaping (GlobalStateType) -> StateType
-    ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies> {
-        EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies>(
-            dependencies: self.dependencies,
-            handle: { globalInputAction, globalState, globalContext -> Effect<GlobalOutputActionType> in
-                guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    stateMap(globalState),
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
-                    )
-                ).map(outputActionMap).asEffect
+                return .doNothing
             }
         )
     }
 }
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension EffectMiddleware: Monoid where Dependencies == Void {
+    public static var identity: EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies> {
+        Self.onAction { _, _, _ in .doNothing }
+    }
+}
+
+#endif
