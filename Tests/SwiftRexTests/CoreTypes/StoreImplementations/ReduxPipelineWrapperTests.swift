@@ -68,6 +68,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         }
 
         wait(for: [shouldCallMiddlewareActionHandler], timeout: 0.1)
+        _ = wrapperHolder
     }
 
     func testMiddlewareGetStateIsSetCorrectly() {

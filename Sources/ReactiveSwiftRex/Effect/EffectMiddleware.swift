@@ -84,81 +84,58 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///         .asEffect(cancellationToken: "image-for-user-\(userId)") // this will automatically cancel any pending download for the same image
 ///                                                                  // using the URL would also be possible
 ///     case let .cancelImageDownload(userId):
-///       context.toCancel("image-for-user-\(userId)")               // alternatively you can explicitly cancel tasks by token
-///       return .doNothing
+///       return context.toCancel("image-for-user-\(userId)")        // alternatively you can explicitly cancel tasks by token
 ///     }
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
-public final class EffectMiddleware<InputAction, OutputAction, State, Dependencies>: Middleware {
-    public typealias InputActionType = InputAction
-    public typealias OutputActionType = OutputAction
-    public typealias StateType = State
-
+public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
     private var cancellables = [Int: Lifetime.Token]()
     private var cancellableButNotViaToken = CompositeDisposable()
-    private var onAction: (InputActionType, StateType, Context) -> Effect<OutputActionType>
-    private var dependencies: Dependencies
+    private var getState: GetState<StateType>?
+    private var output: AnyActionHandler<OutputActionType>?
+    fileprivate let onReceiveContext: (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void
+    let onAction: (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
+    let dependencies: Dependencies
 
-    public struct Context {
-        public let dispatcher: ActionSource
-        public let dependencies: Dependencies
-        public let toCancel: (AnyHashable) -> Void
-    }
-
-    private init(
+    init(
         dependencies: Dependencies,
-        handle: @escaping (InputActionType, StateType, Context) -> Effect<OutputActionType>
+        onReceiveContext: @escaping (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void,
+        onAction handle: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
     ) {
         self.dependencies = dependencies
+        self.onReceiveContext = onReceiveContext
         self.onAction = handle
     }
 
-    private var getState: GetState<StateType>?
-    private var output: AnyActionHandler<OutputActionType>?
     public func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
         self.getState = getState
         self.output = output
+        self.onReceiveContext(getState, output)
     }
 
     public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
         afterReducer = .do { [weak self] in
-            guard let self = self else { return }
-            guard let state = self.getState?() else { return }
-            let context = Context(dispatcher: dispatcher, dependencies: self.dependencies) { [weak self] cancellingToken in
+            guard let self = self, let getState = self.getState else { return }
+
+            let effect = self.onAction(action, dispatcher, getState)
+            self.runOptionalEffect(effect)
+        }
+    }
+
+    func runOptionalEffect(_ effect: Effect<Dependencies, OutputActionType>) {
+        guard let output = self.output,
+              effect.doesSomething else { return }
+
+        let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
+            .init { [weak self] in
                 self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
             }
-            let effect = self.onAction(action, state, context)
-            self.run(effect: effect)
         }
-    }
-}
 
-extension EffectMiddleware {
-    public static func onAction(
-        do handler: @escaping (InputActionType, StateType, Context) -> Effect<OutputActionType>
-    ) -> MiddlewareReader<Dependencies, EffectMiddleware> {
-        MiddlewareReader { dependencies in
-            EffectMiddleware(dependencies: dependencies, handle: handler)
-        }
-    }
-}
+        let subscription = effect.run((dependencies: self.dependencies, toCancel: toCancel))?
+            .producer.startWithValues { output.dispatch($0.action, from: $0.dispatcher) }
 
-extension EffectMiddleware where Dependencies == Void {
-    public static func onAction(
-        do handler: @escaping (InputActionType, StateType, Context) -> Effect<OutputActionType>
-    ) -> EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies> {
-        EffectMiddleware(dependencies: ()) { action, state, context in
-            handler(action, state, context)
-        }
-    }
-}
-
-extension EffectMiddleware {
-    private func run(effect: Effect<OutputAction>) {
-        let subscription = effect
-            .producer.startWithValues { [weak self] in self?.output?.dispatch($0) }
-
-        if let token = effect.cancellationToken {
+        if let token = effect.token {
             let (lifetime, lifetimeToken) = Lifetime.make()
             lifetime += subscription
             cancellables[token.hashValue] = lifetimeToken
@@ -168,62 +145,57 @@ extension EffectMiddleware {
     }
 }
 
+extension EffectMiddleware {
+    public static func onAction(
+        do onAction: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
+    ) -> MiddlewareReader<Dependencies, EffectMiddleware> {
+        MiddlewareReader { dependencies in
+            EffectMiddleware(dependencies: dependencies, onReceiveContext: { _, _ in }, onAction: onAction)
+        }
+    }
+}
+
+extension EffectMiddleware where Dependencies == Void {
+    public static func onAction(
+        do onAction: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
+    ) -> EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies> {
+        EffectMiddleware(dependencies: (), onReceiveContext: { _, _ in }, onAction: onAction)
+    }
+}
+
 extension EffectMiddleware: Semigroup {
     public static func <> (lhs: EffectMiddleware, rhs: EffectMiddleware) -> EffectMiddleware {
-        Self.onAction { action, state, context -> Effect<OutputActionType> in
-            let leftEffect = lhs.onAction(
-                action,
-                state,
-                Context(
-                    dispatcher: context.dispatcher,
-                    dependencies: lhs.dependencies,
-                    toCancel: context.toCancel
+        EffectMiddleware(
+            dependencies: lhs.dependencies,
+            onReceiveContext: { getState, output in
+                lhs.receiveContext(getState: getState, output: output)
+                rhs.receiveContext(getState: getState, output: output)
+            },
+            onAction: { action, dispatcher, getState in
+                let leftEffect: Effect<Dependencies, OutputActionType> = lhs.onAction(
+                    action,
+                    dispatcher,
+                    getState
                 )
-            )
-            let rightEffect = rhs.onAction(
-                action,
-                state,
-                Context(
-                    dispatcher: context.dispatcher,
-                    dependencies: rhs.dependencies,
-                    toCancel: context.toCancel
+
+                lhs.runOptionalEffect(leftEffect)
+
+                let rightEffect: Effect<Dependencies, OutputActionType> = rhs.onAction(
+                    action,
+                    dispatcher,
+                    getState
                 )
-            )
-            // TODO: Fix cancellation on merge. The merged Publisher has no cancellation token, and once the publishers are merge they can't be
-            // cancelled individually anyway. So each effect should run in the context of the own EffectMiddleware, not in the context of composed
-            // middleware. To write a test for that.
-            // https://github.com/SwiftRex/SwiftRex/issues/62
-            return leftEffect.producer.merge(with: rightEffect.producer).asEffect
-        }.inject(lhs.dependencies)
+
+                rhs.runOptionalEffect(rightEffect)
+
+                return .doNothing
+            }
+        )
     }
 }
 
 extension EffectMiddleware: Monoid where Dependencies == Void {
-    public static var identity: EffectMiddleware<InputAction, OutputAction, State, Dependencies> {
+    public static var identity: EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies> {
         Self.onAction { _, _, _ in .doNothing }
-    }
-}
-
-extension EffectMiddleware {
-    public func lift<GlobalInputActionType, GlobalOutputActionType, GlobalStateType>(
-        inputAction inputActionMap: @escaping (GlobalInputActionType) -> InputActionType?,
-        outputAction outputActionMap: @escaping (OutputActionType) -> GlobalOutputActionType,
-        state stateMap: @escaping (GlobalStateType) -> StateType
-    ) -> EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies> {
-        EffectMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Dependencies>(
-            dependencies: self.dependencies,
-            handle: { globalInputAction, globalState, globalContext -> Effect<GlobalOutputActionType> in
-                guard let localInputAction = inputActionMap(globalInputAction) else { return .doNothing }
-                return self.onAction(
-                    localInputAction,
-                    stateMap(globalState),
-                    Context(
-                        dispatcher: globalContext.dispatcher,
-                        dependencies: globalContext.dependencies,
-                        toCancel: globalContext.toCancel
-                    )
-                ).producer.map(outputActionMap).asEffect
-            }
-        )
     }
 }
