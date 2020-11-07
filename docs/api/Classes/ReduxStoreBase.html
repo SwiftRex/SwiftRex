@@ -14,7 +14,7 @@
     <a title="ReduxStoreBase Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.7.4 Docs</a> (78% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -62,6 +62,14 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
             </ul>
           </li>
@@ -144,7 +152,13 @@
                 <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/DispatchedAction.html">DispatchedAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ElementIndexAction.html">ElementIndexAction</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
@@ -168,9 +182,6 @@
                 <a href="../Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -183,6 +194,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
@@ -359,9 +373,9 @@ a derived view store).</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex14ReduxStoreBaseC7subject7reducer10middleware10emitsValueACyxq_GAA21ReplayLastSubjectTypeVyq_s5NeverOG_AA7ReducerVyxq_Gqd__AA010ShouldEmitJ0Vyq_Gtc011InputActionN0Qyd__Rsz05StateN0Qyd__Rs_AA10MiddlewareRd__06OutputtN0Qyd__AURSlufc"></a>
+                    <a name="/s:8SwiftRex14ReduxStoreBaseC7subject7reducer10middleware10emitsValueACyxq_GAA21ReplayLastSubjectTypeVyq_s5NeverOG_AA7ReducerVyxq_Gqd__AA010ShouldEmitJ0Oyq_Gtc011InputActionN0Qyd__Rsz05StateN0Qyd__Rs_AA10MiddlewareRd__06OutputtN0Qyd__AURSlufc"></a>
                     <a name="//apple_ref/swift/Method/init(subject:reducer:middleware:emitsValue:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex14ReduxStoreBaseC7subject7reducer10middleware10emitsValueACyxq_GAA21ReplayLastSubjectTypeVyq_s5NeverOG_AA7ReducerVyxq_Gqd__AA010ShouldEmitJ0Vyq_Gtc011InputActionN0Qyd__Rsz05StateN0Qyd__Rs_AA10MiddlewareRd__06OutputtN0Qyd__AURSlufc">init(subject:<wbr>reducer:<wbr>middleware:<wbr>emitsValue:<wbr>)</a>
+                    <a class="token" href="#/s:8SwiftRex14ReduxStoreBaseC7subject7reducer10middleware10emitsValueACyxq_GAA21ReplayLastSubjectTypeVyq_s5NeverOG_AA7ReducerVyxq_Gqd__AA010ShouldEmitJ0Oyq_Gtc011InputActionN0Qyd__Rsz05StateN0Qyd__Rs_AA10MiddlewareRd__06OutputtN0Qyd__AURSlufc">init(subject:<wbr>reducer:<wbr>middleware:<wbr>emitsValue:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -380,7 +394,7 @@ a derived view store).</p>
     <span class="nv">subject</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex31UnfailableReplayLastSubjectTypea">UnfailableReplayLastSubjectType</a></span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="nv">reducer</span><span class="p">:</span> <span class="kt"><a href="../Structs/Reducer.html">Reducer</a></span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="nv">middleware</span><span class="p">:</span> <span class="kt">M</span><span class="p">,</span>
-    <span class="nv">emitsValue</span><span class="p">:</span> <span class="kt"><a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a></span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">.</span><span class="n">always</span>
+    <span class="nv">emitsValue</span><span class="p">:</span> <span class="kt"><a href="../Enums/ShouldEmitValue.html">ShouldEmitValue</a></span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">.</span><span class="n">always</span>
 <span class="p">)</span> <span class="k">where</span> <span class="kt">M</span><span class="o">.</span><span class="kt">InputActionType</span> <span class="o">==</span> <span class="kt">ActionType</span><span class="p">,</span> <span class="kt">M</span><span class="o">.</span><span class="kt">InputActionType</span> <span class="o">==</span> <span class="kt">M</span><span class="o">.</span><span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">M</span><span class="o">.</span><span class="kt">StateType</span> <span class="o">==</span> <span class="kt">StateType</span></code></pre>
 
                         </div>
@@ -444,7 +458,7 @@ a derived view store).</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

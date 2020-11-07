@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#reduxstorebase.init(subject:reducer:middleware:emitsvalue:)">init(subject:​reducer:​middleware:​emits​Value:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="property"><a href="#reduxstorebase.subject">subject</a></li><li class="property"><a href="#reduxstorebase.pipeline">pipeline</a></li><li class="property"><a href="#reduxstorebase.statepublisher">state​Publisher</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#reduxstorebase.init(subject:reducer:middleware:emitsvalue:)">init(subject:​reducer:​middleware:​emits​Value:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#reduxstorebase.pipeline">pipeline</a></li><li class="variable"><a href="#reduxstorebase.statepublisher">state​Publisher</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -46,6 +46,21 @@
     <p>A store should have a single input and a single output, being the input the method to handle actions dispatched by the
 counterparts, and the output the state that can be observed by them. For that reason, a <code>StoreType</code> protocol is nothing
 but a composition of two other protocols: <code>ActionHandler</code> and <code>StateProvider</code>:</p>
+
+<ul>
+<li>
+<p>as <code>ActionHandler</code>, which represents the store input, it's gonna be able to receive and distribute action of a
+generic type <code>ActionType</code>. Being an action handler means that an <code>UIViewController</code> or SwiftUI <code>View</code> can dispatch
+actions to it, such as <code>.saveButtonTapped</code>, <code>.didScrollToPosition(y)</code>, <code>.viewDidLoad</code> or <code>.queryTextFieldChanged(text)</code>.</p>
+</li>
+<li>
+<p>as <code>StateProvider</code>, which represents the store output, it's gonna be able to offer to the system a way to subscribe
+for updates on State. Being a state provider basically means that a store has a <code>statePublisher</code> that is either a
+<code>Observable&lt;StateType&gt;</code>, <code>SignalProducer&lt;StateType, Never&gt;</code> or <code>Publisher&lt;StateType, Never&gt;</code> depending on the reactive
+framework of your choice, so an <code>UIViewController</code> can subscribe to state changes and react to them, or a SwiftUI View
+can use it as a <code>ObservedObject</code>.</p>
+</li>
+</ul>
 
 <p>This type of store will glue all the parts together and its responsibility is owning the main state, which means the
 only source-of-truth an app can have, besides of coordinating the sequence of operations that will be triggered once a
@@ -138,8 +153,11 @@ a derived view store).</p>
 <!-- ReduxStoreProtocol -->
 <g id="node2" class="node protocol">
 <title>ReduxStoreProtocol</title>
+<g id="a_node2"><a xlink:href="/ReduxStoreProtocol" xlink:title="ReduxStoreProtocol">
 <path fill="none" stroke="black" d="M528,-36C528,-36 336,-36 336,-36 330,-36 324,-30 324,-24 324,-24 324,-12 324,-12 324,-6 330,0 336,0 336,0 528,0 528,0 534,0 540,-6 540,-12 540,-12 540,-24 540,-24 540,-30 534,-36 528,-36"/>
 <text text-anchor="middle" x="432" y="-14.3" font-family="Menlo" font-size="14.00">ReduxStoreProtocol</text>
+</a>
+</g>
 </g>
 <!-- ReduxStoreBase&#45;&gt;ReduxStoreProtocol -->
 <g id="edge1" class="edge conformsTo">
@@ -184,26 +202,20 @@ a derived view store).</p>
   <tbody>
     <tr>
     <th>subject</th>
-    <td><code class="type">Unfailable​Replay​Last​Subject​Type&lt;State​Type&gt;</code></td></td>
-    <td><ul>
-<li>subject: a reactive subject type that replays the last value, never fails and works on <code>StateType</code> elements. It should contain the initial state already.</li>
-</ul>
+    <td><code class="type">Unfailable​Replay​Last​Subject​Type&lt;State​Type&gt;</code></td>
+    <td><p>a reactive subject type that replays the last value, never fails and works on <code>StateType</code> elements. It should contain the initial state already.</p>
 </td>
 </tr>
 <tr>
     <th>reducer</th>
-    <td><code class="type">Reducer&lt;Action​Type, State​Type&gt;</code></td></td>
-    <td><ul>
-<li>reducer: a reducer function wrapped in a monoid container of type <code>Reducer</code>, able to handle the state of the type <code>StateType</code> and actions of type <code>ActionType</code>. For <code>reducer</code> composition, please use the diamond operator (<code>&lt;&gt;</code>) and for reducers that understand only a sub-state part, use the <code>lift</code> functions to elevate them to the same global state and global action type.</li>
-</ul>
+    <td><code class="type">Reducer&lt;Action​Type, State​Type&gt;</code></td>
+    <td><p>a reducer function wrapped in a monoid container of type <code>Reducer</code>, able to handle the state of the type <code>StateType</code> and actions of type <code>ActionType</code>. For <code>reducer</code> composition, please use the diamond operator (<code>&lt;&gt;</code>) and for reducers that understand only a sub-state part, use the <code>lift</code> functions to elevate them to the same global state and global action type.</p>
 </td>
 </tr>
 <tr>
     <th>middleware</th>
-    <td><code class="type">M</code></td></td>
-    <td><ul>
-<li>middleware: a middleware pipeline, that can be any flat middleware or a <code>ComposedMiddleware</code>, as long as it's able to handle the state of type <code>StateType</code> and actions of type <code>ActionType</code>. For <code>middleware</code> composition, please use the diamond operator (<code>&lt;&gt;</code>) and for middlewares that understand only a sub-state part, use the <code>lift</code> functions to elevate them to the same global state and global action type.</li>
-</ul>
+    <td><code class="type">M</code></td>
+    <td><p>a middleware pipeline, that can be any flat middleware or a <code>ComposedMiddleware</code>, as long as it's able to handle the state of type <code>StateType</code> and actions of type <code>ActionType</code>. For <code>middleware</code> composition, please use the diamond operator (<code>&lt;&gt;</code>) and for middlewares that understand only a sub-state part, use the <code>lift</code> functions to elevate them to the same global state and global action type.</p>
 </td>
 </tr>
   </tbody>
@@ -213,13 +225,7 @@ a derived view store).</p>
     <section id="properties">
         <h2>Properties</h2>
 
-        <div role="article" class="variable" id="reduxstorebase.subject">
-    <h3>
-        <code>subject</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">subject</span>: <a href="/UnfailableReplayLastSubjectType"><span class="type">UnfailableReplayLastSubjectType</span></a>&lt;<span class="type">StateType</span>&gt;</code></pre></body></html>
-</div>
-<div role="article" class="variable" id="reduxstorebase.pipeline">
+        <div role="article" class="variable" id="reduxstorebase.pipeline">
     <h3>
         <code>pipeline</code>
     </h3>
@@ -248,7 +254,7 @@ a derived view store).</p>
 
     <footer>
         <p>
-    Generated on <time datetime="2020-07-13T23:51:35+0200">13. July 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:01+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

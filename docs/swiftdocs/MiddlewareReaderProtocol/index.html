@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Types Conforming to Middleware​Reader​Protocol</a></li></ul></li><li><a href="#requirements">Requirements</a><ul><li><a href="#middlewarereaderprotocol.dependencies">Dependencies</a></li><li><a href="#middlewarereaderprotocol.middlewaretype">Middleware​Type</a></li><li><a href="#middlewarereaderprotocol.inject">inject</a></li><li><a href="#middlewarereaderprotocol.init(inject:)">init(inject:​)</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Types Conforming to Middleware​Reader​Protocol</a></li></ul></li><li><a href="#requirements">Requirements</a><ul><li class="variable"><a href="#middlewarereaderprotocol.inject">inject</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -68,8 +68,11 @@ provides everything needed for your Middleware dependency injection.</p>
 <!-- MiddlewareReader -->
 <g id="node2" class="node structure">
 <title>MiddlewareReader</title>
+<g id="a_node2"><a xlink:href="/MiddlewareReader" xlink:title="MiddlewareReader">
 <path fill="none" stroke="black" d="M528,-108C528,-108 336,-108 336,-108 330,-108 324,-102 324,-96 324,-96 324,-84 324,-84 324,-78 330,-72 336,-72 336,-72 528,-72 528,-72 534,-72 540,-78 540,-84 540,-84 540,-96 540,-96 540,-102 534,-108 528,-108"/>
 <text text-anchor="middle" x="432" y="-86.3" font-family="Menlo" font-size="14.00">MiddlewareReader</text>
+</a>
+</g>
 </g>
 <!-- MiddlewareReader&#45;&gt;MiddlewareReaderProtocol -->
 <g id="edge1" class="edge conformsTo">
@@ -108,29 +111,7 @@ this Reader works specifically with Middlewares.</p>
     <section id="requirements">
         <h2>Requirements</h2>
 
-        <div role="article" class="protocol" id="middlewarereaderprotocol.dependencies">
-    <h3>
-        <code>Dependencies</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">associatedtype</span> <span class="variable">Dependencies</span></code></pre></body></html>
-<div class="summary" role="doc-abstract">
-    <p>Dependencies to inject in the middleware. This is equivalent to the parameters in a middleware initializer, usually a tuple with multiple
-dependencies separated by comma. In a function <code>(Dependencies) -&gt; MiddlewareType</code>, this is at the left-hand side to the arrow.</p>
-
-</div>
-</div>
-<div role="article" class="protocol" id="middlewarereaderprotocol.middlewaretype">
-    <h3>
-        <code>Middleware​Type</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">associatedtype</span> <span class="variable">MiddlewareType</span></code></pre></body></html>
-<div class="summary" role="doc-abstract">
-    <p>The resulting middleware after the dependencies are injected.
-In a function <code>(Dependencies) -&gt; MiddlewareType</code>, this is at the right-hand side to the arrow.</p>
-
-</div>
-</div>
-<div role="article" class="protocol" id="middlewarereaderprotocol.inject">
+        <div role="article" class="variable" id="middlewarereaderprotocol.inject">
     <h3>
         <code>inject</code>
     </h3>
@@ -141,45 +122,13 @@ When inject is called, your MiddlewareReader materializes into a Middleware.</p>
 
 </div>
 </div>
-<div role="article" class="protocol" id="middlewarereaderprotocol.init(inject:)">
-    <h3>
-        <code>init(inject:​)</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">init</span>(<span class="variable">inject</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">Dependencies</span>) -&gt; <span class="type">MiddlewareType</span>)</code></pre></body></html>
-<div class="summary" role="doc-abstract">
-    <p>Allows to define a middleware initializer and store this initializer function until we have the dependencies to call it.
-This allows us to postpone the dependency injection and compose middlewares that are not even materialized yet.</p>
-
-</div>
-<h4>Parameters</h4>
-
-<table class="parameters">
-  <thead hidden>
-  <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-  </tr>
-  </thead>
-  <tbody>
-    <tr>
-    <th>inject</th>
-    <td><code class="type">@escaping (Dependencies) -&gt; Middleware​Type</code></td></td>
-    <td><ul>
-<li>inject: An initializer function that, given the dependencies in the Middleware's init, will give the Middleware instance When inject is called, your MiddlewareReader materializes into a Middleware.</li>
-</ul>
-</td>
-</tr>
-  </tbody>
-</table>
-</div>
     </section>
         </article>
     </main>
 
     <footer>
         <p>
-    Generated on <time datetime="2020-07-13T23:51:35+0200">13. July 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:00+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

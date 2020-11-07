@@ -13,7 +13,7 @@
     <a title="SwiftRex  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
+        <p><a href="index.html">SwiftRex 0.7.4 Docs</a> (78% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -61,6 +61,14 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
             </ul>
           </li>
@@ -143,7 +151,13 @@
                 <a href="Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/DispatchedAction.html">DispatchedAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/ElementIndexAction.html">ElementIndexAction</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
@@ -167,9 +181,6 @@
                 <a href="Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
               </li>
               <li class="nav-group-task">
-                <a href="Structs/ShouldEmitValue.html">ShouldEmitValue</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -182,6 +193,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
               </li>
               <li class="nav-group-task">
                 <a href="Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
@@ -219,7 +233,7 @@
 <a href="https://swiftrex.github.io/SwiftRex/api/index.html"><img src="https://swiftrex.github.io/SwiftRex/api/badge.svg" alt="Jazzy Documentation"></a>
 <a href="https://cocoapods.org/pods/SwiftRex"><img src="https://img.shields.io/cocoapods/v/SwiftRex.svg" alt="CocoaPods compatible"></a>
 <a href="https://swiftpackageindex.com/SwiftRex/SwiftRex"><img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg" alt="Swift Package Manager compatible"></a>
-<img src="https://img.shields.io/badge/Swift-5.2-orange.svg" alt="Swift">
+<img src="https://img.shields.io/badge/Swift-5.3-orange.svg" alt="Swift">
 <a href="https://github.com/SwiftRex/SwiftRex"><img src="https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20Catalyst-252532.svg" alt="Platform support"></a>
 <a href="https://github.com/SwiftRex/SwiftRex/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License Apache 2.0"></a></p>
 <h1 id='introduction' class='heading'>Introduction</h1>
@@ -926,7 +940,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 <p>If you use it from only one target, automatic mode should be fine.</p>
 
 <p>Combine, automatic linking mode:</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.3</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -946,7 +960,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 </code></pre>
 
 <p>RxSwift, automatic linking mode:</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.3</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -966,7 +980,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 </code></pre>
 
 <p>ReactiveSwift, automatic linking mode:</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.3</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -986,7 +1000,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 </code></pre>
 
 <p>Combine, dynamic linking mode (use similar approach of appending &ldquo;Dynamic&rdquo; also for RxSwift or ReactiveSwift products):</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.2</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.3</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -1020,7 +1034,7 @@ was 0.7.1, and eventually target that version until we come up with a better sol
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

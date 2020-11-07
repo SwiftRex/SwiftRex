@@ -91,20 +91,18 @@
     </a>
 </dt>
 <dd>
-    <p><code>Effect</code> is a Publisher/Observable/SignalProducer to be returned by Middlewares so they can dispatch Actions back to a Store. Every effect may
-have a cancellation token to be later cancelled by new action arrivals, such as in the case when the user is no longer interested in certain HTTP
-Request or wants to stop a timer. When cancellation token is not provided during the initialization of an Effect, it still can be passed later,
-which will re-wrap the upstream again in a new Effect, but this time containing the cancellation token. Some static constructors are available,
-such as <code>.doNothing</code>, <code>.just(_: Output)</code>, <code>.sequence(_: Output...)</code>, <code>.sequence(_: [Output]</code>, <code>.promise(_: CompletionHandler)</code>, etc.</p>
-
+    
 </dd>
 <dt class="structure">
-    <a href="/EffectMiddleware_Context" title="structure - EffectMiddleware.Context">
-        Effect​Middleware.​Context
+    <a href="/FireAndForget" title="structure - FireAndForget">
+        Fire​And​Forget
     </a>
 </dt>
 <dd>
-    
+    <p>Fire And Forget is a publisher for when you don't care about the output of certain async operation. It's important to notice that this operation
+can't fail. If you want to also ignore the failure, then you can catchErrors and return nil in the proper init.
+It may complete successfully when task is done.</p>
+
 </dd>
 <dt class="structure">
     <a href="/Effect" title="structure - Effect">
@@ -112,22 +110,18 @@ such as <code>.doNothing</code>, <code>.just(_: Output)</code>, <code>.sequence(
     </a>
 </dt>
 <dd>
-    <p>Effect is a Signal Producer to be returned by Middlewares so they can dispatch Actions back to a Store.
-Every effect will have a cancellation token to be later cancelled by new action arrivals, such as in the
-case when the user is no longer interested in certain HTTP Request or wants to stop a timer. When
-cancellation token is not provided during the initialization of an Effect, it still can be passed later,
-which will rewrap the upstream again in a new Effect, but this time containing the cancellation token.
-Some static constructors are available, such as <code>.doNothing</code>, <code>.just(_: Output)</code>, <code>.sequence(_: Output...)</code>,
-<code>.sequence(_: [Output]</code>, <code>.promise(_: CompletionHandler)</code>, etc.</p>
-
+    
 </dd>
 <dt class="structure">
-    <a href="/EffectMiddleware_Context" title="structure - EffectMiddleware.Context">
-        Effect​Middleware.​Context
+    <a href="/FireAndForget" title="structure - FireAndForget">
+        Fire​And​Forget
     </a>
 </dt>
 <dd>
-    
+    <p>Fire And Forget is a SignalProducer for when you don't care about the output of certain async operation. It's important to notice that this
+operation can't fail. If you want to also ignore the failure, then you can catchErrors and return nil in the proper init.
+It may complete successfully when task is done.</p>
+
 </dd>
 <dt class="structure">
     <a href="/Effect" title="structure - Effect">
@@ -135,22 +129,18 @@ Some static constructors are available, such as <code>.doNothing</code>, <code>.
     </a>
 </dt>
 <dd>
-    <p>Effect is a RxSwift Observable to be returned by Middlewares so they can dispatch Actions back to a Store.
-Every effect will have a cancellation token to be later cancelled by new action arrivals, such as in the
-case when the user is no longer interested in certain HTTP Request or wants to stop a timer. When
-cancellation token is not provided during the initialization of an Effect, it still can be passed later,
-which will rewrap the upstream again in a new Effect, but this time containing the cancellation token.
-Some static constructors are available, such as <code>.doNothing</code>, <code>.just(_: Output)</code>, <code>.sequence(_: Output...)</code>,
-<code>.sequence(_: [Output]</code>, <code>.promise(_: CompletionHandler)</code>, etc.</p>
-
+    
 </dd>
 <dt class="structure">
-    <a href="/EffectMiddleware_Context" title="structure - EffectMiddleware.Context">
-        Effect​Middleware.​Context
+    <a href="/FireAndForget" title="structure - FireAndForget">
+        Fire​And​Forget
     </a>
 </dt>
 <dd>
-    
+    <p>Fire And Forget is an observable for when you don't care about the output of certain async operation. It's important to notice that this operation
+can't fail. If you want to also ignore the failure, then you can catchErrors and return nil in the proper init.
+It may complete successfully when task is done.</p>
+
 </dd>
 <dt class="structure">
     <a href="/AfterReducer" title="structure - AfterReducer">
@@ -168,14 +158,6 @@ element in composition. The identity of an <code>AfterReducer</code> is the stat
 The combination between two <code>AfterReducer</code> instances occur in reverse order so the first middleware will have its &quot;after reducer&quot; closure executed
 last. This composition can be achieved by using the operator <code>&lt;&gt;</code></p>
 
-</dd>
-<dt class="structure">
-    <a href="/ElementIDAction" title="structure - ElementIDAction">
-        Element​IDAction
-    </a>
-</dt>
-<dd>
-    
 </dd>
 <dt class="structure">
     <a href="/AnyMiddleware" title="structure - AnyMiddleware">
@@ -216,6 +198,18 @@ and <code>AnyActionHandler</code> erases this protocol to a generic struct type.
 or monitoring. The action source will be implicitly created when <code>ActionHandler.dispatch</code> is called from a middleware, view or presenter, and
 it will contain the file, function and line from where the dispatch function was called. Additionally you can append extra information useful
 for debugging, as an optional String attached to the ActionSource.</p>
+
+</dd>
+<dt class="structure">
+    <a href="/DispatchedAction" title="structure - DispatchedAction">
+        Dispatched​Action
+    </a>
+</dt>
+<dd>
+    <p>Wraps an action and the information about its dispatcher. It can be used when reactive pipelines want to enforce that the result is an action
+while keeping track about the source of that action. For example, certain RxSwift, Combine or ReactiveSwift pipeline want to send actions to the
+store and because ActionHandler has a function <code>dispatch(_ action: ActionType, from dispatcher: ActionSource)</code>, that pipeline should output a
+<code>DispatchedAction&lt;Action&gt;</code> to fulfil everything needed by the ActionHandler to feed that action into the store.</p>
 
 </dd>
 <dt class="structure">
@@ -267,6 +261,22 @@ this Reader works specifically with Middlewares.</p>
 
 </dd>
 <dt class="structure">
+    <a href="/ElementIDAction" title="structure - ElementIDAction">
+        Element​IDAction
+    </a>
+</dt>
+<dd>
+    
+</dd>
+<dt class="structure">
+    <a href="/ElementIndexAction" title="structure - ElementIndexAction">
+        Element​Index​Action
+    </a>
+</dt>
+<dd>
+    
+</dd>
+<dt class="structure">
     <a href="/SubscriberType" title="structure - SubscriberType">
         Subscriber​Type
     </a>
@@ -312,17 +322,6 @@ delegating to them once the wrapper funcions are called.</p>
 
 </dd>
 <dt class="structure">
-    <a href="/ShouldEmitValue" title="structure - ShouldEmitValue">
-        Should​Emit​Value
-    </a>
-</dt>
-<dd>
-    <p>A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in
-case it should emit it, or false in case it should not emit it.
-It comes with some standard options like <code>.always</code>, <code>.never</code>, <code>.when(old, new) -&gt; Bool</code> and, for <code>Equatable</code> structures, <code>.whenDifferent</code>.</p>
-
-</dd>
-<dt class="structure">
     <a href="/ComposedMiddleware" title="structure - ComposedMiddleware">
         Composed​Middleware
     </a>
@@ -357,12 +356,15 @@ in the chain or to the reducers. It can be useful for Unit Tests or for some com
         <h2>Enumerations</h2>
         <dl>
             <dt class="enumeration">
-    <a href="/EffectOutput" title="enumeration - EffectOutput">
-        Effect​Output
+    <a href="/ShouldEmitValue" title="enumeration - ShouldEmitValue">
+        Should​Emit​Value
     </a>
 </dt>
 <dd>
-    
+    <p>A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in
+case it should emit it, or false in case it should not emit it.
+It comes with some standard options like <code>.always</code>, <code>.never</code>, <code>.when(old, new) -&gt; Bool</code> and, for <code>Equatable</code> structures, <code>.whenDifferent</code>.</p>
+
 </dd>
         </dl>
     </section>
@@ -370,14 +372,6 @@ in the chain or to the reducers. It can be useful for Unit Tests or for some com
         <h2>Protocols</h2>
         <dl>
             <dt class="protocol">
-    <a href="/EffectOutputProtocol" title="protocol - EffectOutputProtocol">
-        Effect​Output​Protocol
-    </a>
-</dt>
-<dd>
-    
-</dd>
-<dt class="protocol">
     <a href="/Middleware" title="protocol - Middleware">
         Middleware
     </a>
@@ -624,6 +618,16 @@ delegating to them once the wrapper funcions are called.</p>
 <code>(ActionType, StateType) -&gt; StateType</code></p>
 
 </dd>
+<dt class="typealias">
+    <a href="/MutableReduceFunction" title="typealias - MutableReduceFunction">
+        Mutable​Reduce​Function
+    </a>
+</dt>
+<dd>
+    <p>State reducer: takes inout version of the current state and an action, computes the new state changing the provided mutable state. <br/>
+<code>(ActionType, inout StateType) -&gt; Void</code></p>
+
+</dd>
         </dl>
     </section>
         </article>
@@ -631,7 +635,7 @@ delegating to them once the wrapper funcions are called.</p>
 
     <footer>
         <p>
-    Generated on <time datetime="2020-07-13T23:51:35+0200">13. July 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:00+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

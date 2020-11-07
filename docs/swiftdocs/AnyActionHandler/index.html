@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#anyactionhandler.init(_:)">init(_:​)</a></li><li class="initializer"><a href="#anyactionhandler.init(_:)">init(_:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="property"><a href="#anyactionhandler.realhandler">real​Handler</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="method"><a href="#anyactionhandler.dispatch(_:from:)">dispatch(_:​from:​)</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#anyactionhandler.init(_:)">init(_:​)</a></li><li class="initializer"><a href="#anyactionhandler.init(_:)">init(_:​)</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#anyactionhandler.dispatch(_:from:)">dispatch(_:​from:​)</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -74,8 +74,11 @@ is generalized by this protocol.</p>
 <!-- ActionHandler -->
 <g id="node2" class="node protocol">
 <title>ActionHandler</title>
+<g id="a_node2"><a xlink:href="/ActionHandler" xlink:title="ActionHandler">
 <path fill="none" stroke="black" d="M528,-36C528,-36 336,-36 336,-36 330,-36 324,-30 324,-24 324,-24 324,-12 324,-12 324,-6 330,0 336,0 336,0 528,0 528,0 534,0 540,-6 540,-12 540,-12 540,-24 540,-24 540,-30 534,-36 528,-36"/>
 <text text-anchor="middle" x="432" y="-14.3" font-family="Menlo" font-size="14.00">ActionHandler</text>
+</a>
+</g>
 </g>
 <!-- AnyActionHandler&#45;&gt;ActionHandler -->
 <g id="edge1" class="edge conformsTo">
@@ -121,10 +124,8 @@ is generalized by this protocol.</p>
   <tbody>
     <tr>
     <th>real​Handler</th>
-    <td><code class="type">A</code></td></td>
-    <td><ul>
-<li>realHandler: the concrete <code>ActionHandler</code> you're erasing</li>
-</ul>
+    <td><code class="type">A</code></td>
+    <td><p>the concrete <code>ActionHandler</code> you're erasing</p>
 </td>
 </tr>
   </tbody>
@@ -152,24 +153,12 @@ is generalized by this protocol.</p>
   <tbody>
     <tr>
     <th>real​Handler</th>
-    <td><code class="type">@escaping (Action​Type, Action​Source) -&gt; Void</code></td></td>
-    <td><ul>
-<li>realHandler: a function with the same signature of <code>ActionHandler.dispatch</code></li>
-</ul>
+    <td><code class="type">@escaping (Action​Type, Action​Source) -&gt; Void</code></td>
+    <td><p>a function with the same signature of <code>ActionHandler.dispatch</code></p>
 </td>
 </tr>
   </tbody>
 </table>
-</div>
-    </section>
-    <section id="properties">
-        <h2>Properties</h2>
-
-        <div role="article" class="variable" id="anyactionhandler.realhandler">
-    <h3>
-        <code>real​Handler</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">realHandler</span>: (<span class="type">ActionType</span>, <a href="/ActionSource"><span class="type">ActionSource</span></a>) -&gt; <span class="type">Void</span></code></pre></body></html>
 </div>
     </section>
     <section id="methods">
@@ -198,18 +187,14 @@ Also way for a <code>Middleware</code> to trigger their own actions, usually in 
   <tbody>
     <tr>
     <th>action</th>
-    <td><code class="type">Action​Type</code></td></td>
-    <td><ul>
-<li>action: the action to be dispatched</li>
-</ul>
+    <td><code class="type">Action​Type</code></td>
+    <td><p>the action to be dispatched</p>
 </td>
 </tr>
 <tr>
     <th>dispatcher</th>
-    <td><code class="type">Action​Source</code></td></td>
-    <td><ul>
-<li>dispatcher: information about the action source, containing file/line, function and additional information for debugging and logging purposes</li>
-</ul>
+    <td><code class="type">Action​Source</code></td>
+    <td><p>information about the action source, containing file/line, function and additional information for debugging and logging purposes</p>
 </td>
 </tr>
   </tbody>
@@ -224,7 +209,7 @@ Also way for a <code>Middleware</code> to trigger their own actions, usually in 
 
     <footer>
         <p>
-    Generated on <time datetime="2020-07-13T23:51:35+0200">13. July 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:01+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

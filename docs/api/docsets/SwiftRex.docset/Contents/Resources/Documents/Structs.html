@@ -14,7 +14,7 @@
     <a title="Structures  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
+        <p><a href="index.html">SwiftRex 0.7.4 Docs</a> (78% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -62,6 +62,14 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
             </ul>
           </li>
@@ -144,7 +152,13 @@
                 <a href="Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/DispatchedAction.html">DispatchedAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/ElementIndexAction.html">ElementIndexAction</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
@@ -168,9 +182,6 @@
                 <a href="Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
               </li>
               <li class="nav-group-task">
-                <a href="Structs/ShouldEmitValue.html">ShouldEmitValue</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -183,6 +194,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
               </li>
               <li class="nav-group-task">
                 <a href="Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
@@ -255,9 +269,9 @@ last. This composition can be achieved by using the operator <code>&lt;&gt;</cod
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex15ElementIDActionV"></a>
-                    <a name="//apple_ref/swift/Struct/ElementIDAction" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex15ElementIDActionV">ElementIDAction</a>
+                    <a name="/s:8SwiftRex13AnyMiddlewareV"></a>
+                    <a name="//apple_ref/swift/Struct/AnyMiddleware" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV">AnyMiddleware</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -265,15 +279,15 @@ last. This composition can be achieved by using the operator <code>&lt;&gt;</cod
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Erases the protocol <code><a href="Protocols/Middleware.html">Middleware</a></code>. Please check its documentation for more information.</p>
 
-                        <a href="Structs/ElementIDAction.html" class="slightly-smaller">See more</a>
+                        <a href="Structs/AnyMiddleware.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">Action</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Identifiable</span> <span class="k">where</span> <span class="kt">ID</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
 
                         </div>
                       </div>
@@ -390,34 +404,6 @@ this also helps preventing <code>default</code> case or having to re-assign prop
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex13AnyMiddlewareV"></a>
-                    <a name="//apple_ref/swift/Struct/AnyMiddleware" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex13AnyMiddlewareV">AnyMiddleware</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Erases the protocol <code><a href="Protocols/Middleware.html">Middleware</a></code>. Please check its documentation for more information.</p>
-
-                        <a href="Structs/AnyMiddleware.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">AnyMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:8SwiftRex16AnyActionHandlerV"></a>
                     <a name="//apple_ref/swift/Struct/AnyActionHandler" class="dashAnchor"></a>
                     <a class="token" href="#/s:8SwiftRex16AnyActionHandlerV">AnyActionHandler</a>
@@ -476,6 +462,37 @@ effects, such as printing logs.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ActionSource</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">Equatable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16DispatchedActionV"></a>
+                    <a name="//apple_ref/swift/Struct/DispatchedAction" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16DispatchedActionV">DispatchedAction</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Wraps an action and the information about its dispatcher. It can be used when reactive pipelines want to enforce that the result is an action
+while keeping track about the source of that action. For example, certain RxSwift, Combine or ReactiveSwift pipeline want to send actions to the
+store and because ActionHandler has a function <code>dispatch(_ action: ActionType, from dispatcher: ActionSource)</code>, that pipeline should output a
+<code>DispatchedAction&lt;Action&gt;</code> to fulfil everything needed by the ActionHandler to feed that action into the store.</p>
+
+                        <a href="Structs/DispatchedAction.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">Action</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -565,7 +582,7 @@ those.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ReduxPipelineWrapper</span><span class="o">&lt;</span><span class="kt">MiddlewareType</span><span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="Protocols/ActionHandler.html">ActionHandler</a></span>
-    <span class="k">where</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">InputActionType</span> <span class="o">==</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">OutputActionType</span></code></pre>
+<span class="k">where</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">InputActionType</span> <span class="o">==</span> <span class="kt">MiddlewareType</span><span class="o">.</span><span class="kt">OutputActionType</span></code></pre>
 
                         </div>
                       </div>
@@ -608,6 +625,63 @@ this Reader works specifically with Middlewares.</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">MiddlewareReader</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">MiddlewareType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a></span> <span class="k">where</span> <span class="kt">MiddlewareType</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Middleware.html">Middleware</a></span></code></pre>
 <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">MiddlewareReader</span><span class="p">:</span> <span class="kt"><a href="Protocols/Semigroup.html">Semigroup</a></span> <span class="k">where</span> <span class="kt">MiddlewareType</span><span class="p">:</span> <span class="kt"><a href="Protocols/Semigroup.html">Semigroup</a></span></code></pre>
 <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">MiddlewareReader</span><span class="p">:</span> <span class="kt"><a href="Protocols/Monoid.html">Monoid</a></span> <span class="k">where</span> <span class="kt">MiddlewareType</span><span class="p">:</span> <span class="kt"><a href="Protocols/Monoid.html">Monoid</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex15ElementIDActionV"></a>
+                    <a name="//apple_ref/swift/Struct/ElementIDAction" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex15ElementIDActionV">ElementIDAction</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                        <a href="Structs/ElementIDAction.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">Action</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">ID</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">ElementIDAction</span><span class="p">:</span> <span class="kt">Identifiable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18ElementIndexActionV"></a>
+                    <a name="//apple_ref/swift/Struct/ElementIndexAction" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18ElementIndexActionV">ElementIndexAction</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                        <a href="Structs/ElementIndexAction.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ElementIndexAction</span><span class="o">&lt;</span><span class="kt">Index</span><span class="p">,</span> <span class="kt">Action</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">Index</span> <span class="p">:</span> <span class="kt">Comparable</span></code></pre>
 
                         </div>
                       </div>
@@ -738,36 +812,6 @@ delegating to them once the wrapper funcions are called.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex15ShouldEmitValueV"></a>
-                    <a name="//apple_ref/swift/Struct/ShouldEmitValue" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex15ShouldEmitValueV">ShouldEmitValue</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in
-case it should emit it, or false in case it should not emit it.
-It comes with some standard options like <code>.always</code>, <code>.never</code>, <code>.when(old, new) -&gt; Bool</code> and, for <code>Equatable</code> structures, <code>.whenDifferent</code>.</p>
-
-                        <a href="Structs/ShouldEmitValue.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ShouldEmitValue</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:8SwiftRex18ComposedMiddlewareV"></a>
                     <a name="//apple_ref/swift/Struct/ComposedMiddleware" class="dashAnchor"></a>
                     <a class="token" href="#/s:8SwiftRex18ComposedMiddlewareV">ComposedMiddleware</a>
@@ -865,7 +909,7 @@ in the chain or to the reducers. It can be useful for Unit Tests or for some com
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -8,6 +8,55 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/EffectMiddleware.swift",
+      "line": 102,
+      "symbol": "EffectMiddleware.Context",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/EffectMiddleware.swift",
+      "line": 103,
+      "symbol": "EffectMiddleware.Context.dispatcher",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/EffectMiddleware.swift",
+      "line": 104,
+      "symbol": "EffectMiddleware.Context.dependencies",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/EffectMiddleware.swift",
+      "line": 105,
+      "symbol": "EffectMiddleware.Context.toCancel",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/EffectMiddleware.swift",
+      "line": 137,
+      "symbol": "EffectMiddleware.onAction(do:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/EffectMiddleware.swift",
+      "line": 147,
+      "symbol": "EffectMiddleware.onAction(do:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/EffectMiddleware.swift",
+      "line": 208,
+      "symbol": "EffectMiddleware.lift(inputAction:outputAction:state:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/PublisherType+SignalProducerProtocol.swift",
       "line": 28,
       "symbol": "SignalProducerProtocol.asPublisherType()",

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>FireAndForget Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/FireAndForget" class="dashAnchor"></a>
+    <a title="FireAndForget Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CombineRex 0.7.4 Docs</a> (43% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CombineRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        FireAndForget Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Cancellable.html">Cancellable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/MiddlewareReader.html">MiddlewareReader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PassthroughSubject.html">PassthroughSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Publisher.html">Publisher</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Set.html">Set</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StoreType.html">StoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Subscriber.html">Subscriber</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriberType.html">SubscriberType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriptionType.html">SubscriptionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex/SubjectType.html">– SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex/SubscriptionType.html">– SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Effect.html">Effect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/FireAndForget.html">FireAndForget</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>FireAndForget</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)</span>
+<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">FireAndForget</span><span class="o">&lt;</span><span class="kt">IgnoringOutput</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Publisher</span></code></pre>
+
+                </div>
+              </div>
+            <p>Fire And Forget is a publisher for when you don&rsquo;t care about the output of certain async operation. It&rsquo;s important to notice that this operation
+can&rsquo;t fail. If you want to also ignore the failure, then you can catchErrors and return nil in the proper init.
+It may complete successfully when task is done.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex13FireAndForgetV6Outputa"></a>
+                    <a name="//apple_ref/swift/Alias/Output" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex13FireAndForgetV6Outputa">Output</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Output type we are ignoring. It matches the FireAndForget generic parameter, so we can ignore anything we want.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Output</span> <span class="o">=</span> <span class="kt">IgnoringOutput</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex13FireAndForgetV7Failurea"></a>
+                    <a name="//apple_ref/swift/Alias/Failure" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex13FireAndForgetV7Failurea">Failure</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>We&rsquo;re only able to ignore the output, not the failure, so it&rsquo;s important that this publisher never fails. To ignore also the failure path
+please use the init with catchErrors parameter and return nil from it.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Failure</span> <span class="o">=</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex13FireAndForgetVyACyxGyyccfc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex13FireAndForgetVyACyxGyyccfc">init(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Init a FireAndForget publisher by providing a closure with the operation to execute and ignore the output.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">operation</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>operation</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>any operation you want to run async and ignore the result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex13FireAndForgetVyACyxGqd__c0A09PublisherRd__s5NeverO7FailureRtd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex13FireAndForgetVyACyxGqd__c0A09PublisherRd__s5NeverO7FailureRtd__lufc">init(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Init a FireAndForget publisher by providing an upstream that never fails so we can simply ignore its output</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">P</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kt">P</span><span class="p">)</span> <span class="k">where</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt">Publisher</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt"><a href="../Structs/FireAndForget.html#/s:10CombineRex13FireAndForgetV7Failurea">Failure</a></span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>upstream</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>any publisher that never fails</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex13FireAndForgetV_11catchErrorsACyxGqd___xSg7FailureQyd__ctc0A09PublisherRd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:catchErrors:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex13FireAndForgetV_11catchErrorsACyxGqd___xSg7FailureQyd__ctc0A09PublisherRd__lufc">init(_:<wbr>catchErrors:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Init a FireAndForget publisher by providing an upstream that could fail, as well as a catchErrors function to ensure that FireAndForget can&rsquo;t
+itself fail. You can safely return nil from catchErrors. Otherwise outputs sent from catch errors will NOT be ignored, only those from the
+happy path.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">P</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kt">P</span><span class="p">,</span> <span class="nv">catchErrors</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">P</span><span class="o">.</span><span class="kt"><a href="../Structs/FireAndForget.html#/s:10CombineRex13FireAndForgetV7Failurea">Failure</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">IgnoringOutput</span><span class="p">?)</span> <span class="k">where</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt">Publisher</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex13FireAndForgetV7receive10subscriberyqd___t5InputQyd__Rsz0A010SubscriberRd__s5NeverO7FailureRtd__lF"></a>
+                    <a name="//apple_ref/swift/Method/receive(subscriber:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex13FireAndForgetV7receive10subscriberyqd___t5InputQyd__Rsz0A010SubscriberRd__s5NeverO7FailureRtd__lF">receive(subscriber:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Attaches the specified subscriber to this publisher.</p>
+
+<p>Implementations of <code>Publisher</code> must implement this method.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">receive</span><span class="o">&lt;</span><span class="kt">S</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">subscriber</span><span class="p">:</span> <span class="kt">S</span><span class="p">)</span> <span class="k">where</span> <span class="kt">IgnoringOutput</span> <span class="o">==</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Input</span><span class="p">,</span> <span class="kt">S</span> <span class="p">:</span> <span class="kt">Subscriber</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt"><a href="../Structs/FireAndForget.html#/s:10CombineRex13FireAndForgetV7Failurea">Failure</a></span> <span class="o">==</span> <span class="kt">FireAndForget</span><span class="o">&lt;</span><span class="kt">IgnoringOutput</span><span class="o">&gt;.</span><span class="kt"><a href="../Structs/FireAndForget.html#/s:10CombineRex13FireAndForgetV7Failurea">Failure</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>subscriber</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The subscriber to attach to this <code>Publisher</code>, after which it can receive values.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

@@ -14,7 +14,7 @@
     <a title="Type Aliases  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
+        <p><a href="index.html">SwiftRex 0.7.4 Docs</a> (78% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -62,6 +62,14 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
             </ul>
           </li>
@@ -144,7 +152,13 @@
                 <a href="Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/DispatchedAction.html">DispatchedAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/ElementIndexAction.html">ElementIndexAction</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
@@ -168,9 +182,6 @@
                 <a href="Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
               </li>
               <li class="nav-group-task">
-                <a href="Structs/ShouldEmitValue.html">ShouldEmitValue</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -183,6 +194,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
               </li>
               <li class="nav-group-task">
                 <a href="Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
@@ -448,12 +462,40 @@ delegating to them once the wrapper funcions are called.</p>
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex21MutableReduceFunctiona"></a>
+                    <a name="//apple_ref/swift/Alias/MutableReduceFunction" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>State reducer: takes inout version of the current state and an action, computes the new state changing the provided mutable state. <br/>
+<code>(ActionType, inout StateType) -&gt; Void</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">MutableReduceFunction</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(</span><span class="kt">ActionType</span><span class="p">,</span> <span class="k">inout</span> <span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
