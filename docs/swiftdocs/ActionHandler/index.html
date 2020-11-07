@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Types Conforming to Action​Handler</a></li></ul></li><li><a href="#requirements">Requirements</a><ul><li><a href="#actionhandler.actiontype">Action​Type</a></li><li><a href="#actionhandler.dispatch(_:from:)">dispatch(_:​from:​)</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Types Conforming to Action​Handler</a></li></ul></li><li><a href="#requirements">Requirements</a><ul><li class="function"><a href="#actionhandler.dispatch(_:from:)">dispatch(_:​from:​)</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -73,11 +73,14 @@ is generalized by this protocol.</p>
 <!-- StoreType -->
 <g id="node2" class="node protocol">
 <title>StoreType</title>
+<g id="a_node2"><a xlink:href="/StoreType" xlink:title="StoreType">
 <path fill="none" stroke="black" d="M1067.98,-161.31C1067.98,-161.31 875.98,-161.31 875.98,-161.31 869.98,-161.31 863.98,-155.31 863.98,-149.31 863.98,-149.31 863.98,-137.31 863.98,-137.31 863.98,-131.31 869.98,-125.31 875.98,-125.31 875.98,-125.31 1067.98,-125.31 1067.98,-125.31 1073.98,-125.31 1079.98,-131.31 1079.98,-137.31 1079.98,-137.31 1079.98,-149.31 1079.98,-149.31 1079.98,-155.31 1073.98,-161.31 1067.98,-161.31"/>
 <text text-anchor="middle" x="971.98" y="-139.61" font-family="Menlo" font-size="14.00">StoreType</text>
+</a>
+</g>
 </g>
 <!-- StoreType&#45;&gt;ActionHandler -->
-<g id="edge2" class="edge conformsTo">
+<g id="edge1" class="edge conformsTo">
 <title>StoreType&#45;&gt;ActionHandler</title>
 <path fill="none" stroke="black" d="M863.77,-139.7C775.5,-136.76 650.98,-132.61 560.13,-129.58"/>
 <polygon fill="black" stroke="black" points="560.17,-126.08 550.05,-129.24 559.93,-133.07 560.17,-126.08"/>
@@ -85,11 +88,14 @@ is generalized by this protocol.</p>
 <!-- AnyActionHandler -->
 <g id="node3" class="node structure">
 <title>AnyActionHandler</title>
+<g id="a_node3"><a xlink:href="/AnyActionHandler" xlink:title="AnyActionHandler">
 <path fill="none" stroke="black" d="M347.57,-36C347.57,-36 155.57,-36 155.57,-36 149.57,-36 143.57,-30 143.57,-24 143.57,-24 143.57,-12 143.57,-12 143.57,-6 149.57,0 155.57,0 155.57,0 347.57,0 347.57,0 353.57,0 359.57,-6 359.57,-12 359.57,-12 359.57,-24 359.57,-24 359.57,-30 353.57,-36 347.57,-36"/>
 <text text-anchor="middle" x="251.57" y="-14.3" font-family="Menlo" font-size="14.00">AnyActionHandler</text>
+</a>
+</g>
 </g>
 <!-- AnyActionHandler&#45;&gt;ActionHandler -->
-<g id="edge1" class="edge conformsTo">
+<g id="edge3" class="edge conformsTo">
 <title>AnyActionHandler&#45;&gt;ActionHandler</title>
 <path fill="none" stroke="black" d="M283.44,-36.02C315.71,-54.26 365.74,-82.54 400.95,-102.44"/>
 <polygon fill="black" stroke="black" points="399.59,-105.69 410.02,-107.56 403.03,-99.6 399.59,-105.69"/>
@@ -97,11 +103,14 @@ is generalized by this protocol.</p>
 <!-- ReduxPipelineWrapper -->
 <g id="node4" class="node structure">
 <title>ReduxPipelineWrapper</title>
+<g id="a_node4"><a xlink:href="/ReduxPipelineWrapper" xlink:title="ReduxPipelineWrapper">
 <path fill="none" stroke="black" d="M204,-233.73C204,-233.73 12,-233.73 12,-233.73 6,-233.73 0,-227.73 0,-221.73 0,-221.73 0,-209.73 0,-209.73 0,-203.73 6,-197.73 12,-197.73 12,-197.73 204,-197.73 204,-197.73 210,-197.73 216,-203.73 216,-209.73 216,-209.73 216,-221.73 216,-221.73 216,-227.73 210,-233.73 204,-233.73"/>
 <text text-anchor="middle" x="108" y="-212.03" font-family="Menlo" font-size="14.00">ReduxPipelineWrapper</text>
+</a>
+</g>
 </g>
 <!-- ReduxPipelineWrapper&#45;&gt;ActionHandler -->
-<g id="edge3" class="edge conformsTo">
+<g id="edge2" class="edge conformsTo">
 <title>ReduxPipelineWrapper&#45;&gt;ActionHandler</title>
 <path fill="none" stroke="black" d="M174.79,-197.72C229.76,-182.89 307.73,-161.86 365.27,-146.34"/>
 <polygon fill="black" stroke="black" points="366.29,-149.68 375.04,-143.7 364.47,-142.92 366.29,-149.68"/>
@@ -131,13 +140,7 @@ and <code>AnyActionHandler</code> erases this protocol to a generic struct type.
     <section id="requirements">
         <h2>Requirements</h2>
 
-        <div role="article" class="protocol" id="actionhandler.actiontype">
-    <h3>
-        <code>Action​Type</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">associatedtype</span> <span class="variable">ActionType</span></code></pre></body></html>
-</div>
-<div role="article" class="protocol" id="actionhandler.dispatch(_:from:)">
+        <div role="article" class="function" id="actionhandler.dispatch(_:from:)">
     <h3>
         <code>dispatch(_:​from:​)</code>
     </h3>
@@ -160,18 +163,14 @@ Also way for a <code>Middleware</code> to trigger their own actions, usually in 
   <tbody>
     <tr>
     <th>action</th>
-    <td><code class="type">Action​Type</code></td></td>
-    <td><ul>
-<li>action: the action to be dispatched</li>
-</ul>
+    <td><code class="type">Action​Type</code></td>
+    <td><p>the action to be dispatched</p>
 </td>
 </tr>
 <tr>
     <th>dispatcher</th>
-    <td><code class="type">Action​Source</code></td></td>
-    <td><ul>
-<li>dispatcher: information about the action source, containing file/line, function and additional information for debugging and logging purposes</li>
-</ul>
+    <td><code class="type">Action​Source</code></td>
+    <td><p>information about the action source, containing file/line, function and additional information for debugging and logging purposes</p>
 </td>
 </tr>
   </tbody>
@@ -183,7 +182,7 @@ Also way for a <code>Middleware</code> to trigger their own actions, usually in 
 
     <footer>
         <p>
-    Generated on <time datetime="2020-07-13T23:51:35+0200">13. July 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:00+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

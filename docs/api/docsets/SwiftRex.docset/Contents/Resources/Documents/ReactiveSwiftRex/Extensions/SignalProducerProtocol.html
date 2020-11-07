@@ -14,7 +14,7 @@
     <a title="SignalProducerProtocol Extension Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">ReactiveSwiftRex 0.7.4 Docs</a> (68% documented)</p>
+        <p><a href="../index.html">ReactiveSwiftRex 0.7.4 Docs</a> (36% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -63,9 +63,6 @@
               <li class="nav-group-task">
                 <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
               </li>
-              <li class="nav-group-task">
-                <a href="../Classes/EffectMiddleware/Context.html">– Context</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -76,6 +73,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions/Lifetime.html">Lifetime</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/MiddlewareReader.html">MiddlewareReader</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions/PublisherType.html">PublisherType</a>
@@ -111,6 +111,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Structs/Effect.html">Effect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/FireAndForget.html">FireAndForget</a>
               </li>
             </ul>
           </li>
@@ -186,9 +189,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffectAD0J0Vy5ValueQzGvp"></a>
-                    <a name="//apple_ref/swift/Property/asEffect" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffectAD0J0Vy5ValueQzGvp">asEffect</a>
+                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect5token10dispatcherAD0J0Vyyt5ValueQzGqd___0bF012ActionSourceVtSHRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(token:dispatcher:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect5token10dispatcherAD0J0Vyyt5ValueQzGqd___0bF012ActionSourceVtSHRd__lF">asEffect(token:<wbr>dispatcher:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -196,14 +199,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Erases any unfailable <code>SignalProducer</code> to effect.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">asEffect</span><span class="p">:</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Value</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">asEffect</span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Void</span><span class="p">,</span> <span class="kt">Value</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
 
                         </div>
                       </div>
@@ -213,9 +216,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect17cancellationTokenAD0J0Vy5ValueQzGqd___tSHRd__lF"></a>
-                    <a name="//apple_ref/swift/Method/asEffect(cancellationToken:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect17cancellationTokenAD0J0Vy5ValueQzGqd___tSHRd__lF">asEffect(cancellationToken:<wbr>)</a>
+                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect5token4file8function4line4infoAD0J0Vyyt5ValueQzGqd___S2SSuSSSgtSHRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(token:file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect5token4file8function4line4infoAD0J0Vyyt5ValueQzGqd___S2SSuSSSgtSHRd__lF">asEffect(token:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -223,51 +226,81 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Erases any unfailable <code>SignalProducer</code> to effect. Also contains a cancellation token.</p>
-
-<p>Cancellation token is any hashable used later to eventually cancel this effect before its completion.
-Once this effect is subscribed to, the subscription (in form of <code>Lifetime.Token</code>) will be kept in a
-dictionary where the key is this cancellation token. If another effect with the same cancellation
-token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.</p>
-
-<p>If you don&rsquo;t want this, not providing a cancellation token will only cancel your Effect in the
-very unlike scenario where the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets deallocated.</p>
-
-<p>Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running
-effects, that way, the dictionary keeping the effects will cleanup the key with that token.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n"><a href="../Extensions/SignalProducerProtocol.html#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffectAD0J0Vy5ValueQzGvp">asEffect</a></span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">cancellationToken</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Value</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">asEffect</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Void</span><span class="p">,</span> <span class="kt">Value</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>cancellationToken</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>cancellation token for this effect, as explained in the method
-                           description</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect10dispatcherAD0J0Vyyt5ValueQzG0bF012ActionSourceV_tF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(dispatcher:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect10dispatcherAD0J0Vyyt5ValueQzG0bF012ActionSourceV_tF">asEffect(dispatcher:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
                       </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an <code><a href="../Structs/Effect.html">Effect</a></code> wrapping this <code>SignalProducer</code> as its upstream, plus a cancellation token.</p>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">asEffect</span><span class="p">(</span><span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Void</span><span class="p">,</span> <span class="kt">Value</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect4file8function4line4infoAD0J0Vyyt5ValueQzGSS_SSSuSSSgtF"></a>
+                    <a name="//apple_ref/swift/Method/asEffect(file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ReactiveSwift22SignalProducerProtocolP0aB3Rexs5NeverO5ErrorRtzrlE8asEffect4file8function4line4infoAD0J0Vyyt5ValueQzGSS_SSSuSSSgtF">asEffect(file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">asEffect</span><span class="p">(</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Void</span><span class="p">,</span> <span class="kt">Value</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -277,7 +310,7 @@ effects, that way, the dictionary keeping the effects will cleanup the key with 
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

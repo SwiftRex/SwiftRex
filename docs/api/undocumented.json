@@ -1,34 +1,6 @@
 {
   "warnings": [
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/ElementIDAction.swift",
-      "line": 4,
-      "symbol": "ElementIDAction",
-      "symbol_kind": "source.lang.swift.decl.struct",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/ElementIDAction.swift",
-      "line": 6,
-      "symbol": "ElementIDAction.action",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/ElementIDAction.swift",
-      "line": 8,
-      "symbol": "ElementIDAction.init(id:action:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/ElementIDAction.swift",
-      "line": 16,
-      "symbol": "Reducer.liftToCollection(action:stateCollection:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/Middleware+TypeErasure.swift",
       "line": 12,
       "symbol": "AnyMiddleware.init(receiveContext:handle:)",
@@ -46,6 +18,27 @@
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/Middleware+TypeErasure.swift",
       "line": 57,
       "symbol": "Middleware.eraseToAnyMiddleware()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/Reducer+LiftToCollection.swift",
+      "line": 5,
+      "symbol": "Reducer.liftToCollection(action:stateCollection:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/Reducer+LiftToCollection.swift",
+      "line": 20,
+      "symbol": "Reducer.liftToCollection(action:stateCollection:identifier:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/Reducer+LiftToCollection.swift",
+      "line": 36,
+      "symbol": "Reducer.liftToCollection(action:stateCollection:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
@@ -163,21 +156,21 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/StoreImplementations/ReduxPipelineWrapper.swift",
-      "line": 10,
+      "line": 19,
       "symbol": "ReduxPipelineWrapper.init(state:reducer:middleware:emitsValue:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/StoreImplementations/ReduxPipelineWrapper.swift",
-      "line": 54,
+      "line": 74,
       "symbol": "ReduxPipelineWrapper",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/StoreImplementations/ReduxPipelineWrapper.swift",
-      "line": 55,
+      "line": 75,
       "symbol": "ReduxPipelineWrapper.init(state:reducer:middleware:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -208,6 +201,62 @@
       "line": 16,
       "symbol": "ReduxStoreProtocol",
       "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 3,
+      "symbol": "ElementIDAction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 5,
+      "symbol": "ElementIDAction.action",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 7,
+      "symbol": "ElementIDAction.init(id:action:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 14,
+      "symbol": "ElementIDAction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 16,
+      "symbol": "ElementIndexAction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 17,
+      "symbol": "ElementIndexAction.index",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 18,
+      "symbol": "ElementIndexAction.action",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 20,
+      "symbol": "ElementIndexAction.init(index:action:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {

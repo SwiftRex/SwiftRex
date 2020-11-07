@@ -14,7 +14,7 @@
     <a title="Reducer Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.7.4 Docs</a> (79% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.7.4 Docs</a> (78% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -62,6 +62,14 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/ShouldEmitValue.html">ShouldEmitValue</a>
               </li>
             </ul>
           </li>
@@ -144,7 +152,13 @@
                 <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/DispatchedAction.html">DispatchedAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ElementIndexAction.html">ElementIndexAction</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
@@ -168,9 +182,6 @@
                 <a href="../Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -183,6 +194,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
@@ -304,9 +318,9 @@ this also helps preventing <code>default</code> case or having to re-assign prop
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex7ReducerV6reduceyq_x_q_tcvp"></a>
+                    <a name="/s:8SwiftRex7ReducerV6reduceyyx_q_ztcvp"></a>
                     <a name="//apple_ref/swift/Property/reduce" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex7ReducerV6reduceyq_x_q_tcvp">reduce</a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerV6reduceyyx_q_ztcvp">reduce</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -315,15 +329,16 @@ this also helps preventing <code>default</code> case or having to re-assign prop
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Execute the wrapped reduce function. You must provide the parameters <code>action: ActionType</code> (the action to be
-evaluated during the reducing process) and the latest <code>state: StateType</code> (the current state in your single
-source-of-truth). The result of this call will be a <code>StateType</code> with the calculated new state.</p>
+evaluated during the reducing process) and an <code>inout</code> version of the latest <code>state: StateType</code>, (the current
+state in your single source-of-truth).
+State will be mutated in place (<code>inout</code>) and finish with the calculated new state.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">reduce</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a></span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">reduce</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a></span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -374,6 +389,115 @@ function itself.</p>
                             </tr>
                           </tbody>
                         </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex7ReducerV6reduceyACyxq_Gyx_q_ztcFZ"></a>
+                    <a name="//apple_ref/swift/Method/reduce(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerV6reduceyACyxq_Gyx_q_ztcFZ">reduce(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Reducer initializer takes only the underlying function <code>(ActionType, inout StateType) -&gt; Void</code> that is the reducer
+function itself.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">reduce</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a></span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Reducer</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>reduce</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from
+    an action and the old state.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex7ReducerV16liftToCollection6action05stateF010identifierACyqd__qd_0_Gs7KeyPathCyqd__AA15ElementIDActionVyqd_2_xGSgG_s08WritablejK0Cyqd_0_qd_1_GAJyq_qd_2_Gt0L0Qyd_1_Rs_SMRd_1_SHRd_2_r2_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(action:stateCollection:identifier:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerV16liftToCollection6action05stateF010identifierACyqd__qd_0_Gs7KeyPathCyqd__AA15ElementIDActionVyqd_2_xGSgG_s08WritablejK0Cyqd_0_qd_1_GAJyq_qd_2_Gt0L0Qyd_1_Rs_SMRd_1_SHRd_2_r2_lF">liftToCollection(action:<wbr>stateCollection:<wbr>identifier:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="p">,</span> <span class="kt">ID</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">action</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt"><a href="../Structs/ElementIDAction.html">ElementIDAction</a></span><span class="o">&lt;</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">ActionType</span><span class="o">&gt;</span><span class="p">?</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">stateCollection</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">identifier</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="p">,</span> <span class="kt">ID</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">StateType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex7ReducerV16liftToCollection6action05stateF0ACyqd__qd_0_Gs7KeyPathCyqd__AA18ElementIndexActionVy0L0Qyd_1_xGSgG_s08WritableiJ0Cyqd_0_qd_1_Gt0K0Qyd_1_Rs_SMRd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(action:stateCollection:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex7ReducerV16liftToCollection6action05stateF0ACyqd__qd_0_Gs7KeyPathCyqd__AA18ElementIndexActionVy0L0Qyd_1_xGSgG_s08WritableiJ0Cyqd_0_qd_1_Gt0K0Qyd_1_Rs_SMRd_1_r1_lF">liftToCollection(action:<wbr>stateCollection:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">action</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt"><a href="../Structs/ElementIndexAction.html">ElementIndexAction</a></span><span class="o">&lt;</span><span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Index</span><span class="p">,</span> <span class="kt">ActionType</span><span class="o">&gt;</span><span class="p">?</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">stateCollection</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">StateType</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -767,9 +891,9 @@ long as we have a way to lift it to the world of <em>Whole</em>.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="o">/</span>    <span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
-  <span class="nv">state</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span>
-  <span class="o">-&gt;</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -940,7 +1064,7 @@ you want to ignore actions that are not relevant for this reducer.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

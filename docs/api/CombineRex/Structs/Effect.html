@@ -14,7 +14,7 @@
     <a title="Effect Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">CombineRex 0.7.4 Docs</a> (64% documented)</p>
+        <p><a href="../index.html">CombineRex 0.7.4 Docs</a> (43% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -64,18 +64,7 @@
                 <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/EffectMiddleware/Context.html">– Context</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/ObservableViewModel.html">ObservableViewModel</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="../Enums.html">Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Enums/EffectOutput.html">EffectOutput</a>
               </li>
             </ul>
           </li>
@@ -84,6 +73,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Extensions/Cancellable.html">Cancellable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/MiddlewareReader.html">MiddlewareReader</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions/PassthroughSubject.html">PassthroughSubject</a>
@@ -124,18 +116,13 @@
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="../Protocols.html">Protocols</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
             <a href="../Structs.html">Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Structs/Effect.html">Effect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/FireAndForget.html">FireAndForget</a>
               </li>
             </ul>
           </li>
@@ -158,32 +145,11 @@
             <h1>Effect</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)</span>
-<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Publisher</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
 
                 </div>
               </div>
-            <p><code>Effect</code> is a Publisher/Observable/SignalProducer to be returned by Middlewares so they can dispatch Actions back to a Store. Every effect may 
-have a cancellation token to be later cancelled by new action arrivals, such as in the case when the user is no longer interested in certain HTTP 
-Request or wants to stop a timer. When cancellation token is not provided during the initialization of an Effect, it still can be passed later, 
-which will re-wrap the upstream again in a new Effect, but this time containing the cancellation token. Some static constructors are available, 
-such as <code>.doNothing</code>, <code>.just(_: Output)</code>, <code>.sequence(_: Output...)</code>, <code>.sequence(_: [Output]</code>, <code>.promise(_: CompletionHandler)</code>, etc.</p>
-
-<p><code>Effect</code> is a stream of the type <code><a href="../Enums/EffectOutput.html">EffectOutput</a></code>, which contains the action and the action source. Most of the times you want to create the 
-<code><a href="../Enums/EffectOutput.html">EffectOutput</a></code> by simply calling <code>EffectOutput.dispatch(myAction)</code>, where myAction matches the <code>OutputActionType</code> of this middleware.</p>
-
-<p>An Effect should never Fail, so any possible failure of its upstream must be caught and treated before the Effect is created. For example, if you 
-have an upstream that uses URLSession to fetch some data from an URL, once you get your data back you can dispatch a successful action. But in 
-case the task returns an URLError or some unexpected URLResponse, you should not fail, but instead, replace the error with an action to be 
-dispatched telling your store that the request has failed. This will enforce the usage of Actions as communication units between different 
-middlewares and reducers.</p>
-
-<p>That&rsquo;s also the reason why <code>.asEffect()</code>, <code>.asEffect&lt;H: Hashable&gt;(cancellationToken: H)</code> and
-<code>.asEffect&lt;H: Hashable&gt;(dispatcher: ActionSource, cancellationToken: H)</code> extensions are only available for publishers that have <code>Failure == 
-Never</code>, when the reactive framework supports Failure constraints.</p>
-
-<p>An Effect can be a single-shot sync or async, or a long-lasting one such as a timer. That&rsquo;s why cancellation token is so important. The option 
-<code>.doNothing</code> is an <code>Empty</code> publisher useful for when the middleware decides that certain conditions don&rsquo;t require any side-effect.</p>
+            <p>Undocumented</p>
 
           </section>
           <section class="section task-group-section">
@@ -192,9 +158,9 @@ Never</code>, when the reactive framework supports Failure constraints.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV6Outputa"></a>
-                    <a name="//apple_ref/swift/Alias/Output" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV6Outputa">Output</a>
+                    <a name="/s:10CombineRex6EffectV8ToCancela"></a>
+                    <a name="//apple_ref/swift/Alias/ToCancel" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV8ToCancela">ToCancel</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -202,15 +168,14 @@ Never</code>, when the reactive framework supports Failure constraints.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Output action matching middleware&rsquo;s <code>OutputActionType</code>, wrapped in a <code><a href="../Enums/EffectOutput.html">EffectOutput&lt;OutputActionType&gt;</a></code> so the action dispatcher can also be 
-collected.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Output</span> <span class="o">=</span> <span class="kt"><a href="../Enums/EffectOutput.html">EffectOutput</a></span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ToCancel</span> <span class="o">=</span> <span class="p">(</span><span class="kt">AnyHashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/FireAndForget.html">FireAndForget</a></span><span class="o">&lt;</span><span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -220,9 +185,9 @@ collected.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV7Failurea"></a>
-                    <a name="//apple_ref/swift/Alias/Failure" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV7Failurea">Failure</a>
+                    <a name="/s:10CombineRex6EffectV7Contexta"></a>
+                    <a name="//apple_ref/swift/Alias/Context" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV7Contexta">Context</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -230,14 +195,14 @@ collected.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p><code>Effect</code> publisher/observable can&rsquo;t fail.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Failure</span> <span class="o">=</span> <span class="kt">Never</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Context</span> <span class="o">=</span> <span class="p">(</span><span class="nv">dependencies</span><span class="p">:</span> <span class="kt">Dependencies</span><span class="p">,</span> <span class="nv">toCancel</span><span class="p">:</span> <span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV8ToCancela">ToCancel</a></span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -247,9 +212,9 @@ collected.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV17cancellationTokens11AnyHashableVSgvp"></a>
-                    <a name="//apple_ref/swift/Property/cancellationToken" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV17cancellationTokens11AnyHashableVSgvp">cancellationToken</a>
+                    <a name="/s:10CombineRex6EffectV13doesSomethingSbvp"></a>
+                    <a name="//apple_ref/swift/Property/doesSomething" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV13doesSomethingSbvp">doesSomething</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -257,22 +222,14 @@ collected.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect is subscribed to, the 
-subscription (in form of <code>AnyCancellable</code>) will be kept in a dictionary where the key is this cancellation token. If another effect with the 
-same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.</p>
-
-<p>If you don&rsquo;t want this, not providing a cancellation token will only cancel your Effect in the very unlike scenario where the 
-<code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets deallocated.</p>
-
-<p>Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running effects, that way, the dictionary keeping 
-the effects will cleanup the key with that token.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">cancellationToken</span><span class="p">:</span> <span class="kt">AnyHashable</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">doesSomething</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -282,9 +239,9 @@ the effects will cleanup the key with that token.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV8upstreamACyxGqd___tc0A09PublisherRd__s5NeverO7FailureRtd__AA0C6OutputOyxG0H0Rtd__lufc"></a>
-                    <a name="//apple_ref/swift/Method/init(upstream:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV8upstreamACyxGqd___tc0A09PublisherRd__s5NeverO7FailureRtd__AA0C6OutputOyxG0H0Rtd__lufc">init(upstream:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectV5tokens11AnyHashableVSgvp"></a>
+                    <a name="//apple_ref/swift/Property/token" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV5tokens11AnyHashableVSgvp">token</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -292,36 +249,16 @@ the effects will cleanup the key with that token.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Create an effect with any upstream as long as it can&rsquo;t fail. Don&rsquo;t use eager publishers as upstream, such as Future, as they will unexpectedly 
-start the side-effect before the subscription.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">P</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">upstream</span><span class="p">:</span> <span class="kt">P</span><span class="p">)</span> <span class="k">where</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt">Publisher</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Failurea">Failure</a></span> <span class="o">==</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Failurea">Failure</a></span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV6Outputa">Output</a></span> <span class="o">==</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV6Outputa">Output</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">token</span><span class="p">:</span> <span class="kt">AnyHashable</span><span class="p">?</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>upstream</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>an upstream Publisher that can&rsquo;t fail and should not be eager.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -329,9 +266,9 @@ start the side-effect before the subscription.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV8upstream17cancellationTokenACyxGqd___qd_0_tc0A09PublisherRd__SHRd_0_s5NeverO7FailureRtd__AA0C6OutputOyxG0J0Rtd__r0_lufc"></a>
-                    <a name="//apple_ref/swift/Method/init(upstream:cancellationToken:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV8upstream17cancellationTokenACyxGqd___qd_0_tc0A09PublisherRd__SHRd_0_s5NeverO7FailureRtd__AA0C6OutputOyxG0J0Rtd__r0_lufc">init(upstream:<wbr>cancellationToken:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectV5token6effectACyxq_Gqd___qd_0_x12dependencies_AA13FireAndForgetVy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tctcSHRd__0A09PublisherRd_0_s5NeverO7FailureRtd_0_AM6OutputRtd_0_r0_lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(token:effect:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV5token6effectACyxq_Gqd___qd_0_x12dependencies_AA13FireAndForgetVy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tctcSHRd__0A09PublisherRd_0_s5NeverO7FailureRtd_0_AM6OutputRtd_0_r0_lufc">init(token:<wbr>effect:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -339,53 +276,17 @@ start the side-effect before the subscription.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Create an effect with any upstream as long as it can&rsquo;t fail. Don&rsquo;t use eager publishers as upstream, such as Future, as they will unexpectedly 
-start the side-effect before the subscription.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">P</span><span class="p">,</span> <span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">upstream</span><span class="p">:</span> <span class="kt">P</span><span class="p">,</span> <span class="nv">cancellationToken</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="k">where</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt">Publisher</span><span class="p">,</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Failurea">Failure</a></span> <span class="o">==</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Failurea">Failure</a></span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV6Outputa">Output</a></span> <span class="o">==</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV6Outputa">Output</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">P</span><span class="p">:</span> <span class="kt">Publisher</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span> <span class="nv">effect</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">P</span><span class="p">)</span>
+<span class="k">where</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Output</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>upstream</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>an upstream Publisher that can&rsquo;t fail and should not be eager.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>cancellationToken</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect 
-is subscribed to, the subscription (in form of <code>AnyCancellable</code>) will be kept in a dictionary where the key is this cancellation token. If 
-another effect with the same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.<br>
-If you don&rsquo;t want this, not providing a cancellation token will only cancel your Effect in the very unlike scenario where the 
-<code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets deallocated.  Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of 
-running effects, that way, the dictionary keeping the effects will cleanup the key with that token.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -393,9 +294,9 @@ running effects, that way, the dictionary keeping the effects will cleanup the k
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV7receive10subscriberyqd___t0A010SubscriberRd__s5NeverO7FailureRtd__AA0C6OutputOyxG5InputRtd__lF"></a>
-                    <a name="//apple_ref/swift/Method/receive(subscriber:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV7receive10subscriberyqd___t0A010SubscriberRd__s5NeverO7FailureRtd__AA0C6OutputOyxG5InputRtd__lF">receive(subscriber:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectV6effectACyxq_Gqd__x12dependencies_AA13FireAndForgetVy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_tc0A09PublisherRd__s5NeverO7FailureRtd__AL6OutputRtd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(effect:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV6effectACyxq_Gqd__x12dependencies_AA13FireAndForgetVy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_tc0A09PublisherRd__s5NeverO7FailureRtd__AL6OutputRtd__lufc">init(effect:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -403,40 +304,16 @@ running effects, that way, the dictionary keeping the effects will cleanup the k
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>This function is called to attach the specified <code>Subscriber</code> to this <code>Publisher</code> by <code>subscribe(_:)</code></p>
-<div class="aside aside-see-also">
-    <p class="aside-title">See also</p>
-    <code>subscribe(_:)</code>
-
-</div>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">receive</span><span class="o">&lt;</span><span class="kt">S</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">subscriber</span><span class="p">:</span> <span class="kt">S</span><span class="p">)</span> <span class="k">where</span> <span class="kt">S</span> <span class="p">:</span> <span class="kt">Subscriber</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Failurea">Failure</a></span> <span class="o">==</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Failurea">Failure</a></span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Input</span> <span class="o">==</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;.</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV6Outputa">Output</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">P</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">effect</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">P</span><span class="p">)</span> <span class="k">where</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt">Publisher</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Output</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>subscriber</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The subscriber to attach to this <code>Publisher</code>. Once attached it can begin to receive values.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -444,66 +321,9 @@ running effects, that way, the dictionary keeping the effects will cleanup the k
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV12cancellation5tokenACyxGqd___tSHRd__lF"></a>
-                    <a name="//apple_ref/swift/Method/cancellation(token:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV12cancellation5tokenACyxGqd___tSHRd__lF">cancellation(token:<wbr>)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Adds a cancellation token to an Effect. This will re-wrap the upstream in a new Effect that also holds the cancellation token.</p>
-
-<p>Cancellation token is any hashable used later to eventually cancel this effect before its completion. Once this effect is subscribed to, the 
-subscription (in form of <code>AnyCancellable</code>) will be kept in a dictionary where the key is this cancellation token. If another effect with the 
-same cancellation token arrives, the former will be immediately replaced in the dictionary and, therefore, cancelled.  If you don&rsquo;t want this, 
-not providing a cancellation token will only cancel your Effect in the very unlike scenario where the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> itself gets 
-deallocated.  Cancellation tokens can also be provided to the <code><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></code> to force cancellation of running effects, that way, the 
-dictionary keeping the effects will cleanup the key with that token. </p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">cancellation</span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>token</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any hashable you want.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>a new <code>Effect</code> instance, wrapping the upstream of original Effect but also holding the cancellation token.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:10CombineRex6EffectV9doNothingACyxGvpZ"></a>
+                    <a name="/s:10CombineRex6EffectV9doNothingACyxq_GvpZ"></a>
                     <a name="//apple_ref/swift/Variable/doNothing" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV9doNothingACyxGvpZ">doNothing</a>
+                    <a class="token" href="#/s:10CombineRex6EffectV9doNothingACyxq_GvpZ">doNothing</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -511,8 +331,7 @@ dictionary keeping the effects will cleanup the key with that token. </p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>An Empty effect that will complete immediately without emitting any output. Useful for when the Middleware doesn&rsquo;t want to perform any 
-side-effect.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
@@ -529,9 +348,148 @@ side-effect.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV4just_4fromACyxGx_05SwiftB012ActionSourceVtFZ"></a>
+                    <a name="/s:10CombineRex6EffectV3runy0A012AnyPublisherVy05SwiftB016DispatchedActionVyq_Gs5NeverOGSgx12dependencies_AA13FireAndForgetVyAKGs0E8HashableVc8toCancelt_tF"></a>
+                    <a name="//apple_ref/swift/Method/run(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV3runy0A012AnyPublisherVy05SwiftB016DispatchedActionVyq_Gs5NeverOGSgx12dependencies_AA13FireAndForgetVyAKGs0E8HashableVc8toCancelt_tF">run(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">run</span><span class="p">(</span><span class="n">_</span> <span class="nv">context</span><span class="p">:</span> <span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectV3mapyACyxqd__Gqd__q_clF"></a>
+                    <a name="//apple_ref/swift/Method/map(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV3mapyACyxqd__Gqd__q_clF">map(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">map</span><span class="o">&lt;</span><span class="kt">NewOutputAction</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">transform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NewOutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">NewOutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectV13fireAndForgetyACyxq_Gqd__x12dependencies_AA04FireeF0Vy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc0A09PublisherRd__s5NeverO7FailureRtd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV13fireAndForgetyACyxq_Gqd__x12dependencies_AA04FireeF0Vy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc0A09PublisherRd__s5NeverO7FailureRtd__lFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">P</span><span class="p">:</span> <span class="kt">Publisher</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectV13fireAndForget_11catchErrorsACyxq_Gqd__x12dependencies_AA04FireeF0Vy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_AMSg7FailureQyd__ct0A09PublisherRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:catchErrors:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV13fireAndForget_11catchErrorsACyxq_Gqd__x12dependencies_AA04FireeF0Vy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_AMSg7FailureQyd__ct0A09PublisherRd__lFZ">fireAndForget(_:<wbr>catchErrors:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">P</span><span class="p">:</span> <span class="kt">Publisher</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">P</span><span class="p">,</span>
+    <span class="nv">catchErrors</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">?</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectV13fireAndForgetyACyxq_Gyx12dependencies_AA04FireeF0Vy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tcFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV13fireAndForgetyACyxq_Gyx12dependencies_AA04FireeF0Vy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tcFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fireAndForget</span><span class="p">(</span><span class="n">_</span> <span class="nv">operation</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectV4just_4fromACyxq_Gq__05SwiftB012ActionSourceVtFZ"></a>
                     <a name="//apple_ref/swift/Method/just(_:from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV4just_4fromACyxGx_05SwiftB012ActionSourceVtFZ">just(_:<wbr>from:<wbr>)</a>
+                    <a class="token" href="#/s:10CombineRex6EffectV4just_4fromACyxq_Gq__05SwiftB012ActionSourceVtFZ">just(_:<wbr>from:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -539,53 +497,16 @@ side-effect.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A synchronous side-effect that just wraps a single value to be published before the completion.
-It lifts a plain value into an <code>Effect</code>.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">just</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span> <span class="o">=</span> <span class="o">.</span><span class="nf">here</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">just</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>value</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the one and only output to be published, synchronously, before the effect completes.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dispatcher</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The action source, so the Store and other middlewares know where this action is coming from. Default value is 
-<code>ActionSource.here()</code>, referring to this line as the source. It can be customized for better logging results.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an <code>Effect</code> that will publish the given value upon subscription, and then complete, immediately.</p>
                       </div>
                     </section>
                   </div>
@@ -593,9 +514,42 @@ It lifts a plain value into an <code>Effect</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV8sequence_4fromACyxGxd_05SwiftB012ActionSourceVtFZ"></a>
+                    <a name="/s:10CombineRex6EffectV4just_4file8function4line4infoACyxq_Gq__S2SSuSSSgtFZ"></a>
+                    <a name="//apple_ref/swift/Method/just(_:file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV4just_4file8function4line4infoACyxq_Gq__S2SSuSSSgtFZ">just(_:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">just</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="p">,</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectV8sequence_4fromACyxq_Gq_d_05SwiftB012ActionSourceVtFZ"></a>
                     <a name="//apple_ref/swift/Method/sequence(_:from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV8sequence_4fromACyxGxd_05SwiftB012ActionSourceVtFZ">sequence(_:<wbr>from:<wbr>)</a>
+                    <a class="token" href="#/s:10CombineRex6EffectV8sequence_4fromACyxq_Gq_d_05SwiftB012ActionSourceVtFZ">sequence(_:<wbr>from:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -603,53 +557,16 @@ It lifts a plain value into an <code>Effect</code>.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A synchronous side-effect that just wraps a sequence of values to be published before the completion.
-It lifts a plain sequence of values into an <code>Effect</code>.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span><span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="o">...</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span> <span class="o">=</span> <span class="o">.</span><span class="nf">here</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span><span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="o">...</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>values</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the sequence of output values to be published, synchronously, before the effect completes.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dispatcher</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The action source, so the Store and other middlewares know where this action is coming from. Default value is 
-<code>ActionSource.here()</code>, referring to this line as the source. It can be customized for better logging results.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an <code>Effect</code> that will publish the given values upon subscription, and then complete, immediately.</p>
                       </div>
                     </section>
                   </div>
@@ -657,9 +574,42 @@ It lifts a plain sequence of values into an <code>Effect</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV8sequence_4fromACyxGSayxG_05SwiftB012ActionSourceVtFZ"></a>
+                    <a name="/s:10CombineRex6EffectV8sequence_4file8function4line4infoACyxq_Gq_d_S2SSuSSSgtFZ"></a>
+                    <a name="//apple_ref/swift/Method/sequence(_:file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV8sequence_4file8function4line4infoACyxq_Gq_d_S2SSuSSSgtFZ">sequence(_:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="o">...</span><span class="p">,</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectV8sequence_4fromACyxq_GSayq_G_05SwiftB012ActionSourceVtFZ"></a>
                     <a name="//apple_ref/swift/Method/sequence(_:from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV8sequence_4fromACyxGSayxG_05SwiftB012ActionSourceVtFZ">sequence(_:<wbr>from:<wbr>)</a>
+                    <a class="token" href="#/s:10CombineRex6EffectV8sequence_4fromACyxq_GSayq_G_05SwiftB012ActionSourceVtFZ">sequence(_:<wbr>from:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -667,53 +617,16 @@ It lifts a plain sequence of values into an <code>Effect</code>.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A synchronous side-effect that just wraps a sequence of values to be published before the completion.
-It lifts a plain sequence of values into an <code>Effect</code>.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span><span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="p">[</span><span class="kt">OutputAction</span><span class="p">],</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span> <span class="o">=</span> <span class="o">.</span><span class="nf">here</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span><span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="p">[</span><span class="kt">OutputAction</span><span class="p">],</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>values</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>the sequence of output values to be published, synchronously, before the effect completes.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dispatcher</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The action source, so the Store and other middlewares know where this action is coming from. Default value is 
-<code>ActionSource.here()</code>, referring to this line as the source. It can be customized for better logging results.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an <code>Effect</code> that will publish the given values upon subscription, and then complete, immediately.</p>
                       </div>
                     </section>
                   </div>
@@ -721,9 +634,9 @@ It lifts a plain sequence of values into an <code>Effect</code>.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV7promiseyACyxGyyAA0C6OutputOyxGXEcFZ"></a>
-                    <a name="//apple_ref/swift/Method/promise(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV7promiseyACyxGyyAA0C6OutputOyxGXEcFZ">promise(_:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectV8sequence_4file8function4line4infoACyxq_GSayq_G_S2SSuSSSgtFZ"></a>
+                    <a name="//apple_ref/swift/Method/sequence(_:file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV8sequence_4file8function4line4infoACyxq_GSayq_G_S2SSuSSSgtFZ">sequence(_:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -731,49 +644,22 @@ It lifts a plain sequence of values into an <code>Effect</code>.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>An async task that will start upon subscription and needs to call a completion handler once when it&rsquo;s done.
-You can create an Effect promise like this:</p>
-<pre class="highlight swift"><code><span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;.</span><span class="n">promise</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
-    <span class="n">doSomethingAsync</span> <span class="p">{</span> <span class="n">outputString</span> <span class="k">in</span>
-        <span class="nf">completion</span><span class="p">(</span><span class="n">outputString</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre>
-
-<p>Internally creates a <code>Deferred&lt;Future&lt;Output, Never&gt;&gt;</code></p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">promise</span><span class="p">(</span><span class="n">_</span> <span class="nv">operation</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV6Outputa">Output</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="p">[</span><span class="kt">OutputAction</span><span class="p">],</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>operation</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>a closure that gives you a completion handler to be called once the async task is done</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an <code>Effect</code> that will eventually publish the given output when you call the completion handler and that will only call your async 
-task once it&rsquo;s subscribed by the Effect Middleware. Then, it will complete immediately as soon as it emits the first value.</p>
                       </div>
                     </section>
                   </div>
@@ -781,9 +667,9 @@ task once it&rsquo;s subscribed by the Effect Middleware. Then, it will complete
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV5mergeyACyxGAE_AEtFZ"></a>
-                    <a name="//apple_ref/swift/Method/merge(_:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV5mergeyACyxGAE_AEtFZ">merge(_:<wbr>_:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectV7promise5token4from7performACyxq_Gqd___05SwiftB012ActionSourceVyx12dependencies_AA13FireAndForgetVyAI010DispatchedI0Vyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/promise(token:from:perform:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV7promise5token4from7performACyxq_Gqd___05SwiftB012ActionSourceVyx12dependencies_AA13FireAndForgetVyAI010DispatchedI0Vyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ">promise(token:<wbr>from:<wbr>perform:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -791,52 +677,20 @@ task once it&rsquo;s subscribed by the Effect Middleware. Then, it will complete
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Merges multiple effects into one. This will result in an effect that will execute the given effects in parallel, with subscription starting 
-with the order provided but delivering output values in the order they arrive from any of the merged effects.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">merge</span><span class="p">(</span><span class="n">_</span> <span class="nv">first</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">second</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">promise</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span>
+    <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span>
+    <span class="nv">perform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">,</span> <span class="p">(</span><span class="kt">OutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>first</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>second</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an Effect that will subscribe to all upstream effects provided above, and will combine their elements as they arrive.</p>
                       </div>
                     </section>
                   </div>
@@ -844,9 +698,9 @@ with the order provided but delivering output values in the order they arrive fr
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV5mergeyACyxGAE_A2EtFZ"></a>
-                    <a name="//apple_ref/swift/Method/merge(_:_:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV5mergeyACyxGAE_A2EtFZ">merge(_:<wbr>_:<wbr>_:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectV7promise5token4file8function4line4info7performACyxq_Gqd___S2SSuSSSgyx12dependencies_AA13FireAndForgetVy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/promise(token:file:function:line:info:perform:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV7promise5token4file8function4line4info7performACyxq_Gqd___S2SSuSSSgyx12dependencies_AA13FireAndForgetVy05SwiftB016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ">promise(token:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>perform:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -854,64 +708,23 @@ with the order provided but delivering output values in the order they arrive fr
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Merges multiple effects into one. This will result in an effect that will execute the given effects in parallel, with subscription starting 
-with the order provided but delivering output values in the order they arrive from any of the merged effects.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">merge</span><span class="p">(</span><span class="n">_</span> <span class="nv">first</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">second</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">third</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">promise</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+    <span class="nv">perform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:10CombineRex6EffectV7Contexta">Context</a></span><span class="p">,</span> <span class="p">(</span><span class="kt">OutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>first</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>second</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>third</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an Effect that will subscribe to all upstream effects provided above, and will combine their elements as they arrive.</p>
                       </div>
                     </section>
                   </div>
@@ -919,9 +732,9 @@ with the order provided but delivering output values in the order they arrive fr
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV5mergeyACyxGAE_A3EtFZ"></a>
-                    <a name="//apple_ref/swift/Method/merge(_:_:_:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV5mergeyACyxGAE_A3EtFZ">merge(_:<wbr>_:<wbr>_:<wbr>_:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectV8toCancelyACyxq_Gqd__SHRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/toCancel(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectV8toCancelyACyxq_Gqd__SHRd__lFZ">toCancel(_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -929,76 +742,57 @@ with the order provided but delivering output values in the order they arrive fr
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Merges multiple effects into one. This will result in an effect that will execute the given effects in parallel, with subscription starting 
-with the order provided but delivering output values in the order they arrive from any of the merged effects.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">merge</span><span class="p">(</span><span class="n">_</span> <span class="nv">first</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">second</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">third</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">fourth</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">toCancel</span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
 
                         </div>
                       </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>first</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>second</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>third</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>fourth</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60Dependencies%60%20==%20%60Void%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Dependencies` == `Void`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Dependencies%60%20==%20%60Void%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Dependencies</code> == <code>Void</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectVAAytRszrlE5token6effectACyytq_Gqd___qd_0_tcSHRd__0A09PublisherRd_0_s5NeverO7FailureRtd_0_05SwiftB016DispatchedActionVyq_G6OutputRtd_0_r0_lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(token:effect:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectVAAytRszrlE5token6effectACyytq_Gqd___qd_0_tcSHRd__0A09PublisherRd_0_s5NeverO7FailureRtd_0_05SwiftB016DispatchedActionVyq_G6OutputRtd_0_r0_lufc">init(token:<wbr>effect:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
                       </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an Effect that will subscribe to all upstream effects provided above, and will combine their elements as they arrive.</p>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">P</span><span class="p">:</span> <span class="kt">Publisher</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span> <span class="nv">effect</span><span class="p">:</span> <span class="kt">P</span><span class="p">)</span>
+<span class="k">where</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Output</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -1006,9 +800,9 @@ with the order provided but delivering output values in the order they arrive fr
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10CombineRex6EffectV5mergeyACyxGAE_A4EtFZ"></a>
-                    <a name="//apple_ref/swift/Method/merge(_:_:_:_:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10CombineRex6EffectV5mergeyACyxGAE_A4EtFZ">merge(_:<wbr>_:<wbr>_:<wbr>_:<wbr>_:<wbr>)</a>
+                    <a name="/s:10CombineRex6EffectVAAytRszrlEyACyytq_Gqd__c0A09PublisherRd__s5NeverO7FailureRtd__05SwiftB016DispatchedActionVyq_G6OutputRtd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectVAAytRszrlEyACyytq_Gqd__c0A09PublisherRd__s5NeverO7FailureRtd__05SwiftB016DispatchedActionVyq_G6OutputRtd__lufc">init(_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1016,88 +810,125 @@ with the order provided but delivering output values in the order they arrive fr
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Merges multiple effects into one. This will result in an effect that will execute the given effects in parallel, with subscription starting 
-with the order provided but delivering output values in the order they arrive from any of the merged effects.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">merge</span><span class="p">(</span><span class="n">_</span> <span class="nv">first</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">second</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">third</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">fourth</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">,</span> <span class="n">_</span> <span class="nv">fifth</span><span class="p">:</span> <span class="kt">Effect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">P</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">effect</span><span class="p">:</span> <span class="kt">P</span><span class="p">)</span> <span class="k">where</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt">Publisher</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Output</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>first</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>second</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>third</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>fourth</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>fifth</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>any effect to have its elements merged into the final effect stream</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectVAAytRszrlE20ignoringDependenciesACyqd__q_GylF"></a>
+                    <a name="//apple_ref/swift/Method/ignoringDependencies()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectVAAytRszrlE20ignoringDependenciesACyqd__q_GylF">ignoringDependencies()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
                       </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>an Effect that will subscribe to all upstream effects provided above, and will combine their elements as they arrive.</p>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">ignoringDependencies</span><span class="o">&lt;</span><span class="kt">T</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectVAAytRszrlE13fireAndForgetyACyytq_Gqd__0A09PublisherRd__s5NeverO7FailureRtd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectVAAytRszrlE13fireAndForgetyACyytq_Gqd__0A09PublisherRd__s5NeverO7FailureRtd__lFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">P</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kt">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">P</span> <span class="p">:</span> <span class="kt">Publisher</span><span class="p">,</span> <span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectVAAytRszrlE13fireAndForget_11catchErrorsACyytq_Gqd___05SwiftB016DispatchedActionVyq_GSg7FailureQyd__ct0A09PublisherRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:catchErrors:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectVAAytRszrlE13fireAndForget_11catchErrorsACyytq_Gqd___05SwiftB016DispatchedActionVyq_GSg7FailureQyd__ct0A09PublisherRd__lFZ">fireAndForget(_:<wbr>catchErrors:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">P</span><span class="p">:</span> <span class="kt">Publisher</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kt">P</span><span class="p">,</span> <span class="nv">catchErrors</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">P</span><span class="o">.</span><span class="kt">Failure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">?)</span>
+<span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex6EffectVAAytRszrlE13fireAndForgetyACyytq_GyycFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex6EffectVAAytRszrlE13fireAndForgetyACyytq_GyycFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fireAndForget</span><span class="p">(</span><span class="n">_</span> <span class="nv">operation</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -1107,7 +938,7 @@ with the order provided but delivering output values in the order they arrive fr
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

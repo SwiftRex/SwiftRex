@@ -14,7 +14,7 @@
     <a title="Structures  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">CombineRex 0.7.4 Docs</a> (64% documented)</p>
+        <p><a href="index.html">CombineRex 0.7.4 Docs</a> (43% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -64,18 +64,7 @@
                 <a href="Classes/EffectMiddleware.html">EffectMiddleware</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/EffectMiddleware/Context.html">– Context</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/ObservableViewModel.html">ObservableViewModel</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Enums.html">Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Enums/EffectOutput.html">EffectOutput</a>
               </li>
             </ul>
           </li>
@@ -84,6 +73,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Extensions/Cancellable.html">Cancellable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/MiddlewareReader.html">MiddlewareReader</a>
               </li>
               <li class="nav-group-task">
                 <a href="Extensions/PassthroughSubject.html">PassthroughSubject</a>
@@ -124,18 +116,13 @@
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="Protocols.html">Protocols</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Protocols/EffectOutputProtocol.html">EffectOutputProtocol</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
             <a href="Structs.html">Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Structs/Effect.html">Effect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/FireAndForget.html">FireAndForget</a>
               </li>
             </ul>
           </li>
@@ -175,27 +162,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p><code>Effect</code> is a Publisher/Observable/SignalProducer to be returned by Middlewares so they can dispatch Actions back to a Store. Every effect may 
-have a cancellation token to be later cancelled by new action arrivals, such as in the case when the user is no longer interested in certain HTTP 
-Request or wants to stop a timer. When cancellation token is not provided during the initialization of an Effect, it still can be passed later, 
-which will re-wrap the upstream again in a new Effect, but this time containing the cancellation token. Some static constructors are available, 
-such as <code>.doNothing</code>, <code>.just(_: Output)</code>, <code>.sequence(_: Output...)</code>, <code>.sequence(_: [Output]</code>, <code>.promise(_: CompletionHandler)</code>, etc.</p>
-
-<p><code>Effect</code> is a stream of the type <code><a href="Enums/EffectOutput.html">EffectOutput</a></code>, which contains the action and the action source. Most of the times you want to create the 
-<code><a href="Enums/EffectOutput.html">EffectOutput</a></code> by simply calling <code>EffectOutput.dispatch(myAction)</code>, where myAction matches the <code>OutputActionType</code> of this middleware.</p>
-
-<p>An Effect should never Fail, so any possible failure of its upstream must be caught and treated before the Effect is created. For example, if you 
-have an upstream that uses URLSession to fetch some data from an URL, once you get your data back you can dispatch a successful action. But in 
-case the task returns an URLError or some unexpected URLResponse, you should not fail, but instead, replace the error with an action to be 
-dispatched telling your store that the request has failed. This will enforce the usage of Actions as communication units between different 
-middlewares and reducers.</p>
-
-<p>That&rsquo;s also the reason why <code>.asEffect()</code>, <code>.asEffect&lt;H: Hashable&gt;(cancellationToken: H)</code> and
-<code>.asEffect&lt;H: Hashable&gt;(dispatcher: ActionSource, cancellationToken: H)</code> extensions are only available for publishers that have <code>Failure == 
-Never</code>, when the reactive framework supports Failure constraints.</p>
-
-<p>An Effect can be a single-shot sync or async, or a long-lasting one such as a timer. That&rsquo;s why cancellation token is so important. The option 
-<code>.doNothing</code> is an <code>Empty</code> publisher useful for when the middleware decides that certain conditions don&rsquo;t require any side-effect.</p>
+                        <p>Undocumented</p>
 
                         <a href="Structs/Effect.html" class="slightly-smaller">See more</a>
                       </div>
@@ -203,8 +170,38 @@ Never</code>, when the reactive framework supports Failure constraints.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)</span>
-<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Publisher</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex13FireAndForgetV"></a>
+                    <a name="//apple_ref/swift/Struct/FireAndForget" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex13FireAndForgetV">FireAndForget</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Fire And Forget is a publisher for when you don&rsquo;t care about the output of certain async operation. It&rsquo;s important to notice that this operation
+can&rsquo;t fail. If you want to also ignore the failure, then you can catchErrors and return nil in the proper init.
+It may complete successfully when task is done.</p>
+
+                        <a href="Structs/FireAndForget.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)</span>
+<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">FireAndForget</span><span class="o">&lt;</span><span class="kt">IgnoringOutput</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Publisher</span></code></pre>
 
                         </div>
                       </div>
@@ -216,7 +213,7 @@ Never</code>, when the reactive framework supports Failure constraints.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
