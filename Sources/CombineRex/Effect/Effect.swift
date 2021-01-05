@@ -65,12 +65,12 @@ extension Effect where Dependencies == Void {
     public init<H: Hashable, P: Publisher>(token: H, effect: P)
     where P.Output == DispatchedAction<OutputAction>, P.Failure == Never {
         self.token = token
-        self._run = { context in effect.eraseToAnyPublisher() }
+        self._run = { _ in effect.eraseToAnyPublisher() }
     }
 
     public init<P: Publisher>(_ effect: P) where P.Output == DispatchedAction<OutputAction>, P.Failure == Never {
         self.token = nil
-        self._run = { context in effect.eraseToAnyPublisher() }
+        self._run = { _ in effect.eraseToAnyPublisher() }
     }
 
     public func ignoringDependencies<T>() -> Effect<T, OutputAction> {

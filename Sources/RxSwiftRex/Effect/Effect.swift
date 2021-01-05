@@ -62,12 +62,12 @@ extension Effect where Dependencies == Void {
     public init<H: Hashable, O: ObservableType>(token: H, effect: O)
     where O.Element == DispatchedAction<OutputAction> {
         self.token = token
-        self._run = { context in effect.asObservable() }
+        self._run = { _ in effect.asObservable() }
     }
 
     public init<O: ObservableType>(_ effect: O) where O.Element == DispatchedAction<OutputAction> {
         self.token = nil
-        self._run = { context in effect.asObservable() }
+        self._run = { _ in effect.asObservable() }
     }
 
     public func ignoringDependencies<T>() -> Effect<T, OutputAction> {

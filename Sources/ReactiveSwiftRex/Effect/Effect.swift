@@ -64,12 +64,12 @@ extension Effect where Dependencies == Void {
     public init<H: Hashable, S: SignalProducerProtocol>(token: H, effect: S)
     where S.Value == DispatchedAction<OutputAction>, S.Error == Never {
         self.token = token
-        self._run = { context in effect.producer }
+        self._run = { _ in effect.producer }
     }
 
     public init<S: SignalProducerProtocol>(_ effect: S) where S.Value == DispatchedAction<OutputAction>, S.Error == Never {
         self.token = nil
-        self._run = { context in effect.producer }
+        self._run = { _ in effect.producer }
     }
 
     public func ignoringDependencies<T>() -> Effect<T, OutputAction> {

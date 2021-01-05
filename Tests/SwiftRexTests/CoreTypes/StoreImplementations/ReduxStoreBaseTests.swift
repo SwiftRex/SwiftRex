@@ -19,10 +19,10 @@ class ReduxStoreBaseTests: XCTestCase {
         let initialState = TestState()
         let fooMiddleware = IsoMiddlewareMock<AppAction, TestState>()
         var fooMiddlewareOutput: AnyActionHandler<AppAction>?
-        fooMiddleware.receiveContextGetStateOutputClosure = { getState, output in
+        fooMiddleware.receiveContextGetStateOutputClosure = { _, output in
             fooMiddlewareOutput = output
         }
-        fooMiddleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
+        fooMiddleware.handleActionFromAfterReducerClosure = { action, _, afterReducer in
             guard action == .foo else {
                 afterReducer = .doNothing()
                 return
@@ -37,10 +37,10 @@ class ReduxStoreBaseTests: XCTestCase {
         }
         let barMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         var barMiddlewareOutput: AnyActionHandler<AppAction.Bar>?
-        barMiddleware.receiveContextGetStateOutputClosure = { getState, output in
+        barMiddleware.receiveContextGetStateOutputClosure = { _, output in
             barMiddlewareOutput = output
         }
-        barMiddleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
+        barMiddleware.handleActionFromAfterReducerClosure = { action, _, afterReducer in
             switch action {
             case .alpha:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.15) {
