@@ -36,7 +36,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
     func testMiddlewareDispatchesNewActionsBackToTheStore() {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         var middlewareDispatcher: AnyActionHandler<AppAction>?
-        middlewareMock.receiveContextGetStateOutputClosure = { getState, output in
+        middlewareMock.receiveContextGetStateOutputClosure = { _, output in
             middlewareDispatcher = output
         }
         let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
@@ -68,12 +68,13 @@ class ReduxPipelineWrapperTests: XCTestCase {
         }
 
         wait(for: [shouldCallMiddlewareActionHandler], timeout: 0.1)
+        _ = wrapperHolder
     }
 
     func testMiddlewareGetStateIsSetCorrectly() {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         var middlewareGetState: (() -> TestState)?
-        middlewareMock.receiveContextGetStateOutputClosure = { getState, output in
+        middlewareMock.receiveContextGetStateOutputClosure = { getState, _ in
             middlewareGetState = getState
         }
         let currentState = TestState()

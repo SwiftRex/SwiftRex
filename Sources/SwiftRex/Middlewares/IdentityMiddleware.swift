@@ -3,7 +3,7 @@
  to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware
  in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.
  */
-public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
+public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: Middleware, Equatable {
     /**
      Default initializer for `IdentityMiddleware`
      */

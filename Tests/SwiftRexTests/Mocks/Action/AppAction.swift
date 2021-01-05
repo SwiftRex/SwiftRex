@@ -48,3 +48,24 @@ enum AppAction: Equatable {
         return nil
     }
 }
+
+enum ActionForScopedTests {
+    case toIgnore
+    case somethingScopedById(ElementIDAction<Int, String>)
+    case somethingScopedByIndex(ElementIndexAction<Int, String>)
+
+    var toIgnore: Void? {
+        if case .toIgnore = self { return () }
+        return nil
+    }
+
+    var somethingScopedById: ElementIDAction<Int, String>? {
+        if case let .somethingScopedById(action) = self { return action }
+        return nil
+    }
+
+    var somethingScopedByIndex: ElementIndexAction<Int, String>? {
+        if case let .somethingScopedByIndex(action) = self { return action }
+        return nil
+    }
+}

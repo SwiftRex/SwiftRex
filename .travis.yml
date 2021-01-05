@@ -1,9 +1,7 @@
-osx_image: xcode11.5
+osx_image: xcode12.2
 language: objective-c
 cache:
   directories:
-    - bundler
-    - vendor/bundle
     - /Users/travis/mint
 env:
   global:
@@ -12,9 +10,6 @@ env:
     - FRAMEWORK_NAME="SwiftRex"
     - MINT_PATH=/Users/travis/mint
 install:
-  - gem install bundler
-  - bundle config set path 'vendor/bundle'
-  - bundle install
   - brew install mint
   - mint bootstrap
 script:
@@ -24,3 +19,5 @@ script:
   - make code-coverage-file
 after_success:
   - bash <(curl -s https://codecov.io/bash) -X xcodellvm -X gcov -f coverage.txt
+after_script:
+  - bash ./.travis-notification.sh

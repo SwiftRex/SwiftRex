@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#reducer.init(_:)">init(_:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="property"><a href="#reducer.reduce">reduce</a></li><li class="property"><a href="#reducer.identity">identity</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="method"><a href="#reducer.&lt;&gt;(lhs:rhs:)">&lt;&gt;(lhs:​rhs:​)</a></li><li class="method"><a href="#reducer.lift(actiongetter:stategetter:statesetter:)">lift(action​Getter:​state​Getter:​state​Setter:​)</a></li><li class="method"><a href="#reducer.lift(action:state:)">lift(action:​state:​)</a></li><li class="method"><a href="#reducer.lift(state:)">lift(state:​)</a></li><li class="method"><a href="#reducer.lift(action:)">lift(action:​)</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#reducer.init(_:)">init(_:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#reducer.reduce">reduce</a></li><li class="variable"><a href="#reducer.identity">identity</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#reducer.lifttocollection(action:statecollection:identifier:)">lift​ToCollection(action:​state​Collection:​identifier:​)</a></li><li class="function"><a href="#reducer.lifttocollection(action:statecollection:)">lift​ToCollection(action:​state​Collection:​)</a></li><li class="function"><a href="#reducer.reduce(_:)">reduce(_:​)</a></li><li class="function"><a href="#reducer.&lt;&gt;(lhs:rhs:)">&lt;&gt;(lhs:​rhs:​)</a></li><li class="function"><a href="#reducer.lift(actiongetter:stategetter:statesetter:)">lift(action​Getter:​state​Getter:​state​Setter:​)</a></li><li class="function"><a href="#reducer.lift(action:state:)">lift(action:​state:​)</a></li><li class="function"><a href="#reducer.lift(state:)">lift(state:​)</a></li><li class="function"><a href="#reducer.lift(action:)">lift(action:​)</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -93,6 +93,27 @@ check the functions <code>lift(actionGetter:stateGetter:stateSetter:)</code> and
 </code></pre></body></html>
 <p>Please notice from the example above the following good practices:</p>
 
+<ul>
+<li>
+<p>No <code>DispatchQueue</code>, threading, operation queue, promises, reactive code in there</p>
+</li>
+<li>
+<p>All you need to implement this function is provided by the arguments <code>action</code> and <code>currentState</code>, don't use any other
+variable coming from global scope, not even for reading purposes. If you need something else, it should be in the state</p>
+</li>
+<li>
+<p>Do not start side-effects, requests, I/O, database calls</p>
+</li>
+<li>
+<p>Avoid <code>default</code> when writing <code>switch</code>/<code>case</code> statements. That way the compiler will help you more</p>
+</li>
+<li>
+<p>Make the action and the state generic parameters as much specialized as you can. If volume state is part of a bigger
+state, you should not be tempted to pass the whole big state into this reducer. Make it short, brief and specialized,
+this also helps preventing <code>default</code> case or having to re-assign properties that are never mutated by this reducer.</p>
+</li>
+</ul>
+
 <html><body><pre class="highlight"><code>                  &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;                                                                                        &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl;
                   &amp;boxv;     &amp;boxv;     <span class="variable">handle</span>   &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl; <span class="variable">request</span>      &amp;boxdr; &amp;boxh; &amp;boxh; &amp;boxh; &amp;boxh;  <span class="variable">response</span>     &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxdl; <span class="variable">dispatch</span>   &amp;boxv;     &amp;boxv;
                   &amp;boxv;     &amp;boxv;   &amp;boxdr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Middleware</span>&amp;boxvr;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶ <span class="variable">External</span>&amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Middleware</span>&amp;boxv;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;&amp;boxh;▶&amp;boxv;<span class="variable">Store</span>&amp;boxv;&amp;boxh; &amp;boxh; ▶ ...
@@ -135,8 +156,11 @@ check the functions <code>lift(actionGetter:stateGetter:stateSetter:)</code> and
 <!-- Monoid -->
 <g id="node2" class="node protocol">
 <title>Monoid</title>
+<g id="a_node2"><a xlink:href="/Monoid" xlink:title="Monoid">
 <path fill="none" stroke="black" d="M528,-36C528,-36 336,-36 336,-36 330,-36 324,-30 324,-24 324,-24 324,-12 324,-12 324,-6 330,0 336,0 336,0 528,0 528,0 534,0 540,-6 540,-12 540,-12 540,-24 540,-24 540,-30 534,-36 528,-36"/>
 <text text-anchor="middle" x="432" y="-14.3" font-family="Menlo" font-size="14.00">Monoid</text>
+</a>
+</g>
 </g>
 <!-- Reducer&#45;&gt;Monoid -->
 <g id="edge1" class="edge conformsTo">
@@ -185,10 +209,8 @@ function itself.</p>
   <tbody>
     <tr>
     <th>reduce</th>
-    <td><code class="type">@escaping Reduce​Function&lt;Action​Type, State​Type&gt;</code></td></td>
-    <td><ul>
-<li>reduce: a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from an action and the old state.</li>
-</ul>
+    <td><code class="type">@escaping Reduce​Function&lt;Action​Type, State​Type&gt;</code></td>
+    <td><p>a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from an action and the old state.</p>
 </td>
 </tr>
   </tbody>
@@ -202,11 +224,12 @@ function itself.</p>
     <h3>
         <code>reduce</code>
     </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">reduce</span>: <a href="/ReduceFunction"><span class="type">ReduceFunction</span></a>&lt;<span class="type">ActionType</span>, <span class="type">StateType</span>&gt;</code></pre></body></html>
+    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">reduce</span>: <a href="/MutableReduceFunction"><span class="type">MutableReduceFunction</span></a>&lt;<span class="type">ActionType</span>, <span class="type">StateType</span>&gt;</code></pre></body></html>
 <div class="summary" role="doc-abstract">
     <p>Execute the wrapped reduce function. You must provide the parameters <code>action: ActionType</code> (the action to be
-evaluated during the reducing process) and the latest <code>state: StateType</code> (the current state in your single
-source-of-truth). The result of this call will be a <code>StateType</code> with the calculated new state.</p>
+evaluated during the reducing process) and an <code>inout</code> version of the latest <code>state: StateType</code>, (the current
+state in your single source-of-truth).
+State will be mutated in place (<code>inout</code>) and finish with the calculated new state.</p>
 
 </div>
 </div>
@@ -235,7 +258,49 @@ regardless if the identity element is on the left-hand side or the right-hand si
     <section id="methods">
         <h2>Methods</h2>
 
-        <div role="article" class="function" id="reducer.<>(lhs:rhs:)">
+        <div role="article" class="function" id="reducer.lifttocollection(action:statecollection:identifier:)">
+    <h3>
+        <code>lift​ToCollection(action:​state​Collection:​identifier:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">liftToCollection</span>&lt;<span class="variable">GlobalAction</span>, <span class="variable">GlobalState</span>, <span class="variable">CollectionState</span>: <span class="type">MutableCollection</span>, <span class="variable">ID</span>: <span class="type">Hashable</span>&gt;(<span class="variable">action</span> <span class="variable">actionMap</span>: <span class="type">KeyPath</span>&lt;<span class="type">GlobalAction</span>, <a href="/ElementIDAction"><span class="type">ElementIDAction</span></a>&lt;<span class="type">ID</span>, <span class="type">ActionType</span>&gt;?&gt;, <span class="variable">stateCollection</span>: <span class="type">WritableKeyPath</span>&lt;<span class="type">GlobalState</span>, <span class="type">CollectionState</span>&gt;, <span class="variable">identifier</span>: <span class="type">KeyPath</span>&lt;<span class="type">StateType</span>, <span class="type">ID</span>&gt;) -&gt; <a href="/Reducer"><span class="type">Reducer</span></a>&lt;<span class="type">GlobalAction</span>, <span class="type">GlobalState</span>&gt; <span class="keyword">where</span> <span class="type">CollectionState</span>.<span class="type">Element</span> == <span class="type">StateType</span></code></pre></body></html>
+</div>
+<div role="article" class="function" id="reducer.lifttocollection(action:statecollection:)">
+    <h3>
+        <code>lift​ToCollection(action:​state​Collection:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">liftToCollection</span>&lt;<span class="variable">GlobalAction</span>, <span class="variable">GlobalState</span>, <span class="variable">CollectionState</span>: <span class="type">MutableCollection</span>&gt;(<span class="variable">action</span> <span class="variable">actionMap</span>: <span class="type">KeyPath</span>&lt;<span class="type">GlobalAction</span>, <a href="/ElementIndexAction"><span class="type">ElementIndexAction</span></a>&lt;<span class="type">CollectionState</span>.<span class="type">Index</span>, <span class="type">ActionType</span>&gt;?&gt;, <span class="variable">stateCollection</span>: <span class="type">WritableKeyPath</span>&lt;<span class="type">GlobalState</span>, <span class="type">CollectionState</span>&gt;) -&gt; <a href="/Reducer"><span class="type">Reducer</span></a>&lt;<span class="type">GlobalAction</span>, <span class="type">GlobalState</span>&gt; <span class="keyword">where</span> <span class="type">CollectionState</span>.<span class="type">Element</span> == <span class="type">StateType</span></code></pre></body></html>
+</div>
+<div role="article" class="function" id="reducer.reduce(_:)">
+    <h3>
+        <code>reduce(_:​)</code>
+    </h3>
+    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">reduce</span>(<span class="keyword">_</span> <span class="variable">reduce</span>: <span class="attribute">@</span><span class="attribute">escaping</span> <a href="/MutableReduceFunction"><span class="type">MutableReduceFunction</span></a>&lt;<span class="type">ActionType</span>, <span class="type">StateType</span>&gt;) -&gt; <a href="/Reducer"><span class="type">Reducer</span></a></code></pre></body></html>
+<div class="summary" role="doc-abstract">
+    <p>Reducer initializer takes only the underlying function <code>(ActionType, inout StateType) -&gt; Void</code> that is the reducer
+function itself.</p>
+
+</div>
+<h4>Parameters</h4>
+
+<table class="parameters">
+  <thead hidden>
+  <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <th>reduce</th>
+    <td><code class="type">@escaping Mutable​Reduce​Function&lt;Action​Type, State​Type&gt;</code></td>
+    <td><p>a pure function that is gonna be wrapped in a monoid container, and that calculates the new state from an action and the old state.</p>
+</td>
+</tr>
+  </tbody>
+</table>
+</div>
+<div role="article" class="function" id="reducer.<>(lhs:rhs:)">
     <h3>
         <code>&lt;&gt;(lhs:​rhs:​)</code>
     </h3>
@@ -268,18 +333,14 @@ and later C, it's exactly the same as if you compose A to a previously composed 
   <tbody>
     <tr>
     <th>lhs</th>
-    <td><code class="type">Reducer&lt;Action​Type, State​Type&gt;</code></td></td>
-    <td><ul>
-<li>lhs: First monoid <code>(ActionType, StateType) -&gt; StateType</code>, let's call it <code>f(x)</code></li>
-</ul>
+    <td><code class="type">Reducer&lt;Action​Type, State​Type&gt;</code></td>
+    <td><p>First monoid <code>(ActionType, StateType) -&gt; StateType</code>, let's call it <code>f(x)</code></p>
 </td>
 </tr>
 <tr>
     <th>rhs</th>
-    <td><code class="type">Reducer&lt;Action​Type, State​Type&gt;</code></td></td>
-    <td><ul>
-<li>rhs: Second monoid <code>(ActionType, StateType) -&gt; StateType</code>, let's call it <code>g(x)</code></li>
-</ul>
+    <td><code class="type">Reducer&lt;Action​Type, State​Type&gt;</code></td>
+    <td><p>Second monoid <code>(ActionType, StateType) -&gt; StateType</code>, let's call it <code>g(x)</code></p>
 </td>
 </tr>
   </tbody>
@@ -348,26 +409,20 @@ you want to ignore actions that are not relevant for this reducer.</p>
   <tbody>
     <tr>
     <th>action​Getter</th>
-    <td><code class="type">@escaping (Global​Action​Type) -&gt; Action​Type?</code></td></td>
-    <td><ul>
-<li>actionGetter: a way to convert a global action into a local action, but it's optional because maybe this reducer shouldn't care about certain actions. Because actions are usually enums, you can switch over the enum and in case it's nothing you care about, you simply return nil in the closure. If you don't want to lift this reducer in terms of <code>action</code>, just provide the identity function <code>{ $0 }</code> as input.</li>
-</ul>
+    <td><code class="type">@escaping (Global​Action​Type) -&gt; Action​Type?</code></td>
+    <td><p>a way to convert a global action into a local action, but it's optional because maybe this reducer shouldn't care about certain actions. Because actions are usually enums, you can switch over the enum and in case it's nothing you care about, you simply return nil in the closure. If you don't want to lift this reducer in terms of <code>action</code>, just provide the identity function <code>{ $0 }</code> as input.</p>
 </td>
 </tr>
 <tr>
     <th>state​Getter</th>
-    <td><code class="type">@escaping (Global​State​Type) -&gt; State​Type</code></td></td>
-    <td><ul>
-<li>stateGetter: a way to read from a global state and extract only the part that it's relevant for this reducer, by traversing the tree of the global state until you find the property you want, for example: <code>{ $0.currentGame.scoreBoard }</code></li>
-</ul>
+    <td><code class="type">@escaping (Global​State​Type) -&gt; State​Type</code></td>
+    <td><p>a way to read from a global state and extract only the part that it's relevant for this reducer, by traversing the tree of the global state until you find the property you want, for example: <code>{ $0.currentGame.scoreBoard }</code></p>
 </td>
 </tr>
 <tr>
     <th>state​Setter</th>
-    <td><code class="type">@escaping (inout Global​State​Type, State​Type) -&gt; Void</code></td></td>
-    <td><ul>
-<li>stateSetter: a way to write back into the global state once you finished reducing the <em>Part</em>, so now you have a new part that was calculated by this reducer and you want to set it into the global state, also provided as the first parameter as an <code>inout</code> property: <code>{ globalState, newScoreBoard in globalState.currentGame.scoreBoard = newScoreBoard }</code></li>
-</ul>
+    <td><code class="type">@escaping (inout Global​State​Type, State​Type) -&gt; Void</code></td>
+    <td><p>a way to write back into the global state once you finished reducing the <em>Part</em>, so now you have a new part that was calculated by this reducer and you want to set it into the global state, also provided as the first parameter as an <code>inout</code> property: <code>{ globalState, newScoreBoard in globalState.currentGame.scoreBoard = newScoreBoard }</code></p>
 </td>
 </tr>
   </tbody>
@@ -435,18 +490,14 @@ you want to ignore actions that are not relevant for this reducer.</p>
   <tbody>
     <tr>
     <th>action</th>
-    <td><code class="type">Key​Path&lt;Global​Action​Type, Action​Type?&gt;</code></td></td>
-    <td><ul>
-<li>action: a read-only key-path from global action into a local action, but it's optional because maybe this reducer shouldn't care about certain actions. Because actions are usually enums, you can switch over the enum and in case it's nothing you care about, you simply return nil in the closure. If you don't want to lift this reducer in terms of <code>action</code>, just remove this parameter from the call.</li>
-</ul>
+    <td><code class="type">Key​Path&lt;Global​Action​Type, Action​Type?&gt;</code></td>
+    <td><p>a read-only key-path from global action into a local action, but it's optional because maybe this reducer shouldn't care about certain actions. Because actions are usually enums, you can switch over the enum and in case it's nothing you care about, you simply return nil in the closure. If you don't want to lift this reducer in terms of <code>action</code>, just remove this parameter from the call.</p>
 </td>
 </tr>
 <tr>
     <th>state</th>
-    <td><code class="type">Writable​Key​Path&lt;Global​State​Type, State​Type&gt;</code></td></td>
-    <td><ul>
-<li>state: a writable key-path from global state that traverses into a local state, by extracting only the part that it's relevant for this reducer. This will also be used to set the new local state into the global state once the reducer finishes it's operation. For example: <code>\.currentGame.scoreBoard</code>.</li>
-</ul>
+    <td><code class="type">Writable​Key​Path&lt;Global​State​Type, State​Type&gt;</code></td>
+    <td><p>a writable key-path from global state that traverses into a local state, by extracting only the part that it's relevant for this reducer. This will also be used to set the new local state into the global state once the reducer finishes it's operation. For example: <code>\.currentGame.scoreBoard</code>.</p>
 </td>
 </tr>
   </tbody>
@@ -511,10 +562,8 @@ long as we have a way to lift it to the world of <em>Whole</em>.</p>
   <tbody>
     <tr>
     <th>state</th>
-    <td><code class="type">Writable​Key​Path&lt;Global​State​Type, State​Type&gt;</code></td></td>
-    <td><ul>
-<li>state: a writable key-path from global state that traverses into a local state, by extracting only the part that it's relevant for this reducer. This will also be used to set the new local state into the global state once the reducer finishes it's operation. For example: <code>\.currentGame.scoreBoard</code>.</li>
-</ul>
+    <td><code class="type">Writable​Key​Path&lt;Global​State​Type, State​Type&gt;</code></td>
+    <td><p>a writable key-path from global state that traverses into a local state, by extracting only the part that it's relevant for this reducer. This will also be used to set the new local state into the global state once the reducer finishes it's operation. For example: <code>\.currentGame.scoreBoard</code>.</p>
 </td>
 </tr>
   </tbody>
@@ -581,10 +630,8 @@ you want to ignore actions that are not relevant for this reducer.</p>
   <tbody>
     <tr>
     <th>action</th>
-    <td><code class="type">Key​Path&lt;Global​Action​Type, Action​Type?&gt;</code></td></td>
-    <td><ul>
-<li>action: a read-only key-path from global action into a local action, but it's optional because maybe this reducer shouldn't care about certain actions. Because actions are usually enums, you can switch over the enum and in case it's nothing you care about, you simply return nil in the closure. If you don't want to lift this reducer in terms of <code>action</code>, just remove this parameter from the call.</li>
-</ul>
+    <td><code class="type">Key​Path&lt;Global​Action​Type, Action​Type?&gt;</code></td>
+    <td><p>a read-only key-path from global action into a local action, but it's optional because maybe this reducer shouldn't care about certain actions. Because actions are usually enums, you can switch over the enum and in case it's nothing you care about, you simply return nil in the closure. If you don't want to lift this reducer in terms of <code>action</code>, just remove this parameter from the call.</p>
 </td>
 </tr>
   </tbody>
@@ -602,7 +649,7 @@ you want to ignore actions that are not relevant for this reducer.</p>
 
     <footer>
         <p>
-    Generated on <time datetime="2020-05-29T03:19:03+0200">29. May 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:00+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

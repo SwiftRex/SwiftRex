@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Effect Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/Effect" class="dashAnchor"></a>
+    <a title="Effect Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">ReactiveSwiftRex 0.8.0 Docs</a> (36% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">ReactiveSwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        Effect Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Disposable.html">Disposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Lifetime.html">Lifetime</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/MiddlewareReader.html">MiddlewareReader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Signal.html">Signal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Signal/Observer.html">– Observer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SignalProducerProtocol.html">SignalProducerProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SignalProtocol.html">SignalProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubjectType.html">SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriberType.html">SubscriberType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriptionType.html">SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Effect.html">Effect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/FireAndForget.html">FireAndForget</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:16ReactiveSwiftRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:16ReactiveSwiftRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Effect</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                </div>
+              </div>
+            <p>Undocumented</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV8ToCancela"></a>
+                    <a name="//apple_ref/swift/Alias/ToCancel" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV8ToCancela">ToCancel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ToCancel</span> <span class="o">=</span> <span class="p">(</span><span class="kt">AnyHashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/FireAndForget.html">FireAndForget</a></span><span class="o">&lt;</span><span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV7Contexta"></a>
+                    <a name="//apple_ref/swift/Alias/Context" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Context</span> <span class="o">=</span> <span class="p">(</span><span class="nv">dependencies</span><span class="p">:</span> <span class="kt">Dependencies</span><span class="p">,</span> <span class="nv">toCancel</span><span class="p">:</span> <span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV8ToCancela">ToCancel</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV13doesSomethingSbvp"></a>
+                    <a name="//apple_ref/swift/Property/doesSomething" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV13doesSomethingSbvp">doesSomething</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">doesSomething</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV5tokens11AnyHashableVSgvp"></a>
+                    <a name="//apple_ref/swift/Property/token" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV5tokens11AnyHashableVSgvp">token</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">token</span><span class="p">:</span> <span class="kt">AnyHashable</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV5token6effectACyxq_Gqd___qd_0_x12dependencies_AA13FireAndForgetVy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tctcSHRd__0aB022SignalProducerProtocolRd_0_s5NeverO5ErrorRtd_0_AM5ValueRtd_0_r0_lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(token:effect:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV5token6effectACyxq_Gqd___qd_0_x12dependencies_AA13FireAndForgetVy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tctcSHRd__0aB022SignalProducerProtocolRd_0_s5NeverO5ErrorRtd_0_AM5ValueRtd_0_r0_lufc">init(token:<wbr>effect:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">S</span><span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span> <span class="nv">effect</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">S</span><span class="p">)</span>
+<span class="k">where</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Value</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV6effectACyxq_Gqd__x12dependencies_AA13FireAndForgetVy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_tc0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__AL5ValueRtd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(effect:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV6effectACyxq_Gqd__x12dependencies_AA13FireAndForgetVy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_tc0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__AL5ValueRtd__lufc">init(effect:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">S</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">effect</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">S</span><span class="p">)</span> <span class="k">where</span> <span class="kt">S</span> <span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Value</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV9doNothingACyxq_GvpZ"></a>
+                    <a name="//apple_ref/swift/Variable/doNothing" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV9doNothingACyxq_GvpZ">doNothing</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nv">doNothing</span><span class="p">:</span> <span class="kt">Effect</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV3runy0aB014SignalProducerVy0bC016DispatchedActionVyq_Gs5NeverOGSgx12dependencies_AA13FireAndForgetVyAKGs11AnyHashableVc8toCancelt_tF"></a>
+                    <a name="//apple_ref/swift/Method/run(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV3runy0aB014SignalProducerVy0bC016DispatchedActionVyq_Gs5NeverOGSgx12dependencies_AA13FireAndForgetVyAKGs11AnyHashableVc8toCancelt_tF">run(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">run</span><span class="p">(</span><span class="n">_</span> <span class="nv">context</span><span class="p">:</span> <span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">SignalProducer</span><span class="o">&lt;</span><span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV3mapyACyxqd__Gqd__q_clF"></a>
+                    <a name="//apple_ref/swift/Method/map(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV3mapyACyxqd__Gqd__q_clF">map(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">map</span><span class="o">&lt;</span><span class="kt">NewOutputAction</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">transform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NewOutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">NewOutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV13fireAndForgetyACyxq_Gqd__x12dependencies_AA04FirefG0Vy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV13fireAndForgetyACyxq_Gqd__x12dependencies_AA04FirefG0Vy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__lFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">S</span><span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">S</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span>
+<span class="k">where</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV13fireAndForget_11catchErrorsACyxq_Gqd__x12dependencies_AA04FirefG0Vy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_AMSg5ErrorQyd__ct0aB022SignalProducerProtocolRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:catchErrors:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV13fireAndForget_11catchErrorsACyxq_Gqd__x12dependencies_AA04FirefG0Vy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tc_AMSg5ErrorQyd__ct0aB022SignalProducerProtocolRd__lFZ">fireAndForget(_:<wbr>catchErrors:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">S</span><span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">S</span><span class="p">,</span>
+    <span class="nv">catchErrors</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">S</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">?</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV13fireAndForgetyACyxq_Gyx12dependencies_AA04FirefG0Vy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tcFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV13fireAndForgetyACyxq_Gyx12dependencies_AA04FirefG0Vy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_tcFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fireAndForget</span><span class="p">(</span><span class="n">_</span> <span class="nv">operation</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV4just_4fromACyxq_Gq__0bC012ActionSourceVtFZ"></a>
+                    <a name="//apple_ref/swift/Method/just(_:from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV4just_4fromACyxq_Gq__0bC012ActionSourceVtFZ">just(_:<wbr>from:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">just</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV4just_4file8function4line4infoACyxq_Gq__S2SSuSSSgtFZ"></a>
+                    <a name="//apple_ref/swift/Method/just(_:file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV4just_4file8function4line4infoACyxq_Gq__S2SSuSSSgtFZ">just(_:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">just</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="p">,</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV8sequence_4fromACyxq_Gq_d_0bC012ActionSourceVtFZ"></a>
+                    <a name="//apple_ref/swift/Method/sequence(_:from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV8sequence_4fromACyxq_Gq_d_0bC012ActionSourceVtFZ">sequence(_:<wbr>from:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span><span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="o">...</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV8sequence_4file8function4line4infoACyxq_Gq_d_S2SSuSSSgtFZ"></a>
+                    <a name="//apple_ref/swift/Method/sequence(_:file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV8sequence_4file8function4line4infoACyxq_Gq_d_S2SSuSSSgtFZ">sequence(_:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="kt">OutputAction</span><span class="o">...</span><span class="p">,</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV8sequence_4fromACyxq_GSayq_G_0bC012ActionSourceVtFZ"></a>
+                    <a name="//apple_ref/swift/Method/sequence(_:from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV8sequence_4fromACyxq_GSayq_G_0bC012ActionSourceVtFZ">sequence(_:<wbr>from:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span><span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="p">[</span><span class="kt">OutputAction</span><span class="p">],</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV8sequence_4file8function4line4infoACyxq_GSayq_G_S2SSuSSSgtFZ"></a>
+                    <a name="//apple_ref/swift/Method/sequence(_:file:function:line:info:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV8sequence_4file8function4line4infoACyxq_GSayq_G_S2SSuSSSgtFZ">sequence(_:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sequence</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">values</span><span class="p">:</span> <span class="p">[</span><span class="kt">OutputAction</span><span class="p">],</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV7promise5token4from7performACyxq_Gqd___0bC012ActionSourceV0aB010Disposable_px12dependencies_AA13FireAndForgetVyAI010DispatchedI0Vyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/promise(token:from:perform:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV7promise5token4from7performACyxq_Gqd___0bC012ActionSourceV0aB010Disposable_px12dependencies_AA13FireAndForgetVyAI010DispatchedI0Vyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ">promise(token:<wbr>from:<wbr>perform:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">promise</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span>
+    <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span>
+    <span class="nv">perform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">,</span> <span class="p">(</span><span class="kt">OutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Disposable</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV7promise5token4file8function4line4info7performACyxq_Gqd___S2SSuSSSg0aB010Disposable_px12dependencies_AA13FireAndForgetVy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/promise(token:file:function:line:info:perform:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV7promise5token4file8function4line4info7performACyxq_Gqd___S2SSuSSSg0aB010Disposable_px12dependencies_AA13FireAndForgetVy0bC016DispatchedActionVyq_GGs11AnyHashableVc8toCancelt_yq_XEtctSHRd__lFZ">promise(token:<wbr>file:<wbr>function:<wbr>line:<wbr>info:<wbr>perform:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">promise</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span>
+    <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span>
+    <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span>
+    <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span>
+    <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+    <span class="nv">perform</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/Effect.html#/s:16ReactiveSwiftRex6EffectV7Contexta">Context</a></span><span class="p">,</span> <span class="p">(</span><span class="kt">OutputAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Disposable</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectV8toCancelyACyxq_Gqd__SHRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/toCancel(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectV8toCancelyACyxq_Gqd__SHRd__lFZ">toCancel(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">toCancel</span><span class="o">&lt;</span><span class="kt">H</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span> <span class="k">where</span> <span class="kt">H</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60Dependencies%60%20==%20%60Void%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Dependencies` == `Void`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Dependencies%60%20==%20%60Void%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Dependencies</code> == <code>Void</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectVAAytRszrlE5token6effectACyytq_Gqd___qd_0_tcSHRd__0aB022SignalProducerProtocolRd_0_s5NeverO5ErrorRtd_0_0bC016DispatchedActionVyq_G5ValueRtd_0_r0_lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(token:effect:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectVAAytRszrlE5token6effectACyytq_Gqd___qd_0_tcSHRd__0aB022SignalProducerProtocolRd_0_s5NeverO5ErrorRtd_0_0bC016DispatchedActionVyq_G5ValueRtd_0_r0_lufc">init(token:<wbr>effect:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">H</span><span class="p">:</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">S</span><span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">token</span><span class="p">:</span> <span class="kt">H</span><span class="p">,</span> <span class="nv">effect</span><span class="p">:</span> <span class="kt">S</span><span class="p">)</span>
+<span class="k">where</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Value</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectVAAytRszrlEyACyytq_Gqd__c0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__0bC016DispatchedActionVyq_G5ValueRtd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectVAAytRszrlEyACyytq_Gqd__c0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__0bC016DispatchedActionVyq_G5ValueRtd__lufc">init(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">S</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">effect</span><span class="p">:</span> <span class="kt">S</span><span class="p">)</span> <span class="k">where</span> <span class="kt">S</span> <span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Value</span> <span class="o">==</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectVAAytRszrlE20ignoringDependenciesACyqd__q_GylF"></a>
+                    <a name="//apple_ref/swift/Method/ignoringDependencies()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectVAAytRszrlE20ignoringDependenciesACyqd__q_GylF">ignoringDependencies()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">ignoringDependencies</span><span class="o">&lt;</span><span class="kt">T</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectVAAytRszrlE13fireAndForgetyACyytq_Gqd__0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectVAAytRszrlE13fireAndForgetyACyytq_Gqd__0aB022SignalProducerProtocolRd__s5NeverO5ErrorRtd__lFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">S</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kt">S</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">S</span> <span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="p">,</span> <span class="kt">S</span><span class="o">.</span><span class="kt">Error</span> <span class="o">==</span> <span class="kt">Never</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectVAAytRszrlE13fireAndForget_11catchErrorsACyytq_Gqd___0bC016DispatchedActionVyq_GSg5ErrorQyd__ct0aB022SignalProducerProtocolRd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:catchErrors:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectVAAytRszrlE13fireAndForget_11catchErrorsACyytq_Gqd___0bC016DispatchedActionVyq_GSg5ErrorQyd__ct0aB022SignalProducerProtocolRd__lFZ">fireAndForget(_:<wbr>catchErrors:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">fireAndForget</span><span class="o">&lt;</span><span class="kt">S</span><span class="p">:</span> <span class="kt">SignalProducerProtocol</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">upstream</span><span class="p">:</span> <span class="kt">S</span><span class="p">,</span> <span class="nv">catchErrors</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">S</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">OutputAction</span><span class="o">&gt;</span><span class="p">?)</span>
+<span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16ReactiveSwiftRex6EffectVAAytRszrlE13fireAndForgetyACyytq_GyycFZ"></a>
+                    <a name="//apple_ref/swift/Method/fireAndForget(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex6EffectVAAytRszrlE13fireAndForgetyACyytq_GyycFZ">fireAndForget(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fireAndForget</span><span class="p">(</span><span class="n">_</span> <span class="nv">operation</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Effect</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputAction</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

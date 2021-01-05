@@ -85,28 +85,6 @@ class DispatchQueueTests: XCTestCase {
     }
 
     func testDispatchAsapFromGlobalQueue() {
-        DispatchQueue.setMainQueueID()
-        let call1 = expectation(description: "1")
-        let call2 = expectation(description: "2")
-
-        DispatchQueue.global().async {
-            XCTAssertFalse(DispatchQueue.isMainQueue)
-            XCTAssertFalse(Thread.isMainThread)
-
-            DispatchQueue.asap {
-                XCTAssert(DispatchQueue.isMainQueue)
-                XCTAssert(Thread.isMainThread)
-                call1.fulfill()
-            }
-            XCTAssertFalse(DispatchQueue.isMainQueue)
-            XCTAssertFalse(Thread.isMainThread)
-            call2.fulfill()
-        }
-
-        wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
-    }
-
-    func testDispatchAsapFromGlobalQueueDispatched() {
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
 

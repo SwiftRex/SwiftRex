@@ -1,3 +1,6 @@
+{# Make sure to use an array of 1 for a single import declaration#}
+{# such as :  args: imports = ["SomeModule"]#}
+{# Note that this will be added for all files. If you want more granularity, see below... #}
 {% for import in argument.imports %}
 import {{ import }}
 {% endfor %}
@@ -34,6 +37,13 @@ import {{ import }}
 
 {% endmacro %}
 {% for type in types.enums where type.based.Prism or type|annotated:"Prism" %}{% if type.name != "Prism" %}
+{# Make sure to use an array of 1 for a single import declaration #}
+{# such as : // sourcery: imports = ["SomeModule"] #}
+{# This is for targeted imports applying only to the types that have been annotated. #}
+{% for import in type.annotations.imports %}
+import {{ import }}
+{% endfor %}
+
 extension {{ type.name }} {
 {% for case in type.cases %}
     {% call caseOptics type.accessLevel case %}

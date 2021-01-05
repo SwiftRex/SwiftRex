@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MiddlewareReader Extension Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Extension/MiddlewareReader" class="dashAnchor"></a>
+    <a title="MiddlewareReader Extension Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">ReactiveSwiftRex 0.8.0 Docs</a> (36% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">ReactiveSwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        MiddlewareReader Extension Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Disposable.html">Disposable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Lifetime.html">Lifetime</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/MiddlewareReader.html">MiddlewareReader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Signal.html">Signal</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Signal/Observer.html">– Observer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SignalProducerProtocol.html">SignalProducerProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SignalProtocol.html">SignalProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubjectType.html">SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriberType.html">SubscriberType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriptionType.html">SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Effect.html">Effect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/FireAndForget.html">FireAndForget</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:16ReactiveSwiftRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:16ReactiveSwiftRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>MiddlewareReader</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">MiddlewareReader</span></code></pre>
+
+                </div>
+              </div>
+            
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16MiddlewareReaderV08ReactiveaB0E16liftToCollection11inputAction06outputJ005stateH0ACyxAD06EffectC0Cyqd_2_qd_2_qd_3_xGGAA15ElementIDActionVy2IDQyd_1_qd__GSgqd_2_c_qd_2_ANyAPqd_0_Gcqd_4_qd_3_ctAJyqd__qd_0_qd_1_xGRs_s12IdentifiableRd_1_0N0Qyd_4_Rsd_1_SMRd_4_r4_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(inputAction:outputAction:stateCollection:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16MiddlewareReaderV08ReactiveaB0E16liftToCollection11inputAction06outputJ005stateH0ACyxAD06EffectC0Cyqd_2_qd_2_qd_3_xGGAA15ElementIDActionVy2IDQyd_1_qd__GSgqd_2_c_qd_2_ANyAPqd_0_Gcqd_4_qd_3_ctAJyqd__qd_0_qd_1_xGRs_s12IdentifiableRd_1_0N0Qyd_4_Rsd_1_SMRd_4_r4_lF">liftToCollection(inputAction:<wbr>outputAction:<wbr>stateCollection:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">ItemInputActionType</span><span class="p">,</span> <span class="kt">ItemOutputActionType</span><span class="p">,</span> <span class="kt">ItemStateType</span><span class="p">,</span> <span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">ItemStateType</span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">ItemInputActionType</span><span class="o">&gt;</span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">ItemStateType</span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">ItemOutputActionType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalAction</span><span class="p">,</span>
+    <span class="nv">stateCollection</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CollectionState</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MiddlewareReader</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt"><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;&gt;</span>
+<span class="k">where</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="p">,</span>
+      <span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">ItemStateType</span><span class="p">,</span>
+      <span class="kt">MiddlewareType</span> <span class="o">==</span> <span class="kt"><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></span><span class="o">&lt;</span><span class="kt">ItemInputActionType</span><span class="p">,</span> <span class="kt">ItemOutputActionType</span><span class="p">,</span> <span class="kt">ItemStateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="kt">ItemStateType</span><span class="p">:</span> <span class="kt">Identifiable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex16MiddlewareReaderV08ReactiveaB0E16liftToCollection6action05stateH0ACyxAD06EffectC0Cyqd_1_qd_1_qd_2_xGGs15WritableKeyPathCyqd_1_AA15ElementIDActionVy2IDQyd_0_qd__GSgG_s0mN0Cyqd_2_qd_3_GtAIyqd__qd__qd_0_xGRs_s12IdentifiableRd_0_0O0Qyd_3_Rsd_0_SMRd_3_r3_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(action:stateCollection:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex16MiddlewareReaderV08ReactiveaB0E16liftToCollection6action05stateH0ACyxAD06EffectC0Cyqd_1_qd_1_qd_2_xGGs15WritableKeyPathCyqd_1_AA15ElementIDActionVy2IDQyd_0_qd__GSgG_s0mN0Cyqd_2_qd_3_GtAIyqd__qd__qd_0_xGRs_s12IdentifiableRd_0_0O0Qyd_3_Rsd_0_SMRd_3_r3_lF">liftToCollection(action:<wbr>stateCollection:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">ItemActionType</span><span class="p">,</span> <span class="kt">ItemStateType</span><span class="p">,</span> <span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">action</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">ItemStateType</span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">ItemActionType</span><span class="o">&gt;</span><span class="p">?</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">stateCollection</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MiddlewareReader</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt"><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;&gt;</span>
+<span class="k">where</span> <span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">ItemStateType</span><span class="p">,</span>
+      <span class="kt">MiddlewareType</span> <span class="o">==</span> <span class="kt"><a href="../Classes/EffectMiddleware.html">EffectMiddleware</a></span><span class="o">&lt;</span><span class="kt">ItemActionType</span><span class="p">,</span> <span class="kt">ItemActionType</span><span class="p">,</span> <span class="kt">ItemStateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="kt">ItemStateType</span><span class="p">:</span> <span class="kt">Identifiable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

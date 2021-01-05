@@ -32,11 +32,20 @@ where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
 
             state.mutate(
                 when: { $0 },
-                action: { value -> Bool in
-                    let newValue = reducer.reduce(action, value)
-                    guard emitsValue.shouldEmit(previous: value, new: newValue) else { return false }
-                    value = newValue
-                    return true
+                action: { value in
+                    switch emitsValue {
+                    case .always:
+                        reducer.reduce(action, &value)
+                        return true
+                    case .never:
+                        return false
+                    case let .when(predicate):
+                        var newValue = value
+                        reducer.reduce(action, &newValue)
+                        guard predicate(value, newValue) else { return false }
+                        value = newValue
+                        return true
+                    }
                 }
             )
 

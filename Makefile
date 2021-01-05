@@ -1,3 +1,6 @@
+.PHONY: set-version pod-push mint test code-coverage-summary code-coverage-details code-coverage-file code-coverage-upload lint-check lint-autocorrect sourcery jazzy swiftdoc prebuild notify-telegram help
+.DEFAULT_GOAL := help
+
 # Version
 
 ifndef TO
@@ -125,7 +128,7 @@ help:
 	@echo -- generates documentation
 	@echo
 	@echo make swiftdoc
-	@echo -- generates documentation (alternative API docs, not fully working yet)
+	@echo "-- generates documentation (alternative API docs, not fully working yet)"
 	@echo
 	@echo make prebuild
 	@echo -- runs the pre-build phases

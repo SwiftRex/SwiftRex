@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>EffectMiddleware Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/EffectMiddleware" class="dashAnchor"></a>
+    <a title="EffectMiddleware Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CombineRex 0.8.0 Docs</a> (43% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CombineRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        EffectMiddleware Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/EffectMiddleware.html">EffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ObservableViewModel.html">ObservableViewModel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Cancellable.html">Cancellable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/MiddlewareReader.html">MiddlewareReader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PassthroughSubject.html">PassthroughSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Publisher.html">Publisher</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Set.html">Set</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/StoreType.html">StoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Subscriber.html">Subscriber</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriberType.html">SubscriberType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SubscriptionType.html">SubscriptionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex/SubjectType.html">– SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SwiftRex/SubscriptionType.html">– SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Effect.html">Effect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/FireAndForget.html">FireAndForget</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex22SimpleEffectMiddlewarea">SimpleEffectMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:10CombineRex27SymmetricalEffectMiddlewarea">SymmetricalEffectMiddleware</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>EffectMiddleware</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Middleware</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">EffectMiddleware</span><span class="p">:</span> <span class="kt">Semigroup</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">EffectMiddleware</span><span class="p">:</span> <span class="kt">Monoid</span> <span class="k">where</span> <span class="kt">Dependencies</span> <span class="o">==</span> <span class="kt">Void</span></code></pre>
+
+                </div>
+              </div>
+            <p>Easiest way to implement a <code>Middleware</code>, with a single function that gives you all you need, and from which you can return an <code><a href="../Structs/Effect.html">Effect</a></code>.</p>
+
+<p>A <code>MiddlewareEffect</code> is a function providing an incoming <code>Action</code>, <code>State</code> and <code>Context</code> (dispatcher source, dependencies, cancellation closure)
+and expecting as result one or multiple effects that will eventually result in outgoing actions.</p>
+
+<p>An <code><a href="../Structs/Effect.html">Effect</a></code> is a publisher or observable type according to your reactive framework. It can be a one-shot effect, such as an HTTP request,
+an observation that gives back multiple values over time, such as CoreLocation or NotificationCenter, a Timer, a pure value already known
+or even an empty effect using the <code>.doNothing</code> constructor, if there&rsquo;s no need for side-effects.
+<code><a href="../Structs/Effect.html">Effect</a></code> cannot fail, and its element/output/value type is the <code>OutputAction</code> generic of this middleware. The purpose is running tasks,
+creating actions as they respond and returning these actions over time back to the Store. When the Effect completes, it should send a
+completion event so the middleware will cleanup the resources.</p>
+
+<p>Cancellation: effects can optionally provide a cancellation token, which can be any hashable value. If another effect arrives in the same
+middleware instance having the very same cancellation token, the previous effect will be cancelled and replaced by the new one. This is
+useful in case you want to keep only the last request of certain kind running, but cancel any previous ongoing request when a new is
+dispatched. You can also explicitly cancel one or many effects at any point. For that, you will be given a <code>toCancel</code> closure during every
+action arrival within the <code>Context</code> (third parameter). Feel free to call cancellation at that point or even later, if you hold this <code>toCancel</code>
+closure.</p>
+
+<p>Examples</p>
+
+<p>Using Promises</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">someMiddleware</span> <span class="o">=</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">ApiRequestAction</span><span class="p">,</span> <span class="kt">ApiResponseAction</span><span class="p">,</span> <span class="kt">SomeState</span><span class="p">,</span> <span class="kt">Void</span><span class="o">&gt;.</span><span class="n">onAction</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">context</span> <span class="k">in</span>
+  <span class="k">switch</span> <span class="n">action</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="o">.</span><span class="nv">users</span><span class="p">:</span>
+    <span class="k">return</span> <span class="o">.</span><span class="n">promise</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
+      <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">asyncAfter</span><span class="p">(</span><span class="nv">deadline</span><span class="p">:</span> <span class="o">.</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">completion</span><span class="p">(</span><span class="kt">ApiResponseAction</span><span class="o">.</span><span class="nf">someResponse</span><span class="p">(</span><span class="s">"42"</span><span class="p">))</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="k">case</span> <span class="o">.</span><span class="nv">somethingIDontCare</span><span class="p">:</span>
+    <span class="k">return</span> <span class="o">.</span><span class="n">doNothing</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>From Publisher</p>
+<pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">ApiFetchMiddlewareDependencies</span> <span class="o">=</span> <span class="p">(</span><span class="nv">session</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">URLSession</span><span class="p">,</span> <span class="nv">decoder</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">JSONDecoder</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">apiFetchMiddleware</span> <span class="o">=</span>
+  <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">ApiRequestAction</span><span class="p">,</span> <span class="kt">ApiResponseAction</span><span class="p">,</span> <span class="kt">SomeState</span><span class="p">,</span> <span class="kt">ApiFetchMiddlewareDependencies</span><span class="o">&gt;.</span><span class="n">onAction</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">context</span> <span class="k">in</span>
+    <span class="k">switch</span> <span class="n">action</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nv">users</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">urlSession</span>
+        <span class="o">.</span><span class="nf">dataTaskPublisher</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="nf">fetchAllUsersURL</span><span class="p">())</span>
+        <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span> <span class="n">data</span> <span class="p">}</span>
+        <span class="o">.</span><span class="nf">decode</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="p">[</span><span class="kt">User</span><span class="p">]</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">decoder</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">dependencies</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">users</span> <span class="k">in</span> <span class="kt">ApiResponseAction</span><span class="o">.</span><span class="nf">gotUserList</span><span class="p">(</span><span class="n">users</span><span class="p">)</span> <span class="p">}</span>
+        <span class="o">.</span><span class="nf">replaceError</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="kt">ApiResponseAction</span><span class="o">.</span><span class="n">errorRetrivingUserList</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">asEffect</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nf">user</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">):</span>
+      <span class="c1">// ..</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nv">somethingIDontCare</span><span class="p">:</span>
+      <span class="k">return</span> <span class="o">.</span><span class="n">doNothing</span>
+    <span class="p">}</span>
+  <span class="p">}</span><span class="o">.</span><span class="nf">inject</span><span class="p">((</span><span class="nv">session</span><span class="p">:</span> <span class="p">{</span> <span class="kt">URLSession</span><span class="o">.</span><span class="n">shared</span> <span class="p">},</span> <span class="nv">decoder</span><span class="p">:</span> <span class="kt">JSONDecoder</span><span class="o">.</span><span class="kd">init</span><span class="p">))</span>
+</code></pre>
+
+<p>Cancellation</p>
+<pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">ApiFetchMiddlewareDependencies</span> <span class="o">=</span> <span class="p">(</span><span class="nv">session</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">URLSession</span><span class="p">,</span> <span class="nv">decoder</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">JSONDecoder</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">apiFetchMiddleware</span> <span class="o">=</span>
+  <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">ApiRequestAction</span><span class="p">,</span> <span class="kt">ApiResponseAction</span><span class="p">,</span> <span class="kt">SomeState</span><span class="p">,</span> <span class="kt">ApiFetchMiddlewareDependencies</span><span class="o">&gt;.</span><span class="n">onAction</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">context</span> <span class="k">in</span>
+    <span class="k">switch</span> <span class="n">action</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">userPicture</span><span class="p">(</span><span class="n">userId</span><span class="p">):</span>
+      <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">urlSession</span>
+        <span class="o">.</span><span class="nf">dataTaskPublisher</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="nf">fetchPicture</span><span class="p">())</span>
+        <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span> <span class="kt">ApiResponseAction</span><span class="o">.</span><span class="nf">gotUserPicture</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">userId</span><span class="p">,</span> <span class="nv">data</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span> <span class="p">}</span>
+        <span class="o">.</span><span class="nf">replaceError</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="kt">ApiResponseAction</span><span class="o">.</span><span class="nf">errorRetrivingUserPicture</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">userId</span><span class="p">))</span>
+        <span class="o">.</span><span class="nf">asEffect</span><span class="p">(</span><span class="nv">cancellationToken</span><span class="p">:</span> <span class="s">"image-for-user-</span><span class="se">\(</span><span class="n">userId</span><span class="se">)</span><span class="s">"</span><span class="p">)</span> <span class="c1">// this will automatically cancel any pending download for the same image</span>
+                                                                 <span class="c1">// using the URL would also be possible</span>
+    <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">cancelImageDownload</span><span class="p">(</span><span class="n">userId</span><span class="p">):</span>
+      <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="nf">toCancel</span><span class="p">(</span><span class="s">"image-for-user-</span><span class="se">\(</span><span class="n">userId</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>        <span class="c1">// alternatively you can explicitly cancel tasks by token</span>
+    <span class="p">}</span>
+  <span class="p">}</span><span class="o">.</span><span class="nf">inject</span><span class="p">((</span><span class="nv">session</span><span class="p">:</span> <span class="p">{</span> <span class="kt">URLSession</span><span class="o">.</span><span class="n">shared</span> <span class="p">},</span> <span class="nv">decoder</span><span class="p">:</span> <span class="kt">JSONDecoder</span><span class="o">.</span><span class="kd">init</span><span class="p">))</span>
+</code></pre>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF"></a>
+                    <a name="//apple_ref/swift/Method/receiveContext(getState:output:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF">receiveContext(getState:<wbr>output:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex10MiddlewareP6handle6action4from12afterReducery15InputActionTypeQz_AA0J6SourceVAA05AfterH0VztF"></a>
+                    <a name="//apple_ref/swift/Method/handle(action:from:afterReducer:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handle6action4from12afterReducery15InputActionTypeQz_AA0J6SourceVAA05AfterH0VztF">handle(action:<wbr>from:<wbr>afterReducer:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">InputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">afterReducer</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AfterReducer</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC4lift11inputAction06outputG05stateACyqd__qd_0_qd_1_q1_GxSgqd__c_qd_0_q_cq0_qd_1_ctr1_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:outputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC4lift11inputAction06outputG05stateACyqd__qd_0_qd_1_q1_GxSgqd__c_qd_0_q_cq0_qd_1_ctr1_lF">lift(inputAction:<wbr>outputAction:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC4lift11inputAction06outputG0ACyqd__qd_0_q0_q1_GxSgqd__c_qd_0_q_ctr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:outputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC4lift11inputAction06outputG0ACyqd__qd_0_q0_q1_GxSgqd__c_qd_0_q_ctr0_lF">lift(inputAction:<wbr>outputAction:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC4lift11inputAction5stateACyqd__q_qd_0_q1_GxSgqd__c_q0_qd_0_ctr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC4lift11inputAction5stateACyqd__q_qd_0_q1_GxSgqd__c_q0_qd_0_ctr0_lF">lift(inputAction:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC4lift12outputAction5stateACyxqd__qd_0_q1_Gqd__q_c_q0_qd_0_ctr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC4lift12outputAction5stateACyxqd__qd_0_q1_Gqd__q_c_q0_qd_0_ctr0_lF">lift(outputAction:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC4lift11inputActionACyqd__q_q0_q1_GxSgqd__c_tlF"></a>
+                    <a name="//apple_ref/swift/Method/lift(inputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC4lift11inputActionACyqd__q_q0_q1_GxSgqd__c_tlF">lift(inputAction:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">InputActionType</span><span class="p">?</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC4lift12outputActionACyxqd__q0_q1_Gqd__q_c_tlF"></a>
+                    <a name="//apple_ref/swift/Method/lift(outputAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC4lift12outputActionACyxqd__q0_q1_Gqd__q_c_tlF">lift(outputAction:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalOutputActionType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">OutputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC4lift5stateACyxq_qd__q1_Gq0_qd__c_tlF"></a>
+                    <a name="//apple_ref/swift/Method/lift(state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC4lift5stateACyxq_qd__q1_Gq0_qd__c_tlF">lift(state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareC8onAction2do05SwiftB00D6ReaderVyq1_ACyxq_q0_q1_GGAA0C0Vyq1_q_Gx_AF0F6SourceVq0_yctc_tFZ"></a>
+                    <a name="//apple_ref/swift/Method/onAction(do:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareC8onAction2do05SwiftB00D6ReaderVyq1_ACyxq_q0_q1_GGAA0C0Vyq1_q_Gx_AF0F6SourceVq0_yctc_tFZ">onAction(do:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">onAction</span><span class="p">(</span>
+    <span class="k">do</span> <span class="nv">onAction</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MiddlewareReader</span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">EffectMiddleware</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex9SemigroupP2lgoiyxx_xtFZ"></a>
+                    <a name="//apple_ref/swift/Method/&lt;&gt;(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex9SemigroupP2lgoiyxx_xtFZ"><>(_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">EffectMiddleware</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">EffectMiddleware</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60InputActionType%60%20==%20%60OutputActionType%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `InputActionType` == `OutputActionType`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60InputActionType%60%20==%20%60OutputActionType%60"></a>
+                  <h3 class="section-name"><p>Available where <code>InputActionType</code> == <code>OutputActionType</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareCAAq_RszrlE4lift6action5stateACyqd__qd__qd_0_q1_Gs15WritableKeyPathCyqd__xSgG_s0iJ0Cyqd_0_q0_Gtr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/lift(action:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareCAAq_RszrlE4lift6action5stateACyqd__qd__qd_0_q1_Gs15WritableKeyPathCyqd__xSgG_s0iJ0Cyqd_0_q0_Gtr0_lF">lift(action:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">lift</span><span class="o">&lt;</span><span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">action</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt">InputActionType</span><span class="p">?</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60StateType%60:%20%60Identifiable%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `StateType`: `Identifiable`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60StateType%60:%20%60Identifiable%60"></a>
+                  <h3 class="section-name"><p>Available where <code>StateType</code>: <code>Identifiable</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareCAAs12IdentifiableR0_rlE16liftToCollection11inputAction06outputJ005stateH0ACyqd__qd__qd_0_q1_G05SwiftB015ElementIDActionVy2IDQy0_xGSgqd__c_qd__ALyANq_Gcqd_1_qd_0_ct0N0Qyd_1_Rs0_SMRd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(inputAction:outputAction:stateCollection:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareCAAs12IdentifiableR0_rlE16liftToCollection11inputAction06outputJ005stateH0ACyqd__qd__qd_0_q1_G05SwiftB015ElementIDActionVy2IDQy0_xGSgqd__c_qd__ALyANq_Gcqd_1_qd_0_ct0N0Qyd_1_Rs0_SMRd_1_r1_lF">liftToCollection(inputAction:<wbr>outputAction:<wbr>stateCollection:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">InputActionType</span><span class="o">&gt;</span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalAction</span><span class="p">,</span>
+    <span class="nv">stateCollection</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CollectionState</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">StateType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60StateType%60:%20%60Identifiable%60,%20%60InputActionType%60%20==%20%60OutputActionType%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `StateType`: `Identifiable`, `InputActionType` == `OutputActionType`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60StateType%60:%20%60Identifiable%60,%20%60InputActionType%60%20==%20%60OutputActionType%60"></a>
+                  <h3 class="section-name"><p>Available where <code>StateType</code>: <code>Identifiable</code>, <code>InputActionType</code> == <code>OutputActionType</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareCAAq_Rszs12IdentifiableR0_rlE16liftToCollection6action05stateH0ACyqd__qd__qd_0_q1_Gs15WritableKeyPathCyqd__05SwiftB015ElementIDActionVy2IDQy0_xGSgG_s0lM0Cyqd_0_qd_1_Gt0O0Qyd_1_Rs0_SMRd_1_r1_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(action:stateCollection:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareCAAq_Rszs12IdentifiableR0_rlE16liftToCollection6action05stateH0ACyqd__qd__qd_0_q1_Gs15WritableKeyPathCyqd__05SwiftB015ElementIDActionVy2IDQy0_xGSgG_s0lM0Cyqd_0_qd_1_Gt0O0Qyd_1_Rs0_SMRd_1_r1_lF">liftToCollection(action:<wbr>stateCollection:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">action</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">ElementIDAction</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt">InputActionType</span><span class="o">&gt;</span><span class="p">?</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">stateCollection</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalAction</span><span class="p">,</span> <span class="kt">GlobalState</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">StateType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60Dependencies%60%20==%20%60Void%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Dependencies` == `Void`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Dependencies%60%20==%20%60Void%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Dependencies</code> == <code>Void</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:10CombineRex16EffectMiddlewareCAAytRs1_rlE8onAction2doACyxq_q0_ytGAA0C0Vyytq_Gx_05SwiftB00F6SourceVq0_yctc_tFZ"></a>
+                    <a name="//apple_ref/swift/Method/onAction(do:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:10CombineRex16EffectMiddlewareCAAytRs1_rlE8onAction2doACyxq_q0_ytGAA0C0Vyytq_Gx_05SwiftB00F6SourceVq0_yctc_tFZ">onAction(do:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">onAction</span><span class="p">(</span>
+    <span class="k">do</span> <span class="nv">onAction</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Effect.html">Effect</a></span><span class="o">&lt;</span><span class="kt">Dependencies</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex6MonoidP8identityxvpZ"></a>
+                    <a name="//apple_ref/swift/Variable/identity" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex6MonoidP8identityxvpZ">identity</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nv">identity</span><span class="p">:</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

@@ -14,7 +14,7 @@
     <a title="ReduxPipelineWrapper Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.7.8 Docs</a> (82% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.8.0 Docs</a> (78% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -66,6 +66,14 @@
             </ul>
           </li>
           <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/ShouldEmitValue.html">ShouldEmitValue</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
             <a href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
@@ -92,6 +100,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/Monoid.html">Monoid</a>
@@ -141,10 +152,22 @@
                 <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/DispatchedAction.html">DispatchedAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ElementIndexAction.html">ElementIndexAction</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/MiddlewareReader.html">MiddlewareReader</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/PublisherType.html">PublisherType</a>
@@ -159,9 +182,6 @@
                 <a href="../Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Structs/SubjectType.html">SubjectType</a>
               </li>
               <li class="nav-group-task">
@@ -174,6 +194,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
@@ -271,9 +294,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex20ReduxPipelineWrapperV5state7reducer10middleware10emitsValueACyxGAA21ReplayLastSubjectTypeVy05StateN0Qzs5NeverOG_AA7ReducerVy011InputActionN0QzALGxAA010ShouldEmitJ0VyALGtcfc"></a>
+                    <a name="/s:8SwiftRex20ReduxPipelineWrapperV5state7reducer10middleware10emitsValueACyxGAA21ReplayLastSubjectTypeVy05StateN0Qzs5NeverOG_AA7ReducerVy011InputActionN0QzALGxAA010ShouldEmitJ0OyALGtcfc"></a>
                     <a name="//apple_ref/swift/Method/init(state:reducer:middleware:emitsValue:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex20ReduxPipelineWrapperV5state7reducer10middleware10emitsValueACyxGAA21ReplayLastSubjectTypeVy05StateN0Qzs5NeverOG_AA7ReducerVy011InputActionN0QzALGxAA010ShouldEmitJ0VyALGtcfc">init(state:<wbr>reducer:<wbr>middleware:<wbr>emitsValue:<wbr>)</a>
+                    <a class="token" href="#/s:8SwiftRex20ReduxPipelineWrapperV5state7reducer10middleware10emitsValueACyxGAA21ReplayLastSubjectTypeVy05StateN0Qzs5NeverOG_AA7ReducerVy011InputActionN0QzALGxAA010ShouldEmitJ0OyALGtcfc">init(state:<wbr>reducer:<wbr>middleware:<wbr>emitsValue:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -292,7 +315,7 @@
     <span class="nv">state</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex31UnfailableReplayLastSubjectTypea">UnfailableReplayLastSubjectType</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span><span class="p">,</span>
     <span class="nv">reducer</span><span class="p">:</span> <span class="kt"><a href="../Structs/Reducer.html">Reducer</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV10ActionTypea">ActionType</a></span><span class="p">,</span> <span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span><span class="p">,</span>
     <span class="nv">middleware</span><span class="p">:</span> <span class="kt">MiddlewareType</span><span class="p">,</span>
-    <span class="nv">emitsValue</span><span class="p">:</span> <span class="kt"><a href="../Structs/ShouldEmitValue.html">ShouldEmitValue</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span>
+    <span class="nv">emitsValue</span><span class="p">:</span> <span class="kt"><a href="../Enums/ShouldEmitValue.html">ShouldEmitValue</a></span><span class="o">&lt;</span><span class="kt"><a href="../Structs/ReduxPipelineWrapper.html#/s:8SwiftRex20ReduxPipelineWrapperV9StateTypea">StateType</a></span><span class="o">&gt;</span>
 <span class="p">)</span></code></pre>
 
                         </div>
@@ -375,7 +398,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-10-12)</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

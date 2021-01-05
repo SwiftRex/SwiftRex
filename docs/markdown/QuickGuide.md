@@ -501,9 +501,9 @@ let store = ReduxStoreBase<AppAction, AppState>(
         state: \AppState.count
     ),
     middleware: ShakeMiddleware().lift(
-        inputActionMap: \AppAction.shake,
-        outputActionMap: identity,
-        stateMap: ignore
+        inputAction: \AppAction.shake,
+        outputAction: identity,
+        state: ignore
     )
 )
 

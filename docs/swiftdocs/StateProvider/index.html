@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Types Conforming to State​Provider</a></li></ul></li><li><a href="#requirements">Requirements</a><ul><li><a href="#stateprovider.statetype">State​Type</a></li><li><a href="#stateprovider.statepublisher">state​Publisher</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Types Conforming to State​Provider</a></li></ul></li><li><a href="#requirements">Requirements</a><ul><li class="variable"><a href="#stateprovider.statepublisher">state​Publisher</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -75,8 +75,11 @@ state changes and react to those.</p>
 <!-- StoreType -->
 <g id="node2" class="node protocol">
 <title>StoreType</title>
+<g id="a_node2"><a xlink:href="/StoreType" xlink:title="StoreType">
 <path fill="none" stroke="black" d="M303,-108C303,-108 111,-108 111,-108 105,-108 99,-102 99,-96 99,-96 99,-84 99,-84 99,-78 105,-72 111,-72 111,-72 303,-72 303,-72 309,-72 315,-78 315,-84 315,-84 315,-96 315,-96 315,-102 309,-108 303,-108"/>
 <text text-anchor="middle" x="207" y="-86.3" font-family="Menlo" font-size="14.00">StoreType</text>
+</a>
+</g>
 </g>
 <!-- StoreType&#45;&gt;StateProvider -->
 <g id="edge1" class="edge conformsTo">
@@ -87,8 +90,11 @@ state changes and react to those.</p>
 <!-- AnyStateProvider -->
 <g id="node3" class="node structure">
 <title>AnyStateProvider</title>
+<g id="a_node3"><a xlink:href="/AnyStateProvider" xlink:title="AnyStateProvider">
 <path fill="none" stroke="black" d="M753,-108C753,-108 561,-108 561,-108 555,-108 549,-102 549,-96 549,-96 549,-84 549,-84 549,-78 555,-72 561,-72 561,-72 753,-72 753,-72 759,-72 765,-78 765,-84 765,-84 765,-96 765,-96 765,-102 759,-108 753,-108"/>
 <text text-anchor="middle" x="657" y="-86.3" font-family="Menlo" font-size="14.00">AnyStateProvider</text>
+</a>
+</g>
 </g>
 <!-- AnyStateProvider&#45;&gt;StateProvider -->
 <g id="edge2" class="edge conformsTo">
@@ -120,18 +126,7 @@ a <code>Store</code> will implement that, but it can also be a <code>StoreProjec
     <section id="requirements">
         <h2>Requirements</h2>
 
-        <div role="article" class="protocol" id="stateprovider.statetype">
-    <h3>
-        <code>State​Type</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">associatedtype</span> <span class="variable">StateType</span></code></pre></body></html>
-<div class="summary" role="doc-abstract">
-    <p>This can be a global state, or a view state that is a not a source-of-truth but only a struct calculated and
-derived from a global source-of-truth, without storage to avoid state inconsistency.</p>
-
-</div>
-</div>
-<div role="article" class="protocol" id="stateprovider.statepublisher">
+        <div role="article" class="variable" id="stateprovider.statepublisher">
     <h3>
         <code>state​Publisher</code>
     </h3>
@@ -147,7 +142,7 @@ derived from a global source-of-truth, without storage to avoid state inconsiste
 
     <footer>
         <p>
-    Generated on <time datetime="2020-05-29T03:19:03+0200">29. May 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:00+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

@@ -8,7 +8,7 @@
 [![Jazzy Documentation](https://swiftrex.github.io/SwiftRex/api/badge.svg)](https://swiftrex.github.io/SwiftRex/api/index.html)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://swiftpackageindex.com/SwiftRex/SwiftRex)
-![Swift](https://img.shields.io/badge/Swift-5.2-orange.svg)
+![Swift](https://img.shields.io/badge/Swift-5.3-orange.svg)
 [![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20Catalyst-252532.svg)](https://github.com/SwiftRex/SwiftRex)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/SwiftRex/SwiftRex/blob/master/LICENSE)
 
@@ -425,15 +425,15 @@ Middleware protocol is generic over 3 associated types:
 
 #### InputActionType:
 The Action type that this `Middleware` knows how to handle, so the store will forward actions of this type to this middleware.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputAction:outputAction:state:)` for more details.
 
 #### OutputActionType:
 The Action type that this `Middleware` will eventually trigger back to the store in response of side-effects. This can be the same as `InputActionType` or different, in case you want to separate your enum in requests and responses.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
+Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputAction:outputAction:state:)` for more details.
 
 #### StateType:
 The State part that this `Middleware` needs to read in order to make decisions. This middleware will be able to read the most up-to-date `StateType` from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don't need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn't need to read any state, so the `StateType`can safely be set to `Void`.
-Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
+Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check `lift(inputAction:outputAction:state:)` for more details.
 
 When implementing your Middleware, all you have to do is to handle the incoming actions:
 
@@ -719,7 +719,7 @@ If you use it from only one target, automatic mode should be fine.
 
 Combine, automatic linking mode:
 ```swift
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -730,7 +730,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.8")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.0")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRex", package: "SwiftRex")])
@@ -740,7 +740,7 @@ let package = Package(
 
 RxSwift, automatic linking mode:
 ```swift
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -751,7 +751,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.8")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.0")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "RxSwiftRex", package: "SwiftRex")])
@@ -761,7 +761,7 @@ let package = Package(
 
 ReactiveSwift, automatic linking mode:
 ```swift
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -772,7 +772,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.8")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.0")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "ReactiveSwiftRex", package: "SwiftRex")])
@@ -782,7 +782,7 @@ let package = Package(
 
 Combine, dynamic linking mode (use similar approach of appending "Dynamic" also for RxSwift or ReactiveSwift products):
 ```swift
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -793,7 +793,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.7.8")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.0")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRexDynamic", package: "SwiftRex")])

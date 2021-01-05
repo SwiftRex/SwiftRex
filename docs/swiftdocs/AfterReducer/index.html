@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#afterreducer.init(run:)">init(run:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="property"><a href="#afterreducer.identity">identity</a></li><li class="property"><a href="#afterreducer.reducerisdone">reducer​IsDone</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="method"><a href="#afterreducer.`do`(_:)">`do`(_:​)</a></li><li class="method"><a href="#afterreducer.donothing()">do​Nothing()</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#afterreducer.identity">identity</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#afterreducer.`do`(_:)">`do`(_:​)</a></li><li class="function"><a href="#afterreducer.donothing()">do​Nothing()</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -75,8 +75,11 @@ last. This composition can be achieved by using the operator <code>&lt;&gt;</cod
 <!-- Monoid -->
 <g id="node2" class="node protocol">
 <title>Monoid</title>
+<g id="a_node2"><a xlink:href="/Monoid" xlink:title="Monoid">
 <path fill="none" stroke="black" d="M528,-36C528,-36 336,-36 336,-36 330,-36 324,-30 324,-24 324,-24 324,-12 324,-12 324,-6 330,0 336,0 336,0 528,0 528,0 534,0 540,-6 540,-12 540,-12 540,-24 540,-24 540,-30 534,-36 528,-36"/>
 <text text-anchor="middle" x="432" y="-14.3" font-family="Menlo" font-size="14.00">Monoid</text>
+</a>
+</g>
 </g>
 <!-- AfterReducer&#45;&gt;Monoid -->
 <g id="edge1" class="edge conformsTo">
@@ -99,16 +102,6 @@ the left or from the right, for example: <code>a &lt;&gt; identity = identity &l
 </dd>
 </dl>
 </section>
-    <section id="initializers">
-        <h2>Initializers</h2>
-
-        <div role="article" class="initializer" id="afterreducer.init(run:)">
-    <h3>
-        <code>init(run:​)</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">private</span> <span class="keyword">init</span>(<span class="variable">run</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; <span class="type">Void</span>)</code></pre></body></html>
-</div>
-    </section>
     <section id="properties">
         <h2>Properties</h2>
 
@@ -120,17 +113,6 @@ the left or from the right, for example: <code>a &lt;&gt; identity = identity &l
 <div class="summary" role="doc-abstract">
     <p>The identity of an <code>AfterReducer</code> is the static instance <code>doNothing()</code>, that contains an empty closure for no-op.
 When combined with any other <code>AfterReducer</code> changes nothing in the result, acting as a neutral element in composition.</p>
-
-</div>
-</div>
-<div role="article" class="variable" id="afterreducer.reducerisdone">
-    <h3>
-        <code>reducer​IsDone</code>
-    </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">let</span> <span class="variable">reducerIsDone</span>: () -&gt; <span class="type">Void</span></code></pre></body></html>
-<div class="summary" role="doc-abstract">
-    <p>Execute the operation scheduled by the middleware. It should run only once and right after Reducer chain has finished and new state is
-published</p>
 
 </div>
 </div>
@@ -168,7 +150,7 @@ When combined with any other <code>AfterReducer</code> changes nothing in the re
 
     <footer>
         <p>
-    Generated on <time datetime="2020-05-29T03:19:03+0200">29. May 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.3</span>.
+    Generated on <time datetime="2020-11-08T00:34:00+0100">8. November 2020</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>
