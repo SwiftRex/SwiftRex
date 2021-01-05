@@ -526,6 +526,7 @@ static let favouritesMiddleware = EffectMiddleware<FavoritesAction /* input acti
     default:
         return .doNothing // Special type of Effect that, well, does nothing.
     }
+}
 ```
 
 Effect has some useful constructors such as `.doNothing`, `.fireAndForget`, `.just`, `.sequence`, `.promise`, `.toCancel` and others. Also, you can lift any Publisher, Observable or SignalProducer into an Effect, as
