@@ -128,7 +128,7 @@ help:
 	@echo -- generates documentation
 	@echo
 	@echo make swiftdoc
-	@echo -- generates documentation (alternative API docs, not fully working yet)
+	@echo "-- generates documentation (alternative API docs, not fully working yet)"
 	@echo
 	@echo make prebuild
 	@echo -- runs the pre-build phases
