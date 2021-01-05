@@ -129,6 +129,7 @@ Let's understand the components of SwiftRex by splitting them into 3 sections:
 - [Core Parts](#core-parts)
     - [Store](#store)
     - [Middleware](#middleware)
+        - [EffectMiddleware](#effectmiddleware)
     - [Reducer](#reducer)
 - [Projection and Lifting](#projection-and-lifting)
     - [Store Projection](#store-projection)
@@ -240,6 +241,7 @@ Annotating the whole state as Equatable helps us to reduce the UI updates in cas
 ## Core Parts
 - [Store](#store)
 - [Middleware](#middleware)
+    - [EffectMiddleware](#effectmiddleware)
 - [Reducer](#reducer)
 
 ---
@@ -494,19 +496,66 @@ class FavoritesAPIMiddleware: Middleware {
 }
 ```
 
+#### EffectMiddleware
+This is a middleware implementation that aims for simplicity while keeping it very powerful. For every incoming action you must return an Effect, which is simply a wrapper for a reactive
+Observable, Publisher or SignalProducer, depending on your favourite reactive library. The only condition is that the Output (Element) of your reactive stream must be a DispatchedAction and
+the Error must be Never. DispatchedAction is a struct having the action itself and the dispatcher (action source), so it's generic over the Action and matches the OutputAction of the
+EffectMiddleware. Error must be Never because Middlewares are expected to resolve all side-effects, including Errors. So if you want to treat the error, you can do it in the middleware, if
+you want to warn the user about the error, then you catch the error in your reactive stream and transform it into an Action such as `.somethingWentWrong(messageToTheUser: String)` to be
+dispatched and later reduced into the AppState.
+
+Optionally an EffectMiddleware can also handle Dependencies. This helps to perform Dependency Injection into the middleware. If your Dependency generic parameter is Void, then the Middleware
+can be created immediately without passing any dependency, however you can't use any external dependency when handling the action. If Dependency generic parameter has some type, or tuple,
+then you can use them while handling the action, but in order to create the effect middleware you will need to provide that type or tuple.
+
+Important: the dependency will be available inside the Effect closure only, because it's expected that you "access" the external world only while executing an Effect.
+
+```swift
+static let favouritesMiddleware = EffectMiddleware<FavoritesAction /* input action */, FavoritesAction /* output action */, AppState, FavouritesAPI /* dependencies */>.onAction { incomingAction, dispatcher, getState in
+    switch incomingAction {
+    case let .toggleFavorite(movieId):
+        return Effect(token: "Any Hashable. Use this to cancel tasks, or to avoid two tasks of the same type") { context -> AnyPublisher<DispatchedAction<FavoritesAction>, Never> in
+            let favoritesList = getState()
+            let makeFavorite = !favoritesList.contains(where: { $0.id == movieId })
+            let api = context.dependencies
+
+            return api.changeFavoritePublisher(id: movieId, makeFavorite: makeFavorite)
+                      .catch { error in DispatchedAction(.somethingWentWrong("Got an error: \(error)") }
+                      .eraseToAnyPublisher()
+        }
+    default:
+        return .doNothing // Special type of Effect that, well, does nothing.
+    }
+```
+
+Effect has some useful constructors such as `.doNothing`, `.fireAndForget`, `.just`, `.sequence`, `.promise`, `.toCancel` and others. Also, you can lift any Publisher, Observable or SignalProducer into an Effect, as
+long as it matches the required generic parameters, for that you can simply use `.asEffect()` functions.
+
 ![SwiftUI Side-Effects](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg)
 
 ### Reducer
 
 `Reducer` is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.
 
-The `Middleware` pipeline can trigger `ActionProtocol`, and handles both `EventProtocol` and `ActionProtocol`. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the `Reducer` function. Actually, it's a protocol that requires only one method:
+The `Middleware` pipeline can do two things: dispatch outgoing actions and handling incoming actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the `Reducer` function.
 
 ```swift
-func reduce(_ currentState: StateType, action: Action) -> StateType
+// Signature:
+Reducer.reduce(_ reduce: @escaping MutableReduceFunction<ActionType, StateType>)
+
+// Example:
+let someReducer = Reducer.reducer { action, state in
+    switch action {
+    case something:
+        // given that state is "inout", you can mutate it here:
+        state.somethingCalledCount += 1
+    }
+}
 ```
 
-Given the current state and an action, returns the calculated state. This function will be executed in the last stage of an action handling, when all middlewares had the chance to modify or improve the action. Because a reduce function is composable monoid and also can be lifted through lenses, it's possible to write fine-grained "sub-reducer" that will handle only a "sub-state", creating a pipeline of reducers.
+Given the current state (as a mutable inout) and an action, it can change the state. This function will be executed right after middleware action handling for all the middlewares in the
+pipeline. Because a reduce function is composable monoid and also can be lifted through lenses, it's possible to write fine-grained "sub-reducer" that will handle only a "sub-state", creating a pipeline of reducers. For example, you can write a Reducer to handle part A of certain state, another Reducer to handle part B of certain state, "lift" them both to the common
+state that holds A and B (a parent struct, for example, that has properties A and B), and then combine them into one.
 
 It's important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the `Reducer` structs or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it's always good to do a final sanity check before changing the state.
 
