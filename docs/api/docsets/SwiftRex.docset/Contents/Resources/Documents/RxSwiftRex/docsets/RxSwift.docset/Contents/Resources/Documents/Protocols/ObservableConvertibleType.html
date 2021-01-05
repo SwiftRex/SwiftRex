@@ -14,7 +14,7 @@
     <a title="ObservableConvertibleType Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">RxSwift 0.7.4 Docs</a> (95% documented)</p>
+        <p><a href="../index.html">RxSwift 0.8.0 Docs</a> (96% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -91,6 +91,9 @@
                 <a href="../Classes/DisposeBag.html">DisposeBag</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/DisposeBag/DisposableBuilder.html">– DisposableBuilder</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a>
               </li>
               <li class="nav-group-task">
@@ -127,9 +130,6 @@
                 <a href="../Classes/SingleAssignmentDisposable.html">SingleAssignmentDisposable</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/Variable.html">Variable</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/VirtualTimeScheduler.html">VirtualTimeScheduler</a>
               </li>
             </ul>
@@ -158,6 +158,9 @@
                 <a href="../Enums/Hooks.html">Hooks</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Enums/InfallibleEvent.html">InfallibleEvent</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Enums/MaybeEvent.html">MaybeEvent</a>
               </li>
               <li class="nav-group-task">
@@ -167,16 +170,13 @@
                 <a href="../Enums/RxError.html">RxError</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Enums/SingleEvent.html">SingleEvent</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Enums/SubjectLifetimeScope.html">SubjectLifetimeScope</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Enums/TakeUntilBehavior.html">TakeUntilBehavior</a>
+                <a href="../Enums/TakeBehavior.html">TakeBehavior</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Enums/VirtualTimeComparison.html">VirtualTimeComparison</a>
@@ -187,10 +187,13 @@
             <a href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Extensions/Completable.html">Completable</a>
+                <a href="../Extensions.html#/s:10Foundation11JSONDecoderC">JSONDecoder</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions.html#/c:objc(cs)NSObject">NSObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/s:10Foundation19PropertyListDecoderC">PropertyListDecoder</a>
               </li>
             </ul>
           </li>
@@ -204,6 +207,9 @@
                 <a href="../Protocols/ConnectableObservableType.html">ConnectableObservableType</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Protocols/DataDecoder.html">DataDecoder</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Protocols/Disposable.html">Disposable</a>
               </li>
               <li class="nav-group-task">
@@ -211,6 +217,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/InfallibleType.html">InfallibleType</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a>
@@ -245,6 +254,9 @@
                 <a href="../Structs/AnyObserver.html">AnyObserver</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/Binder.html">Binder</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/Disposables.html">Disposables</a>
               </li>
               <li class="nav-group-task">
@@ -252,6 +264,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/HistoricalSchedulerTimeConverter.html">HistoricalSchedulerTimeConverter</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Infallible.html">Infallible</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/PrimitiveSequence.html">PrimitiveSequence</a>
@@ -284,6 +299,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:7RxSwift6Singlea">Single</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7RxSwift11SingleEventa">SingleEvent</a>
               </li>
             </ul>
           </li>
@@ -335,33 +353,6 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift25ObservableConvertibleTypeP1Ea"></a>
-                    <a name="//apple_ref/swift/Alias/E" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift25ObservableConvertibleTypeP1Ea">E</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">E</span> <span class="o">=</span> <span class="kt"><a href="../Protocols/ObservableConvertibleType.html#/s:7RxSwift25ObservableConvertibleTypeP7ElementQa">Element</a></span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:7RxSwift25ObservableConvertibleTypeP02asC0AA0C0Cy7ElementQzGyF"></a>
                     <a name="//apple_ref/swift/Method/asObservable()" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift25ObservableConvertibleTypeP02asC0AA0C0Cy7ElementQzGyF">asObservable()</a>
@@ -390,12 +381,152 @@
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift25ObservableConvertibleTypePAAE12asInfallible17onErrorJustReturnAA0G0Vy7ElementQzGAI_tF"></a>
+                    <a name="//apple_ref/swift/Method/asInfallible(onErrorJustReturn:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift25ObservableConvertibleTypePAAE12asInfallible17onErrorJustReturnAA0G0Vy7ElementQzGAI_tF">asInfallible(onErrorJustReturn:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Convert to an <code><a href="../Structs/Infallible.html">Infallible</a></code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">asInfallible</span><span class="p">(</span><span class="n">onErrorJustReturn</span> <span class="nv">element</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ObservableConvertibleType.html#/s:7RxSwift25ObservableConvertibleTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Infallible.html">Infallible</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/ObservableConvertibleType.html#/s:7RxSwift25ObservableConvertibleTypeP7ElementQa">Element</a></span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p><code><a href="../Structs/Infallible.html">Infallible&lt;Element&gt;</a></code></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift25ObservableConvertibleTypePAAE12asInfallible17onErrorFallbackToAA0G0Vy7ElementQzGAJ_tF"></a>
+                    <a name="//apple_ref/swift/Method/asInfallible(onErrorFallbackTo:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift25ObservableConvertibleTypePAAE12asInfallible17onErrorFallbackToAA0G0Vy7ElementQzGAJ_tF">asInfallible(onErrorFallbackTo:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Convert to an <code><a href="../Structs/Infallible.html">Infallible</a></code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">asInfallible</span><span class="p">(</span><span class="n">onErrorFallbackTo</span> <span class="nv">infallible</span><span class="p">:</span> <span class="kt"><a href="../Structs/Infallible.html">Infallible</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/ObservableConvertibleType.html#/s:7RxSwift25ObservableConvertibleTypeP7ElementQa">Element</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Infallible.html">Infallible</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/ObservableConvertibleType.html#/s:7RxSwift25ObservableConvertibleTypeP7ElementQa">Element</a></span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onErroFallbackTo</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Fall back to this provided infallible on error</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p><code><a href="../Structs/Infallible.html">Infallible&lt;Element&gt;</a></code></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift25ObservableConvertibleTypePAAE12asInfallible14onErrorRecoverAA0G0Vy7ElementQzGAJs0I0_pc_tF"></a>
+                    <a name="//apple_ref/swift/Method/asInfallible(onErrorRecover:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift25ObservableConvertibleTypePAAE12asInfallible14onErrorRecoverAA0G0Vy7ElementQzGAJs0I0_pc_tF">asInfallible(onErrorRecover:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Convert to an <code><a href="../Structs/Infallible.html">Infallible</a></code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">asInfallible</span><span class="p">(</span><span class="nv">onErrorRecover</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Infallible.html">Infallible</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/ObservableConvertibleType.html#/s:7RxSwift25ObservableConvertibleTypeP7ElementQa">Element</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Infallible.html">Infallible</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/ObservableConvertibleType.html#/s:7RxSwift25ObservableConvertibleTypeP7ElementQa">Element</a></span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onErrorRecover</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Recover with the this infallible closure</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p><code><a href="../Structs/Infallible.html">Infallible&lt;Element&gt;</a></code></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

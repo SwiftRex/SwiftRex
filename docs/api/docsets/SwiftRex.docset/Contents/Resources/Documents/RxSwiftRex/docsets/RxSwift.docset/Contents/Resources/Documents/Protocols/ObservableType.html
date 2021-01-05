@@ -14,7 +14,7 @@
     <a title="ObservableType Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">RxSwift 0.7.4 Docs</a> (95% documented)</p>
+        <p><a href="../index.html">RxSwift 0.8.0 Docs</a> (96% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -91,6 +91,9 @@
                 <a href="../Classes/DisposeBag.html">DisposeBag</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/DisposeBag/DisposableBuilder.html">– DisposableBuilder</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes.html#/s:7RxSwift11DisposeBaseC">DisposeBase</a>
               </li>
               <li class="nav-group-task">
@@ -127,9 +130,6 @@
                 <a href="../Classes/SingleAssignmentDisposable.html">SingleAssignmentDisposable</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/Variable.html">Variable</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/VirtualTimeScheduler.html">VirtualTimeScheduler</a>
               </li>
             </ul>
@@ -158,6 +158,9 @@
                 <a href="../Enums/Hooks.html">Hooks</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Enums/InfallibleEvent.html">InfallibleEvent</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Enums/MaybeEvent.html">MaybeEvent</a>
               </li>
               <li class="nav-group-task">
@@ -167,16 +170,13 @@
                 <a href="../Enums/RxError.html">RxError</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Enums/SingleEvent.html">SingleEvent</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Enums/SubjectLifetimeScope.html">SubjectLifetimeScope</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Enums/TakeUntilBehavior.html">TakeUntilBehavior</a>
+                <a href="../Enums/TakeBehavior.html">TakeBehavior</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Enums/VirtualTimeComparison.html">VirtualTimeComparison</a>
@@ -187,10 +187,13 @@
             <a href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Extensions/Completable.html">Completable</a>
+                <a href="../Extensions.html#/s:10Foundation11JSONDecoderC">JSONDecoder</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions.html#/c:objc(cs)NSObject">NSObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/s:10Foundation19PropertyListDecoderC">PropertyListDecoder</a>
               </li>
             </ul>
           </li>
@@ -204,6 +207,9 @@
                 <a href="../Protocols/ConnectableObservableType.html">ConnectableObservableType</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Protocols/DataDecoder.html">DataDecoder</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Protocols/Disposable.html">Disposable</a>
               </li>
               <li class="nav-group-task">
@@ -211,6 +217,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/InfallibleType.html">InfallibleType</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a>
@@ -245,6 +254,9 @@
                 <a href="../Structs/AnyObserver.html">AnyObserver</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/Binder.html">Binder</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/Disposables.html">Disposables</a>
               </li>
               <li class="nav-group-task">
@@ -252,6 +264,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/HistoricalSchedulerTimeConverter.html">HistoricalSchedulerTimeConverter</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Infallible.html">Infallible</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/PrimitiveSequence.html">PrimitiveSequence</a>
@@ -284,6 +299,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Typealiases.html#/s:7RxSwift6Singlea">Single</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7RxSwift11SingleEventa">SingleEvent</a>
               </li>
             </ul>
           </li>
@@ -550,9 +568,9 @@ subscription.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE10catchErroryAA0C0Cy7ElementQzGAIs0F0_pKcF"></a>
-                    <a name="//apple_ref/swift/Method/catchError(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE10catchErroryAA0C0Cy7ElementQzGAIs0F0_pKcF">catchError(_:<wbr>)</a>
+                    <a name="/s:7RxSwift14ObservableTypePAAE5catchyAA0C0Cy7ElementQzGAIs5Error_pKcF"></a>
+                    <a name="//apple_ref/swift/Method/catch(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE5catchyAA0C0Cy7ElementQzGAIs5Error_pKcF">catch(_:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -575,7 +593,7 @@ subscription.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">catchError</span><span class="p">(</span><span class="n">_</span> <span class="nv">handler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="err">`</span><span class="k">catch</span><span class="err">`</span><span class="p">(</span><span class="n">_</span> <span class="nv">handler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -609,6 +627,125 @@ subscription.</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE10catchErroryAA0C0Cy7ElementQzGAIs0F0_pKcF"></a>
+                    <a name="//apple_ref/swift/Method/catchError(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE10catchErroryAA0C0Cy7ElementQzGAIs0F0_pKcF">catchError(_:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Continues an observable sequence that is terminated by an error with the observable sequence produced by the handler.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/catch.html">catch operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "catch(_:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">catchError</span><span class="p">(</span><span class="n">_</span> <span class="nv">handler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>handler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Error handler function, producing another observable sequence.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence containing the source sequence&rsquo;s elements, followed by the elements produced by the handler&rsquo;s resulting observable sequence in case an error occurred.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE14catchAndReturnyAA0C0Cy7ElementQzGAHF"></a>
+                    <a name="//apple_ref/swift/Method/catchAndReturn(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE14catchAndReturnyAA0C0Cy7ElementQzGAHF">catchAndReturn(_:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Continues an observable sequence that is terminated by an error with a single element.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/catch.html">catch operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">catchAndReturn</span><span class="p">(</span><span class="n">_</span> <span class="nv">element</span><span class="p">:</span> <span class="kt">Element</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>element</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Last element in an observable sequence in case error occurs.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence containing the source sequence&rsquo;s elements, followed by the <code>element</code> in case an error occurred.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE20catchErrorJustReturnyAA0C0Cy7ElementQzGAHF"></a>
                     <a name="//apple_ref/swift/Method/catchErrorJustReturn(_:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE20catchErrorJustReturnyAA0C0Cy7ElementQzGAHF">catchErrorJustReturn(_:<wbr>)</a>
@@ -634,7 +771,8 @@ subscription.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">catchErrorJustReturn</span><span class="p">(</span><span class="n">_</span> <span class="nv">element</span><span class="p">:</span> <span class="kt">Element</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "catchAndReturn(_:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">catchErrorJustReturn</span><span class="p">(</span><span class="n">_</span> <span class="nv">element</span><span class="p">:</span> <span class="kt">Element</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -693,7 +831,48 @@ subscription.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">catchError</span><span class="o">&lt;</span><span class="kt">Sequence</span><span class="p">:</span> <span class="kt">Swift</span><span class="o">.</span><span class="kt">Sequence</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">sequence</span><span class="p">:</span> <span class="kt">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "catch(onSuccess:onFailure:onDisposed:﹚")</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">catchError</span><span class="o">&lt;</span><span class="kt">Sequence</span><span class="p">:</span> <span class="kt">Swift</span><span class="o">.</span><span class="kt">Sequence</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">sequence</span><span class="p">:</span> <span class="kt">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
+    <span class="k">where</span> <span class="kt">Sequence</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence containing elements from consecutive source sequences until a source sequence terminates successfully.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE5catch8sequenceAA0C0Cy7ElementQzGqd___tSTRd__AjHRtd__lFZ"></a>
+                    <a name="//apple_ref/swift/Method/catch(sequence:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE5catch8sequenceAA0C0Cy7ElementQzGqd___tSTRd__AjHRtd__lFZ">catch(sequence:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Continues an observable sequence that is terminated by an error with the next observable sequence.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/catch.html">catch operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="err">`</span><span class="k">catch</span><span class="err">`</span><span class="o">&lt;</span><span class="kt">Sequence</span><span class="p">:</span> <span class="kt">Swift</span><span class="o">.</span><span class="kt">Sequence</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">sequence</span><span class="p">:</span> <span class="kt">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span>
     <span class="k">where</span> <span class="kt">Sequence</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -1343,12 +1522,6 @@ subscription.</p>
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Projects each element of an observable sequence into an optional form and filters all optional results.</p>
-
-<p>Equivalent to:</p>
-
-<p>func compactMap<Result>(_ transform: @escaping (Self.E) throws -&gt; Result?) -&gt; RxSwift.Observable<Result> {
-   return self.map { try? transform($0) }.filter { $0 != nil }.map { $0! }
-}</p>
 
                       </div>
                       <div class="declaration">
@@ -2056,1052 +2229,6 @@ subscription.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE12mapWithIndexyAA0C0Cyqd__Gqd__7ElementQz_SitKclF"></a>
-                    <a name="//apple_ref/swift/Method/mapWithIndex(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE12mapWithIndexyAA0C0Cyqd__Gqd__7ElementQz_SitKclF">mapWithIndex(_:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Projects each element of an observable sequence into a new form by incorporating the element&rsquo;s index.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/map.html">map operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, message: "Please use enumerated(﹚.map(﹚")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="n">mapWithIndex</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">selector</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Result</span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>selector</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence whose elements are the result of invoking the transform function on each element of source.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE16flatMapWithIndexyAA0C0Cy7ElementQyd__Gqd__AGQz_SitKcAA0c11ConvertibleD0Rd__lF"></a>
-                    <a name="//apple_ref/swift/Method/flatMapWithIndex(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE16flatMapWithIndexyAA0C0Cy7ElementQyd__Gqd__AGQz_SitKcAA0c11ConvertibleD0Rd__lF">flatMapWithIndex(_:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Projects each element of an observable sequence to an observable sequence by incorporating the element&rsquo;s index and merges the resulting observable sequences into one observable sequence.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/flatmap.html">flatMap operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, message: "Please use enumerated(﹚.flatMap(﹚")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="n">flatMapWithIndex</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a></span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">selector</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Source</span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Source</span><span class="o">.</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>selector</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>A transform function to apply to each element; the second parameter of the function represents the index of the source element.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE18skipWhileWithIndexyAA0C0Cy7ElementQzGSbAH_SitKcF"></a>
-                    <a name="//apple_ref/swift/Method/skipWhileWithIndex(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE18skipWhileWithIndexyAA0C0Cy7ElementQzGSbAH_SitKcF">skipWhileWithIndex(_:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Bypasses elements in an observable sequence as long as a specified condition is true and then returns the remaining elements.
-The element&rsquo;s index is used in the logic of the predicate function.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/skipwhile.html">skipWhile operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, message: "Please use enumerated(﹚.skipWhile(﹚.map(﹚")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">skipWhileWithIndex</span><span class="p">(</span><span class="n">_</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>predicate</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>A function to test each element for a condition; the second parameter of the function represents the index of the source element.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence that contains the elements from the input sequence starting at the first element in the linear series that does not pass the test specified by predicate.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE18takeWhileWithIndexyAA0C0Cy7ElementQzGSbAH_SitKcF"></a>
-                    <a name="//apple_ref/swift/Method/takeWhileWithIndex(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE18takeWhileWithIndexyAA0C0Cy7ElementQzGSbAH_SitKcF">takeWhileWithIndex(_:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns elements from an observable sequence as long as a specified condition is true.</p>
-
-<p>The element&rsquo;s index is used in the logic of the predicate function.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/takewhile.html">takeWhile operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, message: "Please use enumerated(﹚.takeWhile(﹚.map(﹚")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">takeWhileWithIndex</span><span class="p">(</span><span class="n">_</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>predicate</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>A function to test each element for a condition; the second parameter of the function represents the index of the source element.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence that contains the elements from the input sequence that occur before the element at which the test no longer passes.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE31shareReplayLatestWhileConnectedAA0C0Cy7ElementQzGyF"></a>
-                    <a name="//apple_ref/swift/Method/shareReplayLatestWhileConnected()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE31shareReplayLatestWhileConnectedAA0C0Cy7ElementQzGyF">shareReplayLatestWhileConnected()</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns an observable sequence that shares a single subscription to the underlying sequence, and immediately upon subscription replays latest element in buffer.</p>
-
-<p>This operator is a specialization of replay which creates a subscription when the number of observers goes from zero to one, then shares that subscription with all subsequent observers until the number of observers returns to zero, at which point the subscription is disposed.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/replay.html">shareReplay operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "share(replay:﹚", message: "use share(replay: 1﹚ instead")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">shareReplayLatestWhileConnected</span><span class="p">()</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence that contains the elements of a sequence produced by multicasting the source sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE11shareReplayyAA0C0Cy7ElementQzGSiF"></a>
-                    <a name="//apple_ref/swift/Method/shareReplay(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE11shareReplayyAA0C0Cy7ElementQzGSiF">shareReplay(_:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns an observable sequence that shares a single subscription to the underlying sequence, and immediately upon subscription replays maximum number of elements in buffer.</p>
-
-<p>This operator is a specialization of replay which creates a subscription when the number of observers goes from zero to one, then shares that subscription with all subsequent observers until the number of observers returns to zero, at which point the subscription is disposed.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/replay.html">shareReplay operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "share(replay:﹚", message: "Suggested replacement is `share(replay: 1﹚`. In case old 3.x behavior of `shareReplay` is required please use `share(replay: 1, scope: .forever﹚` instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">shareReplay</span><span class="p">(</span><span class="n">_</span> <span class="nv">bufferSize</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>bufferSize</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Maximum element count of the replay buffer.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence that contains the elements of a sequence produced by multicasting the source sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE5delay_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/delay(_:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE5delay_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF">delay(_:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns an observable sequence by the source observable sequence shifted forward in time by a specified delay. Error events from the source observable sequence are not delayed.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/delay.html">delay operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "delay(_:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">delay</span><span class="p">(</span><span class="n">_</span> <span class="nv">dueTime</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dueTime</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Relative time shift of the source by.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the subscription delay timer on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>the source Observable shifted in time by the specified delay.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE7timeout_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/timeout(_:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE7timeout_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF">timeout(_:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Applies a timeout policy for each element in the observable sequence. If the next element isn&rsquo;t received within the specified timeout duration starting from its predecessor, a TimeoutError is propagated to the observer.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/timeout.html">timeout operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "timeout(_:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">timeout</span><span class="p">(</span><span class="n">_</span> <span class="nv">dueTime</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dueTime</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Maximum duration between values before a timeout occurs.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the timeout timer on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence with a <code><a href="../Enums/RxError.html#/s:7RxSwift0A5ErrorO7timeoutyA2CmF">RxError.timeout</a></code> in case of a timeout.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE7timeout_5other9schedulerAA0C0Cy7ElementQzGSd_qd__AA09SchedulerD0_ptAA0c11ConvertibleD0Rd__AIQyd__AJRSlF"></a>
-                    <a name="//apple_ref/swift/Method/timeout(_:other:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE7timeout_5other9schedulerAA0C0Cy7ElementQzGSd_qd__AA09SchedulerD0_ptAA0c11ConvertibleD0Rd__AIQyd__AJRSlF">timeout(_:<wbr>other:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Applies a timeout policy for each element in the observable sequence, using the specified scheduler to run timeout timers. If the next element isn&rsquo;t received within the specified timeout duration starting from its predecessor, the other observable sequence is used to produce future messages from that point on.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/timeout.html">timeout operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "timeout(_:other:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="n">timeout</span><span class="o">&lt;</span><span class="kt">OtherSource</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a></span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">dueTime</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">OtherSource</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">Element</span> <span class="o">==</span> <span class="kt">OtherSource</span><span class="o">.</span><span class="kt">Element</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dueTime</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Maximum duration between values before a timeout occurs.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>other</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Sequence to return in case of a timeout.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the timeout timer on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The source sequence switching to the other sequence in case of a timeout.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE4skip_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/skip(_:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4skip_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF">skip(_:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Skips elements for the specified duration from the start of the observable source sequence, using the specified scheduler to run timers.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/skip.html">skip operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "skip(_:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">skip</span><span class="p">(</span><span class="n">_</span> <span class="nv">duration</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>duration</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Duration for skipping elements from the start of the sequence.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the timer on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence with the elements skipped during the specified duration from the start of the source sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE8throttle_6latest9schedulerAA0C0Cy7ElementQzGSd_SbAA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/throttle(_:latest:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE8throttle_6latest9schedulerAA0C0Cy7ElementQzGSd_SbAA09SchedulerD0_ptF">throttle(_:<wbr>latest:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns an Observable that emits the first and the latest item emitted by the source Observable during sequential time windows of a specified duration.</p>
-
-<p>This operator makes sure that no two elements are emitted in less then dueTime.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/debounce.html">debounce operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "throttle(_:latest:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">throttle</span><span class="p">(</span><span class="n">_</span> <span class="nv">dueTime</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">latest</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dueTime</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Throttling duration for each element.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>latest</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Should latest element received in a dueTime wide time window since last element emission be emitted.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the throttle timers on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The throttled sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE4take_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/take(_:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4take_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF">take(_:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Takes elements for the specified duration from the start of the observable source sequence, using the specified scheduler to run timers.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/take.html">take operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "take(_:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">take</span><span class="p">(</span><span class="n">_</span> <span class="nv">duration</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>duration</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Duration for taking elements from the start of the sequence.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the timer on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence with the elements taken during the specified duration from the start of the source sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE17delaySubscription_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/delaySubscription(_:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE17delaySubscription_9schedulerAA0C0Cy7ElementQzGSd_AA09SchedulerD0_ptF">delaySubscription(_:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Time shifts the observable sequence by delaying the subscription with the specified relative time duration, using the specified scheduler to run timers.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/delay.html">delay operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "delaySubscription(_:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">delaySubscription</span><span class="p">(</span><span class="n">_</span> <span class="nv">dueTime</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dueTime</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Relative time shift of the subscription.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the subscription delay timer on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>Time-shifted sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE6window8timeSpan5count9schedulerAA0C0CyAIy7ElementQzGGSd_SiAA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/window(timeSpan:count:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE6window8timeSpan5count9schedulerAA0C0CyAIy7ElementQzGGSd_SiAA09SchedulerD0_ptF">window(timeSpan:<wbr>count:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Projects each element of an observable sequence into a window that is completed when either it’s full or a given amount of time has elapsed.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/window.html">window operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "window(_:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">window</span><span class="p">(</span><span class="nv">timeSpan</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>timeSpan</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Maximum time length of a window.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>count</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Maximum element count of a window.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run windowing timers on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence of windows (instances of <code><a href="../Classes/Observable.html">Observable</a></code>).</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE6buffer8timeSpan5count9schedulerAA0C0CySay7ElementQzGGSd_SiAA09SchedulerD0_ptF"></a>
-                    <a name="//apple_ref/swift/Method/buffer(timeSpan:count:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE6buffer8timeSpan5count9schedulerAA0C0CySay7ElementQzGGSd_SiAA09SchedulerD0_ptF">buffer(timeSpan:<wbr>count:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Projects each element of an observable sequence into a buffer that&rsquo;s sent out when either it&rsquo;s full or a given amount of time has elapsed, using the specified scheduler to run timers.</p>
-
-<p>A useful real-world analogy of this overload is the behavior of a ferry leaving the dock when all seats are taken, or at the scheduled time of departure, whichever event occurs first.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/buffer.html">buffer operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "buffer(timeSpan:count:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">func</span> <span class="nf">buffer</span><span class="p">(</span><span class="nv">timeSpan</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="p">[</span><span class="kt">Element</span><span class="p">]</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>timeSpan</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Maximum time length of a buffer.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>count</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Maximum element count of a buffer.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run buffering timers on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence of buffers.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE20distinctUntilChangedyAA0C0Cy7ElementQzGqd__AHKcSQRd__lF"></a>
                     <a name="//apple_ref/swift/Method/distinctUntilChanged(_:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE20distinctUntilChangedyAA0C0Cy7ElementQzGqd__AHKcSQRd__lF">distinctUntilChanged(_:<wbr>)</a>
@@ -3291,6 +2418,46 @@ The element&rsquo;s index is used in the logic of the predicate function.</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE20distinctUntilChanged2atAA0C0Cy7ElementQzGs7KeyPathCyAIqd__G_tSQRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/distinctUntilChanged(at:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE20distinctUntilChanged2atAA0C0Cy7ElementQzGs7KeyPathCyAIqd__G_tSQRd__lF">distinctUntilChanged(at:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns an observable sequence that contains only contiguous elements with distinct values in the provided key path on each object.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/distinct.html">distinct operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">distinctUntilChanged</span><span class="o">&lt;</span><span class="kt">Property</span><span class="p">:</span> <span class="kt">Equatable</span><span class="o">&gt;</span><span class="p">(</span><span class="n">at</span> <span class="nv">keyPath</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Property</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence only containing the distinct contiguous elements, based on equality operator on the provided key path</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE2do6onNext05afterG00F5Error0hI00F9Completed0hJ00F9Subscribe0F10Subscribed0F7DisposeAA0C0Cy7ElementQzGyAQKcSg_ASys0I0_pKcSgAUyyKcSgAVyycSgA2WtF"></a>
                     <a name="//apple_ref/swift/Method/do(onNext:afterNext:onError:afterError:onCompleted:afterCompleted:onSubscribe:onSubscribed:onDispose:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE2do6onNext05afterG00F5Error0hI00F9Completed0hJ00F9Subscribe0F10Subscribed0F7DisposeAA0C0Cy7ElementQzGyAQKcSg_ASys0I0_pKcSgAUyyKcSgAVyycSgA2WtF">do(onNext:<wbr>afterNext:<wbr>onError:<wbr>afterError:<wbr>onCompleted:<wbr>afterCompleted:<wbr>onSubscribe:<wbr>onSubscribed:<wbr>onDispose:<wbr>)</a>
@@ -3471,7 +2638,67 @@ The element&rsquo;s index is used in the logic of the predicate function.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">elementAt</span><span class="p">(</span><span class="n">_</span> <span class="nv">index</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "element(at:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">elementAt</span><span class="p">(</span><span class="n">_</span> <span class="nv">index</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>index</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The index of the required element (starting from 0).</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence that emits the desired element as its own sole emission.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE7element2atAA0C0Cy7ElementQzGSi_tF"></a>
+                    <a name="//apple_ref/swift/Method/element(at:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE7element2atAA0C0Cy7ElementQzGSi_tF">element(at:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns a sequence emitting only element <em>n</em> emitted by an Observable</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/elementat.html">elementAt operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">element</span><span class="p">(</span><span class="n">at</span> <span class="nv">index</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -3682,9 +2909,9 @@ The element&rsquo;s index is used in the logic of the predicate function.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE14ignoreElementsAA17PrimitiveSequenceVyAA16CompletableTraitOs5NeverOGyF"></a>
+                    <a name="/s:7RxSwift14ObservableTypePAAE14ignoreElementsAA0C0Cys5NeverOGyF"></a>
                     <a name="//apple_ref/swift/Method/ignoreElements()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE14ignoreElementsAA17PrimitiveSequenceVyAA16CompletableTraitOs5NeverOGyF">ignoreElements()</a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE14ignoreElementsAA0C0Cys5NeverOGyF">ignoreElements()</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -3708,7 +2935,7 @@ The element&rsquo;s index is used in the logic of the predicate function.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">ignoreElements</span><span class="p">()</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Typealiases.html#/s:7RxSwift11Completablea">Completable</a></span></code></pre>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Never</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -5045,6 +4272,68 @@ if the source Observable does not emit at most one element before successfully c
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE7observe2onAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_p_tF"></a>
+                    <a name="//apple_ref/swift/Method/observe(on:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE7observe2onAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_p_tF">observe(on:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Wraps the source sequence in order to run its observer callbacks on the specified scheduler.</p>
+
+<p>This only invokes observer callbacks on a <code>scheduler</code>. In case the subscription and/or unsubscription
+actions have side-effects that require to be run on a scheduler, use <code>subscribeOn</code>.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/observeon.html">observeOn operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">observe</span><span class="p">(</span><span class="n">on</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>scheduler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Scheduler to notify observers on.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The source sequence whose observations happen on the specified scheduler.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE9observeOnyAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_pF"></a>
                     <a name="//apple_ref/swift/Method/observeOn(_:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9observeOnyAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_pF">observeOn(_:<wbr>)</a>
@@ -5073,7 +4362,8 @@ actions have side-effects that require to be run on a scheduler, use <code>subsc
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">observeOn</span><span class="p">(</span><span class="n">_</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "observe(on:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">observeOn</span><span class="p">(</span><span class="n">_</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -5463,6 +4753,66 @@ actions have side-effects that require to be run on a scheduler, use <code>subsc
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE5retry4whenAA0C0Cy7ElementQzGqd__AGyqd_0_Gc_tAaBRd__s5ErrorRd_0_r0_lF"></a>
+                    <a name="//apple_ref/swift/Method/retry(when:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE5retry4whenAA0C0Cy7ElementQzGqd__AGyqd_0_Gc_tAaBRd__s5ErrorRd_0_r0_lF">retry(when:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Repeats the source observable sequence on error when the notifier emits a next value.
+If the source observable errors and the notifier completes, it will complete the source sequence.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/retry.html">retry operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">retry</span><span class="o">&lt;</span><span class="kt">TriggerObservable</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="p">,</span> <span class="kt">Error</span><span class="p">:</span> <span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">(</span><span class="n">when</span> <span class="nv">notificationHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TriggerObservable</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>notificationHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A handler that is passed an observable sequence of errors raised by the source observable and returns and observable that either continues, completes or errors. This behavior is then applied to the source observable.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence producing the elements of the given sequence repeatedly until it terminates successfully or is notified to error or complete.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE9retryWhenyAA0C0Cy7ElementQzGqd__AFyqd_0_GcAaBRd__s5ErrorRd_0_r0_lF"></a>
                     <a name="//apple_ref/swift/Method/retryWhen(_:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9retryWhenyAA0C0Cy7ElementQzGqd__AFyqd_0_GcAaBRd__s5ErrorRd_0_r0_lF">retryWhen(_:<wbr>)</a>
@@ -5489,7 +4839,68 @@ If the source observable errors and the notifier completes, it will complete the
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">retryWhen</span><span class="o">&lt;</span><span class="kt">TriggerObservable</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="p">,</span> <span class="kt">Error</span><span class="p">:</span> <span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">notificationHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TriggerObservable</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "retry(when:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="n">retryWhen</span><span class="o">&lt;</span><span class="kt">TriggerObservable</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="p">,</span> <span class="kt">Error</span><span class="p">:</span> <span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">notificationHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TriggerObservable</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>notificationHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A handler that is passed an observable sequence of errors raised by the source observable and returns and observable that either continues, completes or errors. This behavior is then applied to the source observable.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence producing the elements of the given sequence repeatedly until it terminates successfully or is notified to error or complete.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE5retry4whenAA0C0Cy7ElementQzGqd__AGys5Error_pGc_tAaBRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/retry(when:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE5retry4whenAA0C0Cy7ElementQzGqd__AGys5Error_pGc_tAaBRd__lF">retry(when:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Repeats the source observable sequence on error when the notifier emits a next value.
+If the source observable errors and the notifier completes, it will complete the source sequence.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/retry.html">retry operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">retry</span><span class="o">&lt;</span><span class="kt">TriggerObservable</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">when</span> <span class="nv">notificationHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TriggerObservable</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -5549,7 +4960,8 @@ If the source observable errors and the notifier completes, it will complete the
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">retryWhen</span><span class="o">&lt;</span><span class="kt">TriggerObservable</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">notificationHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TriggerObservable</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "retry(when:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="n">retryWhen</span><span class="o">&lt;</span><span class="kt">TriggerObservable</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">notificationHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">TriggerObservable</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -5583,9 +4995,9 @@ If the source observable errors and the notifier completes, it will complete the
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE6sampleyAA0C0Cy7ElementQzGqd__AaBRd__lF"></a>
-                    <a name="//apple_ref/swift/Method/sample(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE6sampleyAA0C0Cy7ElementQzGqd__AaBRd__lF">sample(_:<wbr>)</a>
+                    <a name="/s:7RxSwift14ObservableTypePAAE6sample_12defaultValueAA0C0Cy7ElementQzGqd___AISgtAaBRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/sample(_:defaultValue:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE6sample_12defaultValueAA0C0Cy7ElementQzGqd___AISgtAaBRd__lF">sample(_:<wbr>defaultValue:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -5600,7 +5012,8 @@ If the source observable errors and the notifier completes, it will complete the
 
 <p>Upon each sampling tick, the latest element (if any) in the source sequence during the last sampling interval is sent to the resulting sequence.</p>
 
-<p><strong>In case there were no new elements between sampler ticks, no element is sent to the resulting sequence.</strong></p>
+<p><strong>In case there were no new elements between sampler ticks, you may provide a default value to be emitted, instead
+  to the resulting sequence otherwise no element is sent.</strong></p>
 <div class="aside aside-seealso">
     <p class="aside-title">Seealso</p>
     <p><a href="http://reactivex.io/documentation/operators/sample.html">sample operator on reactivex.io</a></p>
@@ -5612,7 +5025,7 @@ If the source observable errors and the notifier completes, it will complete the
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">sample</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">sampler</span><span class="p">:</span> <span class="kt">Source</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">sample</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">sampler</span><span class="p">:</span> <span class="kt">Source</span><span class="p">,</span> <span class="n">defaultValue</span><span class="p">:</span> <span class="kt">Element</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -5630,6 +5043,18 @@ If the source observable errors and the notifier completes, it will complete the
                               <td>
                                 <div>
                                   <p>Sampling tick sequence.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>defaultValue</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a value to return if there are no new elements between sampler ticks</p>
                                 </div>
                               </td>
                             </tr>
@@ -6274,9 +5699,9 @@ if the source Observable does not emit exactly one element before successfully c
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE9skipUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF"></a>
-                    <a name="//apple_ref/swift/Method/skipUntil(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9skipUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF">skipUntil(_:<wbr>)</a>
+                    <a name="/s:7RxSwift14ObservableTypePAAE4skip5untilAA0C0Cy7ElementQzGqd___tAaBRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/skip(until:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4skip5untilAA0C0Cy7ElementQzGqd___tAaBRd__lF">skip(until:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -6299,7 +5724,7 @@ if the source Observable does not emit exactly one element before successfully c
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">skipUntil</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">Source</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">skip</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">until</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">Source</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -6333,6 +5758,124 @@ if the source Observable does not emit exactly one element before successfully c
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE9skipUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/skipUntil(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9skipUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF">skipUntil(_:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the elements from the source observable sequence that are emitted after the other observable sequence produces an element.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/skipuntil.html">skipUntil operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "skip(until:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="n">skipUntil</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">Source</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>other</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Observable sequence that starts propagation of elements of the source sequence.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence containing the elements of the source sequence that are emitted after the other sequence emits an item.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE4skip5whileAA0C0Cy7ElementQzGSbAIKc_tF"></a>
+                    <a name="//apple_ref/swift/Method/skip(while:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4skip5whileAA0C0Cy7ElementQzGSbAIKc_tF">skip(while:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Bypasses elements in an observable sequence as long as a specified condition is true and then returns the remaining elements.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/skipwhile.html">skipWhile operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">skip</span><span class="p">(</span><span class="k">while</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>predicate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A function to test each element for a condition.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence that contains the elements from the input sequence starting at the first element in the linear series that does not pass the test specified by predicate.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE9skipWhileyAA0C0Cy7ElementQzGSbAHKcF"></a>
                     <a name="//apple_ref/swift/Method/skipWhile(_:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9skipWhileyAA0C0Cy7ElementQzGSbAHKcF">skipWhile(_:<wbr>)</a>
@@ -6358,7 +5901,8 @@ if the source Observable does not emit exactly one element before successfully c
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">skipWhile</span><span class="p">(</span><span class="n">_</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "skip(while:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">skipWhile</span><span class="p">(</span><span class="n">_</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -6450,6 +5994,72 @@ if the source Observable does not emit exactly one element before successfully c
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE9subscribe2onAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_p_tF"></a>
+                    <a name="//apple_ref/swift/Method/subscribe(on:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9subscribe2onAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_p_tF">subscribe(on:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Wraps the source sequence in order to run its subscription and unsubscription logic on the specified
+scheduler.</p>
+
+<p>This operation is not commonly used.</p>
+
+<p>This only performs the side-effects of subscription and unsubscription on the specified scheduler.</p>
+
+<p>In order to invoke observer callbacks on a <code>scheduler</code>, use <code>observeOn</code>.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/subscribeon.html">subscribeOn operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">subscribe</span><span class="p">(</span><span class="n">on</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>scheduler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Scheduler to perform subscription and unsubscription actions on.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE11subscribeOnyAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_pF"></a>
                     <a name="//apple_ref/swift/Method/subscribeOn(_:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE11subscribeOnyAA0C0Cy7ElementQzGAA018ImmediateSchedulerD0_pF">subscribeOn(_:<wbr>)</a>
@@ -6482,7 +6092,8 @@ scheduler.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">subscribeOn</span><span class="p">(</span><span class="n">_</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "subscribe(on:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">subscribeOn</span><span class="p">(</span><span class="n">_</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ImmediateSchedulerType.html">ImmediateSchedulerType</a></span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -6546,6 +6157,69 @@ transforms an observable sequence of observable sequences into an observable seq
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">flatMapLatest</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a></span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">selector</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Source</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Source</span><span class="o">.</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>selector</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A transform function to apply to each element.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence whose elements are the result of invoking the transform function on each element of source producing an
+Observable of Observable sequences and that at any point in time produces the elements of the most recent inner observable sequence that has been received.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE13flatMapLatestyAA10InfallibleVy7ElementQyd__Gqd__AGQzKcAA0hD0Rd__lF"></a>
+                    <a name="//apple_ref/swift/Method/flatMapLatest(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE13flatMapLatestyAA10InfallibleVy7ElementQyd__Gqd__AGQzKcAA0hD0Rd__lF">flatMapLatest(_:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Projects each element of an observable sequence into a new sequence of observable sequences and then
+transforms an observable sequence of observable sequences into an observable sequence producing values only from the most recent observable sequence.</p>
+
+<p>It is a combination of <code>map</code> + <code>switchLatest</code> operator</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/flatmap.html">flatMapLatest operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">flatMapLatest</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt"><a href="../Protocols/InfallibleType.html">InfallibleType</a></span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">selector</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Source</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/Infallible.html">Infallible</a></span><span class="o">&lt;</span><span class="kt">Source</span><span class="o">.</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -6696,6 +6370,77 @@ Observable of Observable sequences and that at any point in time produces the el
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE4take3for9schedulerAA0C0Cy7ElementQzG8Dispatch0I12TimeIntervalO_AA09SchedulerD0_ptF"></a>
+                    <a name="//apple_ref/swift/Method/take(for:scheduler:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4take3for9schedulerAA0C0Cy7ElementQzG8Dispatch0I12TimeIntervalO_AA09SchedulerD0_ptF">take(for:<wbr>scheduler:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Takes elements for the specified duration from the start of the observable source sequence, using the specified scheduler to run timers.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/take.html">take operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">take</span><span class="p">(</span><span class="k">for</span> <span class="nv">duration</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:7RxSwift0A12TimeIntervala">RxTimeInterval</a></span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>duration</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Duration for taking elements from the start of the sequence.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>scheduler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Scheduler to run the timer on.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence with the elements taken during the specified duration from the start of the source sequence.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:7RxSwift14ObservableTypePAAE4take_9schedulerAA0C0Cy7ElementQzG8Dispatch0H12TimeIntervalO_AA09SchedulerD0_ptF"></a>
                     <a name="//apple_ref/swift/Method/take(_:scheduler:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4take_9schedulerAA0C0Cy7ElementQzG8Dispatch0H12TimeIntervalO_AA09SchedulerD0_ptF">take(_:<wbr>scheduler:<wbr>)</a>
@@ -6721,7 +6466,8 @@ Observable of Observable sequences and that at any point in time produces the el
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">take</span><span class="p">(</span><span class="n">_</span> <span class="nv">duration</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:7RxSwift0A12TimeIntervala">RxTimeInterval</a></span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "take(for:scheduler:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">take</span><span class="p">(</span><span class="n">_</span> <span class="nv">duration</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:7RxSwift0A12TimeIntervala">RxTimeInterval</a></span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -6828,9 +6574,9 @@ Observable of Observable sequences and that at any point in time produces the el
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE9takeUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF"></a>
-                    <a name="//apple_ref/swift/Method/takeUntil(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9takeUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF">takeUntil(_:<wbr>)</a>
+                    <a name="/s:7RxSwift14ObservableTypePAAE4take5untilAA0C0Cy7ElementQzGqd___tAaBRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/take(until:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4take5untilAA0C0Cy7ElementQzGqd___tAaBRd__lF">take(until:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -6853,7 +6599,7 @@ Observable of Observable sequences and that at any point in time produces the el
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">takeUntil</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">Source</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">take</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">until</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">Source</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -6887,9 +6633,9 @@ Observable of Observable sequences and that at any point in time produces the el
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAE9takeUntil_9predicateAA0C0Cy7ElementQzGAA04TakeF8BehaviorO_SbAIKctF"></a>
-                    <a name="//apple_ref/swift/Method/takeUntil(_:predicate:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9takeUntil_9predicateAA0C0Cy7ElementQzGAA04TakeF8BehaviorO_SbAIKctF">takeUntil(_:<wbr>predicate:<wbr>)</a>
+                    <a name="/s:7RxSwift14ObservableTypePAAE4take5until8behaviorAA0C0Cy7ElementQzGSbAJKc_AA12TakeBehaviorOtF"></a>
+                    <a name="//apple_ref/swift/Method/take(until:behavior:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4take5until8behaviorAA0C0Cy7ElementQzGSbAJKc_AA12TakeBehaviorOtF">take(until:<wbr>behavior:<wbr>)</a>
                     </code>
                       <span class="declaration-note">
                         Extension method
@@ -6912,7 +6658,200 @@ Observable of Observable sequences and that at any point in time produces the el
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">takeUntil</span><span class="p">(</span><span class="n">_</span> <span class="nv">behavior</span><span class="p">:</span> <span class="kt"><a href="../Enums/TakeUntilBehavior.html">TakeUntilBehavior</a></span><span class="p">,</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">take</span><span class="p">(</span><span class="n">until</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">,</span>
+                 <span class="nv">behavior</span><span class="p">:</span> <span class="kt"><a href="../Enums/TakeBehavior.html">TakeBehavior</a></span> <span class="o">=</span> <span class="o">.</span><span class="n">exclusive</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>predicate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A function to test each element for a condition.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>behavior</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Whether or not to include the last element matching the predicate. Defaults to <code>exclusive</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence that contains the elements from the input sequence that occur before the element at which the test passes.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE4take5while8behaviorAA0C0Cy7ElementQzGSbAJKc_AA12TakeBehaviorOtF"></a>
+                    <a name="//apple_ref/swift/Method/take(while:behavior:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE4take5while8behaviorAA0C0Cy7ElementQzGSbAJKc_AA12TakeBehaviorOtF">take(while:<wbr>behavior:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns elements from an observable sequence as long as a specified condition is true.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/takewhile.html">takeWhile operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">take</span><span class="p">(</span><span class="k">while</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">,</span>
+                 <span class="nv">behavior</span><span class="p">:</span> <span class="kt"><a href="../Enums/TakeBehavior.html">TakeBehavior</a></span> <span class="o">=</span> <span class="o">.</span><span class="n">exclusive</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>predicate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A function to test each element for a condition.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence that contains the elements from the input sequence that occur before the element at which the test no longer passes.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE9takeUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF"></a>
+                    <a name="//apple_ref/swift/Method/takeUntil(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9takeUntilyAA0C0Cy7ElementQzGqd__AaBRd__lF">takeUntil(_:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the elements from the source observable sequence until the other observable sequence produces an element.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/takeuntil.html">takeUntil operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "take(until:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="n">takeUntil</span><span class="o">&lt;</span><span class="kt">Source</span><span class="p">:</span> <span class="kt">ObservableType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">Source</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>other</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Observable sequence that terminates propagation of elements of the source sequence.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE9takeUntil_9predicateAA0C0Cy7ElementQzGAA12TakeBehaviorO_SbAIKctF"></a>
+                    <a name="//apple_ref/swift/Method/takeUntil(_:predicate:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE9takeUntil_9predicateAA0C0Cy7ElementQzGAA12TakeBehaviorO_SbAIKctF">takeUntil(_:<wbr>predicate:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns elements from an observable sequence until the specified condition is true.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><a href="http://reactivex.io/documentation/operators/takeuntil.html">takeUntil operator on reactivex.io</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "take(until:behavior:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">takeUntil</span><span class="p">(</span><span class="n">_</span> <span class="nv">behavior</span><span class="p">:</span> <span class="kt"><a href="../Enums/TakeBehavior.html">TakeBehavior</a></span><span class="p">,</span>
                       <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
@@ -6984,7 +6923,8 @@ Observable of Observable sequences and that at any point in time produces the el
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">takeWhile</span><span class="p">(</span><span class="n">_</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "take(while:﹚")</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">takeWhile</span><span class="p">(</span><span class="n">_</span> <span class="nv">predicate</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Element</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
@@ -7468,7 +7408,11 @@ Observable of Observable sequences and that at any point in time produces the el
                         <p>Merges two observable sequences into one observable sequence by combining each element from self with the latest element from the second source, if any.</p>
 <div class="aside aside-seealso">
     <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/combinelatest.html">combineLatest operator on reactivex.io</a></p>
+    <a href="http://reactivex.io/documentation/operators/combinelatest.html">combineLatest operator on reactivex.io</a>
+
+</div><div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>Elements emitted by self before the second source has emitted any values will be omitted.</p>
 
 </div>
 
@@ -7538,7 +7482,11 @@ Observable of Observable sequences and that at any point in time produces the el
                         <p>Merges two observable sequences into one observable sequence by using latest element from the second sequence every time when <code>self</code> emits an element.</p>
 <div class="aside aside-seealso">
     <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/combinelatest.html">combineLatest operator on reactivex.io</a></p>
+    <a href="http://reactivex.io/documentation/operators/combinelatest.html">combineLatest operator on reactivex.io</a>
+
+</div><div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>Elements emitted by self before the second source has emitted any values will be omitted.</p>
 
 </div>
 
@@ -7573,6 +7521,131 @@ Observable of Observable sequences and that at any point in time produces the el
                       <div>
                         <h4>Return Value</h4>
                         <p>An observable sequence containing the result of combining each element of the self  with the latest element from the second source, if any, using the specified result selector function.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE14withUnretained_14resultSelectorAA0C0Cyqd_0_Gqd___qd_0_qd___7ElementQztctRld__Cr0_lF"></a>
+                    <a name="//apple_ref/swift/Method/withUnretained(_:resultSelector:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE14withUnretained_14resultSelectorAA0C0Cyqd_0_Gqd___qd_0_qd___7ElementQztctRld__Cr0_lF">withUnretained(_:<wbr>resultSelector:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Provides an unretained, safe to use (i.e. not implicitly unwrapped), reference to an object along with the events emitted by the sequence.</p>
+
+<p>In the case the provided object cannot be retained successfully, the seqeunce will complete.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">withUnretained</span><span class="o">&lt;</span><span class="kt">Object</span><span class="p">:</span> <span class="kt">AnyObject</span><span class="p">,</span> <span class="kt">Out</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">obj</span><span class="p">:</span> <span class="kt">Object</span><span class="p">,</span>
+    <span class="nv">resultSelector</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">Object</span><span class="p">,</span> <span class="kt">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Out</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Out</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>obj</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The object to provide an unretained reference on.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>resultSelector</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A function to combine the unretained referenced on <code>obj</code> and the value of the observable sequence.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence that contains the result of <code>resultSelector</code> being called with an unretained reference on <code>obj</code> and the values of the original sequence.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAAE14withUnretainedyAA0C0Cyqd___7ElementQztGqd__Rld__ClF"></a>
+                    <a name="//apple_ref/swift/Method/withUnretained(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAE14withUnretainedyAA0C0Cyqd___7ElementQztGqd__Rld__ClF">withUnretained(_:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Provides an unretained, safe to use (i.e. not implicitly unwrapped), reference to an object along with the events emitted by the sequence.</p>
+
+<p>In the case the provided object cannot be retained successfully, the seqeunce will complete.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">withUnretained</span><span class="o">&lt;</span><span class="kt">Object</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">obj</span><span class="p">:</span> <span class="kt">Object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="p">(</span><span class="kt">Object</span><span class="p">,</span> <span class="kt">Element</span><span class="p">)</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">Object</span> <span class="p">:</span> <span class="kt">AnyObject</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>obj</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The object to provide an unretained reference on.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An observable sequence of tuples that contains both an unretained reference on <code>obj</code> and the values of the original sequence.</p>
                       </div>
                     </section>
                   </div>
@@ -8400,6 +8473,91 @@ Observable of Observable sequences and that at any point in time produces the el
             </div>
             <div class="task-group">
               <div class="task-name-container">
+                <a name="/Available%20where%20%60Element%60%20==%20%60Data%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Element` == `Data`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Data%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Element</code> == <code>Data</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7RxSwift14ObservableTypePAA10Foundation4DataV7ElementRtzrlE6decode4type7decoderAA0C0Cyqd__Gqd__m_qd_0_tSeRd__AA0F7DecoderRd_0_r0_lF"></a>
+                    <a name="//apple_ref/swift/Method/decode(type:decoder:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7RxSwift14ObservableTypePAA10Foundation4DataV7ElementRtzrlE6decode4type7decoderAA0C0Cyqd__Gqd__m_qd_0_tSeRd__AA0F7DecoderRd_0_r0_lF">decode(type:<wbr>decoder:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Attempt to decode the emitted <code>Data</code> using a provided decoder.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>If using a custom decoder, it must conform to the <code><a href="../Protocols/DataDecoder.html">DataDecoder</a></code> protocol.</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="n">decode</span><span class="o">&lt;</span><span class="kt">Item</span><span class="p">:</span> <span class="kt">Decodable</span><span class="p">,</span>
+            <span class="kt">Decoder</span><span class="p">:</span> <span class="kt"><a href="../Protocols/DataDecoder.html">DataDecoder</a></span><span class="o">&gt;</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="kt">Item</span><span class="o">.</span><span class="k">Type</span><span class="p">,</span>
+                                  <span class="nv">decoder</span><span class="p">:</span> <span class="kt">Decoder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Item</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>type</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A <code>Decodable</code>-conforming type to attempt to decode to</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>decoder</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A capable decoder, e.g. <code>JSONDecoder</code> or <code>PropertyListDecoder</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>An <code><a href="../Classes/Observable.html">Observable</a></code> of the decoded type</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
                 <a name="/Available%20where%20%60Element%60:%20%60EventConvertible%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element`: `EventConvertible`" class="dashAnchor"></a>
                 <div class="section-name-container">
@@ -8444,188 +8602,6 @@ Observable of Observable sequences and that at any point in time produces the el
                       <div>
                         <h4>Return Value</h4>
                         <p>The dematerialized observable sequence.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20:%20%60RxAbstractInteger%60"></a>
-                <a name="//apple_ref/swift/Section/Available where `Element` : `RxAbstractInteger`" class="dashAnchor"></a>
-                <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20:%20%60RxAbstractInteger%60"></a>
-                  <h3 class="section-name"><p>Available where <code>Element</code> : <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
-</h3>
-                </div>
-              </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAs17FixedWidthInteger7ElementRpzrlE8interval_9schedulerAA0C0CyAFGSd_AA09SchedulerD0_ptFZ"></a>
-                    <a name="//apple_ref/swift/Method/interval(_:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAs17FixedWidthInteger7ElementRpzrlE8interval_9schedulerAA0C0CyAFGSd_AA09SchedulerD0_ptFZ">interval(_:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns an observable sequence that produces a value after each period, using the specified scheduler to run timers and to send out observer messages.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/interval.html">interval operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "interval(_:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">interval</span><span class="p">(</span><span class="n">_</span> <span class="nv">period</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>period</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Period for producing the values in the resulting sequence.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run the timer on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence that produces a value after each period.</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60:%20%60RxAbstractInteger%60"></a>
-                <a name="//apple_ref/swift/Section/Available where `Element`: `RxAbstractInteger`" class="dashAnchor"></a>
-                <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60:%20%60RxAbstractInteger%60"></a>
-                  <h3 class="section-name"><p>Available where <code>Element</code>: <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
-</h3>
-                </div>
-              </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7RxSwift14ObservableTypePAAs17FixedWidthInteger7ElementRpzrlE5timer_6period9schedulerAA0C0CyAFGSd_SdSgAA09SchedulerD0_ptFZ"></a>
-                    <a name="//apple_ref/swift/Method/timer(_:period:scheduler:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7RxSwift14ObservableTypePAAs17FixedWidthInteger7ElementRpzrlE5timer_6period9schedulerAA0C0CyAFGSd_SdSgAA09SchedulerD0_ptFZ">timer(_:<wbr>period:<wbr>scheduler:<wbr>)</a>
-                    </code>
-                      <span class="declaration-note">
-                        Extension method
-                      </span>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns an observable sequence that periodically produces a value after the specified initial relative due time has elapsed, using the specified scheduler to run timers.</p>
-<div class="aside aside-seealso">
-    <p class="aside-title">Seealso</p>
-    <p><a href="http://reactivex.io/documentation/operators/timer.html">timer operator on reactivex.io</a></p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "timer(_:period:scheduler:﹚", message: "Use DispatchTimeInterval overload instead.")</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">timer</span><span class="p">(</span><span class="n">_</span> <span class="nv">dueTime</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">,</span> <span class="nv">period</span><span class="p">:</span> <span class="kt">Foundation</span><span class="o">.</span><span class="kt">TimeInterval</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">scheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SchedulerType.html">SchedulerType</a></span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Observable.html">Observable</a></span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>dueTime</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Relative time at which to produce the first value.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>period</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Period to produce subsequent values.</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>scheduler</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Scheduler to run timers on.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An observable sequence that produces a value after due time has elapsed and then each period.</p>
                       </div>
                     </section>
                   </div>
@@ -8687,11 +8663,11 @@ Observable of Observable sequences and that at any point in time produces the el
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20:%20%60ObservableConvertibleType%60"></a>
-                <a name="//apple_ref/swift/Section/Available where `Element` : `ObservableConvertibleType`" class="dashAnchor"></a>
+                <a name="/Available%20where%20%60Element%60:%20%60ObservableConvertibleType%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Element`: `ObservableConvertibleType`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20:%20%60ObservableConvertibleType%60"></a>
-                  <h3 class="section-name"><p>Available where <code>Element</code> : <code><a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a></code></p>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60:%20%60ObservableConvertibleType%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Element</code>: <code><a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a></code></p>
 </h3>
                 </div>
               </div>
@@ -8884,11 +8860,11 @@ Observable of Observable sequences and that at any point in time produces the el
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20:%20%60RxAbstractInteger%602"></a>
-                <a name="//apple_ref/swift/Section/Available where `Element` : `RxAbstractInteger`" class="dashAnchor"></a>
+                <a name="/Available%20where%20%60Element%60:%20%60RxAbstractInteger%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Element`: `RxAbstractInteger`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20:%20%60RxAbstractInteger%602"></a>
-                  <h3 class="section-name"><p>Available where <code>Element</code> : <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60:%20%60RxAbstractInteger%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Element</code>: <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
 </h3>
                 </div>
               </div>
@@ -8979,11 +8955,11 @@ Observable of Observable sequences and that at any point in time produces the el
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20:%20%60ObservableConvertibleType%602"></a>
-                <a name="//apple_ref/swift/Section/Available where `Element` : `ObservableConvertibleType`" class="dashAnchor"></a>
+                <a name="/Available%20where%20%60Element%60:%20%60ObservableConvertibleType%602"></a>
+                <a name="//apple_ref/swift/Section/Available where `Element`: `ObservableConvertibleType`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20:%20%60ObservableConvertibleType%602"></a>
-                  <h3 class="section-name"><p>Available where <code>Element</code> : <code><a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a></code></p>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60:%20%60ObservableConvertibleType%602"></a>
+                  <h3 class="section-name"><p>Available where <code>Element</code>: <code><a href="../Protocols/ObservableConvertibleType.html">ObservableConvertibleType</a></code></p>
 </h3>
                 </div>
               </div>
@@ -9035,11 +9011,11 @@ previous inner observable sequence.</p>
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20:%20%60RxAbstractInteger%603"></a>
-                <a name="//apple_ref/swift/Section/Available where `Element` : `RxAbstractInteger`" class="dashAnchor"></a>
+                <a name="/Available%20where%20%60Element%60:%20%60RxAbstractInteger%602"></a>
+                <a name="//apple_ref/swift/Section/Available where `Element`: `RxAbstractInteger`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20:%20%60RxAbstractInteger%603"></a>
-                  <h3 class="section-name"><p>Available where <code>Element</code> : <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60:%20%60RxAbstractInteger%602"></a>
+                  <h3 class="section-name"><p>Available where <code>Element</code>: <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
 </h3>
                 </div>
               </div>
@@ -9115,19 +9091,6 @@ previous inner observable sequence.</p>
                     </section>
                   </div>
                 </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60:%20%60RxAbstractInteger%602"></a>
-                <a name="//apple_ref/swift/Section/Available where `Element`: `RxAbstractInteger`" class="dashAnchor"></a>
-                <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60:%20%60RxAbstractInteger%602"></a>
-                  <h3 class="section-name"><p>Available where <code>Element</code>: <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
-</h3>
-                </div>
-              </div>
-              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -9516,7 +9479,7 @@ previous inner observable sequence.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2020-11-08)</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
