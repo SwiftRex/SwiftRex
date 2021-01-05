@@ -33,7 +33,7 @@ public struct FireAndForget<IgnoringOutput>: ObservableType {
             .ignoreElements()
             .asObservable()
             .map(absurd)
-            .catchError { error -> Observable<IgnoringOutput?> in
+            .catch { error -> Observable<IgnoringOutput?> in
                 .just(catchErrors(error))
             }
             .compactMap { $0 }

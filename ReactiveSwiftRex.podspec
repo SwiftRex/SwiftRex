@@ -24,5 +24,5 @@ Pod::Spec.new do |s|
 
   s.source_files = "Sources/ReactiveSwiftRex/**/*.swift"
   s.dependency 'SwiftRex'
-  s.dependency 'ReactiveSwift', '~> 6'
+  s.dependency 'ReactiveSwift', '~> 6.5.0'
 end
