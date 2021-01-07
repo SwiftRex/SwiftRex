@@ -181,7 +181,7 @@ extension Effect {
     public static func promise<H: Hashable>(
         token: H,
         from dispatcher: ActionSource,
-        perform: @escaping (Context, (OutputAction) -> Void) -> Disposable
+        perform: @escaping (Context, @escaping (OutputAction) -> Void) -> Disposable
     ) -> Effect {
         Effect<Dependencies, OutputAction> { context in
             Observable.create { observer -> Disposable in
@@ -199,7 +199,7 @@ extension Effect {
         function: String = #function,
         line: UInt = #line,
         info: String? = nil,
-        perform: @escaping (Context, (OutputAction) -> Void) -> Disposable
+        perform: @escaping (Context, @escaping (OutputAction) -> Void) -> Disposable
     ) -> Effect {
         promise(token: token,
                 from: ActionSource(file: file, function: function, line: line, info: info),

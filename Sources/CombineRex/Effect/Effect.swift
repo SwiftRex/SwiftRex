@@ -188,7 +188,7 @@ extension Effect {
     public static func promise<H: Hashable>(
         token: H,
         from dispatcher: ActionSource,
-        perform: @escaping (Context, (OutputAction) -> Void) -> Void
+        perform: @escaping (Context, @escaping (OutputAction) -> Void) -> Void
     ) -> Effect {
         Effect<Dependencies, OutputAction> { context in
             Deferred<Future<DispatchedAction<OutputAction>, Never>> {
@@ -207,7 +207,7 @@ extension Effect {
         function: String = #function,
         line: UInt = #line,
         info: String? = nil,
-        perform: @escaping (Context, (OutputAction) -> Void) -> Void
+        perform: @escaping (Context, @escaping (OutputAction) -> Void) -> Void
     ) -> Effect {
         promise(token: token,
                 from: ActionSource(file: file, function: function, line: line, info: info),
