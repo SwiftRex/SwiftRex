@@ -8,13 +8,21 @@
     <script src="js/jquery.min.js" defer></script>
     <script src="js/jazzy.js" defer></script>
     
+    <script src="js/lunr.min.js" defer></script>
+    <script src="js/typeahead.jquery.js" defer></script>
+    <script src="js/jazzy.search.js" defer></script>
   </head>
   <body>
     <a title="SwiftRex  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex 0.8.0 Docs</a> (78% documented)</p>
+        <p><a href="index.html">SwiftRex 0.8.1 Docs</a> (78% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right">
+          <form role="search" action="search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -372,7 +380,11 @@
 
 <ul>
 <li><a href="#store">Store</a></li>
-<li><a href="#middleware">Middleware</a></li>
+<li><a href="#middleware">Middleware</a>
+
+<ul>
+<li><a href="#effectmiddleware">EffectMiddleware</a></li>
+</ul></li>
 <li><a href="#reducer">Reducer</a></li>
 </ul></li>
 <li><a href="#projection-and-lifting">Projection and Lifting</a>
@@ -493,7 +505,11 @@
 
 <ul>
 <li><a href="#store">Store</a></li>
-<li><a href="#middleware">Middleware</a></li>
+<li><a href="#middleware">Middleware</a>
+
+<ul>
+<li><a href="#effectmiddleware">EffectMiddleware</a></li>
+</ul></li>
 <li><a href="#reducer">Reducer</a></li>
 </ul>
 
@@ -734,17 +750,63 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
+<h4 id='effectmiddleware' class='heading'>EffectMiddleware</h4>
+
+<p>This is a middleware implementation that aims for simplicity while keeping it very powerful. For every incoming action you must return an Effect, which is simply a wrapper for a reactive
+Observable, Publisher or SignalProducer, depending on your favourite reactive library. The only condition is that the Output (Element) of your reactive stream must be a DispatchedAction and
+the Error must be Never. DispatchedAction is a struct having the action itself and the dispatcher (action source), so it&rsquo;s generic over the Action and matches the OutputAction of the
+EffectMiddleware. Error must be Never because Middlewares are expected to resolve all side-effects, including Errors. So if you want to treat the error, you can do it in the middleware, if
+you want to warn the user about the error, then you catch the error in your reactive stream and transform it into an Action such as <code>.somethingWentWrong(messageToTheUser: String)</code> to be
+dispatched and later reduced into the AppState.</p>
+
+<p>Optionally an EffectMiddleware can also handle Dependencies. This helps to perform Dependency Injection into the middleware. If your Dependency generic parameter is Void, then the Middleware
+can be created immediately without passing any dependency, however you can&rsquo;t use any external dependency when handling the action. If Dependency generic parameter has some type, or tuple,
+then you can use them while handling the action, but in order to create the effect middleware you will need to provide that type or tuple.</p>
+
+<p>Important: the dependency will be available inside the Effect closure only, because it&rsquo;s expected that you &ldquo;access&rdquo; the external world only while executing an Effect.</p>
+<pre class="highlight swift"><code><span class="kd">static</span> <span class="k">let</span> <span class="nv">favouritesMiddleware</span> <span class="o">=</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">FavoritesAction</span> <span class="cm">/* input action */</span><span class="p">,</span> <span class="kt">FavoritesAction</span> <span class="cm">/* output action */</span><span class="p">,</span> <span class="kt">AppState</span><span class="p">,</span> <span class="kt">FavouritesAPI</span> <span class="cm">/* dependencies */</span><span class="o">&gt;.</span><span class="n">onAction</span> <span class="p">{</span> <span class="n">incomingAction</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">getState</span> <span class="k">in</span>
+    <span class="k">switch</span> <span class="n">incomingAction</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">toggleFavorite</span><span class="p">(</span><span class="n">movieId</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kt">Effect</span><span class="p">(</span><span class="nv">token</span><span class="p">:</span> <span class="s">"Any Hashable. Use this to cancel tasks, or to avoid two tasks of the same type"</span><span class="p">)</span> <span class="p">{</span> <span class="n">context</span> <span class="o">-&gt;</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="kt">DispatchedAction</span><span class="o">&lt;</span><span class="kt">FavoritesAction</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="k">in</span>
+            <span class="k">let</span> <span class="nv">favoritesList</span> <span class="o">=</span> <span class="nf">getState</span><span class="p">()</span>
+            <span class="k">let</span> <span class="nv">makeFavorite</span> <span class="o">=</span> <span class="o">!</span><span class="n">favoritesList</span><span class="o">.</span><span class="nf">contains</span><span class="p">(</span><span class="nv">where</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">movieId</span> <span class="p">})</span>
+            <span class="k">let</span> <span class="nv">api</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">dependencies</span>
+
+            <span class="k">return</span> <span class="n">api</span><span class="o">.</span><span class="nf">changeFavoritePublisher</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">movieId</span><span class="p">,</span> <span class="nv">makeFavorite</span><span class="p">:</span> <span class="n">makeFavorite</span><span class="p">)</span>
+                      <span class="o">.</span><span class="k">catch</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span> <span class="kt">DispatchedAction</span><span class="p">(</span><span class="o">.</span><span class="nf">somethingWentWrong</span><span class="p">(</span><span class="s">"Got an error: </span><span class="se">\(</span><span class="n">error</span><span class="se">)</span><span class="s">"</span><span class="p">)</span> <span class="p">}</span>
+                      <span class="o">.</span><span class="nf">eraseToAnyPublisher</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="k">default</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">.</span><span class="n">doNothing</span> <span class="c1">// Special type of Effect that, well, does nothing.</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Effect has some useful constructors such as <code>.doNothing</code>, <code>.fireAndForget</code>, <code>.just</code>, <code>.sequence</code>, <code>.promise</code>, <code>.toCancel</code> and others. Also, you can lift any Publisher, Observable or SignalProducer into an Effect, as
+long as it matches the required generic parameters, for that you can simply use <code>.asEffect()</code> functions.</p>
 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg" alt="SwiftUI Side-Effects"></p>
 <h3 id='reducer' class='heading'>Reducer</h3>
 
 <p><code><a href="Structs/Reducer.html">Reducer</a></code> is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.</p>
 
-<p>The <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline can trigger <code>ActionProtocol</code>, and handles both <code>EventProtocol</code> and <code>ActionProtocol</code>. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code><a href="Structs/Reducer.html">Reducer</a></code> function. Actually, it&rsquo;s a protocol that requires only one method:</p>
-<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">currentState</span><span class="p">:</span> <span class="kt">StateType</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+<p>The <code><a href="Protocols/Middleware.html">Middleware</a></code> pipeline can do two things: dispatch outgoing actions and handling incoming actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code><a href="Structs/Reducer.html">Reducer</a></code> function.</p>
+<pre class="highlight swift"><code><span class="c1">// Signature:</span>
+<span class="kt">Reducer</span><span class="o">.</span><span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">reduce</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">MutableReduceFunction</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="c1">// Example:</span>
+<span class="k">let</span> <span class="nv">someReducer</span> <span class="o">=</span> <span class="kt">Reducer</span><span class="o">.</span><span class="n">reducer</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">state</span> <span class="k">in</span>
+    <span class="k">switch</span> <span class="n">action</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nv">something</span><span class="p">:</span>
+        <span class="c1">// given that state is "inout", you can mutate it here:</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">somethingCalledCount</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 
-<p>Given the current state and an action, returns the calculated state. This function will be executed in the last stage of an action handling, when all middlewares had the chance to modify or improve the action. Because a reduce function is composable monoid and also can be lifted through lenses, it&rsquo;s possible to write fine-grained &ldquo;sub-reducer&rdquo; that will handle only a &ldquo;sub-state&rdquo;, creating a pipeline of reducers.</p>
+<p>Given the current state (as a mutable inout) and an action, it can change the state. This function will be executed right after middleware action handling for all the middlewares in the
+pipeline. Because a reduce function is composable monoid and also can be lifted through lenses, it&rsquo;s possible to write fine-grained &ldquo;sub-reducer&rdquo; that will handle only a &ldquo;sub-state&rdquo;, creating a pipeline of reducers. For example, you can write a Reducer to handle part A of certain state, another Reducer to handle part B of certain state, &ldquo;lift&rdquo; them both to the common
+state that holds A and B (a parent struct, for example, that has properties A and B), and then combine them into one.</p>
 
 <p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the <code><a href="Structs/Reducer.html">Reducer</a></code> structs or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always good to do a final sanity check before changing the state.</p>
 
@@ -928,8 +990,8 @@ Thanks to lenses, this state can be a sub-state lifted to a global state in orde
 <p>As seen above, some lines are optional because the final Podspecs already include the correct dependencies.</p>
 
 <p>Then, all you must do is install your pods and open the <code>.xcworkspace</code> instead of the <code>.xcodeproj</code> file:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>pod install
-<span class="gp">$ </span>xed .
+<pre class="highlight shell"><code><span class="nv">$ </span>pod <span class="nb">install</span>
+<span class="nv">$ </span>xed <span class="nb">.</span>
 </code></pre>
 <h2 id='swift-package-manager' class='heading'>Swift Package Manager</h2>
 
@@ -951,7 +1013,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.0"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.1"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -971,7 +1033,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.0"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.1"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"RxSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -991,7 +1053,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.0"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.1"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"ReactiveSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -1011,7 +1073,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.0"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.1"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRexDynamic"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -1020,8 +1082,8 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 </code></pre>
 
 <p>Then you can either building on the terminal or use Xcode 11 or higher that now supports SPM natively.</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>swift build
-<span class="gp">$ </span>xed .
+<pre class="highlight shell"><code><span class="nv">$ </span>swift build
+<span class="nv">$ </span>xed <span class="nb">.</span>
 </code></pre>
 <h2 id='carthage' class='heading'>Carthage</h2>
 
@@ -1034,8 +1096,8 @@ was 0.7.1, and eventually target that version until we come up with a better sol
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.6</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

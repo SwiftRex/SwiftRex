@@ -9,16 +9,18 @@ set-version:
 else
 set-version:
 	sed -i .bkp -E "s/(s\.version.*=.*)'.*'/\1'${TO}'/" *.podspec
+	sed -i .bkp -E "s/(s\.dependency 'SwiftRex', )'~> .*'/\1'~> ${TO}'/" *.podspec
 	sed -i .bkp -E "s/(, from: )\".*\"\)/\1\"${TO}\")/" README.md
 	rm *.bkp
 endif
 
 # Pod push
 pod-push:
-	pod trunk push SwiftRex.podspec --allow-warnings
-	pod trunk push ReactiveSwiftRex.podspec --allow-warnings
-	pod trunk push RxSwiftRex.podspec --allow-warnings
-	pod trunk push CombineRex.podspec --allow-warnings
+	bundle exec pod trunk push SwiftRex.podspec --allow-warnings
+	bundle exec pod repo update
+	bundle exec pod trunk push ReactiveSwiftRex.podspec --allow-warnings
+	bundle exec pod trunk push RxSwiftRex.podspec --allow-warnings
+	bundle exec pod trunk push CombineRex.podspec --allow-warnings
 
 mint:
 	command -v mint || brew install mint

@@ -8,13 +8,21 @@
     <script src="js/jquery.min.js" defer></script>
     <script src="js/jazzy.js" defer></script>
     
+    <script src="js/lunr.min.js" defer></script>
+    <script src="js/typeahead.jquery.js" defer></script>
+    <script src="js/jazzy.search.js" defer></script>
   </head>
   <body>
     <a title="QuickGuide  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">ReactiveSwiftRex 0.8.0 Docs</a> (36% documented)</p>
+        <p><a href="index.html">ReactiveSwiftRex 0.8.1 Docs</a> (36% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right">
+          <form role="search" action="search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -273,8 +281,8 @@ The whole AppState also seems to be too much for it, it only cares about a singl
 
 <p>That&rsquo;s why we need to provide these 3 closures. More details about that are shown in the <a href="../../README.md#lifting-reducer">README Lifting Reducer Chapter</a>. However, we can use a simplified lift syntax as long as our <a href="ActionEnumProperties.md">AppAction has enum case properties</a>.</p>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">appReducer</span> <span class="o">=</span> <span class="n">counterReducer</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
-    <span class="nv">action</span><span class="p">:</span> <span class="err">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
-    <span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">AppState</span><span class="o">.</span><span class="n">count</span>
+    <span class="nv">action</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppState</span><span class="o">.</span><span class="n">count</span>
 <span class="p">)</span> <span class="c1">// &lt;&gt; anotherReducer.lift(...) &lt;&gt; .identity</span>
 </code></pre>
 
@@ -342,7 +350,7 @@ The whole AppState also seems to be too much for it, it only cares about a singl
 <p>We start creating a completely isolated pair of State and Action only for our View. Although this is not required, it&rsquo;s how usually MVVM architectures approach backend/frontend separation and could be helpful to establish a transformation layer where number/date formatting, string localization and other UI work are done. This is completely optional, but recommended. The two functions that bridge UI types to Store types are created in the ViewState and ViewAction entities, but they could also be in a Presenter or ViewModel class if this is your way to go.</p>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">viewModel</span><span class="p">:</span> <span class="kt">StoreProjection</span><span class="o">&lt;</span><span class="kt">CounterViewAction</span><span class="p">,</span> <span class="kt">CounterViewState</span><span class="o">&gt;</span> <span class="o">=</span>
     <span class="n">store</span><span class="o">.</span><span class="nf">projection</span><span class="p">(</span>
-        <span class="nv">action</span><span class="p">:</span> <span class="err">\</span><span class="kt">CounterViewAction</span><span class="o">.</span><span class="n">asAppAction</span><span class="p">,</span>
+        <span class="nv">action</span><span class="p">:</span> <span class="p">\</span><span class="kt">CounterViewAction</span><span class="o">.</span><span class="n">asAppAction</span><span class="p">,</span>
         <span class="nv">state</span><span class="p">:</span> <span class="kt">CounterViewState</span><span class="o">.</span><span class="nf">from</span><span class="p">(</span><span class="nv">appState</span><span class="p">:)</span>
     <span class="p">)</span>
 </code></pre>
@@ -508,7 +516,7 @@ But because we are excited about SwiftUI functional programming style, let&rsquo
 <span class="kd">struct</span> <span class="kt">ContentView</span><span class="p">:</span> <span class="kt">View</span> <span class="p">{</span>
     <span class="kd">@ObservedObject</span> <span class="k">var</span> <span class="nv">viewModel</span><span class="p">:</span> <span class="kt">ObservableViewModel</span><span class="o">&lt;</span><span class="kt">CounterViewModel</span><span class="o">.</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">CounterViewModel</span><span class="o">.</span><span class="kt">ViewState</span><span class="o">&gt;</span>
 
-    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="kt">View</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
         <span class="kt">VStack</span> <span class="p">{</span>
             <span class="kt">Spacer</span><span class="p">()</span>
             <span class="kt">Text</span><span class="p">(</span><span class="n">viewModel</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
@@ -602,11 +610,11 @@ But because we are excited about SwiftUI functional programming style, let&rsquo
 <span class="k">let</span> <span class="nv">store</span> <span class="o">=</span> <span class="kt">ReduxStoreBase</span><span class="o">&lt;</span><span class="kt">AppAction</span><span class="p">,</span> <span class="kt">AppState</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="nv">subject</span><span class="p">:</span> <span class="o">.</span><span class="nf">combine</span><span class="p">(</span><span class="nv">initialValue</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">(</span><span class="nv">count</span><span class="p">:</span> <span class="mi">0</span><span class="p">)),</span>
     <span class="nv">reducer</span><span class="p">:</span> <span class="n">counterReducer</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
-        <span class="nv">action</span><span class="p">:</span> <span class="err">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
-        <span class="nv">state</span><span class="p">:</span> <span class="err">\</span><span class="kt">AppState</span><span class="o">.</span><span class="n">count</span>
+        <span class="nv">action</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+        <span class="nv">state</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppState</span><span class="o">.</span><span class="n">count</span>
     <span class="p">),</span>
     <span class="nv">middleware</span><span class="p">:</span> <span class="kt">ShakeMiddleware</span><span class="p">()</span><span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
-        <span class="nv">inputAction</span><span class="p">:</span> <span class="err">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">shake</span><span class="p">,</span>
+        <span class="nv">inputAction</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">shake</span><span class="p">,</span>
         <span class="nv">outputAction</span><span class="p">:</span> <span class="n">identity</span><span class="p">,</span>
         <span class="nv">state</span><span class="p">:</span> <span class="n">ignore</span>
     <span class="p">)</span>
@@ -666,8 +674,8 @@ But because we are excited about SwiftUI functional programming style, let&rsquo
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.6</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

@@ -8,14 +8,22 @@
     <script src="../js/jquery.min.js" defer></script>
     <script src="../js/jazzy.js" defer></script>
     
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
     <a name="//apple_ref/swift/Protocol/PrimitiveSequenceType" class="dashAnchor"></a>
     <a title="PrimitiveSequenceType Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">RxSwift 0.8.0 Docs</a> (96% documented)</p>
+        <p><a href="../index.html">RxSwift 0.8.1 Docs</a> (96% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -313,6 +321,7 @@
             <h1>PrimitiveSequenceType</h1>
               <div class="declaration">
                 <div class="language">
+                  
                   <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">PrimitiveSequenceType</span></code></pre>
 
                 </div>
@@ -411,10 +420,10 @@
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60CompletableTrait%60,%20%60Element%60%20==%20%60Never%60"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60CompletableTrait%60%2C%20%60Element%60%20%3D%3D%20%60Never%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `CompletableTrait`, `Element` == `Never`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60CompletableTrait%60,%20%60Element%60%20==%20%60Never%60"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60CompletableTrait%60%2C%20%60Element%60%20%3D%3D%20%60Never%60"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift16CompletableTraitO">CompletableTrait</a></code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Never</code></p>
 </h3>
                 </div>
@@ -656,10 +665,10 @@
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60CompletableTrait%60,%20%60Element%60%20==%20%60Swift.Never%60"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60CompletableTrait%60%2C%20%60Element%60%20%3D%3D%20%60Swift.Never%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `CompletableTrait`, `Element` == `Swift.Never`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60CompletableTrait%60,%20%60Element%60%20==%20%60Swift.Never%60"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60CompletableTrait%60%2C%20%60Element%60%20%3D%3D%20%60Swift.Never%60"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift16CompletableTraitO">CompletableTrait</a></code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Swift.Never</code></p>
 </h3>
                 </div>
@@ -1012,7 +1021,7 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="err">`</span><span class="k">do</span><span class="err">`</span><span class="p">(</span><span class="nv">onError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="p">`</span><span class="nv">do</span><span class="p">`(</span><span class="nv">onError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">afterError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">onCompleted</span><span class="p">:</span> <span class="p">(()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">afterCompleted</span><span class="p">:</span> <span class="p">(()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
@@ -1501,10 +1510,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%60"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%60"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%60"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -1998,7 +2007,7 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="err">`</span><span class="k">do</span><span class="err">`</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="p">`</span><span class="nv">do</span><span class="p">`(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">afterNext</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">onError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">afterError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
@@ -2625,7 +2634,7 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "catchAndReturn(_:﹚")</span>
+                          <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="nv">renamed</span><span class="p">:</span> <span class="s">"catchAndReturn(_:﹚"</span><span class="p">)</span>
 <span class="kd">public</span> <span class="kd">func</span> <span class="nf">catchErrorJustReturn</span><span class="p">(</span><span class="n">_</span> <span class="nv">element</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/PrimitiveSequence.html">PrimitiveSequence</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></span><span class="p">,</span> <span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="o">&gt;</span></code></pre>
 
@@ -2661,10 +2670,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%60"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%60"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%60"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -2733,10 +2742,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%60"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%60"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%60"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -2786,10 +2795,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%602"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%602"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%602"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%602"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -2858,10 +2867,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%60"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%60"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%60"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -2911,10 +2920,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%602"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%602"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%602"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%602"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -2983,10 +2992,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%602"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%602"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%602"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%602"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3036,10 +3045,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%603"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%603"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%603"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%603"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3108,10 +3117,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%602"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%602"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%602"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%602"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3161,10 +3170,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%603"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%603"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%603"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%603"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3233,10 +3242,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%603"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%603"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%603"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%603"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3286,10 +3295,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%604"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%604"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%604"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%604"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3358,10 +3367,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%603"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%603"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%603"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%603"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3411,10 +3420,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%604"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%604"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%604"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%604"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3483,10 +3492,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%604"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%604"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%604"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%604"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3536,10 +3545,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%605"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%605"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%605"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%605"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3608,10 +3617,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%604"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%604"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%604"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%604"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3661,10 +3670,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%605"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%605"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%605"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%605"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3733,10 +3742,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%605"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%605"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%605"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%605"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3786,10 +3795,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%606"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%606"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%606"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%606"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3858,10 +3867,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%605"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%605"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%605"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%605"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -3911,10 +3920,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%606"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%606"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%606"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%606"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -3983,10 +3992,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%606"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%606"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%606"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%606"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -4036,10 +4045,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%607"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%607"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%607"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%607"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -4108,10 +4117,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%606"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%606"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%606"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%606"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -4161,10 +4170,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%607"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%607"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%607"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%607"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -4233,10 +4242,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%607"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%607"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60SingleTrait%607"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60SingleTrait%607"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -4286,10 +4295,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%608"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%608"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60MaybeTrait%608"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60MaybeTrait%608"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -4358,10 +4367,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%607"></a>
+                <a name="/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%607"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element` == `Any`, `Trait` == `MaybeTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60Any%60,%20%60Trait%60%20==%20%60MaybeTrait%607"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20%3D%3D%20%60Any%60%2C%20%60Trait%60%20%3D%3D%20%60MaybeTrait%607"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code> == <code>Any</code>, <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift10MaybeTraitO">MaybeTrait</a></code></p>
 </h3>
                 </div>
@@ -4411,10 +4420,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Element%60:%20%60RxAbstractInteger%60"></a>
+                <a name="/Available%20where%20%60Element%60%3A%20%60RxAbstractInteger%60"></a>
                 <a name="//apple_ref/swift/Section/Available where `Element`: `RxAbstractInteger`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Element%60:%20%60RxAbstractInteger%60"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%3A%20%60RxAbstractInteger%60"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></code>: <code><a href="../Typealiases.html#/s:7RxSwift0A15AbstractIntegera">RxAbstractInteger</a></code></p>
 </h3>
                 </div>
@@ -4495,10 +4504,10 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Available%20where%20%60Trait%60%20==%20%60SingleTrait%608"></a>
+                <a name="/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%608"></a>
                 <a name="//apple_ref/swift/Section/Available where `Trait` == `SingleTrait`" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20==%20%60SingleTrait%608"></a>
+                  <a class="section-name-link" href="#/Available%20where%20%60Trait%60%20%3D%3D%20%60SingleTrait%608"></a>
                   <h3 class="section-name"><p>Available where <code><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></code> == <code><a href="../Enums.html#/s:7RxSwift11SingleTraitO">SingleTrait</a></code></p>
 </h3>
                 </div>
@@ -4649,7 +4658,7 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "subscribe(onSuccess:onFailure:onDisposed:﹚")</span>
+                          <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="nv">renamed</span><span class="p">:</span> <span class="s">"subscribe(onSuccess:onFailure:onDisposed:﹚"</span><span class="p">)</span>
 <span class="kd">public</span> <span class="kd">func</span> <span class="nf">subscribe</span><span class="p">(</span><span class="nv">onSuccess</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                       <span class="nv">onError</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">),</span>
                       <span class="nv">onDisposed</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/Disposable.html">Disposable</a></span></code></pre>
@@ -5021,7 +5030,7 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="err">`</span><span class="k">do</span><span class="err">`</span><span class="p">(</span><span class="nv">onSuccess</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="p">`</span><span class="nv">do</span><span class="p">`(</span><span class="nv">onSuccess</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">afterSuccess</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">onError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                  <span class="nv">afterError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
@@ -5653,7 +5662,7 @@ gracefully completed, errored, or if the generation is canceled by disposing sub
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated, renamed: "catchAndReturn(_:﹚")</span>
+                          <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="nv">renamed</span><span class="p">:</span> <span class="s">"catchAndReturn(_:﹚"</span><span class="p">)</span>
 <span class="kd">public</span> <span class="kd">func</span> <span class="nf">catchErrorJustReturn</span><span class="p">(</span><span class="n">_</span> <span class="nv">element</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="p">)</span>
     <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/PrimitiveSequence.html">PrimitiveSequence</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP5TraitQa">Trait</a></span><span class="p">,</span> <span class="kt"><a href="../Protocols/PrimitiveSequenceType.html#/s:7RxSwift21PrimitiveSequenceTypeP7ElementQa">Element</a></span><span class="o">&gt;</span></code></pre>
 
@@ -5759,8 +5768,8 @@ one exists.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-05)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-01-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.6</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>
