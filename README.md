@@ -16,7 +16,7 @@ If you've got questions, about SwiftRex or redux and Functional Programming in g
 
 # Introduction
 
-SwiftRex is a framework that combines Unidirectional Dataflow architecture and reactive programming ([Combine](https://developer.apple.com/documentation/combine), [RxSwift](https://github.com/ReactiveX/RxSwift) or [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift)), providing a central state Store for the whole state of your app, of which your SwiftUI Views or UIViewControllers can observe and react to, as well as dispatching events coming from the user interactions.
+SwiftRex is a framework that combines Unidirectional Dataflow architecture and reactive programming ([Combine](https://developer.apple.com/documentation/combine), [RxSwift](https://github.com/ReactiveX/RxSwift), [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift) or [CombineX](https://github.com/cx-org/CombineX)), providing a central state Store for the whole state of your app, of which your SwiftUI Views or UIViewControllers can observe and react to, as well as dispatching events coming from the user interactions.
 
 This pattern, also known as ["Redux"](https://redux.js.org/basics/data-flow), allows us to rethink our app as a single [pure function](https://en.wikipedia.org/wiki/Pure_function) that receives user events as input and returns UI changes in response. The benefits of this workflow will hopefully become clear soon.
 
@@ -111,12 +111,14 @@ I'm not gonna lie, it's a completely different way of writing apps, as most reac
 # Reactive Framework Libraries
 SwiftRex currently supports the 3 major reactive frameworks:
 - [Apple Combine](https://developer.apple.com/documentation/combine)
+- [CombineX](https://github.com/cx-org/CombineX)
 - [RxSwift](https://github.com/ReactiveX/RxSwift)
 - [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift)
 
 More can be easily added later by implementing some abstraction bridges that can be found in the `ReactiveWrappers.swift` file. To avoid adding unnecessary files to your app, SwiftRex is split in 4 packages:
 - SwiftRex: the core library
 - CombineRex: the implementation for Combine framework
+- CombineXRex: the implementation for CombineX framework
 - RxSwiftRex: the implementation for RxSwift framework
 - ReactiveSwiftRex: the implementation for ReactiveSwift framework
 
@@ -730,6 +732,9 @@ target 'MyAppTarget' do
 end
 ```
 
+For CombineX:
+__Not available yet__
+
 For RxSwift:
 ```ruby
 # Podfile
@@ -790,6 +795,27 @@ let package = Package(
 )
 ```
 
+CombineX, automatic linking mode:
+```swift
+// swift-tools-version:5.3
+
+import PackageDescription
+
+let package = Package(
+  name: "MyApp",
+  platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
+  products: [
+    .executable(name: "MyApp", targets: ["MyApp"])
+  ],
+  dependencies: [
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.2")
+  ],
+  targets: [
+    .target(name: "MyApp", dependencies: [.product(name: "CombineXRex", package: "SwiftRex")])
+  ]
+)
+```
+
 RxSwift, automatic linking mode:
 ```swift
 // swift-tools-version:5.3
@@ -832,7 +858,7 @@ let package = Package(
 )
 ```
 
-Combine, dynamic linking mode (use similar approach of appending "Dynamic" also for RxSwift or ReactiveSwift products):
+Combine, dynamic linking mode (use similar approach of appending "Dynamic" also for CombineX, RxSwift or ReactiveSwift products):
 ```swift
 // swift-tools-version:5.3
 
