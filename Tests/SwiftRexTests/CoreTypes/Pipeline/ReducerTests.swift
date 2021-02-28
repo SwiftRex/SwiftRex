@@ -2,7 +2,7 @@ import Foundation
 @testable import SwiftRex
 import XCTest
 
-// swiftlint:disable:next type_body_length
+// swiftlint:disable:next
 class ReducerTests: XCTestCase {
     func testAnyReducer() {
         // Given
@@ -290,7 +290,7 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item>.reduce { _, state in
+        let reducer = Reducer<String, AppState.Item>.reduce { _, _ in
             XCTFail("This reducer should not be called for this action")
         }
 
@@ -358,7 +358,7 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item>.reduce { _, state in
+        let reducer = Reducer<String, AppState.Item>.reduce { _, _ in
             XCTFail("This reducer should not be called for this action")
         }
 
@@ -426,7 +426,7 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item>.reduce { _, state in
+        let reducer = Reducer<String, AppState.Item>.reduce { _, _ in
             XCTFail("This reducer should not be called for this action")
         }
 
