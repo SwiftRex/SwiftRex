@@ -92,11 +92,11 @@ struct AppState: Codable, Equatable {
 enum CounterService {
     static let middleware = CounterMiddleware()
 
-    static let reducer = Reducer<AppAction.CounterAction, Int> { action, state in
+    static let reducer = Reducer<AppAction.CounterAction, Int>.reduce { action, state in
         print("reducing \(action) from state \(state)")
         switch action {
-        case .increase: return state + 1
-        case .decrease: return state - 1
+        case .increase: state += 1
+        case .decrease: state -= 1
         }
     }
 

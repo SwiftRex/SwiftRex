@@ -78,16 +78,16 @@ class MiddlewareTest: Middleware {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class ObservableViewModelTests: XCTestCase {
-    let reducerTest = Reducer<Action, TestState> { action, state in
+    let reducerTest = Reducer<Action, TestState>.reduce { action, state in
         switch action {
         case let .action1(action):
-            return .init(value: UUID(), name: state.name + "_" + action.name)
+            state = .init(value: UUID(), name: state.name + "_" + action.name)
         case let .action2(action):
-            return .init(value: UUID(), name: state.name + "_" + action.name)
+            state = .init(value: UUID(), name: state.name + "_" + action.name)
         case let .middlewareAction(action):
-            return .init(value: UUID(), name: state.name + "_ma:" + action.name)
+            state = .init(value: UUID(), name: state.name + "_ma:" + action.name)
         case let .middlewareActionAfterReducer(action):
-            return .init(value: UUID(), name: state.name + "_maar:" + action.name)
+            state = .init(value: UUID(), name: state.name + "_maar:" + action.name)
         }
     }
     var statePublisher: CurrentValueSubject<TestState, Never>!

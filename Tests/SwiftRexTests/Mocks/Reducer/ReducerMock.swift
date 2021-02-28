@@ -3,10 +3,10 @@ import SwiftRex
 let createReducerMock: () -> (Reducer<AppAction, TestState>, ReducerMock<AppAction, TestState>) = {
     let mock = ReducerMock<AppAction, TestState>()
 
-    return (Reducer { action, state in
+    return (Reducer.reduce { action, state in
         mock.reduceCallsCount += 1
         mock.reduceReceivedArguments = (action: action, currentState: state)
-        return mock.reduceClosure.map { $0(action, state) } ?? mock.reduceReturnValue
+        state = mock.reduceClosure.map { $0(action, state) } ?? mock.reduceReturnValue
     }, mock)
 }
 
