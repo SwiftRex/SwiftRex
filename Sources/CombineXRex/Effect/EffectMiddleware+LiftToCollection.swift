@@ -4,7 +4,8 @@ import Foundation
 import SwiftRex
 
 public protocol Identifiable {
-    associatedtype ID : Hashable
+    associatedtype ID: Hashable
+
     var id: Self.ID { get }
 }
 
