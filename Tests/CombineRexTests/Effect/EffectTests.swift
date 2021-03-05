@@ -56,6 +56,38 @@ class EffectTests: XCTestCase {
         XCTAssertEqual([.finished], completion)
     }
 
+    func testInitWithCancellationNoDependenciesFromPublisherDispatchedAction() {
+        let sut = Effect<Void, Int>(token: "token", effect: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher)
+        var completion = [Subscribers.Completion<Never>]()
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertEqual("token", sut.token)
+        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
+        XCTAssertEqual([.finished], completion)
+    }
+
+    func testInitWithCancellationIgnoringDependencies() {
+        let sut: Effect<String, Int> = Effect<Void, Int>(token: "token", effect: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher)
+            .ignoringDependencies()
+        var completion = [Subscribers.Completion<Never>]()
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: (""), toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertEqual("token", sut.token)
+        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
+        XCTAssertEqual([.finished], completion)
+    }
+
+    func testInitWithCancellationIgnoringDependenciesDoNothing() {
+        let sut: Effect<String, Int> = Effect<Void, Int>.doNothing
+            .ignoringDependencies()
+        XCTAssertNil(sut.token)
+        XCTAssertNil(sut.run((dependencies: (""), toCancel: { _ in FireAndForget { } })))
+    }
+
     func testDoNothing() {
         let sut = Effect<Void, Int>.doNothing
         XCTAssertNil(sut.token)
@@ -292,6 +324,41 @@ class EffectTests: XCTestCase {
         XCTAssertNil(sut.token)
         XCTAssertEqual(["1", "1", "2", "3", "5", "8", "13", "21", "34", "55"], received)
         XCTAssertEqual([.finished], completion)
+    }
+
+    func testFMapDoNothing() {
+        let numbersDoNothing = Effect<Void, Int>.doNothing
+        let sut = numbersDoNothing.map(String.init)
+        let possibleEffect = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))
+        XCTAssertNil(sut.token)
+        XCTAssertNil(possibleEffect)
+    }
+
+    func testFMapCancellation() {
+        let shouldCallToCancel = expectation(description: "to cancel should have been called")
+        let shouldHaveCancelledThePublisher = expectation(description: "publisher cancellation should have been called")
+        let numbers = Effect<Void, Int>(token: "token") { context in
+            [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+                .publisher
+                .throttle(for: .milliseconds(20), scheduler: DispatchQueue.main, latest: true)
+                .map { DispatchedAction($0) }
+                .prepend(context.toCancel("123"))
+        }
+        let sut = numbers.map(String.init)
+        _ = sut
+            .run((dependencies: (), toCancel: { token in
+                XCTAssertEqual("123", token)
+                shouldCallToCancel.fulfill()
+                return FireAndForget { }
+            }))?
+            .handleEvents(receiveCancel: {
+                shouldHaveCancelledThePublisher.fulfill()
+            })
+            .sink(receiveCompletion: { _ in XCTFail("should not complete") }, receiveValue: { _ in })
+
+        XCTAssertEqual("token", sut.token)
+        wait(for: [shouldCallToCancel, shouldHaveCancelledThePublisher], timeout: 0.1)
     }
 }
 #endif
