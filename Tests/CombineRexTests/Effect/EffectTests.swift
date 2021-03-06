@@ -69,7 +69,12 @@ class EffectTests: XCTestCase {
     }
 
     func testInitWithCancellationIgnoringDependencies() {
-        let sut: Effect<String, Int> = Effect<Void, Int>(token: "token", effect: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55].map { DispatchedAction($0) }.publisher)
+        let sut: Effect<String, Int> = Effect<Void, Int>(
+            token: "token",
+            effect: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+                .map { DispatchedAction($0) }
+                .publisher
+        )
             .ignoringDependencies()
         var completion = [Subscribers.Completion<Never>]()
         var received = [Int]()
