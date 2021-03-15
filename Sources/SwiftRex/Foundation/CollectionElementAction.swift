@@ -26,3 +26,7 @@ public struct ElementIndexAction<Index: Comparable, Action> {
         self.action = action
     }
 }
+
+extension ElementIndexAction: Decodable where Index: Decodable, Action: Decodable { }
+extension ElementIndexAction: Encodable where Index: Encodable, Action: Encodable { }
+extension ElementIndexAction: Equatable where Index: Equatable, Action: Equatable { }
