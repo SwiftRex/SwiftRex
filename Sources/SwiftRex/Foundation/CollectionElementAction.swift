@@ -10,6 +10,10 @@ public struct ElementIDAction<ID: Hashable, Action> {
     }
 }
 
+extension ElementIDAction: Decodable where ID: Decodable, Action: Decodable { }
+extension ElementIDAction: Encodable where ID: Encodable, Action: Encodable { }
+extension ElementIDAction: Equatable where ID: Equatable, Action: Equatable { }
+
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ElementIDAction: Identifiable { }
 
