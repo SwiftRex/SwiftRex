@@ -7,7 +7,7 @@ import XCTest
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class IssueTracker42Tests: XCTestCase {
     struct AppState: Equatable, Codable {
-        let int: Int
+        var int: Int
     }
 
     enum ViewEvent: Equatable {
@@ -25,8 +25,8 @@ class IssueTracker42Tests: XCTestCase {
     override func setUp() {
         super.setUp()
         store = Store(subject: .combine(initialValue: AppState(int: 0)),
-                      reducer: .init { _, state in
-                          AppState(int: state.int + 1)
+                      reducer: .reduce { _, state in
+                          state.int += 1
                       },
                       middleware: IdentityMiddleware())
     }

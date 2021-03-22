@@ -12,6 +12,6 @@ struct AppState: Equatable {
 
     struct Item: Equatable, Identifiable {
         let id: Int
-        let name: String
+        var name: String
     }
 }

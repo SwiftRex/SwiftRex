@@ -59,7 +59,7 @@ class ReduxStoreBaseTests: XCTestCase {
         }
 
         let subjectMock = CurrentValueSubject(currentValue: initialState)
-        let reducer: Reducer<AppAction, TestState> = Reducer { action, state in
+        let reducer: Reducer<AppAction, TestState> = Reducer.reduce { action, state in
             let actionName: String
             switch action {
             case .foo: actionName = "foo"
@@ -70,10 +70,7 @@ class ReduxStoreBaseTests: XCTestCase {
             case .bar(.echo): actionName = "echo"
             }
             shouldCallReducer.fulfill()
-            return .init(
-                value: state.value,
-                name: state.name + "_" + actionName
-            )
+            state.name += "_" + actionName
         }
 
         let store = ReduxStoreBase<AppAction, TestState>(

@@ -121,28 +121,28 @@ class IssueTracker39Tests: XCTestCase {
         super.setUp()
         middleware = MyMiddleware()
 
-        reducer = Reducer<AppAction, MyState> { action, state in
+        reducer = Reducer<AppAction, MyState>.reduce { action, state in
             switch action {
             case .events(.requestPrepare):
                 XCTAssertEqual(state.preparation, .stopped)
                 XCTAssertEqual(state.running, .stopped)
 
-                return .init(preparation: .requested, running: state.running)
+                state = .init(preparation: .requested, running: state.running)
             case .events(.requestRun):
                 XCTAssertEqual(state.preparation, .requested)
                 XCTAssertEqual(state.running, .stopped)
 
-                return .init(preparation: state.preparation, running: .requested)
+                state = .init(preparation: state.preparation, running: .requested)
             case .actions(.prepare):
                 XCTAssertEqual(state.preparation, .requested)
                 XCTAssertEqual(state.running, .requested)
 
-                return .init(preparation: .done, running: state.running)
+                state = .init(preparation: .done, running: state.running)
             case .actions(.run):
                 XCTAssertEqual(state.preparation, .done)
                 XCTAssertEqual(state.running, .requested)
 
-                return .init(preparation: state.preparation, running: .done)
+                state = .init(preparation: state.preparation, running: .done)
             }
         }
 

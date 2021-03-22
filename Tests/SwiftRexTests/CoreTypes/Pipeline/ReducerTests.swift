@@ -2,7 +2,7 @@ import Foundation
 @testable import SwiftRex
 import XCTest
 
-// swiftlint:disable:next type_body_length
+// swiftlint:disable:next
 class ReducerTests: XCTestCase {
     func testAnyReducer() {
         // Given
@@ -53,16 +53,12 @@ class ReducerTests: XCTestCase {
     }
 
     func testComposeTwoReducers() {
-        let reducer1: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer1: Reducer<AppAction, TestState> = Reducer.reduce { _, state in
             state.name += "1"
-            return state
         }
 
-        let reducer2: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer2: Reducer<AppAction, TestState> = Reducer.reduce { _, state in
             state.name += "2"
-            return state
         }
 
         let sut = reducer1 <> reducer2
@@ -74,22 +70,16 @@ class ReducerTests: XCTestCase {
     }
 
     func testComposeThreeReducers() {
-        let reducer1: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer1: Reducer<AppAction, TestState> = .reduce { _, state in
             state.name += "1"
-            return state
         }
 
-        let reducer2: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer2: Reducer<AppAction, TestState> = .reduce { _, state in
             state.name += "2"
-            return state
         }
 
-        let reducer3: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer3: Reducer<AppAction, TestState> = .reduce { _, state in
             state.name += "3"
-            return state
         }
 
         let sut = reducer1 <> reducer2 <> reducer3
@@ -101,28 +91,20 @@ class ReducerTests: XCTestCase {
     }
 
     func testComposeTwoGroupsOfReducers() {
-        let reducer1: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer1: Reducer<AppAction, TestState> = .reduce { _, state in
             state.name += "1"
-            return state
         }
 
-        let reducer2: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer2: Reducer<AppAction, TestState> = .reduce { _, state in
             state.name += "2"
-            return state
         }
 
-        let reducer3: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer3: Reducer<AppAction, TestState> = .reduce { _, state in
             state.name += "3"
-            return state
         }
 
-        let reducer4: Reducer<AppAction, TestState> = Reducer { _, state in
-            var state = state
+        let reducer4: Reducer<AppAction, TestState> = .reduce { _, state in
             state.name += "4"
-            return state
         }
 
         let sut = (reducer1 <> reducer2) <> (reducer3 <> reducer4)
@@ -144,9 +126,9 @@ class ReducerTests: XCTestCase {
 
     func testLiftReducerRelevantAction() {
         let original = TestState(value: UUID(), name: "a")
-        let reducer = Reducer<AppAction.Bar, String> { action, state in
+        let reducer = Reducer<AppAction.Bar, String>.reduce { action, state in
             XCTAssertEqual(action, .charlie)
-            return state + "b"
+            state += "b"
         }
 
         let liftedReducer: Reducer<AppAction, TestState> = reducer
@@ -167,9 +149,9 @@ class ReducerTests: XCTestCase {
 
     func testLiftReducerIrrelevantAction() {
         let original = TestState(value: UUID(), name: "a")
-        let reducer = Reducer<AppAction.Bar, String> { _, state in
+        let reducer = Reducer<AppAction.Bar, String>.reduce { _, state in
             XCTFail("This reducer should not be called for this action")
-            return state + "b"
+            state += "b"
         }
 
         let liftedReducer: Reducer<AppAction, TestState> = reducer
@@ -190,9 +172,9 @@ class ReducerTests: XCTestCase {
 
     func testKeyPathLiftReducerRelevantAction() {
         let original = TestState(value: UUID(), name: "a")
-        let reducer = Reducer<AppAction.Bar, String> { action, state in
+        let reducer = Reducer<AppAction.Bar, String>.reduce { action, state in
             XCTAssertEqual(action, .charlie)
-            return state + "b"
+            state += "b"
         }
 
         let liftedReducer: Reducer<AppAction, TestState> = reducer
@@ -207,9 +189,9 @@ class ReducerTests: XCTestCase {
 
     func testKeyPathReducerIrrelevantAction() {
         let original = TestState(value: UUID(), name: "a")
-        let reducer = Reducer<AppAction.Bar, String> { _, state in
+        let reducer = Reducer<AppAction.Bar, String>.reduce { _, state in
             XCTFail("This reducer should not be called for this action")
-            return state + "b"
+            state += "b"
         }
 
         let liftedReducer: Reducer<AppAction, TestState> = reducer
@@ -225,27 +207,23 @@ class ReducerTests: XCTestCase {
     func testComposeLiftedReducers() {
         let original = TestState(value: UUID(), name: "a")
 
-        let reducerGlobal = Reducer<AppAction, TestState> { _, state in
-            var state = state
+        let reducerGlobal = Reducer<AppAction, TestState>.reduce { _, state in
             state.name += "-"
-            return state
         }
 
-        let reducerFoo = Reducer<AppAction, String> { action, state in
-            guard action == .foo else { return state }
-            return state + "foo"
+        let reducerFoo = Reducer<AppAction, String>.reduce { action, state in
+            guard action == .foo else { return }
+            state += "foo"
         }
 
-        let reducerAlpha = Reducer<AppAction.Bar, String> { action, state in
-            guard action == .alpha else { return state }
-            return state + "alpha"
+        let reducerAlpha = Reducer<AppAction.Bar, String>.reduce { action, state in
+            guard action == .alpha else { return }
+            state += "alpha"
         }
 
-        let reducerBravo = Reducer<AppAction.Bar, TestState> { action, state in
-            guard action == .bravo else { return state }
-            var state = state
+        let reducerBravo = Reducer<AppAction.Bar, TestState>.reduce { action, state in
+            guard action == .bravo else { return }
             state.name += "bravo"
-            return state
         }
 
         let reducerChain: Reducer<AppAction, TestState> =
@@ -276,8 +254,8 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item> { action, state in
-            .init(id: state.id, name: state.name + "_" + action)
+        let reducer = Reducer<String, AppState.Item>.reduce { action, state in
+            state.name += "_" + action
         }
 
         let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
@@ -312,9 +290,8 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item> { _, state in
+        let reducer = Reducer<String, AppState.Item>.reduce { _, _ in
             XCTFail("This reducer should not be called for this action")
-            return state
         }
 
         let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
@@ -342,8 +319,8 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item> { action, state in
-            .init(id: state.id, name: state.name + "_" + action)
+        let reducer = Reducer<String, AppState.Item>.reduce { action, state in
+            state.name += "_" + action
         }
 
         let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
@@ -381,9 +358,8 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item> { _, state in
+        let reducer = Reducer<String, AppState.Item>.reduce { _, _ in
             XCTFail("This reducer should not be called for this action")
-            return state
         }
 
         let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
@@ -415,8 +391,8 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item> { action, state in
-            .init(id: state.id, name: state.name + "_" + action)
+        let reducer = Reducer<String, AppState.Item>.reduce { action, state in
+            state.name += "_" + action
         }
 
         let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
@@ -450,9 +426,8 @@ class ReducerTests: XCTestCase {
             ]
         )
 
-        let reducer = Reducer<String, AppState.Item> { _, state in
+        let reducer = Reducer<String, AppState.Item>.reduce { _, _ in
             XCTFail("This reducer should not be called for this action")
-            return state
         }
 
         let liftedReducer: Reducer<ActionForScopedTests, AppState> = reducer
