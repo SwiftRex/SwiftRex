@@ -7,26 +7,26 @@ class StoreTypeTypeErasureTests: XCTestCase {
         let mock = StoreTypeMock<String, Never>()
         mock.underlyingStatePublisher = .init(subscribe: { _ in preconditionFailure("no state when it's never") })
         let sut = mock.eraseToAnyStoreType()
-        XCTAssertNil(mock.dispatchFromReceivedArguments?.action)
+        XCTAssertNil(mock.dispatchReceivedDispatchedAction?.action)
         sut.dispatch("1", from: .here())
-        XCTAssertEqual("1", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("1", mock.dispatchReceivedDispatchedAction?.action)
         mock.dispatch("2", from: .here())
-        XCTAssertEqual("2", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("2", mock.dispatchReceivedDispatchedAction?.action)
         mock.dispatch("3", from: .here())
-        XCTAssertEqual("3", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("3", mock.dispatchReceivedDispatchedAction?.action)
         sut.dispatch("4", from: .here())
-        XCTAssertEqual("4", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("4", mock.dispatchReceivedDispatchedAction?.action)
         sut.dispatch("5", from: .here())
-        XCTAssertEqual("5", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("5", mock.dispatchReceivedDispatchedAction?.action)
 
-        XCTAssertEqual(5, mock.dispatchFromCallsCount)
+        XCTAssertEqual(5, mock.dispatchCallsCount)
     }
 
     func testActionHandlerClosureErased() {
         var actions: [String] = []
         let sut = AnyStoreType<String, Void>(
-            action: { action, _ in
-                actions.append(action)
+            action: { dispatchedAction in
+                actions.append(dispatchedAction.action)
             },
             state: .init(subscribe: { _ in preconditionFailure("no state when it's never") })
         )
@@ -43,8 +43,8 @@ class StoreTypeTypeErasureTests: XCTestCase {
     func testActionHandlerContramap() {
         var actions: [String] = []
         let stringHandler = AnyStoreType<String, Never>(
-            action: { action, _ in
-                actions.append(action)
+            action: { dispatchedAction in
+                actions.append(dispatchedAction.action)
             },
             state: .init(subscribe: { _ in preconditionFailure("no state when it's never") })
         )
@@ -66,8 +66,8 @@ class StoreTypeTypeErasureTests: XCTestCase {
             return FooSubscription()
         }
         let stringHandler = AnyStoreType<String, Bool>(
-            action: { action, _ in
-                actions.append(action)
+            action: { dispatchedAction in
+                actions.append(dispatchedAction.action)
             },
             state: publisher
         )
@@ -118,7 +118,7 @@ class StoreTypeTypeErasureTests: XCTestCase {
             return FooSubscription()
         }
         let sut = AnyStoreType<Never, String>(
-            action: { _, _ in },
+            action: { _ in },
             state: publisher
         )
 
@@ -139,7 +139,7 @@ class StoreTypeTypeErasureTests: XCTestCase {
             return FooSubscription()
         }
         let sut = AnyStoreType<Never, Int>(
-            action: { _, _ in },
+            action: { _ in },
             state: publisher
         )
 
@@ -162,12 +162,12 @@ class StoreTypeTypeErasureTests: XCTestCase {
         }
         let shouldCallAction = expectation(description: "Action should be called")
         let sut = AnyStoreType<Bool, Int>(
-            action: { value, dispatcher in
-                XCTAssertTrue(value)
-                XCTAssertEqual("file_1", dispatcher.file)
-                XCTAssertEqual("function_1", dispatcher.function)
-                XCTAssertEqual(1, dispatcher.line)
-                XCTAssertEqual("info_1", dispatcher.info)
+            action: { dispatchedAction in
+                XCTAssertTrue(dispatchedAction.action)
+                XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
+                XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
+                XCTAssertEqual(1, dispatchedAction.dispatcher.line)
+                XCTAssertEqual("info_1", dispatchedAction.dispatcher.info)
                 shouldCallAction.fulfill()
             },
             state: publisher

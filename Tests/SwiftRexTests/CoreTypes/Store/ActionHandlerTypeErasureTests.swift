@@ -6,25 +6,25 @@ class ActionHandlerTypeErasureTests: XCTestCase {
     func testActionHandlerMockErased() {
         let mock = ActionHandlerMock<String>()
         let sut = mock.eraseToAnyActionHandler()
-        XCTAssertNil(mock.dispatchFromReceivedArguments?.action)
+        XCTAssertNil(mock.dispatchReceivedDispatchedAction?.action)
         sut.dispatch("1", from: .here())
-        XCTAssertEqual("1", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("1", mock.dispatchReceivedDispatchedAction?.action)
         mock.dispatch("2", from: .here())
-        XCTAssertEqual("2", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("2", mock.dispatchReceivedDispatchedAction?.action)
         mock.dispatch("3", from: .here())
-        XCTAssertEqual("3", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("3", mock.dispatchReceivedDispatchedAction?.action)
         sut.dispatch("4", from: .here())
-        XCTAssertEqual("4", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("4", mock.dispatchReceivedDispatchedAction?.action)
         sut.dispatch("5", from: .here())
-        XCTAssertEqual("5", mock.dispatchFromReceivedArguments?.action)
+        XCTAssertEqual("5", mock.dispatchReceivedDispatchedAction?.action)
 
-        XCTAssertEqual(5, mock.dispatchFromCallsCount)
+        XCTAssertEqual(5, mock.dispatchCallsCount)
     }
 
     func testActionHandlerClosureErased() {
         var actions: [String] = []
-        let sut = AnyActionHandler { action, _ in
-            actions.append(action)
+        let sut = AnyActionHandler { dispatchedAction in
+            actions.append(dispatchedAction.action)
         }
 
         sut.dispatch("1", from: .here())
@@ -38,8 +38,8 @@ class ActionHandlerTypeErasureTests: XCTestCase {
 
     func testActionHandlerContramap() {
         var actions: [String] = []
-        let stringHandler = AnyActionHandler<String> { action, _ in
-            actions.append(action)
+        let stringHandler = AnyActionHandler<String> { dispatchedAction in
+            actions.append(dispatchedAction.action)
         }
         let intHandler: AnyActionHandler<Int> = stringHandler.contramap { "\($0)" }
 

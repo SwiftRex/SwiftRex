@@ -9,7 +9,7 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputActionInputState_OutputActionsAreForwardedToGlobalContext() {
         var localDispatcher: AnyActionHandler<AppAction.Bar>?
         var globalReceived: [AppAction] = []
-        let globalDispatcher: AnyActionHandler<AppAction> = .init { action, _ in globalReceived.append(action) }
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
 
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -70,7 +70,7 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
+        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -82,7 +82,7 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputAction_OutputActionsAreForwardedToGlobalContext() {
         var localDispatcher: AnyActionHandler<AppAction.Bar>?
         var globalReceived: [AppAction] = []
-        let globalDispatcher: AnyActionHandler<AppAction> = .init { action, _ in globalReceived.append(action) }
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
 
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -141,7 +141,7 @@ extension LiftComposedMiddlewareTests {
             )
 
         let uuid = UUID()
-        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _, _ in })
+        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _ in })
 
         XCTAssertEqual(TestState(value: uuid, name: "test-unlift-state"), middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -153,7 +153,7 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionInputState_OutputActionsAreForwardedToGlobalContext() {
         var localDispatcher: AnyActionHandler<AppAction>?
         var globalReceived: [AppAction] = []
-        let globalDispatcher: AnyActionHandler<AppAction> = .init { action, _ in globalReceived.append(action) }
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
@@ -211,7 +211,7 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
+        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -223,7 +223,7 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareOutputActionInputState_OutputActionsAreForwardedToGlobalContext() {
         var localDispatcher: AnyActionHandler<AppAction.Bar>?
         var globalReceived: [AppAction] = []
-        let globalDispatcher: AnyActionHandler<AppAction> = .init { action, _ in globalReceived.append(action) }
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
 
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -282,7 +282,7 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
+        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -294,7 +294,7 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputAction_OutputActionsAreForwardedToGlobalContext() {
         var localDispatcher: AnyActionHandler<AppAction>?
         var globalReceived: [AppAction] = []
-        let globalDispatcher: AnyActionHandler<AppAction> = .init { action, _ in globalReceived.append(action) }
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
 
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -351,7 +351,7 @@ extension LiftComposedMiddlewareTests {
             )
 
         let uuid = UUID()
-        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _, _ in })
+        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _ in })
 
         XCTAssertEqual(TestState(value: uuid, name: "test-unlift-state"), middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -363,7 +363,7 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareOutputAction_OutputActionsAreForwardedToGlobalContext() {
         var localDispatcher: AnyActionHandler<AppAction.Bar>?
         var globalReceived: [AppAction] = []
-        let globalDispatcher: AnyActionHandler<AppAction> = .init { action, _ in globalReceived.append(action) }
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
 
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -420,7 +420,7 @@ extension LiftComposedMiddlewareTests {
             )
 
         let uuid = UUID()
-        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _, _ in })
+        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _ in })
 
         XCTAssertEqual(TestState(value: uuid, name: "test-unlift-state"), middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -432,7 +432,7 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputState_OutputActionsAreForwardedToGlobalContext() {
         var localDispatcher: AnyActionHandler<AppAction>?
         var globalReceived: [AppAction] = []
-        let globalDispatcher: AnyActionHandler<AppAction> = .init { action, _ in globalReceived.append(action) }
+        let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
 
         let nameMiddleware = MiddlewareMock<AppAction, AppAction, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -488,7 +488,7 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _, _ in })
+        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)

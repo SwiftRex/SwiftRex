@@ -5,7 +5,7 @@ import XCTest
 class MiddlewareTypeErasureTests: XCTestCase {
     func testAnyMiddlewareReceivedContext() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
-        middleware.eraseToAnyMiddleware().receiveContext(getState: { TestState() }, output: .init { _, _ in })
+        middleware.eraseToAnyMiddleware().receiveContext(getState: { TestState() }, output: .init { _ in })
         XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
         XCTAssertEqual(0, middleware.handleActionFromAfterReducerCallsCount)
     }
@@ -13,7 +13,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
     func testAnyMiddlewareFromInitReceivedContext() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
         AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
-            .receiveContext(getState: { TestState() }, output: .init { _, _ in })
+            .receiveContext(getState: { TestState() }, output: .init { _ in })
         XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
         XCTAssertEqual(0, middleware.handleActionFromAfterReducerCallsCount)
     }
@@ -25,7 +25,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
             afterReducer = .do { calledAfterReducer.fulfill() }
         }
         let erased = middleware.eraseToAnyMiddleware()
-        erased.receiveContext(getState: { TestState() }, output: .init { _, _ in })
+        erased.receiveContext(getState: { TestState() }, output: .init { _ in })
         var afterReducer: AfterReducer = .doNothing()
         erased.handle(action: .bar(.alpha), from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
@@ -43,7 +43,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
             afterReducer = .do { calledAfterReducer.fulfill() }
         }
         let erased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
-        erased.receiveContext(getState: { TestState() }, output: .init { _, _ in })
+        erased.receiveContext(getState: { TestState() }, output: .init { _ in })
         var afterReducer: AfterReducer = .doNothing()
         erased.handle(action: .bar(.alpha), from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
@@ -61,7 +61,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
             calledBeforeReducer.fulfill()
             afterReducer = .do { calledAfterReducer.fulfill() }
         }
-        erased.receiveContext(getState: { TestState() }, output: .init { _, _ in })
+        erased.receiveContext(getState: { TestState() }, output: .init { _ in })
         var afterReducer: AfterReducer = .doNothing()
         erased.handle(action: .bar(.alpha), from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
@@ -79,12 +79,12 @@ class MiddlewareTypeErasureTests: XCTestCase {
         let typeErased = middleware.eraseToAnyMiddleware()
         typeErased.receiveContext(
             getState: { state },
-            output: .init { actionReceived, dispatcher in
-                XCTAssertEqual(action, actionReceived)
-                XCTAssertEqual("file_1", dispatcher.file)
-                XCTAssertEqual("function_1", dispatcher.function)
-                XCTAssertEqual(666, dispatcher.line)
-                XCTAssertEqual("info_1", dispatcher.info)
+            output: .init { dispatchedAction in
+                XCTAssertEqual(action, dispatchedAction.action)
+                XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
+                XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
+                XCTAssertEqual(666, dispatchedAction.dispatcher.line)
+                XCTAssertEqual("info_1", dispatchedAction.dispatcher.info)
                 receivedAction.fulfill()
             }
         )
@@ -108,12 +108,12 @@ class MiddlewareTypeErasureTests: XCTestCase {
         let typeErased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
         typeErased.receiveContext(
             getState: { state },
-            output: .init { actionReceived, dispatcher in
-                XCTAssertEqual(action, actionReceived)
-                XCTAssertEqual("file_1", dispatcher.file)
-                XCTAssertEqual("function_1", dispatcher.function)
-                XCTAssertEqual(666, dispatcher.line)
-                XCTAssertEqual("info_1", dispatcher.info)
+            output: .init { dispatchedAction in
+                XCTAssertEqual(action, dispatchedAction.action)
+                XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
+                XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
+                XCTAssertEqual(666, dispatchedAction.dispatcher.line)
+                XCTAssertEqual("info_1", dispatchedAction.dispatcher.info)
                 receivedAction.fulfill()
             }
         )

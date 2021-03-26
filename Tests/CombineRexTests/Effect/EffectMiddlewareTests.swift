@@ -23,8 +23,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { currentState },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -71,8 +71,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { currentState },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -113,8 +113,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -171,7 +171,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { _, _ in
+            output: .init { _ in
                 XCTFail("should not have received values")
             }
         )
@@ -247,8 +247,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -294,8 +294,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -354,8 +354,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -412,8 +412,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -469,8 +469,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -527,8 +527,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -583,8 +583,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { "some_state" },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
@@ -641,8 +641,8 @@ class EffectMiddlewareTests: XCTestCase {
 
         sut.receiveContext(
             getState: { currentState },
-            output: .init { action, _ in
-                dispatchedActions.append(action)
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
             }
         )
 
