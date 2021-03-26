@@ -12,7 +12,8 @@ public struct ElementIDAction<ID: Hashable, Action> {
 
 extension ElementIDAction: Decodable where ID: Decodable, Action: Decodable { }
 extension ElementIDAction: Encodable where ID: Encodable, Action: Encodable { }
-extension ElementIDAction: Equatable where ID: Equatable, Action: Equatable { }
+extension ElementIDAction: Equatable where Action: Equatable { }
+extension ElementIDAction: Hashable where Action: Hashable { }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ElementIDAction: Identifiable { }
@@ -30,3 +31,4 @@ public struct ElementIndexAction<Index: Comparable, Action> {
 extension ElementIndexAction: Decodable where Index: Decodable, Action: Decodable { }
 extension ElementIndexAction: Encodable where Index: Encodable, Action: Encodable { }
 extension ElementIndexAction: Equatable where Index: Equatable, Action: Equatable { }
+extension ElementIndexAction: Hashable where Index: Hashable, Action: Hashable { }
