@@ -43,4 +43,16 @@ extension DispatchedAction {
     public func map<NewAction>(_ transform: (Action) -> NewAction) -> DispatchedAction<NewAction> {
         DispatchedAction<NewAction>(transform(action), dispatcher: dispatcher)
     }
+
+    /// Transforms an action while keeping the dispatcher intact
+    /// - Parameter transform: Function that will transform an action into another, optional
+    /// - Returns: another `DispatchedAction` generic over the new action type. The dispatcher is kept as the original action.
+    public func compactMap<NewAction>(_ transform: (Action) -> NewAction?) -> DispatchedAction<NewAction>? {
+        transform(action).map { DispatchedAction<NewAction>.init($0, dispatcher: dispatcher) }
+    }
 }
+
+extension DispatchedAction: Decodable where Action: Decodable { }
+extension DispatchedAction: Encodable where Action: Encodable { }
+extension DispatchedAction: Equatable where Action: Equatable { }
+extension DispatchedAction: Hashable where Action: Hashable { }
