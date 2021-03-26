@@ -6,13 +6,13 @@ public struct AnyStoreType<ActionType, StateType>: StoreType {
         self.init(action: store.dispatch, state: store.statePublisher)
     }
 
-    public init(action: @escaping (ActionType, ActionSource) -> Void, state: UnfailablePublisherType<StateType>) {
+    public init(action: @escaping (DispatchedAction<ActionType>) -> Void, state: UnfailablePublisherType<StateType>) {
         self.actionHandler = AnyActionHandler(action)
         self.stateProvider = AnyStateProvider(state)
     }
 
-    public func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
-        actionHandler.dispatch(action, from: dispatcher)
+    public func dispatch(_ dispatchedAction: DispatchedAction<ActionType>) {
+        actionHandler.dispatch(dispatchedAction)
     }
 
     public var statePublisher: UnfailablePublisherType<StateType> {

@@ -37,7 +37,7 @@ class ComposedMiddlewareTests: XCTestCase {
             }
             .forEach { sut.append(middleware: $0 as IsoMiddlewareMock<AppAction, TestState>) }
 
-        sut.receiveContext(getState: { TestState() }, output: .init({ action, _ in newActions.append(action) }))
+        sut.receiveContext(getState: { TestState() }, output: .init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
 
         originalActions.forEach { originalAction in
             var afterReducer: AfterReducer = .doNothing()
@@ -68,7 +68,7 @@ class ComposedMiddlewareTests: XCTestCase {
             }
 
         let composedMiddlewares = middlewares[0] <> middlewares[1] <> middlewares[2] <> middlewares[3]
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
 
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
@@ -89,7 +89,7 @@ class ComposedMiddlewareTests: XCTestCase {
                 composedMiddlewares.append(middleware: middleware)
             }
 
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
 

@@ -6,12 +6,12 @@ class StoreProjectionTests: XCTestCase {
     func testStoreProjectionDispatchesActionToUpstream() {
         let stateSubject = CurrentValueSubject(currentValue: TestState())
         let shouldCallUpstreamActionHandler = expectation(description: "upstream action handler should have been called")
-        let upstreamActionHandler: (AppAction, ActionSource) -> Void = { action, dispatcher in
-            XCTAssertEqual(.bar(.delta), action)
-            XCTAssertEqual("file_1", dispatcher.file)
-            XCTAssertEqual("function_1", dispatcher.function)
-            XCTAssertEqual(1, dispatcher.line)
-            XCTAssertEqual("info_1", dispatcher.info)
+        let upstreamActionHandler: (DispatchedAction<AppAction>) -> Void = { dispatchedAction in
+            XCTAssertEqual(.bar(.delta), dispatchedAction.action)
+            XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
+            XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
+            XCTAssertEqual(1, dispatchedAction.dispatcher.line)
+            XCTAssertEqual("info_1", dispatchedAction.dispatcher.info)
             shouldCallUpstreamActionHandler.fulfill()
         }
         let sut = StoreProjection<AppAction, TestState>(action: upstreamActionHandler, state: stateSubject.subject.publisher)
@@ -23,7 +23,7 @@ class StoreProjectionTests: XCTestCase {
         let initialState = TestState()
         let shouldNotifyInitialState = expectation(description: "initial state should have been notified")
         let stateSubject = CurrentValueSubject(currentValue: initialState)
-        let sut = StoreProjection<AppAction, TestState>(action: { _, _ in }, state: stateSubject.subject.publisher)
+        let sut = StoreProjection<AppAction, TestState>(action: { _ in }, state: stateSubject.subject.publisher)
         _ = sut.statePublisher.subscribe(.init(onValue: { state in
             XCTAssertEqual(state, initialState)
             shouldNotifyInitialState.fulfill()
