@@ -68,9 +68,9 @@ extension StoreType {
     public func contramapAction<NewActionType>(_ transform: @escaping (NewActionType) -> ActionType)
     -> AnyStoreType<NewActionType, StateType> {
         AnyStoreType(
-            action: { newAction, dispatcher in
-                let oldAction = transform(newAction)
-                self.dispatch(oldAction, from: dispatcher)
+            action: { dispatchedAction in
+                let oldAction = transform(dispatchedAction.action)
+                self.dispatch(oldAction, from: dispatchedAction.dispatcher)
             },
             state: self.statePublisher
         )
@@ -79,7 +79,7 @@ extension StoreType {
     public func mapState<NewStateType>(_ transform: @escaping (StateType) -> NewStateType)
     -> AnyStoreType<ActionType, NewStateType> {
         AnyStoreType(
-            action: { action, dispatcher in self.dispatch(action, from: dispatcher) },
+            action: self.dispatch,
             state: self.statePublisher.map(transform)
         )
     }

@@ -41,9 +41,9 @@ extension StoreType {
         state globalStateToViewState: @escaping (StateType) -> ViewState
     ) -> StoreProjection<ViewAction, ViewState> {
         .init(
-            action: { newAction, dispatcher in
-                guard let oldAction = viewActionToGlobalAction(newAction) else { return }
-                self.dispatch(oldAction, from: dispatcher)
+            action: { dispatchedAction in
+                guard let globalAction = dispatchedAction.compactMap(viewActionToGlobalAction) else { return }
+                self.dispatch(globalAction)
             },
             state: self.statePublisher.map(globalStateToViewState)
         )

@@ -10,11 +10,9 @@ public protocol ActionHandler {
 
     /// The function that allows Views, ViewControllers, Presenters to dispatch actions to the store.
     /// Also way for a `Middleware` to trigger their own actions, usually in response to events or async operations.
-    /// - Parameters:
-    ///   - action: the action to be dispatched
-    ///   - dispatcher: information about the action source, containing file/line, function and additional information for debugging and logging
-    ///                 purposes
-    func dispatch(_ action: ActionType, from dispatcher: ActionSource)
+    /// - Parameter dispatchedAction: container for action (the action to be dispatched) + dispatcher (information about the action source,
+    ///                               containing file/line, function and additional information for debugging and logging purposes)/
+    func dispatch(_ dispatchedAction: DispatchedAction<ActionType>)
 }
 
 extension ActionHandler {
@@ -32,6 +30,16 @@ extension ActionHandler {
     public func dispatch(_ action: ActionType, file: String = #file, function: String = #function, line: UInt = #line, info: String? = nil) {
         self.dispatch(action, from: .init(file: file, function: function, line: line, info: info))
     }
+
+    /// The function that allows Views, ViewControllers, Presenters to dispatch actions to the store.
+    /// Also way for a `Middleware` to trigger their own actions, usually in response to events or async operations.
+    /// - Parameters:
+    ///   - action: the action to be dispatched
+    ///   - dispatcher: information about the action source, containing file/line, function and additional information for debugging and logging
+    ///                 purposes
+    public func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
+        self.dispatch(DispatchedAction(action, dispatcher: dispatcher))
+    }
 }
 
 extension ActionHandler {
@@ -39,9 +47,8 @@ extension ActionHandler {
     /// - Parameter transform: a function that allows to go from a global action to a local action
     /// - Returns: a new `ActionHandler` that knows how to handle the new action type
     public func contramap<NewActionType>(_ transform: @escaping (NewActionType) -> ActionType) -> AnyActionHandler<NewActionType> {
-        AnyActionHandler { newAction, dispatcher in
-            let oldAction = transform(newAction)
-            self.dispatch(oldAction, from: dispatcher)
+        AnyActionHandler { dispatchedAction in
+            self.dispatch(dispatchedAction.map(transform))
         }
     }
 }
