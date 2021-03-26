@@ -48,7 +48,7 @@ extension DispatchedAction {
     /// - Parameter transform: Function that will transform an action into another, optional
     /// - Returns: another `DispatchedAction` generic over the new action type. The dispatcher is kept as the original action.
     public func compactMap<NewAction>(_ transform: (Action) -> NewAction?) -> DispatchedAction<NewAction>? {
-        transform(action).map { DispatchedAction<NewAction>.init($0, dispatcher: dispatcher) }
+        transform(action).map { DispatchedAction<NewAction>($0, dispatcher: dispatcher) }
     }
 }
 
