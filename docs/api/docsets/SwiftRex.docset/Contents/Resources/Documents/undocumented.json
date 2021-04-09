@@ -226,6 +226,13 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 13,
+      "symbol": "ElementIDAction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
       "line": 14,
       "symbol": "ElementIDAction",
       "symbol_kind": "source.lang.swift.decl.extension",
@@ -233,30 +240,65 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
-      "line": 16,
+      "line": 15,
+      "symbol": "ElementIDAction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 18,
+      "symbol": "ElementIDAction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 20,
       "symbol": "ElementIndexAction",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
-      "line": 17,
+      "line": 21,
       "symbol": "ElementIndexAction.index",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
-      "line": 18,
+      "line": 22,
       "symbol": "ElementIndexAction.action",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
-      "line": 20,
+      "line": 24,
       "symbol": "ElementIndexAction.init(index:action:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 30,
+      "symbol": "ElementIndexAction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 31,
+      "symbol": "ElementIndexAction",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
+      "line": 32,
+      "symbol": "ElementIndexAction",
+      "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
