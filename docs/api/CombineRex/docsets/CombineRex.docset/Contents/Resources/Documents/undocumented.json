@@ -464,21 +464,21 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SwiftUI/ObservableViewModel.swift",
-      "line": 68,
+      "line": 70,
       "symbol": "ObservableViewModel.init(initialState:store:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SwiftUI/ObservableViewModel.swift",
-      "line": 80,
+      "line": 82,
       "symbol": "StoreType.asObservableViewModel(initialState:emitsValue:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/SwiftUI/ObservableViewModel.swift",
-      "line": 90,
+      "line": 92,
       "symbol": "StoreType.asObservableViewModel(initialState:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"

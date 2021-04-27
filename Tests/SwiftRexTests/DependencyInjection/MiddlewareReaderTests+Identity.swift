@@ -14,7 +14,7 @@ extension MiddlewareReaderTests {
                 getStateCount += 1
                 return TestState()
             },
-            output: .init { _, _ in
+            output: .init { _ in
                 dispatchActionCount += 1
             })
         let action = AppAction.bar(.delta)
@@ -42,7 +42,7 @@ extension MiddlewareReaderTests {
                 getStateCount += 1
                 return TestState()
             },
-            output: .init { _, _ in
+            output: .init { _ in
                 dispatchActionCount += 1
             })
         let action = AppAction.bar(.delta)

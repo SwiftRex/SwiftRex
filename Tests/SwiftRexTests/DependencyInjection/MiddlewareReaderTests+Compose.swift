@@ -40,7 +40,7 @@ extension MiddlewareReaderTests {
 
         let sut = (readers[0] <> readers[1]).inject("injected dependency")
 
-        sut.receiveContext(getState: { TestState() }, output: .init({ action, _ in newActions.append(action) }))
+        sut.receiveContext(getState: { TestState() }, output: .init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
 
         originalActions.forEach { originalAction in
             var afterReducer: AfterReducer = .doNothing()
@@ -75,7 +75,7 @@ extension MiddlewareReaderTests {
 
         let composedReaders = readers[0] <> readers[1] <> readers[2] <> readers[3]
         let composedMiddlewares = composedReaders.inject("injected dependency")
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
 
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
@@ -98,7 +98,7 @@ extension MiddlewareReaderTests {
             .reduce(MiddlewareReader<String, ComposedMiddleware<AppAction, AppAction, TestState>>.identity, <>)
             .inject("injected dependency")
 
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
 }
@@ -143,7 +143,7 @@ extension MiddlewareReaderTests {
 
         let sut = (readers[0] <> readers[1]).inject("injected dependency")
 
-        sut.receiveContext(getState: { TestState() }, output: .init({ action, _ in newActions.append(action) }))
+        sut.receiveContext(getState: { TestState() }, output: .init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
 
         originalActions.forEach { originalAction in
             var afterReducer: AfterReducer = .doNothing()
@@ -180,7 +180,7 @@ extension MiddlewareReaderTests {
 
         let composedReaders = readers[0] <> readers[1] <> readers[2] <> readers[3]
         let composedMiddlewares = composedReaders.inject("injected dependency")
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
 
         XCTAssertEqual("m1m2m3m4", composedMiddlewares.string)
         wait(for: [shouldReceiveContext], timeout: 0.1)
@@ -204,7 +204,7 @@ extension MiddlewareReaderTests {
             .reduce(MiddlewareReader<String, MonoidMiddleware<AppAction, AppAction, TestState>>.identity, <>)
             .inject("injected dependency")
 
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _, _ in }))
+        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
         XCTAssertEqual("m1m2m3m4", composedMiddlewares.string)
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }

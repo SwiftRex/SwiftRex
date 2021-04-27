@@ -57,9 +57,11 @@ open class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObje
                 }
             )
     }
-
-    open func dispatch(_ action: ViewAction, from dispatcher: ActionSource) {
-        store.dispatch(action, from: dispatcher)
+    deinit {
+      cancellableBinding?.cancel()
+    }
+    open func dispatch(_ dispatchedAction: DispatchedAction<ViewAction>) {
+        store.dispatch(dispatchedAction)
     }
 }
 
@@ -128,9 +130,9 @@ extension ObservableViewModel {
         let subject = CurrentValueSubject<StateType, Never>(state)
 
         return AnyStoreType<ActionType, StateType>(
-            action: { viewAction, dispatcher in
+            action: { dispatchedAction in
                 var state = subject.value
-                action(viewAction, dispatcher, &state)
+                action(dispatchedAction.action, dispatchedAction.dispatcher, &state)
                 subject.send(state)
             },
             state: subject.asPublisherType()

@@ -5,7 +5,7 @@
 ///
 /// The Action Source will arrive at every middleware's `handle` function, and you have the opportunity to use this information when performing side-
 /// effects, such as printing logs.
-public struct ActionSource: Codable, Equatable {
+public struct ActionSource: Codable, Hashable {
     /// File that created and dispatched the action
     public let file: String
 

@@ -1,4 +1,4 @@
-// Generated using Sourcery 1.0.0 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 0.18.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
 // swiftlint:disable all
@@ -26,17 +26,17 @@ class ActionHandlerMock<ActionType>: ActionHandler {
 
     //MARK: - dispatch
 
-    var dispatchFromCallsCount = 0
-    var dispatchFromCalled: Bool {
-        return dispatchFromCallsCount > 0
+    var dispatchCallsCount = 0
+    var dispatchCalled: Bool {
+        return dispatchCallsCount > 0
     }
-    var dispatchFromReceivedArguments: (action: ActionType, dispatcher: ActionSource)?
-    var dispatchFromClosure: ((ActionType, ActionSource) -> Void)?
+    var dispatchReceivedDispatchedAction: DispatchedAction<ActionType>?
+    var dispatchClosure: ((DispatchedAction<ActionType>) -> Void)?
 
-    func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
-        dispatchFromCallsCount += 1
-        dispatchFromReceivedArguments = (action: action, dispatcher: dispatcher)
-        dispatchFromClosure?(action, dispatcher)
+    func dispatch(_ dispatchedAction: DispatchedAction<ActionType>) {
+        dispatchCallsCount += 1
+        dispatchReceivedDispatchedAction = dispatchedAction
+        dispatchClosure?(dispatchedAction)
     }
 
 }
@@ -103,17 +103,17 @@ class StoreTypeMock<ActionType, StateType>: StoreType {
 
     //MARK: - dispatch
 
-    var dispatchFromCallsCount = 0
-    var dispatchFromCalled: Bool {
-        return dispatchFromCallsCount > 0
+    var dispatchCallsCount = 0
+    var dispatchCalled: Bool {
+        return dispatchCallsCount > 0
     }
-    var dispatchFromReceivedArguments: (action: ActionType, dispatcher: ActionSource)?
-    var dispatchFromClosure: ((ActionType, ActionSource) -> Void)?
+    var dispatchReceivedDispatchedAction: DispatchedAction<ActionType>?
+    var dispatchClosure: ((DispatchedAction<ActionType>) -> Void)?
 
-    func dispatch(_ action: ActionType, from dispatcher: ActionSource) {
-        dispatchFromCallsCount += 1
-        dispatchFromReceivedArguments = (action: action, dispatcher: dispatcher)
-        dispatchFromClosure?(action, dispatcher)
+    func dispatch(_ dispatchedAction: DispatchedAction<ActionType>) {
+        dispatchCallsCount += 1
+        dispatchReceivedDispatchedAction = dispatchedAction
+        dispatchClosure?(dispatchedAction)
     }
 
 }

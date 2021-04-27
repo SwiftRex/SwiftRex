@@ -19,7 +19,7 @@ class MiddlewareTests: XCTestCase {
             actionBravoAfterReducerCalled: actionBravoAfterReducerCalled,
             actionCharlieAfterReducerCalled: actionCharlieAfterReducerCalled
         )
-        sut.receiveContext(getState: { state }, output: .init { _, _ in })
+        sut.receiveContext(getState: { state }, output: .init { _ in })
 
         var after1: AfterReducer = .doNothing()
         sut.handle(action: .bar(.bravo), from: .here(), afterReducer: &after1)

@@ -6,18 +6,18 @@ class ActionHandlerTests: XCTestCase {
     func testDefaultSource() {
         let handleTwice = expectation(description: "should have handled two actions")
         handleTwice.expectedFulfillmentCount = 2
-        let sut = AnyActionHandler<String> { action, dispatcher in
-            switch action {
+        let sut = AnyActionHandler<String> { dispatchedAction in
+            switch dispatchedAction.action {
             case "1":
-                XCTAssertEqual(dispatcher.line, 24)
-                XCTAssertNil(dispatcher.info)
+                XCTAssertEqual(dispatchedAction.dispatcher.line, 24)
+                XCTAssertNil(dispatchedAction.dispatcher.info)
             case "2":
-                XCTAssertEqual(dispatcher.line, 26)
-                XCTAssertEqual(dispatcher.info, "second")
+                XCTAssertEqual(dispatchedAction.dispatcher.line, 26)
+                XCTAssertEqual(dispatchedAction.dispatcher.info, "second")
             default: XCTFail("Too many actions")
             }
-            XCTAssert(dispatcher.file.hasSuffix("/ActionHandlerTests.swift"))
-            XCTAssertEqual(dispatcher.function, "testDefaultSource()")
+            XCTAssert(dispatchedAction.dispatcher.file.hasSuffix("/ActionHandlerTests.swift"))
+            XCTAssertEqual(dispatchedAction.dispatcher.function, "testDefaultSource()")
             handleTwice.fulfill()
         }
 
