@@ -85,21 +85,6 @@ class ReduxStoreProtocolMock<ActionType, StateType>: ReduxStoreProtocol {
     }
     var underlyingStatePublisher: UnfailablePublisherType<StateType>!
 
-    //MARK: - dispatch
-
-    var dispatchCallsCount = 0
-    var dispatchCalled: Bool {
-        return dispatchCallsCount > 0
-    }
-    var dispatchReceivedDispatchedAction: DispatchedAction<ActionType>?
-    var dispatchClosure: ((DispatchedAction<ActionType>) -> Void)?
-
-    func dispatch(_ dispatchedAction: DispatchedAction<ActionType>) {
-        dispatchCallsCount += 1
-        dispatchReceivedDispatchedAction = dispatchedAction
-        dispatchClosure?(dispatchedAction)
-    }
-
 }
 class StateProviderMock<StateType>: StateProvider {
     var statePublisher: UnfailablePublisherType<StateType> {

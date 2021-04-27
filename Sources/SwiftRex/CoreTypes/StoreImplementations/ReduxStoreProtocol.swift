@@ -3,7 +3,7 @@ import Foundation
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
 // sourcery: AutoMockableGeneric = ActionType
-// sourcery: AutoMockableSkip = "dispatch(_ action: ActionType, from dispatcher: ActionSource)"
+// sourcery: AutoMockableSkip = "dispatch(_ dispatchedAction: DispatchedAction<ActionType>)"
 public protocol ReduxStoreProtocol: AnyObject, StoreType {
     associatedtype MiddlewareType: Middleware
         where MiddlewareType.StateType == StateType,
