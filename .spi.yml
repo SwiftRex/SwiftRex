@@ -1,0 +1,13 @@
+version: 1
+builder:
+  configs:
+  - platform: watchos
+    scheme: NoTests
+  - platform: ios
+    scheme: CombineRex
+  - platform: macos
+    scheme: SwiftRex-Package
+  - platform: tvos
+    scheme: SwiftRex-Package
+  - platform: linux
+    scheme: SwiftRex-Package
