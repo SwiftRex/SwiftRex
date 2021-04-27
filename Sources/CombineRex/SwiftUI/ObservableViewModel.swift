@@ -57,7 +57,9 @@ open class ObservableViewModel<ViewAction, ViewState>: StoreType, ObservableObje
                 }
             )
     }
-
+    deinit {
+      cancellableBinding?.cancel()
+    }
     open func dispatch(_ dispatchedAction: DispatchedAction<ViewAction>) {
         store.dispatch(dispatchedAction)
     }
