@@ -3,7 +3,7 @@
  to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware
  in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.
  */
-public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: Middleware, Equatable {
+public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: Middleware, MiddlewareProtocol, Equatable {
     /**
      Default initializer for `IdentityMiddleware`
      */
@@ -23,7 +23,17 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer<OutputActionType>) {
         afterReducer = .identity
+    }
+
+    public func handle(action: InputActionType, from dispatcher: ActionSource, getState: @escaping GetState<StateType>, afterReducer: inout AfterReducer<OutputActionType>) {
+        afterReducer = .identity
+    }
+}
+
+extension IdentityMiddleware {
+    public func eraseToAnyMiddleware() -> AnyMiddleware<InputActionType, OutputActionType, StateType> {
+        AnyMiddleware(middleware: self)
     }
 }

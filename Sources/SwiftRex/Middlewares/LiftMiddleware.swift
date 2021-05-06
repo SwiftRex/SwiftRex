@@ -5,7 +5,7 @@
 
  You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call `Middleware.lift(_:)`, passing as parameter the keyPath from whole to part.
  */
-public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, PartMiddleware: Middleware>: Middleware {
+public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, PartMiddleware: MiddlewareProtocol>: MiddlewareProtocol {
     public typealias InputActionType = GlobalInputActionType
     public typealias OutputActionType = GlobalOutputActionType
     public typealias StateType = GlobalStateType
@@ -28,13 +28,6 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
         self.partMiddleware = middleware
     }
 
-    public func receiveContext(getState: @escaping () -> GlobalStateType, output: AnyActionHandler<GlobalOutputActionType>) {
-        partMiddleware.receiveContext(
-            getState: { self.stateMap(getState()) },
-            output: output.contramap(outputActionMap)
-        )
-    }
-
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
      additional actions. This is also a good place for analytics, tracking, logging and telemetry. Because the lift
@@ -53,12 +46,14 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: GlobalInputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+    public func handle(action: GlobalInputActionType, from dispatcher: ActionSource, getState: @escaping GetState<GlobalStateType>, afterReducer: inout AfterReducer<GlobalOutputActionType>) {
         guard let localAction: LocalInputActionType = inputActionMap(action) else {
             // This middleware doesn't care about this action type
             return
         }
 
-        return partMiddleware.handle(action: localAction, from: dispatcher, afterReducer: &afterReducer)
+        var afterReducerPartMiddleware = AfterReducer<LocalOutputActionType>.doNothing()
+        partMiddleware.handle(action: localAction, from: dispatcher, getState: { self.stateMap(getState()) }, afterReducer: &afterReducerPartMiddleware)
+        afterReducer = afterReducerPartMiddleware.map(outputActionMap)
     }
 }

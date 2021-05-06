@@ -9,53 +9,76 @@ import Foundation
 /// element in composition. The identity of an `AfterReducer` is the static instance `doNothing()`, that contains an empty closure for no-op.
 /// The combination between two `AfterReducer` instances occur in reverse order so the first middleware will have its "after reducer" closure executed
 /// last. This composition can be achieved by using the operator `<>`
-public struct AfterReducer: Monoid {
+public struct AfterReducer<OutputActionType>: Monoid {
     /// The identity of an `AfterReducer` is the static instance `doNothing()`, that contains an empty closure for no-op.
     /// When combined with any other `AfterReducer` changes nothing in the result, acting as a neutral element in composition.
-    public static let identity: AfterReducer = doNothing()
+    public static var identity: AfterReducer { doNothing() }
 
     /// Execute the operation scheduled by the middleware. It should run only once and right after Reducer chain has finished and new state is
     /// published
-    let reducerIsDone: () -> Void
+    let reducerIsDone: (AnyActionHandler<OutputActionType>) -> Void
 
-    private init(run: @escaping () -> Void) {
+    private init(run: @escaping (AnyActionHandler<OutputActionType>) -> Void) {
         self.reducerIsDone = run
     }
 
     /// Schedules some task to be executed right after Reducer chain has finished and new state is published
-    public static func `do`(_ run: @escaping () -> Void) -> AfterReducer {
+    @available(
+        *,
+        deprecated,
+        message: "In the closure, either use or explicitly ignore the parameter `output: AnyActionHandler<OutputActionType>`"
+    )
+    @_disfavoredOverload public static func `do`(_ run: @escaping () -> Void) -> AfterReducer {
+        .init(run: { _ in run() })
+    }
+
+    /// Schedules some task to be executed right after Reducer chain has finished and new state is published
+    /// - Parameter run: A closure with a task to be performed by the store after the reducer finished evaluating the incoming action.
+    ///                  This closure gives you `output: AnyActionHandler<OutputActionType>`, that you should use to dispatch actions back to the
+    ///                  store, for example when your side-effect reached some milestone or finished
+    /// - Returns: The scheduled task to be performed by the store after the reducer finished evaluating the incoming action
+    public static func `do`(_ run: @escaping (AnyActionHandler<OutputActionType>) -> Void) -> AfterReducer {
         .init(run: run)
     }
 
     /// The identity of an `AfterReducer` is the static instance `doNothing()`, that contains an empty closure for no-op.
     /// When combined with any other `AfterReducer` changes nothing in the result, acting as a neutral element in composition.
     public static func doNothing() -> AfterReducer {
-        .init(run: { })
+        .init(run: { _ in })
     }
 }
 
 /// The combination between two `AfterReducer` instances occur in reverse order so the first middleware will have its "after reducer" closure executed
 /// last. This composition can be achieved by using the operator `<>`.
-public func <> (lhs: AfterReducer, rhs: AfterReducer) -> AfterReducer {
-    AfterReducer.do {
+public func <> <OutputActionType>(lhs: AfterReducer<OutputActionType>, rhs: AfterReducer<OutputActionType>)
+-> AfterReducer<OutputActionType> {
+    AfterReducer.do { output in
         // When composing multiple closures that run after reducer, compose them backwards
         // so the middlewares execute post-reducer in the reverse order as they run pre-reducer
         // e.g. (1) -> (2) -> (3) -> reducer -> (3) -> (2) -> (1)
         //      == pre-reducer ==               == post-reducer ==
-        rhs.reducerIsDone()
-        lhs.reducerIsDone()
+        rhs.reducerIsDone(output)
+        lhs.reducerIsDone(output)
     }
 }
 
-extension Collection where Element == AfterReducer {
+extension Collection {
     /// Reduces a collection of `AfterReducer` closures into a single `AfterReducer` closure. Useful when a group of middlewares ran, we collected
     /// their `AfterReducer` operations in an Array and now we want to merge everything into a single `AfterReducer` closure to execute all of them
     /// once the reducer pipeline has finished and new state is published.
     /// The composition will happen in the reversed order of the closures in the array, because we want the first middleware to be the last notified
     /// after reducer.
-    public func asAfterReducer() -> AfterReducer {
-        AfterReducer.do {
-            Array(self).reversed().forEach { $0.reducerIsDone() }
+    public func asAfterReducer<OutputActionType>() -> AfterReducer<OutputActionType> where Element == AfterReducer<OutputActionType> {
+        AfterReducer.do { output in
+            Array(self).reversed().forEach { $0.reducerIsDone(output) }
+        }
+    }
+}
+
+extension AfterReducer {
+    public func map<NewOutputActionType>(_ transform: @escaping (OutputActionType) -> NewOutputActionType) -> AfterReducer<NewOutputActionType> {
+        return .do { outputsNewActionType in
+            self.reducerIsDone(outputsNewActionType.contramap(transform))
         }
     }
 }

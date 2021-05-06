@@ -91,43 +91,31 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
+public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: MiddlewareProtocol {
     private var cancellables = [Int: AnyCancellable]()
     private var cancellableButNotViaToken = Set<AnyCancellable>()
-    private var getState: GetState<StateType>?
-    private var output: AnyActionHandler<OutputActionType>?
-    fileprivate let onReceiveContext: (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void
     let onAction: (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
     let dependencies: Dependencies
 
     init(
         dependencies: Dependencies,
-        onReceiveContext: @escaping (@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void,
         onAction handle: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
     ) {
         self.dependencies = dependencies
-        self.onReceiveContext = onReceiveContext
         self.onAction = handle
     }
 
-    public func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
-        self.getState = getState
-        self.output = output
-        self.onReceiveContext(getState, output)
-    }
-
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        afterReducer = .do { [weak self] in
-            guard let self = self, let getState = self.getState else { return }
+    public func handle(action: InputActionType, from dispatcher: ActionSource, getState: @escaping GetState<StateType>, afterReducer: inout AfterReducer<OutputActionType>) {
+        afterReducer = .do { [weak self] output in
+            guard let self = self else { return }
 
             let effect = self.onAction(action, dispatcher, getState)
-            self.runOptionalEffect(effect)
+            self.runOptionalEffect(effect, output: output)
         }
     }
 
-    func runOptionalEffect(_ effect: Effect<Dependencies, OutputActionType>) {
-        guard let output = self.output,
-              effect.doesSomething else { return }
+    func runOptionalEffect(_ effect: Effect<Dependencies, OutputActionType>, output: AnyActionHandler<OutputActionType>) {
+        guard effect.doesSomething else { return }
 
         let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
             .init { [weak self] in
@@ -152,7 +140,7 @@ extension EffectMiddleware {
         do onAction: @escaping (InputActionType, ActionSource, @escaping GetState<StateType>) -> Effect<Dependencies, OutputActionType>
     ) -> MiddlewareReader<Dependencies, EffectMiddleware> {
         MiddlewareReader { dependencies in
-            EffectMiddleware(dependencies: dependencies, onReceiveContext: { _, _ in }, onAction: onAction)
+            EffectMiddleware(dependencies: dependencies, onAction: onAction)
         }
     }
 }
@@ -182,7 +170,7 @@ extension EffectMiddleware: Semigroup {
                     getState
                 )
 
-                lhs.runOptionalEffect(leftEffect)
+                lhs.runOptionalEffect(leftEffect, output: lhs.output!)
 
                 let rightEffect: Effect<Dependencies, OutputActionType> = rhs.onAction(
                     action,
@@ -190,7 +178,7 @@ extension EffectMiddleware: Semigroup {
                     getState
                 )
 
-                rhs.runOptionalEffect(rightEffect)
+                rhs.runOptionalEffect(rightEffect, output: rhs.output!)
 
                 return .doNothing
             }

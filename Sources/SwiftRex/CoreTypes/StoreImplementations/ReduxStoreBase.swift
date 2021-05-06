@@ -86,7 +86,7 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
     private let subject: UnfailableReplayLastSubjectType<StateType>
 
     /// Pipeline to execute upon action arrival, containing all middlewares and reducers
-    public let pipeline: ReduxPipelineWrapper<AnyMiddleware<ActionType, ActionType, StateType>>
+    public let pipeline: ReduxPipelineWrapper<ActionType, StateType>
 
     /// State publisher which can be subscribed in order to be notified on every mutation
     public var statePublisher: UnfailablePublisherType<StateType> { subject.publisher }
@@ -106,7 +106,14 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
                      composition, please use the diamond operator (`<>`) and for middlewares that understand only a
                      sub-state part, use the `lift` functions to elevate them to the same global state and global action
                      type.
+       - emitsValue: sets up the rule for emitting state changes, such as always, never, when modified or custom closure
      */
+    @available(
+        *,
+        deprecated,
+        message: "Instead of providing a class that implements `Middleware`, please provide a class that implements `MiddlewareProtocol`"
+    )
+    @_disfavoredOverload
     public init<M: Middleware>(
         subject: UnfailableReplayLastSubjectType<StateType>,
         reducer: Reducer<ActionType, StateType>,
@@ -114,6 +121,33 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
         emitsValue: ShouldEmitValue<StateType> = .always
     ) where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
         self.subject = subject
-        self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue)
+        self.pipeline = .init(getStatePublisher: { subject }, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue)
+    }
+
+    /**
+     Required initializer that configures the action handler pipeline and the state storage
+
+     - Parameters:
+       - subject: a reactive subject type that replays the last value, never fails and works on `StateType` elements. It
+                  should contain the initial state already.
+       - reducer: a reducer function wrapped in a monoid container of type `Reducer`, able to handle the state of the
+                  type `StateType` and actions of type `ActionType`. For `reducer` composition, please use the diamond
+                  operator (`<>`) and for reducers that understand only a sub-state part, use the `lift` functions to
+                  elevate them to the same global state and global action type.
+       - middleware: a middleware pipeline, that can be any flat middleware or a `ComposedMiddleware`, as long as it's
+                     able to handle the state of type `StateType` and actions of type `ActionType`. For `middleware`
+                     composition, please use the diamond operator (`<>`) and for middlewares that understand only a
+                     sub-state part, use the `lift` functions to elevate them to the same global state and global action
+                     type.
+       - emitsValue: sets up the rule for emitting state changes, such as always, never, when modified or custom closure
+     */
+    public init<M: MiddlewareProtocol>(
+        subject: UnfailableReplayLastSubjectType<StateType>,
+        reducer: Reducer<ActionType, StateType>,
+        middleware: M,
+        emitsValue: ShouldEmitValue<StateType> = .always
+    ) where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
+        self.subject = subject
+        self.pipeline = .init(getStatePublisher: { subject }, reducer: reducer, middleware: AnyMiddleware(middleware: middleware), emitsValue: emitsValue)
     }
 }

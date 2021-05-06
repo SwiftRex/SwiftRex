@@ -6,7 +6,7 @@ public protocol MiddlewareReaderProtocol {
     associatedtype Dependencies
     /// The resulting middleware after the dependencies are injected.
     /// In a function `(Dependencies) -> MiddlewareType`, this is at the right-hand side to the arrow.
-    associatedtype MiddlewareType: Middleware
+    associatedtype MiddlewareType: MiddlewareProtocol
 
     /// An initializer function that, given the dependencies in the Middleware's init, will give the Middleware instance
     /// When inject is called, your MiddlewareReader materializes into a Middleware.

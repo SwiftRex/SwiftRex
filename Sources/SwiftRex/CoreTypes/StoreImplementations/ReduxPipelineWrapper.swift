@@ -1,82 +1,103 @@
 import Foundation
 
-public struct ReduxPipelineWrapper<MiddlewareType: Middleware>: ActionHandler
-where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
-    public typealias ActionType = MiddlewareType.InputActionType
-    public typealias StateType = MiddlewareType.StateType
-
-    private var onAction: (DispatchedAction<ActionType>) -> Void
-    private let middleware: MiddlewareWrapper
-
-    private class MiddlewareWrapper {
-        let middleware: MiddlewareType
-
-        init(middleware: MiddlewareType) {
-            self.middleware = middleware
-        }
-    }
+public struct ReduxPipelineWrapper<ActionType, StateType>: ActionHandler {
+    private let middleware: AnyMiddleware<ActionType, ActionType, StateType>
+    private let reducer: Reducer<ActionType, StateType>
+    private let emitsValue: ShouldEmitValue<StateType>
+    private let getStatePublisher: () -> UnfailableReplayLastSubjectType<StateType>
 
     public init(
-        state: UnfailableReplayLastSubjectType<StateType>,
+        getStatePublisher: @escaping () -> UnfailableReplayLastSubjectType<StateType>,
         reducer: Reducer<ActionType, StateType>,
-        middleware: MiddlewareType,
+        middleware: AnyMiddleware<ActionType, ActionType, StateType>,
         emitsValue: ShouldEmitValue<StateType>
     ) {
         DispatchQueue.setMainQueueID()
-        let middlewareWrapper = MiddlewareWrapper(middleware: middleware)
-        self.middleware = middlewareWrapper
+        self.middleware = middleware
+        self.reducer = reducer
+        self.getStatePublisher = getStatePublisher
+        self.emitsValue = emitsValue
 
-        let onAction: (DispatchedAction<ActionType>) -> Void = { [weak middlewareWrapper] dispatchedAction in
-            var afterReducer: AfterReducer = .doNothing()
-            middlewareWrapper?.middleware.handle(action: dispatchedAction.action, from: dispatchedAction.dispatcher, afterReducer: &afterReducer)
+        middleware.receiveContext(
+            getState: { getStatePublisher().value() },
+            output: lazyActionHandler()
+        )
+    }
 
-            state.mutate(
-                when: { $0 },
-                action: { value in
-                    switch emitsValue {
-                    case .always:
-                        reducer.reduce(dispatchedAction.action, &value)
-                        return true
-                    case .never:
-                        return false
-                    case let .when(predicate):
-                        var newValue = value
-                        reducer.reduce(dispatchedAction.action, &newValue)
-                        guard predicate(value, newValue) else { return false }
-                        value = newValue
-                        return true
-                    }
-                }
-            )
-
-            afterReducer.reducerIsDone()
+    private func lazyActionHandler() -> AnyActionHandler<ActionType> {
+        .init { dispatchedAction in
+            DispatchQueue.main.async {
+                on(dispatchedAction: dispatchedAction)
+            }
         }
+    }
 
-        middlewareWrapper.middleware.receiveContext(
-            getState: { state.value() },
-            output: .init { dispatchedAction in
-                DispatchQueue.main.async {
-                    onAction(dispatchedAction)
+    public func dispatch(_ dispatchedAction: DispatchedAction<ActionType>) {
+        DispatchQueue.asap {
+            on(dispatchedAction: dispatchedAction)
+        }
+    }
+
+    private func on(dispatchedAction: DispatchedAction<ActionType>) {
+        var afterReducer: AfterReducer<ActionType> = .doNothing()
+        middleware.handle(
+            action: dispatchedAction.action,
+            from: dispatchedAction.dispatcher,
+            getState: { getStatePublisher().value() },
+            afterReducer: &afterReducer
+        )
+
+        getStatePublisher().mutate(
+            when: { $0 },
+            action: { value in
+                switch emitsValue {
+                case .always:
+                    reducer.reduce(dispatchedAction.action, &value)
+                    return true
+                case .never:
+                    return false
+                case let .when(predicate):
+                    var newValue = value
+                    reducer.reduce(dispatchedAction.action, &newValue)
+                    guard predicate(value, newValue) else { return false }
+                    value = newValue
+                    return true
                 }
             }
         )
 
-        self.onAction = onAction
-    }
-
-    public func dispatch(_ dispatchedAction: DispatchedAction<MiddlewareType.InputActionType>) {
-        DispatchQueue.asap {
-            self.onAction(dispatchedAction)
-        }
+        afterReducer.reducerIsDone(.init { dispatchedAction in
+            dispatch(dispatchedAction)
+        })
     }
 }
 
 extension ReduxPipelineWrapper where StateType: Equatable {
     public init(
-        state: UnfailableReplayLastSubjectType<StateType>,
+        getStatePublisher: @escaping () -> UnfailableReplayLastSubjectType<StateType>,
         reducer: Reducer<ActionType, StateType>,
-        middleware: MiddlewareType
+        middleware: AnyMiddleware<ActionType, ActionType, StateType>
     ) {
-        self.init(state: state, reducer: reducer, middleware: middleware, emitsValue: .whenDifferent)
+        self.init(getStatePublisher: getStatePublisher, reducer: reducer, middleware: middleware, emitsValue: .whenDifferent)
+    }
+}
+
+extension ReduxPipelineWrapper where StateType: Equatable {
+    public init<M: Middleware>(
+        getStatePublisher: @escaping () -> UnfailableReplayLastSubjectType<StateType>,
+        reducer: Reducer<ActionType, StateType>,
+        middleware: M
+    ) where M.StateType == StateType, M.InputActionType == ActionType, M.OutputActionType == ActionType {
+        self.init(getStatePublisher: getStatePublisher, reducer: reducer, middleware: middleware.eraseToAnyMiddleware(), emitsValue: .whenDifferent)
+    }
+}
+
+extension ReduxPipelineWrapper where StateType: Equatable {
+    public init<M: MiddlewareProtocol>(
+        getStatePublisher: @escaping () -> UnfailableReplayLastSubjectType<StateType>,
+        reducer: Reducer<ActionType, StateType>,
+        middleware: M
+    ) where M.StateType == StateType, M.InputActionType == ActionType, M.OutputActionType == ActionType {
+        self.init(getStatePublisher: getStatePublisher, reducer: reducer, middleware: middleware.eraseToAnyMiddleware(), emitsValue: .whenDifferent)
     }
 }

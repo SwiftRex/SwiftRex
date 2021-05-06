@@ -1,13 +1,13 @@
 /**
  The `ComposedMiddleware` is a container of inner middlewares that are chained together in the order as they were composed. Whenever an `EventProtocol` or an `ActionProtocol` arrives to be handled by this `ComposedMiddleware`, it will delegate to its internal chain of middlewares.
 
- It could be initialized manually by using the `init()` and configured by using the method `append(middleware:)`, but if you're ok with using custom operators you can compose two or more middlewares using the diamond operator:
+ It could be initialized manually by using the `init()` and configured by using the method `append(_:)`, but if you're ok with using custom operators you can compose two or more middlewares using the diamond operator:
 
  ```
  let composedMiddleware = firstMiddleware <> secondMiddleware <> thirdMiddleware
  ```
  */
-public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
+public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: MiddlewareProtocol {
     var middlewares: [AnyMiddleware<InputActionType, OutputActionType, StateType>] = []
 
     /**
@@ -32,6 +32,13 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
      ```
      */
     public mutating func append<M: Middleware>(middleware: M)
+        where M.InputActionType == InputActionType,
+              M.OutputActionType == OutputActionType,
+              M.StateType == StateType {
+        append(middleware.eraseToAnyMiddleware())
+    }
+
+    public mutating func append<M: MiddlewareProtocol>(_ middleware: M)
         where M.InputActionType == InputActionType,
               M.OutputActionType == OutputActionType,
               M.StateType == StateType {
@@ -80,11 +87,11 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        var composedAfterReducer: [AfterReducer] = []
+    public func handle(action: InputActionType, from dispatcher: ActionSource, getState: @escaping GetState<StateType>, afterReducer: inout AfterReducer<OutputActionType>) {
+        var composedAfterReducer: [AfterReducer<OutputActionType>] = []
         for middleware in middlewares {
-            var individualAfterReducer: AfterReducer = .doNothing()
-            middleware.handle(action: action, from: dispatcher, afterReducer: &individualAfterReducer)
+            var individualAfterReducer: AfterReducer<OutputActionType> = .doNothing()
+            middleware.handle(action: action, from: dispatcher, getState: getState, afterReducer: &individualAfterReducer)
             composedAfterReducer.append(individualAfterReducer)
         }
         afterReducer = composedAfterReducer.asAfterReducer()
@@ -117,7 +124,7 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
    - rhs: A flat middleware to be appended to the end of a `ComposedMiddleware`
  - Returns: A `ComposedMiddleware` that calls the `lhs` methods before the `rhs` ones. If `lhs` is already a `ComposedMiddleware`, we will return the same instance after mutating it to have the `rhs` in the end of its chain.
  */
-public func <> <M1: Middleware, M2: Middleware>(lhs: M1, rhs: M2) -> ComposedMiddleware < M1.InputActionType, M1.OutputActionType,
+public func <> <M1: MiddlewareProtocol, M2: MiddlewareProtocol>(lhs: M1, rhs: M2) -> ComposedMiddleware < M1.InputActionType, M1.OutputActionType,
     M1.StateType>
     where M1.InputActionType == M2.InputActionType,
           M1.OutputActionType == M2.OutputActionType,
@@ -127,11 +134,11 @@ public func <> <M1: Middleware, M2: Middleware>(lhs: M1, rhs: M2) -> ComposedMid
         ?? (lhs as? AnyMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType>)?.isComposed
         ?? {
             var newContainer: ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType> = .init()
-            newContainer.append(middleware: lhs)
+            newContainer.append(lhs)
             return newContainer
         }()
 
-    container.append(middleware: rhs)
+    container.append(rhs)
     return container
 }
 
