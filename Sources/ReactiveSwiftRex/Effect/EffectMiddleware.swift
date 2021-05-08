@@ -88,7 +88,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///     }
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
-public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
+public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: MiddlewareProtocol {
     var cancellables = [Int: Lifetime.Token]()
     private var cancellableButNotViaToken = CompositeDisposable()
     private var getState: GetState<StateType>?
@@ -113,8 +113,8 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
         self.onReceiveContext(getState, output)
     }
 
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        afterReducer = .do { [weak self] in
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        IO { [weak self] _ in
             guard let self = self, let getState = self.getState else { return }
 
             let effect = self.onAction(action, dispatcher, getState)

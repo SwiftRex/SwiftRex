@@ -91,7 +91,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
+public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: MiddlewareProtocol {
     var cancellables = [Int: AnyCancellable]()
     private var cancellableButNotViaToken = Set<AnyCancellable>()
     private var getState: GetState<StateType>?
@@ -116,8 +116,8 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
         self.onReceiveContext(getState, output)
     }
 
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        afterReducer = .do { [weak self] in
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        IO { [weak self] _ in
             guard let self = self, let getState = self.getState else { return }
 
             let effect = self.onAction(action, dispatcher, getState)

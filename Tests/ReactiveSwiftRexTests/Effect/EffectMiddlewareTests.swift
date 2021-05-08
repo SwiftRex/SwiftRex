@@ -26,30 +26,33 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: "a0", from: .here(), state: { currentState })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual([], receivedActions)
         XCTAssertEqual([], receivedState)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual(["a0"], receivedActions)
         XCTAssertEqual(["s0"], receivedState)
 
-        afterReducer = .doNothing()
         currentDependency = "d1"
         currentState = "s1"
-        sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a1", from: .here(), state: { currentState })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual(["a0", "a1"], receivedActions)
         XCTAssertEqual(["s0", "s1"], receivedState)
 
-        afterReducer = .doNothing()
         currentDependency = "d2"
         currentState = "s2"
-        sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a2", from: .here(), state: { currentState })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual(["a0", "a1", "a2"], receivedActions)
         XCTAssertEqual(["s0", "s1", "s2"], receivedState)
@@ -74,28 +77,31 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: "a0", from: .here(), state: { currentState })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual([], receivedActions)
         XCTAssertEqual([], receivedState)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual(["a0"], receivedActions)
         XCTAssertEqual(["s0"], receivedState)
 
-        afterReducer = .doNothing()
         currentState = "s1"
-        sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a1", from: .here(), state: { currentState })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual(["a0", "a1"], receivedActions)
         XCTAssertEqual(["s0", "s1"], receivedState)
 
-        afterReducer = .doNothing()
         currentState = "s2"
-        sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a2", from: .here(), state: { currentState })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual(["a0", "a1", "a2"], receivedActions)
         XCTAssertEqual(["s0", "s1", "s2"], receivedState)
@@ -116,22 +122,25 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["dispatched a0 some_state"], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependency = "d1"
-        sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a1", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["dispatched a0 some_state", "dispatched a1 some_state"], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependency = "d2"
-        sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a2", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["dispatched a0 some_state", "dispatched a1 some_state", "dispatched a2 some_state"], dispatchedActions)
     }
 
@@ -167,14 +176,16 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "create", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        var io = sut.handle(action: "create", from: .here(), state: { "some_state" })
+        io.runIO(.init { _ in
+            XCTFail("should not have received values")
+        })
         XCTAssertEqual(sut.cancellables.count, 1)
 
-        afterReducer = .doNothing()
-        sut.handle(action: "cancel", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "cancel", from: .here(), state: { "some_state" })
+        io.runIO(.init { _ in
+            XCTFail("should not have received values")
+        })
 
         wait(for: [expectedSubscription, expectedCancellation], timeout: 0.5)
         XCTAssertEqual(sut.cancellables.count, 0)
@@ -230,24 +241,28 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "first", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        var io = sut.handle(action: "first", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(sut.cancellables.count, 1)
 
-        afterReducer = .doNothing()
-        sut.handle(action: "second", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "second", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(sut.cancellables.count, 2)
 
-        afterReducer = .doNothing()
-        sut.handle(action: "third", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "third", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(sut.cancellables.count, 3)
 
-        afterReducer = .doNothing()
-        sut.handle(action: "cancel second", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "cancel second", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
 
         wait(for: [expectedSubscription1, expectedSubscription2, expectedSubscription3, expectedCancellation2, expectedValue1, expectedValue3],
              timeout: 1.0,
@@ -289,17 +304,19 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["dispatched A a0 some_state dA0", "dispatched B a0 some_state dB0"], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependencyA = "dA1"
         currentDependencyB = "dB1"
-        sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a1", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([
             "dispatched A a0 some_state dA0",
             "dispatched B a0 some_state dB0",
@@ -307,11 +324,12 @@ class EffectMiddlewareTests: XCTestCase {
             "dispatched B a1 some_state dB1"
         ], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependencyA = "dA2"
         currentDependencyB = "dB2"
-        sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a2", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([
             "dispatched A a0 some_state dA0",
             "dispatched B a0 some_state dB0",
@@ -349,17 +367,19 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["dispatched A a0 some_state dA0", "dispatched B a0 some_state dB0"], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependencyA = "dA1"
         currentDependencyB = "dB1"
-        sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a1", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([
             "dispatched A a0 some_state dA0",
             "dispatched B a0 some_state dB0",
@@ -367,11 +387,12 @@ class EffectMiddlewareTests: XCTestCase {
             "dispatched B a1 some_state dB1"
         ], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependencyA = "dA2"
         currentDependencyB = "dB2"
-        sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a2", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([
             "dispatched A a0 some_state dA0",
             "dispatched B a0 some_state dB0",
@@ -467,17 +488,19 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual(["dispatched A a0 some_state d0", "dispatched B a0 some_state d0"], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependency = "d1"
-        sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a1", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
             "dispatched B a0 some_state d0",
@@ -485,10 +508,11 @@ class EffectMiddlewareTests: XCTestCase {
             "dispatched B a1 some_state d1"
         ], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependency = "d2"
-        sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a2", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
             "dispatched B a0 some_state d0",
@@ -526,17 +550,19 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual(["dispatched A a0 some_state d0", "dispatched B a0 some_state d0"], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependency = "d1"
-        sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a1", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
@@ -545,10 +571,11 @@ class EffectMiddlewareTests: XCTestCase {
             "dispatched B a1 some_state d1"
         ], dispatchedActions)
 
-        afterReducer = .doNothing()
         currentDependency = "d2"
-        sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: "a2", from: .here(), state: { "some_state" })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
@@ -647,30 +674,33 @@ class EffectMiddlewareTests: XCTestCase {
             }
         )
 
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: 0, from: .here(), afterReducer: &afterReducer)
+        var io = sut.handle(action: 0, from: .here(), state: { currentState })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual([], receivedActions)
         XCTAssertEqual([], receivedState)
-        afterReducer.reducerIsDone()
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["oa0"], dispatchedActions)
         XCTAssertEqual(["ia0"], receivedActions)
         XCTAssertEqual(["s0"], receivedState)
 
-        afterReducer = .doNothing()
         currentDependency = 1
         currentState = 1
-        sut.handle(action: 1, from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: 1, from: .here(), state: { currentState })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["oa0", "oa1"], dispatchedActions)
         XCTAssertEqual(["ia0", "ia1"], receivedActions)
         XCTAssertEqual(["s0", "s1"], receivedState)
 
-        afterReducer = .doNothing()
         currentDependency = 2
         currentState = 2
-        sut.handle(action: 2, from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        io = sut.handle(action: 2, from: .here(), state: { currentState })
+        io.runIO(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
         XCTAssertEqual(["oa0", "oa1", "oa2"], dispatchedActions)
         XCTAssertEqual(["ia0", "ia1", "ia2"], receivedActions)
         XCTAssertEqual(["s0", "s1", "s2"], receivedState)
