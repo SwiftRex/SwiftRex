@@ -13,7 +13,7 @@ public struct IO<OutputActionType> {
 }
 
 extension IO: Monoid {
-    static public var identity: IO { .pure() }
+    public static var identity: IO { .pure() }
 }
 
 public func <> <OutputActionType>(lhs: IO<OutputActionType>, rhs: IO<OutputActionType>) -> IO<OutputActionType> {

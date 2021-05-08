@@ -124,7 +124,7 @@ where M1.InputActionType == M2.InputActionType,
             newContainer.append(middleware: lhs)
             return newContainer
         }()
-    
+
     container.append(middleware: rhs)
     return container
 }

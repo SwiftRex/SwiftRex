@@ -28,7 +28,13 @@ where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
                 guard let self = self else { return }
 
                 DispatchQueue.main.async {
-                    let io = Self.handle(middleware: self.middleware, reducer: reducer, dispatchedAction: dispatchedAction, state: state, emitsValue: emitsValue)
+                    let io = Self.handle(
+                        middleware: self.middleware,
+                        reducer: reducer,
+                        dispatchedAction: dispatchedAction,
+                        state: state,
+                        emitsValue: emitsValue
+                    )
                     Self.runIO(io) { [weak self] action in
                         self?.handleAsap(dispatchedAction: action)
                     }

@@ -23,6 +23,7 @@ identifier_name:
     - fn
     - v1
     - v2
+    - io
 type_name:
   min_length:
     warning: 2

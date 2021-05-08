@@ -16,7 +16,7 @@ extension MiddlewareReaderProtocol {
             transform(self.inject(environment))
         }
     }
-    
+
     /// Maps the `Dependencies` element, which is the input environment of the calculation for a particular middleware, using a contravariant
     /// function that will allow to lift this reader into a `MiddlewareReader` compatible with a more global dependencies structure.
     ///
@@ -40,7 +40,7 @@ extension MiddlewareReaderProtocol {
             self.inject(extractOnlyDependenciesNeededForThisMiddleware(world))
         }
     }
-    
+
     /// Maps the `Middleware` element that will eventually be produced upon dependency injection, and derives into a new `Middleware`
     ///
     /// Also maps the `Dependencies` element, which is the input environment of the calculation for a particular middleware, using a contravariant

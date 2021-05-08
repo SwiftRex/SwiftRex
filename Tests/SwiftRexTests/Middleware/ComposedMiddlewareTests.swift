@@ -40,9 +40,11 @@ class ComposedMiddlewareTests: XCTestCase {
         sut.receiveContext(getState: { TestState() }, output: .init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
 
         originalActions.forEach { originalAction in
-            let io = sut.handle(action: originalAction,
-                       from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"),
-                       state: { TestState() })
+            let io = sut.handle(
+                action: originalAction,
+                from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"),
+                state: { TestState() }
+            )
             io.runIO(.init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
         }
 

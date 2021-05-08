@@ -28,6 +28,6 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
     }
 
     public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
-        return .pure()
+        .pure()
     }
 }
