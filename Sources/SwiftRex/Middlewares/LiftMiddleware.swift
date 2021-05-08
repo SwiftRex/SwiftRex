@@ -5,7 +5,7 @@
 
  You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call `Middleware.lift(_:)`, passing as parameter the keyPath from whole to part.
  */
-public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, PartMiddleware: Middleware>: Middleware {
+public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, GlobalStateType, PartMiddleware: MiddlewareProtocol>: MiddlewareProtocol {
     public typealias InputActionType = GlobalInputActionType
     public typealias OutputActionType = GlobalOutputActionType
     public typealias StateType = GlobalStateType
@@ -47,18 +47,19 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
      you call `context().getState()`.
      - Parameters:
        - action: the action to be handled
-       - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
-               only once, not more or less than once. Call it from the same thread and runloop where the handle function
-               is executed, never from a completion handler or dispatch queue block. In case you don't need to compare
-               state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
-               on it, at the beginning of `handle` function.
+       - dispatcher: information about the file, line and function that dispatched this action
+       - state: a closure to obtain the most recent state
+     - Returns: possible Side-Effects wrapped in an IO struct
      */
-    public func handle(action: GlobalInputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+    public func handle(action: GlobalInputActionType, from dispatcher: ActionSource, state: @escaping GetState<GlobalStateType>)
+    -> IO<GlobalOutputActionType> {
         guard let localAction: LocalInputActionType = inputActionMap(action) else {
             // This middleware doesn't care about this action type
-            return
+            return .pure()
         }
 
-        return partMiddleware.handle(action: localAction, from: dispatcher, afterReducer: &afterReducer)
+        return partMiddleware
+            .handle(action: localAction, from: dispatcher, state: { self.stateMap(state()) })
+            .map(outputActionMap)
     }
 }

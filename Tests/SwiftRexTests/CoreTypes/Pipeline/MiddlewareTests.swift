@@ -43,6 +43,10 @@ class MiddlewareTests: XCTestCase {
     }
 
     class SomeMiddleware: Middleware {
+        typealias InputActionType = AppAction
+        typealias OutputActionType = AppAction
+        typealias StateType = TestState
+
         let expectedId: UUID
         let receiveContextCalled: XCTestExpectation
         let actionBravoBeforeReducerCalled: XCTestExpectation

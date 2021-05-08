@@ -1,4 +1,4 @@
-extension Middleware {
+extension MiddlewareProtocol {
     /**
      A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with
      other middlewares that work on different generic parameters. The global state of your app is *Whole*, and the `Middleware` handles *Part*, that

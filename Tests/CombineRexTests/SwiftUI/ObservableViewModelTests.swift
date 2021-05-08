@@ -53,6 +53,10 @@ struct Action2: Equatable {
 }
 
 class MiddlewareTest: Middleware {
+    typealias InputActionType = Action
+    typealias OutputActionType = Action
+    typealias StateType = TestState
+
     var getState: (() -> TestState)?
     var output: AnyActionHandler<Action>?
 

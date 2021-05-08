@@ -33,6 +33,10 @@ class IssueTracker39Tests: XCTestCase {
     }
 
     class MyMiddleware: Middleware {
+        typealias InputActionType = AppAction
+        typealias OutputActionType = AppAction
+        typealias StateType = MyState
+
         var getState: (() -> MyState)!
         var output: AnyActionHandler<AppAction>!
 

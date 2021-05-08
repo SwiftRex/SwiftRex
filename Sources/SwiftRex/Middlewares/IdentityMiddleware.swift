@@ -26,4 +26,8 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
     public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
         afterReducer = .identity
     }
+
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        return .pure()
+    }
 }

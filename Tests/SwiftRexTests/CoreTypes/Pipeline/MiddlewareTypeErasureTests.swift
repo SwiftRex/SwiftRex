@@ -26,9 +26,8 @@ class MiddlewareTypeErasureTests: XCTestCase {
         }
         let erased = middleware.eraseToAnyMiddleware()
         erased.receiveContext(getState: { TestState() }, output: .init { _ in })
-        var afterReducer: AfterReducer = .doNothing()
-        erased.handle(action: .bar(.alpha), from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
+        io.runIO(.init { _ in })
         wait(for: [calledAfterReducer], timeout: 0.1)
         XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
         XCTAssertEqual(1, middleware.handleActionFromAfterReducerCallsCount)
@@ -44,9 +43,8 @@ class MiddlewareTypeErasureTests: XCTestCase {
         }
         let erased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
         erased.receiveContext(getState: { TestState() }, output: .init { _ in })
-        var afterReducer: AfterReducer = .doNothing()
-        erased.handle(action: .bar(.alpha), from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
+        io.runIO(.init { _ in })
         wait(for: [calledAfterReducer], timeout: 0.1)
         XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
         XCTAssertEqual(1, middleware.handleActionFromAfterReducerCallsCount)
@@ -57,14 +55,15 @@ class MiddlewareTypeErasureTests: XCTestCase {
     func testAnyMiddlewareFromInitIgnoringContextHandleAction() {
         let calledBeforeReducer = expectation(description: "before reducer was called")
         let calledAfterReducer = expectation(description: "after reducer was called")
-        let erased = AnyMiddleware<AppAction, AppAction, TestState> { _, _, afterReducer in
+        let erased = AnyMiddleware<AppAction, AppAction, TestState> { _, _, _ in
             calledBeforeReducer.fulfill()
-            afterReducer = .do { calledAfterReducer.fulfill() }
+            return .init { _ in
+                calledAfterReducer.fulfill()
+            }
         }
         erased.receiveContext(getState: { TestState() }, output: .init { _ in })
-        var afterReducer: AfterReducer = .doNothing()
-        erased.handle(action: .bar(.alpha), from: .here(), afterReducer: &afterReducer)
-        afterReducer.reducerIsDone()
+        let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
+        io.runIO(.init { _ in })
         wait(for: [calledBeforeReducer, calledAfterReducer], timeout: 0.1, enforceOrder: true)
         XCTAssertFalse(erased.isIdentity)
         XCTAssertNil(erased.isComposed)

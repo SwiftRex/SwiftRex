@@ -29,7 +29,7 @@ class ReduxStoreProtocolTests: XCTestCase {
         }
         let state = CurrentValueSubject(currentValue: TestState())
         sut.pipeline = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-            state: state.subject!,
+            state: { state.subject! },
             reducer: reducer.0,
             middleware: middlewareMock)
 

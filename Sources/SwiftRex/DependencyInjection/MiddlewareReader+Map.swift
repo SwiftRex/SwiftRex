@@ -10,13 +10,13 @@ extension MiddlewareReaderProtocol {
     ///
     /// - Parameter transform: function that transforms original produced Middleware into a new one, once the dependencies are injected
     /// - Returns: a new `MiddlewareReader` that will create not the original MiddlewareType any more, but a NewMiddleware mapped from the original
-    public func mapMiddleware<NewMiddleware: Middleware>(_ transform: @escaping (MiddlewareType) -> NewMiddleware)
+    public func mapMiddleware<NewMiddleware: MiddlewareProtocol>(_ transform: @escaping (MiddlewareType) -> NewMiddleware)
     -> MiddlewareReader<Dependencies, NewMiddleware> {
         MiddlewareReader<Dependencies, NewMiddleware> { environment in
             transform(self.inject(environment))
         }
     }
-
+    
     /// Maps the `Dependencies` element, which is the input environment of the calculation for a particular middleware, using a contravariant
     /// function that will allow to lift this reader into a `MiddlewareReader` compatible with a more global dependencies structure.
     ///
@@ -40,7 +40,7 @@ extension MiddlewareReaderProtocol {
             self.inject(extractOnlyDependenciesNeededForThisMiddleware(world))
         }
     }
-
+    
     /// Maps the `Middleware` element that will eventually be produced upon dependency injection, and derives into a new `Middleware`
     ///
     /// Also maps the `Dependencies` element, which is the input environment of the calculation for a particular middleware, using a contravariant
@@ -63,8 +63,10 @@ extension MiddlewareReaderProtocol {
     ///            NewMiddleware mapped from the original. It can be combined with others that also depend on the same `World`, so this is useful for
     ///            composition as you eventually want to combine all sorts of middlewares that have different dependencies, so this is for finding a
     ///            common ground for all of them.
-    public func dimap<NewMiddleware: Middleware, World>(transformMiddleware: @escaping (MiddlewareType) -> NewMiddleware,
-                                                        extractOnlyDependenciesNeededForThisMiddleware: @escaping (World) -> Dependencies)
+    public func dimap<NewMiddleware: MiddlewareProtocol, World>(
+        transformMiddleware: @escaping (MiddlewareType) -> NewMiddleware,
+        extractOnlyDependenciesNeededForThisMiddleware: @escaping (World) -> Dependencies
+    )
     -> MiddlewareReader<World, NewMiddleware> {
         mapMiddleware(transformMiddleware).contramapDependecies(extractOnlyDependenciesNeededForThisMiddleware)
     }

@@ -140,7 +140,38 @@
 ///
 /// ![SwiftUI Side-Effects](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg)
 ///
-public protocol Middleware {
+public protocol Middleware: MiddlewareProtocol {
+    /// Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.
+    /// This is also a good place for analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global
+    /// state if you want, and/or execute things before the reducer.
+    /// This function is only called by the store after the `receiveContext(getState:output:)` was called, so if you saved the received context from
+    /// there you can safely use it here to get the state or dispatch new actions.
+    /// Setting the `afterReducer` in/out parameter is optional, if you don't set it, it defaults to `.doNothing()`.
+    /// - Parameters:
+    ///   - action: the action to be handled
+    ///   - dispatcher: information about the action source, representing the entity that created and dispatched the action
+    ///   - afterReducer: it can be set to perform any operation after the reducer has changed the global state. If the function ends before you set
+    ///                   this in/out parameter, `afterReducer` will default to `.doNothing()`.
+    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer)
+}
+
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
+// sourcery: AutoMockableGeneric = OutputActionType
+// sourcery: AutoMockableGeneric = InputActionType
+extension Middleware { }
+
+extension Middleware {
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        var afterReducer: AfterReducer = .doNothing()
+        handle(action: action, from: dispatcher, afterReducer: &afterReducer)
+        return IO { _ in
+            afterReducer.reducerIsDone()
+        }
+    }
+}
+
+public protocol MiddlewareProtocol {
     /**
      The Action type that this `Middleware` knows how to handle, so the store will forward actions of this type to this middleware.
      Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
@@ -166,6 +197,8 @@ public protocol Middleware {
      */
     associatedtype StateType
 
+    func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType>
+
     /**
      Middleware setup. This function will be called before actions are handled to the middleware, so you can configure your middleware with the given
      parameters. You can hold any of them if you plan to read the state or dispatch new actions.
@@ -179,23 +212,50 @@ public protocol Middleware {
        - output: an action handler that allows the middleware to dispatch new actions at any point in time
      */
     func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>)
-
-    /// Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.
-    /// This is also a good place for analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global
-    /// state if you want, and/or execute things before the reducer.
-    /// This function is only called by the store after the `receiveContext(getState:output:)` was called, so if you saved the received context from
-    /// there you can safely use it here to get the state or dispatch new actions.
-    /// Setting the `afterReducer` in/out parameter is optional, if you don't set it, it defaults to `.doNothing()`.
-    /// - Parameters:
-    ///   - action: the action to be handled
-    ///   - dispatcher: information about the action source, representing the entity that created and dispatched the action
-    ///   - afterReducer: it can be set to perform any operation after the reducer has changed the global state. If the function ends before you set
-    ///                   this in/out parameter, `afterReducer` will default to `.doNothing()`.
-    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer)
 }
 
-// sourcery: AutoMockable
-// sourcery: AutoMockableGeneric = StateType
-// sourcery: AutoMockableGeneric = OutputActionType
-// sourcery: AutoMockableGeneric = InputActionType
-extension Middleware { }
+extension MiddlewareProtocol {
+    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
+    }
+}
+
+public struct IO<OutputActionType> {
+    let runIO: (AnyActionHandler<OutputActionType>) -> Void
+
+    public init(_ run: @escaping (AnyActionHandler<OutputActionType>) -> Void) {
+        self.runIO = run
+    }
+
+    public static func pure() -> IO {
+        IO { _ in }
+    }
+}
+
+extension IO: Monoid {
+    static public var identity: IO { .pure() }
+}
+
+public func <> <OutputActionType>(lhs: IO<OutputActionType>, rhs: IO<OutputActionType>) -> IO<OutputActionType> {
+    .init { handler in
+        lhs.runIO(handler)
+        rhs.runIO(handler)
+    }
+}
+
+extension IO {
+    public func map<B>(_ transform: @escaping (OutputActionType) -> B) -> IO<B> {
+        IO<B> { output in
+            self.runIO(output.contramap(transform))
+        }
+    }
+}
+
+extension IO {
+    public func flatMap<B>(_ transform: @escaping (DispatchedAction<OutputActionType>) -> IO<B>) -> IO<B> {
+        IO<B> { actionHandlerB in
+            self.runIO(.init { outputActionType in
+                transform(outputActionType).runIO(actionHandlerB)
+            })
+        }
+    }
+}

@@ -10,7 +10,7 @@ extension MiddlewareReaderProtocol {
     ///   - reader2: second reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, MOutput: Middleware>(
+    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, MOutput: MiddlewareProtocol>(
         _ reader1: M1,
         _ reader2: M2,
         with map: @escaping (M1.MiddlewareType, M2.MiddlewareType) -> MOutput
@@ -30,7 +30,7 @@ extension MiddlewareReaderProtocol {
     ///   - reader3: third reader type
     ///   - map: how to combine produced middlewares into a single one, of type `MOutput`
     /// - Returns: middleware reader that gives a middleware of type `MOutput` after receiving the injected dependencies
-    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, MOutput: Middleware>(
+    public static func zip<M1: MiddlewareReaderProtocol, M2: MiddlewareReaderProtocol, M3: MiddlewareReaderProtocol, MOutput: MiddlewareProtocol>(
         _ reader1: M1,
         _ reader2: M2,
         _ reader3: M3,
@@ -57,7 +57,7 @@ extension MiddlewareReaderProtocol {
         M2: MiddlewareReaderProtocol,
         M3: MiddlewareReaderProtocol,
         M4: MiddlewareReaderProtocol,
-        MOutput: Middleware
+        MOutput: MiddlewareProtocol
     > (
         _ reader1: M1,
         _ reader2: M2,
@@ -89,7 +89,7 @@ extension MiddlewareReaderProtocol {
         M3: MiddlewareReaderProtocol,
         M4: MiddlewareReaderProtocol,
         M5: MiddlewareReaderProtocol,
-        MOutput: Middleware
+        MOutput: MiddlewareProtocol
     > (
         _ reader1: M1,
         _ reader2: M2,
@@ -131,7 +131,7 @@ extension MiddlewareReaderProtocol {
         M4: MiddlewareReaderProtocol,
         M5: MiddlewareReaderProtocol,
         M6: MiddlewareReaderProtocol,
-        MOutput: Middleware
+        MOutput: MiddlewareProtocol
     > (
         _ reader1: M1,
         _ reader2: M2,
@@ -179,7 +179,7 @@ extension MiddlewareReaderProtocol {
         M5: MiddlewareReaderProtocol,
         M6: MiddlewareReaderProtocol,
         M7: MiddlewareReaderProtocol,
-        MOutput: Middleware
+        MOutput: MiddlewareProtocol
     > (
         _ reader1: M1,
         _ reader2: M2,
@@ -231,7 +231,7 @@ extension MiddlewareReaderProtocol {
         M6: MiddlewareReaderProtocol,
         M7: MiddlewareReaderProtocol,
         M8: MiddlewareReaderProtocol,
-        MOutput: Middleware
+        MOutput: MiddlewareProtocol
     > (
         _ reader1: M1,
         _ reader2: M2,
@@ -289,7 +289,7 @@ extension MiddlewareReaderProtocol {
         M7: MiddlewareReaderProtocol,
         M8: MiddlewareReaderProtocol,
         M9: MiddlewareReaderProtocol,
-        MOutput: Middleware
+        MOutput: MiddlewareProtocol
     > (
         _ reader1: M1,
         _ reader2: M2,
@@ -351,7 +351,7 @@ extension MiddlewareReaderProtocol {
         M8: MiddlewareReaderProtocol,
         M9: MiddlewareReaderProtocol,
         M10: MiddlewareReaderProtocol,
-        MOutput: Middleware
+        MOutput: MiddlewareProtocol
     > (
         _ reader1: M1,
         _ reader2: M2,

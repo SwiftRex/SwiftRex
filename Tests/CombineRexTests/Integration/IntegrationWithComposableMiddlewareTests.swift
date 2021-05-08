@@ -33,6 +33,10 @@ class IntegrationWithComposableMiddlewareTests: XCTestCase {
     }
 
     class MyEventsMiddleware: Middleware {
+        typealias InputActionType = AppAction
+        typealias OutputActionType = AppAction
+        typealias StateType = MyState
+
         var getState: (() -> MyState)!
         var output: AnyActionHandler<AppAction>!
 
@@ -85,6 +89,10 @@ class IntegrationWithComposableMiddlewareTests: XCTestCase {
     }
 
     class MyActionsMiddleware: Middleware {
+        typealias InputActionType = AppAction
+        typealias OutputActionType = AppAction
+        typealias StateType = MyState
+
         var getState: (() -> MyState)!
         var output: AnyActionHandler<AppAction>!
 

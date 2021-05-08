@@ -9,7 +9,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let reducerMock = createReducerMock()
         reducerMock.1.reduceClosure = { _, state in state }
         let sut = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-            state: stateSubjectMock.subject,
+            state: { stateSubjectMock.subject },
             reducer: reducerMock.0,
             middleware: middlewareMock)
 
@@ -46,7 +46,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         // we have to hold the wrapper here
         // otherwise middleware will be freed immediately and fail the test
         let wrapperHolder = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-            state: stateSubjectMock.subject,
+            state: { stateSubjectMock.subject },
             reducer: reducerMock.0,
             middleware: middlewareMock)
 
@@ -80,7 +80,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let currentState = TestState()
         let stateSubjectMock = CurrentValueSubject(currentValue: currentState)
         _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-            state: stateSubjectMock.subject,
+            state: { stateSubjectMock.subject },
             reducer: createReducerMock().0,
             middleware: middlewareMock)
         XCTAssertEqual(currentState, middlewareGetState?())
@@ -92,7 +92,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let stateSubjectMock = CurrentValueSubject(currentValue: initialState)
         let reducerMock = createReducerMock()
         let sut = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-            state: stateSubjectMock.subject,
+            state: { stateSubjectMock.subject },
             reducer: reducerMock.0,
             middleware: middlewareMock)
 
@@ -124,7 +124,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let stateSubjectMock = CurrentValueSubject(currentValue: initialState)
         let reducerMock = createReducerMock()
         let sut = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-            state: stateSubjectMock.subject,
+            state: { stateSubjectMock.subject },
             reducer: reducerMock.0,
             middleware: middlewareMock)
 
@@ -155,7 +155,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
             let reducerMock = createReducerMock()
             _ = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
-                state: stateSubjectMock.subject,
+                state: { stateSubjectMock.subject },
                 reducer: reducerMock.0,
                 middleware: middlewareMock
             )
