@@ -80,7 +80,7 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
      */
     public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
         middlewares.reduce(into: IO<OutputActionType>.pure()) { effects, middleware in
-            effects = effects <> middleware.handle(action: action, from: dispatcher, state: state)
+            effects = middleware.handle(action: action, from: dispatcher, state: state) <> effects
         }
     }
 }

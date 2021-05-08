@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ReduxPipelineWrapper<MiddlewareType: MiddlewareProtocol>: ActionHandler
+public class ReduxPipelineWrapper<MiddlewareType: MiddlewareProtocol>: ActionHandler
 where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
     public typealias ActionType = MiddlewareType.InputActionType
     public typealias StateType = MiddlewareType.StateType
@@ -24,27 +24,44 @@ where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
 
         middleware.receiveContext(
             getState: { state().value() },
-            output: self.eraseToAnyActionHandler()
+            output: .init { [weak self] dispatchedAction in
+                guard let self = self else { return }
+
+                DispatchQueue.main.async {
+                    let io = Self.handle(middleware: self.middleware, reducer: reducer, dispatchedAction: dispatchedAction, state: state, emitsValue: emitsValue)
+                    Self.runIO(io) { [weak self] action in
+                        self?.handleAsap(dispatchedAction: action)
+                    }
+                }
+            }
         )
     }
 
-    public func dispatch(_ dispatchedAction: DispatchedAction<MiddlewareType.InputActionType>) {
+    public func dispatch(_ dispatchedAction: DispatchedAction<ActionType>) {
         handleAsap(dispatchedAction: dispatchedAction)
     }
 
-    private func handleNextRunLoop(dispatchedAction: DispatchedAction<MiddlewareType.InputActionType>) {
-        DispatchQueue.main.async {
-            self.handle(dispatchedAction: dispatchedAction)
-        }
-    }
-
-    private func handleAsap(dispatchedAction: DispatchedAction<MiddlewareType.InputActionType>) {
+    private func handleAsap(dispatchedAction: DispatchedAction<ActionType>) {
         DispatchQueue.asap {
-            self.handle(dispatchedAction: dispatchedAction)
+            let io = Self.handle(
+                middleware: self.middleware,
+                reducer: self.reducer,
+                dispatchedAction: dispatchedAction,
+                state: self.state,
+                emitsValue: self.emitsValue
+            )
+
+            Self.runIO(io, handler: self.dispatch(_:))
         }
     }
 
-    private func handle(dispatchedAction: DispatchedAction<MiddlewareType.InputActionType>) {
+    private static func handle(
+        middleware: MiddlewareType,
+        reducer: Reducer<ActionType, StateType>,
+        dispatchedAction: DispatchedAction<ActionType>,
+        state: @escaping () -> UnfailableReplayLastSubjectType<StateType>,
+        emitsValue: ShouldEmitValue<StateType>
+    ) -> IO<ActionType> {
         let io = middleware.handle(action: dispatchedAction.action, from: dispatchedAction.dispatcher, state: { state().value() })
 
         state().mutate(
@@ -66,12 +83,18 @@ where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
             }
         )
 
-        io.runIO(self.eraseToAnyActionHandler())
+        return io
+    }
+
+    private static func runIO(_ io: IO<ActionType>, handler: @escaping (DispatchedAction<ActionType>) -> Void) {
+        io.runIO(.init { dispatchedAction in
+            handler(dispatchedAction)
+        })
     }
 }
 
 extension ReduxPipelineWrapper where StateType: Equatable {
-    public init(
+    public convenience init(
         state: @escaping () -> UnfailableReplayLastSubjectType<StateType>,
         reducer: Reducer<ActionType, StateType>,
         middleware: MiddlewareType

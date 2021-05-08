@@ -46,11 +46,10 @@ extension LiftAnyMiddlewareWrappingComposedTests {
                 state: { (global: TestState) in global.name }
             )
 
-        var afterReducer: AfterReducer = .identity
-        generalMiddleware.handle(action: .bar(.echo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .foo, from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.bravo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.delta), from: .here(), afterReducer: &afterReducer)
+        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -117,11 +116,10 @@ extension LiftAnyMiddlewareWrappingComposedTests {
                 outputAction: { bar in AppAction.bar(bar) }
             )
 
-        var afterReducer: AfterReducer = .identity
-        generalMiddleware.handle(action: .bar(.echo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .foo, from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.bravo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.delta), from: .here(), afterReducer: &afterReducer)
+        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -187,11 +185,10 @@ extension LiftAnyMiddlewareWrappingComposedTests {
                 state: { (global: TestState) in global.name }
             )
 
-        var afterReducer: AfterReducer = .identity
-        generalMiddleware.handle(action: .bar(.echo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .foo, from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.bravo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.delta), from: .here(), afterReducer: &afterReducer)
+        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -258,11 +255,10 @@ extension LiftAnyMiddlewareWrappingComposedTests {
                 state: { (global: TestState) in global.name }
             )
 
-        var afterReducer: AfterReducer = .identity
-        generalMiddleware.handle(action: .bar(.echo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .foo, from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.bravo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.delta), from: .here(), afterReducer: &afterReducer)
+        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(4, nameMiddleware.handleActionFromAfterReducerCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
@@ -327,11 +323,10 @@ extension LiftAnyMiddlewareWrappingComposedTests {
                 inputAction: { (global: AppAction) in global.bar }
             )
 
-        var afterReducer: AfterReducer = .identity
-        generalMiddleware.handle(action: .bar(.echo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .foo, from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.bravo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.delta), from: .here(), afterReducer: &afterReducer)
+        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -396,11 +391,10 @@ extension LiftAnyMiddlewareWrappingComposedTests {
                 outputAction: { bar in AppAction.bar(bar) }
             )
 
-        var afterReducer: AfterReducer = .identity
-        generalMiddleware.handle(action: .bar(.echo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .foo, from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.bravo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.delta), from: .here(), afterReducer: &afterReducer)
+        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(4, nameMiddleware.handleActionFromAfterReducerCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
@@ -465,11 +459,10 @@ extension LiftAnyMiddlewareWrappingComposedTests {
                 state: { (global: TestState) in global.name }
             )
 
-        var afterReducer: AfterReducer = .identity
-        generalMiddleware.handle(action: .bar(.echo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .foo, from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.bravo), from: .here(), afterReducer: &afterReducer)
-        generalMiddleware.handle(action: .bar(.delta), from: .here(), afterReducer: &afterReducer)
+        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(4, nameMiddleware.handleActionFromAfterReducerCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]

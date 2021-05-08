@@ -18,7 +18,6 @@ extension MiddlewareReaderTests {
     // MARK: - all 4
     func testMiddlewareReaderLift_InputAction_OutputAction_State_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -47,7 +46,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -59,7 +58,6 @@ extension MiddlewareReaderTests {
     // MARK: - 3
     func testMiddlewareReaderLift_OutputAction_State_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -87,7 +85,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -98,7 +96,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_InputAction_State_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [Int] = []
@@ -126,7 +123,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
@@ -137,7 +134,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_InputAction_OutputAction_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -165,7 +161,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -176,7 +172,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_InputAction_OutputAction_State() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -204,7 +199,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -216,7 +211,6 @@ extension MiddlewareReaderTests {
     // MARK: - 2
     func testMiddlewareReaderLift_InputAction_OutputAction() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -243,7 +237,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -254,7 +248,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_InputAction_State() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [Int] = []
@@ -281,7 +274,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
@@ -292,7 +285,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_InputAction_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [Int] = []
@@ -319,7 +311,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
@@ -330,7 +322,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_OutputAction_State() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -357,7 +348,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -368,7 +359,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_OutputAction_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -395,7 +385,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -406,7 +396,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_State_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [Int] = []
@@ -433,7 +422,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
@@ -445,7 +434,6 @@ extension MiddlewareReaderTests {
     // MARK: - only 1
     func testMiddlewareReaderLift_InputAction() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [Int] = []
@@ -471,7 +459,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
@@ -482,7 +470,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_OutputAction() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [String] = []
@@ -508,7 +495,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
@@ -519,7 +506,6 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderLift_State() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
         var localGetState: GetState<String>?
         var localDispatcher: AnyActionHandler<Int>?
         var globalReceived: [Int] = []
@@ -545,7 +531,7 @@ extension MiddlewareReaderTests {
 
         // When
         localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
