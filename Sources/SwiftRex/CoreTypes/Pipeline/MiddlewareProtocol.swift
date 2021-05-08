@@ -42,6 +42,6 @@ public protocol MiddlewareProtocol {
 }
 
 extension MiddlewareProtocol {
-    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
+    public func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
     }
 }
