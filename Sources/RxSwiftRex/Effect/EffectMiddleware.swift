@@ -89,7 +89,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
 public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
-    private var cancellables = [Int: DisposeBag]()
+    var cancellables = [Int: DisposeBag]()
     private var cancellableButNotViaToken = DisposeBag()
     private var getState: GetState<StateType>?
     private var output: AnyActionHandler<OutputActionType>?
@@ -128,17 +128,34 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
 
         let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
             .init { [weak self] in
-                self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
+                DispatchQueue.main.async {
+                    self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
+                }
             }
         }
 
-        let subscription = effect.run((dependencies: self.dependencies, toCancel: toCancel))?
-            .subscribe(onNext: { output.dispatch($0.action, from: $0.dispatcher) })
+        guard let publisher = effect.run((dependencies: self.dependencies, toCancel: toCancel)) else { return }
 
         if let token = effect.token {
-            cancellables[token.hashValue] = subscription.map { DisposeBag(disposing: $0) } ?? DisposeBag()
+            let subscription = publisher
+                .do(
+                    onCompleted: { [weak self] in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    },
+                    onDispose: { [weak self] in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    }
+                )
+                .subscribe(onNext: { output.dispatch($0.action, from: $0.dispatcher) })
+            self.cancellables[token.hashValue] = DisposeBag(disposing: subscription)
         } else {
-            subscription?.disposed(by: cancellableButNotViaToken)
+            publisher
+                .subscribe(onNext: { output.dispatch($0.action, from: $0.dispatcher) })
+                .disposed(by: cancellableButNotViaToken)
         }
     }
 }

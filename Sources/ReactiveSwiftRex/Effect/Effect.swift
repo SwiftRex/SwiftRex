@@ -52,11 +52,9 @@ public struct Effect<Dependencies, OutputAction> {
             }
         }
 
-        if let token = self.token {
-            return Effect<Dependencies, NewOutputAction>(token: token, effect: map(creator: run))
-        } else {
-            return Effect<Dependencies, NewOutputAction>(effect: map(creator: run))
-        }
+        return self.token.map {
+            return Effect<Dependencies, NewOutputAction>(token: $0, effect: map(creator: run))
+        } ?? Effect<Dependencies, NewOutputAction>(effect: map(creator: run))
     }
 }
 
@@ -75,14 +73,12 @@ extension Effect where Dependencies == Void {
     public func ignoringDependencies<T>() -> Effect<T, OutputAction> {
         guard let run = self._run else { return .doNothing }
 
-        if let token = self.token {
-            return Effect<T, OutputAction>(token: token) { context in
-                run((dependencies: (), toCancel: context.toCancel) ).producer
+        return self.token.map {
+            Effect<T, OutputAction>(token: $0) { context in
+                run((dependencies: (), toCancel: context.toCancel)).producer
             }
-        } else {
-            return Effect<T, OutputAction> { context in
-                run((dependencies: (), toCancel: context.toCancel) ).producer
-            }
+        } ?? Effect<T, OutputAction> { context in
+            run((dependencies: (), toCancel: context.toCancel)).producer
         }
     }
 }

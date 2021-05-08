@@ -71,6 +71,58 @@ class EffectTests: XCTestCase {
         XCTAssertEqual(1, completion)
     }
 
+    func testInitWithCancellationNoDependenciesFromPublisherDispatchedAction() {
+        let sut = Effect<Void, Int>(token: "token", effect: SignalProducer(values: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55).map { DispatchedAction($0) })
+        var completion = 0
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
+            .producer
+            .start(
+                .init(
+                    value: { received += [$0.action] },
+                    failed: nil,
+                    completed: { completion += 1 },
+                    interrupted: { XCTFail("Unexpected interruption") }
+                )
+            )
+        XCTAssertEqual("token", sut.token)
+        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
+        XCTAssertEqual(1, completion)
+    }
+
+    func testInitWithCancellationIgnoringDependencies() {
+        let sut: Effect<String, Int> = Effect<Void, Int>(
+            token: "token",
+            effect: SignalProducer(values: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55)
+                .map { DispatchedAction($0) }
+        )
+        .ignoringDependencies()
+        var completion = 0
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: (""), toCancel: { _ in FireAndForget { } }))?
+            .producer
+            .start(
+                .init(
+                    value: { received += [$0.action] },
+                    failed: nil,
+                    completed: { completion += 1 },
+                    interrupted: { XCTFail("Unexpected interruption") }
+                )
+            )
+        XCTAssertEqual("token", sut.token)
+        XCTAssertEqual([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], received)
+        XCTAssertEqual(1, completion)
+    }
+
+    func testInitWithCancellationIgnoringDependenciesDoNothing() {
+        let sut: Effect<String, Int> = Effect<Void, Int>.doNothing
+            .ignoringDependencies()
+        XCTAssertNil(sut.token)
+        XCTAssertNil(sut.run((dependencies: (""), toCancel: { _ in FireAndForget { } })))
+    }
+
     func testDoNothing() {
         let sut = Effect<Void, Int>.doNothing
         XCTAssertNil(sut.token)
@@ -367,5 +419,40 @@ class EffectTests: XCTestCase {
         XCTAssertNil(sut.token)
         XCTAssertEqual(["1", "1", "2", "3", "5", "8", "13", "21", "34", "55"], received)
         XCTAssertEqual(1, completion)
+    }
+
+    func testFMapDoNothing() {
+        let numbersDoNothing = Effect<Void, Int>.doNothing
+        let sut = numbersDoNothing.map(String.init)
+        let possibleEffect = sut
+            .run((dependencies: (), toCancel: { _ in FireAndForget { } }))
+        XCTAssertNil(sut.token)
+        XCTAssertNil(possibleEffect)
+    }
+
+    func testFMapCancellation() {
+        let shouldCallToCancel = expectation(description: "to cancel should have been called")
+        let shouldHaveCancelledThePublisher = expectation(description: "publisher cancellation should have been called")
+        let numbers = Effect<Void, Int>(token: "token") { context in
+            SignalProducer(values: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55)
+                .throttle(20 / 1_000, on: QueueScheduler.main)
+                .map { DispatchedAction($0) }
+                .prefix(context.toCancel("123").producer)
+        }
+        let sut = numbers.map(String.init)
+        _ = sut
+            .run((dependencies: (), toCancel: { token in
+                XCTAssertEqual("123", token)
+                shouldCallToCancel.fulfill()
+                return FireAndForget { }
+            }))?
+            .on(terminated: {
+                shouldHaveCancelledThePublisher.fulfill()
+            })
+            .producer
+            .start()
+
+        XCTAssertEqual("token", sut.token)
+        wait(for: [shouldCallToCancel, shouldHaveCancelledThePublisher], timeout: 0.1)
     }
 }

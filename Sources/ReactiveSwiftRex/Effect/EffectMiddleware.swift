@@ -89,7 +89,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 ///   }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))
 /// ```
 public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
-    private var cancellables = [Int: Lifetime.Token]()
+    var cancellables = [Int: Lifetime.Token]()
     private var cancellableButNotViaToken = CompositeDisposable()
     private var getState: GetState<StateType>?
     private var output: AnyActionHandler<OutputActionType>?
@@ -128,19 +128,47 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
 
         let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
             .init { [weak self] in
-                self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
+                DispatchQueue.main.async {
+                    self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
+                }
             }
         }
 
-        let subscription = effect.run((dependencies: self.dependencies, toCancel: toCancel))?
-            .producer.startWithValues { output.dispatch($0.action, from: $0.dispatcher) }
+        guard let publisher = effect.run((dependencies: self.dependencies, toCancel: toCancel)) else { return }
 
         if let token = effect.token {
             let (lifetime, lifetimeToken) = Lifetime.make()
+            let subscription = publisher
+                .producer
+                .on(
+                    completed: { [weak self] in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    },
+                    interrupted: { [weak self] in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    },
+                    terminated: { [weak self] in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    },
+                    disposed: { [weak self] in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    }
+                )
+                .startWithValues { output.dispatch($0.action, from: $0.dispatcher) }
             lifetime += subscription
-            cancellables[token.hashValue] = lifetimeToken
+            self.cancellables[token.hashValue] = lifetimeToken
         } else {
-            cancellableButNotViaToken += subscription
+            cancellableButNotViaToken += publisher
+                .producer
+                .startWithValues { output.dispatch($0.action, from: $0.dispatcher) }
         }
     }
 }

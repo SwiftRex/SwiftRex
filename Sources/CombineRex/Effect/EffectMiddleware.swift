@@ -92,7 +92,7 @@ public typealias SymmetricalEffectMiddleware<Action, State, Dependencies> = Effe
 /// ```
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public final class EffectMiddleware<InputActionType, OutputActionType, StateType, Dependencies>: Middleware {
-    private var cancellables = [Int: AnyCancellable]()
+    var cancellables = [Int: AnyCancellable]()
     private var cancellableButNotViaToken = Set<AnyCancellable>()
     private var getState: GetState<StateType>?
     private var output: AnyActionHandler<OutputActionType>?
@@ -131,17 +131,34 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
 
         let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
             .init { [weak self] in
-                self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
+                DispatchQueue.main.async {
+                    self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
+                }
             }
         }
 
-        let subscription = effect.run((dependencies: self.dependencies, toCancel: toCancel))?
-            .sink { output.dispatch($0.action, from: $0.dispatcher) }
+        guard let publisher = effect.run((dependencies: self.dependencies, toCancel: toCancel)) else { return }
 
         if let token = effect.token {
+            let subscription = publisher
+                .handleEvents(
+                    receiveCompletion: { [weak self] _ in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    },
+                    receiveCancel: { [weak self] in
+                        DispatchQueue.main.async {
+                            self?.cancellables.removeValue(forKey: token.hashValue)
+                        }
+                    }
+                )
+                .sink { output.dispatch($0.action, from: $0.dispatcher) }
             self.cancellables[token.hashValue] = subscription
         } else {
-            subscription?.store(in: &self.cancellableButNotViaToken)
+            publisher
+                .sink { output.dispatch($0.action, from: $0.dispatcher) }
+                .store(in: &self.cancellableButNotViaToken)
         }
     }
 }

@@ -1,7 +1,7 @@
 // swiftlint:disable file_length function_body_length type_body_length
 
 import RxSwift
-import RxSwiftRex
+@testable import RxSwiftRex
 @testable import SwiftRex
 import XCTest
 
@@ -171,12 +171,14 @@ class EffectMiddlewareTests: XCTestCase {
         var afterReducer: AfterReducer = .doNothing()
         sut.handle(action: "create", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 1)
 
         afterReducer = .doNothing()
         sut.handle(action: "cancel", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
 
         wait(for: [expectedSubscription, expectedCancellation], timeout: 0.5)
+        XCTAssertEqual(sut.cancellables.count, 0)
     }
 
     func testEffectMiddlewareWithSomeSideEffectsCancelled() {
@@ -235,14 +237,17 @@ class EffectMiddlewareTests: XCTestCase {
         var afterReducer: AfterReducer = .doNothing()
         sut.handle(action: "first", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 1)
 
         afterReducer = .doNothing()
         sut.handle(action: "second", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 2)
 
         afterReducer = .doNothing()
         sut.handle(action: "third", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 3)
 
         afterReducer = .doNothing()
         sut.handle(action: "cancel second", from: .here(), afterReducer: &afterReducer)
@@ -253,6 +258,15 @@ class EffectMiddlewareTests: XCTestCase {
              enforceOrder: true
         )
         XCTAssertEqual(["output1", "output3"], dispatchedActions)
+
+        let waitOneRunLoop = expectation(description: "wait next RunLoop")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // RxSwift needs extra runloops to call onDispose / onComplete
+            // All of them, the 2 completed and the 1 cancelled should have been removed from the Dictionary
+            XCTAssertEqual(sut.cancellables.count, 0)
+            waitOneRunLoop.fulfill()
+        }
+        wait(for: [waitOneRunLoop], timeout: 2)
     }
 
     func testEffectMiddlewareWithSideEffectsComposed() {
@@ -461,6 +475,7 @@ class EffectMiddlewareTests: XCTestCase {
         sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
         XCTAssertEqual([], dispatchedActions)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual(["dispatched A a0 some_state d0", "dispatched B a0 some_state d0"], dispatchedActions)
 
         afterReducer = .doNothing()
@@ -519,12 +534,14 @@ class EffectMiddlewareTests: XCTestCase {
         sut.handle(action: "a0", from: .here(), afterReducer: &afterReducer)
         XCTAssertEqual([], dispatchedActions)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual(["dispatched A a0 some_state d0", "dispatched B a0 some_state d0"], dispatchedActions)
 
         afterReducer = .doNothing()
         currentDependency = "d1"
         sut.handle(action: "a1", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
             "dispatched B a0 some_state d0",
@@ -536,6 +553,7 @@ class EffectMiddlewareTests: XCTestCase {
         currentDependency = "d2"
         sut.handle(action: "a2", from: .here(), afterReducer: &afterReducer)
         afterReducer.reducerIsDone()
+        XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
             "dispatched B a0 some_state d0",
@@ -544,6 +562,7 @@ class EffectMiddlewareTests: XCTestCase {
             "dispatched A a2 some_state d2",
             "dispatched B a2 some_state d2"
         ], dispatchedActions)
+        XCTAssertEqual(sut.cancellables.count, 0)
     }
 
     func testEffectMiddlewareWithSideEffectsReaderComposedWithIdentity() {
