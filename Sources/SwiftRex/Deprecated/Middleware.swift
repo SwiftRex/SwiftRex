@@ -140,6 +140,11 @@
 ///
 /// ![SwiftUI Side-Effects](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg)
 ///
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. This protocol will be removed on 1.0."
+)
 public protocol Middleware: MiddlewareProtocol {
     /// Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.
     /// This is also a good place for analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global
@@ -159,8 +164,18 @@ public protocol Middleware: MiddlewareProtocol {
 // sourcery: AutoMockableGeneric = StateType
 // sourcery: AutoMockableGeneric = OutputActionType
 // sourcery: AutoMockableGeneric = InputActionType
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. This extension will be removed on 1.0."
+)
 extension Middleware { }
 
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. This extension will be removed on 1.0."
+)
 extension Middleware {
     public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
         var afterReducer: AfterReducer = .doNothing()

@@ -38,10 +38,26 @@ public protocol MiddlewareProtocol {
        - getState: a closure that allows the middleware to read the current state at any point in time
        - output: an action handler that allows the middleware to dispatch new actions at any point in time
      */
+    @available(
+        *,
+        deprecated,
+        message: """
+                 Instead of relying on receiveContext, please use the getState from handle(action) function,
+                 and when returning IO from the same handle(action) function use the output from the closure
+                 """
+    )
     func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>)
 }
 
 extension MiddlewareProtocol {
+    @available(
+        *,
+        deprecated,
+        message: """
+                 Instead of relying on receiveContext, please use the getState from handle(action) function,
+                 and when returning IO from the same handle(action) function use the output from the closure
+                 """
+    )
     public func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
     }
 }
