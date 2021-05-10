@@ -57,7 +57,7 @@ where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
                 emitsValue: self.emitsValue
             )
 
-            Self.runIO(io, handler: self.dispatch(_:))
+            Self.runIO(io, handler: { [weak self] dispatchedAction in self?.dispatch(dispatchedAction) })
         }
     }
 
