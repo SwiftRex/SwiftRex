@@ -281,7 +281,7 @@ class EffectMiddlewareTests: XCTestCase {
             XCTAssertEqual(sut.cancellables.count, 0)
             waitOneRunLoop.fulfill()
         }
-        wait(for: [waitOneRunLoop], timeout: 2)
+        wait(for: [waitOneRunLoop], timeout: 0.5)
     }
 
     func testEffectMiddlewareWithSideEffectsComposed() {

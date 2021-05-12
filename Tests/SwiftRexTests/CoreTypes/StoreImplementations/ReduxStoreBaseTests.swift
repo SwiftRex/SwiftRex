@@ -43,11 +43,11 @@ class ReduxStoreBaseTests: XCTestCase {
         barMiddleware.handleActionFromAfterReducerClosure = { action, _, afterReducer in
             switch action {
             case .alpha:
-                DispatchQueue.global().asyncAfter(deadline: .now() + 0.15) {
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
                     barMiddlewareOutput?.dispatch(.delta, from: .here())
                 }
             case .bravo:
-                DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
                     barMiddlewareOutput?.dispatch(.echo, from: .here())
                 }
             default: break
@@ -105,7 +105,7 @@ class ReduxStoreBaseTests: XCTestCase {
 
         events.forEach { store.dispatch($0, from: .here()) }
 
-        waitForExpectations(timeout: 3)
+        waitForExpectations(timeout: 5)
         XCTAssertEqual(subjectMock.currentValue.value, initialState.value)
         XCTAssertEqual(subjectMock.currentValue.name, "_foo_charlie_foo_alpha_bravo_alpha_bravo_delta_delta_echo_echo")
     }

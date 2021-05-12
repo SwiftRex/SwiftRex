@@ -32,10 +32,26 @@ let package = Package(
         .testTarget(name: "ReactiveSwiftRexTests", dependencies: ["ReactiveSwiftRex"]),
         .testTarget(name: "RxSwiftRexTests", dependencies: ["RxSwiftRex"]),
 
-        .testTarget(name: "SwiftRexDeprecationTests", dependencies: ["SwiftRex"], swiftSettings: [.unsafeFlags(["-suppress-warnings"])]),
-        .testTarget(name: "CombineRexDeprecationTests", dependencies: ["CombineRex"], swiftSettings: [.unsafeFlags(["-suppress-warnings"])]),
-        .testTarget(name: "ReactiveSwiftRexDeprecationTests", dependencies: ["ReactiveSwiftRex"], swiftSettings: [.unsafeFlags(["-suppress-warnings"])]),
-        .testTarget(name: "RxSwiftRexDeprecationTests", dependencies: ["RxSwiftRex"], swiftSettings: [.unsafeFlags(["-suppress-warnings"])])
+        .testTarget(
+            name: "SwiftRexDeprecationTests",
+            dependencies: ["SwiftRex"],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+        ),
+        .testTarget(
+            name: "CombineRexDeprecationTests",
+            dependencies: ["CombineRex"],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+        ),
+        .testTarget(
+            name: "ReactiveSwiftRexDeprecationTests",
+            dependencies: ["ReactiveSwiftRex"],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+        ),
+        .testTarget(
+            name: "RxSwiftRexDeprecationTests",
+            dependencies: ["RxSwiftRex"],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+        )
     ],
     swiftLanguageVersions: [.v5]
 )

@@ -272,12 +272,12 @@ class EffectMiddlewareTests: XCTestCase {
 
         let waitOneRunLoop = expectation(description: "wait next RunLoop")
 
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // ReactiveSwift needs extra runloops to call onDispose / onComplete
             // All of them, the 2 completed and the 1 cancelled should have been removed from the Dictionary
             XCTAssertEqual(sut.cancellables.count, 0)
             waitOneRunLoop.fulfill()
         }
-        wait(for: [waitOneRunLoop], timeout: 0.01)
+        wait(for: [waitOneRunLoop], timeout: 0.5)
     }
 
     func testEffectMiddlewareWithSideEffectsComposed() {
