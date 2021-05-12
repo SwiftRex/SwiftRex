@@ -209,6 +209,46 @@
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CombineRexDeprecationTests"
+               BuildableName = "CombineRexDeprecationTests"
+               BlueprintName = "CombineRexDeprecationTests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ReactiveSwiftRexDeprecationTests"
+               BuildableName = "ReactiveSwiftRexDeprecationTests"
+               BlueprintName = "ReactiveSwiftRexDeprecationTests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "RxSwiftRexDeprecationTests"
+               BuildableName = "RxSwiftRexDeprecationTests"
+               BlueprintName = "RxSwiftRexDeprecationTests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftRexDeprecationTests"
+               BuildableName = "SwiftRexDeprecationTests"
+               BlueprintName = "SwiftRexDeprecationTests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
