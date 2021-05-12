@@ -42,6 +42,21 @@ class ActionHandlerMock<ActionType>: ActionHandler {
 }
 class MiddlewareMock<InputActionType, OutputActionType, StateType>: Middleware {
 
+    //MARK: - handle
+
+    var handleActionFromAfterReducerCallsCount = 0
+    var handleActionFromAfterReducerCalled: Bool {
+        return handleActionFromAfterReducerCallsCount > 0
+    }
+    var handleActionFromAfterReducerReceivedArguments: (action: InputActionType, dispatcher: ActionSource, afterReducer: AfterReducer)?
+    var handleActionFromAfterReducerClosure: ((InputActionType, ActionSource, inout AfterReducer) -> Void)?
+
+    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        handleActionFromAfterReducerCallsCount += 1
+        handleActionFromAfterReducerReceivedArguments = (action: action, dispatcher: dispatcher, afterReducer: afterReducer)
+        handleActionFromAfterReducerClosure?(action, dispatcher, &afterReducer)
+    }
+
     //MARK: - receiveContext
 
     var receiveContextGetStateOutputCallsCount = 0
@@ -57,19 +72,38 @@ class MiddlewareMock<InputActionType, OutputActionType, StateType>: Middleware {
         receiveContextGetStateOutputClosure?(getState, output)
     }
 
+}
+class MiddlewareProtocolMock<InputActionType, OutputActionType, StateType>: MiddlewareProtocol {
+
     //MARK: - handle
 
-    var handleActionFromAfterReducerCallsCount = 0
-    var handleActionFromAfterReducerCalled: Bool {
-        return handleActionFromAfterReducerCallsCount > 0
+    var handleActionFromStateCallsCount = 0
+    var handleActionFromStateCalled: Bool {
+        return handleActionFromStateCallsCount > 0
     }
-    var handleActionFromAfterReducerReceivedArguments: (action: InputActionType, dispatcher: ActionSource, afterReducer: AfterReducer)?
-    var handleActionFromAfterReducerClosure: ((InputActionType, ActionSource, inout AfterReducer) -> Void)?
+    var handleActionFromStateReceivedArguments: (action: InputActionType, dispatcher: ActionSource, state: GetState<StateType>)?
+    var handleActionFromStateReturnValue: IO<OutputActionType>!
+    var handleActionFromStateClosure: ((InputActionType, ActionSource, @escaping GetState<StateType>) -> IO<OutputActionType>)?
 
-    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        handleActionFromAfterReducerCallsCount += 1
-        handleActionFromAfterReducerReceivedArguments = (action: action, dispatcher: dispatcher, afterReducer: afterReducer)
-        handleActionFromAfterReducerClosure?(action, dispatcher, &afterReducer)
+    func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        handleActionFromStateCallsCount += 1
+        handleActionFromStateReceivedArguments = (action: action, dispatcher: dispatcher, state: state)
+        return handleActionFromStateClosure.map({ $0(action, dispatcher, state) }) ?? handleActionFromStateReturnValue
+    }
+
+    //MARK: - receiveContext
+
+    var receiveContextGetStateOutputCallsCount = 0
+    var receiveContextGetStateOutputCalled: Bool {
+        return receiveContextGetStateOutputCallsCount > 0
+    }
+    var receiveContextGetStateOutputReceivedArguments: (getState: GetState<StateType>, output: AnyActionHandler<OutputActionType>)?
+    var receiveContextGetStateOutputClosure: ((@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void)?
+
+    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
+        receiveContextGetStateOutputCallsCount += 1
+        receiveContextGetStateOutputReceivedArguments = (getState: getState, output: output)
+        receiveContextGetStateOutputClosure?(getState, output)
     }
 
 }
