@@ -160,15 +160,16 @@ public protocol Middleware: MiddlewareProtocol {
     func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer)
 }
 
-// sourcery: AutoMockable
-// sourcery: AutoMockableGeneric = StateType
-// sourcery: AutoMockableGeneric = OutputActionType
-// sourcery: AutoMockableGeneric = InputActionType
 @available(
     *,
     deprecated,
     message: "Use `MiddlewareProtocol` instead of `Middleware`. This extension will be removed on 1.0."
 )
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
+// sourcery: AutoMockableGeneric = OutputActionType
+// sourcery: AutoMockableGeneric = InputActionType
+// sourcery: AutoMockableSkip = "handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType>"
 extension Middleware { }
 
 @available(

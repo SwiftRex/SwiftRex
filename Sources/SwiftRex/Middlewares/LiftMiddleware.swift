@@ -28,6 +28,14 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
         self.partMiddleware = middleware
     }
 
+    @available(
+        *,
+        deprecated,
+        message: """
+                 Instead of relying on receiveContext, please use the getState from handle(action) function,
+                 and when returning IO from the same handle(action) function use the output from the closure
+                 """
+    )
     public func receiveContext(getState: @escaping () -> GlobalStateType, output: AnyActionHandler<GlobalOutputActionType>) {
         partMiddleware.receiveContext(
             getState: { self.stateMap(getState()) },

@@ -18,15 +18,22 @@ let package = Package(
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "6.5.0")
     ],
     targets: [
-        .target(name: "SwiftRex", exclude: ["CodeGeneration/Templates"]),
+        .target(
+            name: "SwiftRex",
+            exclude: ["CodeGeneration/Templates"],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+        ),
         .target(name: "CombineRex", dependencies: ["SwiftRex"]),
         .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),
         .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"]),
 
-        .testTarget(name: "SwiftRexTests", dependencies: ["SwiftRex"]),
-        .testTarget(name: "CombineRexTests", dependencies: ["CombineRex"]),
-        .testTarget(name: "ReactiveSwiftRexTests", dependencies: ["ReactiveSwiftRex"]),
-        .testTarget(name: "RxSwiftRexTests", dependencies: ["RxSwiftRex"])
+        .testTarget(
+            name: "SwiftRexTests",
+            dependencies: ["SwiftRex"]
+        ),
+        .testTarget(name: "CombineRexTests", dependencies: ["CombineRex"], swiftSettings: [.unsafeFlags(["-suppress-warnings"])]),
+        .testTarget(name: "ReactiveSwiftRexTests", dependencies: ["ReactiveSwiftRex"], swiftSettings: [.unsafeFlags(["-suppress-warnings"])]),
+        .testTarget(name: "RxSwiftRexTests", dependencies: ["RxSwiftRex"], swiftSettings: [.unsafeFlags(["-suppress-warnings"])])
     ],
     swiftLanguageVersions: [.v5]
 )

@@ -61,3 +61,9 @@ extension MiddlewareProtocol {
     public func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
     }
 }
+
+// sourcery: AutoMockable
+// sourcery: AutoMockableGeneric = StateType
+// sourcery: AutoMockableGeneric = OutputActionType
+// sourcery: AutoMockableGeneric = InputActionType
+extension MiddlewareProtocol { }

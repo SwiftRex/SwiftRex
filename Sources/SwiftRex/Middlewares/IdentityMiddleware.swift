@@ -11,6 +11,18 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
 
     public func receiveContext(getState: @escaping () -> StateType, output: AnyActionHandler<OutputActionType>) { }
 
+    @available(
+        *,
+        deprecated,
+        message: """
+                 Instead of relying on receiveContext, please use the getState from the new `handle(action:from:state:)` function,
+                 and when returning IO from the same handle(action) function use the output from the closure
+                 """
+    )
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        afterReducer = .identity
+    }
+
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
      additional actions. This is also a good place for analytics, tracking, logging and telemetry.
@@ -23,10 +35,6 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        afterReducer = .identity
-    }
-
     public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
         .pure()
     }
