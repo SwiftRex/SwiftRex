@@ -3,13 +3,25 @@
  to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware
  in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.
  */
-public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: Middleware, Equatable {
+public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: MiddlewareProtocol, Equatable {
     /**
      Default initializer for `IdentityMiddleware`
      */
     public init() { }
 
     public func receiveContext(getState: @escaping () -> StateType, output: AnyActionHandler<OutputActionType>) { }
+
+    @available(
+        *,
+        deprecated,
+        message: """
+                 Instead of relying on receiveContext, please use the getState from the new `handle(action:from:state:)` function,
+                 and when returning IO from the same handle(action) function use the output from the closure
+                 """
+    )
+    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        afterReducer = .identity
+    }
 
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
@@ -23,7 +35,7 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
                state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
                on it, at the beginning of `handle` function.
      */
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        afterReducer = .identity
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        .pure()
     }
 }

@@ -83,13 +83,11 @@ import Foundation
  a derived view store).
  */
 open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
-    private let subject: UnfailableReplayLastSubjectType<StateType>
-
     /// Pipeline to execute upon action arrival, containing all middlewares and reducers
     public let pipeline: ReduxPipelineWrapper<AnyMiddleware<ActionType, ActionType, StateType>>
 
     /// State publisher which can be subscribed in order to be notified on every mutation
-    public var statePublisher: UnfailablePublisherType<StateType> { subject.publisher }
+    public let statePublisher: UnfailablePublisherType<StateType>
 
     /**
      Required initializer that configures the action handler pipeline and the state storage
@@ -107,13 +105,13 @@ open class ReduxStoreBase<ActionType, StateType>: ReduxStoreProtocol {
                      sub-state part, use the `lift` functions to elevate them to the same global state and global action
                      type.
      */
-    public init<M: Middleware>(
+    public init<M: MiddlewareProtocol>(
         subject: UnfailableReplayLastSubjectType<StateType>,
         reducer: Reducer<ActionType, StateType>,
         middleware: M,
         emitsValue: ShouldEmitValue<StateType> = .always
     ) where M.InputActionType == ActionType, M.InputActionType == M.OutputActionType, M.StateType == StateType {
-        self.subject = subject
-        self.pipeline = .init(state: subject, reducer: reducer, middleware: AnyMiddleware(middleware), emitsValue: emitsValue)
+        self.statePublisher = subject.publisher
+        self.pipeline = .init(state: { subject }, reducer: reducer, middleware: middleware.eraseToAnyMiddleware(), emitsValue: emitsValue)
     }
 }

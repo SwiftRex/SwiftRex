@@ -7,7 +7,7 @@
  let composedMiddleware = firstMiddleware <> secondMiddleware <> thirdMiddleware
  ```
  */
-public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: Middleware {
+public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: MiddlewareProtocol {
     var middlewares: [AnyMiddleware<InputActionType, OutputActionType, StateType>] = []
 
     /**
@@ -31,7 +31,7 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
      let composedOfThreeMiddlewares = firstMiddleware <> secondMiddleware <> thirdMiddleware
      ```
      */
-    public mutating func append<M: Middleware>(middleware: M)
+    public mutating func append<M: MiddlewareProtocol>(middleware: M)
         where M.InputActionType == InputActionType,
               M.OutputActionType == OutputActionType,
               M.StateType == StateType {
@@ -74,20 +74,14 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
      middleware object.
      - Parameters:
        - action: the action to be handled
-       - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
-               only once, not more or less than once. Call it from the same thread and runloop where the handle function
-               is executed, never from a completion handler or dispatch queue block. In case you don't need to compare
-               state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
-               on it, at the beginning of `handle` function.
+       - dispatcher: information about the file, line and function that dispatched this action
+       - state: a closure to obtain the most recent state
+     - Returns: possible Side-Effects wrapped in an IO struct
      */
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        var composedAfterReducer: [AfterReducer] = []
-        for middleware in middlewares {
-            var individualAfterReducer: AfterReducer = .doNothing()
-            middleware.handle(action: action, from: dispatcher, afterReducer: &individualAfterReducer)
-            composedAfterReducer.append(individualAfterReducer)
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        middlewares.reduce(into: IO<OutputActionType>.pure()) { effects, middleware in
+            effects = middleware.handle(action: action, from: dispatcher, state: state) <> effects
         }
-        afterReducer = composedAfterReducer.asAfterReducer()
     }
 }
 
@@ -117,11 +111,11 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
    - rhs: A flat middleware to be appended to the end of a `ComposedMiddleware`
  - Returns: A `ComposedMiddleware` that calls the `lhs` methods before the `rhs` ones. If `lhs` is already a `ComposedMiddleware`, we will return the same instance after mutating it to have the `rhs` in the end of its chain.
  */
-public func <> <M1: Middleware, M2: Middleware>(lhs: M1, rhs: M2) -> ComposedMiddleware < M1.InputActionType, M1.OutputActionType,
-    M1.StateType>
-    where M1.InputActionType == M2.InputActionType,
-          M1.OutputActionType == M2.OutputActionType,
-          M1.StateType == M2.StateType {
+public func <> <M1: MiddlewareProtocol, M2: MiddlewareProtocol>(lhs: M1, rhs: M2)
+-> ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType>
+where M1.InputActionType == M2.InputActionType,
+      M1.OutputActionType == M2.OutputActionType,
+      M1.StateType == M2.StateType {
     var container =
         lhs as? ComposedMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType>
         ?? (lhs as? AnyMiddleware<M1.InputActionType, M1.OutputActionType, M1.StateType>)?.isComposed

@@ -9,6 +9,11 @@ import Foundation
 /// element in composition. The identity of an `AfterReducer` is the static instance `doNothing()`, that contains an empty closure for no-op.
 /// The combination between two `AfterReducer` instances occur in reverse order so the first middleware will have its "after reducer" closure executed
 /// last. This composition can be achieved by using the operator `<>`
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. It doesn't use `AfterReducer`. This struct will be removed on 1.0."
+)
 public struct AfterReducer: Monoid {
     /// The identity of an `AfterReducer` is the static instance `doNothing()`, that contains an empty closure for no-op.
     /// When combined with any other `AfterReducer` changes nothing in the result, acting as a neutral element in composition.
@@ -36,6 +41,11 @@ public struct AfterReducer: Monoid {
 
 /// The combination between two `AfterReducer` instances occur in reverse order so the first middleware will have its "after reducer" closure executed
 /// last. This composition can be achieved by using the operator `<>`.
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. It doesn't use `AfterReducer`. This operator will be removed on 1.0."
+)
 public func <> (lhs: AfterReducer, rhs: AfterReducer) -> AfterReducer {
     AfterReducer.do {
         // When composing multiple closures that run after reducer, compose them backwards
@@ -47,12 +57,22 @@ public func <> (lhs: AfterReducer, rhs: AfterReducer) -> AfterReducer {
     }
 }
 
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. It doesn't use `AfterReducer`. This extension will be removed on 1.0."
+)
 extension Collection where Element == AfterReducer {
     /// Reduces a collection of `AfterReducer` closures into a single `AfterReducer` closure. Useful when a group of middlewares ran, we collected
     /// their `AfterReducer` operations in an Array and now we want to merge everything into a single `AfterReducer` closure to execute all of them
     /// once the reducer pipeline has finished and new state is published.
     /// The composition will happen in the reversed order of the closures in the array, because we want the first middleware to be the last notified
     /// after reducer.
+    @available(
+        *,
+        deprecated,
+        message: "Use `MiddlewareProtocol` instead of `Middleware`. It doesn't use `AfterReducer`. This extension will be removed on 1.0."
+    )
     public func asAfterReducer() -> AfterReducer {
         AfterReducer.do {
             Array(self).reversed().forEach { $0.reducerIsDone() }

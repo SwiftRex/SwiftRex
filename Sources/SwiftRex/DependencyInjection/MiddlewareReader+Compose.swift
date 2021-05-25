@@ -30,7 +30,7 @@ extension MiddlewareReaderProtocol {
     ///   - rhs: middleware reader that will generate a middleware which runs last
     /// - Returns: a composed Middleware Reader that, once injected with dependencies, will produce a ComposedMiddleware that runs first the left and
     ///            then the right middleware
-    public static func <> <OtherMiddleware: Middleware>(lhs: Self, rhs: MiddlewareReader<Dependencies, OtherMiddleware>)
+    public static func <> <OtherMiddleware: MiddlewareProtocol>(lhs: Self, rhs: MiddlewareReader<Dependencies, OtherMiddleware>)
     -> MiddlewareReader<Dependencies, ComposedMiddleware<MiddlewareType.InputActionType, MiddlewareType.OutputActionType, MiddlewareType.StateType>>
         where
         OtherMiddleware.InputActionType == MiddlewareType.InputActionType,

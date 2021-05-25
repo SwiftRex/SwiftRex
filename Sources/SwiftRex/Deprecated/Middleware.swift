@@ -64,68 +64,68 @@
 /// ```
 ///
 /// Middleware protocol is generic over 3 associated types:
-/// 
+///
 /// #### InputActionType:
 /// The Action type that this `Middleware` knows how to handle, so the store will forward actions of this type to this middleware.
 /// Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
-/// 
+///
 /// #### OutputActionType:
 /// The Action type that this `Middleware` will eventually trigger back to the store in response of side-effects. This can be the same as `InputActionType` or different, in case you want to separate your enum in requests and responses.
 /// Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
-/// 
+///
 /// #### StateType:
 /// The State part that this `Middleware` needs to read in order to make decisions. This middleware will be able to read the most up-to-date `StateType` from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don't need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn't need to read any state, so the `StateType`can safely be set to `Void`.
 /// Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
-/// 
+///
 /// When implementing your Middleware, all you have to do is to handle the incoming actions:
-/// 
-/// 
+///
+///
 ///  When implementing your Middleware, all you have to do is to handle the incoming actions:
 /// ```
 /// class LoggerMiddleware: Middleware {
 ///     typealias InputActionType = AppGlobalAction // It wants to receive all possible app actions
 ///     typealias OutputActionType = Never          // No action is generated from this Middleware
 ///     typealias StateType = AppGlobalState        // It wants to read the whole app state
-/// 
+///
 ///     var getState: GetState<AppGlobalState>!
-/// 
+///
 ///     func receiveContext(getState: @escaping GetState<AppGlobalState>, output: AnyActionHandler<Never>) {
 ///         self.getState = getState
 ///     }
-/// 
+///
 ///     func handle(action: AppGlobalAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
 ///         let stateBefore: AppGlobalState = getState()
 ///         let dateBefore = Date()
-/// 
+///
 ///         afterReducer = .do {
 ///             let stateAfter = self.getState()
 ///             let dateAfter = Date()
 ///             let source = "\(dispatcher.file):\(dispatcher.line) - \(dispatcher.function) | \(dispatcher.info ?? "")"
-/// 
+///
 ///             Logger.log(action: action, from: source, before: stateBefore, after: stateAfter, dateBefore: dateBefore, dateAfter: dateAfter)
 ///         }
 ///     }
 /// }
-/// 
+///
 /// class FavoritesAPIMiddleware: Middleware {
 ///     typealias InputActionType = FavoritesAction  // It wants to receive only actions related to Favorites
 ///     typealias OutputActionType = FavoritesAction // It wants to also dispatch actions related to Favorites
 ///     typealias StateType = FavoritesModel         // It wants to read the app state that manages favorites
-/// 
+///
 ///     var getState: GetState<FavoritesModel>!
 ///     var output: AnyActionHandler<FavoritesAction>!
-/// 
+///
 ///     func receiveContext(getState: @escaping GetState<FavoritesModel>, output: AnyActionHandler<FavoritesAction>) {
 ///         self.getState = getState
 ///         self.output = output
 ///     }
-/// 
+///
 ///     func handle(action: FavoritesAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
 ///         guard let .toggleFavorite(movieId) = action else { return }
-/// 
+///
 ///         let favoritesList = getState()
 ///         let makeFavorite = !favoritesList.contains(where: { $0.id == movieId })
-/// 
+///
 ///         API.changeFavorite(id: movieId, makeFavorite: makeFavorite) (completion: { result in
 ///             switch result {
 ///             case let .success(value):
@@ -140,46 +140,12 @@
 ///
 /// ![SwiftUI Side-Effects](https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg)
 ///
-public protocol Middleware {
-    /**
-     The Action type that this `Middleware` knows how to handle, so the store will forward actions of this type to this middleware.
-     Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
-     action of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
-     */
-    associatedtype InputActionType
-
-    /**
-     The Action type that this `Middleware` will eventually trigger back to the store in response of side-effects. This can be the same as
-     `InputActionType` or different, in case you want to separate your enum in requests and responses.
-     Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
-     action of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
-     */
-    associatedtype OutputActionType
-
-    /**
-     The State part that this `Middleware` needs to read in order to make decisions. This middleware will be able to read the most up-to-date
-     `StateType` from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don't need reading the
-     whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn't need to read any state, so the `StateType`can
-     safely be set to `Void`.
-     Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state
-     of an app. Please check `lift(inputActionMap:outputActionMap:stateMap:)` for more details.
-     */
-    associatedtype StateType
-
-    /**
-     Middleware setup. This function will be called before actions are handled to the middleware, so you can configure your middleware with the given
-     parameters. You can hold any of them if you plan to read the state or dispatch new actions.
-     You can initialize and start timers or async tasks in here or in the `handle(action:next)` function, but never before this function is called,
-     otherwise the middleware would not yet be running from a store.
-     Because no actions are delivered to this middleware before the `receiveContext(getState:output:)` is called, you can safely keep implicit
-     unwrapped versions of `getState` and `output` as properties of your concrete middleware, and set them from the arguments of this function.
-
-     - Parameters:
-       - getState: a closure that allows the middleware to read the current state at any point in time
-       - output: an action handler that allows the middleware to dispatch new actions at any point in time
-     */
-    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>)
-
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. This protocol will be removed on 1.0."
+)
+public protocol Middleware: MiddlewareProtocol {
     /// Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.
     /// This is also a good place for analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global
     /// state if you want, and/or execute things before the reducer.
@@ -194,8 +160,29 @@ public protocol Middleware {
     func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer)
 }
 
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. This extension will be removed on 1.0."
+)
 // sourcery: AutoMockable
 // sourcery: AutoMockableGeneric = StateType
 // sourcery: AutoMockableGeneric = OutputActionType
 // sourcery: AutoMockableGeneric = InputActionType
+// sourcery: AutoMockableSkip = "handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType>"
 extension Middleware { }
+
+@available(
+    *,
+    deprecated,
+    message: "Use `MiddlewareProtocol` instead of `Middleware`. This extension will be removed on 1.0."
+)
+extension Middleware {
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        var afterReducer: AfterReducer = .doNothing()
+        handle(action: action, from: dispatcher, afterReducer: &afterReducer)
+        return IO { _ in
+            afterReducer.reducerIsDone()
+        }
+    }
+}
