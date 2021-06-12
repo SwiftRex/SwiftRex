@@ -1,6 +1,13 @@
 {
   "warnings": [
     {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/AfterReducer.swift",
+      "line": 37,
+      "symbol": "AfterReducer.performBlock()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/Middleware+TypeErasure.swift",
       "line": 12,
       "symbol": "AnyMiddleware.init(receiveContext:handle:)",
