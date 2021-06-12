@@ -37,6 +37,12 @@ public struct AfterReducer: Monoid {
     public static func doNothing() -> AfterReducer {
         .init(run: { })
     }
+
+    #if DEBUG
+    public func performBlock() {
+        reducerIsDone()
+    }
+    #endif
 }
 
 /// The combination between two `AfterReducer` instances occur in reverse order so the first middleware will have its "after reducer" closure executed
