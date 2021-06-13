@@ -41,6 +41,7 @@ Packages/
 Package.pins
 # Package.resolved
 *.xcodeproj
+!Playgrounds/Playgrounds.xcodeproj
 #
 
 .build/
