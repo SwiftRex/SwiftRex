@@ -13,6 +13,7 @@ jobs:
     - name: Cache Mint
       uses: actions/cache@v2
       with:
+        key: mint_deps
         path: ~/mint
     - uses: actions/checkout@v2
     - name: Install Dependencies
