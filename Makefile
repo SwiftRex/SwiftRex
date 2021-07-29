@@ -62,8 +62,7 @@ code-coverage-upload:
 # Lint
 
 lint-check:
-	mint run swiftlint
-
+	mint run swiftlint lint --strict
 lint-autocorrect:
 	mint run swiftlint autocorrect
 

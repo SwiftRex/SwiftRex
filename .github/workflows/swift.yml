@@ -15,13 +15,13 @@ jobs:
       with:
         key: mint_deps
         path: ~/mint
+    - uses: actions/checkout@v2
     - name: Install Dependencies
       env:
         MINT_PATH: '~/mint'
       run: |
         brew install mint
         mint bootstrap
-    - uses: actions/checkout@v2
     - name: SwiftLint
       run: make lint-check
     - name: Build
