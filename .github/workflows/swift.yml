@@ -26,13 +26,6 @@ jobs:
       env:
         MINT_PATH: '~/mint'
       run: make lint-check
-    - name: Build
-      env:
-        LC_CTYPE: 'en_US.UTF-8'
-        LANG: 'en_US.UTF-8'
-        FRAMEWORK_NAME: 'SwiftRex'
-        MINT_PATH: '~/mint'
-      run: swift build -v
     - name: Run tests
       env:
         LC_CTYPE: 'en_US.UTF-8'
