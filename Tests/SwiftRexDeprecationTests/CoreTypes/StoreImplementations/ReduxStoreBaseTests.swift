@@ -3,9 +3,10 @@ import Foundation
 import XCTest
 
 class ReduxStoreBaseTests: XCTestCase {
+    // TODO: Reenable test
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
-    func testStoreFullWorkflowIntegration() {
+    func disabledTestStoreFullWorkflowIntegration() {
         let shouldCallFooMiddleware = expectation(description: "foo middleware should have been called 2 times")
         shouldCallFooMiddleware.expectedFulfillmentCount = 2
         let shouldCallBarMiddleware = expectation(description: "bar middleware should have been called 9 times")
