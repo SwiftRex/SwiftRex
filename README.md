@@ -3,7 +3,7 @@
 	Unidirectional Dataflow for your favourite reactive framework<br /><br />
 </p>
 
-[![Build Status](https://travis-ci.org/SwiftRex/SwiftRex.svg?branch=develop)](https://travis-ci.org/SwiftRex/SwiftRex)
+![Build Status](https://github.com/SwiftRex/SwiftRex/actions/workflows/swift.yml/badge.svg?branch=develop)
 [![codecov](https://codecov.io/gh/SwiftRex/SwiftRex/branch/develop/graph/badge.svg)](https://codecov.io/gh/SwiftRex/SwiftRex)
 [![Jazzy Documentation](https://swiftrex.github.io/SwiftRex/api/badge.svg)](https://swiftrex.github.io/SwiftRex/api/index.html)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)

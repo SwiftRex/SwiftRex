@@ -25,7 +25,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let calledAfterReducer = expectation(description: "after reducer was called")
         middleware.handleActionFromStateClosure = { _, _, _ in
-            return IO { _ in calledAfterReducer.fulfill() }
+            IO { _ in calledAfterReducer.fulfill() }
         }
         let erased = middleware.eraseToAnyMiddleware()
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
@@ -40,7 +40,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let calledAfterReducer = expectation(description: "after reducer was called")
         middleware.handleActionFromStateClosure = { _, _, _ in
-            return IO { _ in calledAfterReducer.fulfill() }
+            IO { _ in calledAfterReducer.fulfill() }
         }
         let erased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })

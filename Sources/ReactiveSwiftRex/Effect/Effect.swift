@@ -53,7 +53,7 @@ public struct Effect<Dependencies, OutputAction> {
         }
 
         return self.token.map {
-            return Effect<Dependencies, NewOutputAction>(token: $0, effect: map(creator: run))
+            Effect<Dependencies, NewOutputAction>(token: $0, effect: map(creator: run))
         } ?? Effect<Dependencies, NewOutputAction>(effect: map(creator: run))
     }
 }
