@@ -1,4 +1,4 @@
-import SwiftRex
+@testable import SwiftRex
 import XCTest
 
 extension MiddlewareReaderTests {
@@ -9,19 +9,17 @@ extension MiddlewareReaderTests {
         var getStateCount = 0
         var dispatchActionCount = 0
 
-        sut.receiveContext(
-            getState: {
-                getStateCount += 1
-                return TestState()
-            },
-            output: .init { _ in
-                dispatchActionCount += 1
-            })
         let action = AppAction.bar(.delta)
 
         // Then
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: action, from: .here(), afterReducer: &afterReducer)
+        sut.handle(
+            action: action,
+            from: .here(),
+            state: {
+                getStateCount += 1
+                return TestState()
+            }
+        ).runIO(.init({ _ in dispatchActionCount += 1 }))
 
         // Expect
         let mirror = Mirror(reflecting: sut)
@@ -32,29 +30,33 @@ extension MiddlewareReaderTests {
 
     func testMiddlewareReaderMonoidIdentityMiddlewareAction() {
         // Given
+        let state = TestState()
         let reader = MiddlewareReader<String, MonoidMiddleware<AppAction, AppAction, TestState>>.identity
         let sut = reader.inject("some")
         var getStateCount = 0
         var dispatchActionCount = 0
 
-        sut.receiveContext(
-            getState: {
-                getStateCount += 1
-                return TestState()
-            },
-            output: .init { _ in
-                dispatchActionCount += 1
-            })
         let action = AppAction.bar(.delta)
 
         // Then
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: action, from: .here(), afterReducer: &afterReducer)
+        sut.mock.handleActionFromStateClosure = { receivedAction, _, receivedState in
+            XCTAssertEqual(receivedAction, action)
+            XCTAssertEqual(receivedState(), state)
+            return .pure()
+        }
+        sut.handle(
+            action: action,
+            from: .here(),
+            state: {
+                getStateCount += 1
+                return state
+            }
+        ).runIO(.init { _ in dispatchActionCount += 1 })
 
         // Expect
         let mirror = Mirror(reflecting: sut)
         XCTAssertEqual("Mirror for MonoidMiddleware<AppAction, AppAction, TestState>", mirror.description)
         XCTAssertEqual(0, dispatchActionCount)
-        XCTAssertEqual(0, getStateCount)
+        XCTAssertEqual(1, getStateCount)
     }
 }

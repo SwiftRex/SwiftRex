@@ -39,13 +39,14 @@ class StoreProjectionTests: XCTestCase {
         let reducerMock = createReducerMock()
 
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
-        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
+        middlewareMock.handleActionFromStateClosure = { action, dispatcher, state in
             XCTAssertEqual(.bar(.delta), action)
             XCTAssertEqual("file_1", dispatcher.file)
             XCTAssertEqual("function_1", dispatcher.function)
             XCTAssertEqual(1, dispatcher.line)
             XCTAssertEqual("info_1", dispatcher.info)
             shouldCallUpstreamActionHandler.fulfill()
+            return .pure()
         }
 
         reducerMock.1.reduceClosure = { action, state in

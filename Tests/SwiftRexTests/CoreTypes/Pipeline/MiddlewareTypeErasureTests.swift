@@ -5,32 +5,33 @@ import XCTest
 class MiddlewareTypeErasureTests: XCTestCase {
     func testAnyMiddlewareReceivedContext() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
-        middleware.eraseToAnyMiddleware().receiveContext(getState: { TestState() }, output: .init { _ in })
-        XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
-        XCTAssertEqual(0, middleware.handleActionFromAfterReducerCallsCount)
+        middleware.handleActionFromStateReturnValue = .pure()
+        middleware.eraseToAnyMiddleware()
+            .handle(action: .foo, from: .here(), state: { TestState() })
+            .runIO(.init { _ in })
+        XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
     }
 
     func testAnyMiddlewareFromInitReceivedContext() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
+        middleware.handleActionFromStateReturnValue = .pure()
         AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
-            .receiveContext(getState: { TestState() }, output: .init { _ in })
-        XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
-        XCTAssertEqual(0, middleware.handleActionFromAfterReducerCallsCount)
+            .handle(action: .foo, from: .here(), state: { TestState() })
+            .runIO(.init { _ in })
+        XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
     }
 
     func testAnyMiddlewareHandleAction() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let calledAfterReducer = expectation(description: "after reducer was called")
-        middleware.handleActionFromAfterReducerClosure = { _, _, afterReducer in
-            afterReducer = .do { calledAfterReducer.fulfill() }
+        middleware.handleActionFromStateClosure = { _, _, _ in
+            return IO { _ in calledAfterReducer.fulfill() }
         }
         let erased = middleware.eraseToAnyMiddleware()
-        erased.receiveContext(getState: { TestState() }, output: .init { _ in })
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
         io.runIO(.init { _ in })
         wait(for: [calledAfterReducer], timeout: 0.1)
-        XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
-        XCTAssertEqual(1, middleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
         XCTAssertFalse(erased.isIdentity)
         XCTAssertNil(erased.isComposed)
     }
@@ -38,16 +39,14 @@ class MiddlewareTypeErasureTests: XCTestCase {
     func testAnyMiddlewareFromInitHandleAction() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
         let calledAfterReducer = expectation(description: "after reducer was called")
-        middleware.handleActionFromAfterReducerClosure = { _, _, afterReducer in
-            afterReducer = .do { calledAfterReducer.fulfill() }
+        middleware.handleActionFromStateClosure = { _, _, _ in
+            return IO { _ in calledAfterReducer.fulfill() }
         }
         let erased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
-        erased.receiveContext(getState: { TestState() }, output: .init { _ in })
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
         io.runIO(.init { _ in })
         wait(for: [calledAfterReducer], timeout: 0.1)
-        XCTAssertEqual(1, middleware.receiveContextGetStateOutputCallsCount)
-        XCTAssertEqual(1, middleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
         XCTAssertFalse(erased.isIdentity)
         XCTAssertNil(erased.isComposed)
     }
@@ -61,7 +60,6 @@ class MiddlewareTypeErasureTests: XCTestCase {
                 calledAfterReducer.fulfill()
             }
         }
-        erased.receiveContext(getState: { TestState() }, output: .init { _ in })
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
         io.runIO(.init { _ in })
         wait(for: [calledBeforeReducer, calledAfterReducer], timeout: 0.1, enforceOrder: true)
@@ -71,28 +69,28 @@ class MiddlewareTypeErasureTests: XCTestCase {
 
     func testAnyMiddlewareContextGetsFromWrapped() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
-        let state = TestState(value: UUID(), name: "")
         let action = AppAction.bar(.charlie)
+        let state = TestState(value: UUID(), name: "")
         let receivedAction = expectation(description: "action should have been received")
+        middleware.handleActionFromStateReturnValue = IO { output in
+            output.dispatch(.init(action, dispatcher: .init(file: "file_1", function: "function_1", line: 666, info: "info_1")))
+        }
 
         let typeErased = middleware.eraseToAnyMiddleware()
-        typeErased.receiveContext(
-            getState: { state },
-            output: .init { dispatchedAction in
-                XCTAssertEqual(action, dispatchedAction.action)
-                XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
-                XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
-                XCTAssertEqual(666, dispatchedAction.dispatcher.line)
-                XCTAssertEqual("info_1", dispatchedAction.dispatcher.info)
-                receivedAction.fulfill()
-            }
-        )
-        middleware.receiveContextGetStateOutputReceivedArguments?.output.dispatch(
-            action,
-            from: .init(file: "file_1", function: "function_1", line: 666, info: "info_1")
-        )
+        typeErased.handle(
+            action: .foo,
+            from: .here(),
+            state: { state }
+        ).runIO(.init { dispatchedAction in
+            XCTAssertEqual(action, dispatchedAction.action)
+            XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
+            XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
+            XCTAssertEqual(666, dispatchedAction.dispatcher.line)
+            XCTAssertEqual("info_1", dispatchedAction.dispatcher.info)
+            receivedAction.fulfill()
+        })
 
-        XCTAssertEqual(state.value, middleware.receiveContextGetStateOutputReceivedArguments?.getState().value)
+        XCTAssertEqual(state.value, middleware.handleActionFromStateReceivedArguments?.state().value)
         XCTAssertFalse(typeErased.isIdentity)
         XCTAssertNil(typeErased.isComposed)
         wait(for: [receivedAction], timeout: 0.1)
@@ -103,25 +101,25 @@ class MiddlewareTypeErasureTests: XCTestCase {
         let state = TestState(value: UUID(), name: "")
         let action = AppAction.bar(.charlie)
         let receivedAction = expectation(description: "action should have been received")
+        middleware.handleActionFromStateReturnValue = IO { output in
+            output.dispatch(.init(action, dispatcher: .init(file: "file_1", function: "function_1", line: 666, info: "info_1")))
+        }
 
         let typeErased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
-        typeErased.receiveContext(
-            getState: { state },
-            output: .init { dispatchedAction in
+        typeErased.handle(
+            action: .foo,
+            from: .here(),
+            state: { state }
+        ).runIO(.init { dispatchedAction in
                 XCTAssertEqual(action, dispatchedAction.action)
                 XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
                 XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
                 XCTAssertEqual(666, dispatchedAction.dispatcher.line)
                 XCTAssertEqual("info_1", dispatchedAction.dispatcher.info)
                 receivedAction.fulfill()
-            }
-        )
-        middleware.receiveContextGetStateOutputReceivedArguments?.output.dispatch(
-            action,
-            from: .init(file: "file_1", function: "function_1", line: 666, info: "info_1")
-        )
+        })
 
-        XCTAssertEqual(state.value, middleware.receiveContextGetStateOutputReceivedArguments?.getState().value)
+        XCTAssertEqual(state.value, middleware.handleActionFromStateReceivedArguments?.state().value)
         XCTAssertFalse(typeErased.isIdentity)
         XCTAssertNil(typeErased.isComposed)
         wait(for: [receivedAction], timeout: 0.1)

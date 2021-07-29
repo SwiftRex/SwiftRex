@@ -1,18 +1,14 @@
 import SwiftRex
 
-struct MonoidMiddleware<InputActionType, OutputActionType, StateType>: Middleware, Monoid {
+struct MonoidMiddleware<InputActionType, OutputActionType, StateType>: MiddlewareProtocol, Monoid {
     var string: String
-    let mock: MiddlewareMock<InputActionType, OutputActionType, StateType>
+    let mock: MiddlewareProtocolMock<InputActionType, OutputActionType, StateType>
 
-    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
-        mock.receiveContext(getState: getState, output: output)
+    func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        mock.handle(action: action, from: dispatcher, state: state)
     }
 
-    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        mock.handle(action: action, from: dispatcher, afterReducer: &afterReducer)
-    }
-
-    init(string: String, mock: MiddlewareMock<InputActionType, OutputActionType, StateType> = .init()) {
+    init(string: String, mock: MiddlewareProtocolMock<InputActionType, OutputActionType, StateType> = .init()) {
         self.string = string
         self.mock = mock
     }

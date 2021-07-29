@@ -18,8 +18,8 @@ extension MiddlewareReaderTests {
     // MARK: - all 4
     func testMiddlewareReaderLift_InputAction_OutputAction_State_Dependencies() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -27,9 +27,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -42,24 +48,25 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        globalInputActions.forEach { _ =
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     // MARK: - 3
     func testMiddlewareReaderLift_OutputAction_State_Dependencies() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -67,9 +74,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -81,23 +94,24 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        localInputActions.forEach { _ =
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_InputAction_State_Dependencies() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [Int] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<Int> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -105,9 +119,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -119,23 +139,24 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        globalInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, localOutputActions + [9])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_InputAction_OutputAction_Dependencies() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -143,9 +164,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -157,23 +184,24 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
+        globalInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { localState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_InputAction_OutputAction_State() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -181,9 +209,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -195,24 +229,25 @@ extension MiddlewareReaderTests {
             state: stringify
         )
         let globalMiddleware = globalReader.inject(localDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        globalInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     // MARK: - 2
     func testMiddlewareReaderLift_InputAction_OutputAction() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -220,9 +255,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -233,23 +274,24 @@ extension MiddlewareReaderTests {
             outputAction: stringify
         )
         let globalMiddleware = globalReader.inject(localDependencies)
-        globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
+        globalInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { localState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_InputAction_State() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [Int] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<Int> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -257,9 +299,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -270,23 +318,24 @@ extension MiddlewareReaderTests {
             state: stringify
         )
         let globalMiddleware = globalReader.inject(localDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        globalInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, localOutputActions + [9])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_InputAction_Dependencies() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [Int] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<Int> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -294,9 +343,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -307,23 +362,24 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
+        globalInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { localState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, localOutputActions + [9])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_OutputAction_State() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -331,9 +387,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -344,23 +406,25 @@ extension MiddlewareReaderTests {
             state: stringify
         )
         let globalMiddleware = globalReader.inject(localDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        localInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_OutputAction_Dependencies() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -368,9 +432,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -381,23 +451,24 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
+        localInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { localState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_State_Dependencies() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [Int] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<Int> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -405,9 +476,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -418,24 +495,25 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        localInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, localOutputActions + [9])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     // MARK: - only 1
     func testMiddlewareReaderLift_InputAction() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [Int] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<Int> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -443,9 +521,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -455,23 +539,24 @@ extension MiddlewareReaderTests {
             inputAction: stringify2
         )
         let globalMiddleware = globalReader.inject(localDependencies)
-        globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        globalInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
+        globalInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { localState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, localOutputActions + [9])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_OutputAction() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [String] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<String> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -479,9 +564,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -491,23 +582,24 @@ extension MiddlewareReaderTests {
             outputAction: stringify
         )
         let globalMiddleware = globalReader.inject(localDependencies)
-        globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.localState }) }
+        localInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { localState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch("foo", from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, globalOutputActions + ["foo"])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_State() {
         // Given
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [Int] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<Int> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -515,9 +607,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -527,24 +625,24 @@ extension MiddlewareReaderTests {
             state: stringify
         )
         let globalMiddleware = globalReader.inject(localDependencies)
-        globalMiddleware.receiveContext(getState: { self.globalState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { _ = globalMiddleware.handle(action: $0, from: .here(), state: { self.globalState }) }
+        localInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { self.globalState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, localOutputActions + [9])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 
     func testMiddlewareReaderLift_Dependencies() {
         // Given
-        var afterReducer: AfterReducer = .doNothing()
-        var localGetState: GetState<String>?
-        var localDispatcher: AnyActionHandler<Int>?
+        let localState = self.localState
+        let localOutputActions = self.localOutputActions
         var globalReceived: [Int] = []
         var receivedLocalInputActions = [String]()
         let globalDispatcher: AnyActionHandler<Int> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
@@ -552,9 +650,15 @@ extension MiddlewareReaderTests {
         let localReader = LocalTestReader { dependencies in
             XCTAssertEqual(self.localDependencies, dependencies)
             let localMiddleware = MiddlewareMock<String, Int, String>()
-            localMiddleware.receiveContextGetStateOutputClosure = { getState, output in localGetState = getState; localDispatcher = output }
-            localMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+            localMiddleware.handleActionFromStateClosure = { action, _, state in
                 receivedLocalInputActions.append(action)
+                XCTAssertEqual(localState, state())
+                // Start emitting all the primes, once it got all the fibbo
+                guard action == "55" else { return .pure() }
+
+                return IO { output in
+                    localOutputActions.forEach { output.dispatch($0, from: .here()) }
+                }
             }
             return localMiddleware
         }
@@ -567,13 +671,15 @@ extension MiddlewareReaderTests {
         globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
 
         // When
-        localOutputActions.forEach { localDispatcher?.dispatch($0, from: .here()) }
-        localInputActions.forEach { globalMiddleware.handle(action: $0, from: .here(), afterReducer: &afterReducer) }
+        localInputActions.forEach {
+            globalMiddleware
+                .handle(action: $0, from: .here(), state: { localState })
+                .runIO(globalDispatcher)
+        }
         globalDispatcher.dispatch(9, from: .here())
 
         // Then
         XCTAssertEqual(globalReceived, localOutputActions + [9])
-        XCTAssertEqual(localState, localGetState?())
         XCTAssertEqual(receivedLocalInputActions, localInputActions)
     }
 }

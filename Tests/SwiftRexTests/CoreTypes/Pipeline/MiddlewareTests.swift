@@ -6,6 +6,7 @@ class MiddlewareTests: XCTestCase {
     func testMiddlewareCallOrder() {
         let state = TestState()
         let receiveContextCalled = expectation(description: "receive context should be called")
+        receiveContextCalled.expectedFulfillmentCount = 2
         let actionBravoBeforeReducerCalled = expectation(description: "action bravo before reducer should be called")
         let actionCharlieBeforeReducerCalled = expectation(description: "action charlie before reducer should be called")
         let actionBravoAfterReducerCalled = expectation(description: "action bravo after reducer should be called")
@@ -19,30 +20,27 @@ class MiddlewareTests: XCTestCase {
             actionBravoAfterReducerCalled: actionBravoAfterReducerCalled,
             actionCharlieAfterReducerCalled: actionCharlieAfterReducerCalled
         )
-        sut.receiveContext(getState: { state }, output: .init { _ in })
 
-        var after1: AfterReducer = .doNothing()
-        sut.handle(action: .bar(.bravo), from: .here(), afterReducer: &after1)
-        after1.reducerIsDone()
+        sut.handle(action: .bar(.bravo), from: .here(), state: { state })
+            .runIO(.init { _ in })
 
-        var after2: AfterReducer = .doNothing()
-        sut.handle(action: .bar(.charlie), from: .here(), afterReducer: &after2)
-        after2.reducerIsDone()
+        sut.handle(action: .bar(.charlie), from: .here(), state: { state })
+            .runIO(.init { _ in })
 
         wait(
             for: [
-                receiveContextCalled,
                 actionBravoBeforeReducerCalled,
                 actionBravoAfterReducerCalled,
                 actionCharlieBeforeReducerCalled,
-                actionCharlieAfterReducerCalled
+                actionCharlieAfterReducerCalled,
+                receiveContextCalled
             ],
             timeout: 0.1,
             enforceOrder: true
         )
     }
 
-    class SomeMiddleware: Middleware {
+    class SomeMiddleware: MiddlewareProtocol {
         typealias InputActionType = AppAction
         typealias OutputActionType = AppAction
         typealias StateType = TestState
@@ -73,24 +71,22 @@ class MiddlewareTests: XCTestCase {
             self.actionCharlieAfterReducerCalled = actionCharlieAfterReducerCalled
         }
 
-        func receiveContext(getState: @escaping () -> TestState, output: AnyActionHandler<AppAction>) {
-            XCTAssertEqual(expectedId, getState().value)
-            self.receiveContextCalled.fulfill()
-        }
-
-        func handle(action: AppAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        func handle(action: AppAction, from dispatcher: ActionSource, state: @escaping GetState<TestState>) -> IO<AppAction> {
             switch action {
             case .bar(.bravo): self.actionBravoBeforeReducerCalled.fulfill()
             case .bar(.charlie): self.actionCharlieBeforeReducerCalled.fulfill()
             default: XCTFail("Invalid action")
             }
 
-            afterReducer = .do {
+            return IO { [unowned self] output in
                 switch action {
                 case .bar(.bravo): self.actionBravoAfterReducerCalled.fulfill()
                 case .bar(.charlie): self.actionCharlieAfterReducerCalled.fulfill()
                 default: XCTFail("Invalid action")
                 }
+
+                XCTAssertEqual(self.expectedId, state().value)
+                self.receiveContextCalled.fulfill()
             }
         }
     }

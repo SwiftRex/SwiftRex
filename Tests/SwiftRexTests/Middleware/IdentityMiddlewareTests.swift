@@ -8,19 +8,19 @@ class IdentityMiddlewareTests: XCTestCase {
         var getStateCount = 0
         var dispatchActionCount = 0
 
-        sut.receiveContext(
-            getState: {
-                getStateCount += 1
-                return TestState()
-            },
-            output: .init { _ in
-                dispatchActionCount += 1
-            })
         let action = AppAction.bar(.delta)
 
         // Then
-        var afterReducer: AfterReducer = .doNothing()
-        sut.handle(action: action, from: .here(), afterReducer: &afterReducer)
+        sut.handle(
+            action: action,
+            from: .here(),
+            state: {
+                getStateCount += 1
+                return TestState()
+            }
+        ).runIO(.init { _ in
+            dispatchActionCount += 1
+        })
 
         // Expect
         XCTAssertEqual(0, dispatchActionCount)

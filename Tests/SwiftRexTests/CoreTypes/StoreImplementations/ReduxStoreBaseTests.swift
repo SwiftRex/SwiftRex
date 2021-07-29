@@ -22,15 +22,14 @@ class ReduxStoreBaseTests: XCTestCase {
         fooMiddleware.receiveContextGetStateOutputClosure = { _, output in
             fooMiddlewareOutput = output
         }
-        fooMiddleware.handleActionFromAfterReducerClosure = { action, _, afterReducer in
+        fooMiddleware.handleActionFromStateClosure = { action, _, _ in
             guard action == .foo else {
-                afterReducer = .doNothing()
-                return
+                return .pure()
             }
 
             fooMiddlewareOutput?.dispatch(.bar(.alpha), from: .here())
 
-            afterReducer = .do {
+            return IO { _ in
                 fooMiddlewareOutput?.dispatch(.bar(.bravo), from: .here())
                 shouldCallFooMiddleware.fulfill()
             }
@@ -40,7 +39,7 @@ class ReduxStoreBaseTests: XCTestCase {
         barMiddleware.receiveContextGetStateOutputClosure = { _, output in
             barMiddlewareOutput = output
         }
-        barMiddleware.handleActionFromAfterReducerClosure = { action, _, afterReducer in
+        barMiddleware.handleActionFromStateClosure = { action, _, state in
             switch action {
             case .alpha:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
@@ -53,7 +52,7 @@ class ReduxStoreBaseTests: XCTestCase {
             default: break
             }
 
-            afterReducer = .do {
+            return IO { _ in
                 shouldCallBarMiddleware.fulfill()
             }
         }

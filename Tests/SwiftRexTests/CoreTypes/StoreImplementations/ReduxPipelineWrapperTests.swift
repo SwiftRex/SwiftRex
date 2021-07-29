@@ -16,7 +16,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
+        middlewareMock.handleActionFromStateClosure = { action, dispatcher, _ in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertEqual(action, expectedAction)
             XCTAssertEqual("file_1", dispatcher.file)
@@ -24,6 +24,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             XCTAssertEqual(1, dispatcher.line)
             XCTAssertEqual("info_1", dispatcher.info)
             shouldCallMiddlewareActionHandler.fulfill()
+            return .pure()
         }
 
         DispatchQueue.global().async {
@@ -53,7 +54,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionFromAfterReducerClosure = { action, dispatcher, _ in
+        middlewareMock.handleActionFromStateClosure = { action, dispatcher, _ in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertEqual(action, expectedAction)
             XCTAssertEqual("file_1", dispatcher.file)
@@ -61,6 +62,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             XCTAssertEqual(1, dispatcher.line)
             XCTAssertEqual("info_1", dispatcher.info)
             shouldCallMiddlewareActionHandler.fulfill()
+            return .pure()
         }
 
         DispatchQueue.global().async {
@@ -99,7 +101,8 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallReducerActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionFromAfterReducerClosure = { _, _, _ in
+        middlewareMock.handleActionFromStateClosure = { _, _, _ in
+            return .pure()
         }
 
         reducerMock.1.reduceClosure = { action, state in
@@ -129,7 +132,8 @@ class ReduxPipelineWrapperTests: XCTestCase {
             middleware: middlewareMock)
 
         let shouldCallReducerActionHandler = expectation(description: "middleware action handler should have been called")
-        middlewareMock.handleActionFromAfterReducerClosure = { _, _, _ in
+        middlewareMock.handleActionFromStateClosure = { _, _, _ in
+            return .pure()
         }
 
         reducerMock.1.reduceClosure = { _, state in

@@ -35,8 +35,9 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputActionInputState_RelevantInputActionsArriveFromGlobalContext() {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         var receivedActions = [AppAction.Bar]()
-        nameMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+        nameMiddleware.handleActionFromStateClosure = { action, _, _ in
             receivedActions.append(action)
+            return .pure()
         }
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
@@ -51,7 +52,7 @@ extension LiftComposedMiddlewareTests {
         _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
         _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
-        XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -106,8 +107,9 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputAction_RelevantInputActionsArriveFromGlobalContext() {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, TestState>()
         var receivedActions = [AppAction.Bar]()
-        nameMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+        nameMiddleware.handleActionFromStateClosure = { action, _, _ in
             receivedActions.append(action)
+            return .pure()
         }
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
@@ -121,7 +123,7 @@ extension LiftComposedMiddlewareTests {
         _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
         _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
-        XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -176,8 +178,9 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var receivedActions = [AppAction.Bar]()
-        nameMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+        nameMiddleware.handleActionFromStateClosure = { action, _, _ in
             receivedActions.append(action)
+            return .pure()
         }
         let generalMiddleware =
             composed.lift(
@@ -190,7 +193,7 @@ extension LiftComposedMiddlewareTests {
         _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
         _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
-        XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -246,8 +249,9 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var receivedActions = [AppAction]()
-        nameMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+        nameMiddleware.handleActionFromStateClosure = { action, _, _ in
             receivedActions.append(action)
+            return .pure()
         }
         let generalMiddleware =
             composed.lift(
@@ -260,7 +264,7 @@ extension LiftComposedMiddlewareTests {
         _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
         _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
-        XCTAssertEqual(4, nameMiddleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(4, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -315,8 +319,9 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var receivedActions = [AppAction.Bar]()
-        nameMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+        nameMiddleware.handleActionFromStateClosure = { action, _, _ in
             receivedActions.append(action)
+            return .pure()
         }
         let generalMiddleware =
             composed.lift(
@@ -328,7 +333,7 @@ extension LiftComposedMiddlewareTests {
         _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
         _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
-        XCTAssertEqual(3, nameMiddleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -383,8 +388,9 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var receivedActions = [AppAction]()
-        nameMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+        nameMiddleware.handleActionFromStateClosure = { action, _, _ in
             receivedActions.append(action)
+            return .pure()
         }
         let generalMiddleware =
             composed.lift(
@@ -396,7 +402,7 @@ extension LiftComposedMiddlewareTests {
         _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
         _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
-        XCTAssertEqual(4, nameMiddleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(4, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -450,8 +456,9 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputState_RelevantInputActionsArriveFromGlobalContext() {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction, String>()
         var receivedActions = [AppAction]()
-        nameMiddleware.handleActionFromAfterReducerClosure = { action, _, _ in
+        nameMiddleware.handleActionFromStateClosure = { action, _, _ in
             receivedActions.append(action)
+            return .pure()
         }
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
@@ -464,7 +471,7 @@ extension LiftComposedMiddlewareTests {
         _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
         _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
-        XCTAssertEqual(4, nameMiddleware.handleActionFromAfterReducerCallsCount)
+        XCTAssertEqual(4, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(receivedActions, expectedActionsOnLocalMiddleware)
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)

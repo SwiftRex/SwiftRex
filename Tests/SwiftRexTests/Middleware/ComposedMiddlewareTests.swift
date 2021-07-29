@@ -8,7 +8,6 @@ class ComposedMiddlewareTests: XCTestCase {
         var newActions = [AppAction]()
         let originalActions: [AppAction] = [.foo, .bar(.alpha), .bar(.alpha), .bar(.bravo), .bar(.echo), .foo]
         var originalActionsReceived: [(middlewareName: String, action: AppAction)] = []
-        var middlewareOutput: AnyActionHandler<AppAction>?
         let lastInChainWasCalledExpectation = self.expectation(description: "last in chain should have been called")
         let expectedNewActions: [AppAction] = [
             .foo, .foo, .bar(.alpha), .bar(.alpha), .bar(.alpha), .bar(.alpha),
@@ -21,23 +20,20 @@ class ComposedMiddlewareTests: XCTestCase {
             .lazy
             .map { name in
                 let middleware = IsoMiddlewareMock<AppAction, TestState>()
-                middleware.receiveContextGetStateOutputClosure = { _, output in middlewareOutput = output }
-                middleware.handleActionFromAfterReducerClosure = { action, dispatcher, afterReducer in
+                middleware.handleActionFromStateClosure = { action, dispatcher, state in
                     originalActionsReceived.append((middlewareName: name, action: action))
-                    middlewareOutput?.dispatch(action, from: .init(file: "file_2", function: "function_2", line: 2, info: "info_2"))
                     XCTAssertEqual("file_1", dispatcher.file)
                     XCTAssertEqual("function_1", dispatcher.function)
                     XCTAssertEqual(1, dispatcher.line)
                     XCTAssertEqual("info_1", dispatcher.info)
-                    afterReducer = .do {
+                    return IO { output in
+                        output.dispatch(action, from: .init(file: "file_2", function: "function_2", line: 2, info: "info_2"))
                         lastInChainWasCalledExpectation.fulfill()
                     }
                 }
                 return middleware
             }
             .forEach { sut.append(middleware: $0 as IsoMiddlewareMock<AppAction, TestState>) }
-
-        sut.receiveContext(getState: { TestState() }, output: .init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
 
         originalActions.forEach { originalAction in
             let io = sut.handle(
@@ -55,25 +51,6 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(originalActionsReceived.filter { $0.middlewareName == "m2" }.map { $0.action }, originalActions)
     }
 
-    func testMiddlewareActionHandlerPropagationFromComposedMiddlewareToChildrenComposedViaOperator() {
-        let shouldReceiveContext = expectation(description: "context should have been received")
-        shouldReceiveContext.expectedFulfillmentCount = 4
-        let middlewares = ["m1", "m2", "m3", "m4"]
-            .map { _ -> IsoMiddlewareMock<AppAction, TestState> in
-                let middleware = IsoMiddlewareMock<AppAction, TestState>()
-                middleware.receiveContextGetStateOutputClosure = { _, _ in
-                    shouldReceiveContext.fulfill()
-                }
-                middleware.handleActionFromAfterReducerClosure = { _, _, _ in }
-                return middleware
-            }
-
-        let composedMiddlewares = middlewares[0] <> middlewares[1] <> middlewares[2] <> middlewares[3]
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
-
-        wait(for: [shouldReceiveContext], timeout: 0.1)
-    }
-
     func testMiddlewareActionHandlerPropagationFromComposedMiddlewareToChildrenComposedViaAppend() {
         let shouldReceiveContext = expectation(description: "context should have been received")
         shouldReceiveContext.expectedFulfillmentCount = 4
@@ -84,7 +61,7 @@ class ComposedMiddlewareTests: XCTestCase {
                 middleware.receiveContextGetStateOutputClosure = { _, _ in
                     shouldReceiveContext.fulfill()
                 }
-                middleware.handleActionFromAfterReducerClosure = { _, _, _ in }
+                middleware.handleActionFromStateClosure = { _, _, _ in .pure() }
                 return middleware
             }.forEach { middleware in
                 composedMiddlewares.append(middleware: middleware)
@@ -104,22 +81,22 @@ class ComposedMiddlewareTests: XCTestCase {
 
         var lhs = ComposedMiddleware<String, String, String>()
         let lhsM1 = MiddlewareMock<String, String, String>()
-        lhsM1.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhsM1.handleActionFromStateClosure = { _, _, state in
             m1ShouldBeCalled.fulfill()
-            afterReducer = .do { m1ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m1ShouldBeCalledAfterReducer.fulfill() }
         }
         let lhsM2 = MiddlewareMock<String, String, String>()
-        lhsM2.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhsM2.handleActionFromStateClosure = { _, _, state in
             m2ShouldBeCalled.fulfill()
-            afterReducer = .do { m2ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m2ShouldBeCalledAfterReducer.fulfill() }
         }
         lhs.append(middleware: lhsM1)
         lhs.append(middleware: lhsM2)
 
         let rhs = MiddlewareMock<String, String, String>()
-        rhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhs.handleActionFromStateClosure = { _, _, state in
             m3ShouldBeCalled.fulfill()
-            afterReducer = .do { m3ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m3ShouldBeCalledAfterReducer.fulfill() }
         }
 
         let sut = lhs <> rhs
@@ -152,21 +129,21 @@ class ComposedMiddlewareTests: XCTestCase {
         let m3ShouldBeCalledAfterReducer = expectation(description: "third middleware should have been called after reducer")
 
         let lhs = MiddlewareMock<String, String, String>()
-        lhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhs.handleActionFromStateClosure = { _, _, state in
             m1ShouldBeCalled.fulfill()
-            afterReducer = .do { m1ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m1ShouldBeCalledAfterReducer.fulfill() }
         }
 
         var rhs = ComposedMiddleware<String, String, String>()
         let rhsM1 = MiddlewareMock<String, String, String>()
-        rhsM1.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhsM1.handleActionFromStateClosure = { _, _, state in
             m2ShouldBeCalled.fulfill()
-            afterReducer = .do { m2ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m2ShouldBeCalledAfterReducer.fulfill() }
         }
         let rhsM2 = MiddlewareMock<String, String, String>()
-        rhsM2.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhsM2.handleActionFromStateClosure = { _, _, state in
             m3ShouldBeCalled.fulfill()
-            afterReducer = .do { m3ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m3ShouldBeCalledAfterReducer.fulfill() }
         }
 
         rhs.append(middleware: rhsM1)
@@ -203,22 +180,22 @@ class ComposedMiddlewareTests: XCTestCase {
 
         var lhs = ComposedMiddleware<String, String, String>()
         let lhsM1 = MiddlewareMock<String, String, String>()
-        lhsM1.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhsM1.handleActionFromStateClosure = { _, _, state in
             m1ShouldBeCalled.fulfill()
-            afterReducer = .do { m1ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m1ShouldBeCalledAfterReducer.fulfill() }
         }
         let lhsM2 = MiddlewareMock<String, String, String>()
-        lhsM2.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhsM2.handleActionFromStateClosure = { _, _, state in
             m2ShouldBeCalled.fulfill()
-            afterReducer = .do { m2ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m2ShouldBeCalledAfterReducer.fulfill() }
         }
         lhs.append(middleware: lhsM1)
         lhs.append(middleware: lhsM2)
 
         let rhs = MiddlewareMock<String, String, String>()
-        rhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhs.handleActionFromStateClosure = { _, _, state in
             m3ShouldBeCalled.fulfill()
-            afterReducer = .do { m3ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m3ShouldBeCalledAfterReducer.fulfill() }
         }
 
         let sut = lhs.eraseToAnyMiddleware() <> rhs.eraseToAnyMiddleware()
@@ -251,21 +228,21 @@ class ComposedMiddlewareTests: XCTestCase {
         let m3ShouldBeCalledAfterReducer = expectation(description: "third middleware should have been called after reducer")
 
         let lhs = MiddlewareMock<String, String, String>()
-        lhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhs.handleActionFromStateClosure = { _, _, state in
             m1ShouldBeCalled.fulfill()
-            afterReducer = .do { m1ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m1ShouldBeCalledAfterReducer.fulfill() }
         }
 
         var rhs = ComposedMiddleware<String, String, String>()
         let rhsM1 = MiddlewareMock<String, String, String>()
-        rhsM1.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhsM1.handleActionFromStateClosure = { _, _, state in
             m2ShouldBeCalled.fulfill()
-            afterReducer = .do { m2ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m2ShouldBeCalledAfterReducer.fulfill() }
         }
         let rhsM2 = MiddlewareMock<String, String, String>()
-        rhsM2.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhsM2.handleActionFromStateClosure = { _, _, state in
             m3ShouldBeCalled.fulfill()
-            afterReducer = .do { m3ShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in m3ShouldBeCalledAfterReducer.fulfill() }
         }
 
         rhs.append(middleware: rhsM1)
@@ -298,9 +275,9 @@ class ComposedMiddlewareTests: XCTestCase {
 
         let lhs = IdentityMiddleware<String, String, String>()
         let rhs = MiddlewareMock<String, String, String>()
-        rhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhs.handleActionFromStateClosure = { _, _, state in
             middlewareShouldBeCalled.fulfill()
-            afterReducer = .do { middlewareShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in middlewareShouldBeCalledAfterReducer.fulfill() }
         }
 
         let sut = lhs <> rhs
@@ -325,9 +302,9 @@ class ComposedMiddlewareTests: XCTestCase {
         let middlewareShouldBeCalledAfterReducer = expectation(description: "middleware should have been called after reducer")
 
         let lhs = MiddlewareMock<String, String, String>()
-        lhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhs.handleActionFromStateClosure = { _, _, state in
             middlewareShouldBeCalled.fulfill()
-            afterReducer = .do { middlewareShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in middlewareShouldBeCalledAfterReducer.fulfill() }
         }
         let rhs = IdentityMiddleware<String, String, String>()
 
@@ -354,9 +331,9 @@ class ComposedMiddlewareTests: XCTestCase {
 
         let lhs = IdentityMiddleware<String, String, String>()
         let rhs = MiddlewareMock<String, String, String>()
-        rhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        rhs.handleActionFromStateClosure = { _, _, state in
             middlewareShouldBeCalled.fulfill()
-            afterReducer = .do { middlewareShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in middlewareShouldBeCalledAfterReducer.fulfill() }
         }
 
         let sut = lhs.eraseToAnyMiddleware() <> rhs.eraseToAnyMiddleware()
@@ -381,9 +358,9 @@ class ComposedMiddlewareTests: XCTestCase {
         let middlewareShouldBeCalledAfterReducer = expectation(description: "middleware should have been called after reducer")
 
         let lhs = MiddlewareMock<String, String, String>()
-        lhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhs.handleActionFromStateClosure = { _, _, state in
             middlewareShouldBeCalled.fulfill()
-            afterReducer = .do { middlewareShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in middlewareShouldBeCalledAfterReducer.fulfill() }
         }
         let rhs = IdentityMiddleware<String, String, String>()
 
@@ -409,9 +386,9 @@ class ComposedMiddlewareTests: XCTestCase {
         let middlewareShouldBeCalledAfterReducer = expectation(description: "middleware should have been called after reducer")
 
         let lhs = MiddlewareMock<String, String, String>()
-        lhs.handleActionFromAfterReducerClosure = { _, _, afterReducer in
+        lhs.handleActionFromStateClosure = { _, _, state in
             middlewareShouldBeCalled.fulfill()
-            afterReducer = .do { middlewareShouldBeCalledAfterReducer.fulfill() }
+            return IO { output in middlewareShouldBeCalledAfterReducer.fulfill() }
         }
 
         var sut = lhs.eraseToAnyMiddleware() <> IdentityMiddleware<String, String, String>()
