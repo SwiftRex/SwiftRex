@@ -156,280 +156,287 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 63,
+      "line": 61,
       "symbol": "Effect",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 64,
+      "line": 62,
       "symbol": "Effect.init(token:effect:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 70,
+      "line": 68,
       "symbol": "Effect.init(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 75,
+      "line": 73,
       "symbol": "Effect.ignoringDependencies()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 90,
+      "line": 86,
       "symbol": "Effect",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 91,
+      "line": 87,
       "symbol": "Effect.fireAndForget(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 98,
+      "line": 94,
       "symbol": "Effect.fireAndForget(_:catchErrors:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 107,
+      "line": 103,
       "symbol": "Effect.fireAndForget(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 114,
+      "line": 110,
       "symbol": "Effect",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 115,
+      "line": 111,
       "symbol": "Effect.fireAndForget(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 121,
+      "line": 117,
       "symbol": "Effect.fireAndForget(_:catchErrors:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 128,
+      "line": 124,
       "symbol": "Effect.fireAndForget(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 135,
+      "line": 131,
       "symbol": "Effect",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 136,
+      "line": 132,
       "symbol": "Effect.just(_:from:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 142,
+      "line": 138,
       "symbol": "Effect.just(_:file:function:line:info:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 152,
+      "line": 148,
       "symbol": "Effect.sequence(_:from:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 158,
+      "line": 154,
       "symbol": "Effect.sequence(_:file:function:line:info:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 168,
+      "line": 164,
       "symbol": "Effect.sequence(_:from:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 174,
+      "line": 170,
       "symbol": "Effect.sequence(_:file:function:line:info:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 184,
+      "line": 180,
       "symbol": "Effect.promise(token:from:perform:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 199,
+      "line": 195,
       "symbol": "Effect.promise(token:file:function:line:info:perform:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 212,
+      "line": 208,
       "symbol": "Effect.toCancel(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 220,
+      "line": 216,
       "symbol": "SignalProducerProtocol.asEffect(token:dispatcher:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 224,
+      "line": 220,
       "symbol": "SignalProducerProtocol.asEffect(token:file:function:line:info:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 234,
+      "line": 230,
       "symbol": "SignalProducerProtocol.asEffect(dispatcher:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/Effect.swift",
-      "line": 238,
+      "line": 234,
       "symbol": "SignalProducerProtocol.asEffect(file:function:line:info:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 5,
+      "line": 8,
       "symbol": "EffectMiddleware.lift(inputAction:outputAction:state:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 22,
+      "line": 23,
       "symbol": "EffectMiddleware.lift(inputAction:outputAction:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 38,
+      "line": 37,
       "symbol": "EffectMiddleware.lift(inputAction:state:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 54,
+      "line": 50,
       "symbol": "EffectMiddleware.lift(outputAction:state:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 69,
+      "line": 63,
       "symbol": "EffectMiddleware.lift(inputAction:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 84,
+      "line": 75,
       "symbol": "EffectMiddleware.lift(outputAction:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 98,
+      "line": 87,
       "symbol": "EffectMiddleware.lift(state:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+Lift.swift",
-      "line": 114,
+      "line": 101,
       "symbol": "EffectMiddleware.lift(action:state:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+LiftToCollection.swift",
-      "line": 6,
+      "line": 8,
       "symbol": "EffectMiddleware.liftToCollection(inputAction:outputAction:stateCollection:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+LiftToCollection.swift",
-      "line": 31,
+      "line": 36,
       "symbol": "EffectMiddleware.liftToCollection(action:stateCollection:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+LiftToCollection.swift",
-      "line": 57,
+      "line": 65,
       "symbol": "MiddlewareReader.liftToCollection(inputAction:outputAction:stateCollection:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware+LiftToCollection.swift",
-      "line": 106,
+      "line": 103,
       "symbol": "MiddlewareReader.liftToCollection(action:stateCollection:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware.swift",
-      "line": 149,
+      "line": 121,
+      "symbol": "EffectMiddleware.handle(action:from:state:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware.swift",
+      "line": 176,
       "symbol": "EffectMiddleware.onAction(do:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware.swift",
-      "line": 159,
+      "line": 186,
       "symbol": "EffectMiddleware.onAction(do:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"

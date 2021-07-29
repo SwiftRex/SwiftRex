@@ -17,7 +17,7 @@
     <a title="EffectMiddleware Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">ReactiveSwiftRex 0.8.6 Docs</a> (36% documented)</p>
+        <p><a href="../index.html">ReactiveSwiftRex 0.8.6 Docs</a> (35% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="../search.json">
@@ -145,7 +145,7 @@
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Middleware</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">EffectMiddleware</span><span class="o">&lt;</span><span class="kt">InputActionType</span><span class="p">,</span> <span class="kt">OutputActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">,</span> <span class="kt">Dependencies</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">MiddlewareProtocol</span></code></pre>
 <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">EffectMiddleware</span><span class="p">:</span> <span class="kt">Semigroup</span></code></pre>
 <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">EffectMiddleware</span><span class="p">:</span> <span class="kt">Monoid</span> <span class="k">where</span> <span class="kt">Dependencies</span> <span class="o">==</span> <span class="kt">Void</span></code></pre>
 
@@ -236,9 +236,9 @@ closure.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF"></a>
-                    <a name="//apple_ref/swift/Method/receiveContext(getState:output:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP14receiveContext8getState6outputy0G4TypeQzyc_AA16AnyActionHandlerVy06OutputkI0QzGtF">receiveContext(getState:<wbr>output:<wbr>)</a>
+                    <a name="/s:16ReactiveSwiftRex16EffectMiddlewareC6handle6action4from5state0bC02IOVyq_Gx_AH12ActionSourceVq0_yctF"></a>
+                    <a name="//apple_ref/swift/Method/handle(action:from:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16ReactiveSwiftRex16EffectMiddlewareC6handle6action4from5state0bC02IOVyq_Gx_AH12ActionSourceVq0_yctF">handle(action:<wbr>from:<wbr>state:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -246,39 +246,14 @@ closure.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+                        <p>Undocumented</p>
 
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8SwiftRex10MiddlewareP6handle6action4from12afterReducery15InputActionTypeQz_AA0J6SourceVAA05AfterH0VztF"></a>
-                    <a name="//apple_ref/swift/Method/handle(action:from:afterReducer:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex10MiddlewareP6handle6action4from12afterReducery15InputActionTypeQz_AA0J6SourceVAA05AfterH0VztF">handle(action:<wbr>from:<wbr>afterReducer:<wbr>)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">InputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">afterReducer</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AfterReducer</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">InputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">IO</span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -751,8 +726,8 @@ closure.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-06-12)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.6</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-07-29)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

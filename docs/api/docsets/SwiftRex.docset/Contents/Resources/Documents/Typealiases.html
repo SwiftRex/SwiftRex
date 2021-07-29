@@ -17,7 +17,7 @@
     <a title="Type Aliases  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex 0.8.6 Docs</a> (76% documented)</p>
+        <p><a href="index.html">SwiftRex 0.8.6 Docs</a> (72% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="search.json">
@@ -69,6 +69,9 @@
             <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="Classes/ReduxPipelineWrapper.html">ReduxPipelineWrapper</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a>
               </li>
             </ul>
@@ -96,7 +99,10 @@
                 <a href="Functions.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Functions.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E0RzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+                <a href="Functions.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E8ProtocolRzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:8SwiftRex2lgoiyAA2IOVyxGAE_AEtlF">&lt;&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -108,6 +114,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/MiddlewareProtocol.html">MiddlewareProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a>
@@ -169,6 +178,9 @@
                 <a href="Structs/ElementIndexAction.html">ElementIndexAction</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/IO.html">IO</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/IdentityMiddleware.html">IdentityMiddleware</a>
               </li>
               <li class="nav-group-task">
@@ -182,9 +194,6 @@
               </li>
               <li class="nav-group-task">
                 <a href="Structs/Reducer.html">Reducer</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ReduxPipelineWrapper.html">ReduxPipelineWrapper</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
@@ -287,6 +296,35 @@ eventually pointing to the same instance.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">StoreProjection</span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span> <span class="o">=</span> <span class="kt"><a href="Structs/AnyStoreType.html">AnyStoreType</a></span><span class="o">&lt;</span><span class="kt">ViewAction</span><span class="p">,</span> <span class="kt">ViewState</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex14ReduceFunctiona"></a>
+                    <a name="//apple_ref/swift/Alias/ReduceFunction" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>State reducer: takes current state and an action, computes the new state. <br/>
+<code>(ActionType, StateType) -&gt; StateType</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="s">"Use `MutableReduceFunction` instead of `ReduceFunction`. The inout state improves performance. SwiftRex 1.0 will remove this typealias"</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ReduceFunction</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span></code></pre>
 
                         </div>
                       </div>
@@ -445,35 +483,6 @@ delegating to them once the wrapper funcions are called.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8SwiftRex14ReduceFunctiona"></a>
-                    <a name="//apple_ref/swift/Alias/ReduceFunction" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>State reducer: takes current state and an action, computes the new state. <br/>
-<code>(ActionType, StateType) -&gt; StateType</code></p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="s">"Use `MutableReduceFunction` instead of `ReduceFunction`. The inout state improves performance. SwiftRex 1.0 will remove this typealias"</span><span class="p">)</span>
-<span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ReduceFunction</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/s:8SwiftRex21MutableReduceFunctiona"></a>
                     <a name="//apple_ref/swift/Alias/MutableReduceFunction" class="dashAnchor"></a>
                     <a class="token" href="#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
@@ -504,8 +513,8 @@ delegating to them once the wrapper funcions are called.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-06-12)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.6</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-07-29)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>
