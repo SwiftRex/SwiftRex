@@ -78,7 +78,7 @@ class MiddlewareTests: XCTestCase {
             default: XCTFail("Invalid action")
             }
 
-            return IO { [unowned self] output in
+            return IO { [unowned self] _ in
                 switch action {
                 case .bar(.bravo): self.actionBravoAfterReducerCalled.fulfill()
                 case .bar(.charlie): self.actionCharlieAfterReducerCalled.fulfill()

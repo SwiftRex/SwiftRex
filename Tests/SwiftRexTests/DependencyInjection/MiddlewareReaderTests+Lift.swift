@@ -412,7 +412,6 @@ extension MiddlewareReaderTests {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
                 .runIO(globalDispatcher)
-
         }
         globalDispatcher.dispatch("foo", from: .here())
 

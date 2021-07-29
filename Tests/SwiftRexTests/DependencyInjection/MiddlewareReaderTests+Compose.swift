@@ -21,7 +21,7 @@ extension MiddlewareReaderTests {
                 MiddlewareReader<String, IsoMiddlewareMock<AppAction, TestState>> { dependency -> IsoMiddlewareMock<AppAction, TestState> in
                     XCTAssertEqual("injected dependency", dependency)
                     let middleware = IsoMiddlewareMock<AppAction, TestState>()
-                    middleware.handleActionFromStateClosure = { action, dispatcher, state in
+                    middleware.handleActionFromStateClosure = { action, dispatcher, _ in
                         originalActionsReceived.append((middlewareName: name, action: action))
                         XCTAssertEqual("file_1", dispatcher.file)
                         XCTAssertEqual("function_1", dispatcher.function)
@@ -119,7 +119,7 @@ extension MiddlewareReaderTests {
                 -> MonoidMiddleware<AppAction, AppAction, TestState> in
                     XCTAssertEqual("injected dependency", dependency)
                     let middleware = MonoidMiddleware<AppAction, AppAction, TestState>(string: name)
-                    middleware.mock.handleActionFromStateClosure = { action, dispatcher, state in
+                    middleware.mock.handleActionFromStateClosure = { action, dispatcher, _ in
                         originalActionsReceived.append((middlewareName: name, action: action))
                         XCTAssertEqual("file_1", dispatcher.file)
                         XCTAssertEqual("function_1", dispatcher.function)

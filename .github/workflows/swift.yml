@@ -15,21 +15,21 @@ jobs:
       with:
         key: mint_deps
         path: ~/mint
-    - uses: actions/checkout@v2
     - name: Install Dependencies
       env:
-        MINT_PATH: '~//mint'
+        MINT_PATH: '~/mint'
       run: |
         brew install mint
         mint bootstrap
+    - uses: actions/checkout@v2
+    - name: SwiftLint
+      run: make lint-check
     - name: Build
       env:
         LC_CTYPE: 'en_US.UTF-8'
         LANG: 'en_US.UTF-8'
         FRAMEWORK_NAME: 'SwiftRex'
       run: swift build -v
-    - name: SwiftLint
-      run: make lint-check
     - name: Run tests
       env:
         LC_CTYPE: 'en_US.UTF-8'

@@ -39,7 +39,7 @@ class ReduxStoreBaseTests: XCTestCase {
         barMiddleware.receiveContextGetStateOutputClosure = { _, output in
             barMiddlewareOutput = output
         }
-        barMiddleware.handleActionFromStateClosure = { action, _, state in
+        barMiddleware.handleActionFromStateClosure = { action, _, _ in
             switch action {
             case .alpha:
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {

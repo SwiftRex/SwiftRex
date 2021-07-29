@@ -56,7 +56,7 @@ extension LiftMiddlewareTests {
     func testLiftMiddlewareInputActionOutputActionInputState_LocalInputStateIsExtractedFromGlobalContext() {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         var middlewareGetState: (() -> String)?
-        nameMiddleware.handleActionFromStateClosure = { action, _, getState in middlewareGetState = getState; return .pure() }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in middlewareGetState = getState; return .pure() }
 
         let generalMiddleware: LiftMiddleware<AppAction, AppAction, TestState, IsoMiddlewareMock<AppAction.Bar, String>> =
             nameMiddleware.lift(

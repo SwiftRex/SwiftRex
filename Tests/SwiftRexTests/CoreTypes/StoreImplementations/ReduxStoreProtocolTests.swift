@@ -12,7 +12,7 @@ class ReduxStoreProtocolTests: XCTestCase {
         let shouldCallActionHandlerAfterReducer =
             expectation(description: "middleware action handler after reducer should have been called")
         let shouldCallReducer = expectation(description: "reducer should have been called")
-        middlewareMock.handleActionFromStateClosure = { action, dispatcher, state in
+        middlewareMock.handleActionFromStateClosure = { action, dispatcher, _ in
             XCTAssertEqual(action, expectedAction)
             XCTAssertEqual("file_1", dispatcher.file)
             XCTAssertEqual("function_1", dispatcher.function)
