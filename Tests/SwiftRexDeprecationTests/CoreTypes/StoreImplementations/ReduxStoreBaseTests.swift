@@ -105,7 +105,7 @@ class ReduxStoreBaseTests: XCTestCase {
 
         events.forEach { store.dispatch($0, from: .here()) }
 
-        waitForExpectations(timeout: 5)
+        waitForExpectations(timeout: 10)
         XCTAssertEqual(subjectMock.currentValue.value, initialState.value)
         XCTAssertEqual(subjectMock.currentValue.name, "_foo_charlie_foo_alpha_bravo_alpha_bravo_delta_delta_echo_echo")
     }
