@@ -18,8 +18,9 @@ jobs:
     - name: Install Dependencies
       env:
         MINT_PATH: '~//mint'
-      run: brew install mint
-      run: mint bootstrap
+      run: |
+        brew install mint
+        mint bootstrap
     - name: Build
       env:
         LC_CTYPE: 'en_US.UTF-8'
@@ -33,7 +34,8 @@ jobs:
         LC_CTYPE: 'en_US.UTF-8'
         LANG: 'en_US.UTF-8'
         FRAMEWORK_NAME: 'SwiftRex'
-      run: make test
-      run: make code-coverage-summary
-      run: make code-coverage-file
-      run: bash <(curl -s https://codecov.io/bash) -X xcodellvm -X gcov -f coverage.txt
+      run: |
+        make test
+        make code-coverage-summary
+        make code-coverage-file
+        bash <(curl -s https://codecov.io/bash) -X xcodellvm -X gcov -f coverage.txt
