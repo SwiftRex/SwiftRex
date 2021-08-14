@@ -110,6 +110,19 @@ class EffectTests: XCTestCase {
         XCTAssertEqual([.finished], completion)
     }
 
+    func testJustWithDependencies() {
+        let sut = Effect<Int, Int>.just { context in
+            context.dependencies + 42
+        }
+        var completion = [Subscribers.Completion<Never>]()
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: 1, toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertEqual([43], received)
+        XCTAssertEqual([.finished], completion)
+    }
+
     func testSequenceArray() {
         let sut = Effect<Void, Int>.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
         var completion = [Subscribers.Completion<Never>]()

@@ -135,6 +135,23 @@ class EffectTests: XCTestCase { // swiftlint:disable:this type_body_length
         XCTAssertEqual(1, completion)
     }
 
+    func testJustWithDependencies() {
+        let sut = Effect<Int, Int>.just { context in
+            context.dependencies + 42
+        }
+        var completion = 0
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: 1, toCancel: { _ in FireAndForget { } }))?
+            .subscribe(
+                onNext: { received += [$0.action] },
+                onError: { _ in XCTFail("should not fail") },
+                onCompleted: { completion += 1 }
+            )
+        XCTAssertEqual([43], received)
+        XCTAssertEqual(1, completion)
+    }
+
     func testSequenceArray() {
         let sut = Effect<Void, Int>.sequence([1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
         var completion = 0

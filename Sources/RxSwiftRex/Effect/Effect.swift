@@ -126,6 +126,12 @@ extension Effect where Dependencies == Void {
 }
 
 extension Effect {
+    public static func just(_ upstream: @escaping (Context) -> OutputAction) -> Effect<Dependencies, OutputAction> {
+        Effect { context in
+            Observable.just(DispatchedAction(upstream(context)))
+        }
+    }
+
     public static func just(_ value: OutputAction, from dispatcher: ActionSource) -> Effect {
         Effect { _ in
             Observable.just(DispatchedAction(value, dispatcher: dispatcher))
