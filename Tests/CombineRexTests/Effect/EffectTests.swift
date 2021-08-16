@@ -4,6 +4,8 @@ import CombineRex
 import SwiftRex
 import XCTest
 
+// swiftlint:disable type_body_length
+
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class EffectTests: XCTestCase {
     func testInitWithCancellation() {
