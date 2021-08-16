@@ -28,9 +28,9 @@ let package = Package(
         .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"]),
 
         .testTarget(name: "SwiftRexTests", dependencies: ["SwiftRex"]),
-//        .testTarget(name: "CombineRexTests", dependencies: ["CombineRex"]),
-//        .testTarget(name: "ReactiveSwiftRexTests", dependencies: ["ReactiveSwiftRex"]),
-//        .testTarget(name: "RxSwiftRexTests", dependencies: ["RxSwiftRex"]),
+        .testTarget(name: "CombineRexTests", dependencies: ["CombineRex"]),
+        .testTarget(name: "ReactiveSwiftRexTests", dependencies: ["ReactiveSwiftRex"]),
+        .testTarget(name: "RxSwiftRexTests", dependencies: ["RxSwiftRex"]),
 
         .testTarget(
             name: "SwiftRexDeprecationTests",
