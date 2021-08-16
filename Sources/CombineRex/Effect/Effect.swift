@@ -132,6 +132,12 @@ extension Effect where Dependencies == Void {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Effect {
+    public static func just(_ upstream: @escaping (Context) -> OutputAction) -> Effect<Dependencies, OutputAction> {
+        Effect { context in
+            Just(DispatchedAction(upstream(context)))
+        }
+    }
+
     public static func just(_ value: OutputAction, from dispatcher: ActionSource) -> Effect {
         Effect { _ in
             Just(DispatchedAction(value, dispatcher: dispatcher))

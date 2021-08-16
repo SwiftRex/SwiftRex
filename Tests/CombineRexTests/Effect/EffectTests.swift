@@ -4,6 +4,8 @@ import CombineRex
 import SwiftRex
 import XCTest
 
+// swiftlint:disable type_body_length
+
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 class EffectTests: XCTestCase {
     func testInitWithCancellation() {
@@ -107,6 +109,19 @@ class EffectTests: XCTestCase {
             .run((dependencies: (), toCancel: { _ in FireAndForget { } }))?
             .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
         XCTAssertEqual([42], received)
+        XCTAssertEqual([.finished], completion)
+    }
+
+    func testJustWithDependencies() {
+        let sut = Effect<Int, Int>.just { context in
+            context.dependencies + 42
+        }
+        var completion = [Subscribers.Completion<Never>]()
+        var received = [Int]()
+        _ = sut
+            .run((dependencies: 1, toCancel: { _ in FireAndForget { } }))?
+            .sink(receiveCompletion: { completion += [$0] }, receiveValue: { received += [$0.action] })
+        XCTAssertEqual([43], received)
         XCTAssertEqual([.finished], completion)
     }
 
