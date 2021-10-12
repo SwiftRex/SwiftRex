@@ -30,7 +30,7 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
 
     public func receiveContext(getState: @escaping () -> GlobalStateType, output: AnyActionHandler<GlobalOutputActionType>) {
         partMiddleware.receiveContext(
-            getState: { self.stateMap(getState()) },
+            getState: andThen(getState, stateMap),
             output: output.contramap(outputActionMap)
         )
     }
@@ -61,4 +61,9 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
 
         return partMiddleware.handle(action: localAction, from: dispatcher, afterReducer: &afterReducer)
     }
+}
+
+/// a little helper to compose two functions
+private func andThen<A, B>(_ f: @escaping () -> A, _ g: @escaping (A) -> B) -> () -> B {
+    { g(f()) }
 }
