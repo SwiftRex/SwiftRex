@@ -64,6 +64,7 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
 }
 
 /// a little helper to compose two functions
+// swiftlint:disable:next identifier_name
 private func andThen<A, B>(_ f: @escaping () -> A, _ g: @escaping (A) -> B) -> () -> B {
     { g(f()) }
 }
