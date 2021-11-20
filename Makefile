@@ -1,4 +1,4 @@
-.PHONY: set-version pod-push mint test code-coverage-summary code-coverage-details code-coverage-file code-coverage-upload lint-check lint-autocorrect sourcery jazzy swiftdoc prebuild notify-telegram help
+.PHONY: set-version pod-push mint test code-coverage-summary code-coverage-details code-coverage-file code-coverage-upload lint-check lint-autocorrect sourcery jazzy docc prebuild notify-telegram help
 .DEFAULT_GOAL := help
 
 # Version
@@ -71,6 +71,15 @@ lint-autocorrect:
 sourcery:
 	mint run sourcery
 
+# Docc
+docc:
+	xcodebuild docbuild -scheme "SwiftRex-Package" -sdk iphonesimulator -configuration Debug -destination "platform=iOS Simulator,name=iPhone SE (2nd generation),OS=15.0" SYMROOT=tmp
+	mint run docc2html -f tmp/Debug-iphonesimulator/SwiftRex.doccarchive docs/docc/SwiftRex
+	mint run docc2html -f tmp/Debug-iphonesimulator/CombineRex.doccarchive docs/docc/CombineRex
+	mint run docc2html -f tmp/Debug-iphonesimulator/RxSwiftRex.doccarchive docs/docc/RxSwiftRex
+	mint run docc2html -f tmp/Debug-iphonesimulator/ReactiveSwiftRex.doccarchive docs/docc/ReactiveSwiftRex
+	rm -rf tmp
+
 # Jazzy
 
 jazzy:
@@ -78,9 +87,6 @@ jazzy:
 	bundle exec jazzy --module ReactiveSwiftRex  --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/ReactiveSwiftRex
 	bundle exec jazzy --module RxSwift           --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api/RxSwiftRex
 	bundle exec jazzy --module SwiftRex          --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --output docs/api
-
-swiftdoc:
-	mint run swift-doc generate Sources --module-name SwiftRex --output docs/swiftdocs --format html
 
 # Pre-Build
 
@@ -128,8 +134,8 @@ help:
 	@echo make jazzy
 	@echo -- generates documentation
 	@echo
-	@echo make swiftdoc
-	@echo "-- generates documentation (alternative API docs, not fully working yet)"
+	@echo make docc
+	@echo "-- generates DocC documentation"
 	@echo
 	@echo make prebuild
 	@echo -- runs the pre-build phases
