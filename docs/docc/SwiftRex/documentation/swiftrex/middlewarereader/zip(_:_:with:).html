@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>zip(_:_:with:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">MiddlewareReader</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">MiddlewareReaderProtocol Implementations</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">zip(_:_:with:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Type Method</span>
+  <h1 class="title">zip(_:_:with:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>static</span> <span class='token-keyword'>func</span> <span class='token-identifier'>zip</span>&lt;<span class='token-genericParameter'>M1</span>, <span class='token-genericParameter'>M2</span>, <span class='token-genericParameter'>MOutput</span>&gt;(<span class='token-externalParam'>_</span> <span class='token-internalParam'>reader1</span>: M1, <span class='token-externalParam'>_</span> <span class='token-internalParam'>reader2</span>: M2, <span class='token-externalParam'>with</span> <span class='token-internalParam'>map</span>: <span class='token-keyword'>@escaping</span> (M1.MiddlewareType, M2.MiddlewareType) -&gt; MOutput) -&gt; <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareReader/index.html'><span>MiddlewareReader</span></a>&lt;M1.Dependencies, MOutput&gt; <span class='token-keyword'>where</span> M1 : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareReaderProtocol/index.html'><span>MiddlewareReaderProtocol</span></a>, M2 : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareReaderProtocol/index.html'><span>MiddlewareReaderProtocol</span></a>, MOutput : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a>, M1.Dependencies == M2.Dependencies</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>middleware reader that gives a middleware of type <code>MOutput</code> after receiving the injected dependencies</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>reader1</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>first reader type</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>reader2</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>second reader type</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>map</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>how to combine produced middlewares into a single one, of type <code>MOutput</code></p></div>
+      </dd>
+    
+  </dl>
+</section>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

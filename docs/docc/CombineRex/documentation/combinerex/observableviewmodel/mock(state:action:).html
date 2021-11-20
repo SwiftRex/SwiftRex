@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>mock(state:action:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">CombineRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">ObservableViewModel</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">mock(state:action:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Type Method</span>
+  <h1 class="title">mock(state:action:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Mock for using in tests or SwiftUI previews, available in DEBUG mode only You can use if as a micro-redux for tests and SwiftUI previews, for example:
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>static</span> <span class='token-keyword'>func</span> <span class='token-identifier'>mock</span>(<span class='token-externalParam'>state</span>: <a class='type-identifier-link' href='../../../documentation/CombineRex/ObservableViewModel/index.html'><span>ObservableViewModel</span></a>&lt;ViewAction, ViewState&gt;.StateType, <span class='token-externalParam'>action</span>: <span class='token-keyword'>@escaping</span> ((<a class='type-identifier-link' href='../../../documentation/CombineRex/ObservableViewModel/index.html'><span>ObservableViewModel</span></a>&lt;ViewAction, ViewState&gt;.ActionType, ActionSource, <span class='token-keyword'>inout</span> <a class='type-identifier-link' href='../../../documentation/CombineRex/ObservableViewModel/index.html'><span>ObservableViewModel</span></a>&lt;ViewAction, ViewState&gt;.StateType) -&gt; Void) = { _, _, _ in }) -&gt; <a class='type-identifier-link' href='../../../documentation/CombineRex/ObservableViewModel/index.html'><span>ObservableViewModel</span></a>&lt;<a class='type-identifier-link' href='../../../documentation/CombineRex/ObservableViewModel/index.html'><span>ObservableViewModel</span></a>&lt;ViewAction, ViewState&gt;.ActionType, <a class='type-identifier-link' href='../../../documentation/CombineRex/ObservableViewModel/index.html'><span>ObservableViewModel</span></a>&lt;ViewAction, ViewState&gt;.StateType&gt;</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>a very simple ObservableViewModel mock, that you can inject in your SwiftUI View for tests or live preview.</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>state</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Initial state mock</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>action</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a simple reducer function, of type <code>(ActionType, inout StateType) -&gt; Void</code>, useful if you want to use in SwiftUI live previews and quickly change an UI property when a button is tapped, for example. It’s like a micro-redux for tests and SwiftUI previews. Defaults to do nothing.</p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let mock = ObservableViewModel&lt;(user: String, pass: String, buttonEnabled: Bool), ViewAction&gt;.mock(</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    state: (user: &quot;ozzy&quot;, pass: &quot;&quot;, buttonEnabled: false),</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    action: { action, state in</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">        switch action {</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">        case let .userChanged(newUser):</span></span>
+<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">            state.user = newUser</span></span>
+<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">            state.buttonEnabled = !state.user.isEmpty &amp;&amp; !state.pass.isEmpty</span></span>
+<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">        case let .passwordChanged(newPass):</span></span>
+<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">            state.pass = newPass</span></span>
+<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">            state.buttonEnabled = !state.user.isEmpty &amp;&amp; !state.pass.isEmpty</span></span>
+<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">        case .buttonTapped:</span></span>
+<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">            print(&quot;Button tapped&quot;)</span></span>
+<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
+<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">)</span></span>
+</code></pre>
+  </div>
+</div></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

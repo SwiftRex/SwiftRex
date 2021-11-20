@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>&lt;&gt;(_:_:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">MiddlewareReaderProtocol</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">&lt;&gt;(_:_:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Operator</span>
+  <h1 class="title">&lt;&gt;(_:_:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Compose two Middlewares that are not officially Semigroups and not necessarily the same Middleware type, into a <code>ComposedMiddleware</code> that holds both before even materializing them into real instances. As most Middlewares don’t need to return <code>Self</code> when grouped together, and it’s perfectly reasonable to compose middlewares of different types, this option is more flexible than the Semigroup composition.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>static</span> <span class='token-keyword'>func</span> <span class='token-identifier'>&lt;&gt;</span> &lt;<span class='token-genericParameter'>OtherMiddleware</span>&gt;(<span class='token-internalParam'>lhs</span>: Self, <span class='token-internalParam'>rhs</span>: <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareReader/index.html'><span>MiddlewareReader</span></a>&lt;Self.Dependencies, OtherMiddleware&gt;) -&gt; <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareReader/index.html'><span>MiddlewareReader</span></a>&lt;Self.Dependencies, <a class='type-identifier-link' href='../../../documentation/SwiftRex/ComposedMiddleware/index.html'><span>ComposedMiddleware</span></a>&lt;Self.MiddlewareType.InputActionType, Self.MiddlewareType.OutputActionType, Self.MiddlewareType.StateType&gt;&gt; <span class='token-keyword'>where</span> OtherMiddleware : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a>, OtherMiddleware.InputActionType == Self.MiddlewareType.InputActionType, OtherMiddleware.OutputActionType == Self.MiddlewareType.OutputActionType, OtherMiddleware.StateType == Self.MiddlewareType.StateType</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>a composed Middleware Reader that, once injected with dependencies, will produce a ComposedMiddleware that runs first the left and then the right middleware</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>lhs</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>middleware reader that will generate a middleware which runs first</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>rhs</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>middleware reader that will generate a middleware which runs last</p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>The only requirements are that:</p><ul><li><p><p>both middleware readers must depend on the same Dependencies type</p></p></li><li><p><p>both resulting middlewares should match their input action, output action and state types</p></p></li></ul><p>Therefore, you should lift them first before composing them. Luckily this is possible to be done with MiddlewareReader.</p></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>Middleware| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">Middleware</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Protocol</span>
+  <h1 class="title">Middleware</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      ⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code>ReduxStoreProtocol</code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process. This happens before the <code>Reducer</code> to do its job.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>protocol</span> <span class='token-identifier'>Middleware</span> : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a></code></pre>
+  </div>
+</section><div class='content'><h2 id='overview'>Overview</h2><p>We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state at any point.</p><p>An action is a lightweight structure, typically an enum, that is dispatched into the <code>ActionHandler</code> (usually a <code>StoreProtocol</code>). A Store like <code>ReduxStoreProtocol</code> enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>Middleware</code> is class that handles actions, and has the power to dispatch more actions to the <code>ActionHandler</code> chain. The <code>Middleware</code> can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop, or perhaps some <code>Reducer</code>, as reducers pipeline is at the end of every middleware pipeline.</p><p>Middlewares can schedule a callback to be executed after the reducer pipeline is done mutating the global state. At that point, the middleware will have access to the new state, and in case it cached the old state it can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.</p><p>Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file, line, function and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.</p><p>Because the <code>Middleware</code> receive all actions and accesses the state of the app at any point, anything can be done from these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct.</p><p>Some suggestions of middlewares:</p><ul><li><p><p>Run Timers, pooling some external resource or updating some local state at a constant time</p></p></li><li><p><p>Subscribe for <code>CoreData</code>, <code>Realm</code>, <code>Firebase Realtime Database</code> or equivalent database changes</p></p></li><li><p><p>Be a <code>CoreLocation</code> delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</p></p></li><li><p><p>Be a <code>HealthKit</code> delegate to track activities, or even combining that with <code>CoreLocation</code> observation in order to track the activity route</p></p></li><li><p><p>Logger, Telemetry, Auditing, Analytics tracker, Crash report breadcrumbs</p></p></li><li><p><p>Monitoring or debugging tools, like external apps to monitor the state and actions remotely from a different device</p></p></li><li><p><p><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</p></p></li><li><p><p>API calls and other “cold observables”</p></p></li><li><p><p>Network Reachability</p></p></li><li><p><p>Navigation through the app (Redux Coordinator pattern)</p></p></li><li><p><p><code>CoreBluetooth</code> central or peripheral manager</p></p></li><li><p><p><code>CoreNFC</code> manager and delegate</p></p></li><li><p><p><code>NotificationCenter</code> and other delegates</p></p></li><li><p><p>WebSocket, TCP Socket, Multipeer and many other connectivity protocols</p></p></li><li><p><p><code>RxSwift</code> observables, <code>ReactiveSwift</code> signal producers, <code>Combine</code> publishers</p></p></li><li><p><p>Observation of traits changes, device rotation, language/locale, dark mode, dynamic fonts, background/foreground state</p></p></li><li><p><p>Any side-effect, I/O, networking, sensors, third-party libraries that you want to abstract</p></p></li></ul><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">                  ┌─────┐                                                                                        ┌─────┐</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">                  │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">                  │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">                  │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">                  │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘</span></span>
+<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">┌──────┐ dispatch │     │   │                ▲</span></span>
+<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">│Button│─────────▶│Store│──▶│                └───afterReducer─────┐                   ┌────────┐</span></span>
+<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">└──────┘ Action   │     │   │                                     │                ┌─▶│ View 1 │</span></span>
+<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">                  │     │   │                                  ┌─────┐             │  └────────┘</span></span>
+<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">                  │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐</span></span>
+<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">                  │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │</span></span>
+<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">                  │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘</span></span>
+<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">                  └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐</span></span>
+<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">                              State                                                └─▶│ View 3 │</span></span>
+<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">                                                                                      └────────┘</span></span>
+</code></pre>
+  </div>
+</div><p>Middleware protocol is generic over 3 associated types:</p><h4 id='InputActionType:'>InputActionType:</h4><p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware. Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p><h4 id='OutputActionType:'>OutputActionType:</h4><p>The Action type that this <code>Middleware</code> will eventually trigger back to the store in response of side-effects. This can be the same as <code>InputActionType</code> or different, in case you want to separate your enum in requests and responses. Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p><h4 id='StateType:'>StateType:</h4><p>The State part that this <code>Middleware</code> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <code>StateType</code> from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don’t need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn’t need to read any state, so the <code>StateType</code>can safely be set to <code>Void</code>. Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p><p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p><p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">class LoggerMiddleware: Middleware {</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    typealias InputActionType = AppGlobalAction // It wants to receive all possible app actions</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    typealias OutputActionType = Never          // No action is generated from this Middleware</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">    typealias StateType = AppGlobalState        // It wants to read the whole app state</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">    var getState: GetState&lt;AppGlobalState&gt;!</span></span>
+<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">    func receiveContext(getState: @escaping GetState&lt;AppGlobalState&gt;, output: AnyActionHandler&lt;Never&gt;) {</span></span>
+<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">        self.getState = getState</span></span>
+<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">    func handle(action: AppGlobalAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {</span></span>
+<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">        let stateBefore: AppGlobalState = getState()</span></span>
+<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">        let dateBefore = Date()</span></span>
+<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">        afterReducer = .do {</span></span>
+<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">            let stateAfter = self.getState()</span></span>
+<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">            let dateAfter = Date()</span></span>
+<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">            let source = &quot;\(dispatcher.file):\(dispatcher.line) - \(dispatcher.function) | \(dispatcher.info ?? &quot;&quot;)&quot;</span></span>
+<span class="code-line-container"><span data-line-number="20" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="21" class="code-number" style="display: none;"></span><span class="code-line">            Logger.log(action: action, from: source, before: stateBefore, after: stateAfter, dateBefore: dateBefore, dateAfter: dateAfter)</span></span>
+<span class="code-line-container"><span data-line-number="22" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
+<span class="code-line-container"><span data-line-number="23" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="24" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
+<span class="code-line-container"><span data-line-number="25" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="26" class="code-number" style="display: none;"></span><span class="code-line">class FavoritesAPIMiddleware: Middleware {</span></span>
+<span class="code-line-container"><span data-line-number="27" class="code-number" style="display: none;"></span><span class="code-line">    typealias InputActionType = FavoritesAction  // It wants to receive only actions related to Favorites</span></span>
+<span class="code-line-container"><span data-line-number="28" class="code-number" style="display: none;"></span><span class="code-line">    typealias OutputActionType = FavoritesAction // It wants to also dispatch actions related to Favorites</span></span>
+<span class="code-line-container"><span data-line-number="29" class="code-number" style="display: none;"></span><span class="code-line">    typealias StateType = FavoritesModel         // It wants to read the app state that manages favorites</span></span>
+<span class="code-line-container"><span data-line-number="30" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="31" class="code-number" style="display: none;"></span><span class="code-line">    var getState: GetState&lt;FavoritesModel&gt;!</span></span>
+<span class="code-line-container"><span data-line-number="32" class="code-number" style="display: none;"></span><span class="code-line">    var output: AnyActionHandler&lt;FavoritesAction&gt;!</span></span>
+<span class="code-line-container"><span data-line-number="33" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="34" class="code-number" style="display: none;"></span><span class="code-line">    func receiveContext(getState: @escaping GetState&lt;FavoritesModel&gt;, output: AnyActionHandler&lt;FavoritesAction&gt;) {</span></span>
+<span class="code-line-container"><span data-line-number="35" class="code-number" style="display: none;"></span><span class="code-line">        self.getState = getState</span></span>
+<span class="code-line-container"><span data-line-number="36" class="code-number" style="display: none;"></span><span class="code-line">        self.output = output</span></span>
+<span class="code-line-container"><span data-line-number="37" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="38" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="39" class="code-number" style="display: none;"></span><span class="code-line">    func handle(action: FavoritesAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {</span></span>
+<span class="code-line-container"><span data-line-number="40" class="code-number" style="display: none;"></span><span class="code-line">        guard let .toggleFavorite(movieId) = action else { return }</span></span>
+<span class="code-line-container"><span data-line-number="41" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="42" class="code-number" style="display: none;"></span><span class="code-line">        let favoritesList = getState()</span></span>
+<span class="code-line-container"><span data-line-number="43" class="code-number" style="display: none;"></span><span class="code-line">        let makeFavorite = !favoritesList.contains(where: { $0.id == movieId })</span></span>
+<span class="code-line-container"><span data-line-number="44" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="45" class="code-number" style="display: none;"></span><span class="code-line">        API.changeFavorite(id: movieId, makeFavorite: makeFavorite) (completion: { result in</span></span>
+<span class="code-line-container"><span data-line-number="46" class="code-number" style="display: none;"></span><span class="code-line">            switch result {</span></span>
+<span class="code-line-container"><span data-line-number="47" class="code-number" style="display: none;"></span><span class="code-line">            case let .success(value):</span></span>
+<span class="code-line-container"><span data-line-number="48" class="code-number" style="display: none;"></span><span class="code-line">                self.output.dispatch(.changedFavorite(movieId, isFavorite: true), info: &quot;API.changeFavorite callback&quot;)</span></span>
+<span class="code-line-container"><span data-line-number="49" class="code-number" style="display: none;"></span><span class="code-line">            case let .failure(error):</span></span>
+<span class="code-line-container"><span data-line-number="50" class="code-number" style="display: none;"></span><span class="code-line">                self.output.dispatch(.changedFavoriteHasFailed(movieId, isFavorite: false, error: error), info: &quot;API.changeFavorite callback&quot;)</span></span>
+<span class="code-line-container"><span data-line-number="51" class="code-number" style="display: none;"></span><span class="code-line">            }</span></span>
+<span class="code-line-container"><span data-line-number="52" class="code-number" style="display: none;"></span><span class="code-line">        })</span></span>
+<span class="code-line-container"><span data-line-number="53" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="54" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
+</code></pre>
+  </div>
+</div><p><img src='../../../https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg' /></p></div>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/Middleware/handle(action:from:afterReducer:).html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>handle</span><span class='decorator'>(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>from</span><span class='decorator'>: </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>afterReducer</span><span class='decorator'>: </span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>AfterReducer</span><span class='decorator'>)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions. This is also a good place for analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global state if you want, and/or execute things before the reducer. This function is only called by the store after the <code>receiveContext(getState:output:)</code> was called, so if you saved the received context from there you can safely use it here to get the state or dispatch new actions. Setting the <code>afterReducer</code> in/out parameter is optional, if you don’t set it, it defaults to <code>.doNothing()</code>.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  <section id='see-also' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>See Also</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Learning</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/QuickGuide.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  Quick Guide
+                </a>
+              
+              <div class="abstract">
+                <div class="content">This is a TL;DR in case you want to start quickly, without too much theory, or in case you’re already pretty familiar with other redux implementations. We still recommend the other topics for a deeper understanding behind SwiftRex concepts.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/GettingStarted.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  Getting Started
+                </a>
+              
+              <div class="abstract">
+                <div class="content">Let’s understand the components of SwiftRex.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/Action.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  Action
+                </a>
+              
+              <div class="abstract">
+                <div class="content">An Action represents an event that was notified by external (or sometimes internal) actors of your app. It’s about relevant INPUT events.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/State.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  State
+                </a>
+              
+              <div class="abstract">
+                <div class="content">State represents the whole knowledge that an app holds while is open, usually in memory and mutable. It’s about relevant OUTPUT properties.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/StoreType/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>StoreType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A protocol that defines the two expected roles of a “Store”: receive/distribute actions (<a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a>); and publish changes of the the current app state (<a href='../../../documentation/SwiftRex/StateProvider/index.html'><code>StateProvider</code></a>) to possible subscribers. It can be a real store (such as <a href='../../../documentation/SwiftRex/ReduxStoreBase/index.html'><code>ReduxStoreBase</code></a>) or just a “proxy” that acts on behalf of a real store, for example, in the case of <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareProtocol</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> is a plugin, or a composition of several plugins, that are assigned to the app global <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> pipeline in order to handle each action received (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a>), to execute side-effects in response, and eventually dispatch more actions (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html'><code>OutputActionType</code></a>) in the process. It can also access the most up-to-date <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> while handling an incoming action.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/Reducer/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>Reducer</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

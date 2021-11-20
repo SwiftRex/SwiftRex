@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>init(onValue:onCompleted:onSubscribe:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">SubscriberType</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">init(onValue:onCompleted:onSubscribe:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Initializer</span>
+  <h1 class="title">init(onValue:onCompleted:onSubscribe:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Protocol-witness of a subscriber. Configure the behaviour of this wrapper from a concrete implementation from your favourite reactive framework.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>init</span>(<span class='token-externalParam'>onValue</span>: ((Element) -&gt; Void)? = nil, <span class='token-externalParam'>onCompleted</span>: ((ErrorType?) -&gt; Void)? = nil, <span class='token-externalParam'>onSubscribe</span>: ((<a class='type-identifier-link' href='../../../documentation/SwiftRex/SubscriptionType/index.html'><span>SubscriptionType</span></a>) -&gt; Void)? = nil)</code></pre>
+  </div>
+</section><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>onValue</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Closure to handle new values received</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>onCompleted</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Closure to handle completion, which has an optional error in case the completion happened due to an error being emitted</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>onSubscribe</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Closure to handle subscription event</p></div>
+      </dd>
+    
+  </dl>
+</section>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

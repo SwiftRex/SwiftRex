@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>ReplayLastSubjectType| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">ReplayLastSubjectType</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Structure</span>
+  <h1 class="title">ReplayLastSubjectType</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>, <code>Variable</code>) from reactive frameworks. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>ReplayLastSubjectType</span>&lt;<span class='token-genericParameter'>Element</span>, <span class='token-genericParameter'>ErrorType</span>&gt; <span class='token-keyword'>where</span> ErrorType : Error</code></pre>
+  </div>
+</section>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Initializers</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReplayLastSubjectType/init(publisher:subscriber:value:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>(</span><span class='decorator'>publisher</span><span class='decorator'>: </span><span class='decorator'>PublisherType</span><span class='decorator'>&lt;</span><span class='decorator'>Element</span><span class='decorator'>, </span><span class='decorator'>ErrorType</span><span class='decorator'>&gt;, </span><span class='decorator'>subscriber</span><span class='decorator'>: </span><span class='decorator'>SubscriberType</span><span class='decorator'>&lt;</span><span class='decorator'>Element</span><span class='decorator'>, </span><span class='decorator'>ErrorType</span><span class='decorator'>&gt;, </span><span class='decorator'>value</span><span class='decorator'>: () -&gt; </span><span class='decorator'>Element</span><span class='decorator'>)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates an abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>, <code>Variable</code>) from reactive frameworks.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Properties</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReplayLastSubjectType/publisher.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>publisher</span><span class='decorator'>: </span><span class='decorator'>PublisherType</span><span class='decorator'>&lt;</span><span class='decorator'>Element</span><span class='decorator'>, </span><span class='decorator'>ErrorType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Upstream publisher that feeds data into this subject</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReplayLastSubjectType/subscriber.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>subscriber</span><span class='decorator'>: </span><span class='decorator'>SubscriberType</span><span class='decorator'>&lt;</span><span class='decorator'>Element</span><span class='decorator'>, </span><span class='decorator'>ErrorType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Downstream subscriber that subscribes to this subject and will receive events from it</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReplayLastSubjectType/value.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>var</span><span class='decorator empty-token'> </span><span class='identifier'>value</span><span class='decorator'>: () -&gt; </span><span class='decorator'>Element</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Reads the most recent element emitted by this subject. This subject can be seen as a variable in stateful programming style, it holds one value that can be read at any point using a getter function <code>() -&gt; Element</code>. Useful for bridging with the imperative world.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReplayLastSubjectType/mutate(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>mutate</span><span class='decorator'>&lt;</span><span class='decorator'>Result</span><span class='decorator'>&gt;((</span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>Element</span><span class='decorator'>) -&gt; </span><span class='decorator'>Result</span><span class='decorator'>) -&gt; </span><span class='decorator'>Result</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Atomically mutate this subject’s value in a closure where you can read and write the current element value</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReplayLastSubjectType/mutate(when:action:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>mutate</span><span class='decorator'>&lt;</span><span class='decorator'>Result</span><span class='decorator'>&gt;(</span><span class='decorator'>when</span><span class='decorator'>: (</span><span class='decorator'>Result</span><span class='decorator'>) -&gt; </span><span class='decorator'>Bool</span><span class='decorator'>, </span><span class='decorator'>action</span><span class='decorator'>: (</span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>Element</span><span class='decorator'>) -&gt; </span><span class='decorator'>Result</span><span class='decorator'>) -&gt; </span><span class='decorator'>Result</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Atomically mutate this subject’s value in a closure where you can read and write the current element value Before the mutation, a condition will be evaluated and the mutation will only happen when the result of this evaluation returns <code>true</code>. This allows you to simulate the mutation before executing it.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

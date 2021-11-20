@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>AfterReducer| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">AfterReducer</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Structure</span>
+  <h1 class="title">AfterReducer</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Wraps a closure that will be called after the Reducer pipeline has changed the state with the current action. With this structure, a middleware can schedule some callback to be executed with the new state, and evidently access this state to check what’s different. This can be very useful for Middlewares that perform logging, monitoring or telemetry, so you can check the state before and after reducers’ execution, or how much time it took for the whole chain to be called (in case this middleware is the first in the chain, of course). <code>AfterReducer</code> is a monoid, that means it can be combined with another <code>AfterReducer</code> to form a new one (that executes both operations in the reverse order) and an identity instance, that when combined with any other <code>AfterReducer</code> changes nothing in the result, acting as a neutral element in composition. The identity of an <code>AfterReducer</code> is the static instance <code>doNothing()</code>, that contains an empty closure for no-op. The combination between two <code>AfterReducer</code> instances occur in reverse order so the first middleware will have its “after reducer” closure executed last. This composition can be achieved by using the operator <code>&lt;&gt;</code>
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>AfterReducer</span></code></pre>
+  </div>
+</section>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/AfterReducer/performBlock().html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>performBlock</span><span class='decorator'>()</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Properties</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/AfterReducer/identity.html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>identity</span><span class='decorator'>: </span><span class='decorator'>AfterReducer</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The identity of an <code>AfterReducer</code> is the static instance <code>doNothing()</code>, that contains an empty closure for no-op. When combined with any other <code>AfterReducer</code> changes nothing in the result, acting as a neutral element in composition.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/AfterReducer/do(_:).html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>`do`</span><span class='decorator'>(() -&gt; </span><span class='decorator'>Void</span><span class='decorator'>) -&gt; </span><span class='decorator'>AfterReducer</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Schedules some task to be executed right after Reducer chain has finished and new state is published</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/AfterReducer/doNothing().html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>doNothing</span><span class='decorator'>() -&gt; </span><span class='decorator'>AfterReducer</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The identity of an <code>AfterReducer</code> is the static instance <code>doNothing()</code>, that contains an empty closure for no-op. When combined with any other <code>AfterReducer</code> changes nothing in the result, acting as a neutral element in composition.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

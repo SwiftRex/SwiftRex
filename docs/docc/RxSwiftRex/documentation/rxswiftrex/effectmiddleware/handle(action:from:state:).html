@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>handle(action:from:state:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">RxSwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">EffectMiddleware</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">handle(action:from:state:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">handle(action:from:state:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>handle</span>(<span class='token-externalParam'>action</span>: InputActionType, <span class='token-externalParam'>from</span> <span class='token-internalParam'>dispatcher</span>: ActionSource, <span class='token-externalParam'>state</span>: <span class='token-keyword'>@escaping</span> GetState&lt;StateType&gt;) -&gt; IO&lt;OutputActionType&gt;</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>an <code>IO</code> closure where you can run side-effects and dispatch new actions to the store</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>action</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>the incoming action to be handled</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>dispatcher</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>information about the action source, representing the entity that created and dispatched the action</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>state</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a closure that, once called, will return the most up-to-date state. In the scope of this function, the state wasn’t handled by reducers yet, but in the context of the <code>IO</code> block you should expect the state to be changed already.</p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>This is a good place for side-effects such as async tasks, timers, web, database, file access, background execution, access device sensors, perform analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global state, this will happen in the <code>IO</code> closure you must return from this function.</p><p>In case no side-effect is required for certain action, returning <code>IO/pure()</code> should suffice.</p><p>You can only dispatch new actions to the store from inside the <code>IO</code> closure.</p><aside class='note'><p class='label'>Note</p><p><p><strong><em>IMPORTANT:</em></strong> this will be called on the main queue, never perform expensive work on it. You should perform side-effects only in the <code>IO</code> block and care about running things in background. You don’t have to return to the main queue to dispatch actions, however, the store will take care of that.</p></p></p></aside></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>
