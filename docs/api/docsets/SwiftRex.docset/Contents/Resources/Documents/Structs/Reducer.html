@@ -17,7 +17,7 @@
     <a title="Reducer Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.8.6 Docs</a> (72% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.8.6 Docs</a> (76% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="../search.json">
@@ -249,85 +249,7 @@
 
                 </div>
               </div>
-            <p>⚙ <code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate
-the new state.</p>
-
-<p>The <code><a href="../Protocols/Middleware.html">Middleware</a></code> pipeline will be notified about actions, or even trigger new ones, but what they can NOT do is
-changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are
-required we must use the <code>Reducer</code> function:</p>
-<pre class="highlight swift"><code><span class="p">(</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
-</code></pre>
-
-<p>Given an action and the current state, returns the calculated state. This function will be executed in the last stage
-of an action handling, when all middlewares had the chance to read the action and start their own side-effects.</p>
-
-<p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of
-side-effect, so never add properties to the <code>Reducer</code> structs or call any external function. If you are tempted to do
-that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always
-good to do a final sanity check before changing the state, like for example check other dependant properties that must
-be changed together.</p>
-
-<p>Once the reducer function executes, the store will update its single source of truth with the new calculated state,
-and propagate it to all its observers, that will react to the new state and update Views, for example.</p>
-
-<p>This function is wrapped in a struct to overcome some Swift limitations, for example, allowing us to compose multiple
-reducers into one (monoid operation, where two or more reducers become a single one) or lifting reducers from local
-types to global types. The ability to lift reducers allow us to create small reducers, specialized in parts of our
-state only, written in different frameworks and modules, and later plugged into a bigger state and action handler by
-providing a way to map state and actions between the global and local ones. For more information about that, please
-check the functions <code>lift(actionGetter:stateGetter:stateSetter:)</code> and <code>lift(action:state:)</code>.</p>
-
-<p>A possible implementation of a reducer would be:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">volumeReducer</span> <span class="o">=</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">VolumeAction</span><span class="p">,</span> <span class="kt">VolumeState</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">currentState</span> <span class="k">in</span>
-    <span class="k">switch</span> <span class="n">action</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="o">.</span><span class="nv">louder</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kt">VolumeState</span><span class="p">(</span>
-            <span class="nv">isMute</span><span class="p">:</span> <span class="n">currentState</span><span class="o">.</span><span class="n">isMute</span><span class="p">,</span>
-            <span class="nv">volume</span><span class="p">:</span> <span class="nf">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">currentState</span><span class="o">.</span><span class="n">volume</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">case</span> <span class="o">.</span><span class="nv">quieter</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kt">VolumeState</span><span class="p">(</span>
-            <span class="nv">isMute</span><span class="p">:</span> <span class="n">currentState</span><span class="o">.</span><span class="n">isMute</span><span class="p">,</span>
-            <span class="nv">volume</span><span class="p">:</span> <span class="nf">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">currentState</span><span class="o">.</span><span class="n">volume</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">case</span> <span class="o">.</span><span class="nv">toggleMute</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kt">VolumeState</span><span class="p">(</span>
-            <span class="nv">isMute</span><span class="p">:</span> <span class="o">!</span><span class="n">currentState</span><span class="o">.</span><span class="n">isMute</span><span class="p">,</span>
-            <span class="nv">volume</span><span class="p">:</span> <span class="n">currentState</span><span class="o">.</span><span class="n">volume</span>
-        <span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre>
-
-<p>Please notice from the example above the following good practices:</p>
-
-<ul>
-<li>No <code>DispatchQueue</code>, threading, operation queue, promises, reactive code in there</li>
-<li>All you need to implement this function is provided by the arguments <code>action</code> and <code>currentState</code>, don&rsquo;t use any other
-variable coming from global scope, not even for reading purposes. If you need something else, it should be in the state</li>
-<li>Do not start side-effects, requests, I/O, database calls</li>
-<li>Avoid <code>default</code> when writing <code>switch</code>/<code>case</code> statements. That way the compiler will help you more</li>
-<li>Make the action and the state generic parameters as much specialized as you can. If volume state is part of a bigger
-state, you should not be tempted to pass the whole big state into this reducer. Make it short, brief and specialized,
-this also helps preventing <code>default</code> case or having to re-assign properties that are never mutated by this reducer.
-<code>
-              ┌─────┐                                                                                        ┌─────┐
-              │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
-              │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
-              │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
-              │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
-┌──────┐ dispatch │     │   │
-│Button│─────────▶│Store│──▶│                                                         ┌────────┐
-└──────┘ Action   │     │   │                                                      ┌─▶│ View 1 │
-              │     │   │                                  ┌─────┐             │  └────────┘
-              │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
-              │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
-              │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
-              └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
-                          State                                                └─▶│ View 3 │
-                                                                                  └────────┘
-</code></li>
-</ul>
+            <p><code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.</p>
 
           </section>
           <section class="section task-group-section">
@@ -1083,7 +1005,7 @@ function itself.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-07-29)</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-11-20)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

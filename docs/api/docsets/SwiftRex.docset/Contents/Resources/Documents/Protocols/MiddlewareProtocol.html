@@ -17,7 +17,7 @@
     <a title="MiddlewareProtocol Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.8.6 Docs</a> (72% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.8.6 Docs</a> (76% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="../search.json">
@@ -248,7 +248,9 @@
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p><code>MiddlewareProtocol</code> is a plugin, or a composition of several plugins, that are assigned to the app global <code><a href="../Protocols/StoreType.html">StoreType</a></code> pipeline in order to
+handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions
+(<code>OutputActionType</code>) in the process. It can also access the most up-to-date <code>StateType</code> while handling an incoming action.</p>
 
           </section>
           <section class="section task-group-section">
@@ -267,9 +269,13 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The Action type that this <code><a href="../Protocols/Middleware.html">Middleware</a></code> knows how to handle, so the store will forward actions of this type to this middleware.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
-action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+                        <p>The Action type that this <code>MiddlewareProtocol</code> knows how to handle, so the store will forward actions of this type to this middleware.</p>
+
+<p>Most of the times middlewares don&rsquo;t need to handle all possible actions from the whole global action tree, so we can decide to allow it to
+focus only on a subset of the action.</p>
+
+<p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the
+global action of an app. Please check <a href="doc:Lifting">doc:Lifting</a> for more details.</p>
 
                       </div>
                       <div class="declaration">
@@ -296,10 +302,14 @@ action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMa
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The Action type that this <code><a href="../Protocols/Middleware.html">Middleware</a></code> will eventually trigger back to the store in response of side-effects. This can be the same as
-<code><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP15InputActionTypeQa">InputActionType</a></code> or different, in case you want to separate your enum in requests and responses.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global
-action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+                        <p>The Action type that this <code>MiddlewareProtocol</code> will eventually trigger back to the store in response of side-effects. This can be the same
+as <code><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP15InputActionTypeQa">InputActionType</a></code> or different, in case you want to separate your enum in requests and responses.</p>
+
+<p>Most of the times middlewares don&rsquo;t need to dispatch all possible actions of the whole global action tree, so we can decide to allow it to
+dispatch only a subset of the action, or not dispatch any action at all, so the <code>OutputActionType</code> can safely be set to <code>Never</code>.</p>
+
+<p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the
+global action of an app. Please check <a href="doc:Lifting">doc:Lifting</a> for more details.</p>
 
                       </div>
                       <div class="declaration">
@@ -326,12 +336,14 @@ action of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMa
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The State part that this <code><a href="../Protocols/Middleware.html">Middleware</a></code> needs to read in order to make decisions. This middleware will be able to read the most up-to-date
-<code>StateType</code> from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don&rsquo;t need reading the
-whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn&rsquo;t need to read any state, so the <code>StateType</code>can
-safely be set to <code>Void</code>.
-Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state
-of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</code> for more details.</p>
+                        <p>The State part that this <code>MiddlewareProtocol</code> needs to read in order to make decisions. This middleware will be able to read the most
+up-to-date <code>StateType</code> from the store while handling an incoming action, but it can never write or make changes to it.</p>
+
+<p>Most of the times middlewares don&rsquo;t need reading the whole global state, so we can decide to allow it to read only a subset of the state, or
+maybe this middleware doesn&rsquo;t need to read any state, so the <code>StateType</code> can safely be set to <code>Void</code>.</p>
+
+<p>In this case, this state type can be a subset to be lifted to a global state in order to compose with other middlewares acting on the global state
+of an app. Please check <a href="doc:Lifting">doc:Lifting</a> for more details.</p>
 
                       </div>
                       <div class="declaration">
@@ -358,7 +370,21 @@ of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</co
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.</p>
+
+<p>This is a good place for side-effects such as async tasks, timers, web, database, file access, background execution, access device sensors,
+perform analytics, tracking, logging and telemetry. You can schedule tasks to run after the reducer changed the global state, this will happen
+in the <code><a href="../Structs/IO.html">IO</a></code> closure you must return from this function.</p>
+
+<p>In case no side-effect is required for certain action, returning <code>IO/pure()</code> should suffice.</p>
+
+<p>You can only dispatch new actions to the store from inside the <code><a href="../Structs/IO.html">IO</a></code> closure.</p>
+
+<blockquote>
+<p><strong><em>IMPORTANT:</em></strong> this will be called on the main queue, never perform expensive work on it. You should perform side-effects only in the
+<code><a href="../Structs/IO.html">IO</a></code> block and care about running things in background. You don&rsquo;t have to return to the main queue to dispatch actions, however, the store
+will take care of that.</p>
+</blockquote>
 
                       </div>
                       <div class="declaration">
@@ -368,6 +394,54 @@ of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</co
                           <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP15InputActionTypeQa">InputActionType</a></span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt"><a href="../Structs/ActionSource.html">ActionSource</a></span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP9StateTypeQa">StateType</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/IO.html">IO</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP16OutputActionTypeQa">OutputActionType</a></span><span class="o">&gt;</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>action</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the incoming action to be handled</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dispatcher</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>information about the action source, representing the entity that created and dispatched the action</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>state</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a closure that, once called, will return the most up-to-date state. In the scope of this function, the state wasn&rsquo;t handled by
+   reducers yet, but in the context of the <code><a href="../Structs/IO.html">IO</a></code> block you should expect the state to be changed already.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an <code><a href="../Structs/IO.html">IO</a></code> closure where you can run side-effects and dispatch new actions to the store</p>
                       </div>
                     </section>
                   </div>
@@ -388,12 +462,7 @@ of an app. Please check <code>lift(inputActionMap:outputActionMap:stateMap:)</co
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Middleware setup. This function will be called before actions are handled to the middleware, so you can configure your middleware with the given
-parameters. You can hold any of them if you plan to read the state or dispatch new actions.
-You can initialize and start timers or async tasks in here or in the <code>handle(action:next)</code> function, but never before this function is called,
-otherwise the middleware would not yet be running from a store.
-Because no actions are delivered to this middleware before the <code>receiveContext(getState:output:)</code> is called, you can safely keep implicit
-unwrapped versions of <code>getState</code> and <code>output</code> as properties of your concrete middleware, and set them from the arguments of this function.</p>
+                        <p>Middleware setup. This function is deprecated and should never be used.</p>
 
                       </div>
                       <h4>Default Implementation</h4>
@@ -1165,7 +1234,7 @@ lift it to the world of <code>Whole</code>.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-07-29)</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-11-20)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

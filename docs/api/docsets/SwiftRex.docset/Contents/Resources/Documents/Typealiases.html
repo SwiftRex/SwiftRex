@@ -17,7 +17,7 @@
     <a title="Type Aliases  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex 0.8.6 Docs</a> (72% documented)</p>
+        <p><a href="index.html">SwiftRex 0.8.6 Docs</a> (76% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="search.json">
@@ -260,35 +260,12 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Not necessarily a store implementation means that this entity holds the source-of-truth of an app. The source-of-truth
-should be single a centralized store, where all the state is held. But your Views and ViewControllers not necessarily
-need to access this main Store directly, they could, instead, access some &ldquo;proxy&rdquo; store that simply intermediates
-all actions (inputs) and state change notifications (outputs), without actually holding the truth. For more information
-on that please check <code>StoreProjection</code>, and compare it to <code><a href="Classes/ReduxStoreBase.html">ReduxStoreBase</a></code>.</p>
-
-<p>Well, this unlocks several possibilities like having &ldquo;Store Projections&rdquo; or &ldquo;View Stores&rdquo;, which act somehow like
-presenters (in MVP pattern) or ViewModels (in MVVM pattern), because this layer can be seen as a simple transformation
-of states and actions. The view store will transform State into View State by, for example, applying NumberFormatter or
-DateFormatter into numbers and dates from your state and generating strings to be shown in UI labels or text fields.
-You can picture that as dozens of small functions, transforming each property individually, or you can group all the
-properties in a view item, or view state, containing lots of strings to be used by UI controls, and then the whole
-process is a single function from <code>(State) -&gt; ViewState</code>. In the other direction, you probably want to map UI events
-like scrolling, button taps, toggle changes and view lifecycle events (did load, will appear, foreground) into app
-actions like save a form, load next page, add to favorites or reload a list of items. Grouping them in an enum of
-possible events triggered by the user in a certain view, and you may want to map these view actions into app actions:
-<code>(ViewAction) -&gt; AppAction</code>.</p>
-
-<p>Because the <code><a href="Protocols/StoreType.html">StoreType</a></code> protocol is very generic and offers <code><a href="Protocols/ActionHandler.html">ActionHandler</a></code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code>, we can think of other
-possible implementations like a proxy view store that knows how to reach the main store, but exposes to a view only
-what&rsquo;s relevant for it (<code>ViewState</code> and <code>ViewAction</code>), at the same time it knows how to map <code>(State) -&gt; ViewState</code> and
-<code>(ViewAction) -&gt; AppAction</code>. These two transformations are used every time a view dispatches a view action or a state
-changes and notifies all subscribers.</p>
-
-<p>Some store implementations will glue all the parts together and become responsible for being its responsibility is
-being a proxy to the non-Redux world. For that reason, it&rsquo;s correct to say that a <code><a href="Protocols/StoreType.html">StoreType</a></code> is the single point of
-contact with <code>UIKit</code> and it&rsquo;s a class that you want to inject as a dependency on all the ViewControllers, either as one
-single dependency or, preferably, a dependency for each of its protocols - <code>EventHandler</code> and <code><a href="Protocols/StateProvider.html">StateProvider</a></code> -, both
-eventually pointing to the same instance.</p>
+                        <p>An app should have a single real Store, holding a single source-of-truth. However, we can &ldquo;derive&rdquo; this store to small subsets, called store
+projections, that will handle either a smaller part of the state or action tree, or even a completely different type of actions and states as
+long as we can map back-and-forth to the original store types. It won&rsquo;t store anything, only project the original store. For example, a View can
+define a completely custom View State and View Action, and we can create a <code>StoreProjection</code> that works on these types, as long as it&rsquo;s backed
+by a real store which State and Action types can be mapped somehow to the View State and View Action types. The Store Projection will take care
+of translating these entities.</p>
 
                       </div>
                       <div class="declaration">
@@ -513,7 +490,7 @@ delegating to them once the wrapper funcions are called.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-07-29)</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-11-20)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
