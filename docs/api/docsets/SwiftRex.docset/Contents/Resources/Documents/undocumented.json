@@ -16,13 +16,6 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/AnyMiddleware.swift",
-      "line": 59,
-      "symbol": "AnyMiddleware.handle(action:from:state:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/AnyMiddleware.swift",
       "line": 65,
       "symbol": "MiddlewareProtocol.eraseToAnyMiddleware()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
@@ -92,41 +85,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/MiddlewareProtocol.swift",
-      "line": 1,
-      "symbol": "MiddlewareProtocol",
-      "symbol_kind": "source.lang.swift.decl.extension",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/MiddlewareProtocol.swift",
-      "line": 1,
-      "symbol": "MiddlewareProtocol",
-      "symbol_kind": "source.lang.swift.decl.protocol",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/MiddlewareProtocol.swift",
-      "line": 27,
-      "symbol": "MiddlewareProtocol.handle(action:from:state:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/MiddlewareProtocol.swift",
-      "line": 52,
-      "symbol": "MiddlewareProtocol",
-      "symbol_kind": "source.lang.swift.decl.extension",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/MiddlewareProtocol.swift",
-      "line": 64,
-      "symbol": "MiddlewareProtocol",
-      "symbol_kind": "source.lang.swift.decl.extension",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/Reducer+LiftToCollection.swift",
       "line": 5,
       "symbol": "Reducer.liftToCollection(action:stateCollection:)",
@@ -186,55 +144,6 @@
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StateProvider.swift",
       "line": 20,
       "symbol": "StateProvider.map(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StoreType+Projection.swift",
-      "line": 39,
-      "symbol": "StoreType.projection(action:state:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StoreType+TypeErasure.swift",
-      "line": 1,
-      "symbol": "AnyStoreType",
-      "symbol_kind": "source.lang.swift.decl.struct",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StoreType+TypeErasure.swift",
-      "line": 5,
-      "symbol": "AnyStoreType.init(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StoreType+TypeErasure.swift",
-      "line": 9,
-      "symbol": "AnyStoreType.init(action:state:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StoreType+TypeErasure.swift",
-      "line": 24,
-      "symbol": "StoreType.eraseToAnyStoreType()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StoreType.swift",
-      "line": 68,
-      "symbol": "StoreType.contramapAction(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Store/StoreType.swift",
-      "line": 79,
-      "symbol": "StoreType.mapState(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
@@ -312,13 +221,6 @@
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Deprecated/AfterReducer.swift",
       "line": 42,
       "symbol": "AfterReducer.performBlock()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Deprecated/Middleware.swift",
-      "line": 181,
-      "symbol": "Middleware.handle(action:from:state:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
