@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
     - name: Cache Mint
       uses: actions/cache@v2
