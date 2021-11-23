@@ -1370,7 +1370,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.7")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.8")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRex", package: "SwiftRex")])
@@ -1391,7 +1391,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.7")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.8")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "RxSwiftRex", package: "SwiftRex")])
@@ -1412,7 +1412,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.7")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.8")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "ReactiveSwiftRex", package: "SwiftRex")])
@@ -1433,7 +1433,7 @@ let package = Package(
     .executable(name: "MyApp", targets: ["MyApp"])
   ],
   dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.7")
+    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.8")
   ],
   targets: [
     .target(name: "MyApp", dependencies: [.product(name: "CombineRexDynamic", package: "SwiftRex")])
@@ -1448,7 +1448,7 @@ $ swift build
 $ xed .
 ```
 
-> **_IMPORTANT:_** For Xcode 12, please use the version 0.8.7. Versions 0.9.0 and above require Xcode 13.
+> **_IMPORTANT:_** For Xcode 12, please use the version 0.8.8. Versions 0.9.0 and above require Xcode 13.
 
 ## Carthage
 
