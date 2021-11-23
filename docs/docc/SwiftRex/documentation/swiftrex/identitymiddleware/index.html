@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>IdentityMiddleware| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">IdentityMiddleware</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Structure</span>
+  <h1 class="title">IdentityMiddleware</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      The <code>IdentityMiddleware</code> won’t do any operation, simply bypass actions through. It’s meant to provide identity axiom to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>IdentityMiddleware</span>&lt;<span class='token-genericParameter'>InputActionType</span>, <span class='token-genericParameter'>OutputActionType</span>, <span class='token-genericParameter'>StateType</span>&gt;</code></pre>
+  </div>
+</section>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Initializers</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/init().html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>()</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Default initializer for <code>IdentityMiddleware</code></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/handle(action:from:afterReducer:).html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>handle</span><span class='decorator'>(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>from</span><span class='decorator'>: </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>afterReducer</span><span class='decorator'>: </span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>AfterReducer</span><span class='decorator'>)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/handle(action:from:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>handle</span><span class='decorator'>(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>from</span><span class='decorator'>: </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>GetState</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>IO</span><span class='decorator'>&lt;</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions. This is also a good place for analytics, tracking, logging and telemetry. In this empty implementation, will do nothing but call next delegate.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/lift(inputAction:)-8p05t.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?) -&gt; </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/lift(inputAction:outputAction:)-v1po.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/lift(inputAction:outputAction:state:)-10e7z.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/lift(inputAction:state:)-98tsj.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/lift(outputAction:)-5fc0v.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/lift(outputAction:state:)-5nu07.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/lift(state:)-1jjyy.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/receiveContext(getState:output:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>receiveContext</span><span class='decorator'>(</span><span class='decorator'>getState</span><span class='decorator'>: () -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>output</span><span class='decorator'>: </span><span class='decorator'>AnyActionHandler</span><span class='decorator'>&lt;</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Middleware setup. This function is deprecated and should never be used.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Default Implementations</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/MiddlewareProtocol-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  MiddlewareProtocol Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/Equatable-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  Equatable Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  <section id='see-also' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>See Also</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Middlewares</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/AnyMiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AnyMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Erases the protocol <code>Middleware</code>. Please check its documentation for more information.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ComposedMiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ComposedMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code>EventProtocol</code> or an <code>ActionProtocol</code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReader/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareReader</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A MiddlewareReader is a way to lazily inject dependencies into a Middleware. For example, you may want to compose multiple middlewares but from a library, and in this library you don’t have the dependencies to inject just yet, because these dependencies are only present in the main target. That way, instead of creating the middlewares (which would require all the dependencies), you can wrap their initializers in a MiddlewareReader. The middleware reader is not a middleware, is a a factory (in OOP terms) from <code>(Dependencies) -&gt; MiddlewareType</code> (in FP approach). The benefit of wrapping the middleware initializers in a MiddlewareReader is that, for all means, MiddlewareReaders can be composed as Middlewares, can be lifted as Middlewares, but all of this without in fact creating the Middlewares. Your library can then expose a single MiddlewareReader as public, and you keep all its middlewares as internal classes. From the main target you compose this MiddlewareReader with other MiddlewareReaders coming from other libraries and from the main target itself. Somewhere where you create the Store, you finally inject the dependencies at once and you materialize all your middlewares at the same time. Remember that “inject then compose” is the same as “compose then inject”, but while the former needs dependencies upfront, the latter is more flexible for being lazy. For those familiar with Functional Programming, this is similar to Reader Monad, but as SwiftRex recommends dependencies only on Middlewares, this Reader works specifically with Middlewares.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareReaderProtocol</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A protocol to generalize MiddlewareReader. Unless you look for some very special behaviour, you should use MiddlewareReader directly which provides everything needed for your Middleware dependency injection.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

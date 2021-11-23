@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>MiddlewareReaderProtocol| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">MiddlewareReaderProtocol</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Protocol</span>
+  <h1 class="title">MiddlewareReaderProtocol</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      A protocol to generalize MiddlewareReader. Unless you look for some very special behaviour, you should use MiddlewareReader directly which provides everything needed for your Middleware dependency injection.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>protocol</span> <span class='token-identifier'>MiddlewareReaderProtocol</span></code></pre>
+  </div>
+</section>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Operators</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/__(_:_:)-3265o.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>&lt;&gt;</span><span class='decorator empty-token'> </span><span class='decorator'>&lt;</span><span class='decorator'>OtherMiddleware</span><span class='decorator'>&gt;(</span><span class='decorator'>Self</span><span class='decorator'>, </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>OtherMiddleware</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>ComposedMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Compose two Middlewares that are not officially Semigroups and not necessarily the same Middleware type, into a <code>ComposedMiddleware</code> that holds both before even materializing them into real instances. As most Middlewares don’t need to return <code>Self</code> when grouped together, and it’s perfectly reasonable to compose middlewares of different types, this option is more flexible than the Semigroup composition.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/__(_:_:)-bztd.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>&lt;&gt;</span><span class='decorator empty-token'> </span><span class='decorator'>(</span><span class='decorator'>Self</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Compose two Semigroup Middlewares into one, before even materializing them into real instances.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Associated Types</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/Dependencies.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>associatedtype</span><span class='decorator empty-token'> </span><span class='identifier'>Dependencies</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Dependencies to inject in the middleware. This is equivalent to the parameters in a middleware initializer, usually a tuple with multiple dependencies separated by comma. In a function <code>(Dependencies) -&gt; MiddlewareType</code>, this is at the left-hand side to the arrow.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/MiddlewareType.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>associatedtype</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareType</span><span class='decorator'> : </span><span class='decorator'>MiddlewareProtocol</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The resulting middleware after the dependencies are injected. In a function <code>(Dependencies) -&gt; MiddlewareType</code>, this is at the right-hand side to the arrow.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Initializers</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/init(inject:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>(</span><span class='decorator'>inject</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Allows to define a middleware initializer and store this initializer function until we have the dependencies to call it. This allows us to postpone the dependency injection and compose middlewares that are not even materialized yet.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Properties</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/inject.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>var</span><span class='decorator empty-token'> </span><span class='identifier'>inject</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">An initializer function that, given the dependencies in the Middleware’s init, will give the Middleware instance When inject is called, your MiddlewareReader materializes into a Middleware.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/contramapDependecies(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>contramapDependecies</span><span class='decorator'>&lt;</span><span class='decorator'>World</span><span class='decorator'>&gt;((</span><span class='decorator'>World</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>World</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Maps the <code>Dependencies</code> element, which is the input environment of the calculation for a particular middleware, using a contravariant function that will allow to lift this reader into a <code>MiddlewareReader</code> compatible with a more global dependencies structure.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/dimap(transformMiddleware:extractOnlyDependenciesNeededForThisMiddleware:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>dimap</span><span class='decorator'>&lt;</span><span class='decorator'>NewMiddleware</span><span class='decorator'>, </span><span class='decorator'>World</span><span class='decorator'>&gt;(</span><span class='decorator'>transformMiddleware</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>NewMiddleware</span><span class='decorator'>, </span><span class='decorator'>extractOnlyDependenciesNeededForThisMiddleware</span><span class='decorator'>: (</span><span class='decorator'>World</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>World</span><span class='decorator'>, </span><span class='decorator'>NewMiddleware</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Maps the <code>Middleware</code> element that will eventually be produced upon dependency injection, and derives into a new <code>Middleware</code></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/flatMap(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>flatMap</span><span class='decorator'>&lt;</span><span class='decorator'>NewMiddlewareReader</span><span class='decorator'>&gt;((</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>NewMiddlewareReader</span><span class='decorator'>) -&gt; </span><span class='decorator'>NewMiddlewareReader</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Having a MiddlewareReader mapping that results in another MiddlewareReader that also depends on same environment, we can flatten up the map by using the same environment to inject in both MiddlewareReaders. Useful when there’s a chain of dependencies</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>&gt;(</span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:outputAction:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:outputAction:dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:outputAction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:outputAction:state:dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(inputAction:state:dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(outputAction:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(outputAction:dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(outputAction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(outputAction:state:dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/lift(state:dependencies:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>dependencies</span><span class='decorator'>: (</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalDependencies</span><span class='decorator'>, </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">All you need to compose totally different middlewares. Using lift you can match all 4 parameters of a middleware and once they have common ground, you are able to compose them. These 4 parameters are:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/mapMiddleware(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>mapMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>NewMiddleware</span><span class='decorator'>&gt;((</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>NewMiddleware</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>NewMiddleware</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Maps the <code>Middleware</code> element that will eventually be produced upon dependency injection, and derives into a new <code>Middleware</code></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Properties</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/identity-7xln0.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>var</span><span class='decorator empty-token'> </span><span class='identifier'>identity</span><span class='decorator'>: </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>IdentityMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">An identity MiddlewareReader ignores whatever Dependencies are given and simply return an identity Middleware. Composing any given middleware reader “A” with the identity middleware reader will be exactly the same as composing in the other order and also exactly the same as only the middleware reader “A” alone, which means, it doesn’t change anything in the MiddlewareReader “A” or its resulting Middleware, regardless of the order it was composed to.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/identity-chfd.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>var</span><span class='decorator empty-token'> </span><span class='identifier'>identity</span><span class='decorator'>: </span><span class='decorator'>Self</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">An identity MiddlewareReader ignores whatever Dependencies are given and simply return an identity Middleware. Composing any given middleware reader “A” with the identity middleware reader will be exactly the same as composing in the other order and also exactly the same as only the middleware reader “A” alone, which means, it doesn’t change anything in the MiddlewareReader “A” or its resulting Middleware, regardless of the order it was composed to.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/pure(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>pure</span><span class='decorator'>(</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Wraps a pure function in a <code>MiddlewareReader</code> container just for the sake of composition. Nothing is actually needed for the calculation and injected dependency will be ignored. This is useful for lifting a <code>Middleware</code> into a <code>MiddlewareReader</code>, so you can compose with other MiddlewareReaders that actually depend on dependencies.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:_:_:_:_:_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>, </span><span class='decorator'>M9</span><span class='decorator'>, </span><span class='decorator'>M10</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>, </span><span class='decorator'>M9</span><span class='decorator'>, </span><span class='decorator'>M10</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M9</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M10</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:_:_:_:_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>, </span><span class='decorator'>M9</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>, </span><span class='decorator'>M9</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M9</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:_:_:_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M8</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:_:_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M7</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M6</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M5</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M4</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M3</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/zip(_:_:with:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>zip</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>, </span><span class='decorator'>with</span><span class='decorator'>: (</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>.</span><span class='decorator'>MiddlewareType</span><span class='decorator'>) -&gt; </span><span class='decorator'>MOutput</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>MOutput</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a MiddlewareReader that combines multiple readers into one, as long as they depend on same environment. Once this environment is injected, upstream readers will run and the result will be a tuple containing the resulting values of each upstream reader. Then you provide a way to combine there resulting Middlewares into one.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  <section id='see-also' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>See Also</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Middlewares</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/AnyMiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AnyMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Erases the protocol <code>Middleware</code>. Please check its documentation for more information.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ComposedMiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ComposedMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code>EventProtocol</code> or an <code>ActionProtocol</code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/IdentityMiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>IdentityMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The <code>IdentityMiddleware</code> won’t do any operation, simply bypass actions through. It’s meant to provide identity axiom to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/MiddlewareReader/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareReader</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A MiddlewareReader is a way to lazily inject dependencies into a Middleware. For example, you may want to compose multiple middlewares but from a library, and in this library you don’t have the dependencies to inject just yet, because these dependencies are only present in the main target. That way, instead of creating the middlewares (which would require all the dependencies), you can wrap their initializers in a MiddlewareReader. The middleware reader is not a middleware, is a a factory (in OOP terms) from <code>(Dependencies) -&gt; MiddlewareType</code> (in FP approach). The benefit of wrapping the middleware initializers in a MiddlewareReader is that, for all means, MiddlewareReaders can be composed as Middlewares, can be lifted as Middlewares, but all of this without in fact creating the Middlewares. Your library can then expose a single MiddlewareReader as public, and you keep all its middlewares as internal classes. From the main target you compose this MiddlewareReader with other MiddlewareReaders coming from other libraries and from the main target itself. Somewhere where you create the Store, you finally inject the dependencies at once and you materialize all your middlewares at the same time. Remember that “inject then compose” is the same as “compose then inject”, but while the former needs dependencies upfront, the latter is more flexible for being lazy. For those familiar with Functional Programming, this is similar to Reader Monad, but as SwiftRex recommends dependencies only on Middlewares, this Reader works specifically with Middlewares.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

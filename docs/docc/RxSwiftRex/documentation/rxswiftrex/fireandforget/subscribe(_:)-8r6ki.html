@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>subscribe(_:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">RxSwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">FireAndForget</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">subscribe(_:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">subscribe(_:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Subscribes <code>observer</code> to receive events for this sequence.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>subscribe</span>&lt;<span class='token-genericParameter'>Observer</span>&gt;(<span class='token-externalParam'>_</span> <span class='token-internalParam'>observer</span>: Observer) -&gt; Disposable <span class='token-keyword'>where</span> IgnoringOutput == Observer.Element, Observer : ObserverType</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>Subscription for <code>observer</code> that can be used to cancel production of sequence elements and free resources.</p></div><div class='content'><h3 id='Grammar'>Grammar</h3><p><strong>Next* (Error | Completed)?</strong></p><ul><li><p><p>sequences can produce zero or more elements so zero or more <code>Next</code> events can be sent to <code>observer</code></p></p></li><li><p><p>once an <code>Error</code> or <code>Completed</code> event is sent, the sequence terminates and can’t produce any other elements</p></p></li></ul><p>It is possible that events are sent from different threads, but no two events can be sent concurrently to <code>observer</code>.</p><h3 id='Resource-Management'>Resource Management</h3><p>When sequence sends <code>Complete</code> or <code>Error</code> event all internal resources that compute sequence elements will be freed.</p><p>To cancel production of sequence elements and free resources immediately, call <code>dispose</code> on returned subscription.</p></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

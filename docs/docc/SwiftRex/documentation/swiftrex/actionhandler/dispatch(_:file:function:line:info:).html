@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>dispatch(_:file:function:line:info:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">ActionHandler</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">dispatch(_:file:function:line:info:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">dispatch(_:file:function:line:info:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      The function that allows Views, ViewControllers, Presenters to dispatch actions to the store. Also way for a <code>Middleware</code> to trigger their own actions, usually in response to events or async operations.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>dispatch</span>(<span class='token-externalParam'>_</span> <span class='token-internalParam'>action</span>: Self.ActionType, <span class='token-externalParam'>file</span>: String = <span class='token-keyword'>#file</span>, <span class='token-externalParam'>function</span>: String = <span class='token-keyword'>#function</span>, <span class='token-externalParam'>line</span>: UInt = <span class='token-keyword'>#line</span>, <span class='token-externalParam'>info</span>: String? = nil)</code></pre>
+  </div>
+</section><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>action</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>the action to be dispatched</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>file</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>File that created and dispatched the action, by default this is the file calling the <code>dispatch</code> function</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>function</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Function that created and dispatched the action, by default this is the function calling the <code>dispatch</code> function</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>line</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Line in the file where the action was created and dispatched, by default this is the line from where the <code>dispatch</code> function was called</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>info</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Additional information about the moment where the action was dispatched. This is an optional String that can hold information useful for debugging, logging, monitoring or analytics. By default this is nil but you can add any information useful to trace the journey of this action.</p></div>
+      </dd>
+    
+  </dl>
+</section>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

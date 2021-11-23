@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>ShouldEmitValue| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">ShouldEmitValue</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Enumeration</span>
+  <h1 class="title">ShouldEmitValue</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in case it should emit it, or false in case it should not emit it. It comes with some standard options like <code>.always</code>, <code>.never</code>, <code>.when(old, new) -&gt; Bool</code> and, for <code>Equatable</code> structures, <code>.whenDifferent</code>.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>enum</span> <span class='token-identifier'>ShouldEmitValue</span>&lt;<span class='token-genericParameter'>StateType</span>&gt;</code></pre>
+  </div>
+</section>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Enumeration Cases</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ShouldEmitValue/always.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>case</span><span class='decorator empty-token'> </span><span class='identifier'>always</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">It will always emit changes, regardless of previous and new state</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ShouldEmitValue/never.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>case</span><span class='decorator empty-token'> </span><span class='identifier'>never</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">It will never emit changes, regardless of previous and new state</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ShouldEmitValue/when(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>case</span><span class='decorator empty-token'> </span><span class='identifier'>when</span><span class='decorator'>((</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Bool</span><span class='decorator'>)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">It’s a custom-defined predicate, you’ll be given old and new state, and must return a Bool indicating what you’ve decided from that change, being <code>true</code> when you want this change to be notified, or <code>false</code> when you want it to be ignored.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ShouldEmitValue/shouldEmit(previous:new:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>shouldEmit</span><span class='decorator'>(</span><span class='decorator'>previous</span><span class='decorator'>: </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>new</span><span class='decorator'>: </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Bool</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Evaluates the predicate and returns <code>true</code> in case this should be emitted, or <code>false</code> in case this change should be ignored</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ShouldEmitValue/shouldRemove(previous:new:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>shouldRemove</span><span class='decorator'>(</span><span class='decorator'>previous</span><span class='decorator'>: </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>new</span><span class='decorator'>: </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Bool</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Evaluates the predicate and returns <code>true</code> in case this should be ignored, or <code>false</code> in case this change should be emitted. It’s the exact inversion of <code>shouldEmit</code> and useful for operator <code>.removeDuplicates</code> that some Reactive libraries offer.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Properties</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ShouldEmitValue/whenDifferent.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>var</span><span class='decorator empty-token'> </span><span class='identifier'>whenDifferent</span><span class='decorator'>: </span><span class='decorator'>ShouldEmitValue</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">For <code>Equatable</code> structures, <code>.whenDifferent</code> will run <code>==</code> operator between old and new state, and notify when they are different, or ignore when they are equal.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

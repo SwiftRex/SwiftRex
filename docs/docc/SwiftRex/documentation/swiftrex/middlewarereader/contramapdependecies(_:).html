@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>contramapDependecies(_:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">MiddlewareReader</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">MiddlewareReaderProtocol Implementations</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">contramapDependecies(_:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">contramapDependecies(_:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Maps the <code>Dependencies</code> element, which is the input environment of the calculation for a particular middleware, using a contravariant function that will allow to lift this reader into a <code>MiddlewareReader</code> compatible with a more global dependencies structure.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>contramapDependecies</span>&lt;<span class='token-genericParameter'>World</span>&gt;(<span class='token-externalParam'>_</span> <span class='token-internalParam'>extractOnlyDependenciesNeededForThisMiddleware</span>: <span class='token-keyword'>@escaping</span> (World) -&gt; Self.Dependencies) -&gt; <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareReader/index.html'><span>MiddlewareReader</span></a>&lt;World, Self.MiddlewareType&gt;</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>a new <code>MiddlewareReader</code> that will require the full <code>World</code> to create the <code>MiddlewareType</code>. It can be combined with others that also depend on the same <code>World</code>, so this is useful for composition as you eventually want to combine all sorts of middlewares that have different dependencies, so this is for finding a common ground for all of them.</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>extractOnlyDependenciesNeededForThisMiddleware</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>given all dependencies in the World of this app, that are needed for all middlewares and not only this one, extracts only what we need for this one</p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Once this <code>MiddlewareReader</code> is lifted to depend on <code>World</code> (where world means all dependencies you need for all middlewares), it can be combined with others that also depend on the same <code>World</code>, so this is useful for composition as you eventually want to combine all sorts of middlewares that have different dependencies, so this is for finding a common ground for all of them.</p><ul><li><p><p>We start with a local dependency <code>X</code> to calculate middleware <code>A</code></p></p></li><li><p><p>We give a way to extract depdendency <code>X</code> from world <code>W</code> (<code>W</code> -&gt; <code>X</code>), where world means all dependencies you need for all middlewares</p></p></li><li><p><p>Our resulting <code>MiddlewareReader</code> will accept dependency <code>W</code> to calculate middleware <code>A</code></p></p></li><li><p><p>Middleware type hasn’t changed at all</p></p></li></ul></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

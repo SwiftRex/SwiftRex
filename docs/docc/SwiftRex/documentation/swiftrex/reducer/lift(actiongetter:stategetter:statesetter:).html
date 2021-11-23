@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>lift(actionGetter:stateGetter:stateSetter:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">Reducer</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">lift(actionGetter:stateGetter:stateSetter:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">lift(actionGetter:stateGetter:stateSetter:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      A type-lifting method. The global state of your app is <em>Whole</em>, and the <code>Reducer</code> handles <em>Part</em>, that is a sub-state.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>lift</span>&lt;<span class='token-genericParameter'>GlobalActionType</span>, <span class='token-genericParameter'>GlobalStateType</span>&gt;(<span class='token-externalParam'>actionGetter</span>: <span class='token-keyword'>@escaping</span> (GlobalActionType) -&gt; ActionType?, <span class='token-externalParam'>stateGetter</span>: <span class='token-keyword'>@escaping</span> (GlobalStateType) -&gt; StateType, <span class='token-externalParam'>stateSetter</span>: <span class='token-keyword'>@escaping</span> (<span class='token-keyword'>inout</span> GlobalStateType, StateType) -&gt; Void) -&gt; <a class='type-identifier-link' href='../../../documentation/SwiftRex/Reducer/index.html'><span>Reducer</span></a>&lt;GlobalActionType, GlobalStateType&gt;</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>a <code>Reducer&lt;GlobalAction, GlobalState&gt;</code> that maps actions and states from the original specialized reducer into a more generic and global reducer, to be used in a larger context.</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>actionGetter</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a way to convert a global action into a local action, but it’s optional because maybe this reducer shouldn’t care about certain actions. Because actions are usually enums, you can switch over the enum and in case it’s nothing you care about, you simply return nil in the closure. If you don’t want to lift this reducer in terms of <code>action</code>, just provide the identity function <code>{ $0 }</code> as input.</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>stateGetter</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a way to read from a global state and extract only the part that it’s relevant for this reducer, by traversing the tree of the global state until you find the property you want, for example: <code>{ $0.currentGame.scoreBoard }</code></p></div>
+      </dd>
+    
+      <dt class="param-name"><code>stateSetter</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a way to write back into the global state once you finished reducing the <em>Part</em>, so now you have a new part that was calculated by this reducer and you want to set it into the global state, also provided as the first parameter as an <code>inout</code> property: <code>{ globalState, newScoreBoard in globalState.currentGame.scoreBoard = newScoreBoard }</code></p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Let’s suppose you may want to have a <code>gpsReducer</code> that knows about the following <code>struct</code>:</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">struct Location {</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">   let latitude: Double</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">   let longitude: Double</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
+</code></pre>
+  </div>
+</div><p>Let’s call it <em>Part</em>. Both, this state and its reducer will be part of an external framework, used by dozens of apps. Internally probably the <code>Reducer</code> will receive some known <code>ActionType</code> and calculate a new location. On the main app we have a global state, that we now call <em>Whole</em>.</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">struct MyGlobalState {</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">   let title: String?</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">   let listOfItems: [Item]</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">   let currentLocation: Location</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
+</code></pre>
+  </div>
+</div><p>As expected, <em>Part</em> (<code>Location</code>) is a property of <em>Whole</em> (<code>MyGlobalState</code>). This relationship could be less direct, for example there could be several levels of properties until you find the <em>Part</em> in the <em>Whole</em>, like <code>global.firstLevel.secondLevel.currentLocation</code>, but let’s keep it a single-level for this example.</p><p>Because our <code>Store</code> understands <em>Whole</em> (<code>MyGlobalState</code>) and our <code>gpsReducer</code> understands <em>Part</em> (<code>Location</code>), we must <code>lift</code> the <code>Reducer</code> to the <em>Whole</em> level, by using:</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let globalStateReducer = gpsReducer.lift(actionGetter: { $0 },</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">                                         stateGetter: { global in return global.currentLocation },</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">                                         stateSetter: { global, part in global.currentLocation = path })</span></span>
+</code></pre>
+  </div>
+</div><p>Now this reducer can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to lift it to the world of <em>Whole</em>.</p><p>Same strategy works for the <code>action</code>, as you can guess by the <code>actionGetter</code> parameter. You can provide a function that takes a global action (<em>Whole</em>) and returns an optional local action (<em>Part</em>). It’s optional because perhaps you want to ignore actions that are not relevant for this reducer.</p></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

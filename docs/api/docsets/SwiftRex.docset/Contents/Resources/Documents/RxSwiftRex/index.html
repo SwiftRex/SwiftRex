@@ -468,10 +468,21 @@
 <li><a href="#core-parts">Core Parts</a>
 
 <ul>
-<li><a href="#store">Store</a></li>
+<li><a href="#store">Store</a>
+
+<ul>
+<li><a href="#storetype">StoreType</a></li>
+<li><a href="#real-store">Real Store</a></li>
+<li><a href="#store-projection">Store Projection</a></li>
+<li><a href="#all-together">All together</a></li>
+</ul></li>
 <li><a href="#middleware">Middleware</a>
 
 <ul>
+<li><a href="#generics">Generics</a></li>
+<li><a href="#returning-io-and-performing-side-effects">Returning IO and performing side-effects</a></li>
+<li><a href="#dependency-injection">Dependency Injection</a></li>
+<li><a href="#middleware-examples">Middleware Examples</a></li>
 <li><a href="#effectmiddleware">EffectMiddleware</a></li>
 </ul></li>
 <li><a href="#reducer">Reducer</a></li>
@@ -480,8 +491,27 @@
 
 <ul>
 <li><a href="#store-projection">Store Projection</a></li>
-<li><a href="#lifting-middleware">Lifting Middleware</a></li>
-<li><a href="#lifting-reducer">Lifting Reducer</a></li>
+<li><a href="#lifting">Lifting</a>
+
+<ul>
+<li><a href="#lifting-reducer">Lifting Reducer</a>
+
+<ul>
+<li><a href="#lifting-reducer-using-closures">Lifting Reducer using closures:</a></li>
+<li><a href="#lifting-reducer-using-keypath">Lifting Reducer using KeyPath:</a></li>
+</ul></li>
+<li><a href="#lifting-middleware">Lifting Middleware</a>
+
+<ul>
+<li><a href="#lifting-middleware-using-closures">Lifting Middleware using closures:</a></li>
+<li><a href="#lifting-middleware-using-keypath">Lifting Middleware using KeyPath:</a></li>
+</ul></li>
+<li><a href="#optional-transformation">Optional transformation</a></li>
+<li><a href="#direction-of-the-arrows">Direction of the arrows</a></li>
+<li><a href="#use-of-keypaths">Use of KeyPaths</a></li>
+<li><a href="#identity-ignore-and-absurd">Identity, Ignore and Absurd</a></li>
+<li><a href="#xcode-snippets">Xcode Snippets:</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -493,6 +523,8 @@
 </ul>
 <h2 id='a-href-state-state-a' class='heading'>- <a href="#state">State</a></h2>
 <h3 id='action' class='heading'>Action</h3>
+
+<p>An Action represents an event that was notified by external (or sometimes internal) actors of your app. It&rsquo;s about relevant INPUT events.</p>
 
 <p>There&rsquo;s no &ldquo;Action&rdquo; protocol or type in SwiftRex. However, Action will be found as a generic parameter for most core data structures, meaning that it&rsquo;s up to you to define what is the root Action type.</p>
 
@@ -532,6 +564,8 @@
 
 <hr>
 <h3 id='state' class='heading'>State</h3>
+
+<p>State represents the whole knowledge that an app holds while is open, usually in memory and mutable. It&rsquo;s about relevant OUTPUT properties.</p>
 
 <p>There&rsquo;s no &ldquo;State&rdquo; protocol or type in SwiftRex. However, State will be found as a generic parameter for most core data structures, meaning that it&rsquo;s up to you to define what is the root State type.</p>
 
@@ -593,10 +627,21 @@
 <h2 id='core-parts' class='heading'>Core Parts</h2>
 
 <ul>
-<li><a href="#store">Store</a></li>
+<li><a href="#store">Store</a>
+
+<ul>
+<li><a href="#storetype">StoreType</a></li>
+<li><a href="#real-store">Real Store</a></li>
+<li><a href="#store-projection">Store Projection</a></li>
+<li><a href="#all-together">All together</a></li>
+</ul></li>
 <li><a href="#middleware">Middleware</a>
 
 <ul>
+<li><a href="#generics">Generics</a></li>
+<li><a href="#returning-io-and-performing-side-effects">Returning IO and performing side-effects</a></li>
+<li><a href="#dependency-injection">Dependency Injection</a></li>
+<li><a href="#middleware-examples">Middleware Examples</a></li>
 <li><a href="#effectmiddleware">EffectMiddleware</a></li>
 </ul></li>
 <li><a href="#reducer">Reducer</a></li>
@@ -604,132 +649,183 @@
 
 <hr>
 <h3 id='store' class='heading'>Store</h3>
-
-<p><code>Store</code> is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle. That&rsquo;s also why we want one and only one instance of a Store, so either you create a static instance singleton, or keep it in your AppDelegate. Be careful with SceneDelegate if your app supports multiple windows and you want to share the state between these multiple instances of your app, which you usually want. That&rsquo;s why AppDelegate, singleton or global variable is usually recommended for the Store, not SceneDelegate.</p>
-
-<p>SwiftRex will provide a protocol and a base type for helping you to create your own Store. Let&rsquo;s learn about them.</p>
 <h4 id='storetype' class='heading'>StoreType</h4>
 
-<p><code>StoreType</code> is the protocol that defines the minimum implementation requirement of a Store, and it&rsquo;s actually composed only by two other protocols, one for the store input and one for the store output.</p>
-<h5 id='1-actionhandler' class='heading'>1. ActionHandler</h5>
+<p>A protocol that defines the two expected roles of a &ldquo;Store&rdquo;: receive/distribute actions (<code>ActionHandler</code>); and publish changes of the the current app state (<code>StateProvider</code>) to possible subscribers. It can be a real store (such as <code>ReduxStoreBase</code>) or just a &ldquo;proxy&rdquo; that acts on behalf of a real store, for example, in the case of <code>StoreProjection</code>.</p>
 
-<p><code>ActionHandler</code>: that&rsquo;s the store input, so it makes it able to receive and distribute events of generic type <code>ActionType</code>. Being an action handler means that an <code>UIViewController</code> or SwiftUI View can dispatch events to it, such as <code>.userTappedButtonX</code>, <code>.didScrollToPosition(_:)</code>, <code>.viewDidLoad</code> or <code>queryTextFieldChangedTo(_:)</code>. There&rsquo;s only one requirement:</p>
-<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">)</span>
+<p>Store Type is an <code>ActionHandler</code>, which means actors can dispatch actions (<code>ActionHandler/dispatch(_:)</code>) that will be handled by this store. These actions will eventually start side-effects or change state. These actions can also be dispatched by the result of side-effects, like the callback of an API call, or CLLocation new coordinates. How this action is handled will depend on the different implementations of <code>StoreType</code>.</p>
+
+<p>Store Type is also a <code>StateProvider</code>, which means it&rsquo;s aware of certain state and can notify possible subscribers about changes through its  publisher (<code>StateProvider/statePublisher</code>). If this <code>StoreType</code> owns the state (single source-of-truth) or only proxies it from another store will depend on the different implementations of the protocol.</p>
+<pre class="highlight plaintext"><code>            ┌──────────┐
+            │ UIButton │────────┐
+            └──────────┘        │
+        ┌───────────────────┐   │         dispatch&lt;Action&gt;(_ action: Action)
+        │UIGestureRecognizer│───┼──────────────────────────────────────────────┐
+        └───────────────────┘   │                                              │
+            ┌───────────┐       │                                              ▼
+            │viewDidLoad│───────┘                                   ┏━━━━━━━━━━━━━━━━━━━━┓
+            └───────────┘                                           ┃                    ┃░
+                                                                    ┃                    ┃░
+                                                                    ┃                    ┃░
+              ┌───────┐                                             ┃                    ┃░
+              │UILabel│◀─ ─ ─ ─ ┐                                   ┃                    ┃░
+              └───────┘                   Combine, RxSwift    ┌ ─ ─ ┻ ─ ┐                ┃░
+                                │         or ReactiveSwift       State      Store        ┃░
+       ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│Publisher│                ┃░
+       ▼               │                  subscribe(onNext:)                             ┃░
+┌─────────────┐        ▼                  sink(receiveValue:) └ ─ ─ ┳ ─ ┘                ┃░
+│  Diffable   │ ┌─────────────┐           assign(to:on:)            ┃                    ┃░
+│ DataSource  │ │RxDataSources│                                     ┃                    ┃░
+└─────────────┘ └─────────────┘                                     ┃                    ┃░
+       │               │                                            ┃                    ┃░
+┌──────▼───────────────▼───────────┐                                ┗━━━━━━━━━━━━━━━━━━━━┛░
+│                                  │                                 ░░░░░░░░░░░░░░░░░░░░░░
+│                                  │
+│                                  │
+│                                  │
+│         UICollectionView         │
+│                                  │
+│                                  │
+│                                  │
+│                                  │
+└──────────────────────────────────┘
 </code></pre>
 
-<p>It gives for free another dispatch function:</p>
-<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">dispatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">ActionType</span><span class="p">,</span> <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#file</span><span class="p">,</span> <span class="nv">function</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kd">#function</span><span class="p">,</span> <span class="nv">line</span><span class="p">:</span> <span class="kt">UInt</span> <span class="o">=</span> <span class="kd">#line</span><span class="p">,</span> <span class="nv">info</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span>
-</code></pre>
+<p>There are implementations that will be the actual Store, the one and only instance that will be the central hub for the whole redux architecture.
+Other implementations can be only projections or the main Store, so they act like a Store by implementing the same roles, but instead of owning the
+global state or handling the actions directly, these projections only apply some small (and pure) transformation in the chain and delegate to the real
+Store. This is useful when you want to have local &ldquo;stores&rdquo; in your views, but you don&rsquo;t want them to duplicate data or own any kind of state, but only
+act as a store while using the central one behind the scenes.</p>
 
-<p>Most of the times, users will only provide the first parameter, <code>action: ActionType</code>, and the rest will be collected automatically from where the action was dispatched from. This is useful for log and analytics purposes, we can track the source of each action.</p>
-<pre class="highlight swift"><code><span class="c1">// Usage:</span>
-<span class="n">store</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="n">appStarted</span><span class="p">)</span> <span class="c1">// this collects automatically the dispatcher</span>
-</code></pre>
+<p>For more information about real stores, please check <code>ReduxStoreBase</code> and <code>ReduxStoreProtocol</code>, and for more information about the projections
+please check <code>StoreProjection</code> and <code>StoreType/projection(action:state:)</code>.</p>
+<h4 id='real-store' class='heading'>Real Store?</h4>
 
-<p>Because <code>ActionType</code> is generic, when you dispatch you don&rsquo;t have to provide the full enum name, only the case. This also avoids mistakes as it&rsquo;s compiled-checked.</p>
-<h5 id='2-stateprovider' class='heading'>2. StateProvider</h5>
+<p>A real Store is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a 
+coordinator for the Unidirectional Dataflow lifecycle. That&rsquo;s also why we want one and only one instance of a Store, so either you create a static
+instance singleton, or keep it in your AppDelegate. Be careful with SceneDelegate if your app supports multiple windows and you want to share the 
+state between these multiple instances of your app, which you usually want. That&rsquo;s why AppDelegate, singleton or global variable is usually 
+recommended for the Store, not SceneDelegate. In case of SwiftUI you can create a store in your app protocol as a <code>Combine/StateObject</code>:</p>
+<pre class="highlight swift"><code><span class="kd">@main</span>
+<span class="kd">struct</span> <span class="kt">MyApp</span><span class="p">:</span> <span class="kt">App</span> <span class="p">{</span>
+    <span class="kd">@StateObject</span> <span class="k">var</span> <span class="nv">store</span> <span class="o">=</span> <span class="kt">Store</span><span class="o">.</span><span class="nf">createStore</span><span class="p">(</span><span class="nv">dependencyInjection</span><span class="p">:</span> <span class="kt">World</span><span class="o">.</span><span class="k">default</span><span class="p">)</span><span class="o">.</span><span class="nf">asObservableViewModel</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="o">.</span><span class="n">initial</span><span class="p">)</span>
 
-<p><code>StateProvider</code>: that&rsquo;s the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an <code><a href="Classes/Observable.html">Observable</a></code> (<code>RxSwift</code>) or a <code>Publisher</code> (<code>Combine</code>) of state elements, and an <code>UIViewController</code> or SwiftUI View can subscribe to the store and react to state changes. There&rsquo;s only one requirement:</p>
-<pre class="highlight swift"><code><span class="k">var</span> <span class="nv">statePublisher</span><span class="p">:</span> <span class="kt">UnfailablePublisherType</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
-</code></pre>
-
-<p>The <code>UnfailablePublisherType&lt;StateType&gt;</code> is an abstraction that will be implemented as <code><a href="Classes/Observable.html">Observable</a></code>, <code>Publisher</code> or <code>SignalProducer</code> according to the selected Reactive Framework, and emits the element <code>StateType</code> (your root app state) with <code>Never</code> type for failure, when the framework supports it.</p>
-<pre class="highlight swift"><code><span class="c1">// Combine Usage:</span>
-<span class="k">let</span> <span class="nv">cancellable</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">statePublisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"Got new state: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span> 
-<span class="p">}</span>
-<span class="c1">// RxSwift Usage:</span>
-<span class="k">let</span> <span class="nv">disposable</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">statePublisher</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"Got new state: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span> 
-<span class="p">})</span>
-</code></pre>
-
-<p>There are other ways to observe a Store, such as SwiftUI ObservableObject protocol, but these tools are built on top of this very simple <code>StateProvider</code> protocol.</p>
-<h4 id='storetype-flow' class='heading'>StoreType Flow</h4>
-
-<p>Either using UIKit, AppKit, WatchKit, SwiftUI or any other presentation layer, the communication between a Store and the UI will happen exclusively through these two members, <code>dispatch</code> for input actions and <code>statePublisher</code> for output state.</p>
-
-<p><a href="https://www.youtube.com/watch?v=oBR94I2p2BA"><img src="https://swiftrex.github.io/SwiftRex/markdown/img/Redux1.gif" alt="ViewController and Store"></a></p>
-
-<p>As seen in the animation above, the Store only exposes an input (action) and an output (state provider), and that&rsquo;s all the Views need to know about the Store.</p>
-
-<blockquote>
-<p><strong><em>IMPORTANT:</em></strong> However you should only have one store, you can have multiple projections of this store and give to your views, for example, that way they will only have a limited amount of operations and state available and can&rsquo;t mess with things that are out of their responsibilities. This is also the perfect way to modularize an app, as multiples projections can live in different frameworks and later only assembled together in the main target. We will talk more about that on chapter <a href="#store-projection">Store Projection</a>, but for now it&rsquo;s only important to understand that Store Projections won&rsquo;t hold source-of-truth, but will pretend to be a real store, therefore, implement the <code>StoreType</code> protocol, and the flow above will still be valid regardless of being the real singleton Store or a simple projection of it.</p>
-</blockquote>
-<h4 id='reduxstorebase' class='heading'>ReduxStoreBase</h4>
-
-<p><code>ReduxStoreBase</code> is an <code>open class</code> that conforms to <code>StoreType</code> and provides all we need to start using SwiftRex. You can choose to inherit from this class or use it directly. We recommend inheritance because this will allow you to better mock the Store if necessary, however there&rsquo;s nothing you really have to write once <code>ReduxStoreBase</code> is complete: it glues all the parts together and acts as a proxy to the non-Redux world.</p>
-
-<p>A suggested <code>Store</code> can be written with no more than 10 lines of code:</p>
-<pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">Store</span><span class="p">:</span> <span class="kt">ReduxStoreBase</span><span class="o">&lt;</span><span class="kt">AppAction</span><span class="p">,</span> <span class="kt">AppState</span><span class="o">&gt;</span> <span class="p">{</span>
-    <span class="nf">init</span><span class="p">(</span><span class="nv">world</span><span class="p">:</span> <span class="kt">World</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span>
-            <span class="nv">subject</span><span class="p">:</span> <span class="o">.</span><span class="nf">combine</span><span class="p">(</span><span class="nv">initialValue</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">()),</span>
-            <span class="nv">reducer</span><span class="p">:</span> <span class="n">appReducer</span><span class="p">,</span>
-            <span class="nv">middleware</span><span class="p">:</span> <span class="nf">appMiddleware</span><span class="p">()</span><span class="o">.</span><span class="nf">inject</span><span class="p">(</span><span class="n">world</span><span class="p">),</span>
-            <span class="nv">emitsValue</span><span class="p">:</span> <span class="o">.</span><span class="n">whenDifferent</span>
-        <span class="p">)</span>
+    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">Scene</span> <span class="p">{</span>
+        <span class="kt">WindowGroup</span> <span class="p">{</span>
+            <span class="kt">ContentView</span><span class="p">(</span><span class="nv">viewModel</span><span class="p">:</span> <span class="kt">ContentViewModel</span><span class="p">(</span><span class="nv">store</span><span class="p">:</span> <span class="n">store</span><span class="p">))</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 
-<p>The <code>ReduxStoreBase</code> initialiser expects a middleware and a reducer as input, and that&rsquo;s enough for the store to coordinate the entire process. It creates a queue of incoming actions that will be handled by the middleware pipeline and by the reducer pipeline. By the end of this process the state may or may not change, as a result of reducer pipeline acting on action + current state. Finally, the store notifies all subscribers about the state change and only then starts evaluating the next action on the queue.</p>
+<p>SwiftRex will provide a protocol (<code>ReduxStoreProtocol</code>) and a base class (<code>ReduxStoreBase</code>) for helping you to create your own Store.</p>
+<pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">Store</span><span class="p">:</span> <span class="kt">ReduxStoreBase</span><span class="o">&lt;</span><span class="kt">AppAction</span><span class="p">,</span> <span class="kt">AppState</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">createStore</span><span class="p">(</span><span class="nv">dependencyInjection</span><span class="p">:</span> <span class="kt">World</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Store</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">store</span> <span class="o">=</span> <span class="kt">Store</span><span class="p">(</span>
+            <span class="nv">subject</span><span class="p">:</span> <span class="o">.</span><span class="nf">combine</span><span class="p">(</span><span class="nv">initialValue</span><span class="p">:</span> <span class="o">.</span><span class="n">initial</span><span class="p">),</span>
+            <span class="nv">reducer</span><span class="p">:</span> <span class="kt">AppModule</span><span class="o">.</span><span class="n">appReducer</span><span class="p">,</span>
+            <span class="nv">middleware</span><span class="p">:</span> <span class="kt">AppModule</span><span class="o">.</span><span class="nf">appMiddleware</span><span class="p">(</span><span class="nv">dependencyInjection</span><span class="p">:</span> <span class="n">dependencyInjection</span><span class="p">)</span>
+            <span class="nv">emitsValue</span><span class="p">:</span> <span class="o">.</span><span class="n">whenDifferent</span>
+        <span class="p">)</span>
 
-<p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png" alt="Store internals"></p>
-
-<p>We will see more in depth this dataflow when reading about middlewares and reducers, but please come back to this picture above every time you read about the store internals, it can be very useful.</p>
-
-<p>At this point all you have to notice is the action handler (dispatch action function) and the state provider (subscribe state) boxes that are shown to the outside world. When writing UIViewControllers or SwiftUI Views those are the only 2 functions you&rsquo;ll ever have to use.</p>
-
-<p>There will be only one honest Store in your entire app, so either you create it as a singleton or a property in a long-living class such as AppDelegate or AppCoordinator. That&rsquo;s crucial for making the store completely detached from the <code>UIKit</code>/SwiftUI world.</p>
-<pre class="highlight plaintext"><code>                 ┌────────────────────────────────────────┐
-                 │                                        │
-                 │    SwiftUI View / UIViewController     │
-                 │                                        │
-                 └────┬───────────────────────────────────┘
-                      │                            ▲
-                      │                            │
-                      │ action        notification
-          ┌─────────┐ │                            │
-          │         ▼ │                       ─ ─ ─ ─ ─ ─
-          │      ┏━━━━│━━━━━━━━━━━━━━━━━━━━━━┫   State   ┣┓
-  new actions    ┃    │            Store       Publisher  ┃░
-from middleware  ┃    ▼                      └ ─ ─ ┬ ─ ─ ┘┃░
-          │      ┃ ┌───────────────────┐                  ┃░
-          │      ┃ │    Middlewares    │           │      ┃░
-          └────────┤┌───┐  ┌───┐  ┌───┐│                  ┃░
-                 ┃ ││ 1 │─▶│ 2 │─▶│ 3 ││◀─         │      ┃░
-                 ┃ │└───┘  └───┘  └───┘│  │               ┃░
-                 ┃ └────────────────┬──┘      ┌────┴────┐ ┃░
-                 ┃                  │     │   │         │ ┃░
-                 ┃    ┌─────────────┘      ─ ─│  State  │ ┃░
-                 ┃    │ ┌─────────────────────│         │ ┃░
-                 ┃    ▼ ▼                     └────▲────┘ ┃░
-                 ┃ ┌───────────────────┐           ║      ┃░
-                 ┃ │     Reducers      │           ║      ┃░
-                 ┃ │┌───┐  ┌───┐  ┌───┐│           ║      ┃░
-                 ┃ ││ 1 │─▶│ 2 │─▶│ 3 │╠═══════════╝      ┃░
-                 ┃ │└───┘  └───┘  └───┘│    state         ┃░
-                 ┃ └───────────────────┘   mutation       ┃░
-                 ┃                                        ┃░
-                 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛░
-                  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+        <span class="n">store</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="kt">AppAction</span><span class="o">.</span><span class="nf">lifecycle</span><span class="p">(</span><span class="kt">LifeCycleAction</span><span class="o">.</span><span class="n">start</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">store</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
+<h4 id='what-is-a-store-projection' class='heading'>What is a Store Projection?</h4>
+
+<p>Very often you don&rsquo;t want your view to be able to access the whole App State or dispatch any possible global App Action. Not only it could refresh
+your UI more often than needed, it also makes more error prone, put more complex code in the view layer and finally decreases modularisation making
+the view coupled to the global models.</p>
+
+<p>However, you don&rsquo;t want to split your state in multiple parts because having it in a central and unique point ensures consistency. Also, you don&rsquo;t
+want multiple separate places taking care of actions because that could potentially create race conditions. The real Store is the only place actually
+owning the global state and effectively handling the actions, and that&rsquo;s how it&rsquo;s supposed to be.</p>
+
+<p>To solve both problems, we offer a <code>StoreProjection</code>, which conforms to the <code>StoreType</code> protocol so for all purposes it behaves like a real store,
+but in fact it only projects the real store using custom types for state and actions, that is, either a subset of your models (a branch in the state
+tree, for example), or a completely different entity like a View State. A <code>StoreProjection</code> has 2 closures, that allow it to transform actions and
+state between the global ones and the ones used by the view. That way, the View is not coupled to the whole global models, but only to tiny parts of
+it, and the closure in the <code>StoreProjection</code> will take care of extracting/mapping the interesting part for the view. This also improves performance,
+because the view will not refresh for any property in the global state, only for the relevant ones. On the other direction, view can only dispatch a
+limited set of actions, that will be mapped into global actions by the closure in the <code>StoreProjection</code>.</p>
+
+<p>A Store Projection can be created from any other <code>StoreType</code>, even from another <code>StoreProjection</code>. It&rsquo;s as simple as calling 
+<code>StoreType/projection(action:state:)</code>, and providing the action and state mapping closures:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">storeProjection</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="nf">projection</span><span class="p">(</span>
+    <span class="nv">action</span><span class="p">:</span> <span class="p">{</span> <span class="n">viewAction</span> <span class="k">in</span> <span class="n">viewAction</span><span class="o">.</span><span class="nf">toAppAction</span><span class="p">()</span> <span class="p">}</span> <span class="p">,</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">{</span> <span class="n">globalState</span> <span class="k">in</span> <span class="kt">MyViewState</span><span class="o">.</span><span class="nf">from</span><span class="p">(</span><span class="nv">globalState</span><span class="p">:</span> <span class="n">globalState</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="nf">asObservableViewModel</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="o">.</span><span class="n">empty</span><span class="p">)</span>
+</code></pre>
+<h4 id='all-together' class='heading'>All together</h4>
+
+<p>Putting everything together we could have:</p>
+<pre class="highlight swift"><code><span class="kd">@main</span>
+<span class="kd">struct</span> <span class="kt">MyApp</span><span class="p">:</span> <span class="kt">App</span> <span class="p">{</span>
+    <span class="kd">@StateObject</span> <span class="k">var</span> <span class="nv">store</span> <span class="o">=</span> <span class="kt">Store</span><span class="o">.</span><span class="nf">createStore</span><span class="p">(</span><span class="nv">dependencyInjection</span><span class="p">:</span> <span class="kt">World</span><span class="o">.</span><span class="k">default</span><span class="p">)</span><span class="o">.</span><span class="nf">asObservableViewModel</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="o">.</span><span class="n">initial</span><span class="p">)</span>
+
+    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">Scene</span> <span class="p">{</span>
+        <span class="kt">WindowGroup</span> <span class="p">{</span>
+            <span class="kt">ContentView</span><span class="p">(</span>
+                <span class="nv">viewModel</span><span class="p">:</span> <span class="n">store</span><span class="o">.</span><span class="nf">projection</span><span class="p">(</span>
+                    <span class="nv">action</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">viewAction</span><span class="p">:</span> <span class="kt">ContentViewAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AppAction</span><span class="p">?</span> <span class="k">in</span>
+                        <span class="n">viewAction</span><span class="o">.</span><span class="nf">toAppAction</span><span class="p">()</span>
+                    <span class="p">},</span>
+                    <span class="nv">state</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">globalState</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ContentViewState</span> <span class="k">in</span> 
+                        <span class="kt">ContentViewState</span><span class="o">.</span><span class="nf">from</span><span class="p">(</span><span class="nv">globalState</span><span class="p">:</span> <span class="n">globalState</span><span class="p">)</span> 
+                    <span class="p">}</span>
+                <span class="p">)</span><span class="o">.</span><span class="nf">asObservableViewModel</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="o">.</span><span class="n">empty</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">struct</span> <span class="kt">ContentViewState</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span>
+
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">from</span><span class="p">(</span><span class="nv">globalState</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ContentViewState</span> <span class="p">{</span> 
+        <span class="kt">ContentViewState</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="kt">L10n</span><span class="o">.</span><span class="n">goodMorning</span><span class="se">)</span><span class="s">, </span><span class="se">\(</span><span class="n">globalState</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">bar</span><span class="o">.</span><span class="n">title</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">enum</span> <span class="kt">ContentViewAction</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">onAppear</span>
+
+    <span class="kd">func</span> <span class="nf">toAppAction</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">AppAction</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="k">self</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">onAppear</span><span class="p">:</span> <span class="k">return</span> <span class="kt">AppAction</span><span class="o">.</span><span class="nf">foo</span><span class="p">(</span><span class="o">.</span><span class="nf">bar</span><span class="p">(</span><span class="o">.</span><span class="n">startTimer</span><span class="p">))</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>In this example above we can see that <code>ContentView</code> doesn&rsquo;t know about the global models, it&rsquo;s limited to <code>ContentViewAction</code> and <code>ContentViewState</code>
+only. It also only refreshes when <code>globalState.foo.bar.title</code> changes, any other change in the <code>AppState</code> will be ignored because the other properties
+are not mapped into anything in the <code>ContentViewState</code>. Also, <code>ContentViewAction</code> has a single case, <code>onAppear</code>, and that&rsquo;s the only thing the view
+can dispatch, without knowing that this will eventually start a timer (<code>AppAction.foo(.bar(.startTimer))</code>). The view should not know about domain
+logic and its actions should be limited to <code>buttonTapped</code>, <code>onAppear</code>, <code>didScroll</code>, <code>toggle(enabled: Bool)</code> and other names that only suggest UI
+interaction. How this is mapped into App Actions is responsibility of other parts, in our example, <code>ContentViewAction</code> itself, but it could be a
+Presenter layer, a View Model layer, or whatever structure you decide to create to organise your code.</p>
+
+<p>Testing is also made easier with this approach, as the View doesn&rsquo;t hold any logic and the projection transformations are pure functions.</p>
+
+<p><img src="StoreProjectionDiagram" alt="Store, StoreProjection and View"></p>
 <h3 id='middleware' class='heading'>Middleware</h3>
 
-<p><code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code>ReduxStoreProtocol</code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process.
-This happens before the <code>Reducer</code> to do its job.</p>
+<p><code>MiddlewareProtocol</code> is a plugin, or a composition of several plugins, that are assigned to the app global <code>StoreType</code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process. It can also access the most up-to-date <code>StateType</code> while handling an incoming action.</p>
 
-<p>We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state at any point.</p>
+<p>We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state while handling an action.</p>
 
-<p>An action is a lightweight structure, typically an enum, that is dispatched into the <code>ActionHandler</code> (usually a <code>StoreProtocol</code>).
-A Store like <code>ReduxStoreProtocol</code> enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>Middleware</code> is class that handles actions, and has the power to dispatch more actions to the <code>ActionHandler</code> chain. The <code>Middleware</code> can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop, or perhaps some <code>Reducer</code>, as reducers pipeline is at the end of every middleware pipeline.</p>
+<p>An <a href="#action">Action</a> is a lightweight structure, typically an enum, that is dispatched into the <code>ActionHandler</code> (usually a <code>StoreType</code>).</p>
 
-<p>Middlewares can schedule a callback to be executed after the reducer pipeline is done mutating the global state. At that point, the middleware will have access to the new state, and in case it cached the old state it can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.</p>
+<p>A Store like <code>ReduxStoreProtocol</code> enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>MiddlewareProtocol</code> is class that handles actions, and has the power to dispatch more actions, either immediately or after callback of async tasks. The middleware can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in the future, or perhaps some <code>Reducer</code> will use this action to change the state, because the <code>MiddlewareProtocol</code> itself can never change the state, only read it.</p>
 
-<p>Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file, line, function and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.</p>
+<p>The <code>MiddlewareProtocol/handle(action:from:state:)</code> will be called before the Reducer, so if you read the state at that point it&rsquo;s still going to be the unchanged version. While implementing this function, it&rsquo;s expected that you return an <code>IO</code> object, which is basically a closure where you can perform side-effects and dispatch new actions. Inside this closure, the state will have the new values after the reducers handled the current action, so in case you made a copy of the old state, you can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.</p>
 
-<p>Because the <code>Middleware</code> receive all actions and accesses the state of the app at any point, anything can be done from these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct.</p>
+<p>Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file name, line of code, function name and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.</p>
+
+<p>Ideally a <code>MiddlewareProtocol</code> should be a small and reusable box, handling only a very limited set of actions, and combined with other small middlewares to create more complex apps. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-action tree and sub-state struct.</p>
 
 <p>Some suggestions of middlewares:</p>
 
@@ -752,93 +848,159 @@ A Store like <code>ReduxStoreProtocol</code> enqueues a new action that arrives 
 <li>Observation of traits changes, device rotation, language/locale, dark mode, dynamic fonts, background/foreground state</li>
 <li>Any side-effect, I/O, networking, sensors, third-party libraries that you want to abstract</li>
 </ul>
-<pre class="highlight plaintext"><code>                   ┌─────┐                                                                                        ┌─────┐
-                   │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
-                   │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
-                   │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
-                   │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
- ┌──────┐ dispatch │     │   │                ▲
- │Button│─────────▶│Store│──▶│                └───afterReducer─────┐                   ┌────────┐
- └──────┘ Action   │     │   │                                     │                ┌─▶│ View 1 │
-                   │     │   │                                  ┌─────┐             │  └────────┘
-                   │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
-                   │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
-                   │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
-                   └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
-                               State                                                └─▶│ View 3 │
-                                                                                       └────────┘
+<pre class="highlight plaintext"><code>                                                                                                                    ┌────────┐                                     
+                                                       IO closure                                                ┌─▶│ View 1 │                                     
+                      ┌─────┐                          (don't run yet)                       ┌─────┐             │  └────────┘                                     
+                      │     │ handle  ┌──────────┐  ┌───────────────────────────────────────▶│     │ send        │  ┌────────┐                                     
+                      │     ├────────▶│Middleware│──┘                                        │     │────────────▶├─▶│ View 2 │                                     
+                      │     │ Action  │ Pipeline │──┐  ┌─────┐ reduce ┌──────────┐           │     │ New state   │  └────────┘                                     
+                      │     │         └──────────┘  └─▶│     │───────▶│ Reducer  │──────────▶│     │             │  ┌────────┐                                     
+    ┌──────┐ dispatch │     │                          │Store│ Action │ Pipeline │ New state │     │             └─▶│ View 3 │                                     
+    │Button│─────────▶│Store│                          │     │ +      └──────────┘           │Store│                └────────┘                                     
+    └──────┘ Action   │     │                          └─────┘ State                         │     │                                   dispatch    ┌─────┐         
+                      │     │                                                                │     │       ┌─────────────────────────┐ New Action  │     │         
+                      │     │                                                                │     │─run──▶│       IO closure        ├────────────▶│Store│─ ─ ▶ ...
+                      │     │                                                                │     │       │                         │             │     │         
+                      │     │                                                                │     │       └─┬───────────────────────┘             └─────┘         
+                      └─────┘                                                                └─────┘         │                     ▲                               
+                                                                                                      request│ side-effects        │side-effects                   
+                                                                                                             ▼                      response                       
+                                                                                                        ┌ ─ ─ ─ ─ ─                │                               
+                                                                                                          External │─ ─ async ─ ─ ─                                
+                                                                                                        │  World                                                   
+                                                                                                         ─ ─ ─ ─ ─ ┘                                               
 </code></pre>
+<h4 id='generics' class='heading'>Generics</h4>
 
 <p>Middleware protocol is generic over 3 associated types:</p>
-<h4 id='inputactiontype' class='heading'>InputActionType:</h4>
 
-<p>The Action type that this <code>Middleware</code> knows how to handle, so the store will forward actions of this type to this middleware.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputAction:outputAction:state:)</code> for more details.</p>
-<h4 id='outputactiontype' class='heading'>OutputActionType:</h4>
+<ul>
+<li><p><code>InputActionType</code>:</p>
 
-<p>The Action type that this <code>Middleware</code> will eventually trigger back to the store in response of side-effects. This can be the same as <code>InputActionType</code> or different, in case you want to separate your enum in requests and responses.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <code>lift(inputAction:outputAction:state:)</code> for more details.</p>
-<h4 id='statetype' class='heading'>StateType:</h4>
+<p>The Action type that this <code>MiddlewareProtocol</code> knows how to handle, so the store will forward actions of this type to this middleware.</p>
 
-<p>The State part that this <code>Middleware</code> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <code>StateType</code> from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don&rsquo;t need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn&rsquo;t need to read any state, so the <code>StateType</code>can safely be set to <code>Void</code>.
-Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <code>lift(inputAction:outputAction:state:)</code> for more details.</p>
+<p>Most of the times middlewares don&rsquo;t need to handle all possible actions from the whole global action tree, so we can decide to allow it to
+focus only on a subset of the action.</p>
+
+<p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the
+global action of an app. Please check <a href="#lifting">Lifting</a> for more details.</p></li>
+<li><p><code>OutputActionType</code>:</p>
+
+<p>The Action type that this <code>MiddlewareProtocol</code> will eventually trigger back to the store in response of side-effects. This can be the same
+as <code>InputActionType</code> or different, in case you want to separate your enum in requests and responses.</p>
+
+<p>Most of the times middlewares don&rsquo;t need to dispatch all possible actions of the whole global action tree, so we can decide to allow it to
+dispatch only a subset of the action, or not dispatch any action at all, so the <code>OutputActionType</code> can safely be set to <code>Never</code>.</p>
+
+<p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the
+global action of an app. Please check <a href="#lifting">Lifting</a> for more details.</p></li>
+<li><p><code>StateType</code>:</p>
+
+<p>The State part that this <code>MiddlewareProtocol</code> needs to read in order to make decisions. This middleware will be able to read the most
+up-to-date <code>StateType</code> from the store while handling an incoming action, but it can never write or make changes to it.</p>
+
+<p>Most of the times middlewares don&rsquo;t need reading the whole global state, so we can decide to allow it to read only a subset of the state, or
+maybe this middleware doesn&rsquo;t need to read any state, so the <code>StateType</code> can safely be set to <code>Void</code>.</p>
+
+<p>In this case, this state type can be a subset to be lifted to a global state in order to compose with other middlewares acting on the global state
+of an app. Please check <a href="#lifting">Lifting</a> for more details.</p></li>
+</ul>
+<h4 id='returning-io-and-performing-side-effects' class='heading'>Returning IO and performing side-effects</h4>
+
+<p>In its most important function, <code>MiddlewareProtocol/handle(action:from:state:)</code> the middleware is expected to return an <code>IO</code> object, which is a closure where side-effects should be executed and new actions can be dispatched.</p>
+
+<p>In some cases, we may want to not execute any side-effect or run any code after reducer, in that case, the function can return a simple <code>IO/pure()</code>.</p>
+
+<p>Otherwise, return the closure that takes the <code>output</code> (of <code>ActionHandler</code> type, that accepts <code>ActionHandler/dispatch(_:)</code> calls):</p>
+<pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">InputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">IO</span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">action</span> <span class="o">!=</span> <span class="o">.</span><span class="n">myExpectedAction</span> <span class="p">{</span> <span class="k">return</span> <span class="o">.</span><span class="nf">pure</span><span class="p">()</span> <span class="p">}</span>
+
+    <span class="k">return</span> <span class="kt">IO</span> <span class="p">{</span> <span class="n">output</span> <span class="k">in</span> 
+        <span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="n">showPopup</span><span class="p">)</span>
+        <span class="kt">DispatchQueue</span><span class="o">.</span><span class="nf">global</span><span class="p">()</span><span class="o">.</span><span class="nf">asyncAfter</span><span class="p">(</span><span class="o">.</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="o">.</span><span class="nf">seconds</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="p">{</span> 
+            <span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="n">hidePopup</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<h4 id='dependency-injection' class='heading'>Dependency Injection</h4>
+
+<p>Testability is one of the most important aspects to account for when developing software. In Redux architecture, <code>MiddlewareProtocol</code> is the only type of object allowed to perform side-effects, so it&rsquo;s the only place where the testability can be challenging.</p>
+
+<p>To improve testability, the middleware should use as few external dependencies as possible. If it starts to use too many, consider splitting in smaller middlewares, this will also protect you against race conditions and other problems, will help with tests and make the middleware more reusable.</p>
+
+<p>Also, all external dependencies should be injected in the initialiser, so during the tests you can replace them with mocks. If your middleware uses only one call from a very complex object, instead of using a protocol full of functions please consider either creating a protocol with a single function requirement, or even inject a closure such as <code>@escaping (URLRequest) -&gt; AnyPublisher&lt;(Data, URLResponse), Error&gt;</code>. Creating mocks for this will be way much easier.</p>
+
+<p>Finally, consider using <code>MiddlewareReader</code> to wrap this middleware in a dependency injection container.</p>
+<h4 id='middleware-examples' class='heading'>Middleware Examples</h4>
 
 <p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p>
-<pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">LoggerMiddleware</span><span class="p">:</span> <span class="kt">Middleware</span> <span class="p">{</span>
-    <span class="kd">typealias</span> <span class="kt">InputActionType</span> <span class="o">=</span> <span class="kt">AppGlobalAction</span> <span class="c1">// It wants to receive all possible app actions</span>
-    <span class="kd">typealias</span> <span class="kt">OutputActionType</span> <span class="o">=</span> <span class="kt">Never</span>          <span class="c1">// No action is generated from this Middleware</span>
-    <span class="kd">typealias</span> <span class="kt">StateType</span> <span class="o">=</span> <span class="kt">AppGlobalState</span>        <span class="c1">// It wants to read the whole app state</span>
+<pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoggerMiddleware</span><span class="p">:</span> <span class="kt">MiddlewareProtocol</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">InputActionType</span> <span class="o">=</span> <span class="kt">AppGlobalAction</span> <span class="c1">// It wants to receive all possible app actions</span>
+    <span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">OutputActionType</span> <span class="o">=</span> <span class="kt">Never</span>          <span class="c1">// No action is generated from this Middleware</span>
+    <span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">StateType</span> <span class="o">=</span> <span class="kt">AppGlobalState</span>        <span class="c1">// It wants to read the whole app state</span>
 
-    <span class="k">var</span> <span class="nv">getState</span><span class="p">:</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">AppGlobalState</span><span class="o">&gt;!</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">logger</span><span class="p">:</span> <span class="kt">Logger</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">now</span><span class="p">:</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Date</span>
 
-    <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">AppGlobalState</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">Never</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">getState</span> <span class="o">=</span> <span class="n">getState</span>
+    <span class="c1">// Dependency Injection</span>
+    <span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">logger</span><span class="p">:</span> <span class="kt">Logger</span> <span class="o">=</span> <span class="kt">Logger</span><span class="o">.</span><span class="k">default</span><span class="p">,</span> <span class="nv">now</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Date</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">now</span> <span class="o">=</span> <span class="n">now</span>
     <span class="p">}</span>
 
-    <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">AppGlobalAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">afterReducer</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AfterReducer</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">stateBefore</span><span class="p">:</span> <span class="kt">AppGlobalState</span> <span class="o">=</span> <span class="nf">getState</span><span class="p">()</span>
-        <span class="k">let</span> <span class="nv">dateBefore</span> <span class="o">=</span> <span class="kt">Date</span><span class="p">()</span>
+    <span class="c1">//            inputAction: AppGlobalAction                                                state: AppGlobalState     output action: Never  </span>
+    <span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">InputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">IO</span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">stateBefore</span><span class="p">:</span> <span class="kt">AppGlobalState</span> <span class="o">=</span> <span class="nf">state</span><span class="p">()</span>
+        <span class="k">let</span> <span class="nv">dateBefore</span> <span class="o">=</span> <span class="nf">now</span><span class="p">()</span>
 
-        <span class="n">afterReducer</span> <span class="o">=</span> <span class="o">.</span><span class="k">do</span> <span class="p">{</span>
-            <span class="k">let</span> <span class="nv">stateAfter</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="nf">getState</span><span class="p">()</span>
-            <span class="k">let</span> <span class="nv">dateAfter</span> <span class="o">=</span> <span class="kt">Date</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kt">IO</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">output</span> <span class="k">in</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">stateAfter</span> <span class="o">=</span> <span class="nf">state</span><span class="p">()</span>
+            <span class="k">let</span> <span class="nv">dateAfter</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="nf">now</span><span class="p">()</span>
             <span class="k">let</span> <span class="nv">source</span> <span class="o">=</span> <span class="s">"</span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">file</span><span class="se">)</span><span class="s">:</span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">line</span><span class="se">)</span><span class="s"> - </span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">function</span><span class="se">)</span><span class="s"> | </span><span class="se">\(</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">info</span> <span class="p">??</span> <span class="s">""</span><span class="se">)</span><span class="s">"</span>
 
-            <span class="kt">Logger</span><span class="o">.</span><span class="nf">log</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="nv">before</span><span class="p">:</span> <span class="n">stateBefore</span><span class="p">,</span> <span class="nv">after</span><span class="p">:</span> <span class="n">stateAfter</span><span class="p">,</span> <span class="nv">dateBefore</span><span class="p">:</span> <span class="n">dateBefore</span><span class="p">,</span> <span class="nv">dateAfter</span><span class="p">:</span> <span class="n">dateAfter</span><span class="p">)</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="nf">log</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="nv">before</span><span class="p">:</span> <span class="n">stateBefore</span><span class="p">,</span> <span class="nv">after</span><span class="p">:</span> <span class="n">stateAfter</span><span class="p">,</span> <span class="nv">dateBefore</span><span class="p">:</span> <span class="n">dateBefore</span><span class="p">,</span> <span class="nv">dateAfter</span><span class="p">:</span> <span class="n">dateAfter</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kd">class</span> <span class="kt">FavoritesAPIMiddleware</span><span class="p">:</span> <span class="kt">Middleware</span> <span class="p">{</span>
-    <span class="kd">typealias</span> <span class="kt">InputActionType</span> <span class="o">=</span> <span class="kt">FavoritesAction</span>  <span class="c1">// It wants to receive only actions related to Favorites</span>
-    <span class="kd">typealias</span> <span class="kt">OutputActionType</span> <span class="o">=</span> <span class="kt">FavoritesAction</span> <span class="c1">// It wants to also dispatch actions related to Favorites</span>
-    <span class="kd">typealias</span> <span class="kt">StateType</span> <span class="o">=</span> <span class="kt">FavoritesModel</span>         <span class="c1">// It wants to read the app state that manages favorites</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">FavoritesAPIMiddleware</span><span class="p">:</span> <span class="kt">MiddlewareProtocol</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">InputActionType</span> <span class="o">=</span> <span class="kt">FavoritesAction</span>  <span class="c1">// It wants to receive only actions related to Favorites</span>
+    <span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">OutputActionType</span> <span class="o">=</span> <span class="kt">FavoritesAction</span> <span class="c1">// It wants to also dispatch actions related to Favorites</span>
+    <span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">StateType</span> <span class="o">=</span> <span class="kt">FavoritesModel</span>         <span class="c1">// It wants to read the app state that manages favorites</span>
 
-    <span class="k">var</span> <span class="nv">getState</span><span class="p">:</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">FavoritesModel</span><span class="o">&gt;!</span>
-    <span class="k">var</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">FavoritesAction</span><span class="o">&gt;!</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">api</span><span class="p">:</span> <span class="kt">API</span>
 
-    <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">FavoritesModel</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">AnyActionHandler</span><span class="o">&lt;</span><span class="kt">FavoritesAction</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">getState</span> <span class="o">=</span> <span class="n">getState</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+    <span class="c1">// Dependency Injection</span>
+    <span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">api</span><span class="p">:</span> <span class="kt">API</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">api</span>
     <span class="p">}</span>
 
-    <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">FavoritesAction</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">afterReducer</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AfterReducer</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">guard</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">toggleFavorite</span><span class="p">(</span><span class="n">movieId</span><span class="p">)</span> <span class="o">=</span> <span class="n">action</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
-
-        <span class="k">let</span> <span class="nv">favoritesList</span> <span class="o">=</span> <span class="nf">getState</span><span class="p">()</span>
+    <span class="c1">//            inputAction: FavoritesAction                                                state: FavoritesModel     output action: FavoritesAction  </span>
+    <span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">InputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt">ActionSource</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">GetState</span><span class="o">&lt;</span><span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">IO</span><span class="o">&lt;</span><span class="kt">OutputActionType</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">toggleFavorite</span><span class="p">(</span><span class="n">movieId</span><span class="p">)</span> <span class="o">=</span> <span class="n">action</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="o">.</span><span class="nf">pure</span><span class="p">()</span> <span class="p">}</span>
+        <span class="k">let</span> <span class="nv">favoritesList</span> <span class="o">=</span> <span class="nf">state</span><span class="p">()</span> <span class="c1">// state before reducer</span>
         <span class="k">let</span> <span class="nv">makeFavorite</span> <span class="o">=</span> <span class="o">!</span><span class="n">favoritesList</span><span class="o">.</span><span class="nf">contains</span><span class="p">(</span><span class="nv">where</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">movieId</span> <span class="p">})</span>
 
-        <span class="kt">API</span><span class="o">.</span><span class="nf">changeFavorite</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">movieId</span><span class="p">,</span> <span class="nv">makeFavorite</span><span class="p">:</span> <span class="n">makeFavorite</span><span class="p">)</span> <span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
-            <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
-            <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                <span class="k">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="nf">changedFavorite</span><span class="p">(</span><span class="n">movieId</span><span class="p">,</span> <span class="nv">isFavorite</span><span class="p">:</span> <span class="kc">true</span><span class="p">),</span> <span class="nv">info</span><span class="p">:</span> <span class="s">"API.changeFavorite callback"</span><span class="p">)</span>
-            <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
-                <span class="k">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="nf">changedFavoriteHasFailed</span><span class="p">(</span><span class="n">movieId</span><span class="p">,</span> <span class="nv">isFavorite</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nv">error</span><span class="p">:</span> <span class="n">error</span><span class="p">),</span> <span class="nv">info</span><span class="p">:</span> <span class="s">"API.changeFavorite callback"</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">})</span>
+        <span class="k">return</span> <span class="kt">IO</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">output</span> <span class="k">in</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+
+            <span class="k">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="nf">changeFavorite</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">movieId</span><span class="p">,</span> <span class="nv">makeFavorite</span><span class="p">:</span> <span class="n">makeFavorite</span><span class="p">)</span> <span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+                <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                    <span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="nf">changedFavorite</span><span class="p">(</span><span class="n">movieId</span><span class="p">,</span> <span class="nv">isFavorite</span><span class="p">:</span> <span class="n">makeFavorite</span><span class="p">),</span> <span class="nv">info</span><span class="p">:</span> <span class="s">"API.changeFavorite callback"</span><span class="p">)</span>
+                <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                    <span class="n">output</span><span class="o">.</span><span class="nf">dispatch</span><span class="p">(</span><span class="o">.</span><span class="nf">changedFavoriteHasFailed</span><span class="p">(</span><span class="n">movieId</span><span class="p">,</span> <span class="nv">isFavorite</span><span class="p">:</span> <span class="o">!</span><span class="n">makeFavorite</span><span class="p">,</span> <span class="nv">error</span><span class="p">:</span> <span class="n">error</span><span class="p">),</span> <span class="nv">info</span><span class="p">:</span> <span class="s">"api.changeFavorite callback"</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">})</span>
+
+        <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
+
+<p><img src="wwdc2019-226-02" alt="SwiftUI Side-Effects"></p>
 <h4 id='effectmiddleware' class='heading'>EffectMiddleware</h4>
 
 <p>This is a middleware implementation that aims for simplicity while keeping it very powerful. For every incoming action you must return an Effect, which is simply a wrapper for a reactive
@@ -877,63 +1039,512 @@ long as it matches the required generic parameters, for that you can simply use 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/wwdc2019-226-02.jpg" alt="SwiftUI Side-Effects"></p>
 <h3 id='reducer' class='heading'>Reducer</h3>
 
-<p><code>Reducer</code> is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.</p>
+<p><code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.</p>
 
-<p>The <code>Middleware</code> pipeline can do two things: dispatch outgoing actions and handling incoming actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code>Reducer</code> function.</p>
-<pre class="highlight swift"><code><span class="c1">// Signature:</span>
-<span class="kt">Reducer</span><span class="o">.</span><span class="nf">reduce</span><span class="p">(</span><span class="n">_</span> <span class="nv">reduce</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">MutableReduceFunction</span><span class="o">&lt;</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="o">&gt;</span><span class="p">)</span>
+<p>The <code>MiddlewareProtocol</code> pipeline can do two things: dispatch outgoing actions and handling incoming actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <code>MutableReduceFunction</code> function:</p>
+<pre class="highlight swift"><code><span class="p">(</span><span class="kt">ActionType</span><span class="p">,</span> <span class="k">inout</span> <span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span>
+</code></pre>
 
-<span class="c1">// Example:</span>
-<span class="k">let</span> <span class="nv">someReducer</span> <span class="o">=</span> <span class="kt">Reducer</span><span class="o">.</span><span class="n">reducer</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">state</span> <span class="k">in</span>
+<p>Which has the same semantics (but better performance) than old <code>ReduceFunction</code>:</p>
+<pre class="highlight swift"><code><span class="p">(</span><span class="kt">ActionType</span><span class="p">,</span> <span class="kt">StateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">StateType</span>
+</code></pre>
+
+<p>Given an action and the current state (as a mutable inout), it calculates the new state and changes it:</p>
+<pre class="highlight plaintext"><code>initial state is 42
+action: increment
+reducer: increment 42 =&gt; new state 43
+
+current state is 43
+action: decrement
+reducer: decrement 43 =&gt; new state 42
+
+current state is 42
+action: half
+reducer: half 42 =&gt; new state 21
+</code></pre>
+
+<p>The function is reducing all the actions in a cached state, and that happens incrementally for each new incoming action.</p>
+
+<p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect (including non-obvious ones as creating <code>Date()</code>, using DispatchQueue or <code>Locale.current</code>), so never add properties to the <code>Reducer</code> structs or call any external function. If you are tempted to do that, please create a middleware and dispatch actions with Dates or Locales from it. </p>
+
+<p>Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always good to do a final sanity check before changing the state, like for example check other dependant properties that must be changed together.</p>
+
+<p>Once the reducer function executes, the store will update its single source-of-truth with the new calculated state, and propagate it to all its subscribers, that will react to the new state and update Views, for example.</p>
+
+<p>This function is wrapped in a struct to overcome some Swift limitations, for example, allowing us to compose multiple reducers into one (monoid operation, where two or more reducers become a single one) or lifting reducers from local types to global types.</p>
+
+<p>The ability to lift reducers allow us to write fine-grained &ldquo;sub-reducer&rdquo; that will handle only a subset of the state and/or action, place it in different frameworks and modules, and later plugged into a bigger state and action handler by providing a way to map state and actions between the global and local ones. For more information about that, please check <a href="#lifting">Lifting</a>.</p>
+
+<p>A possible implementation of a reducer would be:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">volumeReducer</span> <span class="o">=</span> <span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">VolumeAction</span><span class="p">,</span> <span class="kt">VolumeState</span><span class="o">&gt;.</span><span class="n">reduce</span> <span class="p">{</span> <span class="n">action</span><span class="p">,</span> <span class="n">currentState</span> <span class="k">in</span>
     <span class="k">switch</span> <span class="n">action</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="nv">something</span><span class="p">:</span>
-        <span class="c1">// given that state is "inout", you can mutate it here:</span>
-        <span class="n">state</span><span class="o">.</span><span class="n">somethingCalledCount</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nv">louder</span><span class="p">:</span>
+        <span class="n">currentState</span> <span class="o">=</span> <span class="kt">VolumeState</span><span class="p">(</span>
+            <span class="nv">isMute</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// When increasing the volume, always unmute it.</span>
+            <span class="nv">volume</span><span class="p">:</span> <span class="nf">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">currentState</span><span class="o">.</span><span class="n">volume</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nv">quieter</span><span class="p">:</span>
+        <span class="n">currentState</span> <span class="o">=</span> <span class="kt">VolumeState</span><span class="p">(</span>
+            <span class="nv">isMute</span><span class="p">:</span> <span class="n">currentState</span><span class="o">.</span><span class="n">isMute</span><span class="p">,</span>
+            <span class="nv">volume</span><span class="p">:</span> <span class="nf">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">currentState</span><span class="o">.</span><span class="n">volume</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nv">toggleMute</span><span class="p">:</span>
+        <span class="n">currentState</span> <span class="o">=</span> <span class="kt">VolumeState</span><span class="p">(</span>
+            <span class="nv">isMute</span><span class="p">:</span> <span class="o">!</span><span class="n">currentState</span><span class="o">.</span><span class="n">isMute</span><span class="p">,</span>
+            <span class="nv">volume</span><span class="p">:</span> <span class="n">currentState</span><span class="o">.</span><span class="n">volume</span>
+        <span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 
-<p>Given the current state (as a mutable inout) and an action, it can change the state. This function will be executed right after middleware action handling for all the middlewares in the
-pipeline. Because a reduce function is composable monoid and also can be lifted through lenses, it&rsquo;s possible to write fine-grained &ldquo;sub-reducer&rdquo; that will handle only a &ldquo;sub-state&rdquo;, creating a pipeline of reducers. For example, you can write a Reducer to handle part A of certain state, another Reducer to handle part B of certain state, &ldquo;lift&rdquo; them both to the common
-state that holds A and B (a parent struct, for example, that has properties A and B), and then combine them into one.</p>
+<p>Please notice from the example above the following good practices:</p>
 
-<p>It&rsquo;s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the <code>Reducer</code> structs or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it&rsquo;s always good to do a final sanity check before changing the state.</p>
-
-<p>Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.</p>
-<pre class="highlight plaintext"><code>                  ┌─────┐                                                                                        ┌─────┐
-                  │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
-                  │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
-                  │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
-                  │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
-┌──────┐ dispatch │     │   │
-│Button│─────────▶│Store│──▶│                                                         ┌────────┐
-└──────┘ Action   │     │   │                                                      ┌─▶│ View 1 │
-                  │     │   │                                  ┌─────┐             │  └────────┘
-                  │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
-                  │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
-                  │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
-                  └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
-                              State                                                └─▶│ View 3 │
-                                                                                      └────────┘
+<ul>
+<li>No <code>DispatchQueue</code>, threading, operation queue, promises, reactive code in there.</li>
+<li>All you need to implement this function is provided by the arguments <code>action</code> and <code>currentState</code>, don&rsquo;t use any other variable coming from global scope, not even for reading purposes. If you need something else, it should either be in the state or come in the action payload.</li>
+<li>Do not start side-effects, requests, I/O, database calls.</li>
+<li>Avoid <code>default</code> when writing <code>switch</code>/<code>case</code> statements. That way the compiler will help you more.</li>
+<li>Make the action and the state generic parameters as much specialised as you can. If volume state is part of a bigger state, you should not be tempted to pass the whole big state into this reducer. Make it short, brief and specialised, this also helps preventing <code>default</code> case or having to re-assign properties that are never mutated by this reducer.</li>
+</ul>
+<pre class="highlight plaintext"><code>                                                                                                                    ┌────────┐                                     
+                                                       IO closure                                                ┌─▶│ View 1 │                                     
+                      ┌─────┐                          (don't run yet)                       ┌─────┐             │  └────────┘                                     
+                      │     │ handle  ┌──────────┐  ┌───────────────────────────────────────▶│     │ send        │  ┌────────┐                                     
+                      │     ├────────▶│Middleware│──┘                                        │     │────────────▶├─▶│ View 2 │                                     
+                      │     │ Action  │ Pipeline │──┐  ┌─────┐ reduce ┌──────────┐           │     │ New state   │  └────────┘                                     
+                      │     │         └──────────┘  └─▶│     │───────▶│ Reducer  │──────────▶│     │             │  ┌────────┐                                     
+    ┌──────┐ dispatch │     │                          │Store│ Action │ Pipeline │ New state │     │             └─▶│ View 3 │                                     
+    │Button│─────────▶│Store│                          │     │ +      └──────────┘           │Store│                └────────┘                                     
+    └──────┘ Action   │     │                          └─────┘ State                         │     │                                   dispatch    ┌─────┐         
+                      │     │                                                                │     │       ┌─────────────────────────┐ New Action  │     │         
+                      │     │                                                                │     │─run──▶│       IO closure        ├────────────▶│Store│─ ─ ▶ ...
+                      │     │                                                                │     │       │                         │             │     │         
+                      │     │                                                                │     │       └─┬───────────────────────┘             └─────┘         
+                      └─────┘                                                                └─────┘         │                     ▲                               
+                                                                                                      request│ side-effects        │side-effects                   
+                                                                                                             ▼                      response                       
+                                                                                                        ┌ ─ ─ ─ ─ ─                │                               
+                                                                                                          External │─ ─ async ─ ─ ─                                
+                                                                                                        │  World                                                   
+                                                                                                         ─ ─ ─ ─ ─ ┘                                               
 </code></pre>
 <h2 id='projection-and-lifting' class='heading'>Projection and Lifting</h2>
 
 <ul>
 <li><a href="#store-projection">Store Projection</a></li>
-<li><a href="#lifting-middleware">Lifting Middleware</a></li>
-<li><a href="#lifting-reducer">Lifting Reducer</a></li>
+<li><a href="#lifting">Lifting</a>
+
+<ul>
+<li><a href="#lifting-reducer">Lifting Reducer</a>
+
+<ul>
+<li><a href="#lifting-reducer-using-closures">Lifting Reducer using closures:</a></li>
+<li><a href="#lifting-reducer-using-keypath">Lifting Reducer using KeyPath:</a></li>
+</ul></li>
+<li><a href="#lifting-middleware">Lifting Middleware</a>
+
+<ul>
+<li><a href="#lifting-middleware-using-closures">Lifting Middleware using closures:</a></li>
+<li><a href="#lifting-middleware-using-keypath">Lifting Middleware using KeyPath:</a></li>
+</ul></li>
+<li><a href="#optional-transformation">Optional transformation</a></li>
+<li><a href="#direction-of-the-arrows">Direction of the arrows</a></li>
+<li><a href="#use-of-keypaths">Use of KeyPaths</a></li>
+<li><a href="#identity-ignore-and-absurd">Identity, Ignore and Absurd</a></li>
+<li><a href="#xcode-snippets">Xcode Snippets:</a></li>
+</ul></li>
 </ul>
 <h3 id='store-projection' class='heading'>Store Projection</h3>
 
-<p>TBD</p>
+<p>An app should have a single real Store, holding a single source-of-truth. However, we can &ldquo;derive&rdquo; this store to small subsets, called store projections, that will handle either a smaller part of the state or action tree, or even a completely different type of actions and states as long as we can map back-and-forth to the original store types. It won&rsquo;t store anything, only project the original store. For example, a View can define a completely custom View State and View Action, and we can create a <code>StoreProjection</code> that works on these types, as long as it&rsquo;s backed by a real store which State and Action types can be mapped somehow to the View State and View Action types. The Store Projection will take care of translating these entities.</p>
 
 <p><img src="https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png" alt="Store Projection"></p>
-<h3 id='lifting-middleware' class='heading'>Lifting Middleware</h3>
 
-<p>TBD</p>
-<h3 id='lifting-reducer' class='heading'>Lifting Reducer</h3>
+<p>Very often you don&rsquo;t want your view to be able to access the whole App State or dispatch any possible global App Action. Not only it could refresh
+your UI more often than needed, it also makes more error prone, put more complex code in the view layer and finally decreases modularisation making
+the view coupled to the global models.</p>
 
-<p>TBD</p>
+<p>However, you don&rsquo;t want to split your state in multiple parts because having it in a central and unique point ensures consistency. Also, you don&rsquo;t
+want multiple separate places taking care of actions because that could potentially create race conditions. The real Store is the only place actually
+owning the global state and effectively handling the actions, and that&rsquo;s how it&rsquo;s supposed to be.</p>
+
+<p>To solve both problems, we offer a <code>StoreProjection</code>, which conforms to the <code>StoreType</code> protocol so for all purposes it behaves like a real store,
+but in fact it only projects the real store using custom types for state and actions, that is, either a subset of your models (a branch in the state
+tree, for example), or a completely different entity like a View State. A <code>StoreProjection</code> has 2 closures, that allow it to transform actions and
+state between the global ones and the ones used by the view. That way, the View is not coupled to the whole global models, but only to tiny parts of
+it, and the closure in the <code>StoreProjection</code> will take care of extracting/mapping the interesting part for the view. This also improves performance,
+because the view will not refresh for any property in the global state, only for the relevant ones. On the other direction, view can only dispatch a
+limited set of actions, that will be mapped into global actions by the closure in the <code>StoreProjection</code>.</p>
+
+<p>A Store Projection can be created from any other <code>StoreType</code>, even from another <code>StoreProjection</code>. It&rsquo;s as simple as calling 
+<code>StoreType/projection(action:state:)</code>, and providing the action and state mapping closures:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">storeProjection</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="nf">projection</span><span class="p">(</span>
+    <span class="nv">action</span><span class="p">:</span> <span class="p">{</span> <span class="n">viewAction</span> <span class="k">in</span> <span class="n">viewAction</span><span class="o">.</span><span class="nf">toAppAction</span><span class="p">()</span> <span class="p">}</span> <span class="p">,</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">{</span> <span class="n">globalState</span> <span class="k">in</span> <span class="kt">MyViewState</span><span class="o">.</span><span class="nf">from</span><span class="p">(</span><span class="nv">globalState</span><span class="p">:</span> <span class="n">globalState</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="nf">asObservableViewModel</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="o">.</span><span class="n">empty</span><span class="p">)</span>
+</code></pre>
+
+<p>For more information about real store vs. store projections, and also for complete code examples, please check documentation for <code>StoreType</code>.</p>
+<h3 id='lifting' class='heading'>Lifting</h3>
+
+<p>An app can be a complex product, performing several activities that not necessarily are related. For example, the same app may need to perform a request to a weather API, check the current user location using CLLocation and read preferences from UserDefaults.</p>
+
+<p>Although these activities are combined to create the full experience, they can be isolated from each other in order to avoid URLSession logic and CLLocation logic in the same place, competing for the same resources and potentially causing race conditions. Also, testing these parts in isolation is often easier and leads to more significant tests. </p>
+
+<p>Ideally we should organise our <code>AppState</code> and <code>AppAction</code> to account for these parts as isolated trees. In the example above, we could have 3 different properties in our AppState and 3 different enum cases in our AppAction to group state and actions related to the weather API, to the user location and to the UserDefaults access.</p>
+
+<p>This gets even more helpful in case we split our app in 3 types of <code>Reducer</code> and 3 types of <code>MiddlewareProtocol</code>, and each of them work not on the full <code>AppState</code> and <code>AppAction</code>, but in the 3 paths we grouped in our model. The first pair of <code>Reducer</code> and <code>MiddlewareProtocol</code> would be generic over <code>WeatherState</code> and <code>WeatherAction</code>, the second pair over <code>LocationState</code> and <code>LocationAction</code> and the third pair over <code>RepositoryState</code> and <code>RepositoryAction</code>. They could even be in different frameworks, so the compiler will forbid us from coupling Weather API code with CLLocation code, which is great as this enforces better practices and unlocks code reusability. Maybe our CLLocation middleware/reducer can be useful in a completely different app that checks for public transport routes.</p>
+
+<p>But at some point we want to put these 3 different types of entities together, and the <code>StoreType</code> of our app &ldquo;speaks&rdquo; <code>AppAction</code> and <code>AppState</code>, not the subsets used by the specialised handlers.</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">AppAction</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">weather</span><span class="p">(</span><span class="kt">WeatherAction</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">location</span><span class="p">(</span><span class="kt">LocationAction</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">repository</span><span class="p">(</span><span class="kt">RepositoryAction</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="kd">struct</span> <span class="kt">AppState</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">weather</span><span class="p">:</span> <span class="kt">WeatherState</span>
+    <span class="k">let</span> <span class="nv">location</span><span class="p">:</span> <span class="kt">LocationState</span>
+    <span class="k">let</span> <span class="nv">repository</span><span class="p">:</span> <span class="kt">RepositoryState</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Given a reducer that is generic over <code>WeatherAction</code> and <code>WeatherState</code>, we can &ldquo;lift&rdquo; it to the global types <code>AppAction</code> and <code>AppState</code> by telling this reducer how to find in the global tree the properties that it needs. That would be <code>\AppAction.weather</code> and <code>\AppState.weather</code>. The same can be done for the middleware, and for the other 2 reducers and middlewares of our app.</p>
+
+<p>When all of them are lifted to a common type, they can be combined together using the diamond operator (<code>&lt;&gt;</code>) and set as the store handler.</p>
+
+<blockquote>
+<p><strong><em>IMPORTANT:</em></strong> Because enums in Swift don&rsquo;t have KeyPath as structs do, we strongly recommend reading <a href="docs/markdown/ActionEnumProperties.md">Action Enum Properties</a> document and implementing properties for each case, either manually or using code generators, so later you avoid writing lots and lots of error-prone switch/case. We also offer some templates to help you on that.</p>
+</blockquote>
+
+<p>Let&rsquo;s explore how to lift reducers and middlewares. </p>
+<h4 id='lifting-reducer' class='heading'>Lifting Reducer</h4>
+
+<p><code>Reducer</code> has AppAction INPUT, AppState INPUT and AppState OUTPUT, because it can only handle actions (never dispatch them), read the state and write the state.</p>
+
+<p>The lifting direction, therefore, should be:</p>
+<pre class="highlight plaintext"><code>Reducer:
+- ReducerAction? ← AppAction
+- ReducerState ←→ AppState
+</code></pre>
+
+<p>Given:</p>
+<pre class="highlight swift"><code><span class="c1">//      type 1         type 2</span>
+<span class="kt">Reducer</span><span class="o">&lt;</span><span class="kt">ReducerAction</span><span class="p">,</span> <span class="kt">ReducerState</span><span class="o">&gt;</span>
+</code></pre>
+
+<p>Transformations:</p>
+<pre class="highlight plaintext"><code>                                                                                 ╔═══════════════════╗
+                                                                                 ║                   ║
+                       ╔═══════════════╗                                         ║                   ║
+                       ║    Reducer    ║ .lift                                   ║       Store       ║
+                       ╚═══════════════╝                                         ║                   ║
+                               │                                                 ║                   ║
+                                                                                 ╚═══════════════════╝
+                               │                                                           │          
+
+                               │                                                           │          
+                                                                                     ┌───────────┐    
+                         ┌─────┴─────┐   (AppAction) -&gt; ReducerAction?               │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │  Reducer  │   { $0.case?.reducerAction }                  │           │    
+    Input Action         │  Action   │◀──────────────────────────────────────────────│ AppAction │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │           │   KeyPath&lt;AppAction, ReducerAction?&gt;          │           │    
+                         └─────┬─────┘   \AppAction.case?.reducerAction              │           │    
+                                                                                     └───────────┘    
+                               │                                                           │          
+
+                               │         get: (AppState) -&gt; ReducerState                   │          
+                                         { $0.reducerState }                         ┌───────────┐    
+                         ┌─────┴─────┐   set: (inout AppState, ReducerState) -&gt; Void │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │  Reducer  │   { $0.reducerState = $1 }                    │           │    
+        State            │   State   │◀─────────────────────────────────────────────▶│ AppState  │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │           │   WritableKeyPath&lt;AppState, ReducerState&gt;     │           │    
+                         └─────┬─────┘   \AppState.reducerState                      │           │    
+                                                                                     └───────────┘    
+                               │                                                           │          
+</code></pre>
+<h5 id='lifting-reducer-using-closures' class='heading'>Lifting Reducer using closures:</h5>
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">actionGetter</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">AppAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ReducerAction</span><span class="p">?</span> <span class="cm">/* type 1 */</span> <span class="k">in</span> 
+        <span class="c1">// prism3 has associated value of ReducerAction,</span>
+        <span class="c1">// and whole thing is Optional because Prism is always optional</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">prism1</span><span class="p">?</span><span class="o">.</span><span class="n">prism2</span><span class="p">?</span><span class="o">.</span><span class="n">prism3</span>
+    <span class="p">},</span>
+    <span class="nv">stateGetter</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ReducerState</span> <span class="cm">/* type 2 */</span> <span class="k">in</span> 
+        <span class="c1">// property2: ReducerState</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">property1</span><span class="o">.</span><span class="n">property2</span>
+    <span class="p">},</span>
+    <span class="nv">stateSetter</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AppState</span><span class="p">,</span> <span class="nv">newValue</span><span class="p">:</span> <span class="kt">ReducerState</span> <span class="cm">/* type 2 */</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span> <span class="k">in</span> 
+        <span class="c1">// property2: ReducerState</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">property1</span><span class="o">.</span><span class="n">property2</span> <span class="o">=</span> <span class="n">newValue</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Steps:</p>
+
+<ul>
+<li>Start plugging the 2 types from the Reducer into the 3 closure headers.</li>
+<li>For type 1, find a prism that resolves from AppAction into the matching type. <strong>BE SURE TO RUN SOURCERY AND HAVING ALL ENUM CASES COVERED BY PRISM</strong></li>
+<li>For type 2 on the stateGetter closure, find lenses (property getters) that resolve from AppState into the matching type.</li>
+<li>For type 2 on the stateSetter closure, find lenses (property setters) that can change the global state receive to the newValue received. Be sure that everything is writeable.</li>
+</ul>
+<h5 id='lifting-reducer-using-keypath' class='heading'>Lifting Reducer using KeyPath:</h5>
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">action</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">prism1</span><span class="p">?</span><span class="o">.</span><span class="n">prism2</span><span class="p">?</span><span class="o">.</span><span class="n">prism3</span><span class="p">,</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppState</span><span class="o">.</span><span class="n">property1</span><span class="o">.</span><span class="n">property2</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Steps:</p>
+
+<ul>
+<li>Start with the closure example above</li>
+<li>For action, we can use KeyPath from <code>\AppAction</code> traversing the prism tree</li>
+<li>For state, we can use WritableKeyPath from <code>\AppState</code> traversing the properties as long as all of them are declared as <code>var</code>, not <code>let</code>.</li>
+</ul>
+<h4 id='lifting-middleware' class='heading'>Lifting Middleware</h4>
+
+<p><code>MiddlewareProtocol</code> has AppAction INPUT, AppAction OUTPUT and AppState INPUT, because it can handle actions, dispatch actions, and only read the state (never write it).</p>
+
+<p>The lifting direction, therefore, should be:</p>
+<pre class="highlight plaintext"><code>Middleware:
+- MiddlewareInputAction? ← AppAction
+- MiddlewareOutputAction → AppAction
+- MiddlewareState ← AppState
+</code></pre>
+
+<p>Given:</p>
+<pre class="highlight swift"><code><span class="c1">//           type 1                 type 2                  type 3</span>
+<span class="kt">MyMiddleware</span><span class="o">&lt;</span><span class="kt">MiddlewareInputAction</span><span class="p">,</span> <span class="kt">MiddlewareOutputAction</span><span class="p">,</span> <span class="kt">MiddlewareState</span><span class="o">&gt;</span>
+</code></pre>
+
+<p>Transformations:</p>
+<pre class="highlight plaintext"><code>                                                                                 ╔═══════════════════╗
+                                                                                 ║                   ║
+                       ╔═══════════════╗                                         ║                   ║
+                       ║  Middleware   ║ .lift                                   ║       Store       ║
+                       ╚═══════════════╝                                         ║                   ║
+                               │                                                 ║                   ║
+                                                                                 ╚═══════════════════╝
+                               │                                                           │          
+
+                               │                                                           │          
+                                                                                     ┌───────────┐    
+                         ┌─────┴─────┐   (AppAction) -&gt; MiddlewareInputAction?       │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │Middleware │   { $0.case?.middlewareInputAction }          │           │    
+    Input Action         │   Input   │◀──────────────────────────────────────────────│ AppAction │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │  Action   │   KeyPath&lt;AppAction, MiddlewareInputAction?&gt;  │           │    
+                         └─────┬─────┘   \AppAction.case?.middlewareInputAction      │           │    
+                                                                                     └───────────┘    
+                               │                                                     ┌─────┴─────┐    
+                         ┌───────────┐   (MiddlewareOutputAction) -&gt; AppAction       │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │Middleware │   { AppAction.case($0) }                      │           │    
+    Output Action        │  Output   │──────────────────────────────────────────────▶│ AppAction │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │  Action   │   AppAction.case                              │           │    
+                         └───────────┘                                               │           │    
+                               │                                                     └─────┬─────┘    
+                                                                                     ┌───────────┐    
+                         ┌─────┴─────┐   (AppState) -&gt; MiddlewareState               │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │Middleware │   { $0.middlewareState }                      │           │    
+        State            │   State   │◀──────────────────────────────────────────────│ AppState  │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │           │   KeyPath&lt;AppState, MiddlewareState&gt;          │           │    
+                         └─────┬─────┘   \AppState.middlewareState                   │           │    
+                                                                                     └───────────┘    
+                               │                                                           │          
+</code></pre>
+<h5 id='lifting-middleware-using-closures' class='heading'>Lifting Middleware using closures:</h5>
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">inputAction</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">AppAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MiddlewareInputAction</span><span class="p">?</span> <span class="cm">/* type 1 */</span> <span class="k">in</span>
+        <span class="c1">// prism3 has associated value of MiddlewareInputAction,</span>
+        <span class="c1">// and whole thing is Optional because Prism is always optional</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">prism1</span><span class="p">?</span><span class="o">.</span><span class="n">prism2</span><span class="p">?</span><span class="o">.</span><span class="n">prism3</span>
+    <span class="p">},</span>
+    <span class="nv">outputAction</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">local</span><span class="p">:</span> <span class="kt">MiddlewareOutputAction</span> <span class="cm">/* type 2 */</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AppAction</span> <span class="k">in</span>
+        <span class="c1">// local is MiddlewareOutputAction, </span>
+        <span class="c1">// an associated value for .prism3</span>
+        <span class="kt">AppAction</span><span class="o">.</span><span class="nf">prism1</span><span class="p">(</span><span class="o">.</span><span class="nf">prism2</span><span class="p">(</span><span class="o">.</span><span class="nf">prism3</span><span class="p">(</span><span class="n">local</span><span class="p">)))</span>
+    <span class="p">},</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MiddlewareState</span> <span class="cm">/* type 3 */</span> <span class="k">in</span>
+        <span class="c1">// property2: MiddlewareState</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">property1</span><span class="o">.</span><span class="n">property2</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Steps:</p>
+
+<ul>
+<li>Start plugging the 3 types from MyMiddleware into the closure headers.</li>
+<li>For type 1, find a prism that resolves from AppAction into the matching type. <strong>BE SURE TO RUN SOURCERY AND HAVING ALL ENUM CASES COVERED BY PRISM</strong></li>
+<li>For type 2, wrap it from inside to outside until you reach AppAction, in this example we wrap it (being &ldquo;it&rdquo; = local) in .prism3, which we wrap in .prism2, then .prism1 to finally reach AppAction.</li>
+<li>For type 3, find lenses (property getters) that resolve from AppState into the matching type.</li>
+</ul>
+<h5 id='lifting-middleware-using-keypath' class='heading'>Lifting Middleware using KeyPath:</h5>
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">inputAction</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">prism1</span><span class="p">?</span><span class="o">.</span><span class="n">prism2</span><span class="p">?</span><span class="o">.</span><span class="n">prism3</span><span class="p">,</span>
+    <span class="nv">outputAction</span><span class="p">:</span> <span class="kt">Prism2</span><span class="o">.</span><span class="n">prism3</span><span class="p">,</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppState</span><span class="o">.</span><span class="n">property1</span><span class="o">.</span><span class="n">property2</span>
+<span class="p">)</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">outputAction</span><span class="p">:</span> <span class="kt">Prism1</span><span class="o">.</span><span class="n">prism2</span><span class="p">)</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">outputAction</span><span class="p">:</span> <span class="kt">AppAction</span><span class="o">.</span><span class="n">prism1</span><span class="p">)</span>
+</code></pre>
+
+<p>Steps:</p>
+
+<ul>
+<li>Start with the closure example above</li>
+<li>For inputAction, we can use KeyPath from <code>\AppAction</code> traversing the prism tree</li>
+<li>For outputAction it&rsquo;s <strong>NOT</strong> a KeyPath, but a wrapping. Because we can&rsquo;t wrap more than 1 level at once, either we:
+
+<ul>
+<li>use the closure version for this one</li>
+<li>lift level by level, from inside to outside, in that case follow the steps of wrapping local into Prism2 (case .prism3), then wrapping result into Prism1 (case .prism2), then wrapping result into AppAction (case .prism1)</li>
+</ul></li>
+<li>When it&rsquo;s only 1 level, there&rsquo;s nothing to worry about</li>
+<li>For state, we can use KeyPath from <code>\AppState</code> traversing the properties.</li>
+</ul>
+<h4 id='optional-transformation' class='heading'>Optional transformation</h4>
+
+<p>If some action is running through the store, some reducers and middlewares may opt for ignoring it. For example, if the action tree has nothing to do with that middleware or reducer. That&rsquo;s why, every INCOMING action (InputAction for Middlewares and simply Action for Reducers) is a transformation from <code>AppAction → Optional&lt;Subset&gt;</code>. Returning nil means that the action will be ignored.</p>
+
+<p>This is not true for the other direction, when actions are dispatched by Middlewares, they MUST become an AppAction, we can&rsquo;t ignore what Middlewares have to say.</p>
+<h4 id='direction-of-the-arrows' class='heading'>Direction of the arrows</h4>
+
+<p><strong>Reducers</strong> receive actions (input action) and are able to read and write state.</p>
+
+<p><strong>Middlewares</strong> receive actions (input action), dispatch actions (output action) and only read the state (input state).</p>
+
+<p>When lifting, we must keep that in mind because it defines the variance (covariant/contravariant) of the transformation, that is, <em>map</em> or <em>contramap</em>.</p>
+
+<p>One special case is the State for reducer, because that requires a read and write access, in other words, you are given an <code>inout Whole</code> and a new value for <code>Part</code>, you use that new value to set the correct path inside the inout Whole. This is precisely what WritableKeyPaths are mean for, which we will see with more details now.</p>
+<h4 id='use-of-keypaths' class='heading'>Use of KeyPaths</h4>
+
+<p>KeyPath is the same as <code>Global -&gt; Part</code> transformation, where you give the description of the tree in the following way:
+<code>\Global.parent.part</code>.</p>
+
+<p>WritableKeyPath has similar usage syntax, but it&rsquo;s much more powerful, allowing us to transform <code>(Global, Part) -&gt; Global</code>, or <code>(inout Global, Part) -&gt; Void</code> which is the same.</p>
+
+<p>That said we need to understand that KeyPaths are only possible when the direction of the arrows comes from <code>AppElement -&gt; ReducerOrMiddlewareElement</code>, that is:</p>
+<pre class="highlight plaintext"><code>Reducer:
+- ReducerAction? ← AppAction         // Keypath is possible
+- ReducerState ←→ AppState           // WritableKeyPath is possible
+</code></pre>
+<pre class="highlight plaintext"><code>Middleware:
+- MiddlewareInputAction? ← AppAction // KeyPath is possible
+- MiddlewareOutputAction → AppAction // NOT POSSIBLE
+- MiddlewareState ← AppState         // KeyPath is possible
+</code></pre>
+
+<p>For the <code>ReducerAction? ← AppAction</code> and <code>MiddlewareInputAction? ← AppAction</code> we can use KeyPaths that resolve to <code>Optional&lt;ReducerOrMiddlewareAction&gt;</code>:</p>
+<pre class="highlight swift"><code><span class="p">{</span> <span class="p">(</span><span class="nv">globalAction</span><span class="p">:</span> <span class="kt">AppAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ReducerOrMiddlewareAction</span><span class="p">?</span> <span class="k">in</span>
+    <span class="n">globalAction</span><span class="o">.</span><span class="n">parent</span><span class="p">?</span><span class="o">.</span><span class="n">reducerOrMiddlewareAction</span>
+<span class="p">}</span>
+
+<span class="c1">// or</span>
+<span class="c1">// KeyPath&lt;AppAction, ReducerOrMiddlewareAction?&gt;</span>
+<span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="n">parent</span><span class="p">?</span><span class="o">.</span><span class="n">reducerOrMiddlewareAction</span>
+</code></pre>
+
+<p>For the <code>ReducerState ←→ AppState</code> and <code>MiddlewareState ← AppState</code> transformations, we can use similar syntax although the Reducer is inout (WritableKeyPath). That means our whole tree must be composed by <code>var</code> properties, not <code>let</code>. In this case, unless the Middleware or Reducer accepts Optional, the transformation should NOT be Optional.</p>
+<pre class="highlight swift"><code><span class="p">{</span> <span class="p">(</span><span class="nv">globalState</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">PartState</span> <span class="k">in</span>
+    <span class="n">globalState</span><span class="o">.</span><span class="n">something</span><span class="o">.</span><span class="n">thatsThePieceWeWant</span>
+<span class="p">}</span>
+
+<span class="p">{</span> <span class="p">(</span><span class="nv">globalState</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AppState</span><span class="p">,</span> <span class="nv">newValue</span><span class="p">:</span> <span class="kt">PartState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span> <span class="k">in</span>
+    <span class="n">globalState</span><span class="o">.</span><span class="n">something</span><span class="o">.</span><span class="n">thatsThePieceWeWant</span> <span class="o">=</span> <span class="n">newValue</span>
+<span class="p">}</span>
+
+<span class="c1">// or</span>
+<span class="c1">// KeyPath&lt;AppState, PartState&gt; or WritableKeyPath&lt;AppState, PartState&gt;</span>
+<span class="p">\</span><span class="kt">AppState</span><span class="o">.</span><span class="n">something</span><span class="o">.</span><span class="n">thatsThePieceWeWant</span> <span class="c1">// where:</span>
+                                        <span class="c1">// var something</span>
+                                        <span class="c1">// var thatsThePieceWeWant</span>
+</code></pre>
+
+<p>For the <code>MiddlewareOutputAction → AppAction</code> we can&rsquo;t use keypath, it doesn&rsquo;t make sense, because the direction is the opposite of what we want. In that case we are not unwrapping/extracting the part from a global value, we were given a specific action from certain middleware and we need to wrap it into the AppAction. This can be achieved by two forms:</p>
+<pre class="highlight swift"><code><span class="p">{</span> <span class="p">(</span><span class="nv">middlewareAction</span><span class="p">:</span> <span class="kt">MiddlewareAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AppAction</span> <span class="k">in</span> 
+    <span class="kt">AppAction</span><span class="o">.</span><span class="nf">treeForMiddlewareAction</span><span class="p">(</span><span class="n">middlewareAction</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// or simply</span>
+
+<span class="kt">AppAction</span><span class="o">.</span><span class="n">treeForMiddlewareAction</span> <span class="c1">// please notice, not KeyPath, it doesn't start by \</span>
+</code></pre>
+
+<p>The short form, however, can&rsquo;t traverse 2 levels at once:</p>
+<pre class="highlight swift"><code><span class="p">{</span> <span class="p">(</span><span class="nv">middlewareAction</span><span class="p">:</span> <span class="kt">MiddlewareAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AppAction</span> <span class="k">in</span> 
+    <span class="kt">AppAction</span><span class="o">.</span><span class="nf">firstLevel</span><span class="p">(</span> <span class="kt">FirstLevel</span><span class="o">.</span><span class="nf">secondLevel</span><span class="p">(</span><span class="n">middlewareAction</span><span class="p">)</span> <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// this will NOT compile (although a better Prism could solve that, probably):</span>
+<span class="kt">AppAction</span><span class="o">.</span><span class="n">firstLevel</span><span class="o">.</span><span class="n">secondLevel</span>
+
+<span class="c1">// You could try, however, to lift twice:</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">outputAction</span><span class="p">:</span> <span class="kt">FirstLevel</span><span class="o">.</span><span class="n">secondLevel</span><span class="p">)</span> <span class="c1">// Notice that first we wrap the middleware value in the second level</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span><span class="nv">outputAction</span><span class="p">:</span> <span class="kt">AppAction</span><span class="o">.</span><span class="n">firstLevel</span><span class="p">)</span>   <span class="c1">// And then we wrap the first level in the AppAction</span>
+                                            <span class="c1">// The order must be from inside to outside, always.</span>
+</code></pre>
+<h4 id='identity-ignore-and-absurd' class='heading'>Identity, Ignore and Absurd</h4>
+
+<p>Void:</p>
+
+<ul>
+<li>when Middleware doesn&rsquo;t need State, it can be Void</li>
+<li>lift Void using <code>ignore</code>, which is <code>{ (_: Anything) -&gt; Void in }</code></li>
+</ul>
+
+<p>Never:</p>
+
+<ul>
+<li>when Middleware doesn&rsquo;t need to dispatch actions, it can be Never</li>
+<li>lift Never using <code>absurd</code>, which is <code>{ (never: Never) -&gt; Anything in }</code></li>
+</ul>
+
+<p>Identity:</p>
+
+<ul>
+<li>when some parts of your lift should be unchanged because they are already in the expected type</li>
+<li>lift that using <code>identity</code>, which is <code>{ $0 }</code></li>
+</ul>
+
+<p>Theory behind:
+Void and Never are dual:</p>
+
+<ul>
+<li>Anything can become Void (terminal object)</li>
+<li>Never (initial object) can become Anything</li>
+<li>Void has 1 instance possible (it&rsquo;s a singleton)</li>
+<li>Never has 0 instances possible</li>
+<li>Because nobody can give you Never, you can promise Anything as a challenge. That&rsquo;s why function is called absurd, it&rsquo;s impossible to call it.</li>
+</ul>
+<h4 id='xcode-snippets' class='heading'>Xcode Snippets:</h4>
+<pre class="highlight swift"><code><span class="c1">// Reducer expanded</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">actionGetter</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">AppAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&lt;</span><span class="err">#</span><span class="kt">LocalAction</span><span class="err">#</span><span class="o">&gt;</span><span class="p">?</span> <span class="k">in</span> <span class="n">action</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">something</span><span class="p">?</span><span class="o">.</span><span class="n">child</span><span class="err">#</span><span class="o">&gt;</span> <span class="p">},</span>
+    <span class="nv">stateGetter</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&lt;</span><span class="err">#</span><span class="kt">LocalState</span><span class="err">#</span><span class="o">&gt;</span> <span class="k">in</span> <span class="n">state</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">something</span><span class="o">.</span><span class="n">child</span><span class="err">#</span><span class="o">&gt;</span> <span class="p">},</span>
+    <span class="nv">stateSetter</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">AppState</span><span class="p">,</span> <span class="nv">newValue</span><span class="p">:</span> <span class="o">&lt;</span><span class="err">#</span><span class="kt">LocalState</span><span class="err">#</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span> <span class="k">in</span> <span class="n">state</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">something</span><span class="o">.</span><span class="n">child</span><span class="err">#</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">newValue</span> <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1">// Reducer KeyPath:</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">action</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">something</span><span class="p">?</span><span class="o">.</span><span class="n">child</span><span class="err">#</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppState</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">something</span><span class="o">.</span><span class="n">child</span><span class="err">#</span><span class="o">&gt;</span>
+<span class="p">)</span>
+
+<span class="c1">// Middleware expanded</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">inputAction</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">AppAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&lt;</span><span class="err">#</span><span class="kt">LocalAction</span><span class="err">#</span><span class="o">&gt;</span><span class="p">?</span> <span class="k">in</span> <span class="n">action</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">something</span><span class="p">?</span><span class="o">.</span><span class="n">child</span><span class="err">#</span><span class="o">&gt;</span> <span class="p">},</span>
+    <span class="nv">outputAction</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">local</span><span class="p">:</span> <span class="o">&lt;</span><span class="err">#</span><span class="kt">LocalAction</span><span class="err">#</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AppAction</span> <span class="k">in</span> <span class="kt">AppAction</span><span class="o">.&lt;</span><span class="err">#</span><span class="nf">something</span><span class="p">(</span><span class="o">.</span><span class="nf">child</span><span class="p">(</span><span class="n">local</span><span class="p">))</span><span class="err">#</span><span class="o">&gt;</span> <span class="p">},</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="nv">state</span><span class="p">:</span> <span class="kt">AppState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&lt;</span><span class="err">#</span><span class="kt">LocalState</span><span class="err">#</span><span class="o">&gt;</span> <span class="k">in</span> <span class="n">state</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">something</span><span class="o">.</span><span class="n">child</span><span class="err">#</span><span class="o">&gt;</span> <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1">// Middleware KeyPath</span>
+<span class="o">.</span><span class="nf">lift</span><span class="p">(</span>
+    <span class="nv">inputAction</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">local</span><span class="err">#</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">outputAction</span><span class="p">:</span> <span class="kt">AppAction</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">local</span><span class="err">#</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1">// not more than 1 level</span>
+    <span class="nv">state</span><span class="p">:</span> <span class="p">\</span><span class="kt">AppState</span><span class="o">.&lt;</span><span class="err">#</span><span class="n">local</span><span class="err">#</span><span class="o">&gt;</span>
+<span class="p">)</span>
+</code></pre>
 <h1 id='architecture' class='heading'>Architecture</h1>
 
 <p>This dataflow is, somehow, an implementation of MVC, one that differs significantly from the Apple&rsquo;s MVC for offering a very strict and opinative description of layers&rsquo; responsibilities and by enforcing the growth of the Model layer, through a better definition of how it should be implemented: in this scenario, the Model is the Store. All your Controller has to do is to forward view actions to the Store and subscribe to state changes, updating the views whenever needed. If this flow doesn&rsquo;t sound like MVC, let&rsquo;s check a picture taken from Apple&rsquo;s website:</p>
@@ -1185,7 +1796,7 @@ was 0.7.1, and eventually target that version until we come up with a better sol
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-07-29)</p>
+          <p>&copy; 2021 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2021-11-22)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>EffectMiddleware| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">CombineRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">EffectMiddleware</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Class</span>
+  <h1 class="title">EffectMiddleware</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Easiest way to implement a <code>Middleware</code>, with a single function that gives you all you need, and from which you can return an <code>Effect</code>.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>final</span> <span class='token-keyword'>class</span> <span class='token-identifier'>EffectMiddleware</span>&lt;<span class='token-genericParameter'>InputActionType</span>, <span class='token-genericParameter'>OutputActionType</span>, <span class='token-genericParameter'>StateType</span>, <span class='token-genericParameter'>Dependencies</span>&gt;</code></pre>
+  </div>
+</section><div class='content'><h2 id='overview'>Overview</h2><p>A <code>MiddlewareEffect</code> is a function providing an incoming <code>Action</code>, <code>State</code> and <code>Context</code> (dispatcher source, dependencies, cancellation closure) and expecting as result one or multiple effects that will eventually result in outgoing actions.</p><p>An <code>Effect</code> is a publisher or observable type according to your reactive framework. It can be a one-shot effect, such as an HTTP request, an observation that gives back multiple values over time, such as CoreLocation or NotificationCenter, a Timer, a pure value already known or even an empty effect using the <code>.doNothing</code> constructor, if there’s no need for side-effects. <code>Effect</code> cannot fail, and its element/output/value type is the <code>OutputAction</code> generic of this middleware. The purpose is running tasks, creating actions as they respond and returning these actions over time back to the Store. When the Effect completes, it should send a completion event so the middleware will cleanup the resources.</p><p>Cancellation: effects can optionally provide a cancellation token, which can be any hashable value. If another effect arrives in the same middleware instance having the very same cancellation token, the previous effect will be cancelled and replaced by the new one. This is useful in case you want to keep only the last request of certain kind running, but cancel any previous ongoing request when a new is dispatched. You can also explicitly cancel one or many effects at any point. For that, you will be given a <code>toCancel</code> closure during every action arrival within the <code>Context</code> (third parameter). Feel free to call cancellation at that point or even later, if you hold this <code>toCancel</code> closure.</p><p>Examples</p><p>Using Promises</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let someMiddleware = EffectMiddleware&lt;ApiRequestAction, ApiResponseAction, SomeState, Void&gt;.onAction { action, state, context in</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">  switch action {</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">  case .users:</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">    return .promise { completion in</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">      DispatchQueue.main.asyncAfter(deadline: .now() + 3) {</span></span>
+<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">        completion(ApiResponseAction.someResponse(&quot;42&quot;))</span></span>
+<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">      }</span></span>
+<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">  case .somethingIDontCare:</span></span>
+<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">    return .doNothing</span></span>
+<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">  }</span></span>
+<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
+</code></pre>
+  </div>
+</div><p>From Publisher</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">typealias ApiFetchMiddlewareDependencies = (session: @escaping () -&gt; URLSession, decoder: @escaping () -&gt; JSONDecoder)</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">let apiFetchMiddleware =</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">  EffectMiddleware&lt;ApiRequestAction, ApiResponseAction, SomeState, ApiFetchMiddlewareDependencies&gt;.onAction { action, state, context in</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">    switch action {</span></span>
+<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">    case .users:</span></span>
+<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">      return context.dependencies.urlSession</span></span>
+<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">        .dataTaskPublisher(for: fetchAllUsersURL())</span></span>
+<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">        .map { data, _ in data }</span></span>
+<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">        .decode(type: [User].self, decoder: context.dependencies)</span></span>
+<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">        .map { users in ApiResponseAction.gotUserList(users) }</span></span>
+<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">        .replaceError(with: ApiResponseAction.errorRetrivingUserList)</span></span>
+<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">        .asEffect</span></span>
+<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">    case .user(id: UUID):</span></span>
+<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">      // ..</span></span>
+<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">    case .somethingIDontCare:</span></span>
+<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">      return .doNothing</span></span>
+<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">  }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))</span></span>
+</code></pre>
+  </div>
+</div><p>Cancellation</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">typealias ApiFetchMiddlewareDependencies = (session: @escaping () -&gt; URLSession, decoder: @escaping () -&gt; JSONDecoder)</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">let apiFetchMiddleware =</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">  EffectMiddleware&lt;ApiRequestAction, ApiResponseAction, SomeState, ApiFetchMiddlewareDependencies&gt;.onAction { action, state, context in</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">    switch action {</span></span>
+<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">    case let .userPicture(userId):</span></span>
+<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">      return context.dependencies.urlSession</span></span>
+<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">        .dataTaskPublisher(for: fetchPicture())</span></span>
+<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">        .map { data, _ in ApiResponseAction.gotUserPicture(id: userId, data: data) }</span></span>
+<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">        .replaceError(with: ApiResponseAction.errorRetrivingUserPicture(id: userId))</span></span>
+<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">        .asEffect(cancellationToken: &quot;image-for-user-\(userId)&quot;) // this will automatically cancel any pending download for the same image</span></span>
+<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">                                                                 // using the URL would also be possible</span></span>
+<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">    case let .cancelImageDownload(userId):</span></span>
+<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">      return context.toCancel(&quot;image-for-user-\(userId)&quot;)        // alternatively you can explicitly cancel tasks by token</span></span>
+<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
+<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">  }.inject((session: { URLSession.shared }, decoder: JSONDecoder.init))</span></span>
+</code></pre>
+  </div>
+</div></div>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/handle(action:from:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>handle</span><span class='decorator'>(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>from</span><span class='decorator'>: </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>GetState</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>IO</span><span class='decorator'>&lt;</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(action:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>InputActionType</span><span class='decorator'>?&gt;, </span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(inputAction:)-8rmc0.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(inputAction:outputAction:)-7tbfc.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(inputAction:outputAction:state:)-30lji.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(inputAction:state:)-9f889.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(outputAction:)-px15.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(outputAction:state:)-4pd75.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/lift(state:)-4c43y.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/liftToCollection(action:stateCollection:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>InputActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/liftToCollection(inputAction:outputAction:stateCollection:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalAction</span><span class='decorator'>) -&gt; </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>InputActionType</span><span class='decorator'>&gt;?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>stateCollection</span><span class='decorator'>: (</span><span class='decorator'>GlobalState</span><span class='decorator'>) -&gt; </span><span class='decorator'>CollectionState</span><span class='decorator'>) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/onAction(do:)-7nc1h.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>onAction</span><span class='decorator'>(</span><span class='decorator'>do</span><span class='decorator'>: (</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>GetState</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Effect</span><span class='decorator'>&lt;</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/onAction(do:)-96yr2.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>onAction</span><span class='decorator'>(</span><span class='decorator'>do</span><span class='decorator'>: (</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>GetState</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Effect</span><span class='decorator'>&lt;</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>MiddlewareReader</span><span class='decorator'>&lt;</span><span class='decorator'>Dependencies</span><span class='decorator'>, </span><span class='decorator'>EffectMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>Dependencies</span><span class='decorator'>&gt;&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Default Implementations</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/MiddlewareProtocol-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  MiddlewareProtocol Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/Semigroup-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  Semigroup Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/CombineRex/EffectMiddleware/Monoid-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  Monoid Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

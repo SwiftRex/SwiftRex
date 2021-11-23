@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>ReduxPipelineWrapper| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">ReduxPipelineWrapper</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Class</span>
+  <h1 class="title">ReduxPipelineWrapper</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      No overview available.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>class</span> <span class='token-identifier'>ReduxPipelineWrapper</span>&lt;<span class='token-genericParameter'>MiddlewareType</span>&gt; <span class='token-keyword'>where</span> MiddlewareType : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a>, MiddlewareType.InputActionType == MiddlewareType.OutputActionType</code></pre>
+  </div>
+</section>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Initializers</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReduxPipelineWrapper/init(state:reducer:middleware:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>convenience</span><span class='decorator empty-token'> </span><span class='identifier'>init</span><span class='decorator'>(</span><span class='decorator'>state</span><span class='decorator'>: () -&gt; </span><span class='decorator'>UnfailableReplayLastSubjectType</span><span class='decorator'>&lt;</span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;, </span><span class='decorator'>reducer</span><span class='decorator'>: </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;, </span><span class='decorator'>middleware</span><span class='decorator'>: </span><span class='decorator'>MiddlewareType</span><span class='decorator'>)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReduxPipelineWrapper/init(state:reducer:middleware:emitsValue:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>(</span><span class='decorator'>state</span><span class='decorator'>: () -&gt; </span><span class='decorator'>UnfailableReplayLastSubjectType</span><span class='decorator'>&lt;</span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;, </span><span class='decorator'>reducer</span><span class='decorator'>: </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;, </span><span class='decorator'>middleware</span><span class='decorator'>: </span><span class='decorator'>MiddlewareType</span><span class='decorator'>, </span><span class='decorator'>emitsValue</span><span class='decorator'>: </span><span class='decorator'>ShouldEmitValue</span><span class='decorator'>&lt;</span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReduxPipelineWrapper/dispatch(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>dispatch</span><span class='decorator'>(</span><span class='decorator'>DispatchedAction</span><span class='decorator'>&lt;</span><span class='decorator'>ReduxPipelineWrapper</span><span class='decorator'>&lt;</span><span class='decorator'>MiddlewareType</span><span class='decorator'>&gt;.</span><span class='decorator'>ActionType</span><span class='decorator'>&gt;)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The function that allows Views, ViewControllers, Presenters to dispatch actions to the store. Also way for a <code>Middleware</code> to trigger their own actions, usually in response to events or async operations.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Aliases</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReduxPipelineWrapper/ActionType.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>ActionType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ReduxPipelineWrapper/StateType.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>StateType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Default Implementations</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/ReduxPipelineWrapper/ActionHandler-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  ActionHandler Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

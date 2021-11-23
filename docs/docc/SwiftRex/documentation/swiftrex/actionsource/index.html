@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>ActionSource| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">ActionSource</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Structure</span>
+  <h1 class="title">ActionSource</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Representation of the entity responsible for creating and dispatching the action, including information useful for logging, debugging, analytics or monitoring. The action source will be implicitly created when <code>ActionHandler.dispatch</code> is called from a middleware, view or presenter, and it will contain the file, function and line from where the dispatch function was called. Additionally you can append extra information useful for debugging, as an optional String attached to the ActionSource.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>ActionSource</span></code></pre>
+  </div>
+</section><div class='content'><h2 id='overview'>Overview</h2><p>The Action Source will arrive at every middleware’s <code>handle</code> function, and you have the opportunity to use this information when performing side- effects, such as printing logs.</p></div>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Initializers</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ActionSource/init(file:function:line:info:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>(</span><span class='decorator'>file</span><span class='decorator'>: </span><span class='decorator'>String</span><span class='decorator'>, </span><span class='decorator'>function</span><span class='decorator'>: </span><span class='decorator'>String</span><span class='decorator'>, </span><span class='decorator'>line</span><span class='decorator'>: </span><span class='decorator'>UInt</span><span class='decorator'>, </span><span class='decorator'>info</span><span class='decorator'>: </span><span class='decorator'>String</span><span class='decorator'>?)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Creates a structure that holds information about the entity who created and dispatched the action.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Properties</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ActionSource/file.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>file</span><span class='decorator'>: </span><span class='decorator'>String</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">File that created and dispatched the action</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ActionSource/function.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>function</span><span class='decorator'>: </span><span class='decorator'>String</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Function that created and dispatched the action</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ActionSource/info.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>info</span><span class='decorator'>: </span><span class='decorator'>String</span><span class='decorator'>?</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Additional information about the moment where the action was dispatched. This is an optional String that can hold information useful for debugging, logging, monitoring or analytics.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ActionSource/line.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>line</span><span class='decorator'>: </span><span class='decorator'>UInt</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Line in the file where the action was created and dispatched</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/ActionSource/here(file:function:line:info:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>here</span><span class='decorator'>(</span><span class='decorator'>file</span><span class='decorator'>: </span><span class='decorator'>String</span><span class='decorator'>, </span><span class='decorator'>function</span><span class='decorator'>: </span><span class='decorator'>String</span><span class='decorator'>, </span><span class='decorator'>line</span><span class='decorator'>: </span><span class='decorator'>UInt</span><span class='decorator'>, </span><span class='decorator'>info</span><span class='decorator'>: </span><span class='decorator'>String</span><span class='decorator'>?) -&gt; </span><span class='decorator'>ActionSource</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Default Implementations</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/SwiftRex/ActionSource/Equatable-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  Equatable Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

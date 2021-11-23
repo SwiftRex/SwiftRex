@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>share(replay:scope:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../../index.html" class="item">RxSwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">FireAndForget</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">ObservableType Implementations</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">share(replay:scope:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">share(replay:scope:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Returns an observable sequence that <strong>shares a single subscription to the underlying sequence</strong>, and immediately upon subscription replays  elements in buffer.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>share</span>(<span class='token-externalParam'>replay</span>: Int = 0, <span class='token-externalParam'>scope</span>: SubjectLifetimeScope = .whileConnected) -&gt; Observable&lt;Self.Element&gt;</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>An observable sequence that contains the elements of a sequence produced by multicasting the source sequence.</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>replay</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Maximum element count of the replay buffer.</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>scope</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Lifetime scope of sharing subject. For more information see <code>SubjectLifetimeScope</code> enum.</p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>This operator is equivalent to:</p><ul><li><p><p><code>.whileConnected</code></p></p></li></ul><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">// Each connection will have it&#39;s own subject instance to store replay events.</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">// Connections will be isolated from each another.</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">source.multicast(makeSubject: { Replay.create(bufferSize: replay) }).refCount()</span></span>
+</code></pre>
+  </div>
+</div><ul><li><p><p><code>.forever</code></p></p></li></ul><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">// One subject will store replay events for all connections to source.</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">// Connections won&#39;t be isolated from each another.</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">source.multicast(Replay.create(bufferSize: replay)).refCount()</span></span>
+</code></pre>
+  </div>
+</div><p>It uses optimized versions of the operators for most common operations.</p></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

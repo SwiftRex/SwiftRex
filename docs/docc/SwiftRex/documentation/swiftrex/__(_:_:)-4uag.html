@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>&lt;&gt;(_:_:)| Documentation</title>
+    
+    <link rel="icon"       href="../../favicon.ico" />
+    <link rel="mask-icon"  href="../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">&lt;&gt;(_:_:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Operator</span>
+  <h1 class="title">&lt;&gt;(_:_:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Initializes a <code>ComposedMiddleware</code> from the <code>lhs</code> and <code>rhs</code> middlewares parameters, or appends to the <code>lhs</code> if it is already a <code>ComposedMiddleware</code>, as shown below:
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>&lt;&gt;</span> &lt;<span class='token-genericParameter'>M1</span>, <span class='token-genericParameter'>M2</span>&gt;(<span class='token-internalParam'>lhs</span>: M1, <span class='token-internalParam'>rhs</span>: M2) -&gt; <a class='type-identifier-link' href='../../documentation/SwiftRex/ComposedMiddleware/index.html'><span>ComposedMiddleware</span></a>&lt;M1.InputActionType, M1.OutputActionType, M1.StateType&gt; <span class='token-keyword'>where</span> M1 : <a class='type-identifier-link' href='../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a>, M2 : <a class='type-identifier-link' href='../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a>, M1.InputActionType == M2.InputActionType, M1.OutputActionType == M2.OutputActionType, M1.StateType == M2.StateType</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>A <code>ComposedMiddleware</code> that calls the <code>lhs</code> methods before the <code>rhs</code> ones. If <code>lhs</code> is already a <code>ComposedMiddleware</code>, we will return the same instance after mutating it to have the <code>rhs</code> in the end of its chain.</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>lhs</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>A flat middleware or a composed middleware, in case it’s a flat one, this operation will create a new <code>ComposedMiddleware</code> and return it, otherwise it will append the <code>rhs</code> to this composed lhs one mutating it and also returning it.</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>rhs</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>A flat middleware to be appended to the end of a <code>ComposedMiddleware</code></p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let composedOfThreeMiddlewares = composedOfTwoMiddlewares &lt;&gt; thirdMiddleware</span></span>
+</code></pre>
+  </div>
+</div><p>Or</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let composedOfThreeMiddlewares = firstMiddleware &lt;&gt; secondMiddleware &lt;&gt; thirdMiddleware</span></span>
+</code></pre>
+  </div>
+</div><p>Or</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let composedMiddlewares = firstMiddleware &lt;&gt; secondMiddleware</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">_ = composedMiddlewares &lt;&gt; thirdMiddleware</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">// assert(composedMiddlewares == firstMiddleware &lt;&gt; secondMiddleware &lt;&gt; thirdMiddleware)</span></span>
+</code></pre>
+  </div>
+</div></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

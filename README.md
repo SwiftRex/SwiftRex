@@ -130,13 +130,31 @@ Let's understand the components of SwiftRex by splitting them into 3 sections:
     - [State](#state)
 - [Core Parts](#core-parts)
     - [Store](#store)
+        - [StoreType](#storetype)
+        - [Real Store](#real-store)
+        - [Store Projection](#store-projection)
+        - [All together](#all-together)
     - [Middleware](#middleware)
+        - [Generics](#generics)
+        - [Returning IO and performing side-effects](#returning-io-and-performing-side-effects)
+        - [Dependency Injection](#dependency-injection)
+        - [Middleware Examples](#middleware-examples)
         - [EffectMiddleware](#effectmiddleware)
     - [Reducer](#reducer)
 - [Projection and Lifting](#projection-and-lifting)
     - [Store Projection](#store-projection)
-    - [Lifting Middleware](#lifting-middleware)
-    - [Lifting Reducer](#lifting-reducer)
+    - [Lifting](#lifting)
+        - [Lifting Reducer](#lifting-reducer)
+            - [Lifting Reducer using closures:](#lifting-reducer-using-closures)
+            - [Lifting Reducer using KeyPath:](#lifting-reducer-using-keypath)
+        - [Lifting Middleware](#lifting-middleware)
+            - [Lifting Middleware using closures:](#lifting-middleware-using-closures)
+            - [Lifting Middleware using KeyPath:](#lifting-middleware-using-keypath)
+        - [Optional transformation](#optional-transformation)
+        - [Direction of the arrows](#direction-of-the-arrows)
+        - [Use of KeyPaths](#use-of-keypaths)
+        - [Identity, Ignore and Absurd](#identity-ignore-and-absurd)
+        - [Xcode Snippets:](#xcode-snippets)
 
 ---
 ## Conceptual Parts
@@ -144,6 +162,8 @@ Let's understand the components of SwiftRex by splitting them into 3 sections:
 - [State](#state)
 ---
 ### Action
+
+An Action represents an event that was notified by external (or sometimes internal) actors of your app. It's about relevant INPUT events.
 
 There's no "Action" protocol or type in SwiftRex. However, Action will be found as a generic parameter for most core data structures, meaning that it's up to you to define what is the root Action type.
 
@@ -184,6 +204,8 @@ For example, all apps will have common actions that represent life-cycle of any 
 ---
 
 ### State
+
+State represents the whole knowledge that an app holds while is open, usually in memory and mutable. It's about relevant OUTPUT properties.
 
 There's no "State" protocol or type in SwiftRex. However, State will be found as a generic parameter for most core data structures, meaning that it's up to you to define what is the root State type.
 
@@ -242,7 +264,15 @@ Annotating the whole state as Equatable helps us to reduce the UI updates in cas
 
 ## Core Parts
 - [Store](#store)
+    - [StoreType](#storetype)
+    - [Real Store](#real-store)
+    - [Store Projection](#store-projection)
+    - [All together](#all-together)
 - [Middleware](#middleware)
+    - [Generics](#generics)
+    - [Returning IO and performing side-effects](#returning-io-and-performing-side-effects)
+    - [Dependency Injection](#dependency-injection)
+    - [Middleware Examples](#middleware-examples)
     - [EffectMiddleware](#effectmiddleware)
 - [Reducer](#reducer)
 
@@ -250,145 +280,197 @@ Annotating the whole state as Equatable helps us to reduce the UI updates in cas
 
 ### Store
 
-`Store` is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle. That's also why we want one and only one instance of a Store, so either you create a static instance singleton, or keep it in your AppDelegate. Be careful with SceneDelegate if your app supports multiple windows and you want to share the state between these multiple instances of your app, which you usually want. That's why AppDelegate, singleton or global variable is usually recommended for the Store, not SceneDelegate.
-
-SwiftRex will provide a protocol and a base type for helping you to create your own Store. Let's learn about them.
-
 #### StoreType
-`StoreType` is the protocol that defines the minimum implementation requirement of a Store, and it's actually composed only by two other protocols, one for the store input and one for the store output.
+A protocol that defines the two expected roles of a "Store": receive/distribute actions (``ActionHandler``); and publish changes of the the current app state (``StateProvider``) to possible subscribers. It can be a real store (such as ``ReduxStoreBase``) or just a "proxy" that acts on behalf of a real store, for example, in the case of ``StoreProjection``.
 
-##### 1. ActionHandler
-`ActionHandler`: that's the store input, so it makes it able to receive and distribute events of generic type `ActionType`. Being an action handler means that an `UIViewController` or SwiftUI View can dispatch events to it, such as `.userTappedButtonX`, `.didScrollToPosition(_:)`, `.viewDidLoad` or `queryTextFieldChangedTo(_:)`. There's only one requirement:
+Store Type is an ``ActionHandler``, which means actors can dispatch actions (``ActionHandler/dispatch(_:)``) that will be handled by this store. These actions will eventually start side-effects or change state. These actions can also be dispatched by the result of side-effects, like the callback of an API call, or CLLocation new coordinates. How this action is handled will depend on the different implementations of ``StoreType``.
 
-```swift
-func dispatch(_ action: ActionType, from dispatcher: ActionSource)
+Store Type is also a ``StateProvider``, which means it's aware of certain state and can notify possible subscribers about changes through its  publisher (``StateProvider/statePublisher``). If this ``StoreType`` owns the state (single source-of-truth) or only proxies it from another store will depend on the different implementations of the protocol.
+
+```
+            ┌──────────┐
+            │ UIButton │────────┐
+            └──────────┘        │
+        ┌───────────────────┐   │         dispatch<Action>(_ action: Action)
+        │UIGestureRecognizer│───┼──────────────────────────────────────────────┐
+        └───────────────────┘   │                                              │
+            ┌───────────┐       │                                              ▼
+            │viewDidLoad│───────┘                                   ┏━━━━━━━━━━━━━━━━━━━━┓
+            └───────────┘                                           ┃                    ┃░
+                                                                    ┃                    ┃░
+                                                                    ┃                    ┃░
+              ┌───────┐                                             ┃                    ┃░
+              │UILabel│◀─ ─ ─ ─ ┐                                   ┃                    ┃░
+              └───────┘                   Combine, RxSwift    ┌ ─ ─ ┻ ─ ┐                ┃░
+                                │         or ReactiveSwift       State      Store        ┃░
+       ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│Publisher│                ┃░
+       ▼               │                  subscribe(onNext:)                             ┃░
+┌─────────────┐        ▼                  sink(receiveValue:) └ ─ ─ ┳ ─ ┘                ┃░
+│  Diffable   │ ┌─────────────┐           assign(to:on:)            ┃                    ┃░
+│ DataSource  │ │RxDataSources│                                     ┃                    ┃░
+└─────────────┘ └─────────────┘                                     ┃                    ┃░
+       │               │                                            ┃                    ┃░
+┌──────▼───────────────▼───────────┐                                ┗━━━━━━━━━━━━━━━━━━━━┛░
+│                                  │                                 ░░░░░░░░░░░░░░░░░░░░░░
+│                                  │
+│                                  │
+│                                  │
+│         UICollectionView         │
+│                                  │
+│                                  │
+│                                  │
+│                                  │
+└──────────────────────────────────┘
 ```
 
-It gives for free another dispatch function:
+There are implementations that will be the actual Store, the one and only instance that will be the central hub for the whole redux architecture.
+Other implementations can be only projections or the main Store, so they act like a Store by implementing the same roles, but instead of owning the
+global state or handling the actions directly, these projections only apply some small (and pure) transformation in the chain and delegate to the real
+Store. This is useful when you want to have local "stores" in your views, but you don't want them to duplicate data or own any kind of state, but only
+act as a store while using the central one behind the scenes.
+
+For more information about real stores, please check ``ReduxStoreBase`` and ``ReduxStoreProtocol``, and for more information about the projections
+please check ``StoreProjection`` and ``StoreType/projection(action:state:)``.
+
+#### Real Store?
+
+A real Store is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a 
+coordinator for the Unidirectional Dataflow lifecycle. That's also why we want one and only one instance of a Store, so either you create a static
+instance singleton, or keep it in your AppDelegate. Be careful with SceneDelegate if your app supports multiple windows and you want to share the 
+state between these multiple instances of your app, which you usually want. That's why AppDelegate, singleton or global variable is usually 
+recommended for the Store, not SceneDelegate. In case of SwiftUI you can create a store in your app protocol as a ``Combine/StateObject``:
 ```swift
-func dispatch(_ action: ActionType, file: String = #file, function: String = #function, line: UInt = #line, info: String? = nil)
-```
+@main
+struct MyApp: App {
+    @StateObject var store = Store.createStore(dependencyInjection: World.default).asObservableViewModel(initialState: .initial)
 
-Most of the times, users will only provide the first parameter, `action: ActionType`, and the rest will be collected automatically from where the action was dispatched from. This is useful for log and analytics purposes, we can track the source of each action.
-
-```swift
-// Usage:
-store.dispatch(.appStarted) // this collects automatically the dispatcher
-```
-
-Because `ActionType` is generic, when you dispatch you don't have to provide the full enum name, only the case. This also avoids mistakes as it's compiled-checked.
-
-##### 2. StateProvider
-`StateProvider`: that's the store output, so the system can subscribe a store for updates on State. Being a state provider basically means that store is an `Observable` (`RxSwift`) or a `Publisher` (`Combine`) of state elements, and an `UIViewController` or SwiftUI View can subscribe to the store and react to state changes. There's only one requirement:
-
-```swift
-var statePublisher: UnfailablePublisherType<StateType> { get }
-```
-
-The `UnfailablePublisherType<StateType>` is an abstraction that will be implemented as `Observable`, `Publisher` or `SignalProducer` according to the selected Reactive Framework, and emits the element `StateType` (your root app state) with `Never` type for failure, when the framework supports it.
-
-```swift
-// Combine Usage:
-let cancellable = store.statePublisher.sink { value in
-    print("Got new state: \(value)") 
+    var body: some Scene {
+        WindowGroup {
+            ContentView(viewModel: ContentViewModel(store: store))
+        }
+    }
 }
-// RxSwift Usage:
-let disposable = store.statePublisher.subscribe(onNext: { value in
-    print("Got new state: \(value)") 
-})
 ```
+SwiftRex will provide a protocol (``ReduxStoreProtocol``) and a base class (``ReduxStoreBase``) for helping you to create your own Store.
 
-There are other ways to observe a Store, such as SwiftUI ObservableObject protocol, but these tools are built on top of this very simple `StateProvider` protocol.
-
-#### StoreType Flow
-
-Either using UIKit, AppKit, WatchKit, SwiftUI or any other presentation layer, the communication between a Store and the UI will happen exclusively through these two members, `dispatch` for input actions and `statePublisher` for output state.
-
-[![ViewController and Store](https://swiftrex.github.io/SwiftRex/markdown/img/Redux1.gif)](https://www.youtube.com/watch?v=oBR94I2p2BA)
-
-As seen in the animation above, the Store only exposes an input (action) and an output (state provider), and that's all the Views need to know about the Store.
-
-> **_IMPORTANT:_** However you should only have one store, you can have multiple projections of this store and give to your views, for example, that way they will only have a limited amount of operations and state available and can't mess with things that are out of their responsibilities. This is also the perfect way to modularize an app, as multiples projections can live in different frameworks and later only assembled together in the main target. We will talk more about that on chapter [Store Projection](#store-projection), but for now it's only important to understand that Store Projections won't hold source-of-truth, but will pretend to be a real store, therefore, implement the `StoreType` protocol, and the flow above will still be valid regardless of being the real singleton Store or a simple projection of it.
-
-#### ReduxStoreBase
-`ReduxStoreBase` is an `open class` that conforms to `StoreType` and provides all we need to start using SwiftRex. You can choose to inherit from this class or use it directly. We recommend inheritance because this will allow you to better mock the Store if necessary, however there's nothing you really have to write once `ReduxStoreBase` is complete: it glues all the parts together and acts as a proxy to the non-Redux world.
-
-A suggested `Store` can be written with no more than 10 lines of code:
 ```swift
 class Store: ReduxStoreBase<AppAction, AppState> {
-    init(world: World) {
-        super.init(
-            subject: .combine(initialValue: AppState()),
-            reducer: appReducer,
-            middleware: appMiddleware().inject(world),
+    static func createStore(dependencyInjection: World) -> Store {
+        let store = Store(
+            subject: .combine(initialValue: .initial),
+            reducer: AppModule.appReducer,
+            middleware: AppModule.appMiddleware(dependencyInjection: dependencyInjection)
             emitsValue: .whenDifferent
         )
+
+        store.dispatch(AppAction.lifecycle(LifeCycleAction.start))
+        return store
     }
 }
 ```
 
-The `ReduxStoreBase` initialiser expects a middleware and a reducer as input, and that's enough for the store to coordinate the entire process. It creates a queue of incoming actions that will be handled by the middleware pipeline and by the reducer pipeline. By the end of this process the state may or may not change, as a result of reducer pipeline acting on action + current state. Finally, the store notifies all subscribers about the state change and only then starts evaluating the next action on the queue.
+#### What is a Store Projection?
 
-![Store internals](https://swiftrex.github.io/SwiftRex/markdown/img/StoreInternals.png)
+Very often you don't want your view to be able to access the whole App State or dispatch any possible global App Action. Not only it could refresh
+your UI more often than needed, it also makes more error prone, put more complex code in the view layer and finally decreases modularisation making
+the view coupled to the global models.
 
-We will see more in depth this dataflow when reading about middlewares and reducers, but please come back to this picture above every time you read about the store internals, it can be very useful.
+However, you don't want to split your state in multiple parts because having it in a central and unique point ensures consistency. Also, you don't
+want multiple separate places taking care of actions because that could potentially create race conditions. The real Store is the only place actually
+owning the global state and effectively handling the actions, and that's how it's supposed to be.
 
-At this point all you have to notice is the action handler (dispatch action function) and the state provider (subscribe state) boxes that are shown to the outside world. When writing UIViewControllers or SwiftUI Views those are the only 2 functions you'll ever have to use.
+To solve both problems, we offer a ``StoreProjection``, which conforms to the ``StoreType`` protocol so for all purposes it behaves like a real store,
+but in fact it only projects the real store using custom types for state and actions, that is, either a subset of your models (a branch in the state
+tree, for example), or a completely different entity like a View State. A ``StoreProjection`` has 2 closures, that allow it to transform actions and
+state between the global ones and the ones used by the view. That way, the View is not coupled to the whole global models, but only to tiny parts of
+it, and the closure in the ``StoreProjection`` will take care of extracting/mapping the interesting part for the view. This also improves performance,
+because the view will not refresh for any property in the global state, only for the relevant ones. On the other direction, view can only dispatch a
+limited set of actions, that will be mapped into global actions by the closure in the ``StoreProjection``.
 
-There will be only one honest Store in your entire app, so either you create it as a singleton or a property in a long-living class such as AppDelegate or AppCoordinator. That's crucial for making the store completely detached from the `UIKit`/SwiftUI world.
+A Store Projection can be created from any other ``StoreType``, even from another ``StoreProjection``. It's as simple as calling 
+``StoreType/projection(action:state:)``, and providing the action and state mapping closures:
 
+```swift
+let storeProjection = store.projection(
+    action: { viewAction in viewAction.toAppAction() } ,
+    state: { globalState in MyViewState.from(globalState: globalState) }
+).asObservableViewModel(initialState: .empty)
 ```
-                 ┌────────────────────────────────────────┐
-                 │                                        │
-                 │    SwiftUI View / UIViewController     │
-                 │                                        │
-                 └────┬───────────────────────────────────┘
-                      │                            ▲
-                      │                            │
-                      │ action        notification
-          ┌─────────┐ │                            │
-          │         ▼ │                       ─ ─ ─ ─ ─ ─
-          │      ┏━━━━│━━━━━━━━━━━━━━━━━━━━━━┫   State   ┣┓
-  new actions    ┃    │            Store       Publisher  ┃░
-from middleware  ┃    ▼                      └ ─ ─ ┬ ─ ─ ┘┃░
-          │      ┃ ┌───────────────────┐                  ┃░
-          │      ┃ │    Middlewares    │           │      ┃░
-          └────────┤┌───┐  ┌───┐  ┌───┐│                  ┃░
-                 ┃ ││ 1 │─▶│ 2 │─▶│ 3 ││◀─         │      ┃░
-                 ┃ │└───┘  └───┘  └───┘│  │               ┃░
-                 ┃ └────────────────┬──┘      ┌────┴────┐ ┃░
-                 ┃                  │     │   │         │ ┃░
-                 ┃    ┌─────────────┘      ─ ─│  State  │ ┃░
-                 ┃    │ ┌─────────────────────│         │ ┃░
-                 ┃    ▼ ▼                     └────▲────┘ ┃░
-                 ┃ ┌───────────────────┐           ║      ┃░
-                 ┃ │     Reducers      │           ║      ┃░
-                 ┃ │┌───┐  ┌───┐  ┌───┐│           ║      ┃░
-                 ┃ ││ 1 │─▶│ 2 │─▶│ 3 │╠═══════════╝      ┃░
-                 ┃ │└───┘  └───┘  └───┘│    state         ┃░
-                 ┃ └───────────────────┘   mutation       ┃░
-                 ┃                                        ┃░
-                 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛░
-                  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+#### All together
+
+Putting everything together we could have:
+
+```swift
+@main
+struct MyApp: App {
+    @StateObject var store = Store.createStore(dependencyInjection: World.default).asObservableViewModel(initialState: .initial)
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView(
+                viewModel: store.projection(
+                    action: { (viewAction: ContentViewAction) -> AppAction? in
+                        viewAction.toAppAction()
+                    },
+                    state: { (globalState: AppState) -> ContentViewState in 
+                        ContentViewState.from(globalState: globalState) 
+                    }
+                ).asObservableViewModel(initialState: .empty)
+            )
+        }
+    }
+}
+
+struct ContentViewState: Equatable {
+    let title: String
+
+    static func from(globalState: AppState) -> ContentViewState { 
+        ContentViewState(title: "\(L10n.goodMorning), \(globalState.foo.bar.title)")
+    }
+}
+
+enum ContentViewAction {
+    case onAppear
+
+    func toAppAction() -> AppAction? {
+        switch self {
+        case .onAppear: return AppAction.foo(.bar(.startTimer))
+        }
+    }
+}
 ```
+
+In this example above we can see that `ContentView` doesn't know about the global models, it's limited to `ContentViewAction` and `ContentViewState`
+only. It also only refreshes when `globalState.foo.bar.title` changes, any other change in the `AppState` will be ignored because the other properties
+are not mapped into anything in the `ContentViewState`. Also, `ContentViewAction` has a single case, `onAppear`, and that's the only thing the view
+can dispatch, without knowing that this will eventually start a timer (`AppAction.foo(.bar(.startTimer))`). The view should not know about domain
+logic and its actions should be limited to `buttonTapped`, `onAppear`, `didScroll`, `toggle(enabled: Bool)` and other names that only suggest UI
+interaction. How this is mapped into App Actions is responsibility of other parts, in our example, `ContentViewAction` itself, but it could be a
+Presenter layer, a View Model layer, or whatever structure you decide to create to organise your code.
+
+Testing is also made easier with this approach, as the View doesn't hold any logic and the projection transformations are pure functions.
+
+![Store, StoreProjection and View](StoreProjectionDiagram)
 
 ### Middleware
 
-`Middleware` is a plugin, or a composition of several plugins, that are assigned to the `ReduxStoreProtocol` pipeline in order to handle each action received (`InputActionType`), to execute side-effects in response, and eventually dispatch more actions (`OutputActionType`) in the process.
-This happens before the `Reducer` to do its job.
+``MiddlewareProtocol`` is a plugin, or a composition of several plugins, that are assigned to the app global ``StoreType`` pipeline in order to handle each action received (``InputActionType``), to execute side-effects in response, and eventually dispatch more actions (``OutputActionType``) in the process. It can also access the most up-to-date ``StateType`` while handling an incoming action.
 
-We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state at any point.
+We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state while handling an action.
 
-An action is a lightweight structure, typically an enum, that is dispatched into the `ActionHandler` (usually a `StoreProtocol`).
-A Store like `ReduxStoreProtocol` enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a `Middleware` is class that handles actions, and has the power to dispatch more actions to the `ActionHandler` chain. The `Middleware` can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop, or perhaps some `Reducer`, as reducers pipeline is at the end of every middleware pipeline.
+An [Action](#action) is a lightweight structure, typically an enum, that is dispatched into the ``ActionHandler`` (usually a ``StoreType``).
 
-Middlewares can schedule a callback to be executed after the reducer pipeline is done mutating the global state. At that point, the middleware will have access to the new state, and in case it cached the old state it can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.
+A Store like ``ReduxStoreProtocol`` enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a ``MiddlewareProtocol`` is class that handles actions, and has the power to dispatch more actions, either immediately or after callback of async tasks. The middleware can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in the future, or perhaps some ``Reducer`` will use this action to change the state, because the ``MiddlewareProtocol`` itself can never change the state, only read it.
 
-Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file, line, function and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.
+The ``MiddlewareProtocol/handle(action:from:state:)`` will be called before the Reducer, so if you read the state at that point it's still going to be the unchanged version. While implementing this function, it's expected that you return an ``IO`` object, which is basically a closure where you can perform side-effects and dispatch new actions. Inside this closure, the state will have the new values after the reducers handled the current action, so in case you made a copy of the old state, you can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.
 
-Because the `Middleware` receive all actions and accesses the state of the app at any point, anything can be done from these small and reusable boxes. For example, the same `CoreLocation` middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct.
+Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file name, line of code, function name and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.
+
+Ideally a ``MiddlewareProtocol`` should be a small and reusable box, handling only a very limited set of actions, and combined with other small middlewares to create more complex apps. For example, the same `CoreLocation` middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-action tree and sub-state struct.
 
 Some suggestions of middlewares:
+
 - Run Timers, pooling some external resource or updating some local state at a constant time
 - Subscribe for `CoreData`, `Realm`, `Firebase Realtime Database` or equivalent database changes
 - Be a `CoreLocation` delegate, checking for significant location changes or beacon ranges and triggering actions to update the state
@@ -408,95 +490,166 @@ Some suggestions of middlewares:
 - Any side-effect, I/O, networking, sensors, third-party libraries that you want to abstract
 
 ```
-                   ┌─────┐                                                                                        ┌─────┐
-                   │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
-                   │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
-                   │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
-                   │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
- ┌──────┐ dispatch │     │   │                ▲
- │Button│─────────▶│Store│──▶│                └───afterReducer─────┐                   ┌────────┐
- └──────┘ Action   │     │   │                                     │                ┌─▶│ View 1 │
-                   │     │   │                                  ┌─────┐             │  └────────┘
-                   │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
-                   │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
-                   │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
-                   └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
-                               State                                                └─▶│ View 3 │
-                                                                                       └────────┘
+                                                                                                                    ┌────────┐                                     
+                                                       IO closure                                                ┌─▶│ View 1 │                                     
+                      ┌─────┐                          (don't run yet)                       ┌─────┐             │  └────────┘                                     
+                      │     │ handle  ┌──────────┐  ┌───────────────────────────────────────▶│     │ send        │  ┌────────┐                                     
+                      │     ├────────▶│Middleware│──┘                                        │     │────────────▶├─▶│ View 2 │                                     
+                      │     │ Action  │ Pipeline │──┐  ┌─────┐ reduce ┌──────────┐           │     │ New state   │  └────────┘                                     
+                      │     │         └──────────┘  └─▶│     │───────▶│ Reducer  │──────────▶│     │             │  ┌────────┐                                     
+    ┌──────┐ dispatch │     │                          │Store│ Action │ Pipeline │ New state │     │             └─▶│ View 3 │                                     
+    │Button│─────────▶│Store│                          │     │ +      └──────────┘           │Store│                └────────┘                                     
+    └──────┘ Action   │     │                          └─────┘ State                         │     │                                   dispatch    ┌─────┐         
+                      │     │                                                                │     │       ┌─────────────────────────┐ New Action  │     │         
+                      │     │                                                                │     │─run──▶│       IO closure        ├────────────▶│Store│─ ─ ▶ ...
+                      │     │                                                                │     │       │                         │             │     │         
+                      │     │                                                                │     │       └─┬───────────────────────┘             └─────┘         
+                      └─────┘                                                                └─────┘         │                     ▲                               
+                                                                                                      request│ side-effects        │side-effects                   
+                                                                                                             ▼                      response                       
+                                                                                                        ┌ ─ ─ ─ ─ ─                │                               
+                                                                                                          External │─ ─ async ─ ─ ─                                
+                                                                                                        │  World                                                   
+                                                                                                         ─ ─ ─ ─ ─ ┘                                               
 ```
+
+#### Generics
 
 Middleware protocol is generic over 3 associated types:
 
-#### InputActionType:
-The Action type that this `Middleware` knows how to handle, so the store will forward actions of this type to this middleware.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputAction:outputAction:state:)` for more details.
+- ``InputActionType``:
 
-#### OutputActionType:
-The Action type that this `Middleware` will eventually trigger back to the store in response of side-effects. This can be the same as `InputActionType` or different, in case you want to separate your enum in requests and responses.
-Thanks to optics, this action can be a sub-action lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check `lift(inputAction:outputAction:state:)` for more details.
+    The Action type that this ``MiddlewareProtocol`` knows how to handle, so the store will forward actions of this type to this middleware.
+    
+    Most of the times middlewares don't need to handle all possible actions from the whole global action tree, so we can decide to allow it to
+    focus only on a subset of the action.
+    
+    In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the
+    global action of an app. Please check [Lifting](#lifting) for more details.
 
-#### StateType:
-The State part that this `Middleware` needs to read in order to make decisions. This middleware will be able to read the most up-to-date `StateType` from the store at any point in time, but it can never write or make changes to it. In some cases, middleware don't need reading the whole global state, so we can decide to allow only a sub-state, or maybe this middleware doesn't need to read any state, so the `StateType`can safely be set to `Void`.
-Thanks to lenses, this state can be a sub-state lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check `lift(inputAction:outputAction:state:)` for more details.
+- ``OutputActionType``:
+
+    The Action type that this ``MiddlewareProtocol`` will eventually trigger back to the store in response of side-effects. This can be the same
+    as ``InputActionType`` or different, in case you want to separate your enum in requests and responses.
+    
+    Most of the times middlewares don't need to dispatch all possible actions of the whole global action tree, so we can decide to allow it to
+    dispatch only a subset of the action, or not dispatch any action at all, so the ``OutputActionType`` can safely be set to `Never`.
+    
+    In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the
+    global action of an app. Please check [Lifting](#lifting) for more details.
+
+- ``StateType``:
+
+    The State part that this ``MiddlewareProtocol`` needs to read in order to make decisions. This middleware will be able to read the most
+    up-to-date ``StateType`` from the store while handling an incoming action, but it can never write or make changes to it.
+    
+    Most of the times middlewares don't need reading the whole global state, so we can decide to allow it to read only a subset of the state, or
+    maybe this middleware doesn't need to read any state, so the ``StateType`` can safely be set to `Void`.
+    
+    In this case, this state type can be a subset to be lifted to a global state in order to compose with other middlewares acting on the global state
+    of an app. Please check [Lifting](#lifting) for more details.
+
+#### Returning IO and performing side-effects
+
+In its most important function, ``MiddlewareProtocol/handle(action:from:state:)`` the middleware is expected to return an ``IO`` object, which is a closure where side-effects should be executed and new actions can be dispatched.
+
+In some cases, we may want to not execute any side-effect or run any code after reducer, in that case, the function can return a simple ``IO/pure()``.
+
+Otherwise, return the closure that takes the `output` (of ``ActionHandler`` type, that accepts ``ActionHandler/dispatch(_:)`` calls):
+```swift
+public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+    if action != .myExpectedAction { return .pure() }
+
+    return IO { output in 
+        output.dispatch(.showPopup)
+        DispatchQueue.global().asyncAfter(.now() + .seconds(3)) { 
+            output.dispatch(.hidePopup)
+        }
+    }
+}
+```
+
+#### Dependency Injection
+
+Testability is one of the most important aspects to account for when developing software. In Redux architecture, ``MiddlewareProtocol`` is the only type of object allowed to perform side-effects, so it's the only place where the testability can be challenging.
+
+To improve testability, the middleware should use as few external dependencies as possible. If it starts to use too many, consider splitting in smaller middlewares, this will also protect you against race conditions and other problems, will help with tests and make the middleware more reusable.
+
+Also, all external dependencies should be injected in the initialiser, so during the tests you can replace them with mocks. If your middleware uses only one call from a very complex object, instead of using a protocol full of functions please consider either creating a protocol with a single function requirement, or even inject a closure such as `@escaping (URLRequest) -> AnyPublisher<(Data, URLResponse), Error>`. Creating mocks for this will be way much easier.
+
+Finally, consider using ``MiddlewareReader`` to wrap this middleware in a dependency injection container.
+
+#### Middleware Examples
 
 When implementing your Middleware, all you have to do is to handle the incoming actions:
 
 ```swift
-class LoggerMiddleware: Middleware {
-    typealias InputActionType = AppGlobalAction // It wants to receive all possible app actions
-    typealias OutputActionType = Never          // No action is generated from this Middleware
-    typealias StateType = AppGlobalState        // It wants to read the whole app state
+public final class LoggerMiddleware: MiddlewareProtocol {
+    public typealias InputActionType = AppGlobalAction // It wants to receive all possible app actions
+    public typealias OutputActionType = Never          // No action is generated from this Middleware
+    public typealias StateType = AppGlobalState        // It wants to read the whole app state
 
-    var getState: GetState<AppGlobalState>!
+    private let logger: Logger
+    private let now: () -> Date
 
-    func receiveContext(getState: @escaping GetState<AppGlobalState>, output: AnyActionHandler<Never>) {
-        self.getState = getState
+    // Dependency Injection
+    public init(logger: Logger = Logger.default, now: @escaping () -> Date) {
+        self.logger = logger
+        self.now = now
     }
 
-    func handle(action: AppGlobalAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        let stateBefore: AppGlobalState = getState()
-        let dateBefore = Date()
+    //            inputAction: AppGlobalAction                                                state: AppGlobalState     output action: Never  
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        let stateBefore: AppGlobalState = state()
+        let dateBefore = now()
 
-        afterReducer = .do {
-            let stateAfter = self.getState()
-            let dateAfter = Date()
+        return IO { [weak self] output in
+            guard let self = self else { return }
+            let stateAfter = state()
+            let dateAfter = self.now()
             let source = "\(dispatcher.file):\(dispatcher.line) - \(dispatcher.function) | \(dispatcher.info ?? "")"
 
-            Logger.log(action: action, from: source, before: stateBefore, after: stateAfter, dateBefore: dateBefore, dateAfter: dateAfter)
+            self.logger.log(action: action, from: source, before: stateBefore, after: stateAfter, dateBefore: dateBefore, dateAfter: dateAfter)
         }
     }
 }
 
-class FavoritesAPIMiddleware: Middleware {
-    typealias InputActionType = FavoritesAction  // It wants to receive only actions related to Favorites
-    typealias OutputActionType = FavoritesAction // It wants to also dispatch actions related to Favorites
-    typealias StateType = FavoritesModel         // It wants to read the app state that manages favorites
+public final class FavoritesAPIMiddleware: MiddlewareProtocol {
+    public typealias InputActionType = FavoritesAction  // It wants to receive only actions related to Favorites
+    public typealias OutputActionType = FavoritesAction // It wants to also dispatch actions related to Favorites
+    public typealias StateType = FavoritesModel         // It wants to read the app state that manages favorites
 
-    var getState: GetState<FavoritesModel>!
-    var output: AnyActionHandler<FavoritesAction>!
+    private let api: API
 
-    func receiveContext(getState: @escaping GetState<FavoritesModel>, output: AnyActionHandler<FavoritesAction>) {
-        self.getState = getState
-        self.output = output
+    // Dependency Injection
+    public init(api: API) {
+        self.api = api
     }
 
-    func handle(action: FavoritesAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        guard let .toggleFavorite(movieId) = action else { return }
-
-        let favoritesList = getState()
+    //            inputAction: FavoritesAction                                                state: FavoritesModel     output action: FavoritesAction  
+    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
+        guard case let .toggleFavorite(movieId) = action else { return .pure() }
+        let favoritesList = state() // state before reducer
         let makeFavorite = !favoritesList.contains(where: { $0.id == movieId })
 
-        API.changeFavorite(id: movieId, makeFavorite: makeFavorite) (completion: { result in
-            switch result {
-            case let .success(value):
-                self.output.dispatch(.changedFavorite(movieId, isFavorite: true), info: "API.changeFavorite callback")
-            case let .failure(error):
-                self.output.dispatch(.changedFavoriteHasFailed(movieId, isFavorite: false, error: error), info: "API.changeFavorite callback")
-            }
-        })
+        return IO { [weak self] output in
+            guard let self = self else { return }
+
+            self.api.changeFavorite(id: movieId, makeFavorite: makeFavorite) (completion: { result in
+                switch result {
+                case let .success(value):
+                    output.dispatch(.changedFavorite(movieId, isFavorite: makeFavorite), info: "API.changeFavorite callback")
+                case let .failure(error):
+                    output.dispatch(.changedFavoriteHasFailed(movieId, isFavorite: !makeFavorite, error: error), info: "api.changeFavorite callback")
+                }
+            })
+
+        }
     }
 }
 ```
+
+![SwiftUI Side-Effects](wwdc2019-226-02)
 
 #### EffectMiddleware
 This is a middleware implementation that aims for simplicity while keeping it very powerful. For every incoming action you must return an Effect, which is simply a wrapper for a reactive
@@ -538,68 +691,503 @@ long as it matches the required generic parameters, for that you can simply use 
 
 ### Reducer
 
-`Reducer` is a pure function wrapped in a monoid container, that takes current state and an action to calculate the new state.
+`Reducer` is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.
 
-The `Middleware` pipeline can do two things: dispatch outgoing actions and handling incoming actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the `Reducer` function.
+The ``MiddlewareProtocol`` pipeline can do two things: dispatch outgoing actions and handling incoming actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the ``MutableReduceFunction`` function:
 
 ```swift
-// Signature:
-Reducer.reduce(_ reduce: @escaping MutableReduceFunction<ActionType, StateType>)
+(ActionType, inout StateType) -> Void
+```
 
-// Example:
-let someReducer = Reducer.reducer { action, state in
+Which has the same semantics (but better performance) than old ``ReduceFunction``:
+
+```swift
+(ActionType, StateType) -> StateType
+```
+
+Given an action and the current state (as a mutable inout), it calculates the new state and changes it:
+
+```
+initial state is 42
+action: increment
+reducer: increment 42 => new state 43
+
+current state is 43
+action: decrement
+reducer: decrement 43 => new state 42
+
+current state is 42
+action: half
+reducer: half 42 => new state 21
+```
+
+The function is reducing all the actions in a cached state, and that happens incrementally for each new incoming action.
+
+It's important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect (including non-obvious ones as creating `Date()`, using DispatchQueue or `Locale.current`), so never add properties to the ``Reducer`` structs or call any external function. If you are tempted to do that, please create a middleware and dispatch actions with Dates or Locales from it. 
+
+Reducers are also responsible for keeping the consistency of a state, so it's always good to do a final sanity check before changing the state, like for example check other dependant properties that must be changed together.
+
+Once the reducer function executes, the store will update its single source-of-truth with the new calculated state, and propagate it to all its subscribers, that will react to the new state and update Views, for example.
+
+This function is wrapped in a struct to overcome some Swift limitations, for example, allowing us to compose multiple reducers into one (monoid operation, where two or more reducers become a single one) or lifting reducers from local types to global types.
+
+The ability to lift reducers allow us to write fine-grained "sub-reducer" that will handle only a subset of the state and/or action, place it in different frameworks and modules, and later plugged into a bigger state and action handler by providing a way to map state and actions between the global and local ones. For more information about that, please check [Lifting](#lifting).
+
+A possible implementation of a reducer would be:
+```swift
+let volumeReducer = Reducer<VolumeAction, VolumeState>.reduce { action, currentState in
     switch action {
-    case something:
-        // given that state is "inout", you can mutate it here:
-        state.somethingCalledCount += 1
+    case .louder:
+        currentState = VolumeState(
+            isMute: false, // When increasing the volume, always unmute it.
+            volume: min(100, currentState.volume + 5)
+        )
+    case .quieter:
+        currentState = VolumeState(
+            isMute: currentState.isMute,
+            volume: max(0, currentState.volume - 5)
+        )
+    case .toggleMute:
+        currentState = VolumeState(
+            isMute: !currentState.isMute,
+            volume: currentState.volume
+        )
     }
 }
 ```
 
-Given the current state (as a mutable inout) and an action, it can change the state. This function will be executed right after middleware action handling for all the middlewares in the
-pipeline. Because a reduce function is composable monoid and also can be lifted through lenses, it's possible to write fine-grained "sub-reducer" that will handle only a "sub-state", creating a pipeline of reducers. For example, you can write a Reducer to handle part A of certain state, another Reducer to handle part B of certain state, "lift" them both to the common
-state that holds A and B (a parent struct, for example, that has properties A and B), and then combine them into one.
-
-It's important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect, so never add properties to the `Reducer` structs or call any external function. If you are tempted to do that, please create a middleware. Reducers are also responsible for keeping the consistency of a state, so it's always good to do a final sanity check before changing the state.
-
-Once the reducer function executes, the store will update its single source of truth with the new calculated state, and propagate it to all its observers.
+Please notice from the example above the following good practices:
+- No `DispatchQueue`, threading, operation queue, promises, reactive code in there.
+- All you need to implement this function is provided by the arguments `action` and `currentState`, don't use any other variable coming from global scope, not even for reading purposes. If you need something else, it should either be in the state or come in the action payload.
+- Do not start side-effects, requests, I/O, database calls.
+- Avoid `default` when writing `switch`/`case` statements. That way the compiler will help you more.
+- Make the action and the state generic parameters as much specialised as you can. If volume state is part of a bigger state, you should not be tempted to pass the whole big state into this reducer. Make it short, brief and specialised, this also helps preventing `default` case or having to re-assign properties that are never mutated by this reducer.
 
 ```
-                  ┌─────┐                                                                                        ┌─────┐
-                  │     │     handle   ┌──────────┐ request      ┌ ─ ─ ─ ─  response     ┌──────────┐ dispatch   │     │
-                  │     │   ┌─────────▶│Middleware├─────────────▶ External│─────────────▶│Middleware│───────────▶│Store│─ ─ ▶ ...
-                  │     │   │ Action   │ Pipeline │ side-effects │ World    side-effects │ callback │ New Action │     │
-                  │     │   │          └──────────┘               ─ ─ ─ ─ ┘              └──────────┘            └─────┘
-┌──────┐ dispatch │     │   │
-│Button│─────────▶│Store│──▶│                                                         ┌────────┐
-└──────┘ Action   │     │   │                                                      ┌─▶│ View 1 │
-                  │     │   │                                  ┌─────┐             │  └────────┘
-                  │     │   │ reduce   ┌──────────┐            │     │ onNext      │  ┌────────┐
-                  │     │   └─────────▶│ Reducer  ├───────────▶│Store│────────────▶├─▶│ View 2 │
-                  │     │     Action   │ Pipeline │ New state  │     │ New state   │  └────────┘
-                  └─────┘     +        └──────────┘            └─────┘             │  ┌────────┐
-                              State                                                └─▶│ View 3 │
-                                                                                      └────────┘
+                                                                                                                    ┌────────┐                                     
+                                                       IO closure                                                ┌─▶│ View 1 │                                     
+                      ┌─────┐                          (don't run yet)                       ┌─────┐             │  └────────┘                                     
+                      │     │ handle  ┌──────────┐  ┌───────────────────────────────────────▶│     │ send        │  ┌────────┐                                     
+                      │     ├────────▶│Middleware│──┘                                        │     │────────────▶├─▶│ View 2 │                                     
+                      │     │ Action  │ Pipeline │──┐  ┌─────┐ reduce ┌──────────┐           │     │ New state   │  └────────┘                                     
+                      │     │         └──────────┘  └─▶│     │───────▶│ Reducer  │──────────▶│     │             │  ┌────────┐                                     
+    ┌──────┐ dispatch │     │                          │Store│ Action │ Pipeline │ New state │     │             └─▶│ View 3 │                                     
+    │Button│─────────▶│Store│                          │     │ +      └──────────┘           │Store│                └────────┘                                     
+    └──────┘ Action   │     │                          └─────┘ State                         │     │                                   dispatch    ┌─────┐         
+                      │     │                                                                │     │       ┌─────────────────────────┐ New Action  │     │         
+                      │     │                                                                │     │─run──▶│       IO closure        ├────────────▶│Store│─ ─ ▶ ...
+                      │     │                                                                │     │       │                         │             │     │         
+                      │     │                                                                │     │       └─┬───────────────────────┘             └─────┘         
+                      └─────┘                                                                └─────┘         │                     ▲                               
+                                                                                                      request│ side-effects        │side-effects                   
+                                                                                                             ▼                      response                       
+                                                                                                        ┌ ─ ─ ─ ─ ─                │                               
+                                                                                                          External │─ ─ async ─ ─ ─                                
+                                                                                                        │  World                                                   
+                                                                                                         ─ ─ ─ ─ ─ ┘                                               
 ```
 
 ## Projection and Lifting
 - [Store Projection](#store-projection)
-- [Lifting Middleware](#lifting-middleware)
-- [Lifting Reducer](#lifting-reducer)
+- [Lifting](#lifting)
+    - [Lifting Reducer](#lifting-reducer)
+        - [Lifting Reducer using closures:](#lifting-reducer-using-closures)
+        - [Lifting Reducer using KeyPath:](#lifting-reducer-using-keypath)
+    - [Lifting Middleware](#lifting-middleware)
+        - [Lifting Middleware using closures:](#lifting-middleware-using-closures)
+        - [Lifting Middleware using KeyPath:](#lifting-middleware-using-keypath)
+    - [Optional transformation](#optional-transformation)
+    - [Direction of the arrows](#direction-of-the-arrows)
+    - [Use of KeyPaths](#use-of-keypaths)
+    - [Identity, Ignore and Absurd](#identity-ignore-and-absurd)
+    - [Xcode Snippets:](#xcode-snippets)
 
 ### Store Projection
 
-TBD
+An app should have a single real Store, holding a single source-of-truth. However, we can "derive" this store to small subsets, called store projections, that will handle either a smaller part of the state or action tree, or even a completely different type of actions and states as long as we can map back-and-forth to the original store types. It won't store anything, only project the original store. For example, a View can define a completely custom View State and View Action, and we can create a ``StoreProjection`` that works on these types, as long as it's backed by a real store which State and Action types can be mapped somehow to the View State and View Action types. The Store Projection will take care of translating these entities.
 
 ![Store Projection](https://swiftrex.github.io/SwiftRex/markdown/img/StoreProjectionDiagram.png)
 
-### Lifting Middleware
+Very often you don't want your view to be able to access the whole App State or dispatch any possible global App Action. Not only it could refresh
+your UI more often than needed, it also makes more error prone, put more complex code in the view layer and finally decreases modularisation making
+the view coupled to the global models.
 
-TBD
+However, you don't want to split your state in multiple parts because having it in a central and unique point ensures consistency. Also, you don't
+want multiple separate places taking care of actions because that could potentially create race conditions. The real Store is the only place actually
+owning the global state and effectively handling the actions, and that's how it's supposed to be.
 
-### Lifting Reducer
+To solve both problems, we offer a ``StoreProjection``, which conforms to the ``StoreType`` protocol so for all purposes it behaves like a real store,
+but in fact it only projects the real store using custom types for state and actions, that is, either a subset of your models (a branch in the state
+tree, for example), or a completely different entity like a View State. A ``StoreProjection`` has 2 closures, that allow it to transform actions and
+state between the global ones and the ones used by the view. That way, the View is not coupled to the whole global models, but only to tiny parts of
+it, and the closure in the ``StoreProjection`` will take care of extracting/mapping the interesting part for the view. This also improves performance,
+because the view will not refresh for any property in the global state, only for the relevant ones. On the other direction, view can only dispatch a
+limited set of actions, that will be mapped into global actions by the closure in the ``StoreProjection``.
 
-TBD
+A Store Projection can be created from any other ``StoreType``, even from another ``StoreProjection``. It's as simple as calling 
+``StoreType/projection(action:state:)``, and providing the action and state mapping closures:
+
+```swift
+let storeProjection = store.projection(
+    action: { viewAction in viewAction.toAppAction() } ,
+    state: { globalState in MyViewState.from(globalState: globalState) }
+).asObservableViewModel(initialState: .empty)
+```
+
+For more information about real store vs. store projections, and also for complete code examples, please check documentation for ``StoreType``.
+
+### Lifting
+
+An app can be a complex product, performing several activities that not necessarily are related. For example, the same app may need to perform a request to a weather API, check the current user location using CLLocation and read preferences from UserDefaults.
+
+Although these activities are combined to create the full experience, they can be isolated from each other in order to avoid URLSession logic and CLLocation logic in the same place, competing for the same resources and potentially causing race conditions. Also, testing these parts in isolation is often easier and leads to more significant tests. 
+
+Ideally we should organise our `AppState` and `AppAction` to account for these parts as isolated trees. In the example above, we could have 3 different properties in our AppState and 3 different enum cases in our AppAction to group state and actions related to the weather API, to the user location and to the UserDefaults access.
+
+This gets even more helpful in case we split our app in 3 types of ``Reducer`` and 3 types of ``MiddlewareProtocol``, and each of them work not on the full `AppState` and `AppAction`, but in the 3 paths we grouped in our model. The first pair of ``Reducer`` and ``MiddlewareProtocol`` would be generic over ``WeatherState`` and ``WeatherAction``, the second pair over ``LocationState`` and ``LocationAction`` and the third pair over ``RepositoryState`` and ``RepositoryAction``. They could even be in different frameworks, so the compiler will forbid us from coupling Weather API code with CLLocation code, which is great as this enforces better practices and unlocks code reusability. Maybe our CLLocation middleware/reducer can be useful in a completely different app that checks for public transport routes.
+
+But at some point we want to put these 3 different types of entities together, and the ``StoreType`` of our app "speaks" `AppAction` and `AppState`, not the subsets used by the specialised handlers.
+
+```swift
+enum AppAction {
+    case weather(WeatherAction)
+    case location(LocationAction)
+    case repository(RepositoryAction)
+}
+struct AppState {
+    let weather: WeatherState
+    let location: LocationState
+    let repository: RepositoryState
+}
+```
+Given a reducer that is generic over `WeatherAction` and `WeatherState`, we can "lift" it to the global types `AppAction` and `AppState` by telling this reducer how to find in the global tree the properties that it needs. That would be `\AppAction.weather` and `\AppState.weather`. The same can be done for the middleware, and for the other 2 reducers and middlewares of our app.
+
+When all of them are lifted to a common type, they can be combined together using the diamond operator (`<>`) and set as the store handler.
+
+> **_IMPORTANT:_** Because enums in Swift don't have KeyPath as structs do, we strongly recommend reading [Action Enum Properties](docs/markdown/ActionEnumProperties.md) document and implementing properties for each case, either manually or using code generators, so later you avoid writing lots and lots of error-prone switch/case. We also offer some templates to help you on that.
+
+Let's explore how to lift reducers and middlewares. 
+
+#### Lifting Reducer
+
+``Reducer`` has AppAction INPUT, AppState INPUT and AppState OUTPUT, because it can only handle actions (never dispatch them), read the state and write the state.
+
+The lifting direction, therefore, should be:
+```
+Reducer:
+- ReducerAction? ← AppAction
+- ReducerState ←→ AppState
+```
+
+Given:
+```swift
+//      type 1         type 2
+Reducer<ReducerAction, ReducerState>
+```
+
+Transformations:
+```
+                                                                                 ╔═══════════════════╗
+                                                                                 ║                   ║
+                       ╔═══════════════╗                                         ║                   ║
+                       ║    Reducer    ║ .lift                                   ║       Store       ║
+                       ╚═══════════════╝                                         ║                   ║
+                               │                                                 ║                   ║
+                                                                                 ╚═══════════════════╝
+                               │                                                           │          
+                                                                                                      
+                               │                                                           │          
+                                                                                     ┌───────────┐    
+                         ┌─────┴─────┐   (AppAction) -> ReducerAction?               │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │  Reducer  │   { $0.case?.reducerAction }                  │           │    
+    Input Action         │  Action   │◀──────────────────────────────────────────────│ AppAction │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │           │   KeyPath<AppAction, ReducerAction?>          │           │    
+                         └─────┬─────┘   \AppAction.case?.reducerAction              │           │    
+                                                                                     └───────────┘    
+                               │                                                           │          
+                                                                                                      
+                               │         get: (AppState) -> ReducerState                   │          
+                                         { $0.reducerState }                         ┌───────────┐    
+                         ┌─────┴─────┐   set: (inout AppState, ReducerState) -> Void │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │  Reducer  │   { $0.reducerState = $1 }                    │           │    
+        State            │   State   │◀─────────────────────────────────────────────▶│ AppState  │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │           │   WritableKeyPath<AppState, ReducerState>     │           │    
+                         └─────┬─────┘   \AppState.reducerState                      │           │    
+                                                                                     └───────────┘    
+                               │                                                           │          
+```
+
+##### Lifting Reducer using closures:
+```swift
+.lift(
+    actionGetter: { (action: AppAction) -> ReducerAction? /* type 1 */ in 
+        // prism3 has associated value of ReducerAction,
+        // and whole thing is Optional because Prism is always optional
+        action.prism1?.prism2?.prism3
+    },
+    stateGetter: { (state: AppState) -> ReducerState /* type 2 */ in 
+        // property2: ReducerState
+        state.property1.property2
+    },
+    stateSetter: { (state: inout AppState, newValue: ReducerState /* type 2 */) -> Void in 
+        // property2: ReducerState
+        state.property1.property2 = newValue
+    }
+)
+```
+Steps:
+- Start plugging the 2 types from the Reducer into the 3 closure headers.
+- For type 1, find a prism that resolves from AppAction into the matching type. **BE SURE TO RUN SOURCERY AND HAVING ALL ENUM CASES COVERED BY PRISM**
+- For type 2 on the stateGetter closure, find lenses (property getters) that resolve from AppState into the matching type.
+- For type 2 on the stateSetter closure, find lenses (property setters) that can change the global state receive to the newValue received. Be sure that everything is writeable.
+
+##### Lifting Reducer using KeyPath:
+```swift
+.lift(
+    action: \AppAction.prism1?.prism2?.prism3,
+    state: \AppState.property1.property2
+)
+```
+Steps:
+- Start with the closure example above
+- For action, we can use KeyPath from `\AppAction` traversing the prism tree
+- For state, we can use WritableKeyPath from `\AppState` traversing the properties as long as all of them are declared as `var`, not `let`.
+
+#### Lifting Middleware
+
+``MiddlewareProtocol`` has AppAction INPUT, AppAction OUTPUT and AppState INPUT, because it can handle actions, dispatch actions, and only read the state (never write it).
+
+The lifting direction, therefore, should be:
+```
+Middleware:
+- MiddlewareInputAction? ← AppAction
+- MiddlewareOutputAction → AppAction
+- MiddlewareState ← AppState
+```
+
+Given:
+```swift
+//           type 1                 type 2                  type 3
+MyMiddleware<MiddlewareInputAction, MiddlewareOutputAction, MiddlewareState>
+```
+
+Transformations:
+```
+                                                                                 ╔═══════════════════╗
+                                                                                 ║                   ║
+                       ╔═══════════════╗                                         ║                   ║
+                       ║  Middleware   ║ .lift                                   ║       Store       ║
+                       ╚═══════════════╝                                         ║                   ║
+                               │                                                 ║                   ║
+                                                                                 ╚═══════════════════╝
+                               │                                                           │          
+                                                                                                      
+                               │                                                           │          
+                                                                                     ┌───────────┐    
+                         ┌─────┴─────┐   (AppAction) -> MiddlewareInputAction?       │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │Middleware │   { $0.case?.middlewareInputAction }          │           │    
+    Input Action         │   Input   │◀──────────────────────────────────────────────│ AppAction │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │  Action   │   KeyPath<AppAction, MiddlewareInputAction?>  │           │    
+                         └─────┬─────┘   \AppAction.case?.middlewareInputAction      │           │    
+                                                                                     └───────────┘    
+                               │                                                     ┌─────┴─────┐    
+                         ┌───────────┐   (MiddlewareOutputAction) -> AppAction       │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │Middleware │   { AppAction.case($0) }                      │           │    
+    Output Action        │  Output   │──────────────────────────────────────────────▶│ AppAction │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │  Action   │   AppAction.case                              │           │    
+                         └───────────┘                                               │           │    
+                               │                                                     └─────┬─────┘    
+                                                                                     ┌───────────┐    
+                         ┌─────┴─────┐   (AppState) -> MiddlewareState               │           │    
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    │Middleware │   { $0.middlewareState }                      │           │    
+        State            │   State   │◀──────────────────────────────────────────────│ AppState  │    
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘    │           │   KeyPath<AppState, MiddlewareState>          │           │    
+                         └─────┬─────┘   \AppState.middlewareState                   │           │    
+                                                                                     └───────────┘    
+                               │                                                           │          
+```
+
+##### Lifting Middleware using closures:
+```swift
+.lift(
+    inputAction: { (action: AppAction) -> MiddlewareInputAction? /* type 1 */ in
+        // prism3 has associated value of MiddlewareInputAction,
+        // and whole thing is Optional because Prism is always optional
+        action.prism1?.prism2?.prism3
+    },
+    outputAction: { (local: MiddlewareOutputAction /* type 2 */) -> AppAction in
+        // local is MiddlewareOutputAction, 
+        // an associated value for .prism3
+        AppAction.prism1(.prism2(.prism3(local)))
+    },
+    state: { (state: AppState) -> MiddlewareState /* type 3 */ in
+        // property2: MiddlewareState
+        state.property1.property2
+    }
+)
+```
+Steps:
+- Start plugging the 3 types from MyMiddleware into the closure headers.
+- For type 1, find a prism that resolves from AppAction into the matching type. **BE SURE TO RUN SOURCERY AND HAVING ALL ENUM CASES COVERED BY PRISM**
+- For type 2, wrap it from inside to outside until you reach AppAction, in this example we wrap it (being "it" = local) in .prism3, which we wrap in .prism2, then .prism1 to finally reach AppAction.
+- For type 3, find lenses (property getters) that resolve from AppState into the matching type.
+
+##### Lifting Middleware using KeyPath:
+```swift
+.lift(
+    inputAction: \AppAction.prism1?.prism2?.prism3,
+    outputAction: Prism2.prism3,
+    state: \AppState.property1.property2
+)
+.lift(outputAction: Prism1.prism2)
+.lift(outputAction: AppAction.prism1)
+```
+Steps:
+- Start with the closure example above
+- For inputAction, we can use KeyPath from `\AppAction` traversing the prism tree
+- For outputAction it's **NOT** a KeyPath, but a wrapping. Because we can't wrap more than 1 level at once, either we:
+    - use the closure version for this one
+    - lift level by level, from inside to outside, in that case follow the steps of wrapping local into Prism2 (case .prism3), then wrapping result into Prism1 (case .prism2), then wrapping result into AppAction (case .prism1)
+- When it's only 1 level, there's nothing to worry about
+- For state, we can use KeyPath from `\AppState` traversing the properties.
+
+#### Optional transformation
+If some action is running through the store, some reducers and middlewares may opt for ignoring it. For example, if the action tree has nothing to do with that middleware or reducer. That's why, every INCOMING action (InputAction for Middlewares and simply Action for Reducers) is a transformation from `AppAction → Optional<Subset>`. Returning nil means that the action will be ignored.
+
+This is not true for the other direction, when actions are dispatched by Middlewares, they MUST become an AppAction, we can't ignore what Middlewares have to say.
+
+#### Direction of the arrows
+**Reducers** receive actions (input action) and are able to read and write state.
+
+**Middlewares** receive actions (input action), dispatch actions (output action) and only read the state (input state).
+
+When lifting, we must keep that in mind because it defines the variance (covariant/contravariant) of the transformation, that is, _map_ or _contramap_.
+
+One special case is the State for reducer, because that requires a read and write access, in other words, you are given an `inout Whole` and a new value for `Part`, you use that new value to set the correct path inside the inout Whole. This is precisely what WritableKeyPaths are mean for, which we will see with more details now.
+
+#### Use of KeyPaths
+KeyPath is the same as `Global -> Part` transformation, where you give the description of the tree in the following way:
+`\Global.parent.part`.
+
+WritableKeyPath has similar usage syntax, but it's much more powerful, allowing us to transform `(Global, Part) -> Global`, or `(inout Global, Part) -> Void` which is the same.
+
+That said we need to understand that KeyPaths are only possible when the direction of the arrows comes from `AppElement -> ReducerOrMiddlewareElement`, that is:
+```
+Reducer:
+- ReducerAction? ← AppAction         // Keypath is possible
+- ReducerState ←→ AppState           // WritableKeyPath is possible
+```
+```
+Middleware:
+- MiddlewareInputAction? ← AppAction // KeyPath is possible
+- MiddlewareOutputAction → AppAction // NOT POSSIBLE
+- MiddlewareState ← AppState         // KeyPath is possible
+```
+
+For the `ReducerAction? ← AppAction` and `MiddlewareInputAction? ← AppAction` we can use KeyPaths that resolve to `Optional<ReducerOrMiddlewareAction>`:
+```swift
+{ (globalAction: AppAction) -> ReducerOrMiddlewareAction? in
+    globalAction.parent?.reducerOrMiddlewareAction
+}
+
+// or
+// KeyPath<AppAction, ReducerOrMiddlewareAction?>
+\AppAction.parent?.reducerOrMiddlewareAction
+```
+
+For the `ReducerState ←→ AppState` and `MiddlewareState ← AppState` transformations, we can use similar syntax although the Reducer is inout (WritableKeyPath). That means our whole tree must be composed by `var` properties, not `let`. In this case, unless the Middleware or Reducer accepts Optional, the transformation should NOT be Optional.
+```swift
+{ (globalState: AppState) -> PartState in
+    globalState.something.thatsThePieceWeWant
+}
+
+{ (globalState: inout AppState, newValue: PartState) -> Void in
+    globalState.something.thatsThePieceWeWant = newValue
+}
+
+// or
+// KeyPath<AppState, PartState> or WritableKeyPath<AppState, PartState>
+\AppState.something.thatsThePieceWeWant // where:
+                                        // var something
+                                        // var thatsThePieceWeWant
+```
+
+For the `MiddlewareOutputAction → AppAction` we can't use keypath, it doesn't make sense, because the direction is the opposite of what we want. In that case we are not unwrapping/extracting the part from a global value, we were given a specific action from certain middleware and we need to wrap it into the AppAction. This can be achieved by two forms:
+```swift
+{ (middlewareAction: MiddlewareAction) -> AppAction in 
+    AppAction.treeForMiddlewareAction(middlewareAction)
+}
+
+// or simply
+
+AppAction.treeForMiddlewareAction // please notice, not KeyPath, it doesn't start by \
+```
+
+The short form, however, can't traverse 2 levels at once:
+```swift
+{ (middlewareAction: MiddlewareAction) -> AppAction in 
+    AppAction.firstLevel( FirstLevel.secondLevel(middlewareAction) )
+}
+
+// this will NOT compile (although a better Prism could solve that, probably):
+AppAction.firstLevel.secondLevel
+
+// You could try, however, to lift twice:
+.lift(outputAction: FirstLevel.secondLevel) // Notice that first we wrap the middleware value in the second level
+.lift(outputAction: AppAction.firstLevel)   // And then we wrap the first level in the AppAction
+                                            // The order must be from inside to outside, always.
+```
+
+#### Identity, Ignore and Absurd
+Void:
+- when Middleware doesn't need State, it can be Void
+- lift Void using `ignore`, which is `{ (_: Anything) -> Void in }`
+
+Never:
+- when Middleware doesn't need to dispatch actions, it can be Never
+- lift Never using `absurd`, which is `{ (never: Never) -> Anything in }`
+
+Identity:
+- when some parts of your lift should be unchanged because they are already in the expected type
+- lift that using `identity`, which is `{ $0 }`
+
+Theory behind:
+Void and Never are dual:
+- Anything can become Void (terminal object)
+- Never (initial object) can become Anything
+- Void has 1 instance possible (it's a singleton)
+- Never has 0 instances possible
+- Because nobody can give you Never, you can promise Anything as a challenge. That's why function is called absurd, it's impossible to call it.
+
+#### Xcode Snippets:
+```swift
+// Reducer expanded
+.lift(
+    actionGetter: { (action: AppAction) -> <#LocalAction#>? in action.<#something?.child#> },
+    stateGetter: { (state: AppState) -> <#LocalState#> in state.<#something.child#> },
+    stateSetter: { (state: inout AppState, newValue: <#LocalState#>) -> Void in state.<#something.child#> = newValue }
+)
+
+// Reducer KeyPath:
+.lift(
+    action: \AppAction.<#something?.child#>,
+    state: \AppState.<#something.child#>
+)
+
+// Middleware expanded
+.lift(
+    inputAction: { (action: AppAction) -> <#LocalAction#>? in action.<#something?.child#> },
+    outputAction: { (local: <#LocalAction#>) -> AppAction in AppAction.<#something(.child(local))#> },
+    state: { (state: AppState) -> <#LocalState#> in state.<#something.child#> }
+)
+
+// Middleware KeyPath
+.lift(
+    inputAction: \AppAction.<#local#>,
+    outputAction: AppAction.<#local#>, // not more than 1 level
+    state: \AppState.<#local#>
+)
+```
 
 # Architecture
 

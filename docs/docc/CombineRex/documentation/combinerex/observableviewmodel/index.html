@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>ObservableViewModel| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">CombineRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">ObservableViewModel</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Class</span>
+  <h1 class="title">ObservableViewModel</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      A Store Projection made to be used in SwiftUI
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>class</span> <span class='token-identifier'>ObservableViewModel</span>&lt;<span class='token-genericParameter'>ViewAction</span>, <span class='token-genericParameter'>ViewState</span>&gt;</code></pre>
+  </div>
+</section><div class='content'><h2 id='overview'>Overview</h2><p>All you need is to create an instance of this class by projecting the main store and providing maps for state and actions. For the consumers, it will act as a real Store, but in fact it’s only a proxy to the main store but working in types more close to what a View should know, instead of working on global domain.</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">            ┌────────┐</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">            │ Button │────────┐</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">            └────────┘        │                     ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐             ┏━━━━━━━━━━━━━━━━━━━━━━━┓</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">       ┌──────────────────┐   │         dispatch                                            ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">       │      Toggle      │───┼────────────────────▶│   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─▶  │────────────▶┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">       └──────────────────┘   │         view event      f: (Event) → Action     app action  ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">           ┌──────────┐       │                     │                         │             ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">           │ onAppear │───────┘                                                             ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">           └──────────┘                             │   ObservableViewModel   │             ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">                                                                                            ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">                                                    │     a projection of     │  projection ┃         Store         ┃░</span></span>
+<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">                                                         the actual store                   ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">                                                    │                         │             ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">   ┌────────────────────────┐                                                               ┃                       ┃░</span></span>
+<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">   │                        │                       │                         │            ┌┃─ ─ ─ ─ ─ ┐            ┃░</span></span>
+<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">   │    @ObservedObject     │◀ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─    ◀─ ─ ─ ─ ─ ─ ─ ─ ─ ─   ◀─ ─ ─ ─ ─ ─    State                ┃░</span></span>
+<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">   │                        │           view state  │   f: (State) → View     │  app state │ Publisher │            ┃░</span></span>
+<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">   └────────────────────────┘                                        State                  ┳ ─ ─ ─ ─ ─             ┃░</span></span>
+<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">     │          │          │                        └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘             ┗━━━━━━━━━━━━━━━━━━━━━━━┛░</span></span>
+<span class="code-line-container"><span data-line-number="20" class="code-number" style="display: none;"></span><span class="code-line">     ▼          ▼          ▼                                                                 ░░░░░░░░░░░░░░░░░░░░░░░░░</span></span>
+<span class="code-line-container"><span data-line-number="21" class="code-number" style="display: none;"></span><span class="code-line">┌────────┐ ┌────────┐ ┌────────┐</span></span>
+<span class="code-line-container"><span data-line-number="22" class="code-number" style="display: none;"></span><span class="code-line">│  Text  │ │  List  │ │ForEach │</span></span>
+<span class="code-line-container"><span data-line-number="23" class="code-number" style="display: none;"></span><span class="code-line">└────────┘ └────────┘ └────────┘</span></span>
+</code></pre>
+  </div>
+</div></div>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Initializers</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/init(initialState:store:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>convenience</span><span class='decorator empty-token'> </span><span class='identifier'>init</span><span class='decorator'>&lt;</span><span class='decorator'>S</span><span class='decorator'>&gt;(</span><span class='decorator'>initialState</span><span class='decorator'>: </span><span class='decorator'>ViewState</span><span class='decorator'>, </span><span class='decorator'>store</span><span class='decorator'>: </span><span class='decorator'>S</span><span class='decorator'>)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/init(initialState:store:emitsValue:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>&lt;</span><span class='decorator'>S</span><span class='decorator'>&gt;(</span><span class='decorator'>initialState</span><span class='decorator'>: </span><span class='decorator'>ViewState</span><span class='decorator'>, </span><span class='decorator'>store</span><span class='decorator'>: </span><span class='decorator'>S</span><span class='decorator'>, </span><span class='decorator'>emitsValue</span><span class='decorator'>: </span><span class='decorator'>ShouldEmitValue</span><span class='decorator'>&lt;</span><span class='decorator'>ViewState</span><span class='decorator'>&gt;)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Properties</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/state.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>var</span><span class='decorator empty-token'> </span><span class='identifier'>state</span><span class='decorator'>: </span><span class='decorator'>ViewState</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/statePublisher.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>statePublisher</span><span class='decorator'>: </span><span class='decorator'>UnfailablePublisherType</span><span class='decorator'>&lt;</span><span class='decorator'>ViewState</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The state publisher that can be observed by counterparts</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/dispatch(_:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>dispatch</span><span class='decorator'>(</span><span class='decorator'>DispatchedAction</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>&gt;)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The function that allows Views, ViewControllers, Presenters to dispatch actions to the store. Also way for a <code>Middleware</code> to trigger their own actions, usually in response to events or async operations.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/mock(state:action:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>mock</span><span class='decorator'>(</span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>ObservableViewModel</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>action</span><span class='decorator'>: ((</span><span class='decorator'>ObservableViewModel</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>ObservableViewModel</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Void</span><span class='decorator'>)) -&gt; </span><span class='decorator'>ObservableViewModel</span><span class='decorator'>&lt;</span><span class='decorator'>ObservableViewModel</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>ObservableViewModel</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Mock for using in tests or SwiftUI previews, available in DEBUG mode only You can use if as a micro-redux for tests and SwiftUI previews, for example:</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Default Implementations</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/StateProvider-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  StateProvider Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/ActionHandler-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  ActionHandler Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/ObservableObject-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  ObservableObject Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/CombineRex/ObservableViewModel/StoreType-Implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  StoreType Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

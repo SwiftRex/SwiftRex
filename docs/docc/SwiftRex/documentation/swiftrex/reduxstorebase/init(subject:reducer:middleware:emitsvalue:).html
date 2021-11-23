@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>init(subject:reducer:middleware:emitsValue:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">ReduxStoreBase</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">init(subject:reducer:middleware:emitsValue:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Initializer</span>
+  <h1 class="title">init(subject:reducer:middleware:emitsValue:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Required initializer that configures the action handler pipeline and the state storage
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>init</span>&lt;<span class='token-genericParameter'>M</span>&gt;(<span class='token-externalParam'>subject</span>: <a class='type-identifier-link' href='../../../documentation/SwiftRex/UnfailableReplayLastSubjectType.html'><span>UnfailableReplayLastSubjectType</span></a>&lt;StateType&gt;, <span class='token-externalParam'>reducer</span>: <a class='type-identifier-link' href='../../../documentation/SwiftRex/Reducer/index.html'><span>Reducer</span></a>&lt;ActionType, StateType&gt;, <span class='token-externalParam'>middleware</span>: M, <span class='token-externalParam'>emitsValue</span>: <a class='type-identifier-link' href='../../../documentation/SwiftRex/ShouldEmitValue/index.html'><span>ShouldEmitValue</span></a>&lt;StateType&gt; = .always) <span class='token-keyword'>where</span> ActionType == M.InputActionType, StateType == M.StateType, M : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a>, M.InputActionType == M.OutputActionType</code></pre>
+  </div>
+</section><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>subject</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a reactive subject type that replays the last value, never fails and works on <code>StateType</code> elements. It should contain the initial state already.</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>reducer</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a reducer function wrapped in a monoid container of type <code>Reducer</code>, able to handle the state of the type <code>StateType</code> and actions of type <code>ActionType</code>. For <code>reducer</code> composition, please use the diamond operator (<code>&lt;&gt;</code>) and for reducers that understand only a sub-state part, use the <code>lift</code> functions to elevate them to the same global state and global action type.</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>middleware</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a middleware pipeline, that can be any flat middleware or a <code>ComposedMiddleware</code>, as long as it’s able to handle the state of type <code>StateType</code> and actions of type <code>ActionType</code>. For <code>middleware</code> composition, please use the diamond operator (<code>&lt;&gt;</code>) and for middlewares that understand only a sub-state part, use the <code>lift</code> functions to elevate them to the same global state and global action type.</p></div>
+      </dd>
+    
+  </dl>
+</section>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

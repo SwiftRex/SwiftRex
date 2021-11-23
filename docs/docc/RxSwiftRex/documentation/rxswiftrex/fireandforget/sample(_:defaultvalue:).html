@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>sample(_:defaultValue:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../../index.html" class="item">RxSwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">FireAndForget</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">ObservableType Implementations</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">sample(_:defaultValue:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">sample(_:defaultValue:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Samples the source observable sequence using a sampler observable sequence producing sampling ticks.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>sample</span>&lt;<span class='token-genericParameter'>Source</span>&gt;(<span class='token-externalParam'>_</span> <span class='token-internalParam'>sampler</span>: Source, <span class='token-externalParam'>defaultValue</span>: Self.Element? = nil) -&gt; Observable&lt;Self.Element&gt; <span class='token-keyword'>where</span> Source : ObservableType</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>Sampled observable sequence.</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>sampler</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Sampling tick sequence.</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>defaultValue</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a value to return if there are no new elements between sampler ticks</p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Upon each sampling tick, the latest element (if any) in the source sequence during the last sampling interval is sent to the resulting sequence.</p><p><strong>In case there were no new elements between sampler ticks, you may provide a default value to be emitted, instead to the resulting sequence otherwise no element is sent.</strong></p></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>
