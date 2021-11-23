@@ -20,8 +20,7 @@ let package = Package(
     targets: [
         .target(
             name: "SwiftRex",
-            exclude: ["CodeGeneration/Templates"],
-            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+            exclude: ["CodeGeneration/Templates", "SwiftRex.docc"] // TODO: Once Swift Package is updated to 5.5, put docc back
         ),
         .target(name: "CombineRex", dependencies: ["SwiftRex"]),
         .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),
