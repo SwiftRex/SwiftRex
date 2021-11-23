@@ -149,6 +149,8 @@ $ swift build
 $ xed .
 ```
 
+> **_IMPORTANT:_** For Xcode 12, please use the version 0.8.7. Versions 0.9.0 and above require Xcode 13.
+
 ### Carthage
 
 Carthage is no longer supported due to lack of interest and high maintenance effort.

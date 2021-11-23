@@ -11,6 +11,7 @@ set-version:
 	sed -i .bkp -E "s/(s\.version.*=.*)'.*'/\1'${TO}'/" *.podspec
 	sed -i .bkp -E "s/(s\.dependency 'SwiftRex', )'~> .*'/\1'~> ${TO}'/" *.podspec
 	sed -i .bkp -E "s/(, from: )\".*\"\)/\1\"${TO}\")/" README.md
+	sed -i .bkp -E "s/(, from: )\".*\"\)/\1\"${TO}\")/" Sources/SwiftRex/SwiftRex.docc/discussions/Installation.md
 	rm *.bkp
 endif
 
