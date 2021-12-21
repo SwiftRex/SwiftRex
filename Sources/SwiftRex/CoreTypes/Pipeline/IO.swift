@@ -1,10 +1,10 @@
 import Foundation
 
 public struct IO<OutputActionType> {
-    let _runIO: (AnyActionHandler<OutputActionType>) -> Void
+    private let runIO: (AnyActionHandler<OutputActionType>) -> Void
 
     public init(_ run: @escaping (AnyActionHandler<OutputActionType>) -> Void) {
-        self._runIO = run
+        self.runIO = run
     }
 
     public static func pure() -> IO {
@@ -12,11 +12,11 @@ public struct IO<OutputActionType> {
     }
 
     public func run(_ output: AnyActionHandler<OutputActionType>) {
-        _runIO(output)
+        runIO(output)
     }
 
     public func run (_ output: @escaping (DispatchedAction<OutputActionType>) -> Void) {
-        _runIO(.init(output))
+        runIO(.init(output))
     }
 }
 
