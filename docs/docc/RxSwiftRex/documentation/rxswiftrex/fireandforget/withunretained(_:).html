@@ -91,7 +91,7 @@
       </dd>
     
   </dl>
-</section><div class='content'><h2 id='discussion'>Discussion</h2><p>In the case the provided object cannot be retained successfully, the seqeunce will complete.</p></div>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>In the case the provided object cannot be retained successfully, the seqeunce will complete.</p><aside class='note'><p class='label'>Note</p><p><p>Be careful when using this operator in a sequence that has a buffer or replay, for example <code>share(replay: 1)</code>, as the sharing buffer will also include the provided object, which could potentially cause a retain cycle.</p></p></p></aside></div>
   </div>
 </div>
   

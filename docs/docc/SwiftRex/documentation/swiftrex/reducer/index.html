@@ -202,6 +202,30 @@
           
             <div class="link-block topic">
               
+                <a href="../../../documentation/SwiftRex/Reducer/lift(action:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>?&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A type-lifting method. The global state of your app is <em>Whole</em>, and the <code>Reducer</code> handles <em>Part</em>, that is a sub-state.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/Reducer/lift(action:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>?&gt;, </span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A type-lifting method. The global state of your app is <em>Whole</em>, and the <code>Reducer</code> handles <em>Part</em>, that is a sub-state.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
                 <a href="../../../documentation/SwiftRex/Reducer/lift(actionGetter:stateGetter:stateSetter:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>actionGetter</span><span class='decorator'>: (</span><span class='decorator'>GlobalActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>ActionType</span><span class='decorator'>?, </span><span class='decorator'>stateGetter</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>stateSetter</span><span class='decorator'>: (</span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Void</span><span class='decorator'>) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
                 </a>
@@ -209,6 +233,54 @@
               
               <div class="abstract">
                 <div class="content">A type-lifting method. The global state of your app is <em>Whole</em>, and the <code>Reducer</code> handles <em>Part</em>, that is a sub-state.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/Reducer/lift(state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A type-lifting method. The global state of your app is <em>Whole</em>, and the <code>Reducer</code> handles <em>Part</em>, that is a sub-state.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/Reducer/liftToCollection(action:stateCollection:)-2n6l6.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/Reducer/liftToCollection(action:stateCollection:)-2puf.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>ElementIndexAction</span><span class='decorator'>&lt;</span><span class='decorator'>CollectionState</span><span class='decorator'>.</span><span class='decorator'>Index</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/SwiftRex/Reducer/liftToCollection(action:stateCollection:identifier:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>, </span><span class='decorator'>ID</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;, </span><span class='decorator'>identifier</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>ID</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
               </div>
             </div>
           

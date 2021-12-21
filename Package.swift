@@ -1,4 +1,4 @@
-// swift-tools-version:5.4
+// swift-tools-version:5.5
 import PackageDescription
 
 let package = Package(
@@ -14,13 +14,13 @@ let package = Package(
         .library(name: "RxSwiftRexDynamic", type: .dynamic, targets: ["SwiftRex", "RxSwiftRex"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.0.0"),
-        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "6.5.0")
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.2.0"),
+        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.0.0")
     ],
     targets: [
         .target(
             name: "SwiftRex",
-            exclude: ["CodeGeneration/Templates", "SwiftRex.docc"] // TODO: Once Swift Package is updated to 5.5, put docc back
+            exclude: ["CodeGeneration/Templates"] // TODO: Once Swift Package is updated to 5.5, put docc back
         ),
         .target(name: "CombineRex", dependencies: ["SwiftRex"]),
         .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),
