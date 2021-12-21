@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'Apache 2.0', :file => 'LICENSE' }
   s.author           = { 'Luiz Barbosa' => 'swiftrex@developercity.de' }
   s.source           = { :git => 'https://github.com/swiftrex/SwiftRex.git',
-                         :tag => "v#{s.version}" }
+                         :tag => s.version }
 
   s.requires_arc     = true
 
