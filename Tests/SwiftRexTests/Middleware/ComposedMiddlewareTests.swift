@@ -40,7 +40,7 @@ class ComposedMiddlewareTests: XCTestCase {
                 from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"),
                 state: { TestState() }
             )
-            io.runIO(.init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
+            io.run(.init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
         }
 
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
@@ -103,7 +103,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 3)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -153,7 +153,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 3)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -202,7 +202,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 3)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -252,7 +252,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 3)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -284,7 +284,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 1)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -312,7 +312,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 1)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -340,7 +340,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 1)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -368,7 +368,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 1)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [
@@ -409,7 +409,7 @@ class ComposedMiddlewareTests: XCTestCase {
         XCTAssertEqual(sut.middlewares.count, 1)
 
         let io = sut.handle(action: "", from: .here(), state: { .init() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
 
         wait(
             for: [

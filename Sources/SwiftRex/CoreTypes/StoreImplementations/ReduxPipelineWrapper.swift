@@ -93,7 +93,7 @@ where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
     }
 
     private static func runIO(_ io: IO<ActionType>, handler: @escaping (DispatchedAction<ActionType>) -> Void) {
-        io.runIO(.init { dispatchedAction in
+        io.run(.init { dispatchedAction in
             handler(dispatchedAction)
         })
     }

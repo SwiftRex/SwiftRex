@@ -19,7 +19,7 @@ extension MiddlewareReaderTests {
                 getStateCount += 1
                 return TestState()
             }
-        ).runIO(.init({ _ in dispatchActionCount += 1 }))
+        ).run(.init({ _ in dispatchActionCount += 1 }))
 
         // Expect
         let mirror = Mirror(reflecting: sut)
@@ -51,7 +51,7 @@ extension MiddlewareReaderTests {
                 getStateCount += 1
                 return state
             }
-        ).runIO(.init { _ in dispatchActionCount += 1 })
+        ).run(.init { _ in dispatchActionCount += 1 })
 
         // Expect
         let mirror = Mirror(reflecting: sut)

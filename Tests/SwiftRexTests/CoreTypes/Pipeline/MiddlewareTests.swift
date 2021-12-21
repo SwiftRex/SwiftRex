@@ -22,10 +22,10 @@ class MiddlewareTests: XCTestCase {
         )
 
         sut.handle(action: .bar(.bravo), from: .here(), state: { state })
-            .runIO(.init { _ in })
+            .run(.init { _ in })
 
         sut.handle(action: .bar(.charlie), from: .here(), state: { state })
-            .runIO(.init { _ in })
+            .run(.init { _ in })
 
         wait(
             for: [

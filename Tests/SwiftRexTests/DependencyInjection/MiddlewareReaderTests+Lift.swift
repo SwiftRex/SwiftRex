@@ -53,7 +53,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach { _ =
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -99,7 +99,7 @@ extension MiddlewareReaderTests {
         localInputActions.forEach { _ =
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -144,7 +144,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch(9, from: .here())
 
@@ -189,7 +189,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { localState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -234,7 +234,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -279,7 +279,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { localState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -323,7 +323,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch(9, from: .here())
 
@@ -367,7 +367,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { localState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch(9, from: .here())
 
@@ -411,7 +411,7 @@ extension MiddlewareReaderTests {
         localInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -455,7 +455,7 @@ extension MiddlewareReaderTests {
         localInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { localState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -499,7 +499,7 @@ extension MiddlewareReaderTests {
         localInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch(9, from: .here())
 
@@ -543,7 +543,7 @@ extension MiddlewareReaderTests {
         globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { localState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch(9, from: .here())
 
@@ -586,7 +586,7 @@ extension MiddlewareReaderTests {
         localInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { localState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch("foo", from: .here())
 
@@ -629,7 +629,7 @@ extension MiddlewareReaderTests {
         localInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch(9, from: .here())
 
@@ -673,7 +673,7 @@ extension MiddlewareReaderTests {
         localInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { localState })
-                .runIO(globalDispatcher)
+                .run(globalDispatcher)
         }
         globalDispatcher.dispatch(9, from: .here())
 

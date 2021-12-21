@@ -18,7 +18,7 @@ class IdentityMiddlewareTests: XCTestCase {
                 getStateCount += 1
                 return TestState()
             }
-        ).runIO(.init { _ in
+        ).run(.init { _ in
             dispatchActionCount += 1
         })
 

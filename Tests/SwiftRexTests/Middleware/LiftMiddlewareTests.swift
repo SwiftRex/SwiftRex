@@ -23,7 +23,7 @@ extension LiftMiddlewareTests {
             globalDispatcher.dispatch(.bar(.bravo), from: .here())
             output.dispatch(.delta, from: .here())
         }
-        generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() }).runIO(globalDispatcher)
+        generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() }).run(globalDispatcher)
 
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(globalReceived.map(\.action), expectedActionsOnGlobalContext)
@@ -66,7 +66,7 @@ extension LiftMiddlewareTests {
             )
 
         generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: .init(), name: "test-unlift-state") })
-            .runIO(.init { _ in })
+            .run(.init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
     }
@@ -87,7 +87,7 @@ extension LiftMiddlewareTests {
             )
         nameMiddleware.handleActionFromStateReturnValue = IO { output in localDispatcher = output }
         generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
-            .runIO(globalDispatcher)
+            .run(globalDispatcher)
 
         localDispatcher?.dispatch(.echo, from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
@@ -156,7 +156,7 @@ extension LiftMiddlewareTests {
                 state: { $0.name }
             )
         nameMiddleware.handleActionFromStateReturnValue = IO { output in localDispatcher = output }
-        generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() }).runIO(globalDispatcher)
+        generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() }).run(globalDispatcher)
 
         localDispatcher?.dispatch(.bar(.echo), from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
@@ -224,7 +224,7 @@ extension LiftMiddlewareTests {
                 state: { $0.name }
             )
         nameMiddleware.handleActionFromStateReturnValue = IO { output in localDispatcher = output }
-        generalMiddleware.handle(action: .foo, from: .here(), state: { TestState() }).runIO(globalDispatcher)
+        generalMiddleware.handle(action: .foo, from: .here(), state: { TestState() }).run(globalDispatcher)
 
         localDispatcher?.dispatch(.echo, from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
@@ -291,7 +291,7 @@ extension LiftMiddlewareTests {
                 inputAction: { $0.bar }
             )
         nameMiddleware.handleActionFromStateReturnValue = IO { output in localDispatcher = output }
-        generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() }).runIO(globalDispatcher)
+        generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() }).run(globalDispatcher)
 
         localDispatcher?.dispatch(.bar(.echo), from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
@@ -357,7 +357,7 @@ extension LiftMiddlewareTests {
                 outputAction: { bar in .bar(bar) }
             )
         nameMiddleware.handleActionFromStateReturnValue = IO { output in localDispatcher = output }
-        generalMiddleware.handle(action: .foo, from: .here(), state: { TestState() }).runIO(globalDispatcher)
+        generalMiddleware.handle(action: .foo, from: .here(), state: { TestState() }).run(globalDispatcher)
 
         localDispatcher?.dispatch(.echo, from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
@@ -423,7 +423,7 @@ extension LiftMiddlewareTests {
                 state: { $0.name }
             )
         nameMiddleware.handleActionFromStateReturnValue = IO { output in localDispatcher = output }
-        generalMiddleware.handle(action: .foo, from: .here(), state: { TestState() }).runIO(globalDispatcher)
+        generalMiddleware.handle(action: .foo, from: .here(), state: { TestState() }).run(globalDispatcher)
 
         localDispatcher?.dispatch(.bar(.echo), from: .here())
         globalDispatcher.dispatch(.foo, from: .here())

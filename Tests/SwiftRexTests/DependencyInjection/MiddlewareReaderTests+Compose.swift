@@ -42,7 +42,7 @@ extension MiddlewareReaderTests {
             let io = sut.handle(action: originalAction,
                                 from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"),
                                 state: { TestState() })
-            io.runIO(.init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
+            io.run(.init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
         }
 
         wait(for: [lastInChainWasCalledExpectation], timeout: 3)
@@ -140,7 +140,7 @@ extension MiddlewareReaderTests {
             sut.handle(action: originalAction,
                        from: .init(file: "file_1", function: "function_1", line: 1, info: "info_1"),
                        state: { TestState() })
-                .runIO(.init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
+                .run(.init({ dispatchedAction in newActions.append(dispatchedAction.action) }))
         }
 
         XCTAssertEqual("m1m2", sut.string)

@@ -7,7 +7,7 @@ class IOTests: XCTestCase {
         let sut = IO<String>.identity
 
         // Then
-        sut.runIO(.init { _ in XCTFail("Should not receive actions") })
+        sut.run(.init { _ in XCTFail("Should not receive actions") })
     }
 
     func testPure() {
@@ -15,7 +15,7 @@ class IOTests: XCTestCase {
         let sut = IO<String>.pure()
 
         // Then
-        sut.runIO(.init { _ in XCTFail("Should not receive actions") })
+        sut.run(.init { _ in XCTFail("Should not receive actions") })
     }
 
     func testDoSomething() {
@@ -28,7 +28,7 @@ class IOTests: XCTestCase {
         }
 
         // When
-        sut.runIO(.init { value in
+        sut.run(.init { value in
             XCTAssertEqual(value.action, "42")
             shouldReceiveValue.fulfill()
         })
@@ -54,7 +54,7 @@ class IOTests: XCTestCase {
 
         // When
         let sut = afterReducer1 <> afterReducer2
-        sut.runIO(.init { value in
+        sut.run(.init { value in
             switch value.action {
             case "1": shouldReceiveValue1.fulfill()
             case "2": shouldReceiveValue2.fulfill()
@@ -77,7 +77,7 @@ class IOTests: XCTestCase {
 
         // When
         let sut = afterReducer1 <> afterReducer2 <> afterReducer3
-        sut.runIO(.init { _ in XCTFail("Should not receive actions") })
+        sut.run(.init { _ in XCTFail("Should not receive actions") })
 
         // Then
         wait(for: [shouldDoSomething1, shouldDoSomething2, shouldDoSomething3], timeout: 0.1, enforceOrder: true)
@@ -98,7 +98,7 @@ class IOTests: XCTestCase {
         let composition1 = afterReducer1 <> afterReducer2
         let composition2 = afterReducer3 <> afterReducer4
         let sut = composition1 <> composition2
-        sut.runIO(.init { _ in XCTFail("Should not receive actions") })
+        sut.run(.init { _ in XCTFail("Should not receive actions") })
 
         // Then
         wait(for: [shouldDoSomething1, shouldDoSomething2, shouldDoSomething3, shouldDoSomething4], timeout: 0.1, enforceOrder: true)
@@ -119,7 +119,7 @@ class IOTests: XCTestCase {
         let composition1 = afterReducer1 <> IO<String>.identity <> afterReducer2
         let composition2 = IO<String>.identity <> afterReducer3 <> afterReducer4 <> IO<String>.identity
         let sut = composition1 <> IO<String>.identity <> composition2 <> IO<String>.identity
-        sut.runIO(.init { _ in XCTFail("Should not receive actions") })
+        sut.run(.init { _ in XCTFail("Should not receive actions") })
 
         // Then
         wait(for: [shouldDoSomething1, shouldDoSomething2, shouldDoSomething3, shouldDoSomething4], timeout: 0.1, enforceOrder: true)

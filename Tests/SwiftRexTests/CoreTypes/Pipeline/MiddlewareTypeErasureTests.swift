@@ -8,7 +8,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
         middleware.handleActionFromStateReturnValue = .pure()
         middleware.eraseToAnyMiddleware()
             .handle(action: .foo, from: .here(), state: { TestState() })
-            .runIO(.init { _ in })
+            .run(.init { _ in })
         XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
     }
 
@@ -17,7 +17,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
         middleware.handleActionFromStateReturnValue = .pure()
         AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
             .handle(action: .foo, from: .here(), state: { TestState() })
-            .runIO(.init { _ in })
+            .run(.init { _ in })
         XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
     }
 
@@ -29,7 +29,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
         }
         let erased = middleware.eraseToAnyMiddleware()
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
         wait(for: [calledAfterReducer], timeout: 0.1)
         XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
         XCTAssertFalse(erased.isIdentity)
@@ -44,7 +44,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
         }
         let erased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
         wait(for: [calledAfterReducer], timeout: 0.1)
         XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
         XCTAssertFalse(erased.isIdentity)
@@ -61,7 +61,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
             }
         }
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
-        io.runIO(.init { _ in })
+        io.run(.init { _ in })
         wait(for: [calledBeforeReducer, calledAfterReducer], timeout: 0.1, enforceOrder: true)
         XCTAssertFalse(erased.isIdentity)
         XCTAssertNil(erased.isComposed)
@@ -81,7 +81,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
             action: .foo,
             from: .here(),
             state: { state }
-        ).runIO(.init { dispatchedAction in
+        ).run(.init { dispatchedAction in
             XCTAssertEqual(action, dispatchedAction.action)
             XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
             XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
@@ -110,7 +110,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
             action: .foo,
             from: .here(),
             state: { state }
-        ).runIO(.init { dispatchedAction in
+        ).run(.init { dispatchedAction in
                 XCTAssertEqual(action, dispatchedAction.action)
                 XCTAssertEqual("file_1", dispatchedAction.dispatcher.file)
                 XCTAssertEqual("function_1", dispatchedAction.dispatcher.function)
