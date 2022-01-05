@@ -304,6 +304,161 @@ class EffectMiddlewareTests: XCTestCase {
         wait(for: [waitOneRunLoop], timeout: 0.01)
     }
 
+    func testEffectMiddlewareWithNonCompletingPublisherEffectCancelledViaToCancel() {
+        var dispatchedActions = [String]()
+        let token = "token1"
+        let expectedSubscription = expectation(description: "should have been subscribed")
+        let expectedCancellation = expectation(description: "should have been cancelled")
+        let subject = PassthroughSubject<String, Never>()
+
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, _, _ in
+            switch action {
+            case "start":
+                return Effect(token: token) { _ in
+                    subject
+                        .map { DispatchedAction($0) }
+                        .handleEvents(
+                            receiveSubscription: { _ in expectedSubscription.fulfill() },
+                            receiveCancel: { expectedCancellation.fulfill() }
+                        )
+                }
+            case "stop":
+                return .toCancel(token)
+            default:
+                XCTFail("Invalid action")
+                return .doNothing
+            }
+        }
+
+        sut.receiveContext(
+            getState: { "some_state" },
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
+            }
+        )
+
+        // Nobody cares about this subject yet, this is gonna be ignored
+        subject.send("Foo1")
+        subject.send("Foo2")
+
+        // Start the effect
+        var io = sut.handle(action: "start", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        subject.send("some value 1")
+        subject.send("some value 2")
+        subject.send("some value 3")
+
+        io = sut.handle(action: "stop", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+
+        subject.send("some value 4")
+
+        wait(for: [expectedSubscription, expectedCancellation],
+             timeout: 1.0,
+             enforceOrder: true
+        )
+
+        subject.send("some value 5")
+
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "some value 4"], dispatchedActions)
+
+        let waitOneRunLoop = expectation(description: "wait next RunLoop")
+
+        DispatchQueue.main.async {
+            // All of them, the 2 completed and the 1 cancelled should have been removed from the Dictionary
+            XCTAssertEqual(sut.cancellables.count, 0)
+            waitOneRunLoop.fulfill()
+        }
+        wait(for: [waitOneRunLoop], timeout: 0.01)
+    }
+
+    func testEffectMiddlewareWithNonCompletingPublisherEffectCancelledViaEffectCompositionThatHasToCancel() {
+        var dispatchedActions = [String]()
+        let token = "token1"
+        let expectedSubscription = expectation(description: "should have been subscribed")
+        let expectedCancellation = expectation(description: "should have been cancelled")
+        let subject = PassthroughSubject<String, Never>()
+
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, _, _ in
+            switch action {
+            case "start":
+                return Effect(token: token) { _ in
+                    subject
+                        .map { DispatchedAction($0) }
+                        .handleEvents(
+                            receiveSubscription: { _ in expectedSubscription.fulfill() },
+                            receiveCancel: { expectedCancellation.fulfill() }
+                        )
+                }
+            case "stop":
+                return Effect { context in
+                    Publishers.Merge(
+                        context.toCancel(token),
+                        Just(.init("ignoring"))
+                    )
+                }
+            case "ignoring":
+                return .doNothing
+            default:
+                XCTFail("Invalid action")
+                return .doNothing
+            }
+        }
+
+        sut.receiveContext(
+            getState: { "some_state" },
+            output: .init { dispatchedAction in
+                dispatchedActions.append(dispatchedAction.action)
+            }
+        )
+
+        // Nobody cares about this subject yet, this is gonna be ignored
+        subject.send("Foo1")
+        subject.send("Foo2")
+
+        // Start the effect
+        var io = sut.handle(action: "start", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        subject.send("some value 1")
+        subject.send("some value 2")
+        subject.send("some value 3")
+
+        io = sut.handle(action: "stop", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+
+        subject.send("some value 4")
+
+        wait(for: [expectedSubscription, expectedCancellation],
+             timeout: 1.0,
+             enforceOrder: true
+        )
+
+        subject.send("some value 5")
+
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "ignoring", "some value 4"], dispatchedActions)
+
+        let waitOneRunLoop = expectation(description: "wait next RunLoop")
+
+        DispatchQueue.main.async {
+            // All of them, the 2 completed and the 1 cancelled should have been removed from the Dictionary
+            XCTAssertEqual(sut.cancellables.count, 0)
+            waitOneRunLoop.fulfill()
+        }
+        wait(for: [waitOneRunLoop], timeout: 0.01)
+    }
+
     func testEffectMiddlewareWithSideEffectsComposed() {
         var dispatchedActions = [String]()
         var currentDependencyA = "dA0"
