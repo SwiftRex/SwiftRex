@@ -366,7 +366,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         subject.send("some value 5")
 
-        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "some value 4"], dispatchedActions)
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3"], dispatchedActions)
 
         let waitOneRunLoop = expectation(description: "wait next RunLoop")
 
@@ -447,7 +447,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         subject.send("some value 5")
 
-        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "ignoring", "some value 4"], dispatchedActions)
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "ignoring"], dispatchedActions)
 
         let waitOneRunLoop = expectation(description: "wait next RunLoop")
 
