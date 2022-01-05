@@ -368,14 +368,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         XCTAssertEqual(["some value 1", "some value 2", "some value 3"], dispatchedActions)
 
-        let waitOneRunLoop = expectation(description: "wait next RunLoop")
-
-        DispatchQueue.main.async {
-            // All of them, the 2 completed and the 1 cancelled should have been removed from the Dictionary
-            XCTAssertEqual(sut.cancellables.count, 0)
-            waitOneRunLoop.fulfill()
-        }
-        wait(for: [waitOneRunLoop], timeout: 0.01)
+        XCTAssertEqual(sut.cancellables.count, 0)
     }
 
     func testEffectMiddlewareWithNonCompletingPublisherEffectCancelledViaEffectCompositionThatHasToCancel() {
@@ -449,14 +442,7 @@ class EffectMiddlewareTests: XCTestCase {
 
         XCTAssertEqual(["some value 1", "some value 2", "some value 3", "ignoring"], dispatchedActions)
 
-        let waitOneRunLoop = expectation(description: "wait next RunLoop")
-
-        DispatchQueue.main.async {
-            // All of them, the 2 completed and the 1 cancelled should have been removed from the Dictionary
-            XCTAssertEqual(sut.cancellables.count, 0)
-            waitOneRunLoop.fulfill()
-        }
-        wait(for: [waitOneRunLoop], timeout: 0.01)
+        XCTAssertEqual(sut.cancellables.count, 0)
     }
 
     func testEffectMiddlewareWithSideEffectsComposed() {
