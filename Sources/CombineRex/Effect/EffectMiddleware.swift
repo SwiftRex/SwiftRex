@@ -144,7 +144,8 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
                 #endif
             } else {
                 #if SWIFTREX_DEBUG
-                print("⚠️ Can't cancel Effect with token \(cancellingToken.hashValue) because it was not found in the dictionary with keys \(self.cancellables.keys.joined(separator: ", ")).")
+                print("⚠️ Can't cancel Effect with token \(cancellingToken.hashValue) because it was not found in the dictionary with keys " +
+                      "\(self.cancellables.keys.joined(separator: ", ")).")
                 #endif
             }
         }
