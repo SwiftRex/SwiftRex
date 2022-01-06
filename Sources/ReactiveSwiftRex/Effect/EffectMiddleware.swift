@@ -125,12 +125,31 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
     func runOptionalEffect(_ effect: Effect<Dependencies, OutputActionType>, output: AnyActionHandler<OutputActionType>) {
         guard effect.doesSomething else { return }
 
-        let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
-            .init { [weak self] in
-                DispatchQueue.main.async {
-                    self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
-                }
+        let cancelTokenPublisher: (AnyHashable) -> Void = { [weak self] cancellingToken in
+            guard let self = self, let effect = self.cancellables[cancellingToken.hashValue] else {
+                #if DEBUG && SWIFTREX_DEBUG
+                print("⚠️ Can't cancel Effect with token \(cancellingToken.hashValue) because it was not found in the dictionary with keys " +
+                      "\(self.cancellables.keys.joined(separator: ", ")).")
+                #endif
+                return
             }
+            effect.dispose()
+            self.cancellables.removeValue(forKey: cancellingToken.hashValue)
+            #if DEBUG && SWIFTREX_DEBUG
+            print("Cancelled Effect with token \(cancellingToken.hashValue).")
+            #endif
+        }
+
+        let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { cancellingToken in
+            FireAndForget(
+                SignalProducer<DispatchedAction<OutputActionType>, Never>
+                    .empty
+                    // ReactiveSwift UIScheduler is eager, so if this is already running in the main queue, it happens immediately,
+                    // otherwise it schedules to the next Main Thread RunLoop. This is important because cancellation is requested
+                    // by the user (downstream) and must occur AS SOON AS POSSIBLE!
+                    .start(on: UIScheduler())
+                    .on(started: { cancelTokenPublisher(cancellingToken) })
+            )
         }
 
         guard let publisher = effect.run((dependencies: self.dependencies, toCancel: toCancel)) else { return }
@@ -138,24 +157,11 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
         if let token = effect.token {
             let (lifetime, lifetimeToken) = Lifetime.make()
             let subscription = publisher
-                .producer
                 .on(
                     completed: { [weak self] in
-                        DispatchQueue.main.async {
-                            self?.cancellables.removeValue(forKey: token.hashValue)
-                        }
-                    },
-                    interrupted: { [weak self] in
-                        DispatchQueue.main.async {
-                            self?.cancellables.removeValue(forKey: token.hashValue)
-                        }
-                    },
-                    terminated: { [weak self] in
-                        DispatchQueue.main.async {
-                            self?.cancellables.removeValue(forKey: token.hashValue)
-                        }
-                    },
-                    disposed: { [weak self] in
+                        // Completion, that means UPSTREAM finished sending actions, not cancellation from the downstream.
+                        // That means, there's no urgency in cleaning up the `cancellables` dictionary, we can afford to
+                        // do it in the next Main Thread RunLoop.
                         DispatchQueue.main.async {
                             self?.cancellables.removeValue(forKey: token.hashValue)
                         }
@@ -163,10 +169,10 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
                 )
                 .startWithValues { output.dispatch($0.action, from: $0.dispatcher) }
             lifetime += subscription
+            self.cancellables[token.hashValue]?.dispose()
             self.cancellables[token.hashValue] = lifetimeToken
         } else {
             cancellableButNotViaToken += publisher
-                .producer
                 .startWithValues { output.dispatch($0.action, from: $0.dispatcher) }
         }
     }
