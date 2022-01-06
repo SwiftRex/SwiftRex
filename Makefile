@@ -74,7 +74,7 @@ sourcery:
 
 # Docc
 docc:
-	xcodebuild docbuild -scheme "SwiftRex-Package" -sdk iphonesimulator -configuration Debug -destination "platform=iOS Simulator,name=iPhone SE (2nd generation),OS=15.2" SYMROOT=tmp
+	# xcodebuild docbuild -scheme "SwiftRex-Package" -sdk iphonesimulator -configuration Debug -destination "platform=iOS Simulator,name=iPhone SE (2nd generation),OS=15.2" SYMROOT=tmp
 	mint run docc2html -f tmp/Debug-iphonesimulator/SwiftRex.doccarchive docs/docc/SwiftRex
 	mint run docc2html -f tmp/Debug-iphonesimulator/CombineRex.doccarchive docs/docc/CombineRex
 	mint run docc2html -f tmp/Debug-iphonesimulator/RxSwiftRex.doccarchive docs/docc/RxSwiftRex
