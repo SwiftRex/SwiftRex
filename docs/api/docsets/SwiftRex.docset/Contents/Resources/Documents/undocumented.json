@@ -44,21 +44,21 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/IO.swift",
-      "line": 15,
-      "symbol": "IO",
-      "symbol_kind": "source.lang.swift.decl.extension",
+      "line": 14,
+      "symbol": "IO.run(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/IO.swift",
-      "line": 19,
-      "symbol": "<>(_:_:)",
-      "symbol_kind": "source.lang.swift.decl.function.free",
+      "line": 18,
+      "symbol": "IO.run(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/IO.swift",
-      "line": 26,
+      "line": 23,
       "symbol": "IO",
       "symbol_kind": "source.lang.swift.decl.extension",
       "warning": "undocumented"
@@ -66,8 +66,8 @@
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/IO.swift",
       "line": 27,
-      "symbol": "IO.map(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "symbol": "<>(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
       "warning": "undocumented"
     },
     {
@@ -80,6 +80,20 @@
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/IO.swift",
       "line": 35,
+      "symbol": "IO.map(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/IO.swift",
+      "line": 42,
+      "symbol": "IO",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/CoreTypes/Pipeline/IO.swift",
+      "line": 43,
       "symbol": "IO.flatMap(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
