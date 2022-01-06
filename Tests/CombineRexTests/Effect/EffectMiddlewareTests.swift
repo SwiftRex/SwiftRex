@@ -487,6 +487,65 @@ class EffectMiddlewareTests: XCTestCase {
         wait(for: [waitOneRunLoop], timeout: 0.01)
     }
 
+    func testEffectMiddlewareCancelWrongTokenDoesNothing() {
+        var dispatchedActions = [String]()
+        let token = "token1"
+        let expectedSubscription = expectation(description: "should have been subscribed")
+        let subject = PassthroughSubject<String, Never>()
+
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, _, _ in
+            switch action {
+            case "start":
+                return Effect(token: token) { _ in
+                    subject
+                        .map { DispatchedAction($0) }
+                        .handleEvents(
+                            receiveSubscription: { _ in expectedSubscription.fulfill() },
+                            receiveCancel: { XCTFail("should not cancel anything") }
+                        )
+                }
+            case "stop":
+                return .toCancel("wrong token")
+            default:
+                XCTFail("Invalid action")
+                return .doNothing
+            }
+        }
+
+        // Nobody cares about this subject yet, this is gonna be ignored
+        subject.send("Foo1")
+        subject.send("Foo2")
+
+        // Start the effect
+        var io = sut.handle(action: "start", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        subject.send("some value 1")
+        subject.send("some value 2")
+        subject.send("some value 3")
+
+        io = sut.handle(action: "stop", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+
+        subject.send("some value 4")
+
+        wait(for: [expectedSubscription],
+             timeout: 1.0,
+             enforceOrder: true
+        )
+
+        subject.send("some value 5")
+
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "some value 4", "some value 5"], dispatchedActions)
+
+        XCTAssertEqual(sut.cancellables.count, 1)
+    }
+
     func testEffectMiddlewareWithSideEffectsComposed() {
         var dispatchedActions = [String]()
         var currentDependencyA = "dA0"

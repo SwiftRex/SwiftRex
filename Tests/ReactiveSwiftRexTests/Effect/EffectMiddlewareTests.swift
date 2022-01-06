@@ -510,6 +510,74 @@ class EffectMiddlewareTests: XCTestCase {
                              // subscription, causing interrupt in the subject2.
     }
 
+    func testEffectMiddlewareCancelWrongTokenDoesNothing() {
+        var dispatchedActions = [String]()
+        let token = "token1"
+        let expectedSubscription = expectation(description: "should have been subscribed")
+        let (signal, subject) = Signal<String, Never>.pipe()
+        var middlewareAlive = true
+
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, _, _ in
+            switch action {
+            case "start":
+                return Effect(token: token) { _ in
+                    signal
+                        .map { DispatchedAction($0) }
+                        .producer
+                        .on(
+                            started: { expectedSubscription.fulfill() },
+                            interrupted: {
+                                if middlewareAlive {
+                                    XCTFail("should not cancel anything")
+                                }
+                            }
+                        )
+                }
+            case "stop":
+                return .toCancel("wrong token")
+            default:
+                XCTFail("Invalid action")
+                return .doNothing
+            }
+        }
+
+        // Nobody cares about this subject yet, this is gonna be ignored
+        subject.send(value: "Foo1")
+        subject.send(value: "Foo2")
+
+        // Start the effect
+        var io = sut.handle(action: "start", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        subject.send(value: "some value 1")
+        subject.send(value: "some value 2")
+        subject.send(value: "some value 3")
+
+        io = sut.handle(action: "stop", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+
+        subject.send(value: "some value 4")
+
+        wait(for: [expectedSubscription],
+             timeout: 1.0,
+             enforceOrder: true
+        )
+
+        subject.send(value: "some value 5")
+
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "some value 4", "some value 5"], dispatchedActions)
+
+        XCTAssertEqual(sut.cancellables.count, 1)
+        middlewareAlive = false
+        _ = sut.cancellables // After this, middleware will be deallocated, then cancellables dict, then the second
+                             // subscription, causing interrupt in the subject2.
+    }
+
     func testEffectMiddlewareWithSideEffectsComposed() {
         var dispatchedActions = [String]()
         var currentDependencyA = "dA0"
