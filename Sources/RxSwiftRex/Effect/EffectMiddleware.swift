@@ -125,12 +125,35 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
     func runOptionalEffect(_ effect: Effect<Dependencies, OutputActionType>, output: AnyActionHandler<OutputActionType>) {
         guard effect.doesSomething else { return }
 
-        let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { [weak self] cancellingToken in
-            .init { [weak self] in
-                DispatchQueue.main.async {
-                    self?.cancellables.removeValue(forKey: cancellingToken.hashValue)
-                }
+        let cancelTokenPublisher: (AnyHashable) -> Void = { [weak self] cancellingToken in
+            guard let self = self else {
+                #if SWIFTREX_DEBUG
+                print("⚠️ Can't cancel Effect with token \(cancellingToken.hashValue) because Middleware was disposed.")
+                #endif
+                return
             }
+
+            if self.cancellables.removeValue(forKey: cancellingToken.hashValue) != nil {
+                #if SWIFTREX_DEBUG
+                print("Cancelled Effect with token \(cancellingToken.hashValue).")
+                #endif
+            } else {
+                #if SWIFTREX_DEBUG
+                print("⚠️ Can't cancel Effect with token \(cancellingToken.hashValue) because it was not found in the dictionary with keys " +
+                      "\(self.cancellables.keys.joined(separator: ", ")).")
+                #endif
+            }
+        }
+
+        let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { cancellingToken in
+            FireAndForget(
+                Observable<DispatchedAction<OutputActionType>>.empty()
+                    // RxSwift MainScheduler is eager, so if this is already running in the main queue, it happens immediately,
+                    // otherwise it schedules to the next Main Thread RunLoop. This is important because cancellation is requested
+                    // by the user (downstream) and must occur AS SOON AS POSSIBLE!
+                    .subscribe(on: MainScheduler())
+                    .do(onSubscribe: { cancelTokenPublisher(cancellingToken) })
+            )
         }
 
         guard let publisher = effect.run((dependencies: self.dependencies, toCancel: toCancel)) else { return }
@@ -139,11 +162,9 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
             let subscription = publisher
                 .do(
                     onCompleted: { [weak self] in
-                        DispatchQueue.main.async {
-                            self?.cancellables.removeValue(forKey: token.hashValue)
-                        }
-                    },
-                    onDispose: { [weak self] in
+                        // Completion, that means UPSTREAM finished sending actions, not cancellation from the downstream.
+                        // That means, there's no urgency in cleaning up the `cancellables` dictionary, we can afford to
+                        // do it in the next Main Thread RunLoop.
                         DispatchQueue.main.async {
                             self?.cancellables.removeValue(forKey: token.hashValue)
                         }

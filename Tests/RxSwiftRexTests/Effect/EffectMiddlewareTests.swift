@@ -284,6 +284,224 @@ class EffectMiddlewareTests: XCTestCase {
         wait(for: [waitOneRunLoop], timeout: 0.5)
     }
 
+    func testEffectMiddlewareWithNonCompletingPublisherEffectCancelledViaToCancel() {
+        var dispatchedActions = [String]()
+        let token = "token1"
+        let expectedSubscription = expectation(description: "should have been subscribed")
+        let expectedCancellation = expectation(description: "should have been cancelled")
+        let subject = PublishSubject<String>()
+
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, _, _ in
+            switch action {
+            case "start":
+                return Effect(token: token) { _ in
+                    subject
+                        .map { DispatchedAction($0) }
+                        .do(
+                            onSubscribed: { expectedSubscription.fulfill() },
+                            onDispose: { expectedCancellation.fulfill() }
+                        )
+                }
+            case "stop":
+                return .toCancel(token)
+            default:
+                XCTFail("Invalid action")
+                return .doNothing
+            }
+        }
+
+        // Nobody cares about this subject yet, this is gonna be ignored
+        subject.onNext("Foo1")
+        subject.onNext("Foo2")
+
+        // Start the effect
+        var io = sut.handle(action: "start", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        subject.onNext("some value 1")
+        subject.onNext("some value 2")
+        subject.onNext("some value 3")
+
+        io = sut.handle(action: "stop", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+
+        subject.onNext("some value 4")
+
+        wait(for: [expectedSubscription, expectedCancellation],
+             timeout: 1.0,
+             enforceOrder: true
+        )
+
+        subject.onNext("some value 5")
+
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3"], dispatchedActions)
+
+        XCTAssertEqual(sut.cancellables.count, 0)
+    }
+
+    func testEffectMiddlewareWithNonCompletingPublisherEffectCancelledViaEffectCompositionThatHasToCancel() {
+        var dispatchedActions = [String]()
+        let token = "token1"
+        let expectedSubscription = expectation(description: "should have been subscribed")
+        let expectedCancellation = expectation(description: "should have been cancelled")
+        let subject = PublishSubject<String>()
+
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, _, _ in
+            switch action {
+            case "start":
+                return Effect(token: token) { _ in
+                    subject
+                        .map { DispatchedAction($0) }
+                        .do(
+                            onSubscribe: { expectedSubscription.fulfill() },
+                            onDispose: { expectedCancellation.fulfill() }
+                        )
+                }
+            case "stop":
+                return Effect { context in
+                    Observable.merge(
+                        context.toCancel(token).asObservable(),
+                        .just(.init("ignoring"))
+                    )
+                }
+            case "ignoring":
+                return .doNothing
+            default:
+                XCTFail("Invalid action")
+                return .doNothing
+            }
+        }
+
+        // Nobody cares about this subject yet, this is gonna be ignored
+        subject.onNext("Foo1")
+        subject.onNext("Foo2")
+
+        // Start the effect
+        var io = sut.handle(action: "start", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        subject.onNext("some value 1")
+        subject.onNext("some value 2")
+        subject.onNext("some value 3")
+
+        io = sut.handle(action: "stop", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+
+        subject.onNext("some value 4")
+
+        wait(for: [expectedSubscription, expectedCancellation],
+             timeout: 1.0,
+             enforceOrder: true
+        )
+
+        subject.onNext("some value 5")
+
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "ignoring"], dispatchedActions)
+
+        XCTAssertEqual(sut.cancellables.count, 0)
+    }
+
+    func testEffectMiddlewareWithNonCompletingPublisherEffectCancelledViaSameTokenUsage() {
+        var dispatchedActions = [String]()
+        let token = "token1"
+        let expectedSubscription1 = expectation(description: "should have been subscribed to publisher 1")
+        let expectedCancellation1 = expectation(description: "should have been cancelled publisher 1")
+        let expectedSubscription2 = expectation(description: "should have been subscribed to publisher 2")
+        let subject1 = PublishSubject<String>()
+        let subject2 = PublishSubject<String>()
+
+        let sut = EffectMiddleware<String, String, String, Void>.onAction { action, _, _ in
+            switch action {
+            case "start":
+                return Effect(token: token) { _ in
+                    // First Publisher
+                    subject1
+                        .map { DispatchedAction($0) }
+                        .do(
+                            onSubscribe: { expectedSubscription1.fulfill() },
+                            onDispose: { expectedCancellation1.fulfill() }
+                        )
+                }
+            case "replace":
+                // Replaces First Publisher for the Second Publisher, using the same token
+                // First is cancelled, Second starts from there
+                return Effect(token: token) { _ in
+                    subject2
+                        .map { DispatchedAction($0) }
+                        .do(
+                            onSubscribe: { expectedSubscription2.fulfill() },
+                            onDispose: { XCTFail("Second publisher should not have been cancelled") }
+                        )
+                }
+            default:
+                XCTFail("Invalid action")
+                return .doNothing
+            }
+        }
+
+        // Nobody cares about this subject yet, this is gonna be ignored
+        subject1.onNext("Foo1.1")
+        subject1.onNext("Foo1.2")
+        subject2.onNext("Foo2.1")
+        subject2.onNext("Foo2.2")
+
+        // Start the effect
+        var io = sut.handle(action: "start", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        subject1.onNext("some value 1")
+        subject1.onNext("some value 2")
+        subject1.onNext("some value 3")
+        subject2.onNext("Foo2.3")
+        subject2.onNext("Foo2.4")
+        subject2.onNext("Foo2.5")
+
+        io = sut.handle(action: "replace", from: .here(), state: { "some_state" })
+        io.run(.init { dispatchedAction in
+            dispatchedActions.append(dispatchedAction.action)
+        })
+
+        subject1.onNext("Foo1.3")
+        subject1.onNext("Foo1.4")
+
+        wait(for: [expectedSubscription1, expectedSubscription2, expectedCancellation1],
+             timeout: 1.0,
+             enforceOrder: true
+        )
+
+        subject1.onNext("Foo1.5")
+        subject1.onNext("Foo1.6")
+        subject2.onNext("some value 4")
+        subject2.onNext("some value 5")
+
+        XCTAssertEqual(["some value 1", "some value 2", "some value 3", "some value 4", "some value 5"], dispatchedActions)
+
+        XCTAssertEqual(sut.cancellables.count, 1)
+
+        let waitOneRunLoop = expectation(description: "wait next RunLoop")
+
+        DispatchQueue.main.async {
+            // Even after next run loop, the second subject effect continues to be alive and kicking
+            // (ensure that cancellation of first effect doesn't mistakenly remove the second effect from the dictionary)
+            XCTAssertEqual(sut.cancellables.count, 1)
+            waitOneRunLoop.fulfill()
+        }
+        wait(for: [waitOneRunLoop], timeout: 0.01)
+    }
+
     func testEffectMiddlewareWithSideEffectsComposed() {
         var dispatchedActions = [String]()
         var currentDependencyA = "dA0"
