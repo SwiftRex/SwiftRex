@@ -126,23 +126,16 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
         guard effect.doesSomething else { return }
 
         let cancelTokenPublisher: (AnyHashable) -> Void = { [weak self] cancellingToken in
-            guard let self = self else {
-                #if SWIFTREX_DEBUG
-                print("⚠️ Can't cancel Effect with token \(cancellingToken.hashValue) because Middleware was disposed.")
-                #endif
-                return
-            }
-
-            if self.cancellables.removeValue(forKey: cancellingToken.hashValue) != nil {
-                #if SWIFTREX_DEBUG
-                print("Cancelled Effect with token \(cancellingToken.hashValue).")
-                #endif
-            } else {
-                #if SWIFTREX_DEBUG
+            guard let self = self, self.cancellables.removeValue(forKey: cancellingToken.hashValue) != nil else {
+                #if DEBUG && SWIFTREX_DEBUG
                 print("⚠️ Can't cancel Effect with token \(cancellingToken.hashValue) because it was not found in the dictionary with keys " +
                       "\(self.cancellables.keys.joined(separator: ", ")).")
                 #endif
+                return
             }
+            #if DEBUG && SWIFTREX_DEBUG
+            print("Cancelled Effect with token \(cancellingToken.hashValue).")
+            #endif
         }
 
         let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { cancellingToken in
