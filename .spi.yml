@@ -4,7 +4,7 @@ builder:
   - platform: watchos
     scheme: NoTests
   - platform: ios
-    scheme: CombineRex
+    scheme: NoTests
   - platform: macos
     scheme: SwiftRex-Package
   - platform: tvos
