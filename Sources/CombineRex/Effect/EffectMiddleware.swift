@@ -145,13 +145,13 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
 
         let toCancel: (AnyHashable) -> FireAndForget<DispatchedAction<OutputActionType>> = { cancellingToken in
             FireAndForget(
-                Empty<DispatchedAction<OutputActionType>, Never>()
-                    // Combine `.receive(on:)` is eager, so if this is already running in the main queue, it happens immediately,
-                    // otherwise it schedules to the next Main Thread RunLoop. This is important because cancellation is requested
-                    // by the user (downstream) and must occur AS SOON AS POSSIBLE!
-                    .receive(on: DispatchQueue.main)
-                    .handleEvents(receiveSubscription: { _ in cancelTokenPublisher(cancellingToken) })
-            )
+                // ASAPScheduler is eager, so if this is already running in the main queue, it happens immediately,
+                // otherwise it schedules to the next Main Thread RunLoop. This is important because cancellation is requested
+                // by the user (downstream) and must occur AS SOON AS POSSIBLE!
+                scheduler: ASAPScheduler.default
+            ) {
+                cancelTokenPublisher(cancellingToken)
+            }
         }
 
         guard let publisher = effect.run((dependencies: self.dependencies, toCancel: toCancel)) else { return }
@@ -161,9 +161,10 @@ public final class EffectMiddleware<InputActionType, OutputActionType, StateType
                 .handleEvents(
                     receiveCompletion: { [weak self] _ in
                         // Completion, that means UPSTREAM finished sending actions, not cancellation from the downstream.
-                        // That means, there's no urgency in cleaning up the `cancellables` dictionary, we can afford to
-                        // do it in the next Main Thread RunLoop.
-                        DispatchQueue.main.async {
+                        // Let's purge the key and value from `cancellables` dictionary as soon as possible, although we
+                        // coult afford to do it in the next Main Thread RunLoop as the publisher won't do anything anymore.
+                        // However, cleaning up early can be useful in tests to count the cancellables tasks.
+                        DispatchQueue.asap {
                             self?.cancellables.removeValue(forKey: token.hashValue)
                         }
                     }
@@ -219,5 +220,4 @@ extension EffectMiddleware: Monoid where Dependencies == Void {
         Self.onAction { _, _, _ in .doNothing }
     }
 }
-
 #endif

@@ -1,55 +1,35 @@
+import Combine
 import Foundation
 @testable import SwiftRex
 import XCTest
 
-class DispatchQueueTests: XCTestCase {
-    func testDispatchAsyncOnMainQueueAlready() {
+class ASAPSchedulerTests: XCTestCase {
+    func testASAPSchedulerOnMainQueueAlready() {
+        let scheduler = ASAPScheduler.default
+
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
 
-        XCTAssert(DispatchQueue.isMainQueue)
-        XCTAssert(Thread.isMainThread)
-        DispatchQueue.main.async {
+        scheduler.schedule {
             XCTAssert(DispatchQueue.isMainQueue)
             XCTAssert(Thread.isMainThread)
+            XCTAssertEqual(scheduler.minimumTolerance, DispatchQueue.main.minimumTolerance)
             call1.fulfill()
         }
         XCTAssert(DispatchQueue.isMainQueue)
         XCTAssert(Thread.isMainThread)
         call2.fulfill()
 
-        wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
+        wait(for: [call1, call2], timeout: 0.1, enforceOrder: true)
     }
 
-    func testDispatchAsyncOnMainQueueAlreadyDispatched() {
+    func testASAPSchedulerWithOptionsOnMainQueueAlready() {
+        let scheduler = ASAPScheduler.default
+
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
 
-        DispatchQueue.main.async {
-            XCTAssert(DispatchQueue.isMainQueue)
-            XCTAssert(Thread.isMainThread)
-            DispatchQueue.main.async {
-                XCTAssert(DispatchQueue.isMainQueue)
-                XCTAssert(Thread.isMainThread)
-                call1.fulfill()
-            }
-            XCTAssert(DispatchQueue.isMainQueue)
-            XCTAssert(Thread.isMainThread)
-            call2.fulfill()
-        }
-
-        wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
-    }
-
-    func testDispatchAsapOnMainQueueAlready() {
-        DispatchQueue.setMainQueueID()
-
-        XCTAssert(DispatchQueue.isMainQueue)
-        XCTAssert(Thread.isMainThread)
-        let call1 = expectation(description: "1")
-        let call2 = expectation(description: "2")
-
-        DispatchQueue.asap {
+        scheduler.schedule(options: .init(qos: .background, flags: .detached, group: nil)) {
             XCTAssert(DispatchQueue.isMainQueue)
             XCTAssert(Thread.isMainThread)
             call1.fulfill()
@@ -61,37 +41,17 @@ class DispatchQueueTests: XCTestCase {
         wait(for: [call1, call2], timeout: 0.1, enforceOrder: true)
     }
 
-    func testDispatchAsapWithOptionsOnMainQueueAlready() {
-        DispatchQueue.setMainQueueID()
+    func testASAPSchedulerOnMainQueueAlreadyDispatched() {
+        let scheduler = ASAPScheduler.default
 
-        XCTAssert(DispatchQueue.isMainQueue)
-        XCTAssert(Thread.isMainThread)
-        let call1 = expectation(description: "1")
-        let call2 = expectation(description: "2")
-
-        DispatchQueue.asap(options: .init(qos: .background, flags: .detached, group: nil)) {
-            XCTAssert(DispatchQueue.isMainQueue)
-            XCTAssert(Thread.isMainThread)
-            call1.fulfill()
-        }
-        XCTAssert(DispatchQueue.isMainQueue)
-        XCTAssert(Thread.isMainThread)
-        call2.fulfill()
-
-        wait(for: [call1, call2], timeout: 0.1, enforceOrder: true)
-    }
-
-    func testDispatchAsapOnMainQueueAlreadyDispatched() {
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
 
         DispatchQueue.main.async {
-            DispatchQueue.setMainQueueID()
-
             XCTAssert(DispatchQueue.isMainQueue)
             XCTAssert(Thread.isMainThread)
 
-            DispatchQueue.asap {
+            scheduler.schedule {
                 XCTAssert(DispatchQueue.isMainQueue)
                 XCTAssert(Thread.isMainThread)
                 call1.fulfill()
@@ -104,17 +64,17 @@ class DispatchQueueTests: XCTestCase {
         wait(for: [call1, call2], timeout: 0.1, enforceOrder: true)
     }
 
-    func testDispatchAsapWithOptionsOnMainQueueAlreadyDispatched() {
+    func testASAPSchedulerWithOptionsOnMainQueueAlreadyDispatched() {
+        let scheduler = ASAPScheduler.default
+
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
 
         DispatchQueue.main.async {
-            DispatchQueue.setMainQueueID()
-
             XCTAssert(DispatchQueue.isMainQueue)
             XCTAssert(Thread.isMainThread)
 
-            DispatchQueue.asap(options: .init(qos: .background, flags: .detached, group: nil)) {
+            scheduler.schedule(options: .init(qos: .background, flags: .detached, group: nil)) {
                 XCTAssert(DispatchQueue.isMainQueue)
                 XCTAssert(Thread.isMainThread)
                 call1.fulfill()
@@ -127,18 +87,18 @@ class DispatchQueueTests: XCTestCase {
         wait(for: [call1, call2], timeout: 0.1, enforceOrder: true)
     }
 
-    func testDispatchAsapFromGlobalQueue() {
+    func testASAPSchedulerFromGlobalQueue() {
+        let scheduler = ASAPScheduler.default
+
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
 
         DispatchQueue.main.async {
-            DispatchQueue.setMainQueueID()
-
             DispatchQueue.global().async {
                 XCTAssertFalse(DispatchQueue.isMainQueue)
                 XCTAssertFalse(Thread.isMainThread)
 
-                DispatchQueue.asap {
+                scheduler.schedule {
                     XCTAssert(DispatchQueue.isMainQueue)
                     XCTAssert(Thread.isMainThread)
                     call1.fulfill()
@@ -152,18 +112,18 @@ class DispatchQueueTests: XCTestCase {
         wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
     }
 
-    func testDispatchAsapWithOptionsFromGlobalQueue() {
+    func testASAPSchedulerWithOptionsFromGlobalQueue() {
+        let scheduler = ASAPScheduler.default
+
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
 
         DispatchQueue.main.async {
-            DispatchQueue.setMainQueueID()
-
             DispatchQueue.global().async {
                 XCTAssertFalse(DispatchQueue.isMainQueue)
                 XCTAssertFalse(Thread.isMainThread)
 
-                DispatchQueue.asap(options: .init(qos: .background, flags: .detached, group: nil)) {
+                scheduler.schedule(options: .init(qos: .background, flags: .detached, group: nil)) {
                     XCTAssert(DispatchQueue.isMainQueue)
                     XCTAssert(Thread.isMainThread)
                     call1.fulfill()
@@ -175,5 +135,62 @@ class DispatchQueueTests: XCTestCase {
         }
 
         wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
+    }
+
+    func testASAPSchedulerAfterUsesMainQueue() {
+        let scheduler = ASAPScheduler.default
+
+        let call1 = expectation(description: "1")
+        let call2 = expectation(description: "2")
+
+        DispatchQueue.main.async {
+            DispatchQueue.global().async {
+                XCTAssertFalse(DispatchQueue.isMainQueue)
+                XCTAssertFalse(Thread.isMainThread)
+
+                scheduler.schedule(after: scheduler.now.advanced(by: .milliseconds(50)), tolerance: .zero, options: .init()) {
+                    XCTAssert(DispatchQueue.isMainQueue)
+                    XCTAssert(Thread.isMainThread)
+                    call1.fulfill()
+                }
+                XCTAssertFalse(DispatchQueue.isMainQueue)
+                XCTAssertFalse(Thread.isMainThread)
+                call2.fulfill()
+            }
+        }
+
+        wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
+    }
+
+    func testASAPSchedulerRecurringUsesMainQueue() {
+        let scheduler = ASAPScheduler.default
+
+        let call1 = expectation(description: "1")
+        call1.expectedFulfillmentCount = 2
+        call1.assertForOverFulfill = true
+        let call2 = expectation(description: "2")
+        var timerHandle: Cancellable?
+
+        DispatchQueue.main.async {
+            DispatchQueue.global().async {
+                XCTAssertFalse(DispatchQueue.isMainQueue)
+                XCTAssertFalse(Thread.isMainThread)
+
+                timerHandle = scheduler.schedule(after: scheduler.now.advanced(by: .milliseconds(5)),
+                                                 interval: .milliseconds(60),
+                                                 tolerance: .zero,
+                                                 options: .init()) {
+                    XCTAssert(DispatchQueue.isMainQueue)
+                    XCTAssert(Thread.isMainThread)
+                    call1.fulfill()
+                }
+                XCTAssertFalse(DispatchQueue.isMainQueue)
+                XCTAssertFalse(Thread.isMainThread)
+                call2.fulfill()
+            }
+        }
+
+        wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
+        timerHandle?.cancel()
     }
 }
