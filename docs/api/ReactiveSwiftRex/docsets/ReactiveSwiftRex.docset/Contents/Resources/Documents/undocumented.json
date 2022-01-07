@@ -429,14 +429,14 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware.swift",
-      "line": 176,
+      "line": 182,
       "symbol": "EffectMiddleware.onAction(do:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/ReactiveSwiftRex/Effect/EffectMiddleware.swift",
-      "line": 186,
+      "line": 192,
       "symbol": "EffectMiddleware.onAction(do:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"

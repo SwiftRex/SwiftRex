@@ -239,6 +239,13 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/ASAPScheduler.swift",
+      "line": 13,
+      "symbol": "ASAPScheduler.default",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/CollectionElementAction.swift",
       "line": 3,
       "symbol": "ElementIDAction",
@@ -348,6 +355,27 @@
       "line": 34,
       "symbol": "ElementIndexAction",
       "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/DispatchQueue.swift",
+      "line": 7,
+      "symbol": "DispatchQueue.isMainQueue",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/DispatchQueue.swift",
+      "line": 19,
+      "symbol": "DispatchQueue.asap(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/SwiftRex/Foundation/DispatchQueue.swift",
+      "line": 30,
+      "symbol": "DispatchQueue.asap(options:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {

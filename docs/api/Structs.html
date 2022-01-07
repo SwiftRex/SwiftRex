@@ -17,7 +17,7 @@
     <a title="Structures  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">SwiftRex 0.8.10 Docs</a> (76% documented)</p>
+        <p><a href="index.html">SwiftRex 0.8.11 Docs</a> (75% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="search.json">
@@ -90,6 +90,9 @@
               <li class="nav-group-task">
                 <a href="Extensions/Collection.html">Collection</a>
               </li>
+              <li class="nav-group-task">
+                <a href="Extensions/DispatchQueue.html">DispatchQueue</a>
+              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -147,6 +150,9 @@
           <li class="nav-group-name">
             <a href="Structs.html">Structures</a>
             <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/ASAPScheduler.html">ASAPScheduler</a>
+              </li>
               <li class="nav-group-task">
                 <a href="Structs/ActionSource.html">ActionSource</a>
               </li>
@@ -581,6 +587,41 @@ last. This composition can be achieved by using the operator <code>&lt;&gt;</cod
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:8SwiftRex13ASAPSchedulerV"></a>
+                    <a name="//apple_ref/swift/Struct/ASAPScheduler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex13ASAPSchedulerV">ASAPScheduler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A very eager scheduler that will perform tasks in the Main Queue, immediately if possible.</p>
+
+<p>If current queue is MainQueue, it will behave like <code>ImmediateScheduler</code> (<a href="https://developer.apple.com/documentation/combine/immediatescheduler">https://developer.apple.com/documentation/combine/immediatescheduler</a>)
+and perform the task immediately in the current RunLoop. If the queue is different, then it will schedule to the Main Dispatch Queue and perform
+as soon as its new RunLoop starts (depending on the DispatchQueue.SchedulerOptions provided).
+Use <code><a href="Structs/ASAPScheduler.html#/s:8SwiftRex13ASAPSchedulerV7defaultACvpZ">ASAPScheduler.default</a></code> in order to use this Scheduler.</p>
+
+                        <a href="Structs/ASAPScheduler.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="n">macOS</span> <span class="mf">10.15</span><span class="p">,</span> <span class="n">iOS</span> <span class="mf">13.0</span><span class="p">,</span> <span class="n">tvOS</span> <span class="mf">13.0</span><span class="p">,</span> <span class="n">watchOS</span> <span class="mf">6.0</span><span class="p">,</span> <span class="o">*</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ASAPScheduler</span> <span class="p">:</span> <span class="kt">Scheduler</span></code></pre>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">ASAPScheduler</span><span class="p">:</span> <span class="kt">Scheduler</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:8SwiftRex15ElementIDActionV"></a>
                     <a name="//apple_ref/swift/Struct/ElementIDAction" class="dashAnchor"></a>
                     <a class="token" href="#/s:8SwiftRex15ElementIDActionV">ElementIDAction</a>
@@ -864,7 +905,7 @@ in the chain or to the reducers. It can be useful for Unit Tests or for some com
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2022 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2022-01-06)</p>
+          <p>&copy; 2022 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2022-01-07)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

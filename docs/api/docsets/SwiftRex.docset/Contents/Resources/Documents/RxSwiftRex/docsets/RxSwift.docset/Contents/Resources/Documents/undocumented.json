@@ -10,6 +10,13 @@
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Disposables/DisposeBag.swift",
       "line": 130,
+      "symbol": "DisposeBag.DisposableBuilder",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/Disposables/DisposeBag.swift",
+      "line": 131,
       "symbol": "DisposeBag.DisposableBuilder.buildBlock(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
@@ -23,14 +30,14 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/ObservableType+Extensions.swift",
-      "line": 88,
+      "line": 133,
       "symbol": "Hooks.DefaultErrorHandler",
       "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/.build/checkouts/RxSwift/RxSwift/ObservableType+Extensions.swift",
-      "line": 89,
+      "line": 134,
       "symbol": "Hooks.CustomCaptureSubscriptionCallstack",
       "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
