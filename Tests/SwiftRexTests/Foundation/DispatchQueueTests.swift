@@ -61,6 +61,7 @@ class DispatchQueueTests: XCTestCase {
         wait(for: [call1, call2], timeout: 0.1, enforceOrder: true)
     }
 
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     func testDispatchAsapWithOptionsOnMainQueueAlready() {
         DispatchQueue.setMainQueueID()
 
@@ -104,6 +105,7 @@ class DispatchQueueTests: XCTestCase {
         wait(for: [call1, call2], timeout: 0.1, enforceOrder: true)
     }
 
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     func testDispatchAsapWithOptionsOnMainQueueAlreadyDispatched() {
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
@@ -152,6 +154,7 @@ class DispatchQueueTests: XCTestCase {
         wait(for: [call2, call1], timeout: 0.1, enforceOrder: true)
     }
 
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     func testDispatchAsapWithOptionsFromGlobalQueue() {
         let call1 = expectation(description: "1")
         let call2 = expectation(description: "2")
