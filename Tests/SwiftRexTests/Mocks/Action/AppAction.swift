@@ -48,7 +48,7 @@ enum AppAction: Equatable {
         if case let .bar(bar) = self { return bar }
         return nil
     }
-    
+
     var scoped: ElementIDAction<Int, Bar>? {
         get {
             if case let .scoped(action) = self { return action }

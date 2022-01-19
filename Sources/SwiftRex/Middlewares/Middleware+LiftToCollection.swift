@@ -11,9 +11,9 @@ extension MiddlewareProtocol where StateType: Identifiable {
                 guard let itemAction = inputActionMap(inputAction) else { return .pure() }
                 let getStateItem = { stateMap(getState()).first(where: { $0.id == itemAction.id }) }
                 guard let itemState = getStateItem() else { return .pure() }
-                
+
                 let getState = { getStateItem() ?? itemState }
-                
+
                 return partMiddleware.handle(action: itemAction.action, from: actionSource, state: getState)
                     .map { (outputAction: Self.OutputActionType) -> GlobalOutputActionType in
                         outputActionMap(.init(id: itemAction.id, action: outputAction))
@@ -29,14 +29,13 @@ extension MiddlewareProtocol where StateType: Identifiable, InputActionType == O
         action actionMap: WritableKeyPath<GlobalActionType, ElementIDAction<StateType.ID, InputActionType>?>,
         stateCollection: KeyPath<GlobalStateType, CollectionState>
     ) -> LiftToCollectionMiddleware<GlobalActionType, GlobalActionType, GlobalStateType, CollectionState, Self> {
-
         .init(middleware: self) { partMiddleware, inputAction, actionSource, getState in
             guard let itemAction = inputAction[keyPath: actionMap] else { return .pure() }
             let getStateItem = { getState()[keyPath: stateCollection].first(where: { $0.id == itemAction.id }) }
             guard let itemState = getStateItem() else { return .pure() }
-            
+
             let getState = { getStateItem() ?? itemState }
-            
+
             return partMiddleware.handle(action: itemAction.action,
                                          from: actionSource,
                                          state: getState
