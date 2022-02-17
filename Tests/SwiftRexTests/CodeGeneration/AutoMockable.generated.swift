@@ -1,6 +1,5 @@
-// Generated using Sourcery 0.18.0 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 1.6.1 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
-
 // swiftlint:disable all
 import Foundation
 @testable import SwiftRex
@@ -37,6 +36,39 @@ class ActionHandlerMock<ActionType>: ActionHandler {
         dispatchCallsCount += 1
         dispatchReceivedDispatchedAction = dispatchedAction
         dispatchClosure?(dispatchedAction)
+    }
+
+}
+class MiddlewareMock<InputActionType, OutputActionType, StateType>: Middleware {
+
+    //MARK: - handle
+
+    var handleActionFromAfterReducerCallsCount = 0
+    var handleActionFromAfterReducerCalled: Bool {
+        return handleActionFromAfterReducerCallsCount > 0
+    }
+    var handleActionFromAfterReducerReceivedArguments: (action: InputActionType, dispatcher: ActionSource, afterReducer: AfterReducer)?
+    var handleActionFromAfterReducerClosure: ((InputActionType, ActionSource, inout AfterReducer) -> Void)?
+
+    func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        handleActionFromAfterReducerCallsCount += 1
+        handleActionFromAfterReducerReceivedArguments = (action: action, dispatcher: dispatcher, afterReducer: afterReducer)
+        handleActionFromAfterReducerClosure?(action, dispatcher, &afterReducer)
+    }
+
+    //MARK: - receiveContext
+
+    var receiveContextGetStateOutputCallsCount = 0
+    var receiveContextGetStateOutputCalled: Bool {
+        return receiveContextGetStateOutputCallsCount > 0
+    }
+    var receiveContextGetStateOutputReceivedArguments: (getState: GetState<StateType>, output: AnyActionHandler<OutputActionType>)?
+    var receiveContextGetStateOutputClosure: ((@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void)?
+
+    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
+        receiveContextGetStateOutputCallsCount += 1
+        receiveContextGetStateOutputReceivedArguments = (getState: getState, output: output)
+        receiveContextGetStateOutputClosure?(getState, output)
     }
 
 }
