@@ -9,6 +9,7 @@ let createNameReducer: () -> Reducer<AppAction, TestState> = {
         case .bar(.charlie): state.name = "charlie"
         case .bar(.delta): state.name = "delta"
         case .bar(.echo): state.name = "echo"
+        case .scoped: state.name = "scoped"
         }
     }
 }

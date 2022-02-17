@@ -67,6 +67,7 @@ class ReduxStoreBaseTests: XCTestCase {
             case .bar(.charlie): actionName = "charlie"
             case .bar(.delta): actionName = "delta"
             case .bar(.echo): actionName = "echo"
+            case .scoped: actionName = "scoped"
             }
             shouldCallReducer.fulfill()
             state.name += "_" + actionName

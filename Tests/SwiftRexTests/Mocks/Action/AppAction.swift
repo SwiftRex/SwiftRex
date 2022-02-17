@@ -4,6 +4,7 @@ import SwiftRex
 enum AppAction: Equatable {
     case foo
     case bar(Bar)
+    case scoped(ElementIDAction<Int, Bar>)
 
     enum Bar: Equatable {
         case alpha
@@ -46,6 +47,17 @@ enum AppAction: Equatable {
     var bar: Bar? {
         if case let .bar(bar) = self { return bar }
         return nil
+    }
+
+    var scoped: ElementIDAction<Int, Bar>? {
+        get {
+            if case let .scoped(action) = self { return action }
+            return nil
+        }
+        set {
+            guard case .scoped = self, let newValue = newValue else { return }
+            self = .scoped(newValue)
+        }
     }
 }
 
