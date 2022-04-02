@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>liftToCollection(action:stateCollection:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">LiftMiddleware</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">MiddlewareProtocol Implementations</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">liftToCollection(action:stateCollection:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">liftToCollection(action:stateCollection:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Inherited from <code>MiddlewareProtocol.liftToCollection(action:stateCollection:)</code>.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>liftToCollection</span>&lt;<span class='token-genericParameter'>GlobalActionType</span>, <span class='token-genericParameter'>GlobalStateType</span>, <span class='token-genericParameter'>CollectionState</span>&gt;(<span class='token-externalParam'>action</span> <span class='token-internalParam'>actionMap</span>: WritableKeyPath&lt;GlobalActionType, <a class='type-identifier-link' href='../../../documentation/swiftrex/elementidaction/index.html'><span>ElementIDAction</span></a>&lt;Self.StateType.ID, Self.InputActionType&gt;?&gt;, <span class='token-externalParam'>stateCollection</span>: KeyPath&lt;GlobalStateType, CollectionState&gt;) -&gt; <a class='type-identifier-link' href='../../../documentation/swiftrex/lifttocollectionmiddleware/index.html'><span>LiftToCollectionMiddleware</span></a>&lt;GlobalActionType, GlobalActionType, GlobalStateType, CollectionState, Self&gt; <span class='token-keyword'>where</span> CollectionState : MutableCollection, Self.StateType == CollectionState.Element</code></pre>
+  </div>
+</section>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

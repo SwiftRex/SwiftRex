@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>lift(inputAction:state:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">LiftToCollectionMiddleware</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">MiddlewareProtocol Implementations</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">lift(inputAction:state:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">lift(inputAction:state:)</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>lift</span>&lt;<span class='token-genericParameter'>GlobalInputActionType</span>, <span class='token-genericParameter'>GlobalOutputActionType</span>, <span class='token-genericParameter'>GlobalStateType</span>&gt;(<span class='token-externalParam'>inputAction</span> <span class='token-internalParam'>inputActionMap</span>: <span class='token-keyword'>@escaping</span> (GlobalInputActionType) -&gt; Self.InputActionType?, <span class='token-externalParam'>state</span> <span class='token-internalParam'>stateMap</span>: <span class='token-keyword'>@escaping</span> (GlobalStateType) -&gt; Self.StateType) -&gt; <a class='type-identifier-link' href='../../../documentation/swiftrex/liftmiddleware/index.html'><span>LiftMiddleware</span></a>&lt;GlobalInputActionType, GlobalOutputActionType, GlobalStateType, Self&gt; <span class='token-keyword'>where</span> GlobalOutputActionType == Self.OutputActionType</code></pre>
+  </div>
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>a <code>LiftMiddleware</code> that knows how to translate <code>Whole</code> to <code>Part</code> and vice-versa. To the external world this resulting middleware will “speak” global types to be plugged into the main Store. Internally it will “speak” the types of the wrapped middleware.</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>inputActionMap</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a function that will be executed every time a global action arrives at the global store. Then you can optionally return an action of type Middleware’s local input action type so the middleware will handle this action, or you can return nil in case you want this middleware to ignore this global action. This is useful because not all middlewares will care about all global actions. Usually this is a KeyPath in an enum, such as <code>\GlobalAction.someSubAction?.middlewareLocalAction</code> when you use code generators to create enum properties.</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>stateMap</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>a function that will translate the global state of your store into the local state of this middleware. Usually this is a KeyPath in the global state struct, such as <code>\GlobalState.subState.middlewareLocalState</code>.</p></div>
+      </dd>
+    
+  </dl>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">struct Location {</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">   let latitude: Double</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">   let longitude: Double</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
+</code></pre>
+  </div>
+</div><p>Let’s call it <code>Part</code>. Both, this state and its middleware will be part of an external framework, used by dozens of apps. Internally probably the <code>Middleware</code> will use <code>CoreLocation</code> to fetch the GPS changes, and triggers some actions. On the main app we have a global state, that we now call <code>Whole</code>.</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">struct MyGlobalState {</span></span>
+<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">   let title: String?</span></span>
+<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">   let listOfItems: [Item]</span></span>
+<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">   let currentLocation: Location</span></span>
+<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
+</code></pre>
+  </div>
+</div><p>As expected, <code>Part</code> is a property of <code>Whole</code>, maybe not directly, it could be several nodes deep in the tree.</p><p>Because our <code>Store</code> understands <code>Whole</code> and our <code>GPSMiddleware</code> understands <code>Part</code>, we must <code>lift(_:)</code> the middleware to the <code>Whole</code> level, by using:</p><div data-syntax="" class="code-listing">
+  <div class="container-general">
+    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let globalStateMiddleware = gpsMiddleware.lift(state: \MyGlobalState.currentLocation)</span></span>
+</code></pre>
+  </div>
+</div><p>Now this middleware can be used within our <code>Store</code> or even composed with others. It also can be used in other apps as long as we have a way to lift it to the world of <code>Whole</code>.</p></div>
+  </div>
+</div>
+  
+  
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

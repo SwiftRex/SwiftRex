@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>LiftToCollectionMiddleware| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">LiftToCollectionMiddleware</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Structure</span>
+  <h1 class="title">LiftToCollectionMiddleware</h1>
+</div>
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      This is a container that lifts a sub-state middleware to a global state middleware.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>LiftToCollectionMiddleware</span>&lt;<span class='token-genericParameter'>GlobalInputActionType</span>, <span class='token-genericParameter'>GlobalOutputActionType</span>, <span class='token-genericParameter'>GlobalStateType</span>, <span class='token-genericParameter'>CollectionState</span>, <span class='token-genericParameter'>PartMiddleware</span>&gt; <span class='token-keyword'>where</span> CollectionState : MutableCollection, PartMiddleware : <a class='type-identifier-link' href='../../../documentation/swiftrex/middlewareprotocol/index.html'><span>MiddlewareProtocol</span></a>, CollectionState.Element : Identifiable, CollectionState.Element == PartMiddleware.StateType</code></pre>
+  </div>
+</section><div class='content'><h2 id='overview'>Overview</h2><p>Internally you find the middleware responsible for handling events and actions for a sub-state (<code>Part</code>), while this outer class will be able to compose with global state (<code>Whole</code>) in your <code>Store</code>.</p><p>You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call <code>Middleware.liftToCollection(_:)</code>, passing as parameter the keyPath from whole to part.</p></div>
+  </div>
+</div>
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/handle(action:from:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>handle</span><span class='decorator'>(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>from</span><span class='decorator'>: </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>GetState</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>IO</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch additional actions. This is also a good place for analytics, tracking, logging and telemetry. Because the lift middleware is derived from a sub-state/sub-action middleware, every global action received will be mapped into a sub-action, in a operation that can return nil (<code>Optional&lt;SubAction&gt;</code>). In case it’s nil, it means that the sub-action middleware doesn’t work with this type of action, so the lifted middleware will simply call the next middleware in the chain. On the other hand, if this operation returns a non-nil local action, this local action will be handled by the child middleware, which is also responsible for calling <code>next()</code> in this case. When the <code>State</code> type is also lifted, the context property will translate the global state into local state as expected every time you call <code>context().getState()</code>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/receivecontext(getstate:output:).html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>receiveContext</span><span class='decorator'>(</span><span class='decorator'>getState</span><span class='decorator'>: () -&gt; </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>output</span><span class='decorator'>: </span><span class='decorator'>AnyActionHandler</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>&gt;)</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Middleware setup. This function is deprecated and should never be used.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Default Implementations</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/middlewareprotocol-implementations.html" class="link has-adjacent-elements">
+                  <span class="topic-icon-wrapper">&nbsp;</span>
+                  MiddlewareProtocol Implementations
+                </a>
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

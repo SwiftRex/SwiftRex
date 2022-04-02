@@ -67,80 +67,7 @@
   <div class='declaration-group'>
     <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>Reducer</span>&lt;<span class='token-genericParameter'>ActionType</span>, <span class='token-genericParameter'>StateType</span>&gt;</code></pre>
   </div>
-</section><div class='content'><h2 id='overview'>Overview</h2><p>The <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> pipeline can do two things: dispatch outgoing actions and handling incoming actions. But what they can NOT do is changing the app state. Middlewares have read-only access to the up-to-date state of our apps, but when mutations are required we use the <a href='../../../documentation/SwiftRex/MutableReduceFunction.html'><code>MutableReduceFunction</code></a> function:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">(ActionType, inout StateType) -&gt; Void</span></span>
-</code></pre>
-  </div>
-</div><p>Which has the same semantics (but better performance) than old <a href='../../../documentation/SwiftRex/ReduceFunction.html'><code>ReduceFunction</code></a>:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">(ActionType, StateType) -&gt; StateType</span></span>
-</code></pre>
-  </div>
-</div><p>Given an action and the current state (as a mutable inout), it calculates the new state and changes it:</p><div data-syntax="" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">initial state is 42</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">action: increment</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">reducer: increment 42 =&gt; new state 43</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">current state is 43</span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">action: decrement</span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">reducer: decrement 43 =&gt; new state 42</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">current state is 42</span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">action: half</span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">reducer: half 42 =&gt; new state 21</span></span>
-</code></pre>
-  </div>
-</div><p>The function is reducing all the actions in a cached state, and that happens incrementally for each new incoming action.</p><p>It’s important to understand that reducer is a synchronous operations that calculates a new state without any kind of side-effect (including non-obvious ones as creating <code>Date()</code>, using DispatchQueue or <code>Locale.current</code>), so never add properties to the <a href='../../../documentation/SwiftRex/Reducer/index.html'><code>Reducer</code></a> structs or call any external function. If you are tempted to do that, please create a middleware and dispatch actions with Dates or Locales from it.</p><p>Reducers are also responsible for keeping the consistency of a state, so it’s always good to do a final sanity check before changing the state, like for example check other dependant properties that must be changed together.</p><p>Once the reducer function executes, the store will update its single source-of-truth with the new calculated state, and propagate it to all its subscribers, that will react to the new state and update Views, for example.</p><p>This function is wrapped in a struct to overcome some Swift limitations, for example, allowing us to compose multiple reducers into one (monoid operation, where two or more reducers become a single one) or lifting reducers from local types to global types.</p><p>The ability to lift reducers allow us to write fine-grained “sub-reducer” that will handle only a subset of the state and/or action, place it in different frameworks and modules, and later plugged into a bigger state and action handler by providing a way to map state and actions between the global and local ones. For more information about that, please check <a href='../../../documentation/SwiftRex/Lifting.html'>Lifting</a>.</p><p>A possible implementation of a reducer would be:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let volumeReducer = Reducer&lt;VolumeAction, VolumeState&gt;.reduce { action, currentState in</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    switch action {</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    case .louder:</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">        currentState = VolumeState(</span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">            isMute: false, // When increasing the volume, always unmute it.</span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">            volume: min(100, currentState.volume + 5)</span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">        )</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">    case .quieter:</span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">        currentState = VolumeState(</span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">            isMute: currentState.isMute,</span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">            volume: max(0, currentState.volume - 5)</span></span>
-<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">        )</span></span>
-<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">    case .toggleMute:</span></span>
-<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">        currentState = VolumeState(</span></span>
-<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">            isMute: !currentState.isMute,</span></span>
-<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">            volume: currentState.volume</span></span>
-<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">        )</span></span>
-<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-</code></pre>
-  </div>
-</div><p>Please notice from the example above the following good practices:</p><ul><li><p><p>No <code>DispatchQueue</code>, threading, operation queue, promises, reactive code in there.</p></p></li><li><p><p>All you need to implement this function is provided by the arguments <code>action</code> and <code>currentState</code>, don’t use any other variable coming from global scope, not even for reading purposes. If you need something else, it should either be in the state or come in the action payload.</p></p></li><li><p><p>Do not start side-effects, requests, I/O, database calls.</p></p></li><li><p><p>Avoid <code>default</code> when writing <code>switch</code>/<code>case</code> statements. That way the compiler will help you more.</p></p></li><li><p><p>Make the action and the state generic parameters as much specialised as you can. If volume state is part of a bigger state, you should not be tempted to pass the whole big state into this reducer. Make it short, brief and specialised, this also helps preventing <code>default</code> case or having to re-assign properties that are never mutated by this reducer.</p></p></li></ul><div data-syntax="" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                                    ┌────────┐                                     </span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">                                                       IO closure                                                ┌─▶│ View 1 │                                     </span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">                      ┌─────┐                          (don&#39;t run yet)                       ┌─────┐             │  └────────┘                                     </span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">                      │     │ handle  ┌──────────┐  ┌───────────────────────────────────────▶│     │ send        │  ┌────────┐                                     </span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">                      │     ├────────▶│Middleware│──┘                                        │     │────────────▶├─▶│ View 2 │                                     </span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">                      │     │ Action  │ Pipeline │──┐  ┌─────┐ reduce ┌──────────┐           │     │ New state   │  └────────┘                                     </span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">                      │     │         └──────────┘  └─▶│     │───────▶│ Reducer  │──────────▶│     │             │  ┌────────┐                                     </span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">    ┌──────┐ dispatch │     │                          │Store│ Action │ Pipeline │ New state │     │             └─▶│ View 3 │                                     </span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">    │Button│─────────▶│Store│                          │     │ +      └──────────┘           │Store│                └────────┘                                     </span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">    └──────┘ Action   │     │                          └─────┘ State                         │     │                                   dispatch    ┌─────┐         </span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │       ┌─────────────────────────┐ New Action  │     │         </span></span>
-<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │─run──▶│       IO closure        ├────────────▶│Store│─ ─ ▶ ...</span></span>
-<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │       │                         │             │     │         </span></span>
-<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │       └─┬───────────────────────┘             └─────┘         </span></span>
-<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">                      └─────┘                                                                └─────┘         │                     ▲                               </span></span>
-<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                      request│ side-effects        │side-effects                   </span></span>
-<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                             ▼                      response                       </span></span>
-<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                        ┌ ─ ─ ─ ─ ─                │                               </span></span>
-<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                          External │─ ─ async ─ ─ ─                                </span></span>
-<span class="code-line-container"><span data-line-number="20" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                        │  World                                                   </span></span>
-<span class="code-line-container"><span data-line-number="21" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                         ─ ─ ─ ─ ─ ┘                                               </span></span>
-</code></pre>
-  </div>
-</div></div>
+</section>
   </div>
 </div>
   
@@ -158,7 +85,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/init(_:).html" class="link deprecated has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/init(_:).html" class="link deprecated has-adjacent-elements">
                   <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>(</span><span class='decorator'>ReduceFunction</span><span class='decorator'>&lt;</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;)</span></code>
                 </a>
               
@@ -180,7 +107,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/reduce.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/reduce.html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>reduce</span><span class='decorator'>: </span><span class='decorator'>MutableReduceFunction</span><span class='decorator'>&lt;</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -202,7 +129,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/lift(action:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/lift(action:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>?&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -214,7 +141,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/lift(action:state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/lift(action:state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>?&gt;, </span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -226,7 +153,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/lift(actionGetter:stateGetter:stateSetter:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/lift(actiongetter:stategetter:statesetter:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>actionGetter</span><span class='decorator'>: (</span><span class='decorator'>GlobalActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>ActionType</span><span class='decorator'>?, </span><span class='decorator'>stateGetter</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>stateSetter</span><span class='decorator'>: (</span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Void</span><span class='decorator'>) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -238,7 +165,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/lift(state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/lift(state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -250,7 +177,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/liftToCollection(action:stateCollection:)-2n6l6.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/lifttocollection(action:statecollection:)-2n6l6.html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -262,7 +189,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/liftToCollection(action:stateCollection:)-2puf.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/lifttocollection(action:statecollection:)-2puf.html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>ElementIndexAction</span><span class='decorator'>&lt;</span><span class='decorator'>CollectionState</span><span class='decorator'>.</span><span class='decorator'>Index</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -274,7 +201,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/liftToCollection(action:stateCollection:identifier:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/lifttocollection(action:statecollection:identifier:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>, </span><span class='decorator'>ID</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>ActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalState</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;, </span><span class='decorator'>identifier</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>StateType</span><span class='decorator'>, </span><span class='decorator'>ID</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalAction</span><span class='decorator'>, </span><span class='decorator'>GlobalState</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -296,7 +223,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Reducer/reduce(_:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/reduce(_:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>static</span><span class='decorator empty-token'> </span><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>reduce</span><span class='decorator'>(</span><span class='decorator'>MutableReduceFunction</span><span class='decorator'>&lt;</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>Reducer</span><span class='decorator'>&lt;</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -319,7 +246,7 @@
             <div class="link-block topic">
               
               
-                <a href="../../../documentation/SwiftRex/Reducer/Monoid-Implementations.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/monoid-implementations.html" class="link has-adjacent-elements">
                   <span class="topic-icon-wrapper">&nbsp;</span>
                   Monoid Implementations
                 </a>
@@ -332,7 +259,7 @@
             <div class="link-block topic">
               
               
-                <a href="../../../documentation/SwiftRex/Reducer/Semigroup-Implementations.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reducer/semigroup-implementations.html" class="link has-adjacent-elements">
                   <span class="topic-icon-wrapper">&nbsp;</span>
                   Semigroup Implementations
                 </a>
@@ -347,111 +274,7 @@
     
   </div>
 </section>
-  <section id='see-also' class='contenttable alt-light'>
-  <div class='container'>
-    <h2 class='title'>See Also</h2>
-
-    
-      <div class="row contenttable-section">
-        <div class="col section-title large-3 medium-3 small-12">
-          <h3 class="title">Learning</h3>
-        </div>
   
-        <div class="col section-content large-9 medium-9 small-12">
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/QuickGuide.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Quick Guide
-                </a>
-              
-              <div class="abstract">
-                <div class="content">This is a TL;DR in case you want to start quickly, without too much theory, or in case you’re already pretty familiar with other redux implementations. We still recommend the other topics for a deeper understanding behind SwiftRex concepts.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/GettingStarted.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Getting Started
-                </a>
-              
-              <div class="abstract">
-                <div class="content">Let’s understand the components of SwiftRex.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/Action.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Action
-                </a>
-              
-              <div class="abstract">
-                <div class="content">An Action represents an event that was notified by external (or sometimes internal) actors of your app. It’s about relevant INPUT events.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/State.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  State
-                </a>
-              
-              <div class="abstract">
-                <div class="content">State represents the whole knowledge that an app holds while is open, usually in memory and mutable. It’s about relevant OUTPUT properties.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/StoreType/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>StoreType</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">A protocol that defines the two expected roles of a “Store”: receive/distribute actions (<a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a>); and publish changes of the the current app state (<a href='../../../documentation/SwiftRex/StateProvider/index.html'><code>StateProvider</code></a>) to possible subscribers. It can be a real store (such as <a href='../../../documentation/SwiftRex/ReduxStoreBase/index.html'><code>ReduxStoreBase</code></a>) or just a “proxy” that acts on behalf of a real store, for example, in the case of <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareProtocol</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content"><a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> is a plugin, or a composition of several plugins, that are assigned to the app global <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> pipeline in order to handle each action received (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a>), to execute side-effects in response, and eventually dispatch more actions (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html'><code>OutputActionType</code></a>) in the process. It can also access the most up-to-date <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> while handling an incoming action.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/Middleware/index.html" class="link deprecated has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>Middleware</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code>ReduxStoreProtocol</code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process. This happens before the <code>Reducer</code> to do its job.</div>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-  </div>
-</section>
 </main>
       </div>
     </div>

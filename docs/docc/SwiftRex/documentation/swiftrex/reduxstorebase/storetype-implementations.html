@@ -75,43 +75,43 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/ReduxStoreBase/contramapAction(_:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reduxstorebase/contramapaction(_:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>contramapAction</span><span class='decorator'>&lt;</span><span class='decorator'>NewActionType</span><span class='decorator'>&gt;((</span><span class='decorator'>NewActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>AnyStoreType</span><span class='decorator'>&lt;</span><span class='decorator'>NewActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">Create another <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> that handles a different type of Action. The original store will be used behind the scenes, by only the provided “transform” closure whenever an action arrives.</div>
+                <div class="content">Create another <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a> that handles a different type of Action. The original store will be used behind the scenes, by only the provided “transform” closure whenever an action arrives.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/ReduxStoreBase/eraseToAnyStoreType().html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reduxstorebase/erasetoanystoretype().html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>eraseToAnyStoreType</span><span class='decorator'>() -&gt; </span><span class='decorator'>AnyStoreType</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">Type-erasure for the protocol <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>.</div>
+                <div class="content">Type-erasure for the protocol <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a>.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/ReduxStoreBase/mapState(_:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reduxstorebase/mapstate(_:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>mapState</span><span class='decorator'>&lt;</span><span class='decorator'>NewStateType</span><span class='decorator'>&gt;((</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>NewStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>AnyStoreType</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>NewStateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">Create another <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> that handles a different type of State. The original store will be used behind the scenes, by only applying the provided “transform” closure whenever the state changes in the original store.</div>
+                <div class="content">Create another <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a> that handles a different type of State. The original store will be used behind the scenes, by only applying the provided “transform” closure whenever the state changes in the original store.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/ReduxStoreBase/projection(action:state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/reduxstorebase/projection(action:state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>projection</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: (</span><span class='decorator'>ViewAction</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>ViewState</span><span class='decorator'>) -&gt; </span><span class='decorator'>StoreProjection</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;</span></code>
                 </a>
               

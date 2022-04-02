@@ -62,7 +62,7 @@
   <div class="container content-grid">
   <div class="description">
     <div class="abstract content">
-      The Action type that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> knows how to handle, so the store will forward actions of this type to this middleware.
+      The Action type that this <a href='../../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> knows how to handle, so the store will forward actions of this type to this middleware.
     </div>
   </div>
   
@@ -74,7 +74,7 @@
   <div class='declaration-group'>
     <pre class='source indented'><code><span class='token-keyword'>typealias</span> <span class='token-identifier'>InputActionType</span> = GlobalInputActionType</code></pre>
   </div>
-</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Most of the times middlewares don’t need to handle all possible actions from the whole global action tree, so we can decide to allow it to focus only on a subset of the action.</p><p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <a href='../../../documentation/SwiftRex/Lifting.html'>Lifting</a> for more details.</p></div>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Most of the times middlewares don’t need to handle all possible actions from the whole global action tree, so we can decide to allow it to focus only on a subset of the action.</p><p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check doc:Lifting for more details.</p></div>
   </div>
 </div>
   

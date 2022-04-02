@@ -65,7 +65,7 @@
     <section id='declaration' class='declaration'>
   <h2>Declaration</h2>
   <div class='declaration-group'>
-    <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>MiddlewareReader</span>&lt;<span class='token-genericParameter'>Dependencies</span>, <span class='token-genericParameter'>MiddlewareType</span>&gt; <span class='token-keyword'>where</span> MiddlewareType : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a></code></pre>
+    <pre class='source indented'><code><span class='token-keyword'>struct</span> <span class='token-identifier'>MiddlewareReader</span>&lt;<span class='token-genericParameter'>Dependencies</span>, <span class='token-genericParameter'>MiddlewareType</span>&gt; <span class='token-keyword'>where</span> MiddlewareType : <a class='type-identifier-link' href='../../../documentation/swiftrex/middlewareprotocol/index.html'><span>MiddlewareProtocol</span></a></code></pre>
   </div>
 </section>
   </div>
@@ -85,7 +85,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareReader/init(inject:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewarereader/init(inject:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='identifier'>init</span><span class='decorator'>(</span><span class='decorator'>inject</span><span class='decorator'>: (</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareType</span><span class='decorator'>)</span></code>
                 </a>
               
@@ -107,7 +107,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareReader/inject.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewarereader/inject.html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>let</span><span class='decorator empty-token'> </span><span class='identifier'>inject</span><span class='decorator'>: (</span><span class='decorator'>Dependencies</span><span class='decorator'>) -&gt; </span><span class='decorator'>MiddlewareType</span></code>
                 </a>
               
@@ -130,7 +130,7 @@
             <div class="link-block topic">
               
               
-                <a href="../../../documentation/SwiftRex/MiddlewareReader/MiddlewareReaderProtocol-Implementations.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewarereader/middlewarereaderprotocol-implementations.html" class="link has-adjacent-elements">
                   <span class="topic-icon-wrapper">&nbsp;</span>
                   MiddlewareReaderProtocol Implementations
                 </a>
@@ -145,71 +145,7 @@
     
   </div>
 </section>
-  <section id='see-also' class='contenttable alt-light'>
-  <div class='container'>
-    <h2 class='title'>See Also</h2>
-
-    
-      <div class="row contenttable-section">
-        <div class="col section-title large-3 medium-3 small-12">
-          <h3 class="title">Middlewares</h3>
-        </div>
   
-        <div class="col section-content large-9 medium-9 small-12">
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/AnyMiddleware/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AnyMiddleware</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">Erases the protocol <code>Middleware</code>. Please check its documentation for more information.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/ComposedMiddleware/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ComposedMiddleware</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code>EventProtocol</code> or an <code>ActionProtocol</code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/IdentityMiddleware/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>IdentityMiddleware</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">The <code>IdentityMiddleware</code> won’t do any operation, simply bypass actions through. It’s meant to provide identity axiom to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/MiddlewareReaderProtocol/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareReaderProtocol</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">A protocol to generalize MiddlewareReader. Unless you look for some very special behaviour, you should use MiddlewareReader directly which provides everything needed for your Middleware dependency injection.</div>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-  </div>
-</section>
 </main>
       </div>
     </div>

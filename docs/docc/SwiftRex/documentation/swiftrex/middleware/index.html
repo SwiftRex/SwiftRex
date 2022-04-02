@@ -65,7 +65,7 @@
     <section id='declaration' class='declaration'>
   <h2>Declaration</h2>
   <div class='declaration-group'>
-    <pre class='source indented'><code><span class='token-keyword'>protocol</span> <span class='token-identifier'>Middleware</span> : <a class='type-identifier-link' href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><span>MiddlewareProtocol</span></a></code></pre>
+    <pre class='source indented'><code><span class='token-keyword'>protocol</span> <span class='token-identifier'>Middleware</span> : <a class='type-identifier-link' href='../../../documentation/swiftrex/middlewareprotocol/index.html'><span>MiddlewareProtocol</span></a></code></pre>
   </div>
 </section><div class='content'><h2 id='overview'>Overview</h2><p>We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state at any point.</p><p>An action is a lightweight structure, typically an enum, that is dispatched into the <code>ActionHandler</code> (usually a <code>StoreProtocol</code>). A Store like <code>ReduxStoreProtocol</code> enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a <code>Middleware</code> is class that handles actions, and has the power to dispatch more actions to the <code>ActionHandler</code> chain. The <code>Middleware</code> can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in a future RunLoop, or perhaps some <code>Reducer</code>, as reducers pipeline is at the end of every middleware pipeline.</p><p>Middlewares can schedule a callback to be executed after the reducer pipeline is done mutating the global state. At that point, the middleware will have access to the new state, and in case it cached the old state it can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.</p><p>Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file, line, function and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.</p><p>Because the <code>Middleware</code> receive all actions and accesses the state of the app at any point, anything can be done from these small and reusable boxes. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-state struct.</p><p>Some suggestions of middlewares:</p><ul><li><p><p>Run Timers, pooling some external resource or updating some local state at a constant time</p></p></li><li><p><p>Subscribe for <code>CoreData</code>, <code>Realm</code>, <code>Firebase Realtime Database</code> or equivalent database changes</p></p></li><li><p><p>Be a <code>CoreLocation</code> delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</p></p></li><li><p><p>Be a <code>HealthKit</code> delegate to track activities, or even combining that with <code>CoreLocation</code> observation in order to track the activity route</p></p></li><li><p><p>Logger, Telemetry, Auditing, Analytics tracker, Crash report breadcrumbs</p></p></li><li><p><p>Monitoring or debugging tools, like external apps to monitor the state and actions remotely from a different device</p></p></li><li><p><p><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</p></p></li><li><p><p>API calls and other “cold observables”</p></p></li><li><p><p>Network Reachability</p></p></li><li><p><p>Navigation through the app (Redux Coordinator pattern)</p></p></li><li><p><p><code>CoreBluetooth</code> central or peripheral manager</p></p></li><li><p><p><code>CoreNFC</code> manager and delegate</p></p></li><li><p><p><code>NotificationCenter</code> and other delegates</p></p></li><li><p><p>WebSocket, TCP Socket, Multipeer and many other connectivity protocols</p></p></li><li><p><p><code>RxSwift</code> observables, <code>ReactiveSwift</code> signal producers, <code>Combine</code> publishers</p></p></li><li><p><p>Observation of traits changes, device rotation, language/locale, dark mode, dynamic fonts, background/foreground state</p></p></li><li><p><p>Any side-effect, I/O, networking, sensors, third-party libraries that you want to abstract</p></p></li></ul><div data-syntax="" class="code-listing">
   <div class="container-general">
@@ -162,7 +162,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/Middleware/handle(action:from:afterReducer:).html" class="link deprecated has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middleware/handle(action:from:afterreducer:).html" class="link deprecated has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>handle</span><span class='decorator'>(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>from</span><span class='decorator'>: </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>afterReducer</span><span class='decorator'>: </span><span class='decorator'>inout</span><span class='decorator empty-token'> </span><span class='decorator'>AfterReducer</span><span class='decorator'>)</span></code>
                 </a>
               
@@ -177,111 +177,7 @@
     
   </div>
 </section>
-  <section id='see-also' class='contenttable alt-light'>
-  <div class='container'>
-    <h2 class='title'>See Also</h2>
-
-    
-      <div class="row contenttable-section">
-        <div class="col section-title large-3 medium-3 small-12">
-          <h3 class="title">Learning</h3>
-        </div>
   
-        <div class="col section-content large-9 medium-9 small-12">
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/QuickGuide.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Quick Guide
-                </a>
-              
-              <div class="abstract">
-                <div class="content">This is a TL;DR in case you want to start quickly, without too much theory, or in case you’re already pretty familiar with other redux implementations. We still recommend the other topics for a deeper understanding behind SwiftRex concepts.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/GettingStarted.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Getting Started
-                </a>
-              
-              <div class="abstract">
-                <div class="content">Let’s understand the components of SwiftRex.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/Action.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Action
-                </a>
-              
-              <div class="abstract">
-                <div class="content">An Action represents an event that was notified by external (or sometimes internal) actors of your app. It’s about relevant INPUT events.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/State.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  State
-                </a>
-              
-              <div class="abstract">
-                <div class="content">State represents the whole knowledge that an app holds while is open, usually in memory and mutable. It’s about relevant OUTPUT properties.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/StoreType/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>StoreType</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">A protocol that defines the two expected roles of a “Store”: receive/distribute actions (<a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a>); and publish changes of the the current app state (<a href='../../../documentation/SwiftRex/StateProvider/index.html'><code>StateProvider</code></a>) to possible subscribers. It can be a real store (such as <a href='../../../documentation/SwiftRex/ReduxStoreBase/index.html'><code>ReduxStoreBase</code></a>) or just a “proxy” that acts on behalf of a real store, for example, in the case of <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareProtocol</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content"><a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> is a plugin, or a composition of several plugins, that are assigned to the app global <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> pipeline in order to handle each action received (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a>), to execute side-effects in response, and eventually dispatch more actions (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html'><code>OutputActionType</code></a>) in the process. It can also access the most up-to-date <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> while handling an incoming action.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/Reducer/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>Reducer</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content"><code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.</div>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-  </div>
-</section>
 </main>
       </div>
     </div>

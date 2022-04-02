@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>MiddlewareProtocol Implementations| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SwiftRex</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">LiftToCollectionMiddleware</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">MiddlewareProtocol Implementations</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow"></span>
+  <h1 class="title">MiddlewareProtocol Implementations</h1>
+</div>
+  
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Instance Methods</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/erasetoanymiddleware().html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>eraseToAnyMiddleware</span><span class='decorator'>() -&gt; </span><span class='decorator'>AnyMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lift(inputaction:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lift(inputaction:outputaction:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lift(inputaction:outputaction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lift(inputaction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lift(outputaction:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lift(outputaction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lift(state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A method used to transform a middleware focused in a specific substate into a middleware that can be plugged in a global scope and composed with other middlewares that work on different generic parameters. The global state of your app is <em>Whole</em>, and the <code>Middleware</code> handles <em>Part</em>, that is a sub-state. So for example you may want to have a <code>GPSMiddleware</code> that knows about the following <code>struct</code>:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lifttocollection(action:statecollection:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>LiftToCollectionMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/lifttocollectionmiddleware/lifttocollection(inputaction:outputaction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>&gt;?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>CollectionState</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftToCollectionMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

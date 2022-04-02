@@ -55,7 +55,7 @@
   <div class="container content-grid">
   <div class="description">
     <div class="abstract content">
-      A protocol that defines the two expected roles of a “Store”: receive/distribute actions (<a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a>); and publish changes of the the current app state (<a href='../../../documentation/SwiftRex/StateProvider/index.html'><code>StateProvider</code></a>) to possible subscribers. It can be a real store (such as <a href='../../../documentation/SwiftRex/ReduxStoreBase/index.html'><code>ReduxStoreBase</code></a>) or just a “proxy” that acts on behalf of a real store, for example, in the case of <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>.
+      A protocol that defines the two expected roles of a “Store”: receive/distribute actions (<a href='../../../documentation/swiftrex/actionhandler/index.html'><code>ActionHandler</code></a>); and publish changes of the the current app state (<a href='../../../documentation/swiftrex/stateprovider/index.html'><code>StateProvider</code></a>) to possible subscribers. It can be a real store (such as <a href='../../../documentation/swiftrex/reduxstorebase/index.html'><code>ReduxStoreBase</code></a>) or just a “proxy” that acts on behalf of a real store, for example, in the case of <a href='../../../documentation/swiftrex/storeprojection.html'><code>StoreProjection</code></a>.
     </div>
   </div>
   
@@ -65,126 +65,9 @@
     <section id='declaration' class='declaration'>
   <h2>Declaration</h2>
   <div class='declaration-group'>
-    <pre class='source indented'><code><span class='token-keyword'>protocol</span> <span class='token-identifier'>StoreType</span> : <a class='type-identifier-link' href='../../../documentation/SwiftRex/ActionHandler/index.html'><span>ActionHandler</span></a>, <a class='type-identifier-link' href='../../../documentation/SwiftRex/StateProvider/index.html'><span>StateProvider</span></a></code></pre>
+    <pre class='source indented'><code><span class='token-keyword'>protocol</span> <span class='token-identifier'>StoreType</span> : <a class='type-identifier-link' href='../../../documentation/swiftrex/actionhandler/index.html'><span>ActionHandler</span></a>, <a class='type-identifier-link' href='../../../documentation/swiftrex/stateprovider/index.html'><span>StateProvider</span></a></code></pre>
   </div>
-</section><div class='content'><h2 id='overview'>Overview</h2><p>Store Type is an <a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a>, which means actors can dispatch actions (<a href='../../../documentation/SwiftRex/ActionHandler/dispatch(_:).html'><code>dispatch(_:)</code></a>) that will be handled by this store. These actions will eventually start side-effects or change state. These actions can also be dispatched by the result of side-effects, like the callback of an API call, or CLLocation new coordinates. How this action is handled will depend on the different implementations of <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>.</p><p>Store Type is also a <a href='../../../documentation/SwiftRex/StateProvider/index.html'><code>StateProvider</code></a>, which means it’s aware of certain state and can notify possible subscribers about changes through its publisher (<a href='../../../documentation/SwiftRex/StateProvider/statePublisher.html'><code>statePublisher</code></a>). If this <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> owns the state (single source-of-truth) or only proxies it from another store will depend on the different implementations of the protocol.</p><div data-syntax="" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">            ┌──────────┐</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">            │ UIButton │────────┐</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">            └──────────┘        │</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">        ┌───────────────────┐   │         dispatch&lt;Action&gt;(_ action: Action)</span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">        │UIGestureRecognizer│───┼──────────────────────────────────────────────┐</span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">        └───────────────────┘   │                                              │</span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">            ┌───────────┐       │                                              ▼</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">            │viewDidLoad│───────┘                                   ┏━━━━━━━━━━━━━━━━━━━━┓</span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">            └───────────┘                                           ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">                                                                    ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">                                                                    ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">              ┌───────┐                                             ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">              │UILabel│◀─ ─ ─ ─ ┐                                   ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">              └───────┘                   Combine, RxSwift    ┌ ─ ─ ┻ ─ ┐                ┃░</span></span>
-<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">                                │         or ReactiveSwift       State      Store        ┃░</span></span>
-<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">       ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│Publisher│                ┃░</span></span>
-<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">       ▼               │                  subscribe(onNext:)                             ┃░</span></span>
-<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">┌─────────────┐        ▼                  sink(receiveValue:) └ ─ ─ ┳ ─ ┘                ┃░</span></span>
-<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">│  Diffable   │ ┌─────────────┐           assign(to:on:)            ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="20" class="code-number" style="display: none;"></span><span class="code-line">│ DataSource  │ │RxDataSources│                                     ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="21" class="code-number" style="display: none;"></span><span class="code-line">└─────────────┘ └─────────────┘                                     ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="22" class="code-number" style="display: none;"></span><span class="code-line">       │               │                                            ┃                    ┃░</span></span>
-<span class="code-line-container"><span data-line-number="23" class="code-number" style="display: none;"></span><span class="code-line">┌──────▼───────────────▼───────────┐                                ┗━━━━━━━━━━━━━━━━━━━━┛░</span></span>
-<span class="code-line-container"><span data-line-number="24" class="code-number" style="display: none;"></span><span class="code-line">│                                  │                                 ░░░░░░░░░░░░░░░░░░░░░░</span></span>
-<span class="code-line-container"><span data-line-number="25" class="code-number" style="display: none;"></span><span class="code-line">│                                  │</span></span>
-<span class="code-line-container"><span data-line-number="26" class="code-number" style="display: none;"></span><span class="code-line">│                                  │</span></span>
-<span class="code-line-container"><span data-line-number="27" class="code-number" style="display: none;"></span><span class="code-line">│                                  │</span></span>
-<span class="code-line-container"><span data-line-number="28" class="code-number" style="display: none;"></span><span class="code-line">│         UICollectionView         │</span></span>
-<span class="code-line-container"><span data-line-number="29" class="code-number" style="display: none;"></span><span class="code-line">│                                  │</span></span>
-<span class="code-line-container"><span data-line-number="30" class="code-number" style="display: none;"></span><span class="code-line">│                                  │</span></span>
-<span class="code-line-container"><span data-line-number="31" class="code-number" style="display: none;"></span><span class="code-line">│                                  │</span></span>
-<span class="code-line-container"><span data-line-number="32" class="code-number" style="display: none;"></span><span class="code-line">│                                  │</span></span>
-<span class="code-line-container"><span data-line-number="33" class="code-number" style="display: none;"></span><span class="code-line">└──────────────────────────────────┘</span></span>
-</code></pre>
-  </div>
-</div><p>There are implementations that will be the actual Store, the one and only instance that will be the central hub for the whole redux architecture. Other implementations can be only projections or the main Store, so they act like a Store by implementing the same roles, but instead of owning the global state or handling the actions directly, these projections only apply some small (and pure) transformation in the chain and delegate to the real Store. This is useful when you want to have local “stores” in your views, but you don’t want them to duplicate data or own any kind of state, but only act as a store while using the central one behind the scenes.</p><p>For more information about real stores, please check <a href='../../../documentation/SwiftRex/ReduxStoreBase/index.html'><code>ReduxStoreBase</code></a> and <a href='../../../documentation/SwiftRex/ReduxStoreProtocol/index.html'><code>ReduxStoreProtocol</code></a>, and for more information about the projections please check <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a> and <a href='../../../documentation/SwiftRex/StoreType/projection(action:state:).html'><code>projection(action:state:)</code></a>.</p><h2 id='What-is-a-Real-Store?'>What is a Real Store?</h2><p>A real Store is a class that you want to create and keep alive during the whole execution of an app, because its only responsibility is to act as a coordinator for the Unidirectional Dataflow lifecycle. That’s also why we want one and only one instance of a Store, so either you create a static instance singleton, or keep it in your AppDelegate. Be careful with SceneDelegate if your app supports multiple windows and you want to share the state between these multiple instances of your app, which you usually want. That’s why AppDelegate, singleton or global variable is usually recommended for the Store, not SceneDelegate. In case of SwiftUI you can create a store in your app protocol as a <code>Combine/StateObject</code>:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">@main</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">struct MyApp: App {</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    @StateObject var store = Store.createStore(dependencyInjection: World.default).asObservableViewModel(initialState: .initial)</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">    var body: some Scene {</span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">        WindowGroup {</span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">            ContentView(viewModel: ContentViewModel(store: store))</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-</code></pre>
-  </div>
-</div><p>SwiftRex will provide a protocol (<a href='../../../documentation/SwiftRex/ReduxStoreProtocol/index.html'><code>ReduxStoreProtocol</code></a>) and a base class (<a href='../../../documentation/SwiftRex/ReduxStoreBase/index.html'><code>ReduxStoreBase</code></a>) for helping you to create your own Store.</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">class Store: ReduxStoreBase&lt;AppAction, AppState&gt; {</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    static func createStore(dependencyInjection: World) -&gt; Store {</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">        let store = Store(</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">            subject: .combine(initialValue: .initial),</span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">            reducer: AppModule.appReducer,</span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">            middleware: AppModule.appMiddleware(dependencyInjection: dependencyInjection)</span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">            emitsValue: .whenDifferent</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">        )</span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">        store.dispatch(AppAction.lifecycle(LifeCycleAction.start))</span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">        return store</span></span>
-<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-</code></pre>
-  </div>
-</div><h2 id='What-is-a-Store-Projection?'>What is a Store Projection?</h2><p>Very often you don’t want your view to be able to access the whole App State or dispatch any possible global App Action. Not only it could refresh your UI more often than needed, it also makes more error prone, put more complex code in the view layer and finally decreases modularisation making the view coupled to the global models.</p><p>However, you don’t want to split your state in multiple parts because having it in a central and unique point ensures consistency. Also, you don’t want multiple separate places taking care of actions because that could potentially create race conditions. The real Store is the only place actually owning the global state and effectively handling the actions, and that’s how it’s supposed to be.</p><p>To solve both problems, we offer a <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>, which conforms to the <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> protocol so for all purposes it behaves like a real store, but in fact it only projects the real store using custom types for state and actions, that is, either a subset of your models (a branch in the state tree, for example), or a completely different entity like a View State. A <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a> has 2 closures, that allow it to transform actions and state between the global ones and the ones used by the view. That way, the View is not coupled to the whole global models, but only to tiny parts of it, and the closure in the <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a> will take care of extracting/mapping the interesting part for the view. This also improves performance, because the view will not refresh for any property in the global state, only for the relevant ones. On the other direction, view can only dispatch a limited set of actions, that will be mapped into global actions by the closure in the <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>.</p><p>A Store Projection can be created from any other <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>, even from another <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>. It’s as simple as calling <a href='../../../documentation/SwiftRex/StoreType/projection(action:state:).html'><code>projection(action:state:)</code></a>, and providing the action and state mapping closures:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let storeProjection = store.projection(</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    action: { viewAction in viewAction.toAppAction() } ,</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    state: { globalState in MyViewState.from(globalState: globalState) }</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">).asObservableViewModel(initialState: .empty)</span></span>
-</code></pre>
-  </div>
-</div><h2 id='All-together'>All together</h2><p>Putting everything together we could have:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">@main</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">struct MyApp: App {</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    @StateObject var store = Store.createStore(dependencyInjection: World.default).asObservableViewModel(initialState: .initial)</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">    var body: some Scene {</span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">        WindowGroup {</span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">            ContentView(</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">                viewModel: store.projection(</span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">                    action: { (viewAction: ContentViewAction) -&gt; AppAction? in</span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">                        viewAction.toAppAction()</span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">                    },</span></span>
-<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">                    state: { (globalState: AppState) -&gt; ContentViewState in </span></span>
-<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">                        ContentViewState.from(globalState: globalState) </span></span>
-<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">                    }</span></span>
-<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">                ).asObservableViewModel(initialState: .empty)</span></span>
-<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">            )</span></span>
-<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
-<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-<span class="code-line-container"><span data-line-number="20" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="21" class="code-number" style="display: none;"></span><span class="code-line">struct ContentViewState: Equatable {</span></span>
-<span class="code-line-container"><span data-line-number="22" class="code-number" style="display: none;"></span><span class="code-line">    let title: String</span></span>
-<span class="code-line-container"><span data-line-number="23" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="24" class="code-number" style="display: none;"></span><span class="code-line">    static func from(globalState: AppState) -&gt; ContentViewState { </span></span>
-<span class="code-line-container"><span data-line-number="25" class="code-number" style="display: none;"></span><span class="code-line">        ContentViewState(title: &quot;\(L10n.goodMorning), \(globalState.foo.bar.title)&quot;)</span></span>
-<span class="code-line-container"><span data-line-number="26" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="27" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-<span class="code-line-container"><span data-line-number="28" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="29" class="code-number" style="display: none;"></span><span class="code-line">enum ContentViewAction {</span></span>
-<span class="code-line-container"><span data-line-number="30" class="code-number" style="display: none;"></span><span class="code-line">    case onAppear</span></span>
-<span class="code-line-container"><span data-line-number="31" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="32" class="code-number" style="display: none;"></span><span class="code-line">    func toAppAction() -&gt; AppAction? {</span></span>
-<span class="code-line-container"><span data-line-number="33" class="code-number" style="display: none;"></span><span class="code-line">        switch self {</span></span>
-<span class="code-line-container"><span data-line-number="34" class="code-number" style="display: none;"></span><span class="code-line">        case .onAppear: return AppAction.foo(.bar(.startTimer))</span></span>
-<span class="code-line-container"><span data-line-number="35" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
-<span class="code-line-container"><span data-line-number="36" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="37" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-</code></pre>
-  </div>
-</div><p>In this example above we can see that <code>ContentView</code> doesn’t know about the global models, it’s limited to <code>ContentViewAction</code> and <code>ContentViewState</code> only. It also only refreshes when <code>globalState.foo.bar.title</code> changes, any other change in the <code>AppState</code> will be ignored because the other properties are not mapped into anything in the <code>ContentViewState</code>. Also, <code>ContentViewAction</code> has a single case, <code>onAppear</code>, and that’s the only thing the view can dispatch, without knowing that this will eventually start a timer (<code>AppAction.foo(.bar(.startTimer))</code>). The view should not know about domain logic and its actions should be limited to <code>buttonTapped</code>, <code>onAppear</code>, <code>didScroll</code>, <code>toggle(enabled: Bool)</code> and other names that only suggest UI interaction. How this is mapped into App Actions is responsibility of other parts, in our example, <code>ContentViewAction</code> itself, but it could be a Presenter layer, a View Model layer, or whatever structure you decide to create to organise your code.</p><p>Testing is also made easier with this approach, as the View doesn’t hold any logic and the projection transformations are pure functions.</p><p><picture><source media='(prefers-color-scheme: light)' srcset='../../../images/StoreProjectionDiagram@1x.png 2x'><img alt='Store, StoreProjection and View' srcset='../../../images/StoreProjectionDiagram@1x.png 2x' src='../../../images/StoreProjectionDiagram@1x.png' width='1005' height='auto' /></source></picture></p></div>
+</section>
   </div>
 </div>
   
@@ -202,43 +85,43 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/StoreType/contramapAction(_:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/storetype/contramapaction(_:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>contramapAction</span><span class='decorator'>&lt;</span><span class='decorator'>NewActionType</span><span class='decorator'>&gt;((</span><span class='decorator'>NewActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>AnyStoreType</span><span class='decorator'>&lt;</span><span class='decorator'>NewActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">Create another <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> that handles a different type of Action. The original store will be used behind the scenes, by only the provided “transform” closure whenever an action arrives.</div>
+                <div class="content">Create another <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a> that handles a different type of Action. The original store will be used behind the scenes, by only the provided “transform” closure whenever an action arrives.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/StoreType/eraseToAnyStoreType().html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/storetype/erasetoanystoretype().html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>eraseToAnyStoreType</span><span class='decorator'>() -&gt; </span><span class='decorator'>AnyStoreType</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">Type-erasure for the protocol <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>.</div>
+                <div class="content">Type-erasure for the protocol <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a>.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/StoreType/mapState(_:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/storetype/mapstate(_:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>mapState</span><span class='decorator'>&lt;</span><span class='decorator'>NewStateType</span><span class='decorator'>&gt;((</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>NewStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>AnyStoreType</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>, </span><span class='decorator'>NewStateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">Create another <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> that handles a different type of State. The original store will be used behind the scenes, by only applying the provided “transform” closure whenever the state changes in the original store.</div>
+                <div class="content">Create another <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a> that handles a different type of State. The original store will be used behind the scenes, by only applying the provided “transform” closure whenever the state changes in the original store.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/StoreType/projection(action:state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/storetype/projection(action:state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>projection</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: (</span><span class='decorator'>ViewAction</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>ActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>ViewState</span><span class='decorator'>) -&gt; </span><span class='decorator'>StoreProjection</span><span class='decorator'>&lt;</span><span class='decorator'>ViewAction</span><span class='decorator'>, </span><span class='decorator'>ViewState</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -253,111 +136,7 @@
     
   </div>
 </section>
-  <section id='see-also' class='contenttable alt-light'>
-  <div class='container'>
-    <h2 class='title'>See Also</h2>
-
-    
-      <div class="row contenttable-section">
-        <div class="col section-title large-3 medium-3 small-12">
-          <h3 class="title">Learning</h3>
-        </div>
   
-        <div class="col section-content large-9 medium-9 small-12">
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/QuickGuide.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Quick Guide
-                </a>
-              
-              <div class="abstract">
-                <div class="content">This is a TL;DR in case you want to start quickly, without too much theory, or in case you’re already pretty familiar with other redux implementations. We still recommend the other topics for a deeper understanding behind SwiftRex concepts.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/GettingStarted.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Getting Started
-                </a>
-              
-              <div class="abstract">
-                <div class="content">Let’s understand the components of SwiftRex.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/Action.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Action
-                </a>
-              
-              <div class="abstract">
-                <div class="content">An Action represents an event that was notified by external (or sometimes internal) actors of your app. It’s about relevant INPUT events.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/State.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  State
-                </a>
-              
-              <div class="abstract">
-                <div class="content">State represents the whole knowledge that an app holds while is open, usually in memory and mutable. It’s about relevant OUTPUT properties.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareProtocol</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content"><a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> is a plugin, or a composition of several plugins, that are assigned to the app global <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> pipeline in order to handle each action received (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a>), to execute side-effects in response, and eventually dispatch more actions (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html'><code>OutputActionType</code></a>) in the process. It can also access the most up-to-date <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> while handling an incoming action.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/Middleware/index.html" class="link deprecated has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>Middleware</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code>ReduxStoreProtocol</code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process. This happens before the <code>Reducer</code> to do its job.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/Reducer/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>Reducer</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content"><code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.</div>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-  </div>
-</section>
 </main>
       </div>
     </div>

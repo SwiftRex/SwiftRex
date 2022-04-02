@@ -55,7 +55,7 @@
   <div class="container content-grid">
   <div class="description">
     <div class="abstract content">
-      An app should have a single real Store, holding a single source-of-truth. However, we can “derive” this store to small subsets, called store projections, that will handle either a smaller part of the state or action tree, or even a completely different type of actions and states as long as we can map back-and-forth to the original store types. It won’t store anything, only project the original store. For example, a View can define a completely custom View State and View Action, and we can create a <a href='../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a> that works on these types, as long as it’s backed by a real store which State and Action types can be mapped somehow to the View State and View Action types. The Store Projection will take care of translating these entities.
+      An app should have a single real Store, holding a single source-of-truth. However, we can “derive” this store to small subsets, called store projections, that will handle either a smaller part of the state or action tree, or even a completely different type of actions and states as long as we can map back-and-forth to the original store types. It won’t store anything, only project the original store. For example, a View can define a completely custom View State and View Action, and we can create a <a href='../../documentation/swiftrex/storeprojection.html'><code>StoreProjection</code></a> that works on these types, as long as it’s backed by a real store which State and Action types can be mapped somehow to the View State and View Action types. The Store Projection will take care of translating these entities.
     </div>
   </div>
   
@@ -65,51 +65,14 @@
     <section id='declaration' class='declaration'>
   <h2>Declaration</h2>
   <div class='declaration-group'>
-    <pre class='source indented'><code><span class='token-keyword'>typealias</span> <span class='token-identifier'>StoreProjection</span>&lt;<span class='token-genericParameter'>ViewAction</span>, <span class='token-genericParameter'>ViewState</span>&gt; = <a class='type-identifier-link' href='../../documentation/SwiftRex/AnyStoreType/index.html'><span>AnyStoreType</span></a>&lt;ViewAction, ViewState&gt;</code></pre>
+    <pre class='source indented'><code><span class='token-keyword'>typealias</span> <span class='token-identifier'>StoreProjection</span>&lt;<span class='token-genericParameter'>ViewAction</span>, <span class='token-genericParameter'>ViewState</span>&gt; = <a class='type-identifier-link' href='../../documentation/swiftrex/anystoretype/index.html'><span>AnyStoreType</span></a>&lt;ViewAction, ViewState&gt;</code></pre>
   </div>
-</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Very often you don’t want your view to be able to access the whole App State or dispatch any possible global App Action. Not only it could refresh your UI more often than needed, it also makes more error prone, put more complex code in the view layer and finally decreases modularisation making the view coupled to the global models.</p><p>However, you don’t want to split your state in multiple parts because having it in a central and unique point ensures consistency. Also, you don’t want multiple separate places taking care of actions because that could potentially create race conditions. The real Store is the only place actually owning the global state and effectively handling the actions, and that’s how it’s supposed to be.</p><p>To solve both problems, we offer a <a href='../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>, which conforms to the <a href='../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> protocol so for all purposes it behaves like a real store, but in fact it only projects the real store using custom types for state and actions, that is, either a subset of your models (a branch in the state tree, for example), or a completely different entity like a View State. A <a href='../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a> has 2 closures, that allow it to transform actions and state between the global ones and the ones used by the view. That way, the View is not coupled to the whole global models, but only to tiny parts of it, and the closure in the <a href='../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a> will take care of extracting/mapping the interesting part for the view. This also improves performance, because the view will not refresh for any property in the global state, only for the relevant ones. On the other direction, view can only dispatch a limited set of actions, that will be mapped into global actions by the closure in the <a href='../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>.</p><p>A Store Projection can be created from any other <a href='../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>, even from another <a href='../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>. It’s as simple as calling <a href='../../documentation/SwiftRex/StoreType/projection(action:state:).html'><code>projection(action:state:)</code></a>, and providing the action and state mapping closures:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">let storeProjection = store.projection(</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    action: { viewAction in viewAction.toAppAction() } ,</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    state: { globalState in MyViewState.from(globalState: globalState) }</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">).asObservableViewModel(initialState: .empty)</span></span>
-</code></pre>
-  </div>
-</div><p>For more information about real store vs. store projections, and also for complete code examples, please check documentation for <a href='../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>.</p></div>
+</section>
   </div>
 </div>
   
   
-  <section id='see-also' class='contenttable alt-light'>
-  <div class='container'>
-    <h2 class='title'>See Also</h2>
-
-    
-      <div class="row contenttable-section">
-        <div class="col section-title large-3 medium-3 small-12">
-          <h3 class="title">Projection and Lifting</h3>
-        </div>
   
-        <div class="col section-content large-9 medium-9 small-12">
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../documentation/SwiftRex/Lifting.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Lifting
-                </a>
-              
-              <div class="abstract">
-                <div class="content">An app can be a complex product, performing several activities that not necessarily are related. For example, the same app may need to perform a request to a weather API, check the current user location using CLLocation and read preferences from UserDefaults.</div>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-  </div>
-</section>
 </main>
       </div>
     </div>

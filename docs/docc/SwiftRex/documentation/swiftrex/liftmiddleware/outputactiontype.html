@@ -62,7 +62,7 @@
   <div class="container content-grid">
   <div class="description">
     <div class="abstract content">
-      The Action type that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> will eventually trigger back to the store in response of side-effects. This can be the same as <a href='../../../documentation/SwiftRex/LiftMiddleware/InputActionType.html'><code>LiftMiddleware.InputActionType</code></a> or different, in case you want to separate your enum in requests and responses.
+      The Action type that this <a href='../../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> will eventually trigger back to the store in response of side-effects. This can be the same as <a href='../../../documentation/swiftrex/liftmiddleware/inputactiontype.html'><code>LiftMiddleware.InputActionType</code></a> or different, in case you want to separate your enum in requests and responses.
     </div>
   </div>
   
@@ -74,7 +74,7 @@
   <div class='declaration-group'>
     <pre class='source indented'><code><span class='token-keyword'>typealias</span> <span class='token-identifier'>OutputActionType</span> = GlobalOutputActionType</code></pre>
   </div>
-</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Most of the times middlewares don’t need to dispatch all possible actions of the whole global action tree, so we can decide to allow it to dispatch only a subset of the action, or not dispatch any action at all, so the <a href='../../../documentation/SwiftRex/LiftMiddleware/OutputActionType.html'><code>LiftMiddleware.OutputActionType</code></a> can safely be set to <code>Never</code>.</p><p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <a href='../../../documentation/SwiftRex/Lifting.html'>Lifting</a> for more details.</p></div>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Most of the times middlewares don’t need to dispatch all possible actions of the whole global action tree, so we can decide to allow it to dispatch only a subset of the action, or not dispatch any action at all, so the <a href='../../../documentation/swiftrex/liftmiddleware/outputactiontype.html'><code>LiftMiddleware.OutputActionType</code></a> can safely be set to <code>Never</code>.</p><p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check doc:Lifting for more details.</p></div>
   </div>
 </div>
   

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>SwiftRex| Documentation</title>
+    
+    <link rel="icon"       href="../../favicon.ico" />
+    <link rel="mask-icon"  href="../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">SwiftRex</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Framework</span>
+  <h1 class="title">SwiftRex</h1>
+</div>
+  
+  
+  <section id='topics' class='contenttable alt-light'>
+  <div class='container'>
+    <h2 class='title'>Topics</h2>
+
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Classes</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/reduxpipelinewrapper/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>class</span><span class='decorator empty-token'> </span><span class='identifier'>ReduxPipelineWrapper</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/reduxstorebase/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>class</span><span class='decorator empty-token'> </span><span class='identifier'>ReduxStoreBase</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">🏪 <code>ReduxStoreBase</code> is a base class that can be used to create the main store of an app, using the redux pattern.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Protocols</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/actionhandler/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>ActionHandler</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><code>ActionHandler</code> defines a protocol for entities able to handle actions - defined by the associated type <code>ActionType</code>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/middleware/index.html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>Middleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code>ReduxStoreProtocol</code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process. This happens before the <code>Reducer</code> to do its job.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/middlewareprotocol/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareProtocol</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><a href='../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> is a plugin, or a composition of several plugins, that are assigned to the app global <a href='../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a> pipeline in order to handle each action received (<a href='../../documentation/swiftrex/middlewareprotocol/inputactiontype.html'><code>InputActionType</code></a>), to execute side-effects in response, and eventually dispatch more actions (<a href='../../documentation/swiftrex/middlewareprotocol/outputactiontype.html'><code>OutputActionType</code></a>) in the process. It can also access the most up-to-date <a href='../../documentation/swiftrex/middlewareprotocol/statetype.html'><code>StateType</code></a> while handling an incoming action.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/middlewarereaderprotocol/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareReaderProtocol</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A protocol to generalize MiddlewareReader. Unless you look for some very special behaviour, you should use MiddlewareReader directly which provides everything needed for your Middleware dependency injection.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/monoid/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>Monoid</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Protocol for a monoid algebra, allowing monoidal composition. It’s a <code>Semigroup</code> with identity element, element which, when combined to any other element, will keep the other elemenet unchanged, regardless if the composition happened from the left or from the right, for example: <code>a &lt;&gt; identity = identity &lt;&gt; a = a</code>, for any <code>a</code> in <code>A</code>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/reduxstoreprotocol/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>ReduxStoreProtocol</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/semigroup/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>Semigroup</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Protocol for a semigroup, any algebraic structure that allows two of its elements to be combined into one, <code>(A, A) -&gt; A</code>, for any of its elements and keeping associativity property for all the cases, for example: <code>(a1 &lt;&gt; a2) &lt;&gt; a3 = a1 &lt;&gt; (a2 &lt;&gt; a3)</code> for any <code>a</code>s in <code>A</code>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/stateprovider/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>StateProvider</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><code>StateProvider</code> defines a protocol for entities able to offer state publishers (Combine Publisher, RxSwift Observable, ReactiveSwift SignalProducer) of certain <code>StateType</code>, so everybody can observe the global state changes through this container. Usually a <code>Store</code> will implement that, but it can also be a <code>StoreProjection</code> with a state that is derived from the global source-of-truth.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/storetype/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>StoreType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A protocol that defines the two expected roles of a “Store”: receive/distribute actions (<a href='../../documentation/swiftrex/actionhandler/index.html'><code>ActionHandler</code></a>); and publish changes of the the current app state (<a href='../../documentation/swiftrex/stateprovider/index.html'><code>StateProvider</code></a>) to possible subscribers. It can be a real store (such as <a href='../../documentation/swiftrex/reduxstorebase/index.html'><code>ReduxStoreBase</code></a>) or just a “proxy” that acts on behalf of a real store, for example, in the case of <a href='../../documentation/swiftrex/storeprojection.html'><code>StoreProjection</code></a>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/subscriptioncollection/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>SubscriptionCollection</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over subscription collection (<code>DisposeBag</code> or <code>Set&lt;AnyCancellable</code> depending on your chosen reactive framework), useful for keeping subscriptions alive while the parent class is alive, binding the lifecycle of subscriptions to the lifecycle of views, view controllers or presenters. Subscriptions added to a subscription collection will be cancelled/disposed automatically once the collection gets deallocated, stopping any pending operation and cleaning up the resources. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/subscriptiontype/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>SubscriptionType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over subscription types from reactive frameworks. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Structures</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/asapscheduler/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ASAPScheduler</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A very eager scheduler that will perform tasks in the Main Queue, immediately if possible.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/actionsource/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ActionSource</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Representation of the entity responsible for creating and dispatching the action, including information useful for logging, debugging, analytics or monitoring. The action source will be implicitly created when <code>ActionHandler.dispatch</code> is called from a middleware, view or presenter, and it will contain the file, function and line from where the dispatch function was called. Additionally you can append extra information useful for debugging, as an optional String attached to the ActionSource.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/afterreducer/index.html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AfterReducer</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Wraps a closure that will be called after the Reducer pipeline has changed the state with the current action. With this structure, a middleware can schedule some callback to be executed with the new state, and evidently access this state to check what’s different. This can be very useful for Middlewares that perform logging, monitoring or telemetry, so you can check the state before and after reducers’ execution, or how much time it took for the whole chain to be called (in case this middleware is the first in the chain, of course). <code>AfterReducer</code> is a monoid, that means it can be combined with another <code>AfterReducer</code> to form a new one (that executes both operations in the reverse order) and an identity instance, that when combined with any other <code>AfterReducer</code> changes nothing in the result, acting as a neutral element in composition. The identity of an <code>AfterReducer</code> is the static instance <code>doNothing()</code>, that contains an empty closure for no-op. The combination between two <code>AfterReducer</code> instances occur in reverse order so the first middleware will have its “after reducer” closure executed last. This composition can be achieved by using the operator <code>&lt;&gt;</code></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/anyactionhandler/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AnyActionHandler</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><code>ActionHandler</code> defines a protocol for entities able to handle actions - defined by the associated type <code>ActionType</code> and <code>AnyActionHandler</code> erases this protocol to a generic struct type.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/anymiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AnyMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Erases the protocol <code>Middleware</code>. Please check its documentation for more information.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/anystateprovider/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AnyStateProvider</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><code>AnyStateProvider</code> erases the protocol <code>StateProvider</code>, which defines a entities able to offer state publishers (Combine Publisher, RxSwift Observable, ReactiveSwift SignalProducer) of certain <code>StateType</code>, so everybody can observe the global state changes through this container. Usually a <code>Store</code> will implement that, but it can also be a <code>StoreProjection</code> with a state that is derived from the global source-of-truth.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/anystoretype/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>AnyStoreType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Type-erasure for the protocol <a href='../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/composedmiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ComposedMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The <code>ComposedMiddleware</code> is a container of inner middlewares that are chained together in the order as they were composed. Whenever an <code>EventProtocol</code> or an <code>ActionProtocol</code> arrives to be handled by this <code>ComposedMiddleware</code>, it will delegate to its internal chain of middlewares.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/dispatchedaction/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>DispatchedAction</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Wraps an action and the information about its dispatcher. It can be used when reactive pipelines want to enforce that the result is an action while keeping track about the source of that action. For example, certain RxSwift, Combine or ReactiveSwift pipeline want to send actions to the store and because ActionHandler has a function <code>dispatch(_ action: ActionType, from dispatcher: ActionSource)</code>, that pipeline should output a <code>DispatchedAction&lt;Action&gt;</code> to fulfil everything needed by the ActionHandler to feed that action into the store.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/elementidaction/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ElementIDAction</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/elementindexaction/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ElementIndexAction</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/io/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>IO</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/identitymiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>IdentityMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The <code>IdentityMiddleware</code> won’t do any operation, simply bypass actions through. It’s meant to provide identity axiom to middleware type to allow its conformance to monoid algebra. It will simply forward actions to the next middleware in the chain or to the reducers. It can be useful for Unit Tests or for some compositions.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/liftmiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>LiftMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">This is a container that lifts a sub-state middleware to a global state middleware.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/lifttocollectionmiddleware/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>LiftToCollectionMiddleware</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">This is a container that lifts a sub-state middleware to a global state middleware.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/middlewarereader/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>MiddlewareReader</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A MiddlewareReader is a way to lazily inject dependencies into a Middleware. For example, you may want to compose multiple middlewares but from a library, and in this library you don’t have the dependencies to inject just yet, because these dependencies are only present in the main target. That way, instead of creating the middlewares (which would require all the dependencies), you can wrap their initializers in a MiddlewareReader. The middleware reader is not a middleware, is a a factory (in OOP terms) from <code>(Dependencies) -&gt; MiddlewareType</code> (in FP approach). The benefit of wrapping the middleware initializers in a MiddlewareReader is that, for all means, MiddlewareReaders can be composed as Middlewares, can be lifted as Middlewares, but all of this without in fact creating the Middlewares. Your library can then expose a single MiddlewareReader as public, and you keep all its middlewares as internal classes. From the main target you compose this MiddlewareReader with other MiddlewareReaders coming from other libraries and from the main target itself. Somewhere where you create the Store, you finally inject the dependencies at once and you materialize all your middlewares at the same time. Remember that “inject then compose” is the same as “compose then inject”, but while the former needs dependencies upfront, the latter is more flexible for being lazy. For those familiar with Functional Programming, this is similar to Reader Monad, but as SwiftRex recommends dependencies only on Middlewares, this Reader works specifically with Middlewares.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/publishertype/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>PublisherType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over publisher/observable/signal producer types from reactive frameworks. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/reducer/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>Reducer</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"><code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/replaylastsubjecttype/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>ReplayLastSubjectType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>, <code>Variable</code>) from reactive frameworks. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/subjecttype/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>SubjectType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over passthrough subject types (<code>PassthroughSubject</code>, <code>PublishSubject</code>, <code>Signal</code>) from reactive frameworks. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/subscribertype/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>SubscriberType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over subscriber/observer types from reactive frameworks. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Operators</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/__(_:_:)-23xz.html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>&lt;&gt;</span><span class='decorator empty-token'> </span><span class='decorator'>(</span><span class='decorator'>AfterReducer</span><span class='decorator'>, </span><span class='decorator'>AfterReducer</span><span class='decorator'>) -&gt; </span><span class='decorator'>AfterReducer</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">The combination between two <code>AfterReducer</code> instances occur in reverse order so the first middleware will have its “after reducer” closure executed last. This composition can be achieved by using the operator <code>&lt;&gt;</code>.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/__(_:_:)-4uag.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>&lt;&gt;</span><span class='decorator empty-token'> </span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>&gt;(</span><span class='decorator'>M1</span><span class='decorator'>, </span><span class='decorator'>M2</span><span class='decorator'>) -&gt; </span><span class='decorator'>ComposedMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>M1</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Initializes a <code>ComposedMiddleware</code> from the <code>lhs</code> and <code>rhs</code> middlewares parameters, or appends to the <code>lhs</code> if it is already a <code>ComposedMiddleware</code>, as shown below:</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/__(_:_:)-uiwz.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>&lt;&gt;</span><span class='decorator empty-token'> </span><span class='decorator'>&lt;</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;(</span><span class='decorator'>IO</span><span class='decorator'>&lt;</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;, </span><span class='decorator'>IO</span><span class='decorator'>&lt;</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>IO</span><span class='decorator'>&lt;</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Type Aliases</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/getstate.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>GetState</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Zero-argument function that returns the current state.  <code>() -&gt; StateType</code></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/mutablereducefunction.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>MutableReduceFunction</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">State reducer: takes inout version of the current state and an action, computes the new state changing the provided mutable state.  <code>(ActionType, inout StateType) -&gt; Void</code></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/reducefunction.html" class="link deprecated has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>ReduceFunction</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">State reducer: takes current state and an action, computes the new state.  <code>(ActionType, StateType) -&gt; StateType</code></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/storeprojection.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>StoreProjection</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">An app should have a single real Store, holding a single source-of-truth. However, we can “derive” this store to small subsets, called store projections, that will handle either a smaller part of the state or action tree, or even a completely different type of actions and states as long as we can map back-and-forth to the original store types. It won’t store anything, only project the original store. For example, a View can define a completely custom View State and View Action, and we can create a <a href='../../documentation/swiftrex/storeprojection.html'><code>StoreProjection</code></a> that works on these types, as long as it’s backed by a real store which State and Action types can be mapped somehow to the View State and View Action types. The Store Projection will take care of translating these entities.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/unfailablepublishertype.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>UnfailablePublisherType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over publisher/observable/signal producer types from reactive frameworks. For this specific case, the failure/error is <code>Never</code>, meaning that this publisher can’t emit error. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/unfailablereplaylastsubjecttype.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>UnfailableReplayLastSubjectType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over subject types able to keep the last object (<code>CurrentValueSubject</code>, <code>BehaviorSubject</code>, <code>MutableProperty</code>, <code>Variable</code>) from reactive frameworks. For this specific case, the failure/error is <code>Never</code>, meaning that this subject can’t emit error. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/unfailablesubject.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>UnfailableSubject</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over passthrough subject types (<code>PassthroughSubject</code>, <code>PublishSubject</code>, <code>Signal</code>) from reactive frameworks. For this specific case, the failure/error is <code>Never</code>, meaning that this subject can’t emit error. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/unfailablesubscribertype.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>typealias</span><span class='decorator empty-token'> </span><span class='identifier'>UnfailableSubscriberType</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">Abstraction over subscriber/observer types from reactive frameworks. For this specific case, the failure/error is <code>Never</code>, meaning that this subscriber can only subscribe to publishers that don’t emit errors. This abstraction uses concept similar to type-erasure or protocol witness pattern, wrapping the behaviour of concrete implementations and delegating to them once the wrapper funcions are called.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="row contenttable-section">
+        <div class="col section-title large-3 medium-3 small-12">
+          <h3 class="title">Enumerations</h3>
+        </div>
+  
+        <div class="col section-content large-9 medium-9 small-12">
+          
+            <div class="link-block topic">
+              
+                <a href="../../documentation/swiftrex/shouldemitvalue/index.html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>enum</span><span class='decorator empty-token'> </span><span class='identifier'>ShouldEmitValue</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content">A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in case it should emit it, or false in case it should not emit it. It comes with some standard options like <code>.always</code>, <code>.never</code>, <code>.when(old, new) -&gt; Bool</code> and, for <code>Equatable</code> structures, <code>.whenDifferent</code>.</div>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+  </div>
+</section>
+  
+</main>
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

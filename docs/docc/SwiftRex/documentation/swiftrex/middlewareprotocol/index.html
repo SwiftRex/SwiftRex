@@ -55,7 +55,7 @@
   <div class="container content-grid">
   <div class="description">
     <div class="abstract content">
-      <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> is a plugin, or a composition of several plugins, that are assigned to the app global <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> pipeline in order to handle each action received (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a>), to execute side-effects in response, and eventually dispatch more actions (<a href='../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html'><code>OutputActionType</code></a>) in the process. It can also access the most up-to-date <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> while handling an incoming action.
+      <a href='../../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> is a plugin, or a composition of several plugins, that are assigned to the app global <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a> pipeline in order to handle each action received (<a href='../../../documentation/swiftrex/middlewareprotocol/inputactiontype.html'><code>InputActionType</code></a>), to execute side-effects in response, and eventually dispatch more actions (<a href='../../../documentation/swiftrex/middlewareprotocol/outputactiontype.html'><code>OutputActionType</code></a>) in the process. It can also access the most up-to-date <a href='../../../documentation/swiftrex/middlewareprotocol/statetype.html'><code>StateType</code></a> while handling an incoming action.
     </div>
   </div>
   
@@ -67,113 +67,7 @@
   <div class='declaration-group'>
     <pre class='source indented'><code><span class='token-keyword'>protocol</span> <span class='token-identifier'>MiddlewareProtocol</span></code></pre>
   </div>
-</section><div class='content'><h2 id='overview'>Overview</h2><p>We can think of a Middleware as an object that transforms actions into sync or async tasks and create more actions as these side-effects complete, also being able to check the current state while handling an action.</p><p>An <a href='../../../documentation/SwiftRex/Action.html'>Action</a> is a lightweight structure, typically an enum, that is dispatched into the <a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a> (usually a <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>).</p><p>A Store like <a href='../../../documentation/SwiftRex/ReduxStoreProtocol/index.html'><code>ReduxStoreProtocol</code></a> enqueues a new action that arrives and submits it to a pipeline of middlewares. So, in other words, a <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> is class that handles actions, and has the power to dispatch more actions, either immediately or after callback of async tasks. The middleware can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests, for example. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response (a JSON file, an array of movies, credentials, etc). Other middlewares will handle that, or maybe even the same middleware in the future, or perhaps some <a href='../../../documentation/SwiftRex/Reducer/index.html'><code>Reducer</code></a> will use this action to change the state, because the <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> itself can never change the state, only read it.</p><p>The <a href='../../../documentation/SwiftRex/MiddlewareProtocol/handle(action:from:state:).html'><code>handle(action:from:state:)</code></a> will be called before the Reducer, so if you read the state at that point it’s still going to be the unchanged version. While implementing this function, it’s expected that you return an <a href='../../../documentation/SwiftRex/IO/index.html'><code>IO</code></a> object, which is basically a closure where you can perform side-effects and dispatch new actions. Inside this closure, the state will have the new values after the reducers handled the current action, so in case you made a copy of the old state, you can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches. Remote Debugging over the network is also a great use of a Middleware.</p><p>Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file name, line of code, function name and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.</p><p>Ideally a <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> should be a small and reusable box, handling only a very limited set of actions, and combined with other small middlewares to create more complex apps. For example, the same <code>CoreLocation</code> middleware could be used from an iOS app, its extensions, the Apple Watch extension or even different apps, as long as they share some sub-action tree and sub-state struct.</p><p>Some suggestions of middlewares:</p><ul><li><p><p>Run Timers, pooling some external resource or updating some local state at a constant time</p></p></li><li><p><p>Subscribe for <code>CoreData</code>, <code>Realm</code>, <code>Firebase Realtime Database</code> or equivalent database changes</p></p></li><li><p><p>Be a <code>CoreLocation</code> delegate, checking for significant location changes or beacon ranges and triggering actions to update the state</p></p></li><li><p><p>Be a <code>HealthKit</code> delegate to track activities, or even combining that with <code>CoreLocation</code> observation in order to track the activity route</p></p></li><li><p><p>Logger, Telemetry, Auditing, Analytics tracker, Crash report breadcrumbs</p></p></li><li><p><p>Monitoring or debugging tools, like external apps to monitor the state and actions remotely from a different device</p></p></li><li><p><p><code>WatchConnectivity</code> sync, keep iOS and watchOS state in sync</p></p></li><li><p><p>API calls and other “cold observables”</p></p></li><li><p><p>Network Reachability</p></p></li><li><p><p>Navigation through the app (Redux Coordinator pattern)</p></p></li><li><p><p><code>CoreBluetooth</code> central or peripheral manager</p></p></li><li><p><p><code>CoreNFC</code> manager and delegate</p></p></li><li><p><p><code>NotificationCenter</code> and other delegates</p></p></li><li><p><p>WebSocket, TCP Socket, Multipeer and many other connectivity protocols</p></p></li><li><p><p><code>RxSwift</code> observables, <code>ReactiveSwift</code> signal producers, <code>Combine</code> publishers</p></p></li><li><p><p>Observation of traits changes, device rotation, language/locale, dark mode, dynamic fonts, background/foreground state</p></p></li><li><p><p>Any side-effect, I/O, networking, sensors, third-party libraries that you want to abstract</p></p></li></ul><div data-syntax="" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                                    ┌────────┐                                     </span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">                                                       IO closure                                                ┌─▶│ View 1 │                                     </span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">                      ┌─────┐                          (don&#39;t run yet)                       ┌─────┐             │  └────────┘                                     </span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">                      │     │ handle  ┌──────────┐  ┌───────────────────────────────────────▶│     │ send        │  ┌────────┐                                     </span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">                      │     ├────────▶│Middleware│──┘                                        │     │────────────▶├─▶│ View 2 │                                     </span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">                      │     │ Action  │ Pipeline │──┐  ┌─────┐ reduce ┌──────────┐           │     │ New state   │  └────────┘                                     </span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">                      │     │         └──────────┘  └─▶│     │───────▶│ Reducer  │──────────▶│     │             │  ┌────────┐                                     </span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">    ┌──────┐ dispatch │     │                          │Store│ Action │ Pipeline │ New state │     │             └─▶│ View 3 │                                     </span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">    │Button│─────────▶│Store│                          │     │ +      └──────────┘           │Store│                └────────┘                                     </span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">    └──────┘ Action   │     │                          └─────┘ State                         │     │                                   dispatch    ┌─────┐         </span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │       ┌─────────────────────────┐ New Action  │     │         </span></span>
-<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │─run──▶│       IO closure        ├────────────▶│Store│─ ─ ▶ ...</span></span>
-<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │       │                         │             │     │         </span></span>
-<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line">                      │     │                                                                │     │       └─┬───────────────────────┘             └─────┘         </span></span>
-<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">                      └─────┘                                                                └─────┘         │                     ▲                               </span></span>
-<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                      request│ side-effects        │side-effects                   </span></span>
-<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                             ▼                      response                       </span></span>
-<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                        ┌ ─ ─ ─ ─ ─                │                               </span></span>
-<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                          External │─ ─ async ─ ─ ─                                </span></span>
-<span class="code-line-container"><span data-line-number="20" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                        │  World                                                   </span></span>
-<span class="code-line-container"><span data-line-number="21" class="code-number" style="display: none;"></span><span class="code-line">                                                                                                         ─ ─ ─ ─ ─ ┘                                               </span></span>
-</code></pre>
-  </div>
-</div><h4 id='Generics'>Generics</h4><p>Middleware protocol is generic over 3 associated types:</p><ul><li><p><p><a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a>:</p><p>The Action type that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> knows how to handle, so the store will forward actions of this type to this middleware.</p><p>Most of the times middlewares don’t need to handle all possible actions from the whole global action tree, so we can decide to allow it to focus only on a subset of the action.</p><p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <a href='../../../documentation/SwiftRex/Lifting.html'>Lifting</a> for more details.</p></p></li><li><p><p><a href='../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html'><code>OutputActionType</code></a>:</p><p>The Action type that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> will eventually trigger back to the store in response of side-effects. This can be the same as <a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a> or different, in case you want to separate your enum in requests and responses.</p><p>Most of the times middlewares don’t need to dispatch all possible actions of the whole global action tree, so we can decide to allow it to dispatch only a subset of the action, or not dispatch any action at all, so the <a href='../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html'><code>OutputActionType</code></a> can safely be set to <code>Never</code>.</p><p>In this case, this action type can be a subset to be lifted to a global action type in order to compose with other middlewares acting on the global action of an app. Please check <a href='../../../documentation/SwiftRex/Lifting.html'>Lifting</a> for more details.</p></p></li><li><p><p><a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a>:</p><p>The State part that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> from the store while handling an incoming action, but it can never write or make changes to it.</p><p>Most of the times middlewares don’t need reading the whole global state, so we can decide to allow it to read only a subset of the state, or maybe this middleware doesn’t need to read any state, so the <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> can safely be set to <code>Void</code>.</p><p>In this case, this state type can be a subset to be lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <a href='../../../documentation/SwiftRex/Lifting.html'>Lifting</a> for more details.</p></p></li></ul><h4 id='Returning-IO-and-performing-side-effects'>Returning IO and performing side-effects</h4><p>In its most important function, <a href='../../../documentation/SwiftRex/MiddlewareProtocol/handle(action:from:state:).html'><code>handle(action:from:state:)</code></a> the middleware is expected to return an <a href='../../../documentation/SwiftRex/IO/index.html'><code>IO</code></a> object, which is a closure where side-effects should be executed and new actions can be dispatched.</p><p>In some cases, we may want to not execute any side-effect or run any code after reducer, in that case, the function can return a simple <a href='../../../documentation/SwiftRex/IO/pure().html'><code>pure()</code></a>.</p><p>Otherwise, return the closure that takes the <code>output</code> (of <a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a> type, that accepts <a href='../../../documentation/SwiftRex/ActionHandler/dispatch(_:).html'><code>dispatch(_:)</code></a> calls):</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState&lt;StateType&gt;) -&gt; IO&lt;OutputActionType&gt; {</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    if action != .myExpectedAction { return .pure() }</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">    return IO { output in </span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line">        output.dispatch(.showPopup)</span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">        DispatchQueue.global().asyncAfter(.now() + .seconds(3)) { </span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">            output.dispatch(.hidePopup)</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-</code></pre>
-  </div>
-</div><h4 id='Dependency-Injection'>Dependency Injection</h4><p>Testability is one of the most important aspects to account for when developing software. In Redux architecture, <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> is the only type of object allowed to perform side-effects, so it’s the only place where the testability can be challenging.</p><p>To improve testability, the middleware should use as few external dependencies as possible. If it starts to use too many, consider splitting in smaller middlewares, this will also protect you against race conditions and other problems, will help with tests and make the middleware more reusable.</p><p>Also, all external dependencies should be injected in the initialiser, so during the tests you can replace them with mocks. If your middleware uses only one call from a very complex object, instead of using a protocol full of functions please consider either creating a protocol with a single function requirement, or even inject a closure such as <code>@escaping (URLRequest) -&gt; AnyPublisher&lt;(Data, URLResponse), Error&gt;</code>. Creating mocks for this will be way much easier.</p><p>Finally, consider using <a href='../../../documentation/SwiftRex/MiddlewareReader/index.html'><code>MiddlewareReader</code></a> to wrap this middleware in a dependency injection container.</p><h4 id='Examples'>Examples</h4><p>When implementing your Middleware, all you have to do is to handle the incoming actions:</p><div data-syntax="swift" class="code-listing">
-  <div class="container-general">
-    <pre><code><span class="code-line-container"><span data-line-number="1" class="code-number" style="display: none;"></span><span class="code-line">public final class LoggerMiddleware: MiddlewareProtocol {</span></span>
-<span class="code-line-container"><span data-line-number="2" class="code-number" style="display: none;"></span><span class="code-line">    public typealias InputActionType = AppGlobalAction // It wants to receive all possible app actions</span></span>
-<span class="code-line-container"><span data-line-number="3" class="code-number" style="display: none;"></span><span class="code-line">    public typealias OutputActionType = Never          // No action is generated from this Middleware</span></span>
-<span class="code-line-container"><span data-line-number="4" class="code-number" style="display: none;"></span><span class="code-line">    public typealias StateType = AppGlobalState        // It wants to read the whole app state</span></span>
-<span class="code-line-container"><span data-line-number="5" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="6" class="code-number" style="display: none;"></span><span class="code-line">    private let logger: Logger</span></span>
-<span class="code-line-container"><span data-line-number="7" class="code-number" style="display: none;"></span><span class="code-line">    private let now: () -&gt; Date</span></span>
-<span class="code-line-container"><span data-line-number="8" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="9" class="code-number" style="display: none;"></span><span class="code-line">    // Dependency Injection</span></span>
-<span class="code-line-container"><span data-line-number="10" class="code-number" style="display: none;"></span><span class="code-line">    public init(logger: Logger = Logger.default, now: @escaping () -&gt; Date) {</span></span>
-<span class="code-line-container"><span data-line-number="11" class="code-number" style="display: none;"></span><span class="code-line">        self.logger = logger</span></span>
-<span class="code-line-container"><span data-line-number="12" class="code-number" style="display: none;"></span><span class="code-line">        self.now = now</span></span>
-<span class="code-line-container"><span data-line-number="13" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="14" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="15" class="code-number" style="display: none;"></span><span class="code-line">    //            inputAction: AppGlobalAction                                                state: AppGlobalState     output action: Never  </span></span>
-<span class="code-line-container"><span data-line-number="16" class="code-number" style="display: none;"></span><span class="code-line">    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState&lt;StateType&gt;) -&gt; IO&lt;OutputActionType&gt; {</span></span>
-<span class="code-line-container"><span data-line-number="17" class="code-number" style="display: none;"></span><span class="code-line">        let stateBefore: AppGlobalState = state()</span></span>
-<span class="code-line-container"><span data-line-number="18" class="code-number" style="display: none;"></span><span class="code-line">        let dateBefore = now()</span></span>
-<span class="code-line-container"><span data-line-number="19" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="20" class="code-number" style="display: none;"></span><span class="code-line">        return IO { [weak self] output in</span></span>
-<span class="code-line-container"><span data-line-number="21" class="code-number" style="display: none;"></span><span class="code-line">            guard let self = self else { return }</span></span>
-<span class="code-line-container"><span data-line-number="22" class="code-number" style="display: none;"></span><span class="code-line">            let stateAfter = state()</span></span>
-<span class="code-line-container"><span data-line-number="23" class="code-number" style="display: none;"></span><span class="code-line">            let dateAfter = self.now()</span></span>
-<span class="code-line-container"><span data-line-number="24" class="code-number" style="display: none;"></span><span class="code-line">            let source = &quot;\(dispatcher.file):\(dispatcher.line) - \(dispatcher.function) | \(dispatcher.info ?? &quot;&quot;)&quot;</span></span>
-<span class="code-line-container"><span data-line-number="25" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="26" class="code-number" style="display: none;"></span><span class="code-line">            self.logger.log(action: action, from: source, before: stateBefore, after: stateAfter, dateBefore: dateBefore, dateAfter: dateAfter)</span></span>
-<span class="code-line-container"><span data-line-number="27" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
-<span class="code-line-container"><span data-line-number="28" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="29" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-<span class="code-line-container"><span data-line-number="30" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="31" class="code-number" style="display: none;"></span><span class="code-line">public final class FavoritesAPIMiddleware: MiddlewareProtocol {</span></span>
-<span class="code-line-container"><span data-line-number="32" class="code-number" style="display: none;"></span><span class="code-line">    public typealias InputActionType = FavoritesAction  // It wants to receive only actions related to Favorites</span></span>
-<span class="code-line-container"><span data-line-number="33" class="code-number" style="display: none;"></span><span class="code-line">    public typealias OutputActionType = FavoritesAction // It wants to also dispatch actions related to Favorites</span></span>
-<span class="code-line-container"><span data-line-number="34" class="code-number" style="display: none;"></span><span class="code-line">    public typealias StateType = FavoritesModel         // It wants to read the app state that manages favorites</span></span>
-<span class="code-line-container"><span data-line-number="35" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="36" class="code-number" style="display: none;"></span><span class="code-line">    private let api: API</span></span>
-<span class="code-line-container"><span data-line-number="37" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="38" class="code-number" style="display: none;"></span><span class="code-line">    // Dependency Injection</span></span>
-<span class="code-line-container"><span data-line-number="39" class="code-number" style="display: none;"></span><span class="code-line">    public init(api: API) {</span></span>
-<span class="code-line-container"><span data-line-number="40" class="code-number" style="display: none;"></span><span class="code-line">        self.api = api</span></span>
-<span class="code-line-container"><span data-line-number="41" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="42" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="43" class="code-number" style="display: none;"></span><span class="code-line">    //            inputAction: FavoritesAction                                                state: FavoritesModel     output action: FavoritesAction  </span></span>
-<span class="code-line-container"><span data-line-number="44" class="code-number" style="display: none;"></span><span class="code-line">    public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState&lt;StateType&gt;) -&gt; IO&lt;OutputActionType&gt; {</span></span>
-<span class="code-line-container"><span data-line-number="45" class="code-number" style="display: none;"></span><span class="code-line">        guard case let .toggleFavorite(movieId) = action else { return .pure() }</span></span>
-<span class="code-line-container"><span data-line-number="46" class="code-number" style="display: none;"></span><span class="code-line">        let favoritesList = state() // state before reducer</span></span>
-<span class="code-line-container"><span data-line-number="47" class="code-number" style="display: none;"></span><span class="code-line">        let makeFavorite = !favoritesList.contains(where: { $0.id == movieId })</span></span>
-<span class="code-line-container"><span data-line-number="48" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="49" class="code-number" style="display: none;"></span><span class="code-line">        return IO { [weak self] output in</span></span>
-<span class="code-line-container"><span data-line-number="50" class="code-number" style="display: none;"></span><span class="code-line">            guard let self = self else { return }</span></span>
-<span class="code-line-container"><span data-line-number="51" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="52" class="code-number" style="display: none;"></span><span class="code-line">            self.api.changeFavorite(id: movieId, makeFavorite: makeFavorite) (completion: { result in</span></span>
-<span class="code-line-container"><span data-line-number="53" class="code-number" style="display: none;"></span><span class="code-line">                switch result {</span></span>
-<span class="code-line-container"><span data-line-number="54" class="code-number" style="display: none;"></span><span class="code-line">                case let .success(value):</span></span>
-<span class="code-line-container"><span data-line-number="55" class="code-number" style="display: none;"></span><span class="code-line">                    output.dispatch(.changedFavorite(movieId, isFavorite: makeFavorite), info: &quot;API.changeFavorite callback&quot;)</span></span>
-<span class="code-line-container"><span data-line-number="56" class="code-number" style="display: none;"></span><span class="code-line">                case let .failure(error):</span></span>
-<span class="code-line-container"><span data-line-number="57" class="code-number" style="display: none;"></span><span class="code-line">                    output.dispatch(.changedFavoriteHasFailed(movieId, isFavorite: !makeFavorite, error: error), info: &quot;api.changeFavorite callback&quot;)</span></span>
-<span class="code-line-container"><span data-line-number="58" class="code-number" style="display: none;"></span><span class="code-line">                }</span></span>
-<span class="code-line-container"><span data-line-number="59" class="code-number" style="display: none;"></span><span class="code-line">            })</span></span>
-<span class="code-line-container"><span data-line-number="60" class="code-number" style="display: none;"></span><span class="code-line"></span></span>
-<span class="code-line-container"><span data-line-number="61" class="code-number" style="display: none;"></span><span class="code-line">        }</span></span>
-<span class="code-line-container"><span data-line-number="62" class="code-number" style="display: none;"></span><span class="code-line">    }</span></span>
-<span class="code-line-container"><span data-line-number="63" class="code-number" style="display: none;"></span><span class="code-line">}</span></span>
-</code></pre>
-  </div>
-</div><h4 id='WWDC-slide-about-SwiftUI'>WWDC slide about SwiftUI</h4><p><picture><source media='(prefers-color-scheme: light)' srcset='../../../images/wwdc2019-226-02@1x.jpg 2x'><img alt='SwiftUI Side-Effects' srcset='../../../images/wwdc2019-226-02@1x.jpg 2x' src='../../../images/wwdc2019-226-02@1x.jpg' width='2376' height='auto' /></source></picture></p></div>
+</section>
   </div>
 </div>
   
@@ -191,37 +85,37 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/inputactiontype.html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>associatedtype</span><span class='decorator empty-token'> </span><span class='identifier'>InputActionType</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">The Action type that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> knows how to handle, so the store will forward actions of this type to this middleware.</div>
+                <div class="content">The Action type that this <a href='../../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> knows how to handle, so the store will forward actions of this type to this middleware.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/OutputActionType.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/outputactiontype.html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>associatedtype</span><span class='decorator empty-token'> </span><span class='identifier'>OutputActionType</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">The Action type that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> will eventually trigger back to the store in response of side-effects. This can be the same as <a href='../../../documentation/SwiftRex/MiddlewareProtocol/InputActionType.html'><code>InputActionType</code></a> or different, in case you want to separate your enum in requests and responses.</div>
+                <div class="content">The Action type that this <a href='../../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> will eventually trigger back to the store in response of side-effects. This can be the same as <a href='../../../documentation/swiftrex/middlewareprotocol/inputactiontype.html'><code>InputActionType</code></a> or different, in case you want to separate your enum in requests and responses.</div>
               </div>
             </div>
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/statetype.html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>associatedtype</span><span class='decorator empty-token'> </span><span class='identifier'>StateType</span></code>
                 </a>
               
               
               <div class="abstract">
-                <div class="content">The State part that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <a href='../../../documentation/SwiftRex/MiddlewareProtocol/StateType.html'><code>StateType</code></a> from the store while handling an incoming action, but it can never write or make changes to it.</div>
+                <div class="content">The State part that this <a href='../../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <a href='../../../documentation/swiftrex/middlewareprotocol/statetype.html'><code>StateType</code></a> from the store while handling an incoming action, but it can never write or make changes to it.</div>
               </div>
             </div>
           
@@ -237,7 +131,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/eraseToAnyMiddleware().html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/erasetoanymiddleware().html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>eraseToAnyMiddleware</span><span class='decorator'>() -&gt; </span><span class='decorator'>AnyMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -249,7 +143,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/handle(action:from:state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/handle(action:from:state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>handle</span><span class='decorator'>(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>, </span><span class='decorator'>from</span><span class='decorator'>: </span><span class='decorator'>ActionSource</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: </span><span class='decorator'>GetState</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>IO</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -261,7 +155,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/lift(inputAction:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lift(inputaction:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -273,7 +167,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/lift(inputAction:outputAction:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lift(inputaction:outputaction:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -285,7 +179,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/lift(inputAction:outputAction:state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lift(inputaction:outputaction:state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -297,7 +191,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/lift(inputAction:state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lift(inputaction:state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>?, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -309,7 +203,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/lift(outputAction:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lift(outputaction:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -321,7 +215,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/lift(outputAction:state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lift(outputaction:state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -333,7 +227,7 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/lift(state:).html" class="link has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lift(state:).html" class="link has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>lift</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>&gt;(</span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
                 </a>
               
@@ -345,7 +239,31 @@
           
             <div class="link-block topic">
               
-                <a href="../../../documentation/SwiftRex/MiddlewareProtocol/receiveContext(getState:output:)-lixv.html" class="link deprecated has-adjacent-elements">
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lifttocollection(action:statecollection:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>action</span><span class='decorator'>: </span><span class='decorator'>WritableKeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>&gt;?&gt;, </span><span class='decorator'>stateCollection</span><span class='decorator'>: </span><span class='decorator'>KeyPath</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>LiftToCollectionMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/middlewareprotocol/lifttocollection(inputaction:outputaction:state:).html" class="link has-adjacent-elements">
+                  <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>liftToCollection</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>&gt;(</span><span class='decorator'>inputAction</span><span class='decorator'>: (</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>) -&gt; </span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>InputActionType</span><span class='decorator'>&gt;?, </span><span class='decorator'>outputAction</span><span class='decorator'>: (</span><span class='decorator'>ElementIDAction</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>.</span><span class='decorator'>ID</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;) -&gt; </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>state</span><span class='decorator'>: (</span><span class='decorator'>GlobalStateType</span><span class='decorator'>) -&gt; </span><span class='decorator'>CollectionState</span><span class='decorator'>) -&gt; </span><span class='decorator'>LiftToCollectionMiddleware</span><span class='decorator'>&lt;</span><span class='decorator'>GlobalInputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalOutputActionType</span><span class='decorator'>, </span><span class='decorator'>GlobalStateType</span><span class='decorator'>, </span><span class='decorator'>CollectionState</span><span class='decorator'>, </span><span class='decorator'>Self</span><span class='decorator'>&gt;</span></code>
+                </a>
+              
+              
+              <div class="abstract">
+                <div class="content"></div>
+              </div>
+            </div>
+          
+            <div class="link-block topic">
+              
+                <a href="../../../documentation/swiftrex/middlewareprotocol/receivecontext(getstate:output:)-lixv.html" class="link deprecated has-adjacent-elements">
                   <code class="decorated-title"><span class='decorator'>func</span><span class='decorator empty-token'> </span><span class='identifier'>receiveContext</span><span class='decorator'>(</span><span class='decorator'>getState</span><span class='decorator'>: </span><span class='decorator'>GetState</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>StateType</span><span class='decorator'>&gt;, </span><span class='decorator'>output</span><span class='decorator'>: </span><span class='decorator'>AnyActionHandler</span><span class='decorator'>&lt;</span><span class='decorator'>Self</span><span class='decorator'>.</span><span class='decorator'>OutputActionType</span><span class='decorator'>&gt;)</span></code>
                 </a>
               
@@ -360,111 +278,7 @@
     
   </div>
 </section>
-  <section id='see-also' class='contenttable alt-light'>
-  <div class='container'>
-    <h2 class='title'>See Also</h2>
-
-    
-      <div class="row contenttable-section">
-        <div class="col section-title large-3 medium-3 small-12">
-          <h3 class="title">Learning</h3>
-        </div>
   
-        <div class="col section-content large-9 medium-9 small-12">
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/QuickGuide.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Quick Guide
-                </a>
-              
-              <div class="abstract">
-                <div class="content">This is a TL;DR in case you want to start quickly, without too much theory, or in case you’re already pretty familiar with other redux implementations. We still recommend the other topics for a deeper understanding behind SwiftRex concepts.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/GettingStarted.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Getting Started
-                </a>
-              
-              <div class="abstract">
-                <div class="content">Let’s understand the components of SwiftRex.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/Action.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  Action
-                </a>
-              
-              <div class="abstract">
-                <div class="content">An Action represents an event that was notified by external (or sometimes internal) actors of your app. It’s about relevant INPUT events.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-              
-                <a href="../../../documentation/SwiftRex/State.html" class="link has-adjacent-elements">
-                  <span class="topic-icon-wrapper">&nbsp;</span>
-                  State
-                </a>
-              
-              <div class="abstract">
-                <div class="content">State represents the whole knowledge that an app holds while is open, usually in memory and mutable. It’s about relevant OUTPUT properties.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/StoreType/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>StoreType</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">A protocol that defines the two expected roles of a “Store”: receive/distribute actions (<a href='../../../documentation/SwiftRex/ActionHandler/index.html'><code>ActionHandler</code></a>); and publish changes of the the current app state (<a href='../../../documentation/SwiftRex/StateProvider/index.html'><code>StateProvider</code></a>) to possible subscribers. It can be a real store (such as <a href='../../../documentation/SwiftRex/ReduxStoreBase/index.html'><code>ReduxStoreBase</code></a>) or just a “proxy” that acts on behalf of a real store, for example, in the case of <a href='../../../documentation/SwiftRex/StoreProjection.html'><code>StoreProjection</code></a>.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/Middleware/index.html" class="link deprecated has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>protocol</span><span class='decorator empty-token'> </span><span class='identifier'>Middleware</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content">⛓ <code>Middleware</code> is a plugin, or a composition of several plugins, that are assigned to the <code>ReduxStoreProtocol</code> pipeline in order to handle each action received (<code>InputActionType</code>), to execute side-effects in response, and eventually dispatch more actions (<code>OutputActionType</code>) in the process. This happens before the <code>Reducer</code> to do its job.</div>
-              </div>
-            </div>
-          
-            <div class="link-block topic">
-              
-                <a href="../../../documentation/SwiftRex/Reducer/index.html" class="link has-adjacent-elements">
-                  <code class="decorated-title"><span class='decorator'>struct</span><span class='decorator empty-token'> </span><span class='identifier'>Reducer</span></code>
-                </a>
-              
-              
-              <div class="abstract">
-                <div class="content"><code>Reducer</code> is a pure function wrapped in a monoid container, that takes an action and the current state to calculate the new state.</div>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-  </div>
-</section>
 </main>
       </div>
     </div>

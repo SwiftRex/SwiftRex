@@ -62,7 +62,7 @@
   <div class="container content-grid">
   <div class="description">
     <div class="abstract content">
-      The State part that this <a href='../../../documentation/SwiftRex/MiddlewareProtocol/index.html'><code>MiddlewareProtocol</code></a> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <a href='../../../documentation/SwiftRex/LiftMiddleware/StateType.html'><code>LiftMiddleware.StateType</code></a> from the store while handling an incoming action, but it can never write or make changes to it.
+      The State part that this <a href='../../../documentation/swiftrex/middlewareprotocol/index.html'><code>MiddlewareProtocol</code></a> needs to read in order to make decisions. This middleware will be able to read the most up-to-date <a href='../../../documentation/swiftrex/liftmiddleware/statetype.html'><code>LiftMiddleware.StateType</code></a> from the store while handling an incoming action, but it can never write or make changes to it.
     </div>
   </div>
   
@@ -74,7 +74,7 @@
   <div class='declaration-group'>
     <pre class='source indented'><code><span class='token-keyword'>typealias</span> <span class='token-identifier'>StateType</span> = GlobalStateType</code></pre>
   </div>
-</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Most of the times middlewares don’t need reading the whole global state, so we can decide to allow it to read only a subset of the state, or maybe this middleware doesn’t need to read any state, so the <a href='../../../documentation/SwiftRex/LiftMiddleware/StateType.html'><code>LiftMiddleware.StateType</code></a> can safely be set to <code>Void</code>.</p><p>In this case, this state type can be a subset to be lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check <a href='../../../documentation/SwiftRex/Lifting.html'>Lifting</a> for more details.</p></div>
+</section><div class='content'><h2 id='discussion'>Discussion</h2><p>Most of the times middlewares don’t need reading the whole global state, so we can decide to allow it to read only a subset of the state, or maybe this middleware doesn’t need to read any state, so the <a href='../../../documentation/swiftrex/liftmiddleware/statetype.html'><code>LiftMiddleware.StateType</code></a> can safely be set to <code>Void</code>.</p><p>In this case, this state type can be a subset to be lifted to a global state in order to compose with other middlewares acting on the global state of an app. Please check doc:Lifting for more details.</p></div>
   </div>
 </div>
   

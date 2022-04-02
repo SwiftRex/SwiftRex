@@ -69,7 +69,7 @@
   <div class="container content-grid">
   <div class="description">
     <div class="abstract content">
-      Create another <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a> that handles a different type of Action. The original store will be used behind the scenes, by only the provided “transform” closure whenever an action arrives.
+      Create another <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a> that handles a different type of Action. The original store will be used behind the scenes, by only the provided “transform” closure whenever an action arrives.
     </div>
   </div>
   
@@ -79,15 +79,15 @@
     <section id='declaration' class='declaration'>
   <h2>Declaration</h2>
   <div class='declaration-group'>
-    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>contramapAction</span>&lt;<span class='token-genericParameter'>NewActionType</span>&gt;(<span class='token-externalParam'>_</span> <span class='token-internalParam'>transform</span>: <span class='token-keyword'>@escaping</span> (NewActionType) -&gt; Self.ActionType) -&gt; <a class='type-identifier-link' href='../../../documentation/SwiftRex/AnyStoreType/index.html'><span>AnyStoreType</span></a>&lt;NewActionType, Self.StateType&gt;</code></pre>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>contramapAction</span>&lt;<span class='token-genericParameter'>NewActionType</span>&gt;(<span class='token-externalParam'>_</span> <span class='token-internalParam'>transform</span>: <span class='token-keyword'>@escaping</span> (NewActionType) -&gt; Self.ActionType) -&gt; <a class='type-identifier-link' href='../../../documentation/swiftrex/anystoretype/index.html'><span>AnyStoreType</span></a>&lt;NewActionType, Self.StateType&gt;</code></pre>
   </div>
-</section><div class='content'><h2 id='return-value'>Return Value</h2><p>an <a href='../../../documentation/SwiftRex/AnyStoreType/index.html'><code>AnyStoreType</code></a> with same <code>Statetype</code> but different <code>ActionType</code> than the original store.</p></div><section id="parameters" class="parameters">
+</section><div class='content'><h2 id='return-value'>Return Value</h2><p>an <a href='../../../documentation/swiftrex/anystoretype/index.html'><code>AnyStoreType</code></a> with same <code>Statetype</code> but different <code>ActionType</code> than the original store.</p></div><section id="parameters" class="parameters">
   <h2>Parameters</h2>
   <dl>
     
       <dt class="param-name"><code>transform</code></dt>
       <dd class="param-content">
-        <div class="content"><p>a closure that will be executed every time an action arrives at the proxy <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>, so we can map it into the expected action type of the original <a href='../../../documentation/SwiftRex/StoreType/index.html'><code>StoreType</code></a>.</p></div>
+        <div class="content"><p>a closure that will be executed every time an action arrives at the proxy <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a>, so we can map it into the expected action type of the original <a href='../../../documentation/swiftrex/storetype/index.html'><code>StoreType</code></a>.</p></div>
       </dd>
     
   </dl>
