@@ -1,4 +1,4 @@
-// swift-tools-version:5.4
+// swift-tools-version:5.5
 import PackageDescription
 
 let package = Package(
@@ -20,7 +20,7 @@ let package = Package(
     targets: [
         .target(
             name: "SwiftRex",
-            exclude: ["CodeGeneration/Templates", "SwiftRex.docc"] // TODO: Once Swift Package is updated to 5.5, put docc back
+            exclude: ["CodeGeneration/Templates"]
         ),
         .target(name: "CombineRex", dependencies: ["SwiftRex"]),
         .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),

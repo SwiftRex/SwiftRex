@@ -1359,7 +1359,7 @@ If you use it from only one target, automatic mode should be fine.
 
 Combine, automatic linking mode:
 ```swift
-// swift-tools-version:5.4
+// swift-tools-version:5.5
 
 import PackageDescription
 
@@ -1380,7 +1380,7 @@ let package = Package(
 
 RxSwift, automatic linking mode:
 ```swift
-// swift-tools-version:5.4
+// swift-tools-version:5.5
 
 import PackageDescription
 
@@ -1401,7 +1401,7 @@ let package = Package(
 
 ReactiveSwift, automatic linking mode:
 ```swift
-// swift-tools-version:5.4
+// swift-tools-version:5.5
 
 import PackageDescription
 
@@ -1422,7 +1422,7 @@ let package = Package(
 
 Combine, dynamic linking mode (use similar approach of appending "Dynamic" also for RxSwift or ReactiveSwift products):
 ```swift
-// swift-tools-version:5.4
+// swift-tools-version:5.5
 
 import PackageDescription
 
