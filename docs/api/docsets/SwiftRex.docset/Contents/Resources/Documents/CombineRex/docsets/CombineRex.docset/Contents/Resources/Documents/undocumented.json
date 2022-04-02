@@ -443,14 +443,14 @@
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect/EffectMiddleware.swift",
-      "line": 183,
+      "line": 184,
       "symbol": "EffectMiddleware.onAction(do:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/luiz.barbosa/code/SwiftRex/SwiftRex/Sources/CombineRex/Effect/EffectMiddleware.swift",
-      "line": 194,
+      "line": 195,
       "symbol": "EffectMiddleware.onAction(do:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"

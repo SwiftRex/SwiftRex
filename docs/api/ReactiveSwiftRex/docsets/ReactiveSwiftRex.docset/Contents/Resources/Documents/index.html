@@ -16,7 +16,7 @@
     <a title="ReactiveSwiftRex  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">ReactiveSwiftRex 0.8.11 Docs</a> (35% documented)</p>
+        <p><a href="index.html">ReactiveSwiftRex 0.8.12 Docs</a> (35% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="search.json">
@@ -1525,7 +1525,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 <p>If you use it from only one target, automatic mode should be fine.</p>
 
 <p>Combine, automatic linking mode:</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.4</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.5</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -1536,7 +1536,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.11"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.12"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -1545,7 +1545,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 </code></pre>
 
 <p>RxSwift, automatic linking mode:</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.4</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.5</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -1556,7 +1556,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.11"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.12"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"RxSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -1565,7 +1565,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 </code></pre>
 
 <p>ReactiveSwift, automatic linking mode:</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.4</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.5</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -1576,7 +1576,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.11"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.12"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"ReactiveSwiftRex"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -1585,7 +1585,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
 </code></pre>
 
 <p>Combine, dynamic linking mode (use similar approach of appending &ldquo;Dynamic&rdquo; also for RxSwift or ReactiveSwift products):</p>
-<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.4</span>
+<pre class="highlight swift"><code><span class="c1">// swift-tools-version:5.5</span>
 
 <span class="kd">import</span> <span class="kt">PackageDescription</span>
 
@@ -1596,7 +1596,7 @@ dynamic linking and overcome current Xcode limitations to resolve diamond depend
     <span class="o">.</span><span class="nf">executable</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span><span class="s">"MyApp"</span><span class="p">])</span>
   <span class="p">],</span>
   <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.11"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/SwiftRex/SwiftRex.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.8.12"</span><span class="p">)</span>
   <span class="p">],</span>
   <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
     <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyApp"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"CombineRexDynamic"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"SwiftRex"</span><span class="p">)])</span>
@@ -1623,7 +1623,7 @@ was 0.7.1, and eventually target that version until we come up with a better sol
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2022 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2022-01-07)</p>
+          <p>&copy; 2022 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2022-04-02)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

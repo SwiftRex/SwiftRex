@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>LiftToCollectionMiddleware Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/LiftToCollectionMiddleware" class="dashAnchor"></a>
+    <a title="LiftToCollectionMiddleware Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">SwiftRex 0.8.12 Docs</a> (75% documented)</p>
+        <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">SwiftRex Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        LiftToCollectionMiddleware Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Guides.html">Guides</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../actionenumproperties.html">ActionEnumProperties</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../combinerex.html">CombineRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../quickguide.html">QuickGuide</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../reactiveswiftrex.html">ReactiveSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../rxswiftrex.html">RxSwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../statemanagement.html">StateManagement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../swiftrex.html">SwiftRex</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../uikitlifetimemanagement.html">UIKitLifetimeManagement</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ReduxPipelineWrapper.html">ReduxPipelineWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ReduxStoreBase.html">ReduxStoreBase</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/ShouldEmitValue.html">ShouldEmitValue</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Collection.html">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/DispatchQueue.html">DispatchQueue</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8SwiftRex2lgoiyAA12AfterReducerVAD_ADtF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8SwiftRex2lgoiyAA18ComposedMiddlewareVy15InputActionTypeQz06OutputgH0Qz05StateH0QzGx_q_tAA0E8ProtocolRzAaLR_AEQy_AFRSAGQy_AHRSAIQy_AJRSr0_lF">&lt;&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:8SwiftRex2lgoiyAA2IOVyxGAE_AEtlF">&lt;&gt;(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ActionHandler.html">ActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Middleware.html">Middleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/MiddlewareProtocol.html">MiddlewareProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/MiddlewareReaderProtocol.html">MiddlewareReaderProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Monoid.html">Monoid</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ReduxStoreProtocol.html">ReduxStoreProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/Semigroup.html">Semigroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StateProvider.html">StateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StoreType.html">StoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SubscriptionCollection.html">SubscriptionCollection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SubscriptionType.html">SubscriptionType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/ASAPScheduler.html">ASAPScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ActionSource.html">ActionSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AfterReducer.html">AfterReducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyActionHandler.html">AnyActionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyMiddleware.html">AnyMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStateProvider.html">AnyStateProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/AnyStoreType.html">AnyStoreType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ComposedMiddleware.html">ComposedMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/DispatchedAction.html">DispatchedAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ElementIDAction.html">ElementIDAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ElementIndexAction.html">ElementIndexAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/IO.html">IO</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/IdentityMiddleware.html">IdentityMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/LiftToCollectionMiddleware.html">LiftToCollectionMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/MiddlewareReader.html">MiddlewareReader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/PublisherType.html">PublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Reducer.html">Reducer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ReplayLastSubjectType.html">ReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SubjectType.html">SubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SubscriberType.html">SubscriberType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex21MutableReduceFunctiona">MutableReduceFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex14ReduceFunctiona">ReduceFunction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex15StoreProjectiona">StoreProjection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex23UnfailablePublisherTypea">UnfailablePublisherType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex31UnfailableReplayLastSubjectTypea">UnfailableReplayLastSubjectType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex17UnfailableSubjecta">UnfailableSubject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:8SwiftRex24UnfailableSubscriberTypea">UnfailableSubscriberType</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>LiftToCollectionMiddleware</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="n">macOS</span> <span class="mf">10.15</span><span class="p">,</span> <span class="n">iOS</span> <span class="mf">13.0</span><span class="p">,</span> <span class="n">tvOS</span> <span class="mf">13.0</span><span class="p">,</span> <span class="n">watchOS</span> <span class="mf">6.0</span><span class="p">,</span> <span class="o">*</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">LiftToCollectionMiddleware</span><span class="o">&lt;</span>
+    <span class="kt">GlobalInputActionType</span><span class="p">,</span>
+    <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="kt">GlobalStateType</span><span class="p">,</span>
+    <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="p">,</span>
+    <span class="kt">PartMiddleware</span><span class="p">:</span> <span class="kt"><a href="../Protocols/MiddlewareProtocol.html">MiddlewareProtocol</a></span><span class="o">&gt;</span><span class="p">:</span> <span class="kt"><a href="../Protocols/MiddlewareProtocol.html">MiddlewareProtocol</a></span>
+<span class="k">where</span> <span class="kt">PartMiddleware</span><span class="o">.</span><span class="kt">StateType</span><span class="p">:</span> <span class="kt">Identifiable</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">PartMiddleware</span><span class="o">.</span><span class="kt">StateType</span></code></pre>
+
+                </div>
+              </div>
+            <p>This is a container that lifts a sub-state middleware to a global state middleware.</p>
+
+<p>Internally you find the middleware responsible for handling events and actions for a sub-state (<code>Part</code>), while this outer class will be able to compose with global state (<code>Whole</code>) in your <code>Store</code>.</p>
+
+<p>You should not be able to instantiate this class directly, instead, create a middleware for the sub-state and call <code>Middleware.liftToCollection(_:)</code>, passing as parameter the keyPath from whole to part.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18MiddlewareProtocolP14receiveContext8getState6outputy0H4TypeQzyc_AA16AnyActionHandlerVy06OutputlJ0QzGtF"></a>
+                    <a name="//apple_ref/swift/Method/receiveContext(getState:output:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18MiddlewareProtocolP14receiveContext8getState6outputy0H4TypeQzyc_AA16AnyActionHandlerVy06OutputlJ0QzGtF">receiveContext(getState:<wbr>output:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="s">"Instead of relying on receiveContext, please use the getState from handle(action﹚ function,</span><span class="se">\n</span><span class="s">and when returning IO from the same handle(action﹚ function use the output from the closure"</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">receiveContext</span><span class="p">(</span><span class="nv">getState</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="nv">output</span><span class="p">:</span> <span class="kt"><a href="../Structs/AnyActionHandler.html">AnyActionHandler</a></span><span class="o">&lt;</span><span class="kt">GlobalOutputActionType</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex26LiftToCollectionMiddlewareV6handle6action4from5stateAA2IOVyq_Gx_AA12ActionSourceVq0_yctF"></a>
+                    <a name="//apple_ref/swift/Method/handle(action:from:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex26LiftToCollectionMiddlewareV6handle6action4from5stateAA2IOVyq_Gx_AA12ActionSourceVq0_yctF">handle(action:<wbr>from:<wbr>state:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
+additional actions. This is also a good place for analytics, tracking, logging and telemetry. Because the lift
+middleware is derived from a sub-state/sub-action middleware, every global action received will be mapped into
+a sub-action, in a operation that can return nil (<code>Optional&lt;SubAction&gt;</code>). In case it&rsquo;s nil, it means that the
+sub-action middleware doesn&rsquo;t work with this type of action, so the lifted middleware will simply call the next
+middleware in the chain. On the other hand, if this operation returns a non-nil local action, this local action will
+be handled by the child middleware, which is also responsible for calling <code>next()</code> in this case. When the <code>State</code>
+type is also lifted, the context property will translate the global state into local state as expected every time
+you call <code>context().getState()</code>.</p>
+
+<ul>
+<li>action: the action to be handled</li>
+<li>dispatcher: information about the file, line and function that dispatched this action</li>
+<li>state: a closure to obtain the most recent state</li>
+</ul>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="n">from</span> <span class="nv">dispatcher</span><span class="p">:</span> <span class="kt"><a href="../Structs/ActionSource.html">ActionSource</a></span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Typealiases.html#/s:8SwiftRex8GetStatea">GetState</a></span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="o">-&gt;</span> <span class="kt"><a href="../Structs/IO.html">IO</a></span><span class="o">&lt;</span><span class="kt">GlobalOutputActionType</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>possible Side-Effects wrapped in an IO struct</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2022-04-02)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

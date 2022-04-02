@@ -17,7 +17,7 @@
     <a title="MiddlewareProtocol Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">SwiftRex 0.8.11 Docs</a> (75% documented)</p>
+        <p><a href="../index.html">SwiftRex 0.8.12 Docs</a> (75% documented)</p>
         <p class="header-right"><a href="https://github.com/SwiftRex/SwiftRex"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="../search.json">
@@ -191,6 +191,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/LiftMiddleware.html">LiftMiddleware</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/LiftToCollectionMiddleware.html">LiftToCollectionMiddleware</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/MiddlewareReader.html">MiddlewareReader</a>
@@ -1237,10 +1240,103 @@ lift it to the world of <code>Whole</code>.</p>
                 </li>
               </ul>
             </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60StateType%60%3A%20%60Identifiable%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `StateType`: `Identifiable`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60StateType%60%3A%20%60Identifiable%60"></a>
+                  <h3 class="section-name"><p>Available where <code><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP9StateTypeQa">StateType</a></code>: <code>Identifiable</code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18MiddlewareProtocolPAAs12Identifiable9StateTypeRpzrlE16liftToCollection11inputAction06outputL05stateAA04LiftijC0Vyqd__qd_0_qd_1_qd_2_xGAA15ElementIDActionVyAE_2IDQZ05InputlG0QzGSgqd__c_qd_0_AOyAQ06OutputlG0QzGcqd_2_qd_1_ctSMRd_2_0P0Qyd_2_AFRSr2_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(inputAction:outputAction:state:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18MiddlewareProtocolPAAs12Identifiable9StateTypeRpzrlE16liftToCollection11inputAction06outputL05stateAA04LiftijC0Vyqd__qd_0_qd_1_qd_2_xGAA15ElementIDActionVyAE_2IDQZ05InputlG0QzGSgqd__c_qd_0_AOyAQ06OutputlG0QzGcqd_2_qd_1_ctSMRd_2_0P0Qyd_2_AFRSr2_lF">liftToCollection(inputAction:<wbr>outputAction:<wbr>state:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">inputAction</span> <span class="nv">inputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalInputActionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/ElementIDAction.html">ElementIDAction</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP9StateTypeQa">StateType</a></span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP15InputActionTypeQa">InputActionType</a></span><span class="o">&gt;</span><span class="p">?,</span>
+    <span class="n">outputAction</span> <span class="nv">outputActionMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/ElementIDAction.html">ElementIDAction</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP9StateTypeQa">StateType</a></span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP16OutputActionTypeQa">OutputActionType</a></span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span>
+    <span class="n">state</span> <span class="nv">stateMap</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">GlobalStateType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CollectionState</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftToCollectionMiddleware.html">LiftToCollectionMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalInputActionType</span><span class="p">,</span> <span class="kt">GlobalOutputActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60StateType%60%3A%20%60Identifiable%60%2C%20%60InputActionType%60%20%3D%3D%20%60OutputActionType%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `StateType`: `Identifiable`, `InputActionType` == `OutputActionType`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60StateType%60%3A%20%60Identifiable%60%2C%20%60InputActionType%60%20%3D%3D%20%60OutputActionType%60"></a>
+                  <h3 class="section-name"><p>Available where <code><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP9StateTypeQa">StateType</a></code>: <code>Identifiable</code>, <code><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP15InputActionTypeQa">InputActionType</a></code> == <code><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP16OutputActionTypeQa">OutputActionType</a></code></p>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8SwiftRex18MiddlewareProtocolPAA16OutputActionTypeQz05InputfG0Rtzs12Identifiable05StateG0RpzrlE16liftToCollection6action05stateM0AA04LiftlmC0Vyqd__qd__qd_0_qd_1_xGs15WritableKeyPathCyqd__AA15ElementIDActionVyAI_2IDQZAGGSgG_s0rS0Cyqd_0_qd_1_GtSMRd_1_0T0Qyd_1_AJRSr1_lF"></a>
+                    <a name="//apple_ref/swift/Method/liftToCollection(action:stateCollection:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8SwiftRex18MiddlewareProtocolPAA16OutputActionTypeQz05InputfG0Rtzs12Identifiable05StateG0RpzrlE16liftToCollection6action05stateM0AA04LiftlmC0Vyqd__qd__qd_0_qd_1_xGs15WritableKeyPathCyqd__AA15ElementIDActionVyAI_2IDQZAGGSgG_s0rS0Cyqd_0_qd_1_GtSMRd_1_0T0Qyd_1_AJRSr1_lF">liftToCollection(action:<wbr>stateCollection:<wbr>)</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">liftToCollection</span><span class="o">&lt;</span><span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">:</span> <span class="kt">MutableCollection</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="n">action</span> <span class="nv">actionMap</span><span class="p">:</span> <span class="kt">WritableKeyPath</span><span class="o">&lt;</span><span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt"><a href="../Structs/ElementIDAction.html">ElementIDAction</a></span><span class="o">&lt;</span><span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP9StateTypeQa">StateType</a></span><span class="o">.</span><span class="kt">ID</span><span class="p">,</span> <span class="kt"><a href="../Protocols/MiddlewareProtocol.html#/s:8SwiftRex18MiddlewareProtocolP15InputActionTypeQa">InputActionType</a></span><span class="o">&gt;</span><span class="p">?</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nv">stateCollection</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/LiftToCollectionMiddleware.html">LiftToCollectionMiddleware</a></span><span class="o">&lt;</span><span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt">GlobalActionType</span><span class="p">,</span> <span class="kt">GlobalStateType</span><span class="p">,</span> <span class="kt">CollectionState</span><span class="p">,</span> <span class="k">Self</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2022 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2022-01-07)</p>
+          <p>&copy; 2022 <a class="link" href="https://github.com/SwiftRex/SwiftRex" target="_blank" rel="external">SwiftRex</a>. All rights reserved. (Last updated: 2022-04-02)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.7</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
