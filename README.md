@@ -6,7 +6,6 @@
 ![Build Status](https://github.com/SwiftRex/SwiftRex/actions/workflows/swift.yml/badge.svg?branch=develop)
 [![codecov](https://codecov.io/gh/SwiftRex/SwiftRex/branch/develop/graph/badge.svg)](https://codecov.io/gh/SwiftRex/SwiftRex)
 [![Jazzy Documentation](https://swiftrex.github.io/SwiftRex/api/badge.svg)](https://swiftrex.github.io/SwiftRex/api/index.html)
-[![CocoaPods compatible](https://img.shields.io/cocoapods/v/SwiftRex.svg)](https://cocoapods.org/pods/SwiftRex)
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://swiftpackageindex.com/SwiftRex/SwiftRex)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwiftRex%2FSwiftRex%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/SwiftRex/SwiftRex)
 [![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20Catalyst-252532.svg)](https://github.com/SwiftRex/SwiftRex)
@@ -1303,61 +1302,11 @@ And what about SwiftUI? Is this architecture a good fit for the new UI framework
 
 # Installation
 
-## CocoaPods
-
-Create or modify the Podfile at the root folder of your project. Your settings will depend on the ReactiveFramework of your choice.
-
-For Combine:
-```ruby
-# Podfile
-source 'https://github.com/CocoaPods/Specs.git'
-use_frameworks!
-
-target 'MyAppTarget' do
-  pod 'CombineRex'
-end
-```
-
-For RxSwift:
-```ruby
-# Podfile
-source 'https://github.com/CocoaPods/Specs.git'
-use_frameworks!
-
-target 'MyAppTarget' do
-  pod 'RxSwiftRex'
-end
-```
-
-For ReactiveSwift:
-```ruby
-# Podfile
-source 'https://github.com/CocoaPods/Specs.git'
-use_frameworks!
-
-target 'MyAppTarget' do
-  pod 'ReactiveSwiftRex'
-end
-```
-
-As seen above, some lines are optional because the final Podspecs already include the correct dependencies.
-
-Then, all you must do is install your pods and open the `.xcworkspace` instead of the `.xcodeproj` file:
-
-```shell
-$ pod install
-$ xed .
-```
-
 ## Swift Package Manager
 
 Create or modify the Package.swift at the root folder of your project.
-You can use the automatic linking mode (static/dynamic), or use the project with suffix Dynamic to force
-dynamic linking and overcome current Xcode limitations to resolve diamond dependency issues.
 
-If you use it from only one target, automatic mode should be fine.
-
-Combine, automatic linking mode:
+Combine:
 ```swift
 // swift-tools-version:5.5
 
@@ -1378,7 +1327,7 @@ let package = Package(
 )
 ```
 
-RxSwift, automatic linking mode:
+RxSwift:
 ```swift
 // swift-tools-version:5.5
 
@@ -1399,7 +1348,7 @@ let package = Package(
 )
 ```
 
-ReactiveSwift, automatic linking mode:
+ReactiveSwift:
 ```swift
 // swift-tools-version:5.5
 
@@ -1420,40 +1369,8 @@ let package = Package(
 )
 ```
 
-Combine, dynamic linking mode (use similar approach of appending "Dynamic" also for RxSwift or ReactiveSwift products):
-```swift
-// swift-tools-version:5.5
+## Carthage and CocoaPods
 
-import PackageDescription
+CocoaPods and Carthage are no longer supported due to lack of interest and high maintenance effort.
 
-let package = Package(
-  name: "MyApp",
-  platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
-  products: [
-    .executable(name: "MyApp", targets: ["MyApp"])
-  ],
-  dependencies: [
-    .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "0.8.12")
-  ],
-  targets: [
-    .target(name: "MyApp", dependencies: [.product(name: "CombineRexDynamic", package: "SwiftRex")])
-  ]
-)
-```
-
-Then you can either building on the terminal or use Xcode 11 or higher that now supports SPM natively.
-
-```shell
-$ swift build
-$ xed .
-```
-
-> **_IMPORTANT:_** For Xcode 12, please use the version 0.8.8. Versions 0.9.0 and above require Xcode 13.
-
-## Carthage
-
-Carthage is no longer supported due to lack of interest and high maintenance effort.
-
-In case this is REALLY critical for you, please open a Github issue and let us know, we will evaluate
-the possibility to bring it back. In meantime you can check last  Carthage compatible version, which
-was 0.7.1, and eventually target that version until we come up with a better solution.
+It's our strong recommendation that you update your project to SPM.
