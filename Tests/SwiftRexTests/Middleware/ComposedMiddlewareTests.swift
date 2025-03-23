@@ -57,16 +57,17 @@ class ComposedMiddlewareTests: XCTestCase {
         ["m1", "m2", "m3", "m4"]
             .map { _ -> IsoMiddlewareMock<AppAction, TestState> in
                 let middleware = IsoMiddlewareMock<AppAction, TestState>()
-                middleware.receiveContextGetStateOutputClosure = { _, _ in
+                middleware.handleActionFromStateClosure = { _, _, _ in
                     shouldReceiveContext.fulfill()
+                    return .pure()
                 }
-                middleware.handleActionFromStateClosure = { _, _, _ in .pure() }
                 return middleware
             }.forEach { middleware in
                 composedMiddlewares.append(middleware: middleware)
             }
 
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
+        let io = composedMiddlewares.handle(action: .foo, from: .here(), state: { TestState() })
+        io.run(.init({ _ in }))
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
 
