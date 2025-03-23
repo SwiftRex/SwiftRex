@@ -7,10 +7,12 @@ class LiftComposedMiddlewareTests: XCTestCase {
 // MARK: - Lifting 3 properties at once
 extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputActionInputState_OutputActionsAreForwardedToGlobalContext() {
-        var localDispatcher: AnyActionHandler<AppAction.Bar>?
         var globalReceived: [AppAction] = []
         let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
-
+        let localDispatcher: AnyActionHandler<AppAction.Bar> = .init { dispatchedAction in
+            globalDispatcher.dispatch(AppAction.bar(dispatchedAction.action), from: dispatchedAction.dispatcher)
+        }
+        
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
@@ -19,13 +21,16 @@ extension LiftComposedMiddlewareTests {
                 outputAction: { bar in AppAction.bar(bar) },
                 state: { (global: TestState) in global.name }
             )
-        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
-        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
+        nameMiddleware.handleActionFromStateClosure = { _, _, _ in
+            
+            return .pure()
+        }
 
-        localDispatcher?.dispatch(.echo, from: .here())
+        // Now we can dispatch actions through our local dispatcher
+        localDispatcher.dispatch(.echo, from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
         globalDispatcher.dispatch(.bar(.bravo), from: .here())
-        localDispatcher?.dispatch(.delta, from: .here())
+        localDispatcher.dispatch(.delta, from: .here())
 
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(globalReceived, expectedActionsOnGlobalContext)
@@ -47,10 +52,10 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -61,7 +66,10 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputActionInputState_LocalInputStateIsExtractedFromGlobalContext() {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         var middlewareGetState: (() -> String)?
-        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in
+            middlewareGetState = getState
+            return .pure()
+        }
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
             composed.lift(
@@ -70,7 +78,8 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
+        let io = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: .init(), name: "test-unlift-state") })
+        io.run(.init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -80,9 +89,12 @@ extension LiftComposedMiddlewareTests {
 // MARK: - Lifting 2 properties at once: Input Action, Output Action
 extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputAction_OutputActionsAreForwardedToGlobalContext() {
-        var localDispatcher: AnyActionHandler<AppAction.Bar>?
+       
         var globalReceived: [AppAction] = []
         let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
+        let localDispatcher: AnyActionHandler<AppAction.Bar> = .init { dispatchedAction in
+            globalDispatcher.dispatch(.bar(dispatchedAction.action), from: dispatchedAction.dispatcher)
+        }
 
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -91,13 +103,16 @@ extension LiftComposedMiddlewareTests {
                 inputAction: { (global: AppAction) in global.bar },
                 outputAction: { bar in AppAction.bar(bar) }
             )
-        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
-        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
+        nameMiddleware.handleActionFromStateClosure = { _, _, _ in
+           
+            return .pure()
+        }
+        let _ = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
 
-        localDispatcher?.dispatch(.echo, from: .here())
+        localDispatcher.dispatch(.echo, from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
         globalDispatcher.dispatch(.bar(.bravo), from: .here())
-        localDispatcher?.dispatch(.delta, from: .here())
+        localDispatcher.dispatch(.delta, from: .here())
 
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(globalReceived, expectedActionsOnGlobalContext)
@@ -118,10 +133,10 @@ extension LiftComposedMiddlewareTests {
                 outputAction: { bar in AppAction.bar(bar) }
             )
 
-        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -132,7 +147,10 @@ extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputActionOutputAction_LocalInputStateIsExtractedFromGlobalContext() {
         let nameMiddleware = IsoMiddlewareMock<AppAction.Bar, TestState>()
         var middlewareGetState: (() -> TestState)?
-        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in
+            middlewareGetState = getState
+            return .pure()
+        }
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
             composed.lift(
@@ -141,7 +159,8 @@ extension LiftComposedMiddlewareTests {
             )
 
         let uuid = UUID()
-        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _ in })
+        let io = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: uuid, name: "test-unlift-state") })
+        io.run(.init { _ in })
 
         XCTAssertEqual(TestState(value: uuid, name: "test-unlift-state"), middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -161,8 +180,13 @@ extension LiftComposedMiddlewareTests {
                 inputAction: { (global: AppAction) in global.bar },
                 state: { (global: TestState) in global.name }
             )
-        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
-        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
+        nameMiddleware.handleActionFromStateClosure = { _, _, _ in
+            localDispatcher = .init { dispatchedAction in
+                globalDispatcher.dispatch(dispatchedAction.action, from: dispatchedAction.dispatcher)
+            }
+            return .pure()
+        }
+        let _ = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
 
         localDispatcher?.dispatch(.bar(.echo), from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
@@ -188,10 +212,10 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -203,7 +227,10 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var middlewareGetState: (() -> String)?
-        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in
+            middlewareGetState = getState
+            return .pure()
+        }
 
         let generalMiddleware =
             composed.lift(
@@ -211,7 +238,8 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
+        let io = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: .init(), name: "test-unlift-state") })
+        io.run(.init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -221,9 +249,12 @@ extension LiftComposedMiddlewareTests {
 // MARK: - Lifting 2 properties at once: Output Action, State
 extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareOutputActionInputState_OutputActionsAreForwardedToGlobalContext() {
-        var localDispatcher: AnyActionHandler<AppAction.Bar>?
+        
         var globalReceived: [AppAction] = []
         let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
+        let localDispatcher: AnyActionHandler<AppAction.Bar> = .init { dispatchedAction in
+            globalDispatcher.dispatch(AppAction.bar(dispatchedAction.action), from: dispatchedAction.dispatcher)
+        }
 
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -232,13 +263,16 @@ extension LiftComposedMiddlewareTests {
                 outputAction: { bar in AppAction.bar(bar) },
                 state: { (global: TestState) in global.name }
             )
-        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
-        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
+        nameMiddleware.handleActionFromStateClosure = { _, _, _ in
+            
+            return .pure()
+        }
+        let _ = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
 
-        localDispatcher?.dispatch(.echo, from: .here())
+        localDispatcher.dispatch(.echo, from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
         globalDispatcher.dispatch(.bar(.bravo), from: .here())
-        localDispatcher?.dispatch(.delta, from: .here())
+        localDispatcher.dispatch(.delta, from: .here())
 
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(globalReceived, expectedActionsOnGlobalContext)
@@ -259,10 +293,10 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(4, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
@@ -274,7 +308,10 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var middlewareGetState: (() -> String)?
-        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in
+            middlewareGetState = getState
+            return .pure()
+        }
 
         let generalMiddleware =
             composed.lift(
@@ -282,7 +319,8 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
+        let io = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: .init(), name: "test-unlift-state") })
+        io.run(.init { _ in })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -292,9 +330,11 @@ extension LiftComposedMiddlewareTests {
 // MARK: - Lifting a single property: Input Action
 extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputAction_OutputActionsAreForwardedToGlobalContext() {
-        var localDispatcher: AnyActionHandler<AppAction>?
         var globalReceived: [AppAction] = []
         let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
+        let localDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in
+            globalDispatcher.dispatch(dispatchedAction.action, from: dispatchedAction.dispatcher)
+        }
 
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -302,13 +342,16 @@ extension LiftComposedMiddlewareTests {
             composed.lift(
                 inputAction: { (global: AppAction) in global.bar }
             )
-        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
-        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
+        nameMiddleware.handleActionFromStateClosure = { _, _, _ in
+            
+            return .pure()
+        }
+        let _ = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
 
-        localDispatcher?.dispatch(.bar(.echo), from: .here())
+        localDispatcher.dispatch(.bar(.echo), from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
         globalDispatcher.dispatch(.bar(.bravo), from: .here())
-        localDispatcher?.dispatch(.bar(.delta), from: .here())
+        localDispatcher.dispatch(.bar(.delta), from: .here())
 
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(globalReceived, expectedActionsOnGlobalContext)
@@ -328,10 +371,10 @@ extension LiftComposedMiddlewareTests {
                 inputAction: { (global: AppAction) in global.bar }
             )
 
-        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(3, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction.Bar] = [.echo, .bravo, .delta]
@@ -343,7 +386,10 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction.Bar, AppAction, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var middlewareGetState: (() -> TestState)?
-        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in
+            middlewareGetState = getState
+            return .pure()
+        }
 
         let generalMiddleware =
             composed.lift(
@@ -351,7 +397,8 @@ extension LiftComposedMiddlewareTests {
             )
 
         let uuid = UUID()
-        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _ in })
+        let io = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: uuid, name: "test-unlift-state") })
+        io.run(.init { _ in })
 
         XCTAssertEqual(TestState(value: uuid, name: "test-unlift-state"), middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -361,9 +408,11 @@ extension LiftComposedMiddlewareTests {
 // MARK: - Lifting a single property: Output Action
 extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareOutputAction_OutputActionsAreForwardedToGlobalContext() {
-        var localDispatcher: AnyActionHandler<AppAction.Bar>?
         var globalReceived: [AppAction] = []
         let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
+        let localDispatcher: AnyActionHandler<AppAction.Bar> = .init { dispatchedAction in
+            globalDispatcher.dispatch(AppAction.bar(dispatchedAction.action), from: dispatchedAction.dispatcher)
+        }
 
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
@@ -371,13 +420,16 @@ extension LiftComposedMiddlewareTests {
             composed.lift(
                 outputAction: { bar in AppAction.bar(bar) }
             )
-        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
-        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
+        nameMiddleware.handleActionFromStateClosure = { _, _, _ in
+            
+            return .pure()
+        }
+        let _ = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
 
-        localDispatcher?.dispatch(.echo, from: .here())
+        localDispatcher.dispatch(.echo, from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
         globalDispatcher.dispatch(.bar(.bravo), from: .here())
-        localDispatcher?.dispatch(.delta, from: .here())
+        localDispatcher.dispatch(.delta, from: .here())
 
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(globalReceived, expectedActionsOnGlobalContext)
@@ -397,10 +449,10 @@ extension LiftComposedMiddlewareTests {
                 outputAction: { bar in AppAction.bar(bar) }
             )
 
-        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(4, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
@@ -412,7 +464,10 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction.Bar, TestState>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var middlewareGetState: (() -> TestState)?
-        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in
+            middlewareGetState = getState
+            return .pure()
+        }
 
         let generalMiddleware =
             composed.lift(
@@ -420,7 +475,8 @@ extension LiftComposedMiddlewareTests {
             )
 
         let uuid = UUID()
-        generalMiddleware.receiveContext(getState: { TestState(value: uuid, name: "test-unlift-state") }, output: .init { _ in })
+        let io = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: uuid, name: "test-unlift-state") })
+        io.run(.init { _ in })
 
         XCTAssertEqual(TestState(value: uuid, name: "test-unlift-state"), middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
@@ -430,23 +486,24 @@ extension LiftComposedMiddlewareTests {
 // MARK: - Lifting a single property: State
 extension LiftComposedMiddlewareTests {
     func testLiftMiddlewareInputState_OutputActionsAreForwardedToGlobalContext() {
-        var localDispatcher: AnyActionHandler<AppAction>?
+       
         var globalReceived: [AppAction] = []
         let globalDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in globalReceived.append(dispatchedAction.action) }
-
+        let localDispatcher: AnyActionHandler<AppAction> = .init { dispatchedAction in
+            globalDispatcher.dispatch(dispatchedAction.action, from: dispatchedAction.dispatcher)
+        }
         let nameMiddleware = MiddlewareMock<AppAction, AppAction, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         let generalMiddleware =
             composed.lift(
                 state: { (global: TestState) in global.name }
             )
-        nameMiddleware.receiveContextGetStateOutputClosure = { _, output in localDispatcher = output }
-        generalMiddleware.receiveContext(getState: { TestState() }, output: globalDispatcher)
+       
 
-        localDispatcher?.dispatch(.bar(.echo), from: .here())
+        localDispatcher.dispatch(.bar(.echo), from: .here())
         globalDispatcher.dispatch(.foo, from: .here())
         globalDispatcher.dispatch(.bar(.bravo), from: .here())
-        localDispatcher?.dispatch(.bar(.delta), from: .here())
+        localDispatcher.dispatch(.bar(.delta), from: .here())
 
         let expectedActionsOnGlobalContext: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
         XCTAssertEqual(globalReceived, expectedActionsOnGlobalContext)
@@ -466,10 +523,10 @@ extension LiftComposedMiddlewareTests {
                 state: { (global: TestState) in global.name }
             )
 
-        _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
-        _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.echo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .foo, from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.bravo), from: .here(), state: { .init() })
+        let _ = generalMiddleware.handle(action: .bar(.delta), from: .here(), state: { .init() })
 
         XCTAssertEqual(4, nameMiddleware.handleActionFromStateCallsCount)
         let expectedActionsOnLocalMiddleware: [AppAction] = [.bar(.echo), .foo, .bar(.bravo), .bar(.delta)]
@@ -481,14 +538,17 @@ extension LiftComposedMiddlewareTests {
         let nameMiddleware = MiddlewareMock<AppAction, AppAction, String>()
         let composed = nameMiddleware <> IdentityMiddleware()
         var middlewareGetState: (() -> String)?
-        nameMiddleware.receiveContextGetStateOutputClosure = { getState, _ in middlewareGetState = getState }
+        nameMiddleware.handleActionFromStateClosure = { _, _, getState in
+            middlewareGetState = getState
+            return .pure()
+        }
 
         let generalMiddleware =
             composed.lift(
                 state: { (global: TestState) in global.name }
             )
 
-        generalMiddleware.receiveContext(getState: { TestState(value: .init(), name: "test-unlift-state") }, output: .init { _ in })
+        let _ = generalMiddleware.handle(action: .bar(.alpha), from: .here(), state: { TestState(value: .init(), name: "test-unlift-state") })
 
         XCTAssertEqual("test-unlift-state", middlewareGetState?())
         XCTAssertEqual(generalMiddleware.middlewares.count, 1)
