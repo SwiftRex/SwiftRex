@@ -15,7 +15,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
     func testAnyMiddlewareFromInitReceivedContext() {
         let middleware = IsoMiddlewareMock<AppAction, TestState>()
         middleware.handleActionFromStateReturnValue = .pure()
-        AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
+        AnyMiddleware(handle: middleware.handle)
             .handle(action: .foo, from: .here(), state: { TestState() })
             .run(.init { _ in })
         XCTAssertEqual(1, middleware.handleActionFromStateCallsCount)
@@ -42,7 +42,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
         middleware.handleActionFromStateClosure = { _, _, _ in
             IO { _ in calledAfterReducer.fulfill() }
         }
-        let erased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
+        let erased = AnyMiddleware(handle: middleware.handle)
         let io = erased.handle(action: .bar(.alpha), from: .here(), state: { TestState() })
         io.run(.init { _ in })
         wait(for: [calledAfterReducer], timeout: 0.1)
@@ -105,7 +105,7 @@ class MiddlewareTypeErasureTests: XCTestCase {
             output.dispatch(.init(action, dispatcher: .init(file: "file_1", function: "function_1", line: 666, info: "info_1")))
         }
 
-        let typeErased = AnyMiddleware(receiveContext: middleware.receiveContext, handle: middleware.handle)
+        let typeErased = AnyMiddleware(handle: middleware.handle)
         typeErased.handle(
             action: .foo,
             from: .here(),

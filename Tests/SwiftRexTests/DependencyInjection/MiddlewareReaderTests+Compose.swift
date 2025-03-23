@@ -60,17 +60,18 @@ extension MiddlewareReaderTests {
                 MiddlewareReader { (dependency: String) -> IsoMiddlewareMock<AppAction, TestState> in
                     XCTAssertEqual("injected dependency", dependency)
                     let middleware = IsoMiddlewareMock<AppAction, TestState>()
-                    middleware.receiveContextGetStateOutputClosure = { _, _ in
+                    middleware.handleActionFromStateClosure = { _, _, _ in
                         shouldReceiveContext.fulfill()
+                        return .pure()
                     }
-                    middleware.handleActionFromStateClosure = { _, _, _ in .pure() }
                     return middleware
                 }
             }
 
         let composedReaders = readers[0] <> readers[1] <> readers[2] <> readers[3]
         let composedMiddlewares = composedReaders.inject("injected dependency")
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
+        let io = composedMiddlewares.handle(action: AppAction.foo, from: .here(), state: { TestState() })
+        io.run(.init({ _ in }))
 
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
@@ -83,17 +84,18 @@ extension MiddlewareReaderTests {
                 MiddlewareReader { (dependency: String) -> IsoMiddlewareMock<AppAction, TestState> in
                     XCTAssertEqual("injected dependency", dependency)
                     let middleware = IsoMiddlewareMock<AppAction, TestState>()
-                    middleware.receiveContextGetStateOutputClosure = { _, _ in
+                    middleware.handleActionFromStateClosure = { _, _, _ in
                         shouldReceiveContext.fulfill()
+                        return .pure()
                     }
-                    middleware.handleActionFromStateClosure = { _, _, _ in .pure() }
                     return middleware
                 }
             }
             .reduce(MiddlewareReader<String, ComposedMiddleware<AppAction, AppAction, TestState>>.identity, <>)
             .inject("injected dependency")
 
-        composedMiddlewares.receiveContext(getState: { TestState() }, output: .init({ _ in }))
+        let io = composedMiddlewares.handle(action: AppAction.foo, from: .here(), state: { TestState() })
+        io.run(.init({ _ in }))
         wait(for: [shouldReceiveContext], timeout: 0.1)
     }
 }
