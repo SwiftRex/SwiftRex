@@ -26,15 +26,6 @@ where PartMiddleware.StateType: Identifiable, CollectionState.Element == PartMid
         self.actionHandler = onAction
     }
 
-    @available(
-        *,
-         deprecated,
-         message: """
-                 This method is unavailable for this container type and won't do anything.
-                 """
-    )
-    public func receiveContext(getState: @escaping () -> GlobalStateType, output: AnyActionHandler<GlobalOutputActionType>) {}
-
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
      additional actions. This is also a good place for analytics, tracking, logging and telemetry. Because the lift

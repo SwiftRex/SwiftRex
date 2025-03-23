@@ -28,21 +28,6 @@ public struct LiftMiddleware<GlobalInputActionType, GlobalOutputActionType, Glob
         self.partMiddleware = middleware
     }
 
-    @available(
-        *,
-        deprecated,
-        message: """
-                 Instead of relying on receiveContext, please use the getState from handle(action) function,
-                 and when returning IO from the same handle(action) function use the output from the closure
-                 """
-    )
-    public func receiveContext(getState: @escaping () -> GlobalStateType, output: AnyActionHandler<GlobalOutputActionType>) {
-        partMiddleware.receiveContext(
-            getState: andThen(getState, stateMap),
-            output: output.contramap(outputActionMap)
-        )
-    }
-
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
      additional actions. This is also a good place for analytics, tracking, logging and telemetry. Because the lift

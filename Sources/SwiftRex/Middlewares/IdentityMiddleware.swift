@@ -9,31 +9,15 @@ public struct IdentityMiddleware<InputActionType, OutputActionType, StateType>: 
      */
     public init() { }
 
-    public func receiveContext(getState: @escaping () -> StateType, output: AnyActionHandler<OutputActionType>) { }
-
-    @available(
-        *,
-        deprecated,
-        message: """
-                 Instead of relying on receiveContext, please use the getState from the new `handle(action:from:state:)` function,
-                 and when returning IO from the same handle(action) function use the output from the closure
-                 """
-    )
-    public func handle(action: InputActionType, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-        afterReducer = .identity
-    }
-
     /**
      Handles the incoming actions and may or not start async tasks, check the latest state at any point or dispatch
      additional actions. This is also a good place for analytics, tracking, logging and telemetry.
      In this empty implementation, will do nothing but call next delegate.
      - Parameters:
        - action: the action to be handled
-       - next: opportunity to call the next middleware in the chain and, eventually, the reducer pipeline. Call it
-               only once, not more or less than once. Call it from the same thread and runloop where the handle function
-               is executed, never from a completion handler or dispatch queue block. In case you don't need to compare
-               state before and after it's changed from the reducers, please consider to add a `defer` block with `next()`
-               on it, at the beginning of `handle` function.
+       - dispatcher: information about the file, line and function that dispatched this action
+       - state: a closure to obtain the most recent state
+     - Returns: possible Side-Effects wrapped in an IO struct
      */
     public func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType> {
         .pure()

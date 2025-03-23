@@ -58,12 +58,6 @@ public struct ComposedMiddleware<InputActionType, OutputActionType, StateType>: 
         middlewares.append(middleware.eraseToAnyMiddleware())
     }
 
-    public func receiveContext(getState: @escaping () -> StateType, output: AnyActionHandler<OutputActionType>) {
-        middlewares.forEach {
-            $0.receiveContext(getState: getState, output: output)
-        }
-    }
-
     /**
      Handles the incoming actions. The `ComposedMiddleware` will forward each action to all its internal middlewares, in
      the order as they were composed together, and when all of them are done, the `ActionType` will be forwarded to the

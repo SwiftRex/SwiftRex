@@ -52,34 +52,6 @@ public protocol MiddlewareProtocol {
     ///            reducers yet, but in the context of the ``IO`` block you should expect the state to be changed already.
     /// - Returns: an ``IO`` closure where you can run side-effects and dispatch new actions to the store
     func handle(action: InputActionType, from dispatcher: ActionSource, state: @escaping GetState<StateType>) -> IO<OutputActionType>
-
-    /// Middleware setup. This function is deprecated and should never be used.
-    ///
-    /// - Parameters:
-    ///   - getState: a closure that allows the middleware to read the current state at any point in time
-    ///   - output: an action handler that allows the middleware to dispatch new actions at any point in time
-    @available(
-        *,
-        deprecated,
-        message: """
-                 Instead of relying on receiveContext, please use the getState from handle(action) function,
-                 and when returning IO from the same handle(action) function use the output from the closure
-                 """
-    )
-    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>)
-}
-
-extension MiddlewareProtocol {
-    @available(
-        *,
-        deprecated,
-        message: """
-                 Instead of relying on receiveContext, please use the getState from handle(action) function,
-                 and when returning IO from the same handle(action) function use the output from the closure
-                 """
-    )
-    public func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
-    }
 }
 
 // sourcery: AutoMockable

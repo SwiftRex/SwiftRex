@@ -21,26 +21,6 @@ where MiddlewareType.InputActionType == MiddlewareType.OutputActionType {
         self.reducer = reducer
         self.middleware = middleware
         self.emitsValue = emitsValue
-
-        middleware.receiveContext(
-            getState: { state().value() },
-            output: .init { [weak self] dispatchedAction in
-                guard let self = self else { return }
-
-                DispatchQueue.main.async {
-                    let io = Self.handle(
-                        middleware: self.middleware,
-                        reducer: reducer,
-                        dispatchedAction: dispatchedAction,
-                        state: state,
-                        emitsValue: emitsValue
-                    )
-                    Self.runIO(io) { [weak self] action in
-                        self?.handleAsap(dispatchedAction: action)
-                    }
-                }
-            }
-        )
     }
 
     public func dispatch(_ dispatchedAction: DispatchedAction<ActionType>) {
