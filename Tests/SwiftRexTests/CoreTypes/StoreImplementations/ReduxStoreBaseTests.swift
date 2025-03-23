@@ -12,7 +12,6 @@ class ReduxStoreBaseTests: XCTestCase {
         shouldCallBarMiddleware.expectedFulfillmentCount = 9
         let shouldCallReducer = expectation(description: "reducer should have been called 11 times")
         shouldCallReducer.expectedFulfillmentCount = 11
-        shouldCallReducer.expectedFulfillmentCount = 11
         let shouldNotifySubscribers = expectation(description: "subscription notification should have been called 11 times")
         shouldNotifySubscribers.expectedFulfillmentCount = 11
         let events: [AppAction] = [.foo, .bar(.charlie), .foo]
