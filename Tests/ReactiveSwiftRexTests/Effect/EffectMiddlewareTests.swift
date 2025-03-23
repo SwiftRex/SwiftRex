@@ -19,13 +19,6 @@ class EffectMiddlewareTests: XCTestCase {
             return .doNothing
         }.inject({ currentDependency })
 
-        sut.receiveContext(
-            getState: { currentState },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
-
         var io = sut.handle(action: "a0", from: .here(), state: { currentState })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual([], receivedActions)
@@ -70,13 +63,6 @@ class EffectMiddlewareTests: XCTestCase {
             return .doNothing
         }
 
-        sut.receiveContext(
-            getState: { currentState },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
-
         var io = sut.handle(action: "a0", from: .here(), state: { currentState })
         XCTAssertEqual([], dispatchedActions)
         XCTAssertEqual([], receivedActions)
@@ -114,13 +100,6 @@ class EffectMiddlewareTests: XCTestCase {
         let sut = EffectMiddleware<String, String, String, () -> String>.onAction { action, _, state in
             .just("dispatched \(action) \(state())")
         }.inject({ currentDependency })
-
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
 
         var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
@@ -168,13 +147,6 @@ class EffectMiddlewareTests: XCTestCase {
                         value: { _ in XCTFail("should not have received values") })
             }
         }.inject("dep")
-
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { _ in
-                XCTFail("should not have received values")
-            }
-        )
 
         var io = sut.handle(action: "create", from: .here(), state: { "some_state" })
         io.run(.init { _ in
@@ -233,13 +205,6 @@ class EffectMiddlewareTests: XCTestCase {
                 return .doNothing
             }
         }.inject("dep")
-
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
 
         var io = sut.handle(action: "first", from: .here(), state: { "some_state" })
         io.run(.init { dispatchedAction in
@@ -595,13 +560,6 @@ class EffectMiddlewareTests: XCTestCase {
                 }
             }.inject({ currentDependencyB })
 
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
-
         var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
         io.run(.init { dispatchedAction in
@@ -658,13 +616,6 @@ class EffectMiddlewareTests: XCTestCase {
                 .doNothing
             }.inject({ "bla" })
 
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
-
         var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
         io.run(.init { dispatchedAction in
@@ -719,13 +670,6 @@ class EffectMiddlewareTests: XCTestCase {
             }.inject({ currentDependencyB })
             <> EffectMiddleware.identity
 
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
-
         var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
         io.run(.init { dispatchedAction in
@@ -779,13 +723,6 @@ class EffectMiddlewareTests: XCTestCase {
             }
         ).inject({ currentDependency })
 
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
-
         var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
         io.run(.init { dispatchedAction in
@@ -799,6 +736,7 @@ class EffectMiddlewareTests: XCTestCase {
         io.run(.init { dispatchedAction in
             dispatchedActions.append(dispatchedAction.action)
         })
+        XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
             "dispatched B a0 some_state d0",
@@ -811,6 +749,7 @@ class EffectMiddlewareTests: XCTestCase {
         io.run(.init { dispatchedAction in
             dispatchedActions.append(dispatchedAction.action)
         })
+        XCTAssertEqual(sut.cancellables.count, 0)
         XCTAssertEqual([
             "dispatched A a0 some_state d0",
             "dispatched B a0 some_state d0",
@@ -840,13 +779,6 @@ class EffectMiddlewareTests: XCTestCase {
                 .doNothing
             }
         ).inject({ currentDependency })
-
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
 
         var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
@@ -904,13 +836,6 @@ class EffectMiddlewareTests: XCTestCase {
             <> .pure(EffectMiddleware.identity)
         ).inject({ currentDependency })
 
-        sut.receiveContext(
-            getState: { "some_state" },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
-        )
-
         var io = sut.handle(action: "a0", from: .here(), state: { "some_state" })
         XCTAssertEqual([], dispatchedActions)
         io.run(.init { dispatchedAction in
@@ -963,13 +888,6 @@ class EffectMiddlewareTests: XCTestCase {
             inputAction: { (int: Int) in "ia\(int)" },
             outputAction: { (int: Int) in "oa\(int)" },
             state: { (int: Int) in "s\(int)" }
-        )
-
-        sut.receiveContext(
-            getState: { currentState },
-            output: .init { dispatchedAction in
-                dispatchedActions.append(dispatchedAction.action)
-            }
         )
 
         var io = sut.handle(action: 0, from: .here(), state: { currentState })
