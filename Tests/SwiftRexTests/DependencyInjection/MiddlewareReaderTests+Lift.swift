@@ -50,7 +50,7 @@ extension MiddlewareReaderTests {
         let globalMiddleware = globalReader.inject(globalDependencies)
 
         // When
-        globalInputActions.forEach { _ =
+        globalInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
                 .run(globalDispatcher)
@@ -96,7 +96,7 @@ extension MiddlewareReaderTests {
         let globalMiddleware = globalReader.inject(globalDependencies)
 
         // When
-        localInputActions.forEach { _ =
+        localInputActions.forEach {
             globalMiddleware
                 .handle(action: $0, from: .here(), state: { self.globalState })
                 .run(globalDispatcher)
@@ -667,7 +667,7 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        globalMiddleware.receiveContext(getState: { self.localState }, output: globalDispatcher)
+        
 
         // When
         localInputActions.forEach {
