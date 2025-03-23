@@ -1,4 +1,4 @@
-// Generated using Sourcery 1.6.1 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 2.1.8 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 // swiftlint:disable all
 import Foundation
@@ -55,21 +55,6 @@ class MiddlewareProtocolMock<InputActionType, OutputActionType, StateType>: Midd
         handleActionFromStateCallsCount += 1
         handleActionFromStateReceivedArguments = (action: action, dispatcher: dispatcher, state: state)
         return handleActionFromStateClosure.map({ $0(action, dispatcher, state) }) ?? handleActionFromStateReturnValue
-    }
-
-    //MARK: - receiveContext
-
-    var receiveContextGetStateOutputCallsCount = 0
-    var receiveContextGetStateOutputCalled: Bool {
-        return receiveContextGetStateOutputCallsCount > 0
-    }
-    var receiveContextGetStateOutputReceivedArguments: (getState: GetState<StateType>, output: AnyActionHandler<OutputActionType>)?
-    var receiveContextGetStateOutputClosure: ((@escaping GetState<StateType>, AnyActionHandler<OutputActionType>) -> Void)?
-
-    func receiveContext(getState: @escaping GetState<StateType>, output: AnyActionHandler<OutputActionType>) {
-        receiveContextGetStateOutputCallsCount += 1
-        receiveContextGetStateOutputReceivedArguments = (getState: getState, output: output)
-        receiveContextGetStateOutputClosure?(getState, output)
     }
 
 }
