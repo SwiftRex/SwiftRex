@@ -100,24 +100,16 @@ enum CounterService {
         }
     }
 
-    class CounterMiddleware: Middleware {
+    class CounterMiddleware: MiddlewareProtocol {
         typealias InputActionType = AppAction.CounterEvent
         typealias OutputActionType = AppAction.CounterAction
         typealias StateType = Int
 
-        var getState: (() -> Int)!
-        var output: AnyActionHandler<AppAction.CounterAction>!
-
-        func receiveContext(getState: @escaping GetState<Int>, output: AnyActionHandler<AppAction.CounterAction>) {
-            self.getState = getState
-            self.output = output
-        }
-
-        func handle(action: AppAction.CounterEvent, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
-            afterReducer = .do { [unowned self] in
+        func handle(action: AppAction.CounterEvent, from dispatcher: SwiftRex.ActionSource, state: @escaping SwiftRex.GetState<Int>) -> SwiftRex.IO<AppAction.CounterAction> {
+            return .init { output in
                 switch action {
-                case .requestIncrease: self.output.dispatch(.increase, from: .here())
-                case .requestDecrease: self.output.dispatch(.decrease, from: .here())
+                case .requestIncrease: output.dispatch(.increase, from: .here())
+                case .requestDecrease: output.dispatch(.decrease, from: .here())
                 }
             }
         }

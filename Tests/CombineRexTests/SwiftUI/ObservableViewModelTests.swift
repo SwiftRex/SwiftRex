@@ -52,30 +52,21 @@ struct Action2: Equatable {
     let event: Event2
 }
 
-class MiddlewareTest: Middleware {
+class MiddlewareTest: MiddlewareProtocol {
     typealias InputActionType = Action
     typealias OutputActionType = Action
     typealias StateType = TestState
-
-    var getState: (() -> TestState)?
-    var output: AnyActionHandler<Action>?
-
-    func receiveContext(getState: @escaping GetState<TestState>, output: AnyActionHandler<Action>) {
-        self.getState = getState
-        self.output = output
-    }
-
-    func handle(action: Action, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+    
+    func handle(action: Action, from dispatcher: SwiftRex.ActionSource, state: @escaping SwiftRex.GetState<TestState>) -> SwiftRex.IO<Action> {
         switch action {
         case .middlewareAction, .middlewareActionAfterReducer:
-            afterReducer = .doNothing()
+            return .pure()
         default:
             break
         }
-
-        output?.dispatch(.middlewareAction(action), from: .here())
-        afterReducer = .do {
-            self.output?.dispatch(.middlewareActionAfterReducer(action), from: .here())
+        return .init { output in
+            output.dispatch(.middlewareAction(action), from: .here())
+            output.dispatch(.middlewareActionAfterReducer(action), from: .here())
         }
     }
 }

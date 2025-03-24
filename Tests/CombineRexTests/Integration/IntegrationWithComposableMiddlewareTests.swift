@@ -32,109 +32,101 @@ class IntegrationWithComposableMiddlewareTests: XCTestCase {
         case actions(MyAction)
     }
 
-    class MyEventsMiddleware: Middleware {
+    class MyEventsMiddleware: MiddlewareProtocol {
         typealias InputActionType = AppAction
         typealias OutputActionType = AppAction
         typealias StateType = MyState
 
-        var getState: (() -> MyState)!
-        var output: AnyActionHandler<AppAction>!
-
-        func receiveContext(getState: @escaping GetState<MyState>, output: AnyActionHandler<AppAction>) {
-            self.getState = getState
-            self.output = output
-        }
-
-        func handle(action: AppAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        func handle(action: AppAction, from dispatcher: ActionSource, state getState: @escaping GetState<StateType>) -> IO<AppAction> {
             switch action {
             case .events(.requestPrepare):
                 // Nothing asked yet
-                XCTAssertEqual(getState().preparation, .stopped)
-                XCTAssertEqual(getState().running, .stopped)
+                let currentState = getState()
+                XCTAssertEqual(currentState.preparation, .stopped)
+                XCTAssertEqual(currentState.running, .stopped)
 
-                afterReducer = .do { [unowned self] in
+                return IO {  output in
                     // After reducing "requestPrepare", preparation should have been requested
-                    XCTAssertEqual(self.getState().preparation, .requested)
-                    XCTAssertEqual(self.getState().running, .stopped)
+                    XCTAssertEqual(getState().preparation, .requested)
+                    XCTAssertEqual(getState().running, .stopped)
 
-                    self.output.dispatch(.actions(.prepare), from: .here())
+                    output.dispatch(.actions(.prepare), from: .here())
 
                     // We expect the prepare action to happen only on the next runloop, so
                     // we still expect the state to remain unchanged
-                    XCTAssertEqual(self.getState().preparation, .requested)
-                    XCTAssertEqual(self.getState().running, .stopped)
+                    XCTAssertEqual(getState().preparation, .requested)
+                    XCTAssertEqual(getState().running, .stopped)
                 }
             case .events(.requestRun):
                 // Because request run was called immediately after request preparation,
                 // its execution will arrive at the store before "prepare" is ready, so it
                 // was only requested
-                XCTAssertEqual(getState().preparation, .requested)
-                XCTAssertEqual(getState().running, .stopped)
+                let currentState = getState()
+                XCTAssertEqual(currentState.preparation, .requested)
+                XCTAssertEqual(currentState.running, .stopped)
 
-                if getState().preparation == .done && getState().running == .requested {
-                    output.dispatch(.actions(.run), from: .here())
-                    // this should never happen, actually
-                    XCTFail("This should never happen")
-                }
-
-                afterReducer = .do { [unowned self] in
+                return IO {output in
+                    
+                    if getState().preparation == .done && getState().running == .requested {
+                       
+                        output.dispatch(.actions(.run), from: .here())
+                        // this should never happen, actually
+                        XCTFail("This should never happen")
+                    }
+                    
                     // Both properties should be requested now, after reducing requestRun
-                    XCTAssertEqual(self.getState().preparation, .requested)
-                    XCTAssertEqual(self.getState().running, .requested)
+                    XCTAssertEqual(getState().preparation, .requested)
+                    XCTAssertEqual(getState().running, .requested)
                 }
             default:
-                afterReducer = .doNothing()
+                return .pure()
             }
         }
     }
 
-    class MyActionsMiddleware: Middleware {
+    class MyActionsMiddleware: MiddlewareProtocol {
         typealias InputActionType = AppAction
         typealias OutputActionType = AppAction
         typealias StateType = MyState
 
-        var getState: (() -> MyState)!
-        var output: AnyActionHandler<AppAction>!
-
-        func receiveContext(getState: @escaping GetState<MyState>, output: AnyActionHandler<AppAction>) {
-            self.getState = getState
-            self.output = output
-        }
-
-        func handle(action: AppAction, from dispatcher: ActionSource, afterReducer: inout AfterReducer) {
+        func handle(action: AppAction, from dispatcher: ActionSource, state getState: @escaping GetState<StateType>) -> IO<AppAction> {
             switch action {
             case .actions(.prepare):
                 // Prepare is done, but we haven't reduced this yet, so state should be preparation
                 // requested. About running, it was requested before prepare was done, so both should
                 // be at requested state by now
-                XCTAssertEqual(getState().preparation, .requested)
-                XCTAssertEqual(getState().running, .requested)
+                let currentState = getState()
+                XCTAssertEqual(currentState.preparation, .requested)
+                XCTAssertEqual(currentState.running, .requested)
 
-                afterReducer = .do { [unowned self] in
+                return IO { output in
                     // After reducing "prepare", preparation should be done
-                    XCTAssertEqual(self.getState().preparation, .done)
-                    XCTAssertEqual(self.getState().running, .requested)
+                    
+                    XCTAssertEqual(getState().preparation, .done)
+                    XCTAssertEqual(getState().running, .requested)
 
-                    if self.getState().preparation == .done && self.getState().running == .requested {
+                    if getState().preparation == .done && getState().running == .requested {
                         // We evaluate this same condition in two places because we can reach the pre-conditions
                         // either when "preparation" or "running" states changed
                         // This time we are expected to execute this operation
-                        self.output.dispatch(.actions(.run), from: .here())
+                        output.dispatch(.actions(.run), from: .here())
                     }
                 }
             case .actions(.run):
                 // When we reach this point, preparation should be done and execution should have been
                 // requested, but not reduced yet
-                XCTAssertEqual(getState().preparation, .done)
-                XCTAssertEqual(getState().running, .requested)
+                let currentState = getState()
+                XCTAssertEqual(currentState.preparation, .done)
+                XCTAssertEqual(currentState.running, .requested)
 
-                afterReducer = .do { [unowned self] in
+                return IO { output in
                     // Now everything should be done
-                    XCTAssertEqual(self.getState().preparation, .done)
-                    XCTAssertEqual(self.getState().running, .done)
+                    
+                    XCTAssertEqual(getState().preparation, .done)
+                    XCTAssertEqual(getState().running, .done)
                 }
             default:
-                afterReducer = .doNothing()
+                return .pure()
             }
         }
     }
