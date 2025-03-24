@@ -667,7 +667,6 @@ extension MiddlewareReaderTests {
             dependencies: stringify
         )
         let globalMiddleware = globalReader.inject(globalDependencies)
-        
 
         // When
         localInputActions.forEach {

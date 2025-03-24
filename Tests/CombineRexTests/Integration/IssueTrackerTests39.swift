@@ -37,7 +37,6 @@ class IssueTracker39Tests: XCTestCase {
         typealias OutputActionType = AppAction
         typealias StateType = MyState
 
-
         func handle(action: IssueTracker39Tests.AppAction, from dispatcher: SwiftRex.ActionSource, state getState: @escaping SwiftRex.GetState<IssueTracker39Tests.MyState>) -> SwiftRex.IO<IssueTracker39Tests.AppAction> {
             switch action {
             case .events(.requestPrepare):
@@ -65,14 +64,13 @@ class IssueTracker39Tests: XCTestCase {
                 XCTAssertEqual(getState().preparation, .done)
                 XCTAssertEqual(getState().running, .stopped)
 
-
                 return .init { output in
                     if getState().preparation == .done && getState().running == .requested {
                         output.dispatch(.actions(.run), from: .here())
                         // this will happen, actually
                         // XCTFail("This should never happen")
                     }
-                    
+
                     // Both properties should be requested now, after reducing requestRun
                     XCTAssertEqual(getState().preparation, .done)
                     XCTAssertEqual(getState().running, .done)

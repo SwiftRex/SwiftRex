@@ -64,14 +64,14 @@ class IntegrationWithComposableMiddlewareTests: XCTestCase {
                 XCTAssertEqual(currentState.running, .stopped)
 
                 return IO {output in
-                    
+
                     if getState().preparation == .done && getState().running == .requested {
-                       
+
                         output.dispatch(.actions(.run), from: .here())
                         // this will happen, actually
                         // XCTFail("This should never happen")
                     }
-                    
+
                     // Both properties should be requested now, after reducing requestRun
                     XCTAssertEqual(getState().preparation, .done)
                     XCTAssertEqual(getState().running, .done)
@@ -99,7 +99,7 @@ class IntegrationWithComposableMiddlewareTests: XCTestCase {
 
                 return IO { output in
                     // After reducing "prepare", preparation should be done
-                    
+
                     XCTAssertEqual(getState().preparation, .done)
                     XCTAssertEqual(getState().running, .stopped)
 
@@ -117,9 +117,9 @@ class IntegrationWithComposableMiddlewareTests: XCTestCase {
                 XCTAssertEqual(currentState.preparation, .done)
                 XCTAssertEqual(currentState.running, .requested)
 
-                return IO { output in
+                return IO { _ in
                     // Now everything should be done
-                    
+
                     XCTAssertEqual(getState().preparation, .done)
                     XCTAssertEqual(getState().running, .done)
                 }

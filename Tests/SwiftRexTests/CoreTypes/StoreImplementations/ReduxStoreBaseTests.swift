@@ -18,7 +18,7 @@ class ReduxStoreBaseTests: XCTestCase {
         let initialState = TestState()
         let fooMiddleware = IsoMiddlewareMock<AppAction, TestState>()
         var fooMiddlewareOutput: AnyActionHandler<AppAction>?
-      
+
         fooMiddleware.handleActionFromStateClosure = { action, _, _ in
             guard action == .foo else {
                 return .pure()
@@ -34,7 +34,7 @@ class ReduxStoreBaseTests: XCTestCase {
         }
         let barMiddleware = IsoMiddlewareMock<AppAction.Bar, String>()
         var barMiddlewareOutput: AnyActionHandler<AppAction.Bar>?
-       
+
         barMiddleware.handleActionFromStateClosure = { action, _, _ in
             switch action {
             case .alpha:
@@ -79,7 +79,7 @@ class ReduxStoreBaseTests: XCTestCase {
                 state: { $0.name }
             )
         )
-        
+
         // receiveContext uses DispatchQueue.main.async, but handle uses DispatchQueue.asap
         // the behavior is different
         var count = 0

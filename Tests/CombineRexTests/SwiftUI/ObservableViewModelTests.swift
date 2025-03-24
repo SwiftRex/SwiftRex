@@ -56,7 +56,7 @@ class MiddlewareTest: MiddlewareProtocol {
     typealias InputActionType = Action
     typealias OutputActionType = Action
     typealias StateType = TestState
-    
+
     func handle(action: Action, from dispatcher: SwiftRex.ActionSource, state: @escaping SwiftRex.GetState<TestState>) -> SwiftRex.IO<Action> {
         switch action {
         case .middlewareAction, .middlewareActionAfterReducer:

@@ -9,7 +9,7 @@ extension PipelineMiddlewareReactiveSwiftTests {
         ("testPipelineMiddlewareActionIgnore", testPipelineMiddlewareActionIgnore),
         ("testPipelineMiddlewareActionTransformPipeline", testPipelineMiddlewareActionTransformPipeline),
         ("testPipelineMiddlewareEventIgnore", testPipelineMiddlewareEventIgnore),
-        ("testPipelineMiddlewareEventTransformPipeline", testPipelineMiddlewareEventTransformPipeline),
+        ("testPipelineMiddlewareEventTransformPipeline", testPipelineMiddlewareEventTransformPipeline)
     ]
 }
 
@@ -23,7 +23,7 @@ extension PublisherTypeBridgeTests {
         ("testSignalProducerToPublisherTypeOnError", testSignalProducerToPublisherTypeOnError),
         ("testSignalProducerToPublisherTypeOnValue", testSignalProducerToPublisherTypeOnValue),
         ("testSignalToPublisherTypeOnError", testSignalToPublisherTypeOnError),
-        ("testSignalToPublisherTypeOnValue", testSignalToPublisherTypeOnValue),
+        ("testSignalToPublisherTypeOnValue", testSignalToPublisherTypeOnValue)
     ]
 }
 
@@ -34,7 +34,7 @@ extension ReplayLastSubjectTypeBridgeTests {
     static let __allTests__ReplayLastSubjectTypeBridgeTests = [
         ("testDefaultReplayLastSubjectTypeMutate", testDefaultReplayLastSubjectTypeMutate),
         ("testDefaultReplayLastSubjectTypeOnValue", testDefaultReplayLastSubjectTypeOnValue),
-        ("testMutablePropertyToReplayLastSubjectTypeOnValue", testMutablePropertyToReplayLastSubjectTypeOnValue),
+        ("testMutablePropertyToReplayLastSubjectTypeOnValue", testMutablePropertyToReplayLastSubjectTypeOnValue)
     ]
 }
 
@@ -46,7 +46,7 @@ extension SubjectTypeBridgeTests {
         ("testDefaultSubjectTypeOnError", testDefaultSubjectTypeOnError),
         ("testDefaultSubjectTypeOnValue", testDefaultSubjectTypeOnValue),
         ("testSignalToSubjectTypeOnError", testSignalToSubjectTypeOnError),
-        ("testSignalToSubjectTypeOnValue", testSignalToSubjectTypeOnValue),
+        ("testSignalToSubjectTypeOnValue", testSignalToSubjectTypeOnValue)
     ]
 }
 
@@ -58,7 +58,7 @@ extension SubscriberTypeBridgeTests {
         ("testObserverToSubscriberTypeOnError", testObserverToSubscriberTypeOnError),
         ("testObserverToSubscriberTypeOnValue", testObserverToSubscriberTypeOnValue),
         ("testSubscriberTypeToObserverOnError", testSubscriberTypeToObserverOnError),
-        ("testSubscriberTypeToObserverOnValue", testSubscriberTypeToObserverOnValue),
+        ("testSubscriberTypeToObserverOnValue", testSubscriberTypeToObserverOnValue)
     ]
 }
 
@@ -71,7 +71,7 @@ extension SubscriptionBridgeTests {
         ("testDisposableToSubscriptionUnsubscribe", testDisposableToSubscriptionUnsubscribe),
         ("testSubscriptionCollectionAppend", testSubscriptionCollectionAppend),
         ("testSubscriptionToDisposableDispose", testSubscriptionToDisposableDispose),
-        ("testSubscriptionToDisposableToSubscriptionUnsubscribe", testSubscriptionToDisposableToSubscriptionUnsubscribe),
+        ("testSubscriptionToDisposableToSubscriptionUnsubscribe", testSubscriptionToDisposableToSubscriptionUnsubscribe)
     ]
 }
 
@@ -82,7 +82,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(ReplayLastSubjectTypeBridgeTests.__allTests__ReplayLastSubjectTypeBridgeTests),
         testCase(SubjectTypeBridgeTests.__allTests__SubjectTypeBridgeTests),
         testCase(SubscriberTypeBridgeTests.__allTests__SubscriberTypeBridgeTests),
-        testCase(SubscriptionBridgeTests.__allTests__SubscriptionBridgeTests),
+        testCase(SubscriptionBridgeTests.__allTests__SubscriptionBridgeTests)
     ]
 }
 #endif

@@ -36,8 +36,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
 
     func testMiddlewareDispatchesNewActionsBackToTheStore() {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
-        
-       
+
         let stateSubjectMock = CurrentValueSubject(currentValue: TestState())
         let reducerMock = createReducerMock()
         reducerMock.1.reduceClosure = { _, state in state }
@@ -52,8 +51,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let actionToDispatch: AppAction = .bar(.charlie)
         let expectedAction: AppAction = .bar(.charlie)
         let shouldCallMiddlewareActionHandler = expectation(description: "middleware action handler should have been called")
-        
-        
+
         middlewareMock.handleActionFromStateClosure = { action, dispatcher, _ in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertEqual(action, expectedAction)
@@ -61,7 +59,7 @@ class ReduxPipelineWrapperTests: XCTestCase {
             XCTAssertEqual("function_1", dispatcher.function)
             XCTAssertEqual(1, dispatcher.line)
             XCTAssertEqual("info_1", dispatcher.info)
-            
+
             shouldCallMiddlewareActionHandler.fulfill()
             return .pure()
         }
@@ -78,21 +76,20 @@ class ReduxPipelineWrapperTests: XCTestCase {
         let middlewareMock = IsoMiddlewareMock<AppAction, TestState>()
         var middlewareGetState: (() -> TestState)?
 
-        middlewareMock.handleActionFromStateClosure = { action, dispatcher, getState in
+        middlewareMock.handleActionFromStateClosure = { _, _, getState in
             middlewareGetState = getState
-            
+
             return .pure()
         }
-       
-        
+
         let currentState = TestState()
         let stateSubjectMock = CurrentValueSubject(currentValue: currentState)
-        
+
         // Keep a reference to both the reducer and its mock
         let (reducer, reducerMock) = createReducerMock()
         // Initialize the reduceReturnValue to avoid nil force unwrapping
         reducerMock.reduceReturnValue = currentState
-        
+
         let wrapper = ReduxPipelineWrapper<IsoMiddlewareMock<AppAction, TestState>>(
             state: { stateSubjectMock.subject },
             reducer: reducer,
