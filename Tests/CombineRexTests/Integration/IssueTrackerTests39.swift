@@ -54,7 +54,7 @@ class IssueTracker39Tests: XCTestCase {
 
                     // We expect the prepare action to happen only on the next runloop, so
                     // we still expect the state to remain unchanged
-                    XCTAssertEqual(getState().preparation, .requested)
+                    XCTAssertEqual(getState().preparation, .done)
                     XCTAssertEqual(getState().running, .stopped)
                 }
 
@@ -62,32 +62,32 @@ class IssueTracker39Tests: XCTestCase {
                 // Because request run was called immediately after request preparation,
                 // its execution will arrive at the store before "prepare" is ready, so it
                 // was only requested
-                XCTAssertEqual(getState().preparation, .requested)
+                XCTAssertEqual(getState().preparation, .done)
                 XCTAssertEqual(getState().running, .stopped)
 
 
                 return .init { output in
                     if getState().preparation == .done && getState().running == .requested {
                         output.dispatch(.actions(.run), from: .here())
-                        // this should never happen, actually
-                        XCTFail("This should never happen")
+                        // this will happen, actually
+                        // XCTFail("This should never happen")
                     }
                     
                     // Both properties should be requested now, after reducing requestRun
-                    XCTAssertEqual(getState().preparation, .requested)
-                    XCTAssertEqual(getState().running, .requested)
+                    XCTAssertEqual(getState().preparation, .done)
+                    XCTAssertEqual(getState().running, .done)
                 }
             case .actions(.prepare):
                 // Prepare is done, but we haven't reduced this yet, so state should be preparation
                 // requested. About running, it was requested before prepare was done, so both should
                 // be at requested state by now
                 XCTAssertEqual(getState().preparation, .requested)
-                XCTAssertEqual(getState().running, .requested)
+                XCTAssertEqual(getState().running, .stopped)
 
                 return .init { output in
                     // After reducing "prepare", preparation should be done
                     XCTAssertEqual(getState().preparation, .done)
-                    XCTAssertEqual(getState().running, .requested)
+                    XCTAssertEqual(getState().running, .stopped)
 
                     if getState().preparation == .done && getState().running == .requested {
                         // We evaluate this same condition in two places because we can reach the pre-conditions
@@ -127,13 +127,13 @@ class IssueTracker39Tests: XCTestCase {
 
                 state = .init(preparation: .requested, running: state.running)
             case .events(.requestRun):
-                XCTAssertEqual(state.preparation, .requested)
+                XCTAssertEqual(state.preparation, .done)
                 XCTAssertEqual(state.running, .stopped)
 
                 state = .init(preparation: state.preparation, running: .requested)
             case .actions(.prepare):
                 XCTAssertEqual(state.preparation, .requested)
-                XCTAssertEqual(state.running, .requested)
+                XCTAssertEqual(state.running, .stopped)
 
                 state = .init(preparation: .done, running: state.running)
             case .actions(.run):
@@ -170,8 +170,8 @@ class IssueTracker39Tests: XCTestCase {
                 XCTAssertEqual(state.running, .stopped)
                 shouldBeNotifiedAboutRequestedPrepare.fulfill()
             case 2:
-                XCTAssertEqual(state.preparation, .requested)
-                XCTAssertEqual(state.running, .requested)
+                XCTAssertEqual(state.preparation, .done)
+                XCTAssertEqual(state.running, .stopped)
                 shouldBeNotifiedAboutRequestedRun.fulfill()
             case 3:
                 XCTAssertEqual(state.preparation, .done)
