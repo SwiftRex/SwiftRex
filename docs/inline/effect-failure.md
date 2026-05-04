@@ -1,1 +1,0 @@
-`Effect` publisher/observable can't fail.

@@ -30,10 +30,5 @@ jobs:
       env:
         LC_CTYPE: 'en_US.UTF-8'
         LANG: 'en_US.UTF-8'
-        FRAMEWORK_NAME: 'SwiftRex'
         MINT_PATH: '~/mint'
-      run: |
-        make test
-        make code-coverage-summary
-        make code-coverage-file
-        bash <(curl -s https://codecov.io/bash) -X xcodellvm -X gcov -f coverage.txt
+      run: make test

@@ -1,1 +1,0 @@
-An Empty effect that will complete immediately without emitting any output. Useful for when the Middleware doesn't want to perform any side-effect.
