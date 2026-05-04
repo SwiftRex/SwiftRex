@@ -1,61 +1,23 @@
 import CoreFP
 
-// MARK: - liftCollection (CollectionAction — one-sided)
-
-extension Reducer {
-    /// Lifts a local reducer using a `CollectionAction` payload carried in the global action.
-    ///
-    /// The `CollectionAction` encodes the full routing — which container in the global state,
-    /// which element within it, and the local action — so no state-side parameter is needed here.
-    ///
-    /// ```swift
-    /// itemReducer.liftCollection(action: \.updateItem)
-    ///
-    /// // At dispatch:
-    /// store.send(.updateItem(CollectionAction(\.items, id: item.id, action: .toggleDone)))
-    /// store.send(.updateItem(CollectionAction(\.items, element: [Item].ix(id: item.id), action: .toggleDone)))
-    /// ```
-    public func liftCollection<GA, GS>(
-        action: KeyPath<GA, CollectionAction<GS, StateType, ActionType>?>
-    ) -> Reducer<GA, GS> {
-        liftCollection(action: { $0[keyPath: action] })
-    }
-
-    /// Lifts a local reducer using a closure that produces a `CollectionAction`.
-    public func liftCollection<GA, GS>(
-        action: @escaping (GA) -> CollectionAction<GS, StateType, ActionType>?
-    ) -> Reducer<GA, GS> {
-        .reduce { globalAction, globalState in
-            guard
-                let payload = action(globalAction),
-                var localState = payload.elementInRoot.preview(globalState)
-            else { return }
-            self.reduce(payload.action, &localState)
-            globalState = payload.elementInRoot.set(globalState, localState)
-        }
-    }
-}
-
 // MARK: - liftCollection (primitive — AffineTraversal)
 
 extension Reducer {
-    /// The primitive two-sided overload: you provide the action extraction closure and a fixed
-    /// container key path; the closure returns the local action and an `AffineTraversal` that
-    /// selects the element within the container.
+    /// The primitive overload: provide a closure that returns the local action and an
+    /// `AffineTraversal` selecting the exact element within its container.
     ///
-    /// Use the `ix` family from the FP library:
+    /// Use the `ix` family from the FP library to build the traversal:
     ///
     /// ```swift
-    /// itemReducer.liftCollection(
-    ///     action: { ga in
-    ///         guard case .updateItem(let id, let sub) = ga else { return nil }
-    ///         return (action: sub, element: [Item].ix(id: id))
+    /// todoReducer.liftCollection(
+    ///     action: { (ea: ElementAction<UUID, TodoAction>?) in
+    ///         ea.map { (action: $0.action, element: [Todo].ix(id: $0.id)) }
     ///     },
-    ///     stateContainer: \.items
+    ///     stateContainer: \AppState.todos
     /// )
     /// ```
     ///
-    /// All tuple-based `liftCollection` overloads delegate here.
+    /// All `ElementAction`-based `liftCollection` overloads delegate here.
     public func liftCollection<GA, GS, Container>(
         action: @escaping (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
         stateContainer: WritableKeyPath<GS, Container>
@@ -75,8 +37,15 @@ extension Reducer {
 
 extension Reducer where StateType: Identifiable {
     /// Lifts to a mutable collection, locating the element by its `Identifiable.id`.
+    ///
+    /// ```swift
+    /// todoReducer.liftCollection(
+    ///     action: { (ea: ElementAction<UUID, TodoAction>?) in ea },
+    ///     stateCollection: \AppState.todos
+    /// )
+    /// ```
     public func liftCollection<GA, GS, C: MutableCollection>(
-        action: @escaping (GA) -> (id: StateType.ID, action: ActionType)?,
+        action: @escaping (GA) -> ElementAction<StateType.ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>
     ) -> Reducer<GA, GS> where C.Element == StateType {
         liftCollection(
@@ -86,8 +55,13 @@ extension Reducer where StateType: Identifiable {
     }
 
     /// Lifts to a mutable collection via a KeyPath, locating the element by its `Identifiable.id`.
+    ///
+    /// ```swift
+    /// // AppAction has: var updateTodo: ElementAction<UUID, TodoAction>?
+    /// todoReducer.liftCollection(action: \AppAction.updateTodo, stateCollection: \AppState.todos)
+    /// ```
     public func liftCollection<GA, GS, C: MutableCollection>(
-        action: KeyPath<GA, (id: StateType.ID, action: ActionType)?>,
+        action: KeyPath<GA, ElementAction<StateType.ID, ActionType>?>,
         stateCollection: WritableKeyPath<GS, C>
     ) -> Reducer<GA, GS> where C.Element == StateType {
         liftCollection(action: { $0[keyPath: action] }, stateCollection: stateCollection)
@@ -97,21 +71,29 @@ extension Reducer where StateType: Identifiable {
 // MARK: - liftCollection (custom Hashable identifier)
 
 extension Reducer {
-    /// Lifts to a mutable collection, locating the element by a custom `Hashable` identifier.
+    /// Lifts to a mutable collection, locating the element by a custom `Hashable` field.
+    ///
+    /// ```swift
+    /// projectReducer.liftCollection(
+    ///     action: { (ea: ElementAction<String, ProjectAction>?) in ea },
+    ///     stateCollection: \AppState.projects,
+    ///     identifier: \Project.slug
+    /// )
+    /// ```
     public func liftCollection<GA, GS, C: MutableCollection, ID: Hashable>(
-        action: @escaping (GA) -> (id: ID, action: ActionType)?,
+        action: @escaping (GA) -> ElementAction<ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>,
         identifier: KeyPath<StateType, ID>
     ) -> Reducer<GA, GS> where C.Element == StateType {
         liftCollection(
             action: { ga in
-                action(ga).map { item in
+                action(ga).map { ea in
                     (
-                        action: item.action,
+                        action: ea.action,
                         element: AffineTraversal<C, StateType>(
-                            preview: { $0.first(where: { $0[keyPath: identifier] == item.id }) },
+                            preview: { $0.first(where: { $0[keyPath: identifier] == ea.id }) },
                             set: { col, elem in
-                                guard let idx = col.firstIndex(where: { $0[keyPath: identifier] == item.id })
+                                guard let idx = col.firstIndex(where: { $0[keyPath: identifier] == ea.id })
                                 else { return col }
                                 var copy = col
                                 copy[idx] = elem
@@ -125,9 +107,18 @@ extension Reducer {
         )
     }
 
-    /// Lifts to a mutable collection via a KeyPath, locating the element by a custom `Hashable` identifier.
+    /// Lifts to a mutable collection via a KeyPath, locating the element by a custom `Hashable` field.
+    ///
+    /// ```swift
+    /// // AppAction has: var updateProject: ElementAction<String, ProjectAction>?
+    /// projectReducer.liftCollection(
+    ///     action: \AppAction.updateProject,
+    ///     stateCollection: \AppState.projects,
+    ///     identifier: \Project.slug
+    /// )
+    /// ```
     public func liftCollection<GA, GS, C: MutableCollection, ID: Hashable>(
-        action: KeyPath<GA, (id: ID, action: ActionType)?>,
+        action: KeyPath<GA, ElementAction<ID, ActionType>?>,
         stateCollection: WritableKeyPath<GS, C>,
         identifier: KeyPath<StateType, ID>
     ) -> Reducer<GA, GS> where C.Element == StateType {
@@ -135,46 +126,35 @@ extension Reducer {
     }
 }
 
-// MARK: - liftCollection (index-based)
-
-extension Reducer {
-    /// Lifts to a mutable collection, locating the element by its index.
-    public func liftCollection<GA, GS, C: MutableCollection>(
-        action: @escaping (GA) -> (index: C.Index, action: ActionType)?,
-        stateCollection: WritableKeyPath<GS, C>
-    ) -> Reducer<GA, GS> where C.Element == StateType {
-        liftCollection(
-            action: { ga in action(ga).map { (action: $0.action, element: C.ix($0.index)) } },
-            stateContainer: stateCollection
-        )
-    }
-
-    /// Lifts to a mutable collection via a KeyPath, locating the element by its index.
-    public func liftCollection<GA, GS, C: MutableCollection>(
-        action: KeyPath<GA, (index: C.Index, action: ActionType)?>,
-        stateCollection: WritableKeyPath<GS, C>
-    ) -> Reducer<GA, GS> where C.Element == StateType {
-        liftCollection(action: { $0[keyPath: action] }, stateCollection: stateCollection)
-    }
-}
-
 // MARK: - liftCollection (Dictionary key-based)
 
 extension Reducer {
     /// Lifts to a `Dictionary`, locating the entry by its key.
+    ///
+    /// ```swift
+    /// configReducer.liftCollection(
+    ///     action: { (ea: ElementAction<String, ConfigAction>?) in ea },
+    ///     stateDictionary: \AppState.configs
+    /// )
+    /// ```
     public func liftCollection<GA, GS, Key: Hashable>(
-        action: @escaping (GA) -> (key: Key, action: ActionType)?,
+        action: @escaping (GA) -> ElementAction<Key, ActionType>?,
         stateDictionary: WritableKeyPath<GS, [Key: StateType]>
     ) -> Reducer<GA, GS> {
         liftCollection(
-            action: { ga in action(ga).map { (action: $0.action, element: [Key: StateType].ix(key: $0.key)) } },
+            action: { ga in action(ga).map { (action: $0.action, element: [Key: StateType].ix(key: $0.id)) } },
             stateContainer: stateDictionary
         )
     }
 
     /// Lifts to a `Dictionary` via a KeyPath, locating the entry by its key.
+    ///
+    /// ```swift
+    /// // AppAction has: var updateConfig: ElementAction<String, ConfigAction>?
+    /// configReducer.liftCollection(action: \AppAction.updateConfig, stateDictionary: \AppState.configs)
+    /// ```
     public func liftCollection<GA, GS, Key: Hashable>(
-        action: KeyPath<GA, (key: Key, action: ActionType)?>,
+        action: KeyPath<GA, ElementAction<Key, ActionType>?>,
         stateDictionary: WritableKeyPath<GS, [Key: StateType]>
     ) -> Reducer<GA, GS> {
         liftCollection(action: { $0[keyPath: action] }, stateDictionary: stateDictionary)

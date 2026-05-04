@@ -21,12 +21,11 @@ A `Reducer<ActionType, StateType>` is a pure function that maps an action and th
    - [AffineTraversal — state](#10-affinetraversal--state)
    - [Prism + AffineTraversal](#11-prism--affinetraversal)
 4. [Lifting into collections](#lifting-into-collections)
-   - [CollectionAction — one-sided](#1-collectionaction--one-sided)
-   - [Identifiable by `.id`](#2-identifiable-by-id)
-   - [Custom Hashable identifier](#3-custom-hashable-identifier)
-   - [Index-based](#4-index-based)
-   - [Dictionary key](#5-dictionary-key)
-   - [Primitive AffineTraversal](#6-primitive-affinetraversal)
+   - [Identifiable by `.id`](#1-identifiable-by-id)
+   - [Custom Hashable identifier](#2-custom-hashable-identifier)
+   - [Dictionary key](#3-dictionary-key)
+   - [Index-based (primitive)](#4-index-based-primitive)
+   - [Custom AffineTraversal](#5-custom-affinetraversal)
 5. [Putting it all together](#putting-it-all-together)
 
 ---
@@ -42,10 +41,10 @@ enum AppAction {
     case auth(AuthAction)
     case profile(ProfileAction)
     case counter(CounterAction)
-    case updateTodo(CollectionAction<AppState, Todo, TodoAction>)
-    case updateProject((id: UUID, action: ProjectAction)?)
-    case expandSection((index: Int, action: SectionAction)?)
-    case updateConfig((key: String, action: ConfigAction)?)
+    case updateTodo(ElementAction<UUID, TodoAction>?)
+    case updateProject(ElementAction<String, ProjectAction>?)  // keyed by Project.slug
+    case expandSection(ElementAction<UUID, SectionAction>?)
+    case updateConfig(ElementAction<String, ConfigAction>?)
 }
 
 struct AppState {
@@ -478,7 +477,7 @@ Combines a `Prism` on the action axis with an `AffineTraversal` on the state axi
 
 ```swift
 let todoPrism = Prism<AppAction, TodoAction>(
-    preview: { if case .updateTodo(let a) = $0 { return a.action } else { return nil } },
+    preview: { if case .updateTodo(let ea) = $0 { return ea?.action } else { return nil } },
     review:  { _ in fatalError("review not used in this context") }
 )
 
@@ -495,91 +494,35 @@ let liftedReducer: Reducer<AppAction, AppState> =
 
 ## Lifting into collections
 
-When an action targets a **specific element** inside a collection, `liftCollection` routes the action to the right element and writes the mutated element back in one step. Six strategies cover every element-selection technique.
+When an action targets a **specific element** inside a collection, `liftCollection` routes the action to the right element and writes the mutated element back in one step.
 
-All overloads have a `KeyPath` variant (ergonomic, when the action property is a stored property) and a `closure` variant (flexible, for any extraction logic).
-
-### 1. CollectionAction — one-sided
-
-`CollectionAction<Root, Element, SubAction>` bundles the element traversal **and** the local action into a single value that travels inside the global action. The call site pre-computes the routing; the reducer side just declares which action property carries the `CollectionAction`.
+The core design principle: **the call site only knows what it uniquely knows** — the element's identifier and the action to send. The path to the collection inside global state belongs at the reducer wiring layer, not in the view. `ElementAction<ID, SubAction>` is the type that carries exactly that pair.
 
 ```swift
-// ── Action side ────────────────────────────────────────────────────────────
+// View — only knows the id and the action:
+store.send(.updateTodo(ElementAction(todo.id, action: .toggleDone)))
 
-// AppAction has:
-//   case updateTodo(CollectionAction<AppState, Todo, TodoAction>)
-
-// ── Dispatch site ──────────────────────────────────────────────────────────
-
-store.send(.updateTodo(CollectionAction(\AppState.todos, id: todo.id, action: .toggleDone)))
-store.send(.updateTodo(CollectionAction(\AppState.todos, id: todo.id, action: .updateTitle("Buy milk"))))
-
-// ── Reducer side ───────────────────────────────────────────────────────────
-
-let todoReducer = Reducer<TodoAction, Todo>.reduce { action, todo in
-    switch action {
-    case .toggleDone:           todo.isDone.toggle()
-    case .updateTitle(let t):   todo.title = t
-    }
-}
-
-// KeyPath variant — AppAction has: var updateTodo: CollectionAction<AppState, Todo, TodoAction>?
-let liftedTodoReducer: Reducer<AppAction, AppState> =
-    todoReducer.liftCollection(action: \AppAction.updateTodo)
-
-// Closure variant — when extraction requires pattern matching
-let liftedTodoReducer: Reducer<AppAction, AppState> =
-    todoReducer.liftCollection(action: { (ga: AppAction) -> CollectionAction<AppState, Todo, TodoAction>? in
-        if case .updateTodo(let ca) = ga { return ca } else { return nil }
-    })
+// Reducer wiring — knows where todos live in AppState:
+todoReducer.liftCollection(action: \AppAction.updateTodo, stateCollection: \AppState.todos)
 ```
 
-The `CollectionAction` initialiser family mirrors the strategies below. You can construct it with:
+All overloads come in two flavours: a **KeyPath variant** (for stored optional properties on the action type) and a **closure variant** (for pattern matching or any custom extraction).
+
+### 1. Identifiable by `.id`
+
+When the element type conforms to `Identifiable`. The `ElementAction` carries the element's `id` and the local sub-action. `liftCollection` looks up the element by `id`, runs the reducer, and writes back.
+
+**KeyPath variant** (requires a stored optional property of type `ElementAction<ID, SubAction>?`):
 
 ```swift
-// By Identifiable.id
-CollectionAction(\AppState.todos, id: todo.id, action: .toggleDone)
+// AppAction has: var updateTodo: ElementAction<UUID, TodoAction>?
+//
+// View:
+store.send(.updateTodo(ElementAction(todo.id, action: .toggleDone)))
+store.send(.updateTodo(ElementAction(todo.id, action: .updateTitle("Buy milk"))))
+store.send(.updateTodo(nil))  // no-op
 
-// By explicit ix traversal
-CollectionAction(\AppState.todos, element: [Todo].ix(id: todo.id), action: .toggleDone)
-
-// By index
-CollectionAction(\AppState.sections, index: 2, action: .expand)
-
-// By Dictionary key
-CollectionAction(\AppState.configs, key: "featureX", action: .toggle)
-
-// By custom AffineTraversal
-CollectionAction(myCustomTraversal, action: .toggleDone)
-```
-
-The one-sided form is the most idiomatic SwiftRex pattern: the call site decides _which_ element to target, the reducer side stays completely unaware of where in the tree the element lives.
-
-### 2. Identifiable by `.id`
-
-When the element type conforms to `Identifiable`, the collection lookup happens by `id`. The action carries the element's id and the local action.
-
-**Closure variant:**
-
-```swift
-// AppAction has no CollectionAction; it carries a raw id + sub-action tuple.
-// (e.g. from a plain enum case with associated values)
-
-let liftedTodo: Reducer<(id: UUID, action: TodoAction)?, AppState> =
-    todoReducer.liftCollection(
-        action: { (payload: (id: UUID, action: TodoAction)?) in payload },
-        stateCollection: \AppState.todos
-    )
-```
-
-**KeyPath variant** (requires a stored property on the action type):
-
-```swift
-struct AppAction {
-    var updateTodo: (id: UUID, action: TodoAction)?
-    // …
-}
-
+// Wiring:
 let liftedTodo: Reducer<AppAction, AppState> =
     todoReducer.liftCollection(
         action: \AppAction.updateTodo,
@@ -587,113 +530,64 @@ let liftedTodo: Reducer<AppAction, AppState> =
     )
 ```
 
-When the id is not found in the collection, the reducer is skipped without mutation.
-
-### 3. Custom Hashable identifier
-
-For elements that are `Identifiable` by some field that is not their `id` property, or for any type with a designated key field, use the `identifier:` parameter to name the key path.
-
-**Closure variant:**
+**Closure variant** (for enum cases with associated values or any custom extraction):
 
 ```swift
-struct Project: Identifiable {
-    let id: UUID
-    var slug: String   // unique human-readable identifier
-    var name: String
-}
-
-let projectReducer = Reducer<ProjectAction, Project>.reduce { action, project in
-    switch action {
-    case .rename(let n): project.name = n
-    case .archive:       project.isArchived = true
-    }
-}
-
-// Route by slug instead of by id
-let liftedProject: Reducer<(id: String, action: ProjectAction)?, AppState> =
-    projectReducer.liftCollection(
-        action: { (p: (id: String, action: ProjectAction)?) in p },
-        stateCollection: \AppState.projects,
-        identifier: \Project.slug
+let liftedTodo: Reducer<AppAction, AppState> =
+    todoReducer.liftCollection(
+        action: { (ga: AppAction) -> ElementAction<UUID, TodoAction>? in
+            if case .updateTodo(let ea) = ga { return ea } else { return nil }
+        },
+        stateCollection: \AppState.todos
     )
 ```
+
+When the `id` is not found in the collection, the reducer is skipped without mutation.
+
+### 2. Custom Hashable identifier
+
+When the element is looked up by a field other than its `Identifiable.id` — for example a human-readable slug or a stable string key. Supply `identifier:` to name which property on the element to match against.
 
 **KeyPath variant:**
 
 ```swift
-struct AppAction {
-    var updateProjectBySlug: (id: String, action: ProjectAction)?
-}
+// Project has a `slug: String` field used as a stable external key.
+// AppAction has: var updateProject: ElementAction<String, ProjectAction>?
 
 let liftedProject: Reducer<AppAction, AppState> =
     projectReducer.liftCollection(
-        action: \AppAction.updateProjectBySlug,
+        action: \AppAction.updateProject,
         stateCollection: \AppState.projects,
         identifier: \Project.slug
     )
 ```
 
-### 4. Index-based
-
-When the action carries the raw collection index. Use for arrays where stable position is meaningful, or when the UI dispatches by index (e.g. a table view row).
-
 **Closure variant:**
 
 ```swift
-let sectionReducer = Reducer<SectionAction, Section>.reduce { action, section in
-    switch action {
-    case .expand:   section.isExpanded = true
-    case .collapse: section.isExpanded = false
-    }
-}
-
-let liftedSection: Reducer<(index: Int, action: SectionAction)?, AppState> =
-    sectionReducer.liftCollection(
-        action: { (p: (index: Int, action: SectionAction)?) in p },
-        stateCollection: \AppState.sections
+let liftedProject: Reducer<AppAction, AppState> =
+    projectReducer.liftCollection(
+        action: { (ga: AppAction) -> ElementAction<String, ProjectAction>? in
+            if case .updateProject(let ea) = ga { return ea } else { return nil }
+        },
+        stateCollection: \AppState.projects,
+        identifier: \Project.slug
     )
 ```
+
+### 3. Dictionary key
+
+For `[Key: Value]` dictionaries. The `ElementAction.id` is the dictionary key. Missing keys produce no mutation.
 
 **KeyPath variant:**
 
 ```swift
-// AppAction has: var expandSection: (index: Int, action: SectionAction)?
+// AppAction has: var updateConfig: ElementAction<String, ConfigAction>?
+//
+// View:
+store.send(.updateConfig(ElementAction("featureX", action: .toggle)))
 
-let liftedSection: Reducer<AppAction, AppState> =
-    sectionReducer.liftCollection(
-        action: \AppAction.expandSection,
-        stateCollection: \AppState.sections
-    )
-```
-
-Out-of-bounds indices produce no mutation.
-
-### 5. Dictionary key
-
-For `[Key: Value]` dictionaries. The action carries the key and the local action. Missing keys produce no mutation.
-
-**Closure variant:**
-
-```swift
-let configReducer = Reducer<ConfigAction, Config>.reduce { action, config in
-    switch action {
-    case .toggle:         config.isEnabled.toggle()
-    case .setValue(let v): config.value = v
-    }
-}
-
-let liftedConfig: Reducer<(key: String, action: ConfigAction)?, AppState> =
-    configReducer.liftCollection(
-        action: { (p: (key: String, action: ConfigAction)?) in p },
-        stateDictionary: \AppState.configs
-    )
-```
-
-**KeyPath variant:**
-
-```swift
-// AppAction has: var updateConfig: (key: String, action: ConfigAction)?
-
+// Wiring:
 let liftedConfig: Reducer<AppAction, AppState> =
     configReducer.liftCollection(
         action: \AppAction.updateConfig,
@@ -701,24 +595,48 @@ let liftedConfig: Reducer<AppAction, AppState> =
     )
 ```
 
-### 6. Primitive AffineTraversal
-
-The foundation all other `liftCollection` overloads are built on. Provide a closure that returns both the local action **and** an `AffineTraversal` that selects the exact element within its container. Use this when the built-in strategies don't fit — for example, a two-level nested collection, a custom container type, or a conditional traversal.
+**Closure variant:**
 
 ```swift
-// Two levels deep: AppState.profile.recentTodos — a [Todo] nested inside ProfileState.
-let nestedTodoReducer: Reducer<(id: UUID, action: TodoAction)?, AppState> =
-    todoReducer.liftCollection(
-        action: { (payload: (id: UUID, action: TodoAction)?) -> (action: TodoAction, element: AffineTraversal<[Todo], Todo>)? in
-            payload.map { (action: $0.action, element: [Todo].ix(id: $0.id)) }
+let liftedConfig: Reducer<AppAction, AppState> =
+    configReducer.liftCollection(
+        action: { (ga: AppAction) -> ElementAction<String, ConfigAction>? in
+            if case .updateConfig(let ea) = ga { return ea } else { return nil }
         },
-        stateContainer: \AppState.profile.recentTodos
+        stateDictionary: \AppState.configs
     )
 ```
 
+### 4. Index-based (primitive)
+
+Array indices are positional, not semantic identifiers, so there is no dedicated `ElementAction` overload for them. Use the primitive `AffineTraversal` overload directly, building the traversal with `[C].ix(_:)` from the FP library:
+
 ```swift
-// Custom container with a non-standard lookup — first incomplete todo.
-let firstIncompleteTodoTraversal = AffineTraversal<[Todo], Todo>(
+// AppAction has: var expandSection: ElementAction<Int, SectionAction>?
+//
+// View (index comes from, e.g., a table view row):
+store.send(.expandSection(ElementAction(indexPath.row, action: .expand)))
+
+// Wiring — build the ix traversal from the ElementAction's id:
+let liftedSection: Reducer<AppAction, AppState> =
+    sectionReducer.liftCollection(
+        action: { (ga: AppAction) -> (action: SectionAction, element: AffineTraversal<[Section], Section>)? in
+            guard case .expandSection(let ea) = ga, let ea else { return nil }
+            return (action: ea.action, element: [Section].ix(ea.id))
+        },
+        stateContainer: \AppState.sections
+    )
+```
+
+Out-of-bounds indices produce no mutation.
+
+### 5. Custom AffineTraversal
+
+The primitive that all other overloads delegate to. Use this when the built-in strategies don't fit: two-level nested collections, custom container types, conditional lookups, or any traversal that can't be expressed as a single `ix` call.
+
+```swift
+// First incomplete todo — not addressable by id or index in a stable way.
+let firstIncompleteTodo = AffineTraversal<[Todo], Todo>(
     preview: { $0.first(where: { !$0.isDone }) },
     set: { todos, updated in
         var copy = todos
@@ -730,9 +648,21 @@ let firstIncompleteTodoTraversal = AffineTraversal<[Todo], Todo>(
 let liftedReducer: Reducer<TodoAction, AppState> =
     todoReducer.liftCollection(
         action: { (action: TodoAction) -> (action: TodoAction, element: AffineTraversal<[Todo], Todo>)? in
-            (action: action, element: firstIncompleteTodoTraversal)
+            (action: action, element: firstIncompleteTodo)
         },
         stateContainer: \AppState.todos
+    )
+```
+
+```swift
+// Two levels deep: AppState.profile.recentTodos — a [Todo] nested inside ProfileState.
+let nestedTodoReducer: Reducer<AppAction, AppState> =
+    todoReducer.liftCollection(
+        action: { (ga: AppAction) -> (action: TodoAction, element: AffineTraversal<[Todo], Todo>)? in
+            guard case .updateTodo(let ea) = ga, let ea else { return nil }
+            return (action: ea.action, element: [Todo].ix(id: ea.id))
+        },
+        stateContainer: \AppState.profile.recentTodos
     )
 ```
 
@@ -740,7 +670,7 @@ let liftedReducer: Reducer<TodoAction, AppState> =
 
 ## Putting it all together
 
-A realistic app reducer that combines all of the above techniques:
+A realistic app reducer combining every technique:
 
 ```swift
 // ── Leaf reducers ──────────────────────────────────────────────────────────
@@ -789,38 +719,32 @@ let configReducer = Reducer<ConfigAction, Config>.reduce { action, config in
     }
 }
 
-// ── App reducer ────────────────────────────────────────────────────────────
-//
-// AppAction is defined as:
+// ── App action ─────────────────────────────────────────────────────────────
 //
 //   enum AppAction {
 //       case auth(AuthAction)
 //       case profile(ProfileAction)
 //       case counter(CounterAction)
-//       case updateTodo(CollectionAction<AppState, Todo, TodoAction>)
-//       case expandSection((index: Int, action: SectionAction)?)
-//       case updateConfig((key: String, action: ConfigAction)?)
+//       case updateTodo(ElementAction<UUID, TodoAction>?)
+//       case expandSection(ElementAction<Int, SectionAction>?)
+//       case updateConfig(ElementAction<String, ConfigAction>?)
 //   }
 //
-// AppAction computed properties used by KeyPath overloads:
+// Computed properties for KeyPath overloads:
 //
 //   extension AppAction {
-//       var auth:          AuthAction?           { if case .auth(let a)    = self { return a } else { return nil } }
-//       var profile:       ProfileAction?        { if case .profile(let a) = self { return a } else { return nil } }
-//       var counter:       CounterAction?        { if case .counter(let a) = self { return a } else { return nil } }
-//       var updateTodo:    CollectionAction<AppState, Todo, TodoAction>? {
-//           if case .updateTodo(let ca) = self { return ca } else { return nil }
-//       }
-//       var expandSection: (index: Int, action: SectionAction)? {
-//           if case .expandSection(let p) = self { return p } else { return nil }
-//       }
-//       var updateConfig:  (key: String, action: ConfigAction)? {
-//           if case .updateConfig(let p) = self { return p } else { return nil }
-//       }
+//       var auth:          AuthAction?                         { … }
+//       var profile:       ProfileAction?                      { … }
+//       var counter:       CounterAction?                      { … }
+//       var updateTodo:    ElementAction<UUID, TodoAction>?    { … }
+//       var expandSection: ElementAction<Int, SectionAction>?  { … }
+//       var updateConfig:  ElementAction<String, ConfigAction>?{ … }
 //   }
 
+// ── App reducer ────────────────────────────────────────────────────────────
+
 let appReducer = Reducer<AppAction, AppState>.compose {
-    // ── Struct state, enum action — KeyPath lift (most common) ──────────────
+    // Scalar sub-state — KeyPath lift
     authReducer
         .lift(action: \AppAction.auth, state: \AppState.auth)
 
@@ -830,24 +754,37 @@ let appReducer = Reducer<AppAction, AppState>.compose {
     counterReducer
         .lift(action: \AppAction.counter, state: \AppState.counter)
 
-    // ── Collection: one-sided CollectionAction ──────────────────────────────
+    // Collection — Identifiable by UUID
     todoReducer
-        .liftCollection(action: \AppAction.updateTodo)
+        .liftCollection(action: \AppAction.updateTodo, stateCollection: \AppState.todos)
 
-    // ── Collection: index-based ─────────────────────────────────────────────
+    // Collection — index-based via primitive
     sectionReducer
         .liftCollection(
-            action: \AppAction.expandSection,
-            stateCollection: \AppState.sections
+            action: { (ga: AppAction) -> (action: SectionAction, element: AffineTraversal<[Section], Section>)? in
+                guard case .expandSection(let ea) = ga, let ea else { return nil }
+                return (action: ea.action, element: [Section].ix(ea.id))
+            },
+            stateContainer: \AppState.sections
         )
 
-    // ── Collection: Dictionary key ──────────────────────────────────────────
+    // Collection — Dictionary key
     configReducer
-        .liftCollection(
-            action: \AppAction.updateConfig,
-            stateDictionary: \AppState.configs
-        )
+        .liftCollection(action: \AppAction.updateConfig, stateDictionary: \AppState.configs)
 }
+```
+
+### Dispatch examples (view layer)
+
+```swift
+// View knows only the element's id and the action — nothing about AppState layout:
+store.send(.updateTodo(ElementAction(todo.id, action: .toggleDone)))
+store.send(.updateTodo(ElementAction(todo.id, action: .updateTitle("Buy milk"))))
+
+store.send(.expandSection(ElementAction(indexPath.row, action: .expand)))
+
+store.send(.updateConfig(ElementAction("featureX", action: .toggle)))
+store.send(.updateConfig(ElementAction("debugMode", action: .setValue("verbose"))))
 ```
 
 ### Quick reference — lift overload selection guide
@@ -855,25 +792,24 @@ let appReducer = Reducer<AppAction, AppState>.compose {
 ```
 Need to narrow the action?
 ├── Yes
-│   ├── Action is a KeyPath optional property → lift(action:state:)  or  lift(action:)
-│   ├── Action needs Prism (enum case, macro) → lift(action: prism, state: …)
-│   └── Action needs custom logic → lift(actionGetter:stateGetter:stateSetter:)
+│   ├── Stored optional property → lift(action: keyPath, state: …)
+│   ├── Enum case / @Prism macro → lift(action: prism, state: …)
+│   └── Custom extraction → lift(actionGetter:stateGetter:stateSetter:)
 └── No (same action type)
     └── lift(state: …)
 
 Need to focus the state?
-├── Stored var property → WritableKeyPath → lift(…state: keyPath)
-├── Let property / composed path → Lens → lift(state: lens)
-├── Enum case (state is an enum) → Prism → lift(state: prism)
+├── Stored var property → WritableKeyPath  → lift(…state: keyPath)
+├── Let property / composed path → Lens   → lift(state: lens)
+├── Enum case (state is enum) → Prism     → lift(state: prism)
 └── Possibly-absent focus → AffineTraversal → lift(state: traversal)
 
 Targeting an element inside a collection?
-├── Carry all routing in the action → CollectionAction → liftCollection(action:)
-├── Element is Identifiable → liftCollection(action:stateCollection:)
-├── Element has a custom Hashable key → liftCollection(action:stateCollection:identifier:)
-├── Target by index → liftCollection(action:stateCollection:)  (index variant)
-├── Target by Dictionary key → liftCollection(action:stateDictionary:)
-└── Custom traversal → liftCollection(action:stateContainer:)  (AffineTraversal primitive)
+├── Element is Identifiable   → ElementAction<ID, A>    + liftCollection(action:stateCollection:)
+├── Custom Hashable field     → ElementAction<Key, A>   + liftCollection(action:stateCollection:identifier:)
+├── Dictionary entry          → ElementAction<Key, A>   + liftCollection(action:stateDictionary:)
+├── Array index               → ElementAction<Int, A>   + liftCollection(action:stateContainer:)  ← primitive
+└── Conditional / nested      → AffineTraversal         + liftCollection(action:stateContainer:)  ← primitive
 ```
 
-> **KeyPath vs closure vs optics** — Use the KeyPath overloads for the simplest cases (stored `var` properties). Reach for the `Lens`/`Prism`/`AffineTraversal` overloads when the focus is computed, immutable, composed across levels, or expressed as an enum case. Use the raw closure overload only when none of the optics overloads fit.
+> **KeyPath vs closure vs optics** — Use KeyPath overloads for stored `var` properties. Reach for `Lens`/`Prism`/`AffineTraversal` when the focus is computed, immutable, composed across levels, or expressed as an enum case. Use the raw closure overload only when none of the optics overloads fit.
