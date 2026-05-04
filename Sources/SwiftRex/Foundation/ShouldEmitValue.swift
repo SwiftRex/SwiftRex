@@ -1,39 +1,40 @@
-import Foundation
-
-/// A predicate that determines if a state change should notify subscribers or not, by comparing previous and new states and returning a Bool true in
-/// case it should emit it, or false in case it should not emit it.
-/// It comes with some standard options like `.always`, `.never`, `.when(old, new) -> Bool` and, for `Equatable` structures, `.whenDifferent`.
-public enum ShouldEmitValue<StateType> {
-    // private let evaluate: (StateType, StateType) -> Bool
-
-    /// It will always emit changes, regardless of previous and new state
+/// Controls when the Store notifies observers after a state mutation.
+///
+/// Keeping deduplication in-house avoids relying on downstream `.removeDuplicates()` operators,
+/// which have had correctness issues in Combine, and avoids forcing `Equatable` on `State`.
+public enum ShouldEmitValue<State> {
+    /// Always notify observers, even when the new state is identical.
     case always
 
-    /// It will never emit changes, regardless of previous and new state
+    /// Never notify observers. Useful for testing or derived projections.
     case never
 
-    /// It's a custom-defined predicate, you'll be given old and new state, and must return a Bool indicating what you've decided from that change,
-    /// being `true` when you want this change to be notified, or `false` when you want it to be ignored.
-    case when((StateType, StateType) -> Bool)
+    /// Notify observers only when the predicate returns `true`.
+    ///
+    /// - Parameter predicate: receives `(old, new)` and returns whether observers should be notified.
+    case when((State, State) -> Bool)
+}
 
-    /// Evaluates the predicate and returns `true` in case this should be emitted, or `false` in case this change should be ignored
-    public func shouldEmit(previous: StateType, new: StateType) -> Bool {
+extension ShouldEmitValue {
+    func shouldEmit(old: State, new: State) -> Bool {
         switch self {
-        case .always: return true
-        case .never: return false
-        case let .when(evaluate): return evaluate(previous, new)
+        case .always: true
+        case .never: false
+        case let .when(predicate): predicate(old, new)
         }
-    }
-
-    /// Evaluates the predicate and returns `true` in case this should be ignored, or `false` in case this change should be emitted. It's the exact
-    /// inversion of `shouldEmit` and useful for operator `.removeDuplicates` that some Reactive libraries offer.
-    public func shouldRemove(previous: StateType, new: StateType) -> Bool {
-        !shouldEmit(previous: previous, new: new)
     }
 }
 
-extension ShouldEmitValue where StateType: Equatable {
-    /// For `Equatable` structures, `.whenDifferent` will run `==` operator between old and new state, and notify when they are different, or ignore
-    /// when they are equal.
-    public static var whenDifferent: ShouldEmitValue<StateType> { .when(!=) }
+extension ShouldEmitValue where State: Equatable {
+    /// Only emit when the new state differs from the old state.
+    public static func whenDifferent() -> ShouldEmitValue<State> {
+        .when { $0 != $1 }
+    }
+}
+
+extension ShouldEmitValue {
+    /// Only emit when the new state differs from the old state, in a specific path
+    public static func whenDifferent<B: Equatable>(_ path: @escaping (State) -> B) -> ShouldEmitValue<State> {
+        .when { old, new in path(old) != path(new) }
+    }
 }
