@@ -43,7 +43,7 @@ enum AppAction {
     case counter(CounterAction)
     case updateTodo(ElementAction<UUID, TodoAction>?)
     case updateProject(ElementAction<String, ProjectAction>?)  // keyed by Project.slug
-    case expandSection(ElementAction<UUID, SectionAction>?)
+    case expandSection(ElementAction<Int, SectionAction>?)   // index-based; no stable id on Section
     case updateConfig(ElementAction<String, ConfigAction>?)
 }
 
