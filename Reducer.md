@@ -32,62 +32,85 @@ A `Reducer<ActionType, StateType>` is a pure function that maps an action and th
 
 ## Domain model used in this document
 
-All examples share a single app model so the snippets read as a coherent whole.
+All examples share a single app model. The `@Prisms` and `@Lenses` macros from the FP library are used throughout — they eliminate boilerplate optic construction while keeping types explicit.
 
 ```swift
+import FPMacros
+
 // ── App-level ──────────────────────────────────────────────────────────────
 
+// @Prisms generates:
+//   • AppAction.prism.auth      → Prism<AppAction, AuthAction>
+//   • AppAction.prism.updateTodo → Prism<AppAction, ElementAction<UUID, TodoAction>>
+//   • appAction.auth            → AuthAction?   (usable as KeyPath)
+//   • appAction.updateTodo      → ElementAction<UUID, TodoAction>?  (usable as KeyPath)
+//   … and so on for every case.
+@Prisms
 enum AppAction {
     case auth(AuthAction)
     case profile(ProfileAction)
     case counter(CounterAction)
-    case updateTodo(ElementAction<UUID, TodoAction>?)
-    case updateProject(ElementAction<String, ProjectAction>?)  // keyed by Project.slug
-    case expandSection(ElementAction<Int, SectionAction>?)   // index-based; no stable id on Section
-    case updateConfig(ElementAction<String, ConfigAction>?)
+    case updateTodo(ElementAction<UUID, TodoAction>)
+    case updateProject(ElementAction<String, ProjectAction>)  // keyed by Project.slug
+    case expandSection(ElementAction<Int, SectionAction>)
+    case updateConfig(ElementAction<String, ConfigAction>)
 }
 
+// @Lenses(init: .public) generates:
+//   • A public memberwise initialiser
+//   • AppState.lens.auth     → Lens<AppState, AuthState>    (reconstruction, because let)
+//   • AppState.lens.todos    → Lens<AppState, [Todo]>       (WritableKeyPath-based, because var)
+//   … etc.
+//
+// let properties use a reconstruction lens (no WritableKeyPath exists on immutable fields).
+// var properties use a WritableKeyPath-based lens and can also be addressed via \AppState.prop.
+@Lenses(init: .public)
 struct AppState {
-    var auth: AuthState
-    var profile: ProfileState
-    var counter: Int = 0
-    var todos: [Todo] = []
-    var projects: [Project] = []
-    var sections: [Section] = []
-    var configs: [String: Config] = [:]
+    let auth: AuthState           // immutable — reconstruction lens
+    let profile: ProfileState     // immutable — reconstruction lens
+    let counter: Int              // immutable — reconstruction lens
+    var todos: [Todo]             // mutable   — WritableKeyPath lens
+    var sections: [Section]       // mutable   — WritableKeyPath lens
+    var configs: [String: Config] // mutable   — WritableKeyPath lens
 }
 
 // ── Auth ───────────────────────────────────────────────────────────────────
 
+@Prisms
 enum AuthAction {
     case login(String)
     case logout
     case tokenRefreshed(String)
 }
 
+@Lenses(init: .public)
 struct AuthState {
-    var token: String? = nil
-    var isLoggingIn: Bool = false
+    let token: String?
+    let isLoggingIn: Bool
 }
 
 // ── Profile ────────────────────────────────────────────────────────────────
 
+@Prisms
 enum ProfileAction {
     case updateName(String)
     case updateAvatar(URL)
 }
 
+@Lenses(init: .public)
 struct ProfileState {
-    var name: String = ""
-    var avatarURL: URL? = nil
+    let name: String
+    let avatarURL: URL?
 }
 
 // ── Counter ────────────────────────────────────────────────────────────────
 
+@Prisms
 enum CounterAction { case increment; case decrement; case reset }
 
 // ── Todos ──────────────────────────────────────────────────────────────────
 
+@Prisms
 enum TodoAction { case toggleDone; case updateTitle(String) }
 
 struct Todo: Identifiable {
@@ -98,16 +121,19 @@ struct Todo: Identifiable {
 
 // ── Projects ───────────────────────────────────────────────────────────────
 
+@Prisms
 enum ProjectAction { case rename(String); case archive }
 
 struct Project: Identifiable {
     let id: UUID
+    var slug: String
     var name: String
     var isArchived: Bool = false
 }
 
 // ── Sections ───────────────────────────────────────────────────────────────
 
+@Prisms
 enum SectionAction { case expand; case collapse }
 
 struct Section {
@@ -117,6 +143,7 @@ struct Section {
 
 // ── Configs ────────────────────────────────────────────────────────────────
 
+@Prisms
 enum ConfigAction { case toggle; case setValue(String) }
 
 struct Config {
@@ -147,33 +174,32 @@ let counterReducer = Reducer<CounterAction, Int>.reduce { action, state in
 let authReducer = Reducer<AuthAction, AuthState>.reduce { action, state in
     switch action {
     case .login:
-        state.isLoggingIn = true
+        state = AuthState(token: state.token, isLoggingIn: true)
     case .logout:
-        state.token = nil
-        state.isLoggingIn = false
+        state = AuthState(token: nil, isLoggingIn: false)
     case .tokenRefreshed(let token):
-        state.token = token
-        state.isLoggingIn = false
+        state = AuthState(token: token, isLoggingIn: false)
     }
 }
 ```
+
+When state is immutable (`let` properties), the `inout` body replaces the entire value rather than mutating individual fields. `@Lenses` provides a cleaner alternative — see [Lens — state only](#7-lens--state-only).
 
 ### Functional (pure-return) form
 
-When the new state is naturally expressed as a transformation, the pure-return form can be cleaner. It bridges to `inout` internally so there is no semantic difference.
+When the new state is naturally expressed as a transformation, the pure-return form reads more clearly. It bridges to `inout` internally so there is no semantic difference.
 
 ```swift
-let profileReducer = Reducer<ProfileAction, ProfileState>.reduce { action, state in
+let authReducer = Reducer<AuthAction, AuthState>.reduce { action, state in
     switch action {
-    case .updateName(let name):
-        ProfileState(name: name, avatarURL: state.avatarURL)
-    case .updateAvatar(let url):
-        ProfileState(name: state.name, avatarURL: url)
+    case .login:                      AuthState(token: state.token, isLoggingIn: true)
+    case .logout:                     AuthState(token: nil, isLoggingIn: false)
+    case .tokenRefreshed(let token):  AuthState(token: token, isLoggingIn: false)
     }
 }
 ```
 
-The inout form is preferred for large state trees to avoid unnecessary copies.
+Prefer the `inout` form for large mutable state trees; prefer the pure-return form for small immutable structs.
 
 ---
 
@@ -201,25 +227,25 @@ Combines exactly two reducers. Order matters: the second reducer sees state afte
 
 ```swift
 let combined = Reducer.combine(
-    authReducer.lift(action: \AppAction.auth, state: \AppState.auth),
-    profileReducer.lift(action: \AppAction.profile, state: \AppState.profile)
+    authReducer.lift(action: AppAction.prism.auth, state: AppState.lens.auth),
+    profileReducer.lift(action: AppAction.prism.profile, state: AppState.lens.profile)
 )
 ```
 
-### `compose` — DSL form (recommended for three or more)
+### `compose` — DSL form (recommended)
 
 `Reducer.compose` takes a `@ReducerBuilder` block. Each line is an independent `Reducer` value; they are composed left-to-right via `combine`.
 
 ```swift
 let appReducer = Reducer<AppAction, AppState>.compose {
     authReducer
-        .lift(action: \AppAction.auth, state: \AppState.auth)
+        .lift(action: AppAction.prism.auth, state: AppState.lens.auth)
 
     profileReducer
-        .lift(action: \AppAction.profile, state: \AppState.profile)
+        .lift(action: AppAction.prism.profile, state: AppState.lens.profile)
 
     counterReducer
-        .lift(action: \AppAction.counter, state: \AppState.counter)
+        .lift(action: AppAction.prism.counter, state: AppState.lens.counter)
 }
 ```
 
@@ -233,9 +259,9 @@ You can annotate any function, computed property, or parameter with `@ReducerBui
 extension AppModule {
     @ReducerBuilder
     var reducer: Reducer<AppAction, AppState> {
-        authReducer.lift(action: \AppAction.auth, state: \AppState.auth)
-        profileReducer.lift(action: \AppAction.profile, state: \AppState.profile)
-        counterReducer.lift(action: \AppAction.counter, state: \AppState.counter)
+        authReducer.lift(action: AppAction.prism.auth, state: AppState.lens.auth)
+        profileReducer.lift(action: AppAction.prism.profile, state: AppState.lens.profile)
+        counterReducer.lift(action: AppAction.prism.counter, state: AppState.lens.counter)
     }
 }
 ```
@@ -246,8 +272,8 @@ For two or more already-constructed reducers passed inline:
 
 ```swift
 let appReducer = Reducer.compose(
-    authReducer.lift(action: \AppAction.auth, state: \AppState.auth),
-    profileReducer.lift(action: \AppAction.profile, state: \AppState.profile)
+    authReducer.lift(action: AppAction.prism.auth, state: AppState.lens.auth),
+    profileReducer.lift(action: AppAction.prism.profile, state: AppState.lens.profile)
 )
 ```
 
@@ -264,11 +290,11 @@ Eleven overloads cover every combination of KeyPaths, closures, and optics.
 
 ### 1. KeyPath — action + state
 
-The most common case. Works when `GlobalAction` has a stored optional property that is the local action, and `GlobalState` has a writable stored property that is the local state.
+Works when `GlobalAction` has a stored optional property (or a `@Prisms`-generated computed property) that is the local action, and `GlobalState` has a writable stored property that is the local state.
 
 ```swift
-// AppAction must have: var auth: AuthAction?
-// AppState must have:  var auth: AuthState
+// @Prisms on AppAction generates \AppAction.auth → KeyPath<AppAction, AuthAction?>
+// AppState.auth is a var, so \AppState.auth → WritableKeyPath<AppState, AuthState>
 
 let liftedAuth = authReducer.lift(
     action: \AppAction.auth,   // KeyPath<AppAction, AuthAction?>
@@ -277,45 +303,38 @@ let liftedAuth = authReducer.lift(
 // Type: Reducer<AppAction, AppState>
 ```
 
-```swift
-let liftedCounter = counterReducer.lift(
-    action: \AppAction.counter,
-    state:  \AppState.counter
-)
-```
-
 The reducer is skipped entirely when `globalAction[keyPath: action]` is `nil`.
+
+> When `AppState.auth` is a `let` property, `\AppState.auth` is not a `WritableKeyPath`.
+> Use the [Prism + Lens](#5-prism--lens) overload instead.
 
 ### 2. KeyPath — state only
 
-Use this when the action type is the same at both levels (no narrowing needed) and only the state needs to be focused.
+Use when the action type is the same at both levels and only the state needs to be focused.
 
 ```swift
-// A sub-reducer that operates on Int, used where Int is a sub-field of AppState
 let counterOnAppState: Reducer<CounterAction, AppState> =
     counterReducer.lift(state: \AppState.counter)
 ```
 
-This is useful when you want to compose reducers at the same action level but different state slices, for example inside a `compose` block:
+This is useful when composing reducers at the same action level but different state slices:
 
 ```swift
 Reducer<AppAction, AppState>.compose {
-    // All three handle AppAction but focus on different parts of AppState.
-    // (Assumes each sub-reducer already accepts AppAction.)
     loggingReducer.lift(state: \AppState.log)
     metricsReducer.lift(state: \AppState.metrics)
     uiStateReducer.lift(state: \AppState.ui)
 }
 ```
 
+> For `let` properties use `lift(state: MyState.lens.prop)` — see [Lens — state only](#7-lens--state-only).
+
 ### 3. KeyPath — action only
 
 Use when the state type is the same at both levels and only the action needs to be narrowed.
 
 ```swift
-// AppAction has: var counter: CounterAction?
-// Both operate on Int — state type is unchanged.
-
+// @Prisms generates \AppAction.counter → KeyPath<AppAction, CounterAction?>
 let liftedAction: Reducer<AppAction, Int> =
     counterReducer.lift(action: \AppAction.counter)
 ```
@@ -330,132 +349,105 @@ The most flexible overload. Provide three closures explicitly:
 
 ```swift
 let liftedAuth = authReducer.lift(
-    actionGetter: { (global: AppAction) -> AuthAction? in
-        if case .auth(let a) = global { return a } else { return nil }
-    },
-    stateGetter: { (global: AppState) in global.auth },
-    stateSetter: { global, local in global.auth = local }
+    actionGetter: { (global: AppAction) in global.auth },   // @Prisms generated property
+    stateGetter:  { (global: AppState) in global.auth },
+    stateSetter:  { global, local in global = AppState(auth: local, profile: global.profile, /* … */) }
 )
 ```
 
-This is the right overload when:
-- The property storing the local action or state is computed, not a `var` stored property
-- The action projection requires pattern matching that isn't expressible as a single KeyPath
-- You are composing optics that don't fit the `Prism`/`Lens` overloads below
+Use this when the projection requires logic that can't be expressed with KeyPaths or the optic overloads.
 
 ### 5. Prism + Lens
 
-When the action requires a `Prism` (e.g. a macro-generated enum prism) and the state requires a `Lens` (e.g. an immutable struct or a composed lens):
+The primary overload for **immutable state**. `@Prisms` generates the action prism; `@Lenses` generates the state lens. Both are available as static properties on the respective types.
 
 ```swift
-let authPrism = Prism<AppAction, AuthAction>(
-    preview: { if case .auth(let a) = $0 { return a } else { return nil } },
-    review:  { AppAction.auth($0) }
-)
-
-let authLens = Lens<AppState, AuthState>(
-    get: { $0.auth },
-    set: { appState, newAuth in AppState(auth: newAuth, profile: appState.profile, /* … */) }
-)
+// AppAction.prism.auth  → Prism<AppAction, AuthAction>   (generated by @Prisms)
+// AppState.lens.auth    → Lens<AppState, AuthState>      (reconstruction lens, generated by @Lenses)
 
 let liftedAuth: Reducer<AppAction, AppState> =
-    authReducer.lift(action: authPrism, state: authLens)
+    authReducer.lift(action: AppAction.prism.auth, state: AppState.lens.auth)
 ```
 
-Use this when state is immutable (`let` properties) — `WritableKeyPath` is unavailable on `let` properties, but a `Lens` with an explicit `set` closure works for any struct.
-
-**Composed lenses** are another common motivation. Two lenses can be composed into a single lens that focuses through two levels of nesting, and the result has no `WritableKeyPath` representation:
+**Composed lenses** — `@Lenses`-generated lenses compose with `>>>` (from `CoreFPOperators`), letting you focus through multiple levels of immutable nesting:
 
 ```swift
-let appToAuth  = lens(\AppState.auth)            // Lens<AppState, AuthState>
-let authToToken = lens(\AuthState.token)         // Lens<AuthState, String?>
+// Focus AppState → AuthState → token: String?
+// Neither step has a WritableKeyPath (both are let fields).
+let tokenLens: Lens<AppState, String?> = AppState.lens.auth >>> AuthState.lens.token
 
-// appToAuth.compose(authToToken) focuses AppState → String?
-// No WritableKeyPath exists for this two-level path.
-let deepLiftedReducer = tokenReducer.lift(
-    action: tokenPrism,
-    state:  appToAuth.compose(authToToken)
-)
+let tokenReducer: Reducer<String?, AppState> =
+    someTokenReducer.lift(state: tokenLens)
 ```
 
 ### 6. Prism — action only
 
-Lifts only the action axis using a `Prism`. State type is unchanged. This is the idiomatic overload when your actions are generated by a `@Prism` macro:
+Lifts only the action axis. State type is unchanged. `@Prisms` makes this a one-liner:
 
 ```swift
-// With a @Prism macro (future):
-// let liftedAuth = authReducer.lift(action: AppAction.authPrism)
-
-// Manual Prism construction:
-let authPrism = Prism<AppAction, AuthAction>(
-    preview: { if case .auth(let a) = $0 { return a } else { return nil } },
-    review:  { .auth($0) }
-)
-
 let liftedAuth: Reducer<AppAction, AuthState> =
-    authReducer.lift(action: authPrism)
+    authReducer.lift(action: AppAction.prism.auth)
 ```
 
 ### 7. Lens — state only
 
-Lifts only the state axis using a `Lens`. Action type is unchanged. Prefer this over the `WritableKeyPath` variant when state properties are immutable or the focus spans multiple struct levels.
+Lifts only the state axis. Action type is unchanged. Use `@Lenses`-generated lenses for immutable (`let`) properties:
 
 ```swift
-let authLens = Lens<AppState, AuthState>(
-    get: { $0.auth },
-    set: { AppState(auth: $1, profile: $0.profile, counter: $0.counter, /* … */) }
-)
-
+// AppState.lens.auth is a reconstruction lens — @Lenses handles the full-struct rebuild.
 let liftedAuth: Reducer<AuthAction, AppState> =
-    authReducer.lift(state: authLens)
+    authReducer.lift(state: AppState.lens.auth)
+```
+
+Compare with the `WritableKeyPath` variant for `var` properties:
+
+```swift
+// AppState.todos is a var — both forms are equivalent.
+let liftedTodosA = someReducer.lift(state: \AppState.todos)
+let liftedTodosB = someReducer.lift(state: AppState.lens.todos)
 ```
 
 ### 8. Prism — partial (enum) state
 
-When the **state itself is an enum** and the reducer only applies to one particular case, use a `Prism` on the state axis. The reducer is skipped when the state does not match the prism's focus; after running, the state is reconstructed via `review`.
+When the **state itself is an enum** and the reducer only applies to one particular case. `@Prisms` on the state enum generates the prism directly:
 
 ```swift
+@Prisms
 enum SessionState {
     case loggedOut
     case loggingIn
     case loggedIn(AuthState)
 }
 
-let loggedInPrism = Prism<SessionState, AuthState>(
-    preview: { if case .loggedIn(let s) = $0 { return s } else { return nil } },
-    review:  { .loggedIn($0) }
-)
-
 // authReducer only runs when SessionState == .loggedIn(_).
+// Afterwards, SessionState.prism.loggedIn.review(mutatedAuth) reconstructs the full state.
 let sessionReducer: Reducer<AuthAction, SessionState> =
-    authReducer.lift(state: loggedInPrism)
+    authReducer.lift(state: SessionState.prism.loggedIn)
 ```
 
 ### 9. Prism + Prism
 
-When both the action and the state require a `Prism` — for example, the action is an enum case and the state is also an enum case. The reducer runs only when **both** prisms match.
+When both the action and the state are enums. Both `@Prisms` macros compose naturally:
 
 ```swift
-let authPrism = Prism<AppAction, AuthAction>(
-    preview: { if case .auth(let a) = $0 { return a } else { return nil } },
-    review:  { .auth($0) }
-)
+@Prisms
+enum SessionState {
+    case loggedOut
+    case loggingIn
+    case loggedIn(AuthState)
+}
 
-let loggedInPrism = Prism<SessionState, AuthState>(
-    preview: { if case .loggedIn(let s) = $0 { return s } else { return nil } },
-    review:  { .loggedIn($0) }
-)
-
+// Runs only when action is .auth(_) AND state is .loggedIn(_).
 let liftedReducer: Reducer<AppAction, SessionState> =
-    authReducer.lift(action: authPrism, state: loggedInPrism)
+    authReducer.lift(action: AppAction.prism.auth, state: SessionState.prism.loggedIn)
 ```
 
 ### 10. AffineTraversal — state
 
-An `AffineTraversal` is like a `Lens` but the focus may be absent (`preview` can return `nil`). This covers optional-valued state, out-of-bounds array slots, or any focus that is not guaranteed to exist. The reducer is skipped when `preview` returns `nil`.
+An `AffineTraversal` is like a `Lens` but the focus may be absent (`preview` can return `nil`). The reducer is skipped when `preview` returns `nil`. No macro generates these — build them directly:
 
 ```swift
-// Focus on the first element of AppState.todos — may be nil if todos is empty.
+// Focus on the first Todo — may be nil if todos is empty.
 let firstTodoTraversal = AffineTraversal<AppState, Todo>(
     preview: { $0.todos.first },
     set: { appState, todo in
@@ -469,25 +461,20 @@ let liftedTodoReducer: Reducer<TodoAction, AppState> =
     todoReducer.lift(state: firstTodoTraversal)
 ```
 
-Use `AffineTraversal` instead of `Lens` whenever the focused value might not exist.
-
 ### 11. Prism + AffineTraversal
 
-Combines a `Prism` on the action axis with an `AffineTraversal` on the state axis. The reducer runs only when the action matches the prism **and** the traversal's `preview` finds a value.
+Combines `@Prisms` on the action axis with an `AffineTraversal` on the state axis. Runs only when both match:
 
 ```swift
-let todoPrism = Prism<AppAction, TodoAction>(
-    preview: { if case .updateTodo(let ea) = $0 { return ea?.action } else { return nil } },
-    review:  { _ in fatalError("review not used in this context") }
-)
-
-let firstTodoTraversal = AffineTraversal<AppState, Todo>(
-    preview: { $0.todos.first },
-    set: { s, t in var c = s; if !c.todos.isEmpty { c.todos[0] = t }; return c }
-)
-
+// Runs only when action is .updateTodo(_) AND todos is non-empty.
 let liftedReducer: Reducer<AppAction, AppState> =
-    todoReducer.lift(action: todoPrism, state: firstTodoTraversal)
+    todoReducer.lift(
+        action: AppAction.prism.updateTodo,
+        state: AffineTraversal<AppState, Todo>(
+            preview: { $0.todos.first },
+            set: { s, t in var c = s; if !c.todos.isEmpty { c.todos[0] = t }; return c }
+        )
+    )
 ```
 
 ---
@@ -506,21 +493,22 @@ store.send(.updateTodo(ElementAction(todo.id, action: .toggleDone)))
 todoReducer.liftCollection(action: \AppAction.updateTodo, stateCollection: \AppState.todos)
 ```
 
-All overloads come in two flavours: a **KeyPath variant** (for stored optional properties on the action type) and a **closure variant** (for pattern matching or any custom extraction).
+`@Prisms` on `AppAction` generates `\AppAction.updateTodo` as a `KeyPath<AppAction, ElementAction<UUID, TodoAction>?>`, which is exactly what the `liftCollection(action:stateCollection:)` KeyPath overload expects.
+
+All overloads come in two flavours: a **KeyPath variant** (for `@Prisms`-generated or stored optional properties) and a **closure variant** (for pattern matching or any custom extraction).
 
 ### 1. Identifiable by `.id`
 
-When the element type conforms to `Identifiable`. The `ElementAction` carries the element's `id` and the local sub-action. `liftCollection` looks up the element by `id`, runs the reducer, and writes back.
+When the element type conforms to `Identifiable`. `liftCollection` looks up the element by `id`, runs the reducer, and writes back.
 
-**KeyPath variant** (requires a stored optional property of type `ElementAction<ID, SubAction>?`):
+**KeyPath variant** — uses the `\AppAction.caseName` KeyPath generated by `@Prisms`:
 
 ```swift
-// AppAction has: var updateTodo: ElementAction<UUID, TodoAction>?
-//
+// @Prisms generates \AppAction.updateTodo → KeyPath<AppAction, ElementAction<UUID, TodoAction>?>
+
 // View:
 store.send(.updateTodo(ElementAction(todo.id, action: .toggleDone)))
 store.send(.updateTodo(ElementAction(todo.id, action: .updateTitle("Buy milk"))))
-store.send(.updateTodo(nil))  // no-op
 
 // Wiring:
 let liftedTodo: Reducer<AppAction, AppState> =
@@ -530,14 +518,12 @@ let liftedTodo: Reducer<AppAction, AppState> =
     )
 ```
 
-**Closure variant** (for enum cases with associated values or any custom extraction):
+**Closure variant** — uses the `@Prisms`-generated computed property for cleaner pattern extraction:
 
 ```swift
 let liftedTodo: Reducer<AppAction, AppState> =
     todoReducer.liftCollection(
-        action: { (ga: AppAction) -> ElementAction<UUID, TodoAction>? in
-            if case .updateTodo(let ea) = ga { return ea } else { return nil }
-        },
+        action: { $0.updateTodo },   // @Prisms generated: appAction.updateTodo → ElementAction?
         stateCollection: \AppState.todos
     )
 ```
@@ -546,13 +532,13 @@ When the `id` is not found in the collection, the reducer is skipped without mut
 
 ### 2. Custom Hashable identifier
 
-When the element is looked up by a field other than its `Identifiable.id` — for example a human-readable slug or a stable string key. Supply `identifier:` to name which property on the element to match against.
+When the element is looked up by a field other than its `Identifiable.id`. Supply `identifier:` to name which property on the element to match against.
 
 **KeyPath variant:**
 
 ```swift
-// Project has a `slug: String` field used as a stable external key.
-// AppAction has: var updateProject: ElementAction<String, ProjectAction>?
+// Project is looked up by its slug, not its UUID id.
+// @Prisms generates \AppAction.updateProject → KeyPath<AppAction, ElementAction<String, ProjectAction>?>
 
 let liftedProject: Reducer<AppAction, AppState> =
     projectReducer.liftCollection(
@@ -567,9 +553,7 @@ let liftedProject: Reducer<AppAction, AppState> =
 ```swift
 let liftedProject: Reducer<AppAction, AppState> =
     projectReducer.liftCollection(
-        action: { (ga: AppAction) -> ElementAction<String, ProjectAction>? in
-            if case .updateProject(let ea) = ga { return ea } else { return nil }
-        },
+        action: { $0.updateProject },  // @Prisms generated
         stateCollection: \AppState.projects,
         identifier: \Project.slug
     )
@@ -582,8 +566,6 @@ For `[Key: Value]` dictionaries. The `ElementAction.id` is the dictionary key. M
 **KeyPath variant:**
 
 ```swift
-// AppAction has: var updateConfig: ElementAction<String, ConfigAction>?
-//
 // View:
 store.send(.updateConfig(ElementAction("featureX", action: .toggle)))
 
@@ -600,28 +582,24 @@ let liftedConfig: Reducer<AppAction, AppState> =
 ```swift
 let liftedConfig: Reducer<AppAction, AppState> =
     configReducer.liftCollection(
-        action: { (ga: AppAction) -> ElementAction<String, ConfigAction>? in
-            if case .updateConfig(let ea) = ga { return ea } else { return nil }
-        },
+        action: { $0.updateConfig },   // @Prisms generated
         stateDictionary: \AppState.configs
     )
 ```
 
 ### 4. Index-based (primitive)
 
-Array indices are positional, not semantic identifiers, so there is no dedicated `ElementAction` overload for them. Use the primitive `AffineTraversal` overload directly, building the traversal with `[C].ix(_:)` from the FP library:
+Array indices are positional, not semantic identifiers, so there is no dedicated `ElementAction` overload for them. Use the primitive `AffineTraversal` overload, building the traversal with `[C].ix(_:)`. The `@Prisms`-generated computed property keeps the extraction clean:
 
 ```swift
-// AppAction has: var expandSection: ElementAction<Int, SectionAction>?
-//
-// View (index comes from, e.g., a table view row):
+// View (index comes from e.g. a table view row):
 store.send(.expandSection(ElementAction(indexPath.row, action: .expand)))
 
-// Wiring — build the ix traversal from the ElementAction's id:
+// Wiring — $0.expandSection uses the @Prisms generated property:
 let liftedSection: Reducer<AppAction, AppState> =
     sectionReducer.liftCollection(
         action: { (ga: AppAction) -> (action: SectionAction, element: AffineTraversal<[Section], Section>)? in
-            guard case .expandSection(let ea) = ga, let ea else { return nil }
+            guard let ea = ga.expandSection else { return nil }
             return (action: ea.action, element: [Section].ix(ea.id))
         },
         stateContainer: \AppState.sections
@@ -632,10 +610,10 @@ Out-of-bounds indices produce no mutation.
 
 ### 5. Custom AffineTraversal
 
-The primitive that all other overloads delegate to. Use this when the built-in strategies don't fit: two-level nested collections, custom container types, conditional lookups, or any traversal that can't be expressed as a single `ix` call.
+The primitive all other overloads delegate to. Use when the built-in strategies don't fit: two-level nested collections, custom container types, or conditional lookups.
 
 ```swift
-// First incomplete todo — not addressable by id or index in a stable way.
+// First incomplete todo — not addressable by a stable id or position.
 let firstIncompleteTodo = AffineTraversal<[Todo], Todo>(
     preview: { $0.first(where: { !$0.isDone }) },
     set: { todos, updated in
@@ -655,11 +633,11 @@ let liftedReducer: Reducer<TodoAction, AppState> =
 ```
 
 ```swift
-// Two levels deep: AppState.profile.recentTodos — a [Todo] nested inside ProfileState.
+// Two levels deep: AppState.profile.recentTodos via @Prisms + ix.
 let nestedTodoReducer: Reducer<AppAction, AppState> =
     todoReducer.liftCollection(
         action: { (ga: AppAction) -> (action: TodoAction, element: AffineTraversal<[Todo], Todo>)? in
-            guard case .updateTodo(let ea) = ga, let ea else { return nil }
+            guard let ea = ga.updateTodo else { return nil }
             return (action: ea.action, element: [Todo].ix(id: ea.id))
         },
         stateContainer: \AppState.profile.recentTodos
@@ -670,23 +648,63 @@ let nestedTodoReducer: Reducer<AppAction, AppState> =
 
 ## Putting it all together
 
-A realistic app reducer combining every technique:
+A realistic app reducer using `@Prisms` and `@Lenses` throughout, with immutable state and the `compose` DSL:
 
 ```swift
+import FPMacros
+
+// ── Actions — @Prisms generates per-case prisms and computed optional properties ──
+
+@Prisms enum AppAction {
+    case auth(AuthAction)
+    case profile(ProfileAction)
+    case counter(CounterAction)
+    case updateTodo(ElementAction<UUID, TodoAction>)
+    case expandSection(ElementAction<Int, SectionAction>)
+    case updateConfig(ElementAction<String, ConfigAction>)
+}
+
+// ── State — @Lenses generates a public memberwise init and per-field lenses ────
+//
+// let fields  → reconstruction Lens (no WritableKeyPath; @Lenses handles full-struct rebuild)
+// var fields  → WritableKeyPath-based Lens (also addressable via \AppState.prop)
+
+@Lenses(init: .public)
+struct AppState {
+    let auth: AuthState           // AppState.lens.auth    → Lens<AppState, AuthState>
+    let profile: ProfileState     // AppState.lens.profile → Lens<AppState, ProfileState>
+    let counter: Int              // AppState.lens.counter → Lens<AppState, Int>
+    var todos: [Todo]             // \AppState.todos or AppState.lens.todos
+    var sections: [Section]       // \AppState.sections or AppState.lens.sections
+    var configs: [String: Config] // \AppState.configs or AppState.lens.configs
+}
+
+@Lenses(init: .public)
+struct AuthState {
+    let token: String?
+    let isLoggingIn: Bool
+}
+
+@Lenses(init: .public)
+struct ProfileState {
+    let name: String
+    let avatarURL: URL?
+}
+
 // ── Leaf reducers ──────────────────────────────────────────────────────────
 
 let authReducer = Reducer<AuthAction, AuthState>.reduce { action, state in
     switch action {
-    case .login:                  state.isLoggingIn = true
-    case .logout:                 state.token = nil; state.isLoggingIn = false
-    case .tokenRefreshed(let t):  state.token = t; state.isLoggingIn = false
+    case .login:                     AuthState(token: state.token, isLoggingIn: true)
+    case .logout:                    AuthState(token: nil, isLoggingIn: false)
+    case .tokenRefreshed(let token): AuthState(token: token, isLoggingIn: false)
     }
 }
 
 let profileReducer = Reducer<ProfileAction, ProfileState>.reduce { action, state in
     switch action {
-    case .updateName(let n):   state.name = n
-    case .updateAvatar(let u): state.avatarURL = u
+    case .updateName(let n):   ProfileState(name: n, avatarURL: state.avatarURL)
+    case .updateAvatar(let u): ProfileState(name: state.name, avatarURL: u)
     }
 }
 
@@ -719,60 +737,48 @@ let configReducer = Reducer<ConfigAction, Config>.reduce { action, config in
     }
 }
 
-// ── App action ─────────────────────────────────────────────────────────────
-//
-//   enum AppAction {
-//       case auth(AuthAction)
-//       case profile(ProfileAction)
-//       case counter(CounterAction)
-//       case updateTodo(ElementAction<UUID, TodoAction>?)
-//       case expandSection(ElementAction<Int, SectionAction>?)
-//       case updateConfig(ElementAction<String, ConfigAction>?)
-//   }
-//
-// Computed properties for KeyPath overloads:
-//
-//   extension AppAction {
-//       var auth:          AuthAction?                         { … }
-//       var profile:       ProfileAction?                      { … }
-//       var counter:       CounterAction?                      { … }
-//       var updateTodo:    ElementAction<UUID, TodoAction>?    { … }
-//       var expandSection: ElementAction<Int, SectionAction>?  { … }
-//       var updateConfig:  ElementAction<String, ConfigAction>?{ … }
-//   }
-
-// ── App reducer ────────────────────────────────────────────────────────────
+// ── App reducer — DSL compose with @Prisms + @Lenses ──────────────────────
 
 let appReducer = Reducer<AppAction, AppState>.compose {
-    // Scalar sub-state — KeyPath lift
+    // Immutable scalar state — Prism on action, Lens on state (reconstruction)
     authReducer
-        .lift(action: \AppAction.auth, state: \AppState.auth)
+        .lift(action: AppAction.prism.auth, state: AppState.lens.auth)
 
     profileReducer
-        .lift(action: \AppAction.profile, state: \AppState.profile)
+        .lift(action: AppAction.prism.profile, state: AppState.lens.profile)
 
     counterReducer
-        .lift(action: \AppAction.counter, state: \AppState.counter)
+        .lift(action: AppAction.prism.counter, state: AppState.lens.counter)
 
-    // Collection — Identifiable by UUID
+    // Collection — Identifiable by UUID; \AppAction.updateTodo from @Prisms
     todoReducer
         .liftCollection(action: \AppAction.updateTodo, stateCollection: \AppState.todos)
 
-    // Collection — index-based via primitive
+    // Collection — index-based via primitive; ga.expandSection from @Prisms
     sectionReducer
         .liftCollection(
             action: { (ga: AppAction) -> (action: SectionAction, element: AffineTraversal<[Section], Section>)? in
-                guard case .expandSection(let ea) = ga, let ea else { return nil }
+                guard let ea = ga.expandSection else { return nil }
                 return (action: ea.action, element: [Section].ix(ea.id))
             },
             stateContainer: \AppState.sections
         )
 
-    // Collection — Dictionary key
+    // Collection — Dictionary key; \AppAction.updateConfig from @Prisms
     configReducer
         .liftCollection(action: \AppAction.updateConfig, stateDictionary: \AppState.configs)
 }
 ```
+
+### What the macros buy you
+
+| Without macros | With macros |
+|---|---|
+| `Prism<AppAction, AuthAction>(preview: { … }, review: { … })` | `AppAction.prism.auth` |
+| `Lens<AppState, AuthState>(get: { … }, set: { … })` | `AppState.lens.auth` |
+| `{ if case .auth(let a) = $0 { return a } else { return nil } }` | `{ $0.auth }` or `\AppAction.auth` |
+| Handwritten memberwise init for immutable structs | `@Lenses(init: .public)` generates it |
+| Composed lens built manually | `AppState.lens.auth >>> AuthState.lens.token` |
 
 ### Dispatch examples (view layer)
 
@@ -792,24 +798,26 @@ store.send(.updateConfig(ElementAction("debugMode", action: .setValue("verbose")
 ```
 Need to narrow the action?
 ├── Yes
-│   ├── Stored optional property → lift(action: keyPath, state: …)
-│   ├── Enum case / @Prism macro → lift(action: prism, state: …)
-│   └── Custom extraction → lift(actionGetter:stateGetter:stateSetter:)
+│   ├── Stored/computed optional property → lift(action: \AppAction.case, state: …)
+│   ├── @Prisms on AppAction             → lift(action: AppAction.prism.case, state: …)
+│   └── Custom logic                     → lift(actionGetter:stateGetter:stateSetter:)
 └── No (same action type)
     └── lift(state: …)
 
 Need to focus the state?
-├── Stored var property → WritableKeyPath  → lift(…state: keyPath)
-├── Let property / composed path → Lens   → lift(state: lens)
-├── Enum case (state is enum) → Prism     → lift(state: prism)
-└── Possibly-absent focus → AffineTraversal → lift(state: traversal)
+├── var stored property   → WritableKeyPath → lift(state: \AppState.prop)
+├── let stored property   → @Lenses Lens   → lift(state: AppState.lens.prop)
+├── Composed path         → Lens >>>        → lift(state: AppState.lens.a >>> AState.lens.b)
+├── Enum case             → @Prisms Prism  → lift(state: MyState.prism.case)
+└── Possibly-absent focus → AffineTraversal → lift(state: myTraversal)
 
 Targeting an element inside a collection?
-├── Element is Identifiable   → ElementAction<ID, A>    + liftCollection(action:stateCollection:)
-├── Custom Hashable field     → ElementAction<Key, A>   + liftCollection(action:stateCollection:identifier:)
-├── Dictionary entry          → ElementAction<Key, A>   + liftCollection(action:stateDictionary:)
-├── Array index               → ElementAction<Int, A>   + liftCollection(action:stateContainer:)  ← primitive
-└── Conditional / nested      → AffineTraversal         + liftCollection(action:stateContainer:)  ← primitive
+├── Element is Identifiable   → ElementAction<ID, A>  + liftCollection(action: \AppAction.case, stateCollection: \AppState.prop)
+├── Custom Hashable field     → ElementAction<Key, A> + liftCollection(action:stateCollection:identifier:)
+├── Dictionary entry          → ElementAction<Key, A> + liftCollection(action:stateDictionary:)
+├── Array index               → ElementAction<Int, A> + liftCollection(action:stateContainer:)  ← primitive
+└── Conditional / nested      → AffineTraversal       + liftCollection(action:stateContainer:)  ← primitive
 ```
 
-> **KeyPath vs closure vs optics** — Use KeyPath overloads for stored `var` properties. Reach for `Lens`/`Prism`/`AffineTraversal` when the focus is computed, immutable, composed across levels, or expressed as an enum case. Use the raw closure overload only when none of the optics overloads fit.
+> `@Prisms` on any enum makes `.prism.caseName` (static `Prism`) and `.caseName` (computed optional property, usable as `KeyPath`) available instantly.
+> `@Lenses(init:)` on any struct makes `.lens.propName` available for both `let` and `var` properties, and generates the memberwise init.
