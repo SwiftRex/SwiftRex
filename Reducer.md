@@ -174,30 +174,34 @@ let counterReducer = Reducer<CounterAction, Int>.reduce { action, state in
 let authReducer = Reducer<AuthAction, AuthState>.reduce { action, state in
     switch action {
     case .login:
-        state = AuthState(token: state.token, isLoggingIn: true)
+        // Only isLoggingIn changes — lens copies the rest automatically.
+        state = AuthState.lens.isLoggingIn.set(state, true)
     case .logout:
+        // All fields are known values — init is fine here.
         state = AuthState(token: nil, isLoggingIn: false)
     case .tokenRefreshed(let token):
-        state = AuthState(token: token, isLoggingIn: false)
+        // Two fields change — chain: inner lens runs first, outer sees its result.
+        state = AuthState.lens.isLoggingIn.set(AuthState.lens.token.set(state, token), false)
     }
 }
 ```
 
-When state is immutable (`let` properties), the `inout` body replaces the entire value rather than mutating individual fields. `@Lenses` provides a cleaner alternative — see [Lens — state only](#7-lens--state-only).
+`Lens.set(oldValue, newValue)` reconstructs the struct changing only the focused field. Every other field is preserved automatically — no manual copying required.
 
 ### Functional (pure-return) form
 
-When the new state is naturally expressed as a transformation, the pure-return form reads more clearly. It bridges to `inout` internally so there is no semantic difference.
+When the new state is naturally expressed as a transformation the pure-return form reads more clearly. It bridges to `inout` internally. Combine with `@Lenses` to touch only the field that actually changes:
 
 ```swift
-let authReducer = Reducer<AuthAction, AuthState>.reduce { action, state in
+let profileReducer = Reducer<ProfileAction, ProfileState>.reduce { action, state in
     switch action {
-    case .login:                      AuthState(token: state.token, isLoggingIn: true)
-    case .logout:                     AuthState(token: nil, isLoggingIn: false)
-    case .tokenRefreshed(let token):  AuthState(token: token, isLoggingIn: false)
+    case .updateName(let n):   ProfileState.lens.name.set(state, n)
+    case .updateAvatar(let u): ProfileState.lens.avatarURL.set(state, u)
     }
 }
 ```
+
+Each case names only what changes. `@Lenses` handles the reconstruction of every untouched field.
 
 Prefer the `inout` form for large mutable state trees; prefer the pure-return form for small immutable structs.
 
@@ -695,16 +699,19 @@ struct ProfileState {
 
 let authReducer = Reducer<AuthAction, AuthState>.reduce { action, state in
     switch action {
-    case .login:                     AuthState(token: state.token, isLoggingIn: true)
-    case .logout:                    AuthState(token: nil, isLoggingIn: false)
-    case .tokenRefreshed(let token): AuthState(token: token, isLoggingIn: false)
+    case .login:
+        AuthState.lens.isLoggingIn.set(state, true)
+    case .logout:
+        AuthState(token: nil, isLoggingIn: false)
+    case .tokenRefreshed(let token):
+        AuthState.lens.isLoggingIn.set(AuthState.lens.token.set(state, token), false)
     }
 }
 
 let profileReducer = Reducer<ProfileAction, ProfileState>.reduce { action, state in
     switch action {
-    case .updateName(let n):   ProfileState(name: n, avatarURL: state.avatarURL)
-    case .updateAvatar(let u): ProfileState(name: state.name, avatarURL: u)
+    case .updateName(let n):   ProfileState.lens.name.set(state, n)
+    case .updateAvatar(let u): ProfileState.lens.avatarURL.set(state, u)
     }
 }
 
