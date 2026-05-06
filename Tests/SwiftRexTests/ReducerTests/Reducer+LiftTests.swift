@@ -15,7 +15,7 @@ final class ReducerLiftTests: XCTestCase {
     func testLiftKeyPathActionStateAppliesWhenMatched() {
         let sut = addAction.lift(action: \GA.local, state: \GS.local)
         var state = GS()
-        sut.reduce(GA(local: 5), &state)
+        sut.reduce(GA(local: 5))(&state)
         XCTAssertEqual(state.local, 5)
         XCTAssertEqual(state.other, 99)
     }
@@ -23,7 +23,7 @@ final class ReducerLiftTests: XCTestCase {
     func testLiftKeyPathActionStateSkipsWhenNil() {
         let sut = addAction.lift(action: \GA.local, state: \GS.local)
         var state = GS()
-        sut.reduce(GA(local: nil), &state)
+        sut.reduce(GA(local: nil))(&state)
         XCTAssertEqual(state.local, 0)
     }
 
@@ -32,7 +32,7 @@ final class ReducerLiftTests: XCTestCase {
     func testLiftKeyPathStateOnly() {
         let sut = addAction.lift(state: \GS.local)
         var state = GS()
-        sut.reduce(7, &state)
+        sut.reduce(7)(&state)
         XCTAssertEqual(state.local, 7)
         XCTAssertEqual(state.other, 99)
     }
@@ -42,9 +42,9 @@ final class ReducerLiftTests: XCTestCase {
     func testLiftKeyPathActionOnly() {
         let sut = addAction.lift(action: \GA.local)
         var state = 0
-        sut.reduce(GA(local: 4), &state)
+        sut.reduce(GA(local: 4))(&state)
         XCTAssertEqual(state, 4)
-        sut.reduce(GA(local: nil), &state)
+        sut.reduce(GA(local: nil))(&state)
         XCTAssertEqual(state, 4)
     }
 
@@ -57,7 +57,7 @@ final class ReducerLiftTests: XCTestCase {
             stateSetter: { gs, local in gs.local = local }
         )
         var state = GS()
-        sut.reduce(GA(local: 3), &state)
+        sut.reduce(GA(local: 3))(&state)
         XCTAssertEqual(state.local, 3)
     }
 
@@ -68,7 +68,7 @@ final class ReducerLiftTests: XCTestCase {
             stateSetter: { gs, local in gs.local = local }
         )
         var state = GS()
-        sut.reduce(GA(local: nil), &state)
+        sut.reduce(GA(local: nil))(&state)
         XCTAssertEqual(state.local, 0)
     }
 
@@ -79,7 +79,7 @@ final class ReducerLiftTests: XCTestCase {
         let stateLens = Lens<GS, Int>(get: { $0.local }, set: { GS(local: $1, other: $0.other) })
         let sut = addAction.lift(action: actionPrism, state: stateLens)
         var state = GS()
-        sut.reduce(GA(local: 6), &state)
+        sut.reduce(GA(local: 6))(&state)
         XCTAssertEqual(state.local, 6)
         XCTAssertEqual(state.other, 99)
     }
@@ -89,7 +89,7 @@ final class ReducerLiftTests: XCTestCase {
         let stateLens = Lens<GS, Int>(get: { $0.local }, set: { GS(local: $1, other: $0.other) })
         let sut = addAction.lift(action: actionPrism, state: stateLens)
         var state = GS()
-        sut.reduce(GA(local: nil), &state)
+        sut.reduce(GA(local: nil))(&state)
         XCTAssertEqual(state.local, 0)
     }
 
@@ -99,9 +99,9 @@ final class ReducerLiftTests: XCTestCase {
         let actionPrism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0) })
         let sut = addAction.lift(action: actionPrism)
         var state = 0
-        sut.reduce(GA(local: 5), &state)
+        sut.reduce(GA(local: 5))(&state)
         XCTAssertEqual(state, 5)
-        sut.reduce(GA(local: nil), &state)
+        sut.reduce(GA(local: nil))(&state)
         XCTAssertEqual(state, 5)
     }
 
@@ -111,7 +111,7 @@ final class ReducerLiftTests: XCTestCase {
         let stateLens = Lens<GS, Int>(get: { $0.local }, set: { GS(local: $1, other: $0.other) })
         let sut = addAction.lift(state: stateLens)
         var state = GS()
-        sut.reduce(8, &state)
+        sut.reduce(8)(&state)
         XCTAssertEqual(state.local, 8)
         XCTAssertEqual(state.other, 99)
     }
@@ -126,7 +126,7 @@ final class ReducerLiftTests: XCTestCase {
         )
         let sut = addAction.lift(state: statePrism)
         var state = LS.active(0)
-        sut.reduce(5, &state)
+        sut.reduce(5)(&state)
         if case .active(let v) = state { XCTAssertEqual(v, 5) } else { XCTFail("Expected .active") }
     }
 
@@ -138,7 +138,7 @@ final class ReducerLiftTests: XCTestCase {
         )
         let sut = addAction.lift(state: statePrism)
         var state = LS.inactive
-        sut.reduce(5, &state)
+        sut.reduce(5)(&state)
         if case .inactive = state {} else { XCTFail("Expected .inactive") }
     }
 
@@ -153,7 +153,7 @@ final class ReducerLiftTests: XCTestCase {
         )
         let sut = addAction.lift(action: actionPrism, state: statePrism)
         var state = LS.active(0)
-        sut.reduce(GA(local: 3), &state)
+        sut.reduce(GA(local: 3))(&state)
         if case .active(let v) = state { XCTAssertEqual(v, 3) } else { XCTFail() }
     }
 
@@ -166,7 +166,7 @@ final class ReducerLiftTests: XCTestCase {
         )
         let sut = addAction.lift(action: actionPrism, state: statePrism)
         var state = LS.active(0)
-        sut.reduce(GA(local: nil), &state)
+        sut.reduce(GA(local: nil))(&state)
         if case .active(let v) = state { XCTAssertEqual(v, 0) } else { XCTFail() }
     }
 
@@ -184,7 +184,7 @@ final class ReducerLiftTests: XCTestCase {
         )
         let sut = addAction.lift(state: traversal)
         var state = Container(nums: [0, 99])
-        sut.reduce(5, &state)
+        sut.reduce(5)(&state)
         XCTAssertEqual(state.nums, [5, 99])
     }
 
@@ -200,7 +200,7 @@ final class ReducerLiftTests: XCTestCase {
         )
         let sut = addAction.lift(state: traversal)
         var state = Container(nums: [])
-        sut.reduce(5, &state)
+        sut.reduce(5)(&state)
         XCTAssertTrue(state.nums.isEmpty)
     }
 
@@ -219,7 +219,7 @@ final class ReducerLiftTests: XCTestCase {
         )
         let sut = addAction.lift(action: actionPrism, state: traversal)
         var state = Container(nums: [0])
-        sut.reduce(GA(local: 3), &state)
+        sut.reduce(GA(local: 3))(&state)
         XCTAssertEqual(state.nums, [3])
     }
 }

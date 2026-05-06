@@ -22,13 +22,13 @@ extension Reducer {
         action: @escaping (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
         stateContainer: WritableKeyPath<GS, Container>
     ) -> Reducer<GA, GS> {
-        .reduce { globalAction, globalState in
-            guard
-                let resolved = action(globalAction),
-                var localState = resolved.element.preview(globalState[keyPath: stateContainer])
-            else { return }
-            self.reduce(resolved.action, &localState)
-            globalState[keyPath: stateContainer] = resolved.element.set(globalState[keyPath: stateContainer], localState)
+        .reduce { globalAction in
+            guard let resolved = action(globalAction) else { return .identity }
+            return EndoMut { globalState in
+                guard var localState = resolved.element.preview(globalState[keyPath: stateContainer]) else { return }
+                self.reduce(resolved.action).runEndoMut(&localState)
+                globalState[keyPath: stateContainer] = resolved.element.set(globalState[keyPath: stateContainer], localState)
+            }
         }
     }
 }

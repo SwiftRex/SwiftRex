@@ -16,11 +16,13 @@ extension Reducer {
         stateGetter: @escaping (GlobalState) -> StateType,
         stateSetter: @escaping (inout GlobalState, StateType) -> Void
     ) -> Reducer<GlobalAction, GlobalState> {
-        .reduce { globalAction, globalState in
-            guard let localAction = actionGetter(globalAction) else { return }
-            var localState = stateGetter(globalState)
-            self.reduce(localAction, &localState)
-            stateSetter(&globalState, localState)
+        .reduce { globalAction in
+            guard let localAction = actionGetter(globalAction) else { return .identity }
+            return EndoMut { globalState in
+                var localState = stateGetter(globalState)
+                self.reduce(localAction).runEndoMut(&localState)
+                stateSetter(&globalState, localState)
+            }
         }
     }
 }
@@ -37,9 +39,9 @@ extension Reducer {
         action: KeyPath<GlobalAction, ActionType?>,
         state: WritableKeyPath<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
-        .reduce { globalAction, globalState in
-            guard let localAction = globalAction[keyPath: action] else { return }
-            self.reduce(localAction, &globalState[keyPath: state])
+        .reduce { globalAction in
+            guard let localAction = globalAction[keyPath: action] else { return .identity }
+            return EndoMut { globalState in self.reduce(localAction).runEndoMut(&globalState[keyPath: state]) }
         }
     }
 
@@ -49,9 +51,7 @@ extension Reducer {
     public func lift<GlobalState>(
         state: WritableKeyPath<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
-        .reduce { action, globalState in
-            self.reduce(action, &globalState[keyPath: state])
-        }
+        .reduce { action in EndoMut { globalState in self.reduce(action).runEndoMut(&globalState[keyPath: state]) } }
     }
 
     /// Lifts a local reducer to a global action only, leaving the state type unchanged.
@@ -134,10 +134,12 @@ extension Reducer {
     public func lift<GlobalState>(
         state lens: Lens<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
-        .reduce { action, globalState in
-            var localState = lens.get(globalState)
-            self.reduce(action, &localState)
-            globalState = lens.set(globalState, localState)
+        .reduce { action in
+            EndoMut { globalState in
+                var localState = lens.get(globalState)
+                self.reduce(action).runEndoMut(&localState)
+                globalState = lens.set(globalState, localState)
+            }
         }
     }
 }
@@ -157,10 +159,12 @@ extension Reducer {
     public func lift<GlobalState>(
         state prism: Prism<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
-        .reduce { action, globalState in
-            guard var localState = prism.preview(globalState) else { return }
-            self.reduce(action, &localState)
-            globalState = prism.review(localState)
+        .reduce { action in
+            EndoMut { globalState in
+                guard var localState = prism.preview(globalState) else { return }
+                self.reduce(action).runEndoMut(&localState)
+                globalState = prism.review(localState)
+            }
         }
     }
 
@@ -172,13 +176,13 @@ extension Reducer {
         action actionPrism: Prism<GlobalAction, ActionType>,
         state statePrism: Prism<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
-        .reduce { globalAction, globalState in
-            guard
-                let localAction = actionPrism.preview(globalAction),
-                var localState = statePrism.preview(globalState)
-            else { return }
-            self.reduce(localAction, &localState)
-            globalState = statePrism.review(localState)
+        .reduce { globalAction in
+            guard let localAction = actionPrism.preview(globalAction) else { return .identity }
+            return EndoMut { globalState in
+                guard var localState = statePrism.preview(globalState) else { return }
+                self.reduce(localAction).runEndoMut(&localState)
+                globalState = statePrism.review(localState)
+            }
         }
     }
 
@@ -190,10 +194,12 @@ extension Reducer {
     public func lift<GlobalState>(
         state traversal: AffineTraversal<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
-        .reduce { action, globalState in
-            guard var localState = traversal.preview(globalState) else { return }
-            self.reduce(action, &localState)
-            globalState = traversal.set(globalState, localState)
+        .reduce { action in
+            EndoMut { globalState in
+                guard var localState = traversal.preview(globalState) else { return }
+                self.reduce(action).runEndoMut(&localState)
+                globalState = traversal.set(globalState, localState)
+            }
         }
     }
 
@@ -205,14 +211,13 @@ extension Reducer {
         action prism: Prism<GlobalAction, ActionType>,
         state traversal: AffineTraversal<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
-        .reduce { globalAction, globalState in
-            guard
-                let localAction = prism.preview(globalAction),
-                var localState = traversal.preview(globalState)
-            else { return }
-            self.reduce(localAction, &localState)
-            globalState = traversal.set(globalState, localState)
+        .reduce { globalAction in
+            guard let localAction = prism.preview(globalAction) else { return .identity }
+            return EndoMut { globalState in
+                guard var localState = traversal.preview(globalState) else { return }
+                self.reduce(localAction).runEndoMut(&localState)
+                globalState = traversal.set(globalState, localState)
+            }
         }
     }
 }
-

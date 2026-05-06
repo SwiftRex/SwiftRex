@@ -156,9 +156,14 @@ struct Config {
 
 ## Creating a Reducer
 
-### `inout` form (preferred)
+`Reducer` stores `(ActionType) -> EndoMut<StateType>` internally: given an action it produces an
+in-place endomorphism on `State`. The `Store` calls `reducer.reduce(action).runEndoMut(&_state)` in
+its dispatch pipeline. All four constructor overloads bridge into that representation.
 
-The internal representation is `(Action, inout State) -> Void`. Mutating `state` in place avoids copying large value trees on every action.
+### `inout` form (idiomatic Swift)
+
+Mutating `state` directly avoids copying large value trees. All CoW containers (`Array`, `Dictionary`,
+`Set`) are updated in place because `inout` passes the exclusive reference — reference count stays 1.
 
 ```swift
 let counterReducer = Reducer<CounterAction, Int>.reduce { action, state in
@@ -186,11 +191,14 @@ let authReducer = Reducer<AuthAction, AuthState>.reduce { action, state in
 }
 ```
 
-`Lens.set(oldValue, newValue)` reconstructs the struct changing only the focused field. Every other field is preserved automatically — no manual copying required.
+`Lens.set(oldValue, newValue)` reconstructs the struct changing only the focused field. Every other
+field is preserved automatically — no manual copying required.
 
 ### Functional (pure-return) form
 
-When the new state is naturally expressed as a transformation the pure-return form reads more clearly. It bridges to `inout` internally. Combine with `@Lenses` to touch only the field that actually changes:
+When the new state is naturally expressed as a transformation the pure-return form reads more clearly.
+It bridges to `EndoMut` via `Endo.toEndoMut()` internally — one copy per dispatch, acceptable for
+small immutable structs:
 
 ```swift
 let profileReducer = Reducer<ProfileAction, ProfileState>.reduce { action, state in
@@ -203,24 +211,57 @@ let profileReducer = Reducer<ProfileAction, ProfileState>.reduce { action, state
 
 Each case names only what changes. `@Lenses` handles the reconstruction of every untouched field.
 
-Prefer the `inout` form for large mutable state trees; prefer the pure-return form for small immutable structs.
+Prefer the `inout` form for large mutable state trees; prefer the pure-return form for small
+immutable structs.
+
+### `(Action) -> Endo<State>` form
+
+Use this when the reducer is naturally expressed as a function from action to a pure endomorphism.
+Bridges via `.toEndoMut()` — one copy per dispatch.
+
+```swift
+let counterReducer = Reducer<CounterAction, Int>.reduce { action in
+    switch action {
+    case .increment: Endo { $0 + 1 }
+    case .decrement: Endo { $0 - 1 }
+    case .reset:     Endo { _ in 0 }
+    }
+}
+```
+
+### `(Action) -> EndoMut<State>` form (primary)
+
+This is the form that maps 1:1 to the internal representation. Zero bridging overhead. Use when
+composing `EndoMut` values directly or when optimising a hot path:
+
+```swift
+let counterReducer = Reducer<CounterAction, Int>.reduce { action in
+    switch action {
+    case .increment: EndoMut { $0 += 1 }
+    case .decrement: EndoMut { $0 -= 1 }
+    case .reset:     EndoMut { $0 = 0  }
+    }
+}
+```
 
 ---
 
 ## The Monoid: identity, combine, compose
 
-`Reducer` is a **Monoid** under sequential composition. The two operations are:
+`Reducer` is a **Monoid** under sequential composition, and that Monoid is a direct **pointwise lift
+of `EndoMut`'s Monoid**: for any action, `Reducer.combine(a, b).reduce(action)` is exactly
+`EndoMut.combine(a.reduce(action), b.reduce(action))`.
 
 | Operation | Meaning |
 |-----------|---------|
-| `Reducer.identity` | No-op; composing with it leaves any other reducer unchanged. |
-| `combine(a, b)` / `compose` | Run `a` then `b` on the same `inout State`. `b` sees `a`'s mutations. |
+| `Reducer.identity` | Returns `EndoMut.identity` for every action — the do-nothing closure. |
+| `combine(a, b)` / `compose` | Combines the `EndoMut` values of `a` and `b` for each action; `b` sees `a`'s mutations. |
 
 ### `identity`
 
 ```swift
 let noOp = Reducer<AppAction, AppState>.identity
-// noOp.reduce(action, &state) — state is always unchanged
+// noOp.reduce(action)(&state) — state is always unchanged
 ```
 
 Useful as a placeholder during development or as the result of a conditional composition.

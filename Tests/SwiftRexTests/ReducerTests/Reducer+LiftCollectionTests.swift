@@ -33,7 +33,7 @@ final class ReducerLiftCollectionTests: XCTestCase {
             stateCollection: \AppState.items
         )
         var state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 10)])
-        sut.reduce(ElementAction(id1, action: 3), &state)
+        sut.reduce(ElementAction(id1, action: 3))(&state)
         XCTAssertEqual(state.items[0].value, 3)
         XCTAssertEqual(state.items[1].value, 10)
     }
@@ -44,7 +44,7 @@ final class ReducerLiftCollectionTests: XCTestCase {
             stateCollection: \AppState.items
         )
         var state = AppState(items: [Item(id: id1, value: 5)])
-        sut.reduce(ElementAction<UUID, Int>?.none, &state)
+        sut.reduce(ElementAction<UUID, Int>?.none)(&state)
         XCTAssertEqual(state.items[0].value, 5)
     }
 
@@ -54,7 +54,7 @@ final class ReducerLiftCollectionTests: XCTestCase {
             stateCollection: \AppState.items
         )
         var state = AppState(items: [Item(id: id1, value: 5)])
-        sut.reduce(ElementAction(id2, action: 99), &state)
+        sut.reduce(ElementAction(id2, action: 99))(&state)
         XCTAssertEqual(state.items[0].value, 5)
     }
 
@@ -64,9 +64,9 @@ final class ReducerLiftCollectionTests: XCTestCase {
         struct GAId { var update: ElementAction<UUID, Int>? }
         let sut = addToValue.liftCollection(action: \GAId.update, stateCollection: \AppState.items)
         var state = AppState(items: [Item(id: id1, value: 0)])
-        sut.reduce(GAId(update: ElementAction(id1, action: 7)), &state)
+        sut.reduce(GAId(update: ElementAction(id1, action: 7)))(&state)
         XCTAssertEqual(state.items[0].value, 7)
-        sut.reduce(GAId(update: nil), &state)
+        sut.reduce(GAId(update: nil))(&state)
         XCTAssertEqual(state.items[0].value, 7)
     }
 
@@ -82,7 +82,7 @@ final class ReducerLiftCollectionTests: XCTestCase {
             identifier: \Named.name
         )
         var state = NamedState(entries: [Named(name: "alice", score: 0), Named(name: "bob", score: 5)])
-        sut.reduce(ElementAction("alice", action: 3), &state)
+        sut.reduce(ElementAction("alice", action: 3))(&state)
         XCTAssertEqual(state.entries[0].score, 3)
         XCTAssertEqual(state.entries[1].score, 5)
     }
@@ -100,7 +100,7 @@ final class ReducerLiftCollectionTests: XCTestCase {
             identifier: \Named.name
         )
         var state = NamedState(entries: [Named(name: "alice", score: 0)])
-        sut.reduce(GACustom(update: ElementAction("alice", action: 4)), &state)
+        sut.reduce(GACustom(update: ElementAction("alice", action: 4)))(&state)
         XCTAssertEqual(state.entries[0].score, 4)
     }
 
@@ -114,9 +114,9 @@ final class ReducerLiftCollectionTests: XCTestCase {
             stateContainer: \Container.nums
         )
         var state = Container(nums: [10, 20, 30])
-        sut.reduce(ElementAction(1, action: 5), &state)
+        sut.reduce(ElementAction(1, action: 5))(&state)
         XCTAssertEqual(state.nums, [10, 25, 30])
-        sut.reduce(ElementAction<Int, Int>?.none, &state)
+        sut.reduce(ElementAction<Int, Int>?.none)(&state)
         XCTAssertEqual(state.nums, [10, 25, 30])
     }
 
@@ -128,7 +128,7 @@ final class ReducerLiftCollectionTests: XCTestCase {
             stateDictionary: \AppState.lookup
         )
         var state = AppState(lookup: ["a": 0, "b": 10])
-        sut.reduce(ElementAction("a", action: 3), &state)
+        sut.reduce(ElementAction("a", action: 3))(&state)
         XCTAssertEqual(state.lookup["a"], 3)
         XCTAssertEqual(state.lookup["b"], 10)
     }
@@ -139,9 +139,9 @@ final class ReducerLiftCollectionTests: XCTestCase {
         struct GADict { var update: ElementAction<String, Int>? }
         let sut = addToInt.liftCollection(action: \GADict.update, stateDictionary: \AppState.lookup)
         var state = AppState(lookup: ["x": 5])
-        sut.reduce(GADict(update: ElementAction("x", action: 2)), &state)
+        sut.reduce(GADict(update: ElementAction("x", action: 2)))(&state)
         XCTAssertEqual(state.lookup["x"], 7)
-        sut.reduce(GADict(update: nil), &state)
+        sut.reduce(GADict(update: nil))(&state)
         XCTAssertEqual(state.lookup["x"], 7)
     }
 }

@@ -6,17 +6,22 @@ import CoreFP
 /// pure — no side effects, no async work, no environment access. Side effects belong in
 /// `Middleware` and are expressed as `Effect` values.
 ///
-/// The internal representation is `(Action, inout State) -> Void` rather than the functional
-/// `(Action, State) -> State` to avoid unnecessary copies of large state trees. A second overload
-/// of `reduce` accepts the functional form and bridges it automatically.
+/// Internally a `Reducer` stores `(ActionType) -> EndoMut<StateType>`: given an action it produces
+/// an in-place endomorphism on `State`. This representation makes the monoidal structure of
+/// `Reducer` a direct, pointwise lift of `EndoMut`'s `Monoid`: combining two reducers combines
+/// their `EndoMut` values for each action, keeping a single allocation path through the pipeline.
+///
+/// The Store calls `reducer.reduce(action).runEndoMut(&_state)` in its dispatch pipeline.
 ///
 /// `Reducer` is a **Semigroup** and **Monoid** under sequential composition: `combine(a, b)` runs
 /// `a` then `b` on the same `inout State`, so `b` sees `a`'s mutations. Order matters.
 public struct Reducer<ActionType, StateType> {
-    /// The underlying reduce function.
-    public let reduce: (ActionType, inout StateType) -> Void
+    /// Given an action, produces an in-place endomorphism on `StateType`.
+    ///
+    /// The Store uses this as `reduce(action).runEndoMut(&_state)`.
+    public let reduce: (ActionType) -> EndoMut<StateType>
 
-    init(reduce: @escaping (ActionType, inout StateType) -> Void) {
+    private init(_ reduce: @escaping (ActionType) -> EndoMut<StateType>) {
         self.reduce = reduce
     }
 }
@@ -24,46 +29,73 @@ public struct Reducer<ActionType, StateType> {
 // MARK: - Constructors
 
 extension Reducer {
-    /// Creates a `Reducer` from an `inout` mutation function — the primary form.
-    public static func reduce(_ f: @escaping (ActionType, inout StateType) -> Void) -> Reducer {
-        Reducer(reduce: f)
+    /// Creates a `Reducer` from `(Action) -> EndoMut<State>` — the primary internal form.
+    ///
+    /// Use this when you already have an `EndoMut` per action, or when composing with other
+    /// `EndoMut`-based pipelines. The closure is stored directly with no bridging overhead.
+    public static func reduce(_ f: @escaping (ActionType) -> EndoMut<StateType>) -> Reducer {
+        Reducer(f)
     }
 
-    /// Creates a `Reducer` from a functional `(Action, State) -> State` — bridges to `inout` internally.
+    /// Creates a `Reducer` from `(Action) -> Endo<State>`. Bridges via `.toEndoMut()`.
     ///
-    /// Prefer the `inout` overload for large state trees to avoid copies. Use this form when
-    /// working with immutable value pipelines or when expressing the reducer as a transformation:
+    /// Use this when the transformation is naturally expressed as a pure `(State) -> State`
+    /// function per action. One `Endo → EndoMut` bridge is applied per action dispatch.
+    public static func reduce(_ f: @escaping (ActionType) -> Endo<StateType>) -> Reducer {
+        Reducer { action in f(action).toEndoMut() }
+    }
+
+    /// Creates a `Reducer` from an `inout` mutation function — the idiomatic Swift form.
+    ///
+    /// Mutating `state` directly avoids copying large value trees. Use this for most leaf
+    /// reducers:
     /// ```swift
     /// Reducer.reduce { action, state in
     ///     switch action {
-    ///     case .increment: State(count: state.count + 1)
+    ///     case .increment: state += 1
+    ///     case .reset:     state = 0
+    ///     }
+    /// }
+    /// ```
+    public static func reduce(_ f: @escaping (ActionType, inout StateType) -> Void) -> Reducer {
+        Reducer { action in EndoMut { state in f(action, &state) } }
+    }
+
+    /// Creates a `Reducer` from a pure `(Action, State) -> State` function. Bridges via
+    /// `Endo.toEndoMut()`.
+    ///
+    /// Prefer the `inout` overload for large mutable state trees. Use this form when the new
+    /// state is naturally expressed as a whole-value transformation:
+    /// ```swift
+    /// Reducer.reduce { action, state in
+    ///     switch action {
+    ///     case .updateName(let n): ProfileState.lens.name.set(state, n)
     ///     }
     /// }
     /// ```
     public static func reduce(_ f: @escaping (ActionType, StateType) -> StateType) -> Reducer {
-        .reduce { action, state in state = f(action, state) }
+        Reducer { action in Endo { state in f(action, state) }.toEndoMut() }
     }
 }
 
 // MARK: - Semigroup & Monoid
 
 extension Reducer: Semigroup {
-    /// Sequential composition: runs `lhs` then `rhs` on the same `inout State`.
+    /// Sequential composition: for each action, combines the two `EndoMut` values pointwise.
     ///
     /// `rhs` observes any mutations made by `lhs`. The composition is associative but not
     /// commutative — order matters.
     public static func combine(_ lhs: Reducer, _ rhs: Reducer) -> Reducer {
-        .reduce { action, state in
-            lhs.reduce(action, &state)
-            rhs.reduce(action, &state)
-        }
+        Reducer { action in .combine(lhs.reduce(action), rhs.reduce(action)) }
     }
 }
 
 extension Reducer: Monoid {
     /// The no-op reducer. Composing with `identity` leaves the other reducer unchanged.
+    ///
+    /// For every action it returns `EndoMut.identity` — the do-nothing in-place closure.
     public static var identity: Reducer {
-        .reduce(untuple(\.1))
+        .reduce { _ in EndoMut<StateType>.identity }
     }
 }
 
@@ -131,8 +163,6 @@ extension Reducer {
     ///
     /// ```swift
     /// let appReducer: Reducer<AppAction, AppState> = Reducer.compose {
-    ///     // Each reducer is scoped to its own action/state subset via lift.
-    ///     // They run in the order listed; mutations are visible to subsequent reducers.
     ///     authReducer
     ///         .lift(action: \.auth, state: \.authState)
     ///
@@ -140,7 +170,6 @@ extension Reducer {
     ///         .lift(action: \.profile, state: \.profileState)
     ///
     ///     Reducer.reduce { action, state in
-    ///         // An inline reducer can appear anywhere in the list.
     ///         if case .resetAll = action { state = .initial }
     ///     }
     /// }
