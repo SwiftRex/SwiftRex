@@ -222,4 +222,74 @@ final class ReducerLiftTests: XCTestCase {
         sut.reduce(GA(local: 3))(&state)
         XCTAssertEqual(state.nums, [3])
     }
+
+    func testLiftPrismAffineTraversalSkipsWhenActionNil() {
+        struct Container { var nums: [Int] }
+        let actionPrism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0) })
+        let traversal = AffineTraversal<Container, Int>(
+            preview: { $0.nums.first },
+            set: { c, v in var copy = c; if !copy.nums.isEmpty { copy.nums[0] = v }; return copy }
+        )
+        let sut = addAction.lift(action: actionPrism, state: traversal)
+        var state = Container(nums: [10])
+        sut.reduce(GA(local: nil))(&state)
+        XCTAssertEqual(state.nums, [10])
+    }
+
+    func testLiftPrismAffineTraversalSkipsWhenFocusMissing() {
+        struct Container { var nums: [Int] }
+        let actionPrism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0) })
+        let traversal = AffineTraversal<Container, Int>(
+            preview: { $0.nums.first },
+            set: { c, v in var copy = c; if !copy.nums.isEmpty { copy.nums[0] = v }; return copy }
+        )
+        let sut = addAction.lift(action: actionPrism, state: traversal)
+        var state = Container(nums: [])
+        sut.reduce(GA(local: 5))(&state)
+        XCTAssertTrue(state.nums.isEmpty)
+    }
+
+    // MARK: - Prism + Prism (state miss)
+
+    func testLiftActionPrismStatePrismSkipsWhenStateNotMatched() {
+        enum LS { case active(Int); case inactive }
+        let actionPrism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0) })
+        let statePrism = Prism<LS, Int>(
+            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            review: { .active($0) }
+        )
+        let sut = addAction.lift(action: actionPrism, state: statePrism)
+        var state = LS.inactive
+        sut.reduce(GA(local: 7))(&state)
+        if case .inactive = state {} else { XCTFail("Expected .inactive") }
+    }
+
+    // MARK: - Lens setMut-based (via closure overload)
+
+    func testLiftClosureSetMutKeepsOtherFieldsUntouched() {
+        // stateSetter is (inout GS, S) -> Void — drives Lens(get:setMut:) internally
+        let sut = addAction.lift(
+            actionGetter: { (ga: GA) in ga.local },
+            stateGetter: { (gs: GS) in gs.local },
+            stateSetter: { gs, local in gs.local = local }
+        )
+        var state = GS(local: 0, other: 99)
+        sut.reduce(GA(local: 10))(&state)
+        XCTAssertEqual(state.local, 10)
+        XCTAssertEqual(state.other, 99)
+    }
+
+    // MARK: - Composed optic via .compose()
+
+    func testLiftComposedLensChain() {
+        struct Inner { var count: Int }
+        struct Outer { var inner: Inner; var tag: String }
+        let countReducer = Reducer<Int, Int>.reduce { delta, n in n += delta }
+        let composed = lens(\Outer.inner).compose(lens(\Inner.count))
+        let sut = countReducer.lift(state: composed)
+        var state = Outer(inner: Inner(count: 0), tag: "x")
+        sut.reduce(5)(&state)
+        XCTAssertEqual(state.inner.count, 5)
+        XCTAssertEqual(state.tag, "x")
+    }
 }

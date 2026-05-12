@@ -144,4 +144,85 @@ final class ReducerLiftCollectionTests: XCTestCase {
         sut.reduce(GADict(update: nil))(&state)
         XCTAssertEqual(state.lookup["x"], 7)
     }
+
+    // MARK: - Dictionary: missing key is a no-op
+
+    func testLiftCollectionDictionaryMissingKeyIsNoOp() {
+        let sut = addToInt.liftCollection(
+            action: { (ea: ElementAction<String, Int>?) in ea },
+            stateDictionary: \AppState.lookup
+        )
+        var state = AppState(lookup: ["a": 1])
+        sut.reduce(ElementAction("z", action: 99))(&state)
+        XCTAssertNil(state.lookup["z"])
+        XCTAssertEqual(state.lookup["a"], 1)
+    }
+
+    // MARK: - Custom identifier: missing ID is a no-op
+
+    func testLiftCollectionCustomIdentifierMissingIdIsNoOp() {
+        struct Named { var name: String; var score: Int }
+        struct NamedState { var entries: [Named] = [] }
+        let addToScore = Reducer<Int, Named>.reduce { delta, item in item.score += delta }
+        let sut = addToScore.liftCollection(
+            action: { (ea: ElementAction<String, Int>?) in ea },
+            stateCollection: \NamedState.entries,
+            identifier: \Named.name
+        )
+        var state = NamedState(entries: [Named(name: "alice", score: 5)])
+        sut.reduce(ElementAction("nobody", action: 99))(&state)
+        XCTAssertEqual(state.entries[0].score, 5)
+    }
+
+    // MARK: - Custom identifier: only the targeted element changes
+
+    func testLiftCollectionCustomIdentifierIsolated() {
+        struct Named: Equatable { var name: String; var score: Int }
+        struct NamedState { var entries: [Named] = [] }
+        let addToScore = Reducer<Int, Named>.reduce { delta, item in item.score += delta }
+        let sut = addToScore.liftCollection(
+            action: { (ea: ElementAction<String, Int>?) in ea },
+            stateCollection: \NamedState.entries,
+            identifier: \Named.name
+        )
+        var state = NamedState(entries: [
+            Named(name: "alice", score: 0),
+            Named(name: "bob", score: 0),
+            Named(name: "carol", score: 0)
+        ])
+        sut.reduce(ElementAction("bob", action: 7))(&state)
+        XCTAssertEqual(state.entries[0].score, 0)
+        XCTAssertEqual(state.entries[1].score, 7)
+        XCTAssertEqual(state.entries[2].score, 0)
+    }
+
+    // MARK: - Primitive AffineTraversal: out-of-bounds is a no-op
+
+    func testLiftCollectionPrimitiveOutOfBoundsIsNoOp() {
+        let sut = addToInt.liftCollection(
+            action: { (ea: ElementAction<Int, Int>?) -> (action: Int, element: AffineTraversal<[Int], Int>)? in
+                ea.map { (action: $0.action, element: [Int].ix($0.id)) }
+            },
+            stateContainer: \Container.nums
+        )
+        var state = Container(nums: [10, 20, 30])
+        sut.reduce(ElementAction(99, action: 5))(&state)
+        XCTAssertEqual(state.nums, [10, 20, 30])
+    }
+
+    // MARK: - Identifiable: only the targeted element changes
+
+    func testLiftCollectionIdentifiableIsolated() {
+        let sut = addToValue.liftCollection(
+            action: { (ea: ElementAction<UUID, Int>?) in ea },
+            stateCollection: \AppState.items
+        )
+        var state = AppState(items: [
+            Item(id: id1, value: 0),
+            Item(id: id2, value: 0)
+        ])
+        sut.reduce(ElementAction(id2, action: 5))(&state)
+        XCTAssertEqual(state.items[0].value, 0)
+        XCTAssertEqual(state.items[1].value, 5)
+    }
 }

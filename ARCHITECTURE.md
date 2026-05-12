@@ -57,14 +57,18 @@ SwiftRex (Package.swift)
 └── Targets
     ├── SwiftRex/
     │   ├── Foundation/
-    │   │   ├── Cancellation.swift
     │   │   ├── ActionSource.swift
     │   │   ├── DispatchedAction.swift
-    │   │   └── ShouldEmitValue.swift
-    │   ├── Core/
+    │   │   ├── ElementAction.swift
+    │   │   └── SubscriptionToken.swift
+    │   ├── Reducer/
     │   │   ├── Reducer.swift
+    │   │   ├── Reducer+Lift.swift
+    │   │   └── Reducer+LiftCollection.swift
+    │   ├── Core/
     │   │   ├── Effect.swift
     │   │   ├── Middleware.swift
+    │   │   ├── ActionHandler.swift
     │   │   └── Store.swift
     │   └── Lifting/
     │       ├── Reducer+Lift.swift
@@ -140,20 +144,6 @@ public struct DispatchedAction<Action> {
 `ActionSource` is captured automatically at every **public API boundary** via default `#file / #function / #line` parameters. Users working inside middlewares see `DispatchedAction<InputAction>` on the incoming side; on the outgoing side they return raw `Action` values and the framework wraps them using the source captured at the `Effect` factory call site.
 
 ---
-
-### `ShouldEmitValue<State>`
-
-Controls when the Store notifies observers after a state mutation. Does not require `Equatable`.
-
-```swift
-public enum ShouldEmitValue<State> {
-    case always
-    case never
-    case when((State, State) -> Bool)
-}
-```
-
-Rationale: Combine's `removeDuplicates()` has had correctness bugs historically. Keeping deduplication in-house gives full control without forcing `Equatable` on `State`.
 
 ---
 
@@ -473,49 +463,191 @@ let mw = searchMiddleware()
     .run(appEnv)                                               // materialise
 ```
 
-**ZIO as an advanced layer:**
+---
 
-`ZIO<Env, Log, Result>` from the FP library (Env = Environment, Log = `Effect<Action>`, Result = State) can represent the full pipeline as a single monad stack: `(Action, State) -> ZIO<Environment, Effect<Action>, State>`. This is mathematically equivalent to Reducer + Middleware combined. It is **not** the primary API but is documented as an advanced composition option with bridge functions provided.
+### `ActionHandler<InputAction, OutputAction, State, Environment>`
+
+The primary composition unit for feature modules. Unifies state mutation and effect production under a single `handle` closure — the direct form is its own definition, not a derived concept.
+
+```swift
+public struct ActionHandler<InputAction, OutputAction, State, Environment> {
+    public let handle: (DispatchedAction<InputAction>, inout State)
+        -> Reader<Environment, Effect<OutputAction>>
+}
+```
+
+**Creating an `ActionHandler`:**
+
+There are three equally valid ways to create one:
+
+```swift
+// 1. Direct closure — mutation and effect in one shot
+let handler = ActionHandler<AppAction, AppAction, AppState, AppEnv>.handle { action, state in
+    state.count += 1                          // mutate
+    let snapshot = state.count
+    return Reader { env in
+        env.analytics.track("counted")        // environment access
+        return .just(.didCount(snapshot))     // effect
+    }
+}
+
+// 2. From a Reducer (effect is always .empty)
+let handler = myReducer.asActionHandler
+
+// 3. From a Reducer + Middleware combined
+let handler = ActionHandler(reducer: myReducer, middleware: myMiddleware)
+```
+
+All three produce the same type. There is no preferred form — choose whichever expresses the intent most clearly.
+
+**Temporal safety contract:**
+
+The `inout State` parameter and the returned `Reader` enforce a strict temporal order:
+1. `handle` is called — `inout State` mutations happen synchronously here
+2. `handle` returns a `Reader` — state is no longer mutable; the closure captures a post-mutation snapshot
+3. The Store resolves the `Reader` with the environment to obtain the `Effect`
+
+Mutations and effects are structurally separated. An effect closure can never be interleaved with a state mutation because the mutation must complete before the `Reader` is returned. This is analogous to Elm's `update : Msg -> Model -> (Model, Cmd Msg)`, but without a state copy — `inout` means zero overhead.
+
+**Named constructors:**
+```swift
+extension ActionHandler {
+    // Primary form — full closure
+    public static func handle(
+        _ f: @escaping (DispatchedAction<InputAction>, inout State)
+            -> Reader<Environment, Effect<OutputAction>>
+    ) -> Self
+
+    // Convenience — environment not needed
+    public static func handle(
+        _ f: @escaping (DispatchedAction<InputAction>, inout State)
+            -> Effect<OutputAction>
+    ) -> Self where Environment == Void
+
+    // From a Reducer + Middleware pair
+    public init(
+        reducer:    Reducer<InputAction, State>,
+        middleware: Middleware<InputAction, OutputAction, State, Environment>
+    )
+}
+```
+
+**Bridges from simpler types:**
+```swift
+extension Reducer {
+    // Mutates state; always returns empty effect
+    public var asActionHandler: ActionHandler<ActionType, ActionType, StateType, Void>
+}
+
+extension Middleware {
+    // Reads state (no mutation); returns effect
+    public var asActionHandler: ActionHandler<InputAction, OutputAction, State, Environment>
+}
+```
+
+**FP structure — Monoid (when symmetric):**
+
+State mutations are applied sequentially (lhs then rhs). Effects are merged in parallel.
+
+```swift
+extension ActionHandler: Monoid where InputAction == OutputAction {
+    public static var identity: Self {
+        .handle { _, _ in .pure(.empty) }
+    }
+    public static func combine(_ lhs: Self, _ rhs: Self) -> Self {
+        .handle { action, state in
+            let lhsReader = lhs.handle(action, &state)
+            let rhsReader = rhs.handle(action, &state)
+            return Reader { env in .combine(lhsReader.run(env), rhsReader.run(env)) }
+        }
+    }
+}
+```
+
+**`lift` — same overload set as `Reducer` and `Middleware`, unified:**
+
+A single `lift` call scopes the handler's local action, state, and environment types up to the global types. This is the mechanism that lets independently developed modules (each with their own `ActionHandler` at local types) be combined into one handler for the Store.
+
+The overloads mirror `Reducer` exactly: `WritableKeyPath`, closure (`Lens(get:setMut:)`), optics (`Prism`, `Lens`, `AffineTraversal`), and all partial-axis combinations. The state axis uses `WritableKeyPath<GS, State>` (or optic equivalent) and performs in-place mutation via the modify coroutine — zero CoW overhead.
+
+```swift
+extension ActionHandler {
+    // Representative 4-axis overload
+    public func lift<GA, GOA, GS, GE>(
+        inputAction:  KeyPath<GA, InputAction?>,
+        outputAction: @escaping (OutputAction) -> GOA,
+        state:        WritableKeyPath<GS, State>,
+        environment:  @escaping (GE) -> Environment
+    ) -> ActionHandler<GA, GOA, GS, GE>
+    // … all non-empty subsets of 4 axes, KeyPath + closure + optics variants (macro-generated)
+}
+```
+
+**`liftCollection`:** same overloads as `Reducer.liftCollection`; the per-element handler can also produce effects.
+
+**The composition story — bringing everything to the Store's level:**
+
+```swift
+// Feature module: local types
+let authHandler: ActionHandler<AuthAction, AuthAction, AuthState, AuthEnv> = …
+
+// Wiring: lift to app-wide types, then combine
+let appHandler: ActionHandler<AppAction, AppAction, AppState, AppEnv> =
+    ActionHandler.combine(
+        authHandler.lift(
+            inputAction:  \AppAction.auth,
+            outputAction: AppAction.auth,
+            state:        \AppState.authState,
+            environment:  \.auth
+        ),
+        profileHandler.lift(…)
+    )
+
+// Store needs one ActionHandler at <AppAction, AppAction, AppState, AppEnv>
+let store = Store(initialState: .init(), actionHandler: appHandler, environment: env)
+```
 
 ---
 
 ### `Store<Action, State, Environment>`
 
-The only class-like entity in the system. An `actor` for Swift-concurrency data-race safety. Owns all mutable state: current state, running effect tasks, debounce/throttle timestamps, and state observer callbacks.
+A `@MainActor actor` for data-race safety. Binding to the main actor is intentional — SwiftUI animation transactions are thread-local, so state mutation and observer notification must happen on the main thread for `withAnimation { }` to take effect.
 
 ```swift
+@MainActor
 public actor Store<Action, State, Environment> {
     private var _state: State
-    private let reducer: Reducer<Action, State>
-    private let middleware: Middleware<Action, Action, State, Environment>
+    private let actionHandler: ActionHandler<Action, Action, State, Environment>
     private let environment: Environment
-    private let shouldEmit: ShouldEmitValue<State>
-
-    // Running effects keyed by cancellation id
     private var runningEffects: [AnyHashable: Cancellation] = [:]
     private var throttleTimestamps: [AnyHashable: /* clock instant */] = [:]
-
-    // Push-based state observers
     private var observers: [UUID: (State) -> Void] = [:]
 
+    // Primary initialiser — accepts a composed ActionHandler
+    public init(
+        initialState: State,
+        actionHandler: ActionHandler<Action, Action, State, Environment>,
+        environment: Environment
+    )
+
+    // Convenience — separate Reducer + Middleware, composed internally
     public init(
         initialState: State,
         reducer: Reducer<Action, State>,
         middleware: Middleware<Action, Action, State, Environment>,
-        environment: Environment,
-        emitsValue: ShouldEmitValue<State> = .always
+        environment: Environment
     )
 
     public var currentState: State { _state }
 
-    // Framework-free state observation
-    public func observe(_ handler: @escaping (State) -> Void) -> Cancellation
+    // Framework-free observation
+    public func observe(_ handler: @escaping (State) -> Void) -> SubscriptionToken
 
-    // Primary dispatch (actor-isolated)
+    // Primary dispatch — synchronous from @MainActor callers; enqueued from other contexts
     public func dispatch(_ action: Action,
         file: String = #file, function: String = #function, line: UInt = #line)
 
-    // Fire-and-forget wrapper for use from non-async contexts (SwiftUI, UIKit)
+    // Fire-and-forget from non-async / non-main-actor contexts
     public nonisolated func send(_ action: Action,
         file: String = #file, function: String = #function, line: UInt = #line)
 }
@@ -523,13 +655,40 @@ public actor Store<Action, State, Environment> {
 
 **Dispatch flow:**
 ```
-1. reader  = middleware.handle(DispatchedAction(action, source), { _state })
-2. effect  = reader.run(environment)          — resolves Reader → Effect
-3. reducer.reduce(action, &_state)            — pure state mutation
-4. notifyObservers()                          — push to all registered handlers
-5. scheduleEffect(effect)                     — interpret EffectScheduling, run subscribe closure
+1. reader = actionHandler.handle(DispatchedAction(action, source), &_state)
+             └─ inout _state: ALL mutations happen here, synchronously, atomically
+2. notifyObservers()          — exactly once per action, after the full pipeline completes
+3. effect = reader.run(environment)   — resolve Reader; effect sees post-mutation snapshot
+4. scheduleEffect(effect)     — interpret EffectScheduling, run subscribe closure
    └─ produced DispatchedAction values loop back to step 1
 ```
+
+**Atomic state notification — one notification per action:**
+
+Observers always see fully-committed state, never an intermediate result from a partially-applied pipeline.
+
+This is a structural guarantee, not a convention. Swift's Law of Exclusivity means that while `handle` holds `inout _state`, no other code can read or write `_state`. A composed `ActionHandler` (via `combine`) runs every handler's mutations sequentially inside a single `handle` call — the Store only regains access to `_state` once the entire call returns. `notifyObservers()` therefore always fires after every reducer and middleware in the pipeline has finished, regardless of how many are composed together.
+
+Consequences:
+- Views always receive consistent, fully-updated state snapshots.
+- No observer ever sees a state where, say, the auth reducer has run but the profile reducer hasn't.
+- The Store always notifies — fine-grained diffing is left to SwiftUI's `@Observable` tracking or to individual observer closures.
+
+**SwiftUI animations:**
+
+No framework API needed. Because `Store` is `@MainActor` and `dispatch` is synchronous from any `@MainActor` caller, SwiftUI views can wrap dispatches directly:
+
+```swift
+Button("Add") {
+    withAnimation(.spring()) {
+        store.dispatch(.addItem)
+    }
+}
+```
+
+`notifyObservers()` fires synchronously inside the `withAnimation` block on the same RunLoop tick — SwiftUI sees the state change in the right transaction context and schedules animated transitions. Animation stays entirely in the view layer, where it belongs. The Store, Effect, and all framework types remain unaware of SwiftUI animations.
+
+The Store always notifies after a dispatch — fine-grained diffing is left to SwiftUI's `@Observable` tracking or to individual observer closures.
 
 **Effect scheduling (all mutable state lives here, not in Middleware):**
 
@@ -567,58 +726,107 @@ extension Store {
 
 ### `StoreProjection<LocalAction, LocalState>`
 
-A lightweight stateless struct that maps a slice of the Store for use in a specific screen or component. Holds only the mapping closures — no state, no ownership.
+The boundary between domain state and view state. It maps global `State → LocalState` and is where `@Observable` / `ObservableObject` conformance lives — not on the `Store`.
+
+**Why here and not on `Store`:**
+
+The Store always notifies after every dispatch (no deduplication, no copies). Deduplication only makes sense on the *view state* — the mapped slice. Consider:
+
+```
+Domain state:  price = 1.234  →  price = 1.235   (changed at third decimal)
+View state:    priceString = "1.23"  →  "1.23"   (same after formatting)
+```
+
+The Store correctly fires because domain state changed. `StoreProjection` computes the new `LocalState`, finds it equal to the previous one, and silently skips the SwiftUI update — no re-render.
+
+This requires `LocalState: Equatable`, which is a reasonable constraint: view state is typically a small, flat struct that the view renders directly.
+
+**`StoreProjection` is a class, not a struct** — it must hold the previous `LocalState` to compare, subscribe to the Store, and own the `SubscriptionToken`. It is `@MainActor`-bound, matching the Store.
+
+**`@Observable` variant (iOS 17+):**
 
 ```swift
-public struct StoreProjection<LocalAction, LocalState> {
-    public let dispatch: (LocalAction) -> Void
-    public let observe: (@escaping (LocalState) -> Void) -> Cancellation
-}
+@MainActor @Observable
+public final class StoreProjection<LocalAction, LocalState: Equatable> {
+    public private(set) var viewState: LocalState
+    private var token: SubscriptionToken?
 
-extension Store {
-    public func projection<LA, LS>(
-        action: @escaping (LA) -> Action,
-        state:  @escaping (State) -> LS
-    ) -> StoreProjection<LA, LS>
+    public init<GlobalAction, GlobalState, Environment>(
+        store: Store<GlobalAction, GlobalState, Environment>,
+        action: @escaping (LocalAction) -> GlobalAction,
+        state:  @escaping (GlobalState) -> LocalState
+    ) {
+        viewState = state(store.currentState)
+        token = store.observe { [weak self] newGlobalState in
+            let newViewState = state(newGlobalState)
+            guard newViewState != self?.viewState else { return }
+            self?.viewState = newViewState   // triggers @Observable tracking
+        }
+    }
+
+    public func dispatch(_ action: LocalAction) { … }
 }
 ```
 
-#### Collection element scoping
+`@Observable` provides sub-property tracking: if `LocalState` has multiple fields and only `priceString` changed, only views that read `projection.viewState.priceString` re-render. The `Equatable` guard prevents even that when the whole `LocalState` hasn't changed.
 
-For SwiftUI `ForEach`, `StoreProjection` needs a way to scope to a single element identified
-by ID. The goal is standard SwiftUI `ForEach` — no custom `ForEachStore` wrapper — where each
-row receives its own `StoreProjection` scoped to one element:
+**`ObservableObject` variant (iOS 13–16):**
 
 ```swift
-ForEach(store.state.items) { item in
-    ItemView(store: store.projection(
-        action: { .item(id: item.id, action: $0) },
-        stateCollection: \.items,
-        elementId: item.id,
-        identifier: \.id
+@MainActor
+public final class StoreProjection<LocalAction, LocalState: Equatable>: ObservableObject {
+    @Published public private(set) var viewState: LocalState
+    // same init and guard logic
+}
+```
+
+Coarser — `objectWillChange` fires for any `viewState` change — but the `Equatable` guard still prevents spurious updates when domain state changes but view state doesn't.
+
+**The performance story end-to-end:**
+
+| Layer | Copies | Diffing |
+|---|---|---|
+| `ActionHandler.handle` | zero (inout) | none |
+| `Store.notifyObservers()` | zero | none — always fires |
+| `StoreProjection` | one `LocalState` value per notification | `Equatable` on the small view state |
+| SwiftUI (`@Observable`) | none | sub-property tracking per view |
+
+Domain state never needs to be `Equatable` or copied for comparison purposes.
+
+#### Collection element scoping
+
+For SwiftUI `ForEach`, create one `StoreProjection` per element. The projected `LocalState` is `Element?` because the element may be removed while the view is still live.
+
+```swift
+ForEach(store.currentState.items) { item in
+    ItemView(projection: StoreProjection(
+        store: store,
+        action: { AppAction.item(id: item.id, action: $0) },
+        state:  { $0.items.first(where: { $0.id == item.id }) }
     ))
 }
 ```
 
-The projected state is `Element?` (optional) because the element may be removed while the
-view is still live. The view is responsible for handling nil (fade out, dismiss, ignore).
+Factory overloads on `Store` for the common collection cases:
 
 ```swift
 extension Store {
-    // Identifiable elements
-    public func projection<LA, C: Collection>(
+    // Identifiable element
+    public func projection<LA, LS: Equatable, C: Collection>(
         action: @escaping (LA) -> Action,
         stateCollection: KeyPath<State, C>,
-        elementId: C.Element.ID
-    ) -> StoreProjection<LA, C.Element?> where C.Element: Identifiable
+        elementId: C.Element.ID,
+        viewState: @escaping (C.Element?) -> LS
+    ) -> StoreProjection<LA, LS> where C.Element: Identifiable
 
     // Custom Hashable identifier
-    public func projection<LA, C: Collection, ID: Hashable>(
+    public func projection<LA, LS: Equatable, C: Collection, ID: Hashable>(
         action: @escaping (LA) -> Action,
         stateCollection: KeyPath<State, C>,
         elementId: ID,
-        identifier: KeyPath<C.Element, ID>
-    ) -> StoreProjection<LA, C.Element?>
+        identifier: KeyPath<C.Element, ID>,
+        viewState: @escaping (C.Element?) -> LS
+    ) -> StoreProjection<LA, LS>
 }
 ```
 
@@ -647,7 +855,6 @@ extension Store {
 
 - `Reducer<Action, State>` — same `inout` signature, same lift API, now with FP naming aliases
 - `ActionSource` / `DispatchedAction<Action>` — call-site tracing
-- `ShouldEmitValue<State>` — user-controlled state emission predicate
 - `liftToCollection` variants (Identifiable, custom ID, index)
 - `<>` operator — in `SwiftRexOperators` only
 - KeyPath-based `lift` — primary ergonomic API
@@ -657,16 +864,17 @@ extension Store {
 
 ## Implementation Order
 
-1. `Package.swift` — products, targets, FP dependency, platform minimums
-2. `Cancellation`, `ActionSource`, `DispatchedAction`, `ShouldEmitValue`
-3. `Reducer` — merge from `github.com/SwiftRex/Reducer`, add FP Monoid conformance, add `contramap`/`dimap` naming, add `pure` factory
-4. `Effect` — push-based subscribe closure, `Cancellation`, `EffectScheduling`, factories, Functor, Monoid
+1. ✅ `Package.swift` — products, targets, FP dependency, platform minimums
+2. ✅ Foundation — `ActionSource`, `DispatchedAction`, `SubscriptionToken`, `ElementAction`
+3. ✅ `Reducer` — inout/pure factories, FP Monoid, `@ReducerBuilder` DSL, full `lift`/`liftCollection` overloads
+4. `Effect` — push-based subscribe closure, `EffectScheduling`, factories, Functor, Monoid
 5. `Middleware` — struct, Reader-returning `handle`, Monoid, per-axis transforms, `lift` overloads
-6. `Store` — actor, dispatch flow, effect scheduling, push-based `observe`
-7. `StoreProjection`
-8. `CombineRex` bridges — `Effect+Publisher`, `Store+Publisher`, `ObservableViewModel`, `ObservableStore`
-9. `RxSwiftRex` bridges
-10. `ReactiveSwiftRex` bridges
-11. `SwiftRexOperators` — `<>` and other symbolic operators via FP operator modules
-12. Swift Macro for `lift` overload generation
-13. Tests for each layer
+6. `ActionHandler` — bundles Reducer + Middleware; `asActionHandler` bridges; Monoid; `lift`/`liftCollection`
+7. `Store` — `@MainActor actor`, ActionHandler-based dispatch flow, effect scheduling, push-based `observe`
+8. `StoreProjection` — class, `State → LocalState` mapping, `Equatable` deduplication, `@Observable` (iOS 17+) and `ObservableObject` (iOS 13+) variants; this is where SwiftUI observation lives, not on `Store`
+9. `CombineRex` bridges — `Effect+Publisher`, `Store+Publisher`
+10. `RxSwiftRex` bridges
+11. `ReactiveSwiftRex` bridges
+12. `SwiftRexOperators` — `<>` and other symbolic operators via FP operator modules
+13. Swift Macro for `lift` overload generation
+14. Tests for each layer

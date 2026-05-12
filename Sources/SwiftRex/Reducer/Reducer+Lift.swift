@@ -18,11 +18,7 @@ extension Reducer {
     ) -> Reducer<GlobalAction, GlobalState> {
         .reduce { globalAction in
             guard let localAction = actionGetter(globalAction) else { return .identity }
-            return EndoMut { globalState in
-                var localState = stateGetter(globalState)
-                self.reduce(localAction)(&localState)
-                stateSetter(&globalState, localState)
-            }
+            return Lens(get: stateGetter, setMut: stateSetter).lift(self.reduce(localAction))
         }
     }
 }
@@ -74,17 +70,17 @@ extension Reducer {
     /// `KeyPath`-based overloads.
     ///
     /// The `Prism` provides the action projection: only global actions matched by the prism's
-    /// `preview` trigger this reducer. The `Lens` provides symmetric state access via `get`
-    /// and `set`.
+    /// `preview` trigger this reducer. The `Lens` provides state access; when backed by a
+    /// `WritableKeyPath` (e.g. via the `@Lenses` macro), `lens.lift` uses the modify coroutine
+    /// for zero-copy in-place mutation.
     public func lift<GlobalAction, GlobalState>(
         action prism: Prism<GlobalAction, ActionType>,
         state lens: Lens<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
-        lift(
-            actionGetter: prism.preview,
-            stateGetter: lens.get,
-            stateSetter: { global, local in global = lens.set(global, local) }
-        )
+        .reduce { globalAction in
+            guard let localAction = prism.preview(globalAction) else { return .identity }
+            return lens.lift(self.reduce(localAction))
+        }
     }
 
     /// Lifts a local reducer to a global action only, using a `Prism`.
@@ -100,47 +96,32 @@ extension Reducer {
     public func lift<GlobalAction>(
         action prism: Prism<GlobalAction, ActionType>
     ) -> Reducer<GlobalAction, StateType> {
-        lift(action: prism, state: Lens<StateType, StateType>.id)
+        .reduce { globalAction in
+            guard let localAction = prism.preview(globalAction) else { return .identity }
+            return self.reduce(localAction)
+        }
     }
 
     /// Lifts a local reducer to a global state only, using a `Lens`.
     ///
-    /// The lens's `get` and `set` define the state focus. State type changes; action type
-    /// is unchanged.
+    /// The lens's `get` and `set` define the state focus. When backed by a `WritableKeyPath`
+    /// (e.g. via the `@Lenses` macro on a `var` property), `lens.lift` delegates to Swift's
+    /// modify coroutine for zero-copy in-place mutation of the focused sub-state.
     ///
-    /// Prefer this overload over the `WritableKeyPath` variant in two situations:
-    ///
-    /// **Immutable state structs.** `WritableKeyPath` requires a `var` stored property.
-    /// If your global state uses `let` properties you must reconstruct the whole value in
-    /// the lens's `set` closure:
+    /// Prefer this overload over the `WritableKeyPath` variant when the global state uses
+    /// `let` properties or when working with composed lenses:
     /// ```swift
-    /// struct AppState {
-    ///     let authState: AuthState      // `let` — no WritableKeyPath available
-    ///     let profileState: ProfileState
-    /// }
-    ///
     /// let authLens = Lens<AppState, AuthState>(
     ///     get: \.authState,
-    ///     set: { appState, newAuth in
-    ///         AppState(authState: newAuth, profileState: appState.profileState)
-    ///     }
+    ///     set: { AppState(authState: $1, profileState: $0.profileState) }
     /// )
     ///
     /// let liftedReducer = authReducer.lift(state: authLens)
     /// ```
-    ///
-    /// **Composed lenses.** `lensA.compose(lensB)` produces a `Lens` that focuses through
-    /// two levels of nesting and has no `WritableKeyPath` representation.
     public func lift<GlobalState>(
         state lens: Lens<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
-        .reduce { action in
-            EndoMut { globalState in
-                var localState = lens(globalState)
-                self.reduce(action)(&localState)
-                globalState = lens.set(globalState, localState)
-            }
-        }
+        .reduce { action in lens.lift(self.reduce(action)) }
     }
 }
 
@@ -159,13 +140,7 @@ extension Reducer {
     public func lift<GlobalState>(
         state prism: Prism<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
-        .reduce { action in
-            EndoMut { globalState in
-                guard var localState = prism(globalState) else { return }
-                self.reduce(action)(&localState)
-                globalState = prism.review(localState)
-            }
-        }
+        .reduce { action in prism.lift(self.reduce(action)) }
     }
 
     /// Lifts a local reducer using a `Prism` on each axis.
@@ -177,12 +152,8 @@ extension Reducer {
         state statePrism: Prism<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
         .reduce { globalAction in
-            guard let localAction = actionPrism(globalAction) else { return .identity }
-            return EndoMut { globalState in
-                guard var localState = statePrism(globalState) else { return }
-                self.reduce(localAction)(&localState)
-                globalState = statePrism.review(localState)
-            }
+            guard let localAction = actionPrism.preview(globalAction) else { return .identity }
+            return statePrism.lift(self.reduce(localAction))
         }
     }
 
@@ -194,13 +165,7 @@ extension Reducer {
     public func lift<GlobalState>(
         state traversal: AffineTraversal<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
-        .reduce { action in
-            EndoMut { globalState in
-                guard var localState = traversal(globalState) else { return }
-                self.reduce(action)(&localState)
-                globalState = traversal.set(globalState, localState)
-            }
-        }
+        .reduce { action in traversal.lift(self.reduce(action)) }
     }
 
     /// Lifts a local reducer using a `Prism` for the action and an `AffineTraversal` for the
@@ -212,12 +177,8 @@ extension Reducer {
         state traversal: AffineTraversal<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
         .reduce { globalAction in
-            guard let localAction = prism(globalAction) else { return .identity }
-            return EndoMut { globalState in
-                guard var localState = traversal(globalState) else { return }
-                self.reduce(localAction)(&localState)
-                globalState = traversal.set(globalState, localState)
-            }
+            guard let localAction = prism.preview(globalAction) else { return .identity }
+            return traversal.lift(self.reduce(localAction))
         }
     }
 }

@@ -24,11 +24,7 @@ extension Reducer {
     ) -> Reducer<GA, GS> {
         .reduce { globalAction in
             guard let resolved = action(globalAction) else { return .identity }
-            return EndoMut { globalState in
-                guard var localState = resolved.element(globalState[keyPath: stateContainer]) else { return }
-                self.reduce(resolved.action)(&localState)
-                globalState[keyPath: stateContainer] = resolved.element.set(globalState[keyPath: stateContainer], localState)
-            }
+            return lens(stateContainer).compose(resolved.element).lift(self.reduce(resolved.action))
         }
     }
 }
@@ -86,23 +82,7 @@ extension Reducer {
         identifier: KeyPath<StateType, ID>
     ) -> Reducer<GA, GS> where C.Element == StateType {
         liftCollection(
-            action: { ga in
-                action(ga).map { ea in
-                    (
-                        action: ea.action,
-                        element: AffineTraversal<C, StateType>(
-                            preview: { $0.first(where: { $0[keyPath: identifier] == ea.id }) },
-                            set: { col, elem in
-                                guard let idx = col.firstIndex(where: { $0[keyPath: identifier] == ea.id })
-                                else { return col }
-                                var copy = col
-                                copy[idx] = elem
-                                return copy
-                            }
-                        )
-                    )
-                }
-            },
+            action: { ga in action(ga).map { ea in (action: ea.action, element: C.ix(id: ea.id, by: identifier)) } },
             stateContainer: stateCollection
         )
     }
