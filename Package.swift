@@ -38,7 +38,10 @@ let package = Package(
 
         .target(
             name: "SwiftRexConcurrency",
-            dependencies: ["SwiftRex"],
+            dependencies: [
+                "SwiftRex",
+                .product(name: "CoreFP", package: "FP")
+            ],
             path: "Sources/SwiftRexConcurrency"
         ),
 

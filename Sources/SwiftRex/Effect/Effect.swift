@@ -10,16 +10,26 @@ import CoreFP
 ///
 /// **Creating an Effect starts no work.** The Store is the sole executor.
 ///
+/// **Completion contract.** Each component signals when it is done producing values by calling
+/// the `complete` callback. Cancelled effects MUST NOT call `complete` — this is what makes
+/// `Effect.then` cascade correctly. The Store uses completion to clean up its lifecycle state.
+///
 /// **Array-of-components internal representation.** Combining two effects appends their
 /// component arrays. The Store schedules each component independently, so cancelling a
 /// component by its id never affects components with a different id.
 public struct Effect<Action: Sendable>: Sendable {
     package struct Component: Sendable {
-        package let subscribe: @Sendable (@escaping @Sendable (DispatchedAction<Action>) -> Void) -> SubscriptionToken
+        package let subscribe: @Sendable (
+            _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
+            _ complete: @escaping @Sendable () -> Void
+        ) -> SubscriptionToken
         package let scheduling: EffectScheduling
 
         package init(
-            subscribe: @escaping @Sendable (@escaping @Sendable (DispatchedAction<Action>) -> Void) -> SubscriptionToken,
+            subscribe: @escaping @Sendable (
+                _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
+                _ complete: @escaping @Sendable () -> Void
+            ) -> SubscriptionToken,
             scheduling: EffectScheduling
         ) {
             self.subscribe = subscribe
@@ -37,13 +47,12 @@ public struct Effect<Action: Sendable>: Sendable {
 // MARK: - Bridge init (for packages outside this repo)
 
 extension Effect {
-    /// Initialiser for community bridge packages that live outside this `Package.swift`.
-    ///
-    /// Targets within the monorepo access `Effect` internals via `package` visibility.
-    /// External bridge packages import SwiftRex with `@_spi(EffectBridging) import SwiftRex`.
     @_spi(EffectBridging)
     public init(
-        subscribe: @escaping @Sendable (@escaping @Sendable (DispatchedAction<Action>) -> Void) -> SubscriptionToken,
+        subscribe: @escaping @Sendable (
+            _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
+            _ complete: @escaping @Sendable () -> Void
+        ) -> SubscriptionToken,
         scheduling: EffectScheduling = .immediately
     ) {
         components = [Component(subscribe: subscribe, scheduling: scheduling)]
@@ -53,13 +62,6 @@ extension Effect {
 // MARK: - Scheduling modifier
 
 extension Effect {
-    /// Returns a copy of this effect with every component's scheduling replaced by `policy`.
-    ///
-    /// Typically called on a single-component effect before combining:
-    /// ```swift
-    /// Effect.task { await api.search(query) }
-    ///     .scheduling(.debounce(id: "search", delay: 0.3))
-    /// ```
     public func scheduling(_ policy: EffectScheduling) -> Self {
         Effect(components: components.map { Component(subscribe: $0.subscribe, scheduling: policy) })
     }
@@ -68,16 +70,11 @@ extension Effect {
 // MARK: - Semigroup & Monoid
 
 extension Effect: Semigroup {
-    /// Combines two effects by appending their component arrays.
-    ///
-    /// The Store schedules each component independently — cancelling one component by its id
-    /// never affects components with a different id, even within the same combined effect.
     public static func combine(_ lhs: Effect, _ rhs: Effect) -> Effect {
         Effect(components: lhs.components + rhs.components)
     }
 }
 
 extension Effect: Monoid {
-    /// The empty effect — no work, no actions produced.
     public static var identity: Effect { Effect(components: []) }
 }

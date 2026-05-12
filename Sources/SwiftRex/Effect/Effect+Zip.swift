@@ -3,20 +3,9 @@ import Foundation
 // MARK: - Applicative zip
 
 extension Effect {
-    /// Runs `self` and `other` concurrently; when both have emitted their **first** value,
-    /// dispatches the pair. Additional emissions from either effect are ignored.
-    ///
-    /// **Scheduling is preserved.** Each component from `self` and `other` keeps its original
-    /// `EffectScheduling` directive (debounce, throttle, cancellable id), so the Store schedules
-    /// each independently. Cancelling a component by its id works exactly as if the zip did not
-    /// exist.
-    ///
-    /// **Dispatcher.** The combined `DispatchedAction` carries the `zip` call site as its source,
-    /// since zip is the conceptual dispatch point for the combined action.
-    ///
-    /// ```swift
-    /// let pair: Effect<(UserProfile, Settings)> = fetchProfile.zip(fetchSettings)
-    /// ```
+    /// Runs `self` and `other` concurrently; when both have emitted their first value, dispatches
+    /// the pair. Additional emissions from either effect are ignored after the pair is formed.
+    /// Calls `complete` when both sides have completed.
     public func zip<B: Sendable>(
         _ other: Effect<B>,
         file: String = #file,
@@ -26,16 +15,8 @@ extension Effect {
         zipWith(other, { ($0, $1) }, file: file, function: function, line: line)
     }
 
-    /// Runs `self` and `other` concurrently; when both have emitted their first value, applies
-    /// `f` and dispatches the result. This is the applicative `liftA2` for `Effect`.
-    ///
-    /// Scheduling, cancellation, and dispatcher semantics are the same as `zip`.
-    ///
-    /// ```swift
-    /// fetchProfile.zipWith(fetchSettings) { profile, settings in
-    ///     AppState(profile: profile, settings: settings)
-    /// }
-    /// ```
+    /// Runs `self` and `other` concurrently; when both have emitted their first value, applies `f`
+    /// and dispatches the result. Calls `complete` when both sides have completed.
     public func zipWith<B: Sendable, C: Sendable>(
         _ other: Effect<B>,
         _ f: @Sendable @escaping (Action, B) -> C,
@@ -44,18 +25,18 @@ extension Effect {
         line: UInt = #line
     ) -> Effect<C> {
         let source = ActionSource(file: file, function: function, line: line)
-        let state = ZipState<Action, B>()
+        let valueState = ZipValueState<Action, B>()
+        let doneState = ZipDoneState()
 
-        // Pass through each component with its original scheduling intact.
-        // The Store schedules/cancels each component independently.
         let selfComponents = components.map { component in
             Effect<C>.Component(
-                subscribe: { send in
-                    component.subscribe { da in
-                        state.setLeft(da.action) { a, b in
+                subscribe: { send, complete in
+                    component.subscribe(
+                        { da in valueState.setLeft(da.action) { a, b in
                             send(DispatchedAction(f(a, b), dispatcher: source))
-                        }
-                    }
+                        }},
+                        { doneState.signalLeft { complete() } }
+                    )
                 },
                 scheduling: component.scheduling
             )
@@ -63,12 +44,13 @@ extension Effect {
 
         let otherComponents = other.components.map { component in
             Effect<C>.Component(
-                subscribe: { send in
-                    component.subscribe { db in
-                        state.setRight(db.action) { a, b in
+                subscribe: { send, complete in
+                    component.subscribe(
+                        { db in valueState.setRight(db.action) { a, b in
                             send(DispatchedAction(f(a, b), dispatcher: source))
-                        }
-                    }
+                        }},
+                        { doneState.signalRight { complete() } }
+                    )
                 },
                 scheduling: component.scheduling
             )
@@ -78,14 +60,10 @@ extension Effect {
     }
 }
 
-// MARK: - ZipState
+// MARK: - Shared state for zip
 
-/// Accumulates one value from each side; dispatches the combined result exactly once.
-///
-/// The `fired` flag prevents double-dispatch when concurrent emissions from multiple
-/// components race — once both sides have contributed a value, all subsequent calls
-/// are silently ignored.
-private final class ZipState<A: Sendable, B: Sendable>: @unchecked Sendable {
+/// Accumulates one value from each side; dispatches combined result exactly once.
+private final class ZipValueState<A: Sendable, B: Sendable>: @unchecked Sendable {
     private let lock = NSLock()
     private var left: A?
     private var right: B?
@@ -105,5 +83,22 @@ private final class ZipState<A: Sendable, B: Sendable>: @unchecked Sendable {
             right = value
             if let l = left { fired = true; dispatch(l, value) }
         }
+    }
+}
+
+/// Tracks when both sides have completed; fires `onBothDone` exactly once.
+private final class ZipDoneState: @unchecked Sendable {
+    private let lock = NSLock()
+    private var leftDone = false
+    private var rightDone = false
+
+    func signalLeft(onBothDone: () -> Void) {
+        let both = lock.withLock { leftDone = true; return leftDone && rightDone }
+        if both { onBothDone() }
+    }
+
+    func signalRight(onBothDone: () -> Void) {
+        let both = lock.withLock { rightDone = true; return leftDone && rightDone }
+        if both { onBothDone() }
     }
 }
