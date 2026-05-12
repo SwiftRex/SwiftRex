@@ -7,10 +7,10 @@
 /// SubscriptionToken { disposable.dispose() }       // RxSwiftRex
 /// SubscriptionToken { task.cancel() }              // async/await
 /// ```
-public struct SubscriptionToken {
-    private let _cancel: () -> Void
+public struct SubscriptionToken: Sendable {
+    private let _cancel: @Sendable () -> Void
 
-    public init(_ cancel: @escaping () -> Void) {
+    public init(_ cancel: @escaping @Sendable () -> Void) {
         _cancel = cancel
     }
 

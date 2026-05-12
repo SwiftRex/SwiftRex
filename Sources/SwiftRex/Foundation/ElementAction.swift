@@ -27,3 +27,11 @@ public struct ElementAction<ID, SubAction> {
 
 extension ElementAction: Sendable where ID: Sendable, SubAction: Sendable {}
 extension ElementAction: Equatable where ID: Equatable, SubAction: Equatable {}
+extension ElementAction: Hashable where ID: Hashable, SubAction: Hashable {}
+extension ElementAction: Decodable where ID: Decodable, SubAction: Decodable {}
+extension ElementAction: Encodable where ID: Encodable, SubAction: Encodable {}
+extension ElementAction: CustomStringConvertible {
+    public var description: String {
+        "ElementAction(id: \(id), action: \(action))"
+    }
+}

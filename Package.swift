@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 import PackageDescription
 
 let package = Package(
@@ -10,11 +10,12 @@ let package = Package(
         .watchOS(.v8)
     ],
     products: [
-        .library(name: "SwiftRex", targets: ["SwiftRex"]),
-        .library(name: "SwiftRexOperators", targets: ["SwiftRexOperators"]),
-        .library(name: "CombineRex", targets: ["CombineRex"]),
-        .library(name: "RxSwiftRex", targets: ["RxSwiftRex"]),
-        .library(name: "ReactiveSwiftRex", targets: ["ReactiveSwiftRex"])
+        .library(name: "SwiftRex",               targets: ["SwiftRex"]),
+        .library(name: "SwiftRex.Operators",     targets: ["SwiftRexOperators"]),
+        .library(name: "SwiftRex.Concurrency",   targets: ["SwiftRexConcurrency"]),
+        .library(name: "SwiftRex.Combine",       targets: ["SwiftRexCombine"]),
+        .library(name: "SwiftRex.RxSwift",       targets: ["SwiftRexRxSwift"]),
+        .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"])
     ],
     dependencies: [
         .package(url: "https://github.com/luizmb/FP.git", from: "1.6.2"),
@@ -33,6 +34,14 @@ let package = Package(
             path: "Sources/SwiftRex"
         ),
 
+        // MARK: - Concurrency bridge
+
+        .target(
+            name: "SwiftRexConcurrency",
+            dependencies: ["SwiftRex"],
+            path: "Sources/SwiftRexConcurrency"
+        ),
+
         // MARK: - Operators (optional, symbolic sugar)
 
         .target(
@@ -45,28 +54,28 @@ let package = Package(
             path: "Sources/SwiftRexOperators"
         ),
 
-        // MARK: - Bridges
+        // MARK: - Reactive bridges
 
         .target(
-            name: "CombineRex",
+            name: "SwiftRexCombine",
             dependencies: ["SwiftRex"],
-            path: "Sources/CombineRex"
+            path: "Sources/SwiftRexCombine"
         ),
         .target(
-            name: "RxSwiftRex",
+            name: "SwiftRexRxSwift",
             dependencies: [
                 "SwiftRex",
                 .product(name: "RxSwift", package: "RxSwift")
             ],
-            path: "Sources/RxSwiftRex"
+            path: "Sources/SwiftRexRxSwift"
         ),
         .target(
-            name: "ReactiveSwiftRex",
+            name: "SwiftRexReactiveSwift",
             dependencies: [
                 "SwiftRex",
                 .product(name: "ReactiveSwift", package: "ReactiveSwift")
             ],
-            path: "Sources/ReactiveSwiftRex"
+            path: "Sources/SwiftRexReactiveSwift"
         ),
 
         // MARK: - Tests
@@ -81,20 +90,25 @@ let package = Package(
             path: "Tests/SwiftRexTests"
         ),
         .testTarget(
-            name: "CombineRexTests",
-            dependencies: ["CombineRex"],
-            path: "Tests/CombineRexTests"
+            name: "SwiftRexConcurrencyTests",
+            dependencies: ["SwiftRexConcurrency", "SwiftRex"],
+            path: "Tests/SwiftRexConcurrencyTests"
         ),
         .testTarget(
-            name: "RxSwiftRexTests",
-            dependencies: ["RxSwiftRex"],
-            path: "Tests/RxSwiftRexTests"
+            name: "SwiftRexCombineTests",
+            dependencies: ["SwiftRexCombine"],
+            path: "Tests/SwiftRexCombineTests"
         ),
         .testTarget(
-            name: "ReactiveSwiftRexTests",
-            dependencies: ["ReactiveSwiftRex"],
-            path: "Tests/ReactiveSwiftRexTests"
+            name: "SwiftRexRxSwiftTests",
+            dependencies: ["SwiftRexRxSwift"],
+            path: "Tests/SwiftRexRxSwiftTests"
+        ),
+        .testTarget(
+            name: "SwiftRexReactiveSwiftTests",
+            dependencies: ["SwiftRexReactiveSwift"],
+            path: "Tests/SwiftRexReactiveSwiftTests"
         )
     ],
-    swiftLanguageVersions: [.v5]
+    swiftLanguageModes: [.v6]
 )

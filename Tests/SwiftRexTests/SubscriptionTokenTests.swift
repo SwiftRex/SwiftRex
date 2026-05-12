@@ -1,12 +1,13 @@
 import XCTest
+import Foundation
 @testable import SwiftRex
 
 final class SubscriptionTokenTests: XCTestCase {
     func testCancelCallsClosure() {
-        var called = false
-        let sut = SubscriptionToken { called = true }
+        let called = LockProtected(false)
+        let sut = SubscriptionToken { called.set(true) }
         sut.cancel()
-        XCTAssertTrue(called)
+        XCTAssertTrue(called.value)
     }
 
     func testEmptyDoesNotCrashOnCancel() {
@@ -14,18 +15,18 @@ final class SubscriptionTokenTests: XCTestCase {
     }
 
     func testCancelIsCalledEachTime() {
-        var count = 0
-        let sut = SubscriptionToken { count += 1 }
+        let count = LockProtected(0)
+        let sut = SubscriptionToken { count.mutate { $0 += 1 } }
         sut.cancel()
         sut.cancel()
-        XCTAssertEqual(count, 2)
+        XCTAssertEqual(count.value, 2)
     }
 
     func testClosureReceivesNoArguments() {
-        var received = false
-        let sut = SubscriptionToken { received = true }
-        XCTAssertFalse(received)
+        let received = LockProtected(false)
+        let sut = SubscriptionToken { received.set(true) }
+        XCTAssertFalse(received.value)
         sut.cancel()
-        XCTAssertTrue(received)
+        XCTAssertTrue(received.value)
     }
 }
