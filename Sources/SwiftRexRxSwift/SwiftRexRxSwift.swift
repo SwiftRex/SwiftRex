@@ -3,78 +3,111 @@ import SwiftRex
 
 private struct Unchecked<T>: @unchecked Sendable { let value: T }
 
-// MARK: - ObservableType → Effect bridges
-//
-// RxSwift has no type-level Never/Error distinction — all observables can fail.
-//
-//   Case A  Observable<Action>   .asEffect()    — element is already Action; errors discarded
-//   Case B  Observable<Output>   .asEffect(fn)  — map Output→Action; errors discarded
-//   Case C  Observable<Output>   .asEffect(fn)  — map Result<Output, Error>→Action
-//
-// Completion: `complete()` fires on `.onCompleted` or after the error action (Case C).
-// Cancellation via SubscriptionToken disposes the subscription; disposed observers receive
-// no further events so `complete()` is never called after cancellation.
-
 // MARK: - Infallible (RxSwift 6+)
 //
-// `Infallible<Element>` cannot error — it is the RxSwift equivalent of `Publisher<E, Never>`.
-// No Result wrapping is needed; the two cases mirror the Combine infallible bridge.
+// `Infallible<Element>` cannot error — equivalent to `Publisher<E, Never>`.
+//
+//   Case A   Infallible<Action>               .asEffect(scheduling:)
+//   Case A2  Infallible<DispatchedAction<A>>  .asEffect(scheduling:)   — forwarding
+//   Case B   Infallible<Output>               .asEffect(_ transform:scheduling:)
 
 extension InfallibleType {
-    /// Bridges an `Infallible<Action>` to `Effect<Action>`. No transform needed.
+    /// Bridges an `Infallible<Action>` to `Effect<Action>`.
     public func asEffect(
+        scheduling: EffectScheduling = .immediately,
         file: String = #file, function: String = #function, line: UInt = #line
     ) -> Effect<Element> where Element: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
-        let infallible = Unchecked(value: self)
+        let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Element>.Component(subscribe: { send, complete in
-                let d = infallible.value.subscribe(
-                    onNext:      { send(DispatchedAction($0, dispatcher: source)) },
+                let d = o.value.subscribe(
+                    onNext: { send(DispatchedAction($0, dispatcher: source)) },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
+        ])
+    }
+
+    /// Bridges an `Infallible<DispatchedAction<Action>>`, forwarding the existing dispatcher.
+    public func asEffect<Action: Sendable>(
+        scheduling: EffectScheduling = .immediately
+    ) -> Effect<Action> where Element == DispatchedAction<Action> {
+        let o = Unchecked(value: self)
+        return Effect(components: [
+            Effect<Action>.Component(subscribe: { send, complete in
+                let d = o.value.subscribe(
+                    onNext: { send($0) },
+                    onCompleted: { complete() }
+                )
+                return SubscriptionToken { d.dispose() }
+            }, scheduling: scheduling)
         ])
     }
 
     /// Bridges an `Infallible<Output>` to `Effect<Action>` by mapping each element.
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Element) -> Action,
+        scheduling: EffectScheduling = .immediately,
         file: String = #file, function: String = #function, line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
-        let infallible = Unchecked(value: self)
+        let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Action>.Component(subscribe: { send, complete in
-                let d = infallible.value.subscribe(
-                    onNext:      { send(DispatchedAction(transform($0), dispatcher: source)) },
+                let d = o.value.subscribe(
+                    onNext: { send(DispatchedAction(transform($0), dispatcher: source)) },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
         ])
     }
 }
 
 // MARK: - Observable (failable)
+//
+//   Case A   Observable<Action>               .asEffect(scheduling:)           — errors discarded
+//   Case A2  Observable<DispatchedAction<A>>  .asEffect(scheduling:)           — forwarding
+//   Case B   Observable<Output>               .asEffect(_ transform:scheduling:) — errors discarded
+//   Case C   Observable<Output>               .asEffect(_ transform:scheduling:) — Result
 
 extension ObservableType {
     /// Bridges an `Observable<Action>` to `Effect<Action>`. Errors are silently discarded.
     public func asEffect(
+        scheduling: EffectScheduling = .immediately,
         file: String = #file, function: String = #function, line: UInt = #line
     ) -> Effect<Element> where Element: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
-        let observable = Unchecked(value: self)
+        let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Element>.Component(subscribe: { send, complete in
-                let d = observable.value.subscribe(
+                let d = o.value.subscribe(
                     onNext:      { send(DispatchedAction($0, dispatcher: source)) },
                     onError:     { _ in complete() },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
+        ])
+    }
+
+    /// Bridges an `Observable<DispatchedAction<Action>>`, forwarding the existing dispatcher.
+    /// Errors are silently discarded.
+    public func asEffect<Action: Sendable>(
+        scheduling: EffectScheduling = .immediately
+    ) -> Effect<Action> where Element == DispatchedAction<Action> {
+        let o = Unchecked(value: self)
+        return Effect(components: [
+            Effect<Action>.Component(subscribe: { send, complete in
+                let d = o.value.subscribe(
+                    onNext:      { send($0) },
+                    onError:     { _ in complete() },
+                    onCompleted: { complete() }
+                )
+                return SubscriptionToken { d.dispose() }
+            }, scheduling: scheduling)
         ])
     }
 
@@ -82,40 +115,35 @@ extension ObservableType {
     /// Errors are silently discarded.
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Element) -> Action,
+        scheduling: EffectScheduling = .immediately,
         file: String = #file, function: String = #function, line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
-        let observable = Unchecked(value: self)
+        let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Action>.Component(subscribe: { send, complete in
-                let d = observable.value.subscribe(
+                let d = o.value.subscribe(
                     onNext:      { send(DispatchedAction(transform($0), dispatcher: source)) },
                     onError:     { _ in complete() },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
         ])
     }
 
-    /// Bridges an `Observable<Output>` to `Effect<Action>` via a Result transform.
-    ///
-    /// Each element arrives as `.success`; an error arrives as `.failure` and is dispatched
-    /// before `complete()` fires.
-    ///
-    /// ```swift
-    /// apiObservable.asEffect(AppAction.didFetch)
-    /// // enum AppAction { case didFetch(Result<MyModel, Error>) }
-    /// ```
+    /// Bridges an `Observable<Output>` to `Effect<Action>` via Result. Errors are delivered
+    /// as `.failure` then `complete()` fires.
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Result<Element, Error>) -> Action,
+        scheduling: EffectScheduling = .immediately,
         file: String = #file, function: String = #function, line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
-        let observable = Unchecked(value: self)
+        let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Action>.Component(subscribe: { send, complete in
-                let d = observable.value.subscribe(
+                let d = o.value.subscribe(
                     onNext:      { send(DispatchedAction(transform(.success($0)), dispatcher: source)) },
                     onError:     { error in
                         send(DispatchedAction(transform(.failure(error)), dispatcher: source))
@@ -124,7 +152,7 @@ extension ObservableType {
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
         ])
     }
 }

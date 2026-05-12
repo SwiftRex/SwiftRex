@@ -7,6 +7,7 @@ extension Effect {
     /// `completer.complete(action)` exactly once. Cancelled effects do NOT call `complete`.
     public static func future(
         _ work: @escaping @Sendable (consuming FutureCompleter<Action>) -> Void,
+        scheduling: EffectScheduling = .immediately,
         file: String = #file,
         function: String = #function,
         line: UInt = #line
@@ -24,18 +25,19 @@ extension Effect {
                             else { work(FutureCompleter(box)) }
                         }
                     } onCancel: { box.cancel() }
-                    guard !Task.isCancelled else { return }   // cancelled — no complete
+                    guard !Task.isCancelled else { return }
                     if let action = result { send(DispatchedAction(action, dispatcher: source)) }
                     complete()
                 }
                 return SubscriptionToken { t.cancel() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
         ])
     }
 
     /// Async function that produces an optional action. Cancelled effects do NOT call `complete`.
     public static func task(
         _ work: @escaping @Sendable () async -> Action?,
+        scheduling: EffectScheduling = .immediately,
         file: String = #file,
         function: String = #function,
         line: UInt = #line
@@ -51,12 +53,15 @@ extension Effect {
                     complete()
                 }
                 return SubscriptionToken { t.cancel() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
         ])
     }
 
     /// Side effect with no resulting action. Cancelled effects do NOT call `complete`.
-    public static func fireAndForget(_ work: @escaping @Sendable () async -> Void) -> Self {
+    public static func fireAndForget(
+        _ work: @escaping @Sendable () async -> Void,
+        scheduling: EffectScheduling = .immediately
+    ) -> Self {
         Effect(components: [
             Component(subscribe: { _, complete in
                 let t = Task {
@@ -66,7 +71,7 @@ extension Effect {
                     complete()
                 }
                 return SubscriptionToken { t.cancel() }
-            }, scheduling: .immediately)
+            }, scheduling: scheduling)
         ])
     }
 }
