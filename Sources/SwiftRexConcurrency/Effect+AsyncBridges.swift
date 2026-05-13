@@ -173,3 +173,24 @@ extension Effect {
         asyncSequence(stream, scheduling: scheduling)
     }
 }
+
+// MARK: - Fire and forget (AsyncSequence)
+
+extension Effect {
+    /// Iterates `sequence` to completion, ignoring all elements and errors.
+    /// Use with `|>`: `myAsyncSequence |> Effect.fireAndForget`.
+    public static func fireAndForget<S: AsyncSequence & Sendable>(_ sequence: S) -> Self
+    where S.Element: Sendable {
+        Effect(components: [
+            Component(subscribe: { _, complete in
+                let t = Task {
+                    guard !Task.isCancelled else { return }
+                    _ = try? await { for try await _ in sequence { } }()
+                    guard !Task.isCancelled else { return }
+                    complete()
+                }
+                return SubscriptionToken { t.cancel() }
+            }, scheduling: .immediately)
+        ])
+    }
+}

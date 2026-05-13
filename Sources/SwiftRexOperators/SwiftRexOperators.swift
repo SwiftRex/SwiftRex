@@ -32,26 +32,6 @@ public func <&> <A: Sendable, B: Sendable>(
     effect.map(f)
 }
 
-// MARK: - Effect Applicative
-
-/// `effectF <*> effectA` — applicative apply.
-///
-/// Runs both effects concurrently; when both have emitted their first value, applies
-/// the function from `effectF` to the value from `effectA` and dispatches the result.
-///
-/// Combine with `<£>` for the standard applicative style:
-/// ```swift
-/// curry { profile, settings in AppState(profile: profile, settings: settings) }
-///     <£> fetchProfile
-///     <*> fetchSettings
-/// ```
-public func <*> <A: Sendable, B: Sendable>(
-    _ effectF: Effect<@Sendable (A) -> B>,
-    _ effectA: Effect<A>
-) -> Effect<B> {
-    effectF.zipWith(effectA) { f, a in f(a) }
-}
-
 // MARK: - DispatchedAction Functor
 
 /// `f <£> dispatched` — functor map, transform on the left.

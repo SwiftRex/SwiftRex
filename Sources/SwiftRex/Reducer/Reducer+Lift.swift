@@ -11,10 +11,10 @@ extension Reducer {
     ///   - actionGetter: Projects a global action to an optional local action. Return `nil` to skip.
     ///   - stateGetter: Extracts the local state from the global state.
     ///   - stateSetter: Writes the mutated local state back into the global state.
-    public func lift<GlobalAction, GlobalState>(
-        actionGetter: @escaping (GlobalAction) -> ActionType?,
-        stateGetter: @escaping (GlobalState) -> StateType,
-        stateSetter: @escaping (inout GlobalState, StateType) -> Void
+    public func lift<GlobalAction, GlobalState: Sendable>(
+        actionGetter: @escaping @Sendable (GlobalAction) -> ActionType?,
+        stateGetter: @escaping @Sendable (GlobalState) -> StateType,
+        stateSetter: @escaping @Sendable (inout GlobalState, StateType) -> Void
     ) -> Reducer<GlobalAction, GlobalState> {
         .reduce { globalAction in
             guard let localAction = actionGetter(globalAction) else { return .identity }

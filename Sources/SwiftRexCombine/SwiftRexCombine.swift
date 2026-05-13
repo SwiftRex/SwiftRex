@@ -110,3 +110,22 @@ extension Publisher where Failure: Error {
         ])
     }
 }
+
+// MARK: - Fire and forget (Publisher)
+
+extension Effect {
+    /// Subscribes to `p`, ignoring all values and errors, and calls `complete` on finish.
+    /// Use with `|>` for a pipeline style: `myPublisher |> Effect.fireAndForget`.
+    public static func fireAndForget<P: Publisher>(_ p: P) -> Self {
+        let p = Unchecked(value: p)
+        return Effect(components: [
+            Component(subscribe: { _, complete in
+                let c = p.value.sink(
+                    receiveCompletion: { _ in complete() },
+                    receiveValue: { _ in }
+                )
+                return SubscriptionToken { c.cancel() }
+            }, scheduling: .immediately)
+        ])
+    }
+}

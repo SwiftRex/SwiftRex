@@ -156,3 +156,38 @@ extension ObservableType {
         ])
     }
 }
+
+// MARK: - Fire and forget (RxSwift)
+
+extension Effect {
+    /// Subscribes to an `Observable`, ignoring all elements and errors, completing when done.
+    /// Use with `|>`: `myObservable |> Effect.fireAndForget`.
+    public static func fireAndForget<O: ObservableType>(_ o: O) -> Self {
+        let o = Unchecked(value: o)
+        return Effect(components: [
+            Component(subscribe: { _, complete in
+                let d = o.value.subscribe(
+                    onNext:      { _ in },
+                    onError:     { _ in complete() },
+                    onCompleted: { complete() }
+                )
+                return SubscriptionToken { d.dispose() }
+            }, scheduling: .immediately)
+        ])
+    }
+
+    /// Subscribes to an `Infallible`, ignoring all elements, completing when done.
+    /// Use with `|>`: `myInfallible |> Effect.fireAndForget`.
+    public static func fireAndForget<I: InfallibleType>(_ i: I) -> Self {
+        let i = Unchecked(value: i)
+        return Effect(components: [
+            Component(subscribe: { _, complete in
+                let d = i.value.subscribe(
+                    onNext:      { _ in },
+                    onCompleted: { complete() }
+                )
+                return SubscriptionToken { d.dispose() }
+            }, scheduling: .immediately)
+        ])
+    }
+}

@@ -130,3 +130,29 @@ extension Signal where Error: Swift.Error {
         SignalProducer(self).asEffect(transform, scheduling: scheduling, file: file, function: function, line: line)
     }
 }
+
+// MARK: - Fire and forget (ReactiveSwift)
+
+extension Effect {
+    /// Subscribes to a `SignalProducer`, ignoring all values and errors, completing when done.
+    /// Use with `|>`: `myProducer |> Effect.fireAndForget`.
+    public static func fireAndForget<V, E: Swift.Error>(_ sp: SignalProducer<V, E>) -> Self {
+        let sp = Unchecked(value: sp)
+        return Effect(components: [
+            Component(subscribe: { _, complete in
+                let (lifetime, token) = Lifetime.make()
+                sp.value.take(during: lifetime).startWithSignal { signal, _ in
+                    signal.observeCompleted { complete() }
+                    signal.observeFailed   { _ in complete() }
+                }
+                return SubscriptionToken { token.dispose() }
+            }, scheduling: .immediately)
+        ])
+    }
+
+    /// Subscribes to a hot `Signal`, ignoring all values and errors, completing when done.
+    /// Use with `|>`: `mySignal |> Effect.fireAndForget`.
+    public static func fireAndForget<V, E: Swift.Error>(_ signal: Signal<V, E>) -> Self {
+        fireAndForget(SignalProducer(signal))
+    }
+}

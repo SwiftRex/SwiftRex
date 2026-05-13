@@ -18,7 +18,7 @@ extension Reducer {
     /// ```
     ///
     /// All `ElementAction`-based `liftCollection` overloads delegate here.
-    public func liftCollection<GA, GS, Container>(
+    public func liftCollection<GA, GS: Sendable, Container: Sendable>(
         action: @escaping (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
         stateContainer: WritableKeyPath<GS, Container>
     ) -> Reducer<GA, GS> {
@@ -40,10 +40,10 @@ extension Reducer where StateType: Identifiable {
     ///     stateCollection: \AppState.todos
     /// )
     /// ```
-    public func liftCollection<GA, GS, C: MutableCollection>(
+    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable>(
         action: @escaping (GA) -> ElementAction<StateType.ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>
-    ) -> Reducer<GA, GS> where C.Element == StateType {
+    ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable {
         liftCollection(
             action: { ga in action(ga).map { (action: $0.action, element: C.ix(id: $0.id)) } },
             stateContainer: stateCollection
@@ -56,10 +56,10 @@ extension Reducer where StateType: Identifiable {
     /// // AppAction has: var updateTodo: ElementAction<UUID, TodoAction>?
     /// todoReducer.liftCollection(action: \AppAction.updateTodo, stateCollection: \AppState.todos)
     /// ```
-    public func liftCollection<GA, GS, C: MutableCollection>(
+    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable>(
         action: KeyPath<GA, ElementAction<StateType.ID, ActionType>?>,
         stateCollection: WritableKeyPath<GS, C>
-    ) -> Reducer<GA, GS> where C.Element == StateType {
+    ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable {
         liftCollection(action: { $0[keyPath: action] }, stateCollection: stateCollection)
     }
 }
@@ -76,11 +76,11 @@ extension Reducer {
     ///     identifier: \Project.slug
     /// )
     /// ```
-    public func liftCollection<GA, GS, C: MutableCollection, ID: Hashable>(
+    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
         action: @escaping (GA) -> ElementAction<ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>,
         identifier: KeyPath<StateType, ID>
-    ) -> Reducer<GA, GS> where C.Element == StateType {
+    ) -> Reducer<GA, GS> where C.Element == StateType, C.Element: Sendable, C.Index: Sendable {
         liftCollection(
             action: { ga in action(ga).map { ea in (action: ea.action, element: C.ix(id: ea.id, by: identifier)) } },
             stateContainer: stateCollection
@@ -97,11 +97,11 @@ extension Reducer {
     ///     identifier: \Project.slug
     /// )
     /// ```
-    public func liftCollection<GA, GS, C: MutableCollection, ID: Hashable>(
+    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
         action: KeyPath<GA, ElementAction<ID, ActionType>?>,
         stateCollection: WritableKeyPath<GS, C>,
         identifier: KeyPath<StateType, ID>
-    ) -> Reducer<GA, GS> where C.Element == StateType {
+    ) -> Reducer<GA, GS> where C.Element == StateType, C.Element: Sendable, C.Index: Sendable {
         liftCollection(action: { $0[keyPath: action] }, stateCollection: stateCollection, identifier: identifier)
     }
 }
@@ -117,10 +117,10 @@ extension Reducer {
     ///     stateDictionary: \AppState.configs
     /// )
     /// ```
-    public func liftCollection<GA, GS, Key: Hashable>(
+    public func liftCollection<GA, GS: Sendable, Key: Hashable & Sendable>(
         action: @escaping (GA) -> ElementAction<Key, ActionType>?,
         stateDictionary: WritableKeyPath<GS, [Key: StateType]>
-    ) -> Reducer<GA, GS> {
+    ) -> Reducer<GA, GS> where StateType: Sendable {
         liftCollection(
             action: { ga in action(ga).map { (action: $0.action, element: [Key: StateType].ix(key: $0.id)) } },
             stateContainer: stateDictionary
@@ -133,10 +133,10 @@ extension Reducer {
     /// // AppAction has: var updateConfig: ElementAction<String, ConfigAction>?
     /// configReducer.liftCollection(action: \AppAction.updateConfig, stateDictionary: \AppState.configs)
     /// ```
-    public func liftCollection<GA, GS, Key: Hashable>(
+    public func liftCollection<GA, GS: Sendable, Key: Hashable & Sendable>(
         action: KeyPath<GA, ElementAction<Key, ActionType>?>,
         stateDictionary: WritableKeyPath<GS, [Key: StateType]>
-    ) -> Reducer<GA, GS> {
+    ) -> Reducer<GA, GS> where StateType: Sendable {
         liftCollection(action: { $0[keyPath: action] }, stateDictionary: stateDictionary)
     }
 }
