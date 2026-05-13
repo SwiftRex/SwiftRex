@@ -21,30 +21,21 @@ extension Middleware {
         }
     }
 
-    /// Lifts the action axis using a KeyPath (preview) and a wrapping closure (review).
-    public func liftAction<GlobalAction: Sendable>(
-        preview: KeyPath<GlobalAction, Action?>,
-        review: @escaping @Sendable (Action) -> GlobalAction
-    ) -> Middleware<GlobalAction, State, Environment> {
-        liftAction(Prism(preview: { $0[keyPath: preview] }, review: review))
-    }
-
     /// Projects the state axis so this middleware works on a sub-state.
     ///
     /// ```swift
     /// authMiddleware.liftState(\.authState)
     /// ```
     public func liftState<GlobalState: Sendable>(
-        _ keyPath: KeyPath<GlobalState, State>
+        _ f: @escaping @Sendable @MainActor (GlobalState) -> State
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.map { $0[keyPath: keyPath] })
+            self.handle(action, globalAccess.map(f))
         }
     }
 
     /// Projects the state axis using a `Lens`. Only the `get` half is used — Middleware
-    /// is read-only on state. Prefer this over the `KeyPath` overload when the sub-state
-    /// is not directly key-path accessible (e.g. computed or composed optics).
+    /// is read-only on state.
     public func liftState<GlobalState: Sendable>(
         _ lens: Lens<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
@@ -72,15 +63,6 @@ extension Middleware {
         }
     }
 
-    /// Projects the state axis using a closure.
-    public func liftState<GlobalState: Sendable>(
-        _ f: @escaping @Sendable @MainActor (GlobalState) -> State
-    ) -> Middleware<Action, GlobalState, Environment> {
-        Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.map(f))
-        }
-    }
-
     /// Narrows the environment using a projection function.
     ///
     /// ```swift
@@ -93,19 +75,12 @@ extension Middleware {
             self.handle(action, state).contramapEnvironment(f)
         }
     }
-
-    /// Narrows the environment using a KeyPath.
-    public func liftEnvironment<GlobalEnvironment: Sendable>(
-        _ keyPath: KeyPath<GlobalEnvironment, Environment>
-    ) -> Middleware<Action, State, GlobalEnvironment> {
-        liftEnvironment { $0[keyPath: keyPath] }
-    }
 }
 
 // MARK: - Combined lift
 
 extension Middleware {
-    /// Lifts all three axes simultaneously using a `KeyPath` for state — the most common wiring call.
+    /// Lifts all three axes simultaneously.
     ///
     /// ```swift
     /// authMiddleware.lift(
@@ -116,47 +91,37 @@ extension Middleware {
     /// ```
     public func lift<GA: Sendable, GS: Sendable, GE: Sendable>(
         action prism: Prism<GA, Action>,
-        state keyPath: KeyPath<GS, State>,
-        environment envKeyPath: KeyPath<GE, Environment>
+        state f: @escaping @Sendable @MainActor (GS) -> State,
+        environment g: @escaping @Sendable (GE) -> Environment
     ) -> Middleware<GA, GS, GE> {
-        liftAction(prism)
-            .liftState(keyPath)
-            .liftEnvironment(envKeyPath)
+        liftAction(prism).liftState(f).liftEnvironment(g)
     }
 
-    /// Lifts all three axes using a `Lens` for state — use when the sub-state is not directly
-    /// key-path accessible (e.g. computed or composed optics).
+    /// Lifts all three axes using a `Lens` for state.
     public func lift<GA: Sendable, GS: Sendable, GE: Sendable>(
         action prism: Prism<GA, Action>,
         state lens: Lens<GS, State>,
-        environment envKeyPath: KeyPath<GE, Environment>
+        environment g: @escaping @Sendable (GE) -> Environment
     ) -> Middleware<GA, GS, GE> {
-        liftAction(prism)
-            .liftState(lens)
-            .liftEnvironment(envKeyPath)
+        liftAction(prism).liftState(lens).liftEnvironment(g)
     }
 
     /// Lifts all three axes using a `Prism` for state — the middleware is skipped when the
-    /// focused enum case is not active, in addition to the normal action filtering.
+    /// focused enum case is not active.
     public func lift<GA: Sendable, GS: Sendable, GE: Sendable>(
         action prism: Prism<GA, Action>,
         state statePrism: Prism<GS, State>,
-        environment envKeyPath: KeyPath<GE, Environment>
+        environment g: @escaping @Sendable (GE) -> Environment
     ) -> Middleware<GA, GS, GE> {
-        liftAction(prism)
-            .liftState(statePrism)
-            .liftEnvironment(envKeyPath)
+        liftAction(prism).liftState(statePrism).liftEnvironment(g)
     }
 
-    /// Lifts all three axes using an `AffineTraversal` for state — the middleware is skipped
-    /// when the traversal's focus is absent.
+    /// Lifts all three axes using an `AffineTraversal` for state.
     public func lift<GA: Sendable, GS: Sendable, GE: Sendable>(
         action prism: Prism<GA, Action>,
         state traversal: AffineTraversal<GS, State>,
-        environment envKeyPath: KeyPath<GE, Environment>
+        environment g: @escaping @Sendable (GE) -> Environment
     ) -> Middleware<GA, GS, GE> {
-        liftAction(prism)
-            .liftState(traversal)
-            .liftEnvironment(envKeyPath)
+        liftAction(prism).liftState(traversal).liftEnvironment(g)
     }
 }

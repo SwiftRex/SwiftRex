@@ -16,9 +16,9 @@ public enum EffectScheduling: @unchecked Sendable {
     /// Run immediately. No cancellation tracking.
     case immediately
 
-    /// Run immediately, registering the token under `id`. A new effect with the same `id`
-    /// cancels the previous one before starting.
-    case cancellable(id: AnyHashable)
+    /// Cancel any existing effect registered under `id`, then run this one and register it
+    /// as the new value. Contrast with `cancelInFlight` which removes the key without replacing.
+    case replacing(id: AnyHashable)
 
     /// Cancel any pending timer or running effect with the same `id`, then start a new one
     /// after `delay` seconds. If another debounce with the same `id` arrives before `delay`
@@ -29,8 +29,7 @@ public enum EffectScheduling: @unchecked Sendable {
     /// seconds. Also cancellable via `cancelInFlight(id:)`.
     case throttle(id: AnyHashable, interval: TimeInterval)
 
-    /// Cancel whatever is registered under `id` — a pending timer, throttled effect, or running
-    /// task — without starting a new one. This is a pure cancellation sentinel; the component's
-    /// subscribe closure is never called.
+    /// Remove the key `id` from the registry, cancelling whatever was registered there.
+    /// No new effect is started — this is a pure dictionary removal, not a replace.
     case cancelInFlight(id: AnyHashable)
 }

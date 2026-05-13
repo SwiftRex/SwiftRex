@@ -11,8 +11,8 @@ import CoreFP
 /// **Creating an Effect starts no work.** The Store is the sole executor.
 ///
 /// **Completion contract.** Each component signals when it is done producing values by calling
-/// the `complete` callback. Cancelled effects MUST NOT call `complete` — this is what makes
-/// `Effect.then` cascade correctly. The Store uses completion to clean up its lifecycle state.
+/// the `complete` callback. Cancelled effects MUST NOT call `complete`. The Store uses completion
+/// to clean up its lifecycle state.
 ///
 /// **Array-of-components internal representation.** Combining two effects appends their
 /// component arrays. The Store schedules each component independently, so cancelling a

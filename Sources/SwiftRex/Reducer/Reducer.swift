@@ -15,7 +15,7 @@ import CoreFP
 ///
 /// `Reducer` is a **Semigroup** and **Monoid** under sequential composition: `combine(a, b)` runs
 /// `a` then `b` on the same `inout State`, so `b` sees `a`'s mutations. Order matters.
-public struct Reducer<ActionType, StateType> {
+public struct Reducer<ActionType, StateType>: @unchecked Sendable {
     /// Given an action, produces an in-place endomorphism on `StateType`.
     ///
     /// The Store uses this as `reduce(action).runEndoMut(&_state)`.

@@ -1,4 +1,4 @@
-@preconcurrency import Combine
+ @preconcurrency import Combine
 import SwiftRex
 
 private struct Unchecked<T>: @unchecked Sendable { let value: T }

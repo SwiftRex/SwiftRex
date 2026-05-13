@@ -12,6 +12,38 @@ public struct DispatchedAction<Action: Sendable>: Sendable {
         self.action = action
         self.dispatcher = dispatcher
     }
+
+    /// Convenience init that captures the call-site source location automatically.
+    ///
+    /// ```swift
+    /// DispatchedAction(AppAction.login(credentials))
+    /// ```
+    public init(
+        _ action: Action,
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
+    ) {
+        self.init(action, dispatcher: ActionSource(file: file, function: function, line: line))
+    }
+}
+
+/// Captures the call-site source location and returns a function that wraps any `Sendable`
+/// action into a `DispatchedAction`. Designed for point-free pipelines with `|>`:
+///
+/// ```swift
+/// AppAction.login(credentials) |> here()
+/// ```
+///
+/// Because `here()` is evaluated before `|>` applies its result, `#file`, `#function`,
+/// and `#line` resolve at the expression's source line — exactly where the dispatch originates.
+public func here<Action: Sendable>(
+    file: String = #file,
+    function: String = #function,
+    line: UInt = #line
+) -> (Action) -> DispatchedAction<Action> {
+    let source = ActionSource(file: file, function: function, line: line)
+    return { DispatchedAction($0, dispatcher: source) }
 }
 
 extension DispatchedAction {

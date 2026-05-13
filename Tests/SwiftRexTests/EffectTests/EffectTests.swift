@@ -29,13 +29,13 @@ final class EffectMonoidTests: XCTestCase {
     }
 
     func testCombinePreservesIndividualScheduling() {
-        let a = Effect<Int>.just(1).scheduling(.cancellable(id: "a"))
+        let a = Effect<Int>.just(1).scheduling(.replacing(id: "a"))
         let b = Effect<Int>.just(2).scheduling(.debounce(id: "b", delay: 0.3))
         let combined = Effect.combine(a, b)
         guard combined.components.count == 2 else { XCTFail("Expected 2 components"); return }
-        if case .cancellable(let id) = combined.components[0].scheduling {
+        if case .replacing(let id) = combined.components[0].scheduling {
             XCTAssertEqual(id, AnyHashable("a"))
-        } else { XCTFail("Expected .cancellable") }
+        } else { XCTFail("Expected .replacing") }
         if case .debounce(let id, _) = combined.components[1].scheduling {
             XCTAssertEqual(id, AnyHashable("b"))
         } else { XCTFail("Expected .debounce") }
@@ -116,9 +116,9 @@ final class EffectForwardingFactoryTests: XCTestCase {
 final class EffectSchedulingModifierTests: XCTestCase {
     func testSchedulingModifierReplacesAllComponents() {
         let combined = Effect.combine(Effect<Int>.just(1), Effect<Int>.just(2))
-        let rescheduled = combined.scheduling(.cancellable(id: "x"))
+        let rescheduled = combined.scheduling(.replacing(id: "x"))
         XCTAssertTrue(rescheduled.components.allSatisfy {
-            if case .cancellable(let id) = $0.scheduling { return id == AnyHashable("x") }
+            if case .replacing(let id) = $0.scheduling { return id == AnyHashable("x") }
             return false
         })
     }
@@ -161,11 +161,11 @@ final class EffectMapTests: XCTestCase {
     }
 
     func testMapPreservesScheduling() {
-        let effect = Effect<Int>.just(1).scheduling(.cancellable(id: "x"))
+        let effect = Effect<Int>.just(1).scheduling(.replacing(id: "x"))
         let mapped = effect.map { $0 * 2 }
-        if case .cancellable(let id) = mapped.components[0].scheduling {
+        if case .replacing(let id) = mapped.components[0].scheduling {
             XCTAssertEqual(id, AnyHashable("x"))
-        } else { XCTFail("Expected .cancellable scheduling preserved after map") }
+        } else { XCTFail("Expected .replacing scheduling preserved after map") }
     }
 
     func testMapThreadsComplete() {
@@ -175,59 +175,3 @@ final class EffectMapTests: XCTestCase {
     }
 }
 
-// MARK: - then
-
-final class EffectThenTests: XCTestCase {
-    func testThenRunsBothEffects() {
-        let received = LockProtected([Int]())
-        subscribeAll(Effect<Int>.just(1).then(Effect<Int>.just(2))) { d in
-            received.mutate { $0.append(d.action) }
-        }
-        XCTAssertEqual(received.value, [1, 2])
-    }
-
-    func testThenRunsInOrder() {
-        let received = LockProtected([Int]())
-        subscribeAll(
-            Effect<Int>.sequence([1, 2]).then(Effect<Int>.sequence([3, 4]))
-        ) { d in received.mutate { $0.append(d.action) } }
-        XCTAssertEqual(received.value, [1, 2, 3, 4])
-    }
-
-    func testThenCallsCompleteAfterBoth() {
-        let completed = LockProtected(false)
-        subscribeAll(
-            Effect<Int>.just(1).then(Effect<Int>.just(2)),
-            send: { _ in },
-            onComplete: { completed.set(true) }
-        )
-        XCTAssertTrue(completed.value)
-    }
-
-    func testThenWithEmptyLeftReducesToRight() {
-        XCTAssertEqual(Effect<Int>.empty.then(Effect<Int>.just(5)).components.count,
-                       Effect<Int>.just(5).components.count)
-    }
-
-    func testThenWithEmptyRightReducesToLeft() {
-        XCTAssertEqual(Effect<Int>.just(5).then(Effect<Int>.empty).components.count,
-                       Effect<Int>.just(5).components.count)
-    }
-
-    func testThenAEmitsZeroActionsBeforeB() {
-        let received = LockProtected([Int]())
-        subscribeAll(
-            Effect<Int>.sequence([]).then(Effect<Int>.just(99))
-        ) { d in received.mutate { $0.append(d.action) } }
-        XCTAssertEqual(received.value, [99])
-    }
-
-    func testThenCancellationPreventsBFromStarting() {
-        let received = LockProtected([Int]())
-        // Use async task-based effects so we can cancel before completion
-        // For synchronous effects, A completes before cancel can fire — test structure is different
-        // Here we just verify the component count is 1 (single composed unit)
-        let chain = Effect<Int>.just(1).then(Effect<Int>.just(2))
-        XCTAssertEqual(chain.components.count, 1)
-    }
-}

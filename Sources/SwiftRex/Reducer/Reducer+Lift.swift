@@ -5,8 +5,6 @@ import CoreFP
 extension Reducer {
     /// Lifts a local reducer to operate on a global action and state using three closures.
     ///
-    /// This is the most flexible form of `lift`. Prefer KeyPath overloads for common cases.
-    ///
     /// - Parameters:
     ///   - actionGetter: Projects a global action to an optional local action. Return `nil` to skip.
     ///   - stateGetter: Extracts the local state from the global state.
@@ -23,24 +21,9 @@ extension Reducer {
     }
 }
 
-// MARK: - Lift (KeyPath-based)
+// MARK: - Lift (WritableKeyPath-based)
 
 extension Reducer {
-    /// Lifts a local reducer to a global action and state using KeyPaths.
-    ///
-    /// - Parameters:
-    ///   - action: KeyPath from global action to optional local action.
-    ///   - state: Writable KeyPath from global state to local state.
-    public func lift<GlobalAction, GlobalState>(
-        action: KeyPath<GlobalAction, ActionType?>,
-        state: WritableKeyPath<GlobalState, StateType>
-    ) -> Reducer<GlobalAction, GlobalState> {
-        .reduce { globalAction in
-            guard let localAction = globalAction[keyPath: action] else { return .identity }
-            return EndoMut { globalState in self.reduce(localAction)(&globalState[keyPath: state]) }
-        }
-    }
-
     /// Lifts a local reducer to a global state only, leaving the action type unchanged.
     ///
     /// - Parameter state: Writable KeyPath from global state to local state.
@@ -48,15 +31,6 @@ extension Reducer {
         state: WritableKeyPath<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
         .reduce { action in EndoMut { globalState in self.reduce(action)(&globalState[keyPath: state]) } }
-    }
-
-    /// Lifts a local reducer to a global action only, leaving the state type unchanged.
-    ///
-    /// - Parameter action: KeyPath from global action to optional local action.
-    public func lift<GlobalAction>(
-        action: KeyPath<GlobalAction, ActionType?>
-    ) -> Reducer<GlobalAction, StateType> {
-        lift(action: action, state: \.self)
     }
 }
 
