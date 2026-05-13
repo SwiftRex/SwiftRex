@@ -15,7 +15,8 @@ let package = Package(
         .library(name: "SwiftRex.Concurrency",   targets: ["SwiftRexConcurrency"]),
         .library(name: "SwiftRex.Combine",       targets: ["SwiftRexCombine"]),
         .library(name: "SwiftRex.RxSwift",       targets: ["SwiftRexRxSwift"]),
-        .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"])
+        .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
+        .library(name: "SwiftRex.SwiftUI",      targets: ["SwiftRexSwiftUI"])
     ],
     dependencies: [
         .package(url: "https://github.com/luizmb/FP.git", from: "1.6.3"),
@@ -79,6 +80,14 @@ let package = Package(
                 .product(name: "ReactiveSwift", package: "ReactiveSwift")
             ],
             path: "Sources/SwiftRexReactiveSwift"
+        ),
+
+        // MARK: - SwiftUI wrappers
+
+        .target(
+            name: "SwiftRexSwiftUI",
+            dependencies: ["SwiftRex"],
+            path: "Sources/SwiftRexSwiftUI"
         ),
 
         // MARK: - Tests

@@ -15,7 +15,7 @@
 @MainActor
 public protocol StoreType<Action, State>: Sendable {
     associatedtype Action: Sendable
-    associatedtype State
+    associatedtype State: Sendable
 
     /// Current state snapshot. Always accessed on `@MainActor`.
     var state: State { get }
@@ -77,10 +77,19 @@ extension StoreType {
         action mapAction: @escaping @Sendable (LocalAction) -> Action,
         state mapState: @escaping @MainActor @Sendable (State) -> LocalState
     ) -> StoreProjection<LocalAction, LocalState> {
-        StoreProjection(
-            state:    { mapState(self.state) },
-            dispatch: { action, source in self.dispatch(mapAction(action), source: source) },
-            observe:  { willChange, didChange in self.observe(willChange: willChange, didChange: didChange) }
-        )
+        StoreProjection(store: self, action: mapAction, state: mapState)
+    }
+
+    /// Wraps this store in a `StoreBuffer` that caches state and only fires observers
+    /// when `hasChanged` returns `true`.
+    public func buffer(
+        hasChanged: @escaping @Sendable (State, State) -> Bool
+    ) -> StoreBuffer<Action, State> where State: Sendable {
+        StoreBuffer(self, hasChanged: hasChanged)
+    }
+
+    /// Wraps this store in a `StoreBuffer` using `!=` as the predicate.
+    public func buffer() -> StoreBuffer<Action, State> where State: Equatable & Sendable {
+        StoreBuffer(self)
     }
 }

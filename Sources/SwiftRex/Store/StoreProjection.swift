@@ -4,17 +4,20 @@ import Foundation
 /// narrower local interface. Holds no state — `state` is computed from the underlying
 /// store on every access.
 ///
-/// Create projections via `StoreType.projection(action:state:)`:
+/// `StoreProjection` owns the mapping logic: the global store types appear only in the
+/// initialiser and are erased into the stored closures.
 ///
 /// ```swift
-/// let counterProjection = appStore.projection(
-///     action: AppAction.counter,     // LocalAction → GlobalAction
-///     state:  \.counterState         // GlobalState → LocalState
+/// // Direct — global types in the init only
+/// let proj = StoreProjection(
+///     store:  appStore,
+///     action: AppAction.counter,
+///     state:  \.counterState
 /// )
-/// ```
 ///
-/// The ViewModel / ObservableObject layer that owns the projection and drives SwiftUI
-/// re-rendering is a separate concern implemented on top of `StoreType`.
+/// // Convenience factory on StoreType (delegates to this init)
+/// let proj = appStore.projection(action: AppAction.counter, state: \.counterState)
+/// ```
 @MainActor
 public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
 
@@ -25,17 +28,16 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken
 
-    package init(
-        state:    @escaping @MainActor @Sendable () -> State,
-        dispatch: @escaping @MainActor @Sendable (Action, ActionSource) -> Void,
-        observe:  @escaping @MainActor @Sendable (
-            @escaping @MainActor @Sendable () -> Void,
-            @escaping @MainActor @Sendable () -> Void
-        ) -> SubscriptionToken
+    /// Primary init. Global store types (`GA`, `GS`) appear here only and are captured
+    /// into the map closures — they are not exposed as type parameters on the struct.
+    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>>(
+        store: S,
+        action mapAction: @escaping @Sendable (Action) -> GA,
+        state mapState: @escaping @MainActor @Sendable (GS) -> State
     ) {
-        _state    = state
-        _dispatch = dispatch
-        _observe  = observe
+        _state    = { mapState(store.state) }
+        _dispatch = { action, source in store.dispatch(mapAction(action), source: source) }
+        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     public var state: State { _state() }
