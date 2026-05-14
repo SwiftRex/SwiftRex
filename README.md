@@ -6,7 +6,7 @@
 ![Build Status](https://github.com/SwiftRex/SwiftRex/actions/workflows/ci.yml/badge.svg?branch=main)
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-orange.svg)](https://swiftpackageindex.com/SwiftRex/SwiftRex)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwiftRex%2FSwiftRex%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/SwiftRex/SwiftRex)
-[![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20Catalyst-252532.svg)](https://github.com/SwiftRex/SwiftRex)
+[![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20visionOS%20%7C%20Linux-252532.svg)](https://github.com/SwiftRex/SwiftRex)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/SwiftRex/SwiftRex/blob/main/LICENSE)
 
 # Introduction
@@ -97,22 +97,26 @@ That's the scenario where SwiftRex shines, because it:
 <details>
   <summary>offers tooling for development, tests and debugging [tap to expand]</summary>
   <p>Several projects offer SwiftRex tools to help developers when writing apps, tests, debugging it or evaluating crash reports.</p>
-  <p><a href="https://github.com/SwiftRex/TestingExtensions">TestingExtensions</a> has "test asserts" that will unlock testability of use cases in a fun and easy way, <a href="https://github.com/SwiftRex/InstrumentationMiddleware">InstrumentationMiddleware</a> allows you to use Instruments to see what's happening in a SwiftRex app, <a href="https://github.com/SwiftRex/SwiftRexMonitor">SwiftRexMonitor</a> will be a Swift version of well-known Redux DevTools where you can remotely monitor state and actions of an app from an external Mac or iOS device, and even inject actions to simulate side-effects (useful for UITests, for example), <a href="https://github.com/SwiftRex/GatedMiddleware">GatedMiddleware</a> is a middleware wrapper that can be used to enable or disable other middlewares in runtime, <a href="https://github.com/SwiftRex/LoggerMiddleware">LoggerMiddleware</a> is a very powerful logger to be used by developers to easily understand what's happening in runtime. More Middlewares will be open-sourced soon allowing, for example, to create good Crashlytics reports that tell the story of a crash as you've never had access before, and that way, recreate crashes or user reports. Also tools for generating code (Sourcery templates, Xcode snippets and templates, console tools). New dependency injection strategies are about to be released as well.</p>
-  <p>All these tools are already done and will be released any time soon, and more are expected for the future.</p>
+  <p><code>SwiftRex.Testing</code> ships a <code>TestStore</code> built directly into SwiftRex — no separate package needed. It gives you a deterministic, exhaustive test harness with mandatory state assertions on every dispatch and Prism-based action validation for <code>receive</code>. See the <a href="#testing">Testing</a> section below for full examples. <a href="https://github.com/SwiftRex/InstrumentationMiddleware">InstrumentationMiddleware</a> allows you to use Instruments to see what's happening in a SwiftRex app, and <a href="https://github.com/SwiftRex/LoggerMiddleware">LoggerMiddleware</a> is a very powerful logger to be used by developers to easily understand what's happening in runtime.</p>
 </details>
 
 I'm not gonna lie, it's a completely different way of writing apps, as most reactive approaches are; but once you get used to, it makes more sense and enables you to reuse much more code between your projects, gives you better tooling for writing software, testing, debugging, logging and finally thinking about events, state and mutation as you've never done before. And I promise you, it's gonna be a way with no return, a unidirectional journey.
 
 # Integration Options
 
-SwiftRex supports multiple concurrency styles. The core package is self-contained and sufficient on its own; the reactive and concurrency bridges are optional add-ons:
+SwiftRex supports multiple concurrency styles. The core package is self-contained and sufficient on its own; the reactive, concurrency, and testing bridges are optional add-ons:
 
-- **SwiftRex.Concurrency** — If you use async/await and don't want reactive framework dependencies, `SwiftRex.Concurrency` gives you Effect bridges for `Task`, `AsyncSequence`, and `DeferredStream` — no third-party dependencies.
-- **SwiftRex.Combine** — Integration with [Apple Combine](https://developer.apple.com/documentation/combine)
-- **SwiftRex.RxSwift** — Integration with [RxSwift](https://github.com/ReactiveX/RxSwift)
-- **SwiftRex.ReactiveSwift** — Integration with [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift)
+| Product | When to use |
+|---|---|
+| `SwiftRex` | Always — the core store, reducers, behaviors, effects |
+| `SwiftRex.Concurrency` | async/await — Effect bridges for `Task`, `AsyncSequence`, `DeferredStream` |
+| `SwiftRex.Combine` | Apple Combine integration |
+| `SwiftRex.RxSwift` | RxSwift integration |
+| `SwiftRex.ReactiveSwift` | ReactiveSwift integration |
+| `SwiftRex.SwiftUI` | SwiftUI helpers — `asObservableObject()`, `asObservableStore()` |
+| `SwiftRex.Testing` | Test target only — `TestStore` for deterministic unit tests |
 
-More can be easily added later by implementing some abstraction bridges. Pick the module that matches your project's reactive strategy, or stay with core SwiftRex and `SwiftRex.Concurrency` for a pure Swift Concurrency setup.
+Pick the module(s) that match your project's reactive strategy. For a pure Swift Concurrency setup with no third-party dependencies, `SwiftRex` + `SwiftRex.Concurrency` is sufficient.
 
 ## Swift Concurrency
 
@@ -1109,6 +1113,102 @@ You can think of Store as a very heavy "Model" layer, completely detached from t
 
 And what about SwiftUI? Is this architecture a good fit for the new UI framework? In fact, this architecture works even better in SwiftUI, because SwiftUI was inspired by several functional patterns and it's reactive and stateless by conception. In SwiftUI, the **View is a function of the state**, and we should always aim for single source of truth — data should always flow in a single direction.
 
+# Testing
+
+SwiftRex ships `SwiftRex.Testing` — a `TestStore` that drives the dispatch pipeline synchronously so you can assert mutations and verify effects without spinning up a real `Store`.
+
+## TestStore basics
+
+```swift
+import SwiftRexTesting
+import Testing
+
+@Test func counterIncrements() {
+    let store = TestStore(initial: CounterState(), reducer: counterReducer)
+
+    store.send(.increment) { $0.count += 1 }  // assert state after the action
+    store.send(.decrement) { $0.count -= 1 }
+}
+```
+
+`send(_:assert:)` runs the behavior's handle closure and state mutation synchronously, then validates the resulting state against the closure. The closure receives an `inout` copy of the state *before* the action and you mutate it to what you expect — a mismatch records a `Testing` failure pointing to the call site.
+
+## Testing effects
+
+Effects are captured in `pendingEffects` without running. Call `runEffects()` to drive them, then `receive` each resulting action:
+
+```swift
+@Test func fetchPopulatesItems() async {
+    let store = TestStore(
+        initial: AppState(),
+        behavior: appBehavior,
+        environment: AppEnvironment.mock
+    )
+
+    store.send(.fetchItems) { $0.isLoading = true }
+
+    await store.runEffects()
+
+    // receive(prism:assert:) validates the action case via Prism and gives
+    // you the extracted associated value for the state assertion
+    store.receive(AppAction.prism.didFetch) { items, state in
+        state.isLoading = false
+        state.items = items   // `items` is the [Item] extracted from .didFetch([Item])
+    }
+}
+```
+
+For action cases with no associated value, use a `Prism<Action, Void>` and the shorter closure:
+
+```swift
+store.receive(AppAction.prism.didReset) { $0 = .initial }
+```
+
+## Exhaustive mode
+
+By default `TestStore` is exhaustive — it fails the test if you:
+
+- call `send` while `receivedActions` is non-empty (unprocessed received actions)
+- let the store deallocate with leftover `pendingEffects` or `receivedActions`
+
+Pass `exhaustive: false` to opt out:
+
+```swift
+let store = TestStore(initial: s, behavior: b, environment: e, exhaustive: false)
+```
+
+## Chaining sends
+
+`send` returns `self`, so multiple dispatches can be chained:
+
+```swift
+store
+    .send(.increment) { $0.count = 1 }
+    .send(.increment) { $0.count = 2 }
+    .send(.reset)     { $0.count = 0 }
+```
+
+## Defining Prisms for your action type
+
+`receive` uses `Prism<Action, Value>` from the [FP](https://github.com/luizmb/FP) library to match action cases without requiring `Action: Equatable`. Define prisms for each case you want to assert:
+
+```swift
+extension AppAction {
+    enum prism {
+        static let didFetch = Prism<AppAction, [Item]>(
+            preview: { if case .didFetch(let items) = $0 { return items } else { return nil } },
+            review: AppAction.didFetch
+        )
+        static let didReset = Prism<AppAction, Void>(
+            preview: { if case .didReset = $0 { return () } else { return nil } },
+            review: { _ in .didReset }
+        )
+    }
+}
+```
+
+---
+
 # Installation
 
 ## Swift Package Manager
@@ -1122,7 +1222,7 @@ import PackageDescription
 
 let package = Package(
     name: "MyApp",
-    platforms: [.macOS(.v12), .iOS(.v15), .tvOS(.v15), .watchOS(.v8)],
+    platforms: [.macOS(.v12), .iOS(.v15), .tvOS(.v15), .watchOS(.v8), .visionOS(.v1)],
     products: [
         .executable(name: "MyApp", targets: ["MyApp"])
     ],
@@ -1140,11 +1240,36 @@ let package = Package(
                 .product(name: "SwiftRex.RxSwift", package: "SwiftRex"),       // RxSwift
                 .product(name: "SwiftRex.ReactiveSwift", package: "SwiftRex"), // ReactiveSwift
             ]
+        ),
+        .testTarget(
+            name: "MyAppTests",
+            dependencies: [
+                "MyApp",
+                .product(name: "SwiftRex.Testing", package: "SwiftRex"),       // TestStore
+            ]
         )
     ]
 )
 ```
 
-Platform minimums: macOS 12+, iOS 15+, tvOS 15+, watchOS 8+.
+Supported platforms: macOS 12+, iOS 15+, tvOS 15+, watchOS 8+, visionOS 1+, Linux (Swift 6+).
+
+`SwiftRex.Concurrency`, `SwiftRex`, and `SwiftRex.Testing` are fully cross-platform including Linux. `SwiftRex.Combine` and `SwiftRex.SwiftUI` require Apple platforms. `SwiftRex.RxSwift` and `SwiftRex.ReactiveSwift` require Apple platforms unless the respective frameworks add Linux support.
 
 You can also add SwiftRex directly in Xcode via **File > Add Package Dependencies** and entering the repository URL `https://github.com/SwiftRex/SwiftRex.git`.
+
+## XCFrameworks
+
+Pre-built XCFrameworks for the dependency-free products are attached to each [GitHub release](https://github.com/SwiftRex/SwiftRex/releases):
+
+| Framework | Contents |
+|---|---|
+| `SwiftRex.xcframework.zip` | Core store, reducers, behaviors, effects |
+| `SwiftRex.Operators.xcframework.zip` | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
+| `SwiftRex.Concurrency.xcframework.zip` | async/await Effect bridges |
+| `SwiftRex.Combine.xcframework.zip` | Combine publisher bridge |
+| `SwiftRex.SwiftUI.xcframework.zip` | SwiftUI integration (`asObservableObject`, `asObservableStore`) |
+
+The reactive bridges (`SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`) depend on third-party frameworks that ship their own XCFrameworks; use SPM for those products.
+
+To integrate an XCFramework manually: download the `.zip` from the release, unzip it, and drag the `.xcframework` bundle into your Xcode project's **Frameworks, Libraries, and Embedded Content** section.
