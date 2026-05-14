@@ -1,18 +1,33 @@
-/// A single-use token passed to `Effect.future` that lets the caller complete the future
-/// with exactly one action.
+/// A single-use token passed to ``Effect/future(_:scheduling:file:function:line:)`` that
+/// completes the future with exactly one action.
 ///
-/// `FutureCompleter` is `~Copyable`: the compiler prevents it from ever being duplicated.
-/// `complete` is a `consuming func`: calling it moves the completer out of scope, making
-/// a second call a **compile-time error**. Dropping a `FutureCompleter` without calling
-/// `complete` fires `deinit`, which cancels the underlying continuation and emits a runtime
-/// warning — the same safety net `CheckedContinuation` provides for the never-called case.
+/// ## Compile-time safety
 ///
-/// This type is an implementation detail of `Effect.future`. Users interact with it only
-/// as the parameter of the work closure:
+/// `FutureCompleter` is `~Copyable`: the Swift compiler prevents the value from being
+/// duplicated. ``complete(_:)`` is a `consuming func`, which moves the completer out of
+/// scope at the call site — attempting to call it a second time is a **compile-time error**.
+///
+/// ## Dropped completers
+///
+/// If you drop a `FutureCompleter` without calling ``complete(_:)`` (e.g., forgetting an
+/// `else` branch), `deinit` fires automatically. It cancels the underlying
+/// `CheckedContinuation`, preventing the internal `Task` from hanging. You will also see
+/// a runtime warning similar to the one `CheckedContinuation` itself emits for the
+/// "continuation resumed more than once" and "never resumed" cases.
+///
+/// ## Interaction model
+///
+/// You only ever see `FutureCompleter` as the parameter of the `work` closure in
+/// ``Effect/future(_:scheduling:file:function:line:)``. Create no instances directly.
+///
 /// ```swift
-/// Effect.future { completer in
-///     URLSession.shared.dataTask(with: url) { data, _, _ in
-///         completer.complete(parseAction(data))   // compile error if called twice
+/// Effect<AppAction>.future { completer in
+///     URLSession.shared.dataTask(with: request) { data, _, error in
+///         let action: AppAction = data
+///             .flatMap { try? JSONDecoder().decode(MyModel.self, from: $0) }
+///             .map { AppAction.didFetch(.success($0)) }
+///             ?? AppAction.didFetch(.failure(error ?? URLError(.unknown)))
+///         completer.complete(action)    // second call would not compile
 ///     }.resume()
 /// }
 /// ```
@@ -23,8 +38,13 @@ public struct FutureCompleter<Action: Sendable>: ~Copyable, @unchecked Sendable 
         self.box = box
     }
 
-    /// Complete the future with `action`. This **consumes** the completer — a second call
-    /// is a compile-time error.
+    /// Resolves the future with `action` and dispatches it to the store.
+    ///
+    /// This function **consumes** the `FutureCompleter`. After it returns, the completer no
+    /// longer exists at the call site — calling it again is a compile-time error.
+    ///
+    /// - Parameter action: The action to dispatch. It is tagged with the ``ActionSource``
+    ///   captured at the ``Effect/future(_:scheduling:file:function:line:)`` call site.
     public consuming func complete(_ action: Action) {
         box.complete(action)
     }

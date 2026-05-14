@@ -2,8 +2,13 @@ import SwiftRex
 
 #if canImport(Combine)
 extension StoreType {
-    /// Lifts any `StoreType` into an `ObservableObjectStore` for use with `@StateObject`
-    /// or `@ObservedObject` on iOS 15+.
+    /// Wraps this store in an ``ObservableObjectStore`` for use with `@StateObject` / `@ObservedObject`.
+    ///
+    /// Requires iOS 15+ (Combine). The returned wrapper fires `objectWillChange` before each
+    /// mutation, keeping SwiftUI animation snapshots accurate.
+    ///
+    /// Apply ``StoreType/projection(action:state:)`` before calling this method if you need to
+    /// narrow the action or state type:
     ///
     /// ```swift
     /// @StateObject var vm = appStore
@@ -11,6 +16,10 @@ extension StoreType {
     ///     .buffer()
     ///     .asObservableObject()
     /// ```
+    ///
+    /// On iOS 17+ prefer ``asObservableStore()`` for fine-grained `@Observable` tracking.
+    ///
+    /// - Returns: An ``ObservableObjectStore`` wrapping `self`.
     public func asObservableObject() -> ObservableObjectStore<Action, State> {
         ObservableObjectStore(self)
     }
@@ -18,7 +27,13 @@ extension StoreType {
 #endif
 
 extension StoreType {
-    /// Lifts any `StoreType` into an `ObservableStore` for use with `@State` on iOS 17+.
+    /// Wraps this store in an ``ObservableStore`` for use with `@State`.
+    ///
+    /// Requires iOS 17+ / macOS 14+ (`Observation` framework). The returned wrapper uses
+    /// `@Observable`'s registrar so only views that read a changed field of `state` re-render.
+    ///
+    /// Apply ``StoreType/projection(action:state:)`` before calling this method if you need to
+    /// narrow the action or state type:
     ///
     /// ```swift
     /// @State var vm = appStore
@@ -26,6 +41,10 @@ extension StoreType {
     ///     .buffer()
     ///     .asObservableStore()
     /// ```
+    ///
+    /// On iOS 15/16 fall back to ``asObservableObject()``.
+    ///
+    /// - Returns: An ``ObservableStore`` wrapping `self`.
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     public func asObservableStore() -> ObservableStore<Action, State> {
         ObservableStore(self)

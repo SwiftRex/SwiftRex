@@ -2,26 +2,56 @@
 import Observation
 import SwiftRex
 
-/// A `@MainActor` SwiftUI view model that wraps any `StoreType` and adds `@Observable`
-/// conformance for iOS 17+.
+/// A `@MainActor` SwiftUI view model that wraps any ``StoreType`` and adds `@Observable`
+/// conformance for use with `@State` on iOS 17+.
 ///
-/// `state` is a stored property so `@Observable`'s registrar can track access and invalidate
-/// exactly the views that read changed fields — no full re-render on unrelated mutations.
+/// ## Fine-grained observation
 ///
-/// Use `StoreType.projection(action:state:)` first if you need action or state mapping,
-/// then wrap the result here.
+/// Unlike `ObservableObject` (which invalidates all views subscribed to the object),
+/// `@Observable`'s registrar tracks **individual property access**. Only the views that
+/// actually read a field that changed are invalidated — unrelated views stay in the render tree
+/// untouched.
+///
+/// `state` is a **stored** property updated after every mutation via the store's `didChange`
+/// callback. The `@Observable` macro synthesises `_$observationRegistrar` tracking around it.
+///
+/// ## Projection first
+///
+/// Apply ``StoreType/projection(action:state:)`` before wrapping if you need a narrower
+/// action or state type:
 ///
 /// ```swift
 /// @State var vm = ObservableStore(
 ///     appStore.projection(action: AppAction.counter, state: \.counterState)
 /// )
 /// ```
+///
+/// Or use the convenience factory ``StoreType/asObservableStore()``:
+///
+/// ```swift
+/// @State var vm = appStore
+///     .projection(action: AppAction.counter, state: \.counterState)
+///     .buffer()
+///     .asObservableStore()
+/// ```
+///
+/// ## iOS version guidance
+///
+/// | iOS | Recommended wrapper | Property wrapper |
+/// | --- | --- | --- |
+/// | 15+ | ``ObservableObjectStore`` | `@StateObject` / `@ObservedObject` |
+/// | 17+ | ``ObservableStore`` | `@State` |
+///
+/// On iOS 15/16, fall back to ``ObservableObjectStore``.
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @Observable
 @MainActor
 public final class ObservableStore<Action: Sendable, State: Sendable>: StoreType {
-    /// Stored so `@Observable`'s registrar can track which fields views read.
-    /// Updated after every mutation via the store's `didChange` callback.
+    /// The current store state, stored so `@Observable`'s registrar tracks field access.
+    ///
+    /// Updated after every mutation via the store's `didChange` callback. Reading individual
+    /// fields of this property inside a SwiftUI `body` registers per-field dependencies —
+    /// only views that read a changed field re-render.
     public private(set) var state: State
 
     private let store: any StoreType<Action, State>

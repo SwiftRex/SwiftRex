@@ -1,24 +1,78 @@
 import CoreFP
 
-/// A pure function that calculates a new state given an action and the current state.
+/// A pure function that calculates how state should change in response to an action.
 ///
-/// Reducers are the only place in SwiftRex that is allowed to mutate `State`. They are completely
+/// A `Reducer` is the only place in SwiftRex that is allowed to mutate `State`. It is completely
 /// pure — no side effects, no async work, no environment access. Side effects belong in
-/// `Middleware` and are expressed as `Effect` values.
+/// ``Middleware`` and are expressed as ``Effect`` values returned from ``Behavior``.
 ///
-/// Internally a `Reducer` stores `(ActionType) -> EndoMut<StateType>`: given an action it produces
-/// an in-place endomorphism on `State`. This representation makes the monoidal structure of
-/// `Reducer` a direct, pointwise lift of `EndoMut`'s `Monoid`: combining two reducers combines
-/// their `EndoMut` values for each action, keeping a single allocation path through the pipeline.
+/// ## Internal representation
 ///
-/// The Store calls `reducer.reduce(action).runEndoMut(&_state)` in its dispatch pipeline.
+/// Internally a `Reducer` stores `(ActionType) -> EndoMut<StateType>`: given an action, it
+/// returns an in-place endomorphism on `State`. This representation:
 ///
-/// `Reducer` is a **Semigroup** and **Monoid** under sequential composition: `combine(a, b)` runs
-/// `a` then `b` on the same `inout State`, so `b` sees `a`'s mutations. Order matters.
+/// - Avoids copying state on every action — mutations are applied directly via `inout`.
+/// - Makes the `Monoid` structure a direct, pointwise lift of `EndoMut`'s `Monoid`.
+/// - Keeps composition associative and free of allocation overhead.
+///
+/// The ``Store`` calls `reducer.reduce(action).runEndoMut(&_state)` during phase 2 of dispatch.
+///
+/// ## Constructors
+///
+/// Four factory overloads cover the most common use cases:
+///
+/// ```swift
+/// // 1. Idiomatic Swift — direct inout mutation (preferred for leaf reducers)
+/// let counter = Reducer<CounterAction, Int>.reduce { action, state in
+///     switch action {
+///     case .increment: state += 1
+///     case .decrement: state -= 1
+///     case .reset:     state  = 0
+///     }
+/// }
+///
+/// // 2. From a pure (Action, State) -> State function
+/// let toggle = Reducer<ToggleAction, Bool>.reduce { action, state in
+///     switch action {
+///     case .toggle: !state
+///     }
+/// }
+///
+/// // 3. From (Action) -> EndoMut<State> — for low-level composition
+/// let raw = Reducer<MyAction, MyState>.reduce { action in
+///     EndoMut { state in /* ... */ }
+/// }
+///
+/// // 4. From (Action) -> Endo<State> — when the new state is a pure function
+/// let endo = Reducer<MyAction, MyState>.reduce { action in
+///     Endo { state in /* return new state */ }
+/// }
+/// ```
+///
+/// ## Composition with `@ReducerBuilder`
+///
+/// ```swift
+/// let appReducer: Reducer<AppAction, AppState> = Reducer.compose {
+///     authReducer.lift(action: \.auth, state: \.authState)
+///     profileReducer.lift(action: \.profile, state: \.profileState)
+/// }
+/// ```
+///
+/// ## Semigroup & Monoid
+///
+/// `Reducer` is a **Semigroup** under sequential composition and a **Monoid** with
+/// ``identity`` as the neutral element. `combine(a, b)` runs `a`'s mutation then `b`'s on
+/// the same `inout State`, so `b` observes `a`'s changes.
+///
+/// - Note: `@unchecked Sendable` is used because `ActionType` and `StateType` do not have a
+///   `Sendable` constraint at the type level, but the stored closure is always called on
+///   `@MainActor`, making it safe in practice.
 public struct Reducer<ActionType, StateType>: @unchecked Sendable {
     /// Given an action, produces an in-place endomorphism on `StateType`.
     ///
-    /// The Store uses this as `reduce(action).runEndoMut(&_state)`.
+    /// The ``Store`` uses this as `reduce(action).runEndoMut(&_state)` in phase 2 of
+    /// dispatch. The resulting `EndoMut` captures the action and modifies the state
+    /// in-place when run.
     public let reduce: (ActionType) -> EndoMut<StateType>
 
     private init(_ reduce: @escaping (ActionType) -> EndoMut<StateType>) {
@@ -31,8 +85,21 @@ public struct Reducer<ActionType, StateType>: @unchecked Sendable {
 extension Reducer {
     /// Creates a `Reducer` from `(Action) -> EndoMut<State>` — the primary internal form.
     ///
-    /// Use this when you already have an `EndoMut` per action, or when composing with other
+    /// Use this when you already have an `EndoMut` per action or when composing with other
     /// `EndoMut`-based pipelines. The closure is stored directly with no bridging overhead.
+    ///
+    /// ```swift
+    /// let myReducer = Reducer<MyAction, MyState>.reduce { action in
+    ///     EndoMut { state in
+    ///         switch action {
+    ///         case .reset: state = .initial
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameter f: A function from action to `EndoMut<State>`.
+    /// - Returns: A `Reducer` that applies the returned `EndoMut` for each action.
     public static func reduce(_ f: @escaping (ActionType) -> EndoMut<StateType>) -> Reducer {
         Reducer(f)
     }
@@ -40,39 +107,56 @@ extension Reducer {
     /// Creates a `Reducer` from `(Action) -> Endo<State>`. Bridges via `.toEndoMut()`.
     ///
     /// Use this when the transformation is naturally expressed as a pure `(State) -> State`
-    /// function per action. One `Endo → EndoMut` bridge is applied per action dispatch.
+    /// function per action. One `Endo → EndoMut` bridge is applied on each action dispatch.
+    ///
+    /// - Parameter f: A function from action to `Endo<State>` (a `State -> State` function).
+    /// - Returns: A `Reducer` that converts each `Endo` to an `EndoMut` via `.toEndoMut()`.
     public static func reduce(_ f: @escaping (ActionType) -> Endo<StateType>) -> Reducer {
         Reducer { action in f(action).toEndoMut() }
     }
 
     /// Creates a `Reducer` from an `inout` mutation function — the idiomatic Swift form.
     ///
-    /// Mutating `state` directly avoids copying large value trees. Use this for most leaf
-    /// reducers:
+    /// Mutating `state` directly avoids copying large value trees. This overload is the
+    /// preferred choice for most leaf reducers:
+    ///
     /// ```swift
-    /// Reducer.reduce { action, state in
+    /// let counterReducer = Reducer<CounterAction, CounterState>.reduce { action, state in
     ///     switch action {
-    ///     case .increment: state += 1
-    ///     case .reset:     state = 0
+    ///     case .increment:       state.count += 1
+    ///     case .decrement:       state.count -= 1
+    ///     case .reset:           state.count  = 0
+    ///     case .setMax(let max): state.max    = max
     ///     }
     /// }
     /// ```
+    ///
+    /// - Parameter f: A closure that receives the action and mutates `state` in place.
+    /// - Returns: A `Reducer` that wraps each `inout` mutation in an `EndoMut`.
     public static func reduce(_ f: @escaping (ActionType, inout StateType) -> Void) -> Reducer {
         Reducer { action in EndoMut { state in f(action, &state) } }
     }
 
-    /// Creates a `Reducer` from a pure `(Action, State) -> State` function. Bridges via
-    /// `Endo.toEndoMut()`.
+    /// Creates a `Reducer` from a pure `(Action, State) -> State` function.
+    /// Bridges via `Endo.toEndoMut()`.
     ///
-    /// Prefer the `inout` overload for large mutable state trees. Use this form when the new
-    /// state is naturally expressed as a whole-value transformation:
+    /// Use this form when the new state is naturally expressed as a whole-value
+    /// transformation — for example, when using computed properties or optics:
+    ///
     /// ```swift
-    /// Reducer.reduce { action, state in
+    /// let nameReducer = Reducer<ProfileAction, ProfileState>.reduce { action, state in
     ///     switch action {
     ///     case .updateName(let n): ProfileState.lens.name.set(state, n)
+    ///     default: state
     ///     }
     /// }
     /// ```
+    ///
+    /// - Note: This form copies `state` on every action dispatch. Prefer the `inout` overload
+    ///   for large mutable state trees.
+    ///
+    /// - Parameter f: A pure function from `(ActionType, StateType)` to a new `StateType`.
+    /// - Returns: A `Reducer` that bridges each invocation through `Endo.toEndoMut()`.
     public static func reduce(_ f: @escaping (ActionType, StateType) -> StateType) -> Reducer {
         Reducer { action in Endo { state in f(action, state) }.toEndoMut() }
     }
@@ -81,19 +165,27 @@ extension Reducer {
 // MARK: - Semigroup & Monoid
 
 extension Reducer: Semigroup {
-    /// Sequential composition: for each action, combines the two `EndoMut` values pointwise.
+    /// Sequential composition: for each action, runs `lhs`'s mutation then `rhs`'s on the same
+    /// `inout State`.
     ///
-    /// `rhs` observes any mutations made by `lhs`. The composition is associative but not
-    /// commutative — order matters.
+    /// `rhs` observes any mutations made by `lhs`. Composition is associative but not
+    /// commutative — order matters. Use ``compose(content:)`` or ``ReducerBuilder`` for
+    /// readable multi-reducer composition.
+    ///
+    /// - Parameters:
+    ///   - lhs: The first reducer; its mutation runs first.
+    ///   - rhs: The second reducer; its mutation sees lhs's changes.
+    /// - Returns: A reducer whose `EndoMut` is the sequential composition of both.
     public static func combine(_ lhs: Reducer, _ rhs: Reducer) -> Reducer {
         Reducer { action in .combine(lhs.reduce(action), rhs.reduce(action)) }
     }
 }
 
 extension Reducer: Monoid {
-    /// The no-op reducer. Composing with `identity` leaves the other reducer unchanged.
+    /// The no-op reducer — for every action it returns `EndoMut.identity` (do nothing).
     ///
-    /// For every action it returns `EndoMut.identity` — the do-nothing in-place closure.
+    /// Composing with `identity` leaves the other reducer unchanged.
+    /// An empty ``compose(content:)`` block also produces this.
     public static var identity: Reducer {
         .reduce { _ in EndoMut<StateType>.identity }
     }
@@ -101,20 +193,19 @@ extension Reducer: Monoid {
 
 // MARK: - DSL Builder
 
-/// Enables the ``Reducer/compose(content:)`` DSL syntax for listing reducers in a block.
+/// A result builder that collects `Reducer` values from a block and folds them left-to-right
+/// via ``Reducer/combine(_:_:)``, enabling a SwiftUI-style DSL for reducer composition.
 ///
-/// Each line in the block is an independent `Reducer` value. They are collected and folded
-/// left-to-right via ``Reducer/combine(_:_:)``, so each reducer sees the state mutations
-/// made by all preceding ones.
+/// Each line in the block is an independent `Reducer` value. They are composed so that each
+/// reducer sees the state mutations made by all preceding reducers in the block.
 ///
 /// ## Using `@ReducerBuilder` as a function attribute
 ///
-/// Like `@ViewBuilder` in SwiftUI, you can annotate your own functions, computed properties,
-/// or initialiser parameters with `@ReducerBuilder` to make their body a reducer-composition
-/// block — without needing to call ``Reducer/compose(content:)`` explicitly:
+/// Like `@ViewBuilder` in SwiftUI, annotate computed properties, functions, or initialiser
+/// parameters with `@ReducerBuilder` to make their body a reducer-composition block:
 ///
 /// ```swift
-/// // Computed property — @ReducerBuilder on the property, just like @ViewBuilder on `body`
+/// // Computed property — mirrors the @ViewBuilder `body` pattern
 /// extension ProfileModule {
 ///     @ReducerBuilder
 ///     var reducer: Reducer<ProfileAction, ProfileState> {
@@ -124,7 +215,7 @@ extension Reducer: Monoid {
 ///     }
 /// }
 ///
-/// // Static factory — useful when construction needs parameters
+/// // Static factory with parameters
 /// extension AuthModule {
 ///     @ReducerBuilder
 ///     static func reducer(config: AuthConfig) -> Reducer<AuthAction, AuthState> {
@@ -133,17 +224,17 @@ extension Reducer: Monoid {
 ///         tokenRefreshReducer
 ///     }
 /// }
-///
-/// // Composing at the app level from module factories
-/// let appReducer: Reducer<AppAction, AppState> = Reducer.compose {
-///     AuthModule.reducer(config: .production).lift(action: \.auth, state: \.authState)
-///     ProfileModule().reducer.lift(action: \.profile, state: \.profileState)
-/// }
 /// ```
 ///
-/// You never use `ReducerBuilder` directly — it is the backing machinery for the `@ReducerBuilder`
-/// parameter in ``Reducer/compose(content:)``.
+/// You never use `ReducerBuilder` directly — it is the backing machinery for the
+/// `@ReducerBuilder` parameter in ``Reducer/compose(content:)``.
+///
+/// - SeeAlso: ``Reducer/compose(content:)``, ``Reducer/combine(_:_:)``
 @resultBuilder public enum ReducerBuilder {
+    /// Collects all `Reducer` values from the block and folds them with `mconcat`.
+    ///
+    /// - Parameter reducers: The reducers listed in the builder block.
+    /// - Returns: A single `Reducer` that is the sequential composition of all inputs.
     public static func buildBlock<Action, State>(
         _ reducers: Reducer<Action, State>...
     ) -> Reducer<Action, State> {
@@ -152,14 +243,13 @@ extension Reducer: Monoid {
 }
 
 extension Reducer {
-    /// Composes reducers sequentially using a DSL block.
+    /// Composes reducers sequentially using a `@ReducerBuilder` block.
     ///
     /// Each reducer listed in the block handles the same incoming action against the same
-    /// `State`, but in order — the second reducer sees any mutations made by the first, and so on.
-    /// This is monoidal composition (`mconcat`) written in a readable top-to-bottom style.
+    /// `State`, but in order — each reducer sees the state mutations made by all preceding
+    /// ones. This is monoidal composition (`mconcat`) in a readable top-to-bottom style.
     ///
-    /// Prefer this form when composing many reducers, or when the composition reads more clearly
-    /// as a vertical list than a chain of ``combine(_:_:)`` calls.
+    /// An empty block produces ``identity`` — the no-op reducer.
     ///
     /// ```swift
     /// let appReducer: Reducer<AppAction, AppState> = Reducer.compose {
@@ -175,7 +265,8 @@ extension Reducer {
     /// }
     /// ```
     ///
-    /// An empty block produces ``identity`` — the no-op reducer.
+    /// - Parameter content: A `@ReducerBuilder` block listing reducers to compose.
+    /// - Returns: The sequential composition of all reducers in the block.
     public static func compose(@ReducerBuilder content: () -> Reducer) -> Reducer {
         content()
     }
@@ -191,6 +282,11 @@ extension Reducer {
     ///     profileReducer.lift(action: \.profile, state: \.profileState)
     /// )
     /// ```
+    ///
+    /// - Parameters:
+    ///   - first: The first reducer (required so the overload does not conflict with `compose(content:)`).
+    ///   - others: Additional reducers to compose in order.
+    /// - Returns: The sequential composition of `first` followed by each element of `others`.
     public static func compose(_ first: Reducer, _ others: Reducer...) -> Reducer {
         sconcat(first, others)
     }
