@@ -25,12 +25,34 @@ extension Reducer {
 
 extension Reducer {
     /// Lifts a local reducer to a global state only, leaving the action type unchanged.
-    ///
-    /// - Parameter state: Writable KeyPath from global state to local state.
     public func lift<GlobalState>(
         state: WritableKeyPath<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
         .reduce { action in EndoMut { globalState in self.reduce(action)(&globalState[keyPath: state]) } }
+    }
+
+    /// Lifts a local reducer using an optional `WritableKeyPath` for the action.
+    /// The reducer runs only when the keypath value is non-`nil`.
+    public func lift<GlobalAction>(
+        action: WritableKeyPath<GlobalAction, ActionType?>
+    ) -> Reducer<GlobalAction, StateType> {
+        .reduce { globalAction in
+            guard let localAction = globalAction[keyPath: action] else { return .identity }
+            return self.reduce(localAction)
+        }
+    }
+
+    /// Lifts a local reducer using an optional `WritableKeyPath` for the action and a
+    /// `WritableKeyPath` for the state.
+    /// The reducer runs only when the action keypath value is non-`nil`.
+    public func lift<GlobalAction, GlobalState: Sendable>(
+        action: WritableKeyPath<GlobalAction, ActionType?>,
+        state: WritableKeyPath<GlobalState, StateType>
+    ) -> Reducer<GlobalAction, GlobalState> {
+        .reduce { globalAction in
+            guard let localAction = globalAction[keyPath: action] else { return .identity }
+            return EndoMut { globalState in self.reduce(localAction)(&globalState[keyPath: state]) }
+        }
     }
 }
 
