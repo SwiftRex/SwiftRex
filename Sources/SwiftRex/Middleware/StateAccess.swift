@@ -19,7 +19,7 @@
 /// }
 /// ```
 @MainActor
-public struct StateAccess<State: Sendable>: Sendable {
+public struct StateAccess<State: Sendable> {
     private let _get: @Sendable @MainActor () -> State?
 
     package init(_ get: @escaping @Sendable @MainActor () -> State?) {
