@@ -9,12 +9,13 @@ import Testing
 ///   ``Effect`` into ``pendingEffects`` without starting it.
 /// - ``runEffects()`` drives all pending effects and collects their output actions into
 ///   ``receivedActions``.
-/// - ``receive(sourceLocation:assert:)`` dequeues the next received action, dispatches it through
-///   the behavior, validates the resulting state, and returns the action for assertion.
+/// - ``receive(_:sourceLocation:assert:)`` asserts the next received action equals an expected
+///   value, dispatches it through the behavior, validates the resulting state, and returns the
+///   action.
 ///
 /// ## State assertions
 ///
-/// Both ``send(_:sourceLocation:assert:)`` and ``receive(sourceLocation:assert:)`` require a
+/// Both ``send(_:sourceLocation:assert:)`` and ``receive(_:sourceLocation:assert:)`` require a
 /// trailing closure that describes the **expected** state change. The closure receives an `inout`
 /// copy of the state before the action and you mutate it to what you expect:
 ///
@@ -32,7 +33,7 @@ import Testing
 /// In exhaustive mode (`exhaustive: true`) the store enforces a strict discipline:
 ///
 /// - Calling ``send(_:sourceLocation:assert:)`` while ``receivedActions`` is non-empty records a
-///   test failure — process all received actions with ``receive(sourceLocation:assert:)`` before
+///   test failure — process all received actions with ``receive(_:sourceLocation:assert:)`` before
 ///   dispatching again.
 /// - When the `TestStore` is deallocated (end of the test function), any remaining
 ///   ``pendingEffects`` or ``receivedActions`` also record failures.
@@ -46,8 +47,7 @@ import Testing
 ///     store.send(.load) { $0.isLoading = true }
 ///
 ///     await store.runEffects()
-///     let action = store.receive { $0.isLoading = false; $0.data = mockData }
-///     #expect(action == .didLoad(mockData))
+///     store.receive(.didLoad(mockData)) { $0.isLoading = false; $0.data = mockData }
 /// }
 /// ```
 @MainActor
@@ -174,35 +174,53 @@ public final class TestStore<Action: Sendable & Equatable, State: Sendable & Equ
         _receivedCount = receivedActions.count
     }
 
-    /// Dequeues and dispatches the next action in ``receivedActions`` through the behavior,
-    /// then validates the resulting state.
+    /// Dequeues the next action from ``receivedActions``, asserts it equals `expected`,
+    /// dispatches it through the behavior, and validates the resulting state.
     ///
-    /// The `assert` closure receives an `inout` copy of the state **before** the received action
-    /// was dispatched. Mutate it to produce the **expected** post-action state. If the actual
-    /// state does not equal the expected state, a test failure is recorded.
+    /// Both the **action** and the **state change** are validated:
+    /// - If the dequeued action does not equal `expected`, a failure is recorded and the action
+    ///   is still dispatched so subsequent assertions remain meaningful.
+    /// - The `assert` closure receives an `inout` copy of the state **before** dispatch. Mutate
+    ///   it to produce the expected post-action state; a mismatch records a failure.
     ///
     /// A failure is also recorded when ``receivedActions`` is empty — call ``runEffects()`` first
     /// if you expect effect output.
     ///
+    /// ```swift
+    /// await store.runEffects()
+    /// store.receive(.didLoad(data)) { $0.isLoading = false; $0.items = data }
+    /// ```
+    ///
     /// - Parameters:
+    ///   - expected: The action you expect to find at the front of ``receivedActions``.
     ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: A closure that mutates the pre-action state to produce the expected
-    ///     post-action state. Pass `{ _ in }` when no state change is expected.
-    /// - Returns: The action that was processed, or `nil` if ``receivedActions`` was empty.
+    ///   - assert: Mutates the pre-action state to produce the expected post-action state.
+    ///     Pass `{ _ in }` when the action is expected to produce no state change.
     @discardableResult
     public func receive(
+        _ expected: Action,
         sourceLocation: SourceLocation = #_sourceLocation,
         assert expectedStateChange: (inout State) -> Void
     ) -> Action? {
         guard !receivedActions.isEmpty else {
             Issue.record(
-                "receive() called but receivedActions is empty — call runEffects() first if you expect effect output",
+                "receive(\(expected)) called but receivedActions is empty — call runEffects() first if you expect effect output",
                 sourceLocation: sourceLocation
             )
             return nil
         }
         let action = receivedActions.removeFirst()
         _receivedCount = receivedActions.count
+        if action != expected {
+            Issue.record(
+                """
+                Action mismatch in receive()
+                Expected: \(expected)
+                  Actual: \(action)
+                """,
+                sourceLocation: sourceLocation
+            )
+        }
         let before = state
         dispatch(DispatchedAction(action))
         assertState(before: before, after: state, label: "receive(\(action))", sourceLocation: sourceLocation, expectedChange: expectedStateChange)

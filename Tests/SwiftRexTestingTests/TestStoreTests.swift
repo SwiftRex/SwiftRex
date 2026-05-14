@@ -121,7 +121,7 @@ struct TestStoreEffectTests {
             store.send(.increment) { $0.isLoading = true; $0.count = 1 }
         }
         // process the pending received action so deinit is clean
-        store.receive { $0.isLoading = false; $0.count = 99 }
+        store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
     }
 }
 
@@ -136,14 +136,14 @@ struct TestStoreRunEffectsTests {
         await store.runEffects()
         #expect(store.pendingEffects.isEmpty)
         #expect(store.receivedActions == [.loaded(99)])
-        store.receive { $0.isLoading = false; $0.count = 99 }
+        store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
     }
 
     @Test func receiveProcessesActionThroughBehavior() async {
         let store = TestStore(initial: CounterState(), behavior: counterBehavior, environment: ())
         store.send(.load) { $0.isLoading = true }
         await store.runEffects()
-        let action = store.receive { $0.isLoading = false; $0.count = 99 }
+        let action = store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
         #expect(action == .loaded(99))
     }
 
@@ -155,7 +155,7 @@ struct TestStoreRunEffectsTests {
             exhaustive: false
         )
         withKnownIssue("receive() on empty receivedActions should record a failure") {
-            let result = store.receive { _ in }
+            let result = store.receive(.loaded(0)) { _ in }
             #expect(result == nil)
         }
     }
@@ -164,7 +164,7 @@ struct TestStoreRunEffectsTests {
         let store = TestStore(initial: CounterState(), behavior: counterBehavior, environment: ())
         store.send(.load) { $0.isLoading = true }
         await store.runEffects()
-        store.receive { $0.isLoading = false; $0.count = 99 }
+        store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
         #expect(store.receivedActions.isEmpty)
     }
 
@@ -187,11 +187,11 @@ struct TestStoreRunEffectsTests {
         store.send(.load) { $0.isLoading = true }
 
         await store.runEffects()
-        store.receive { $0.isLoading = false; $0.count = 5 }
+        store.receive(.loaded(5)) { $0.isLoading = false; $0.count = 5 }
         #expect(!store.pendingEffects.isEmpty)
 
         await store.runEffects()
-        store.receive { $0.count = 100 }
+        store.receive(.set(100)) { $0.count = 100 }
         #expect(store.pendingEffects.isEmpty)
         #expect(store.receivedActions.isEmpty)
     }
@@ -217,9 +217,23 @@ struct TestStoreRunEffectsTests {
         store.send(.load) { _ in }  // .load produces no state change in this behavior
         await store.runEffects()
         #expect(store.receivedActions.count == 3)
-        store.receive { $0.count = 1 }
-        store.receive { $0.count = 2 }
-        store.receive { $0.count = 3 }
+        store.receive(.set(1)) { $0.count = 1 }
+        store.receive(.set(2)) { $0.count = 2 }
+        store.receive(.set(3)) { $0.count = 3 }
+    }
+
+    @Test func receiveActionMismatchRecordsFailure() async {
+        let store = TestStore(
+            initial: CounterState(),
+            behavior: counterBehavior,
+            environment: (),
+            exhaustive: false
+        )
+        store.send(.load) { $0.isLoading = true }
+        await store.runEffects()
+        withKnownIssue("wrong expected action should record a mismatch failure") {
+            store.receive(.increment) { $0.isLoading = false; $0.count = 99 }
+        }
     }
 
     @Test func runEffectsOnEmptyIsNoop() async {
