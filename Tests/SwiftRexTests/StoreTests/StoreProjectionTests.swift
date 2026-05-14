@@ -121,6 +121,63 @@ struct StoreProjectionIdentifiableTests {
     }
 }
 
+// MARK: - Collection element projection (custom identifier closure)
+
+private struct Tagged: Sendable { let tag: String; var score: Int }
+private struct TaggedState: Sendable { var entries: [Tagged] = [] }
+
+@Suite("StoreProjection collection element (custom identifier closure)")
+@MainActor
+struct StoreProjectionCustomIdentifierTests {
+    private func taggedStore(entries: [Tagged]) -> Store<ElementAction<String, Int>, TaggedState, Void> {
+        Store(
+            initial: TaggedState(entries: entries),
+            behavior: Behavior<ElementAction<String, Int>, TaggedState, Void>.handle { action, _ in
+                .reduce { state in
+                    guard let idx = state.entries.firstIndex(where: { $0.tag == action.action.id }) else { return }
+                    state.entries[idx].score = action.action.action
+                }
+            },
+            environment: ()
+        )
+    }
+
+    @Test func stateIsElementWhenPresent() {
+        let store = taggedStore(entries: [Tagged(tag: "a", score: 1), Tagged(tag: "b", score: 2)])
+        let proj = store.projection(
+            element: "b",
+            actionReview: { $0 },
+            stateCollection: \.entries,
+            identifier: { $0.tag }
+        )
+        #expect(proj.state?.score == 2)
+    }
+
+    @Test func stateIsNilWhenElementAbsent() {
+        let store = taggedStore(entries: [Tagged(tag: "a", score: 1)])
+        let proj = store.projection(
+            element: "missing",
+            actionReview: { $0 },
+            stateCollection: \.entries,
+            identifier: { $0.tag }
+        )
+        #expect(proj.state == nil)
+    }
+
+    @Test func dispatchUpdatesCorrectElement() {
+        let store = taggedStore(entries: [Tagged(tag: "x", score: 0), Tagged(tag: "y", score: 5)])
+        let proj = store.projection(
+            element: "x",
+            actionReview: { $0 },
+            stateCollection: \.entries,
+            identifier: { $0.tag }
+        )
+        proj.dispatch(99)
+        #expect(store.state.entries[0].score == 99)
+        #expect(store.state.entries[1].score == 5)
+    }
+}
+
 // MARK: - Dictionary projection
 
 @Suite("StoreProjection dictionary key")

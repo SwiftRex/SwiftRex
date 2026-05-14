@@ -196,14 +196,98 @@ struct MiddlewareLiftEnvironmentTests {
     }
 }
 
+// MARK: - liftState AffineTraversal
+
+@Suite("Middleware liftState AffineTraversal")
+@MainActor
+struct MiddlewareLiftStateATTests {
+    private let statePasser = Middleware<Int, Int, Void>.handle { _, stateAccess in
+        Reader { _ in
+            guard let s = stateAccess.snapshotState() else { return .empty }
+            return .just(s)
+        }
+    }
+
+    private let optionalIntAT = AffineTraversal<Int?, Int>(
+        preview: { $0 },
+        set: { _, v in Optional(v) }
+    )
+
+    @Test func liftStateATProjectsSubStateWhenFocusPresent() {
+        let sut = statePasser.liftState(optionalIntAT)
+        let received = LockProtected([Int]())
+        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource), StateAccess<Int?> { .some(55) }).runReader(())) { d in
+            received.mutate { $0.append(d.action) }
+        }
+        #expect(received.value == [55])
+    }
+
+    @Test func liftStateATReturnsNilWhenFocusAbsent() {
+        let sut = statePasser.liftState(optionalIntAT)
+        let received = LockProtected([Int]())
+        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource), StateAccess<Int?> { nil }).runReader(())) { d in
+            received.mutate { $0.append(d.action) }
+        }
+        #expect(received.value.isEmpty)
+    }
+}
+
+// MARK: - Combined lift
+
+@Suite("Middleware combined lift")
+@MainActor
+struct MiddlewareCombinedLiftTests {
+    private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
+    private let base = Middleware<Int, Int, Int>.handle { action, _ in
+        Reader { env in .just(action.action + env) }
+    }
+
+    @Test func liftAllThreeAxesClosure() {
+        let sut = base.lift(
+            action: prism,
+            state: { (gs: GS) in gs.local },
+            environment: { (ge: GE) in ge.sub }
+        )
+        let dispatched = DispatchedAction(GA(local: 2, other: nil), dispatcher: anySource)
+        let received = LockProtected([GA]())
+        subscribeAll(sut.handle(dispatched, StateAccess { GS() }).runReader(GE(sub: 3, other: ""))) { d in
+            received.mutate { $0.append(d.action) }
+        }
+        // action=2 + env=3 = 5, wrapped via review → GA(local: 5)
+        #expect(received.value.first?.local == 5)
+    }
+
+    @Test func liftAllThreeAxesLens() {
+        let stateLens = Lens<GS, Int>(get: { $0.local }, set: { GS(local: $1, other: $0.other) })
+        let sut = base.lift(action: prism, state: stateLens, environment: { (ge: GE) in ge.sub })
+        let dispatched = DispatchedAction(GA(local: 1, other: nil), dispatcher: anySource)
+        let received = LockProtected([GA]())
+        subscribeAll(sut.handle(dispatched, StateAccess { GS() }).runReader(GE(sub: 4, other: ""))) { d in
+            received.mutate { $0.append(d.action) }
+        }
+        #expect(received.value.first?.local == 5)
+    }
+
+    @Test func liftSkipsWhenActionNotMatched() {
+        let sut = base.lift(
+            action: prism,
+            state: { (gs: GS) in gs.local },
+            environment: { (ge: GE) in ge.sub }
+        )
+        let dispatched = DispatchedAction(GA(local: nil, other: "x"), dispatcher: anySource)
+        let effect = sut.handle(dispatched, StateAccess { GS() }).runReader(GE(sub: 0, other: ""))
+        #expect(effect.components.isEmpty)
+    }
+}
+
 // MARK: - StateAccess timing: pre vs post mutation
 
 @Suite("Middleware StateAccess timing")
 @MainActor
 struct MiddlewareStateAccessTimingTests {
     @Test func handleCapturesPreStateReaderSeesPostState() {
-        var state = 0
-        let access = StateAccess<Int> { state }
+        let stateBox = LockProtected(0)
+        let access = StateAccess<Int> { stateBox.value }
         let sut = Middleware<Int, Int, Void>.handle { _, stateAccess in
             let pre = stateAccess.snapshotState() ?? 0
             return Reader { _ in
@@ -211,9 +295,8 @@ struct MiddlewareStateAccessTimingTests {
                 return .just(pre + post)
             }
         }
-        let dispatched = DispatchedAction(0, dispatcher: anySource)
-        let reader = sut.handle(dispatched, access)
-        state = 10
+        let reader = sut.handle(DispatchedAction(0, dispatcher: anySource), access)
+        stateBox.set(10)   // mutate after handle captures pre-state
         let received = LockProtected([Int]())
         subscribeAll(reader.runReader(())) { d in received.mutate { $0.append(d.action) } }
         // pre=0, post=10 → 0+10=10

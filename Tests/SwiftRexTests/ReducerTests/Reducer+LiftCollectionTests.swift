@@ -225,4 +225,87 @@ final class ReducerLiftCollectionTests: XCTestCase {
         XCTAssertEqual(state.items[0].value, 0)
         XCTAssertEqual(state.items[1].value, 5)
     }
+
+    // MARK: - Lens state container (primitive)
+
+    func testLiftCollectionPrimitiveLensStateContainer() {
+        let containerLens = Lens<AppState, [Int]>(
+            get: { $0.items.map(\.value) },
+            setMut: { appState, ints in
+                for (i, v) in ints.enumerated() where i < appState.items.count {
+                    appState.items[i].value = v
+                }
+            }
+        )
+        let addToInt = Reducer<Int, Int>.reduce { delta, n in n += delta }
+        let sut = addToInt.liftCollection(
+            action: { (pair: (action: Int, element: AffineTraversal<[Int], Int>)?) in pair },
+            stateContainer: containerLens
+        )
+        var state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 10)])
+        sut.reduce((action: 5, element: [Int].ix(0)))(&state)
+        XCTAssertEqual(state.items[0].value, 5)
+        XCTAssertEqual(state.items[1].value, 10)
+    }
+
+    // MARK: - Identifiable with Lens state container
+
+    func testLiftCollectionIdentifiableLensState() {
+        let itemsLens = Lens<AppState, [Item]>(get: { $0.items }, setMut: { $0.items = $1 })
+        let sut = addToValue.liftCollection(
+            action: { (ea: ElementAction<UUID, Int>?) in ea },
+            stateCollection: itemsLens
+        )
+        var state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 10)])
+        sut.reduce(ElementAction(id1, action: 3))(&state)
+        XCTAssertEqual(state.items[0].value, 3)
+        XCTAssertEqual(state.items[1].value, 10)
+    }
+
+    // MARK: - Custom identifier with closure (genuine closure call)
+
+    func testLiftCollectionCustomIdentifierClosureNotKeyPath() {
+        struct Named: Sendable { var tag: String; var count: Int }
+        struct NamedState { var entries: [Named] = [] }
+        let inc = Reducer<Int, Named>.reduce { delta, item in item.count += delta }
+        let sut = inc.liftCollection(
+            action: { (ea: ElementAction<String, Int>?) in ea },
+            stateCollection: \NamedState.entries,
+            identifier: { $0.tag }          // genuine closure, not a KeyPath
+        )
+        var state = NamedState(entries: [Named(tag: "a", count: 0), Named(tag: "b", count: 5)])
+        sut.reduce(ElementAction("b", action: 2))(&state)
+        XCTAssertEqual(state.entries[0].count, 0)
+        XCTAssertEqual(state.entries[1].count, 7)
+    }
+
+    // MARK: - Custom identifier with Lens state container
+
+    func testLiftCollectionCustomIdentifierLensState() {
+        struct Named: Sendable { var tag: String; var count: Int }
+        struct NamedState { var entries: [Named] = [] }
+        let inc = Reducer<Int, Named>.reduce { delta, item in item.count += delta }
+        let entriesLens = Lens<NamedState, [Named]>(get: { $0.entries }, setMut: { $0.entries = $1 })
+        let sut = inc.liftCollection(
+            action: { (ea: ElementAction<String, Int>?) in ea },
+            stateCollection: entriesLens,
+            identifier: { $0.tag }
+        )
+        var state = NamedState(entries: [Named(tag: "x", count: 1)])
+        sut.reduce(ElementAction("x", action: 9))(&state)
+        XCTAssertEqual(state.entries[0].count, 10)
+    }
+
+    // MARK: - Dictionary with Lens state container
+
+    func testLiftCollectionDictionaryLensState() {
+        let lookupLens = Lens<AppState, [String: Int]>(get: { $0.lookup }, setMut: { $0.lookup = $1 })
+        let sut = addToInt.liftCollection(
+            action: { (ea: ElementAction<String, Int>?) in ea },
+            stateDictionary: lookupLens
+        )
+        var state = AppState(items: [], lookup: ["score": 10])
+        sut.reduce(ElementAction("score", action: 5))(&state)
+        XCTAssertEqual(state.lookup["score"], 15)
+    }
 }
