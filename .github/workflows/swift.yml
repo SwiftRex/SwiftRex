@@ -1,34 +1,25 @@
-name: Swift
+name: CI
 
 on:
   push:
-    branches: [ develop ]
+    branches: [full-rewrite, master, develop]
   pull_request:
-    branches: [ develop ]
+    branches: [master, develop]
 
 jobs:
-  build:
-    runs-on: macos-11
+  macos:
+    name: macOS
+    runs-on: macos-15
     steps:
-    - name: Cache Mint
-      uses: actions/cache@v2
-      with:
-        key: mint_deps
-        path: ~/mint
-    - uses: actions/checkout@v2
-    - name: Install Dependencies
-      env:
-        MINT_PATH: '~/mint'
-      run: |
-        brew install mint
-        mint bootstrap
-    - name: SwiftLint
-      env:
-        MINT_PATH: '~/mint'
-      run: make lint-check
-    - name: Run tests
-      env:
-        LC_CTYPE: 'en_US.UTF-8'
-        LANG: 'en_US.UTF-8'
-        MINT_PATH: '~/mint'
-      run: make test
+      - uses: actions/checkout@v4
+      - name: Test
+        run: swift test 2>&1
+
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: swift test 2>&1
