@@ -19,7 +19,7 @@ let package = Package(
         .library(name: "SwiftRex.SwiftUI",      targets: ["SwiftRexSwiftUI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/luizmb/FP.git", from: "1.6.3"),
+        .package(url: "https://github.com/luizmb/FP.git", from: "1.6.4"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0")
     ],

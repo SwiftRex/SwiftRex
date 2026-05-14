@@ -73,7 +73,7 @@ extension Reducer where StateType: Identifiable {
 
 extension Reducer {
     /// Lifts to a mutable collection, locating the element by a custom `Hashable` field.
-    /// The `identifier` closure extracts the ID from an element — no `KeyPath`.
+    /// The `identifier` closure extracts the ID from an element.
     /// State container via `WritableKeyPath`.
     public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> ElementAction<ID, ActionType>?,
@@ -81,20 +81,7 @@ extension Reducer {
         identifier: @escaping @Sendable (StateType) -> ID
     ) -> Reducer<GA, GS> where C.Element == StateType, C.Element: Sendable, C.Index: Sendable {
         liftCollection(
-            action: { ga in
-                action(ga).map { ea in
-                    let id = ea.id
-                    let at = AffineTraversal<C, StateType>(
-                        preview: { $0.first(where: { identifier($0) == id }) },
-                        set: { collection, element in
-                            guard let idx = collection.firstIndex(where: { identifier($0) == id })
-                            else { return collection }
-                            var copy = collection; copy[idx] = element; return copy
-                        }
-                    )
-                    return (action: ea.action, element: at)
-                }
-            },
+            action: { ga in action(ga).map { ea in (action: ea.action, element: C.ix(id: ea.id, by: identifier)) } },
             stateContainer: stateCollection
         )
     }
@@ -107,20 +94,7 @@ extension Reducer {
         identifier: @escaping @Sendable (StateType) -> ID
     ) -> Reducer<GA, GS> where C.Element == StateType, C.Element: Sendable, C.Index: Sendable {
         liftCollection(
-            action: { ga in
-                action(ga).map { ea in
-                    let id = ea.id
-                    let at = AffineTraversal<C, StateType>(
-                        preview: { $0.first(where: { identifier($0) == id }) },
-                        set: { collection, element in
-                            guard let idx = collection.firstIndex(where: { identifier($0) == id })
-                            else { return collection }
-                            var copy = collection; copy[idx] = element; return copy
-                        }
-                    )
-                    return (action: ea.action, element: at)
-                }
-            },
+            action: { ga in action(ga).map { ea in (action: ea.action, element: C.ix(id: ea.id, by: identifier)) } },
             stateContainer: stateCollection
         )
     }
