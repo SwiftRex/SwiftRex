@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Testing
 import Combine
 import SwiftRex
@@ -182,3 +183,4 @@ struct StorePublisherTests {
         #expect(received == [1])
     }
 }
+#endif

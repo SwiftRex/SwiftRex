@@ -1,4 +1,5 @@
- @preconcurrency import Combine
+#if canImport(Combine)
+@preconcurrency import Combine
 import SwiftRex
 
 // MARK: - Store observation as Publisher
@@ -58,3 +59,4 @@ where Sub.Input == S.State, Sub.Failure == Never {
         subscriber = nil
     }
 }
+#endif

@@ -1,5 +1,6 @@
 import SwiftRex
 
+#if canImport(Combine)
 extension StoreType {
     /// Lifts any `StoreType` into an `ObservableObjectStore` for use with `@StateObject`
     /// or `@ObservedObject` on iOS 15+.
@@ -14,6 +15,7 @@ extension StoreType {
         ObservableObjectStore(self)
     }
 }
+#endif
 
 extension StoreType {
     /// Lifts any `StoreType` into an `ObservableStore` for use with `@State` on iOS 17+.

@@ -1,3 +1,4 @@
+#if canImport(Combine)
 import Combine
 import SwiftRex
 
@@ -44,3 +45,4 @@ public final class ObservableObjectStore<Action: Sendable, State: Sendable>
         store.observe(willChange: willChange, didChange: didChange)
     }
 }
+#endif

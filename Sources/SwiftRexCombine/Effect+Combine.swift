@@ -1,4 +1,5 @@
- @preconcurrency import Combine
+#if canImport(Combine)
+@preconcurrency import Combine
 import SwiftRex
 
 private struct Unchecked<T>: @unchecked Sendable { let value: T }
@@ -129,4 +130,4 @@ extension Effect {
         ])
     }
 }
-
+#endif
