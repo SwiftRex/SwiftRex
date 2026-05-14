@@ -1,7 +1,7 @@
-/// The common interface shared by `Store` and `StoreProjection`.
+/// The common interface shared by `Store`, `StoreProjection`, `StoreBuffer`, and any mock.
 ///
 /// Views, coordinators, and tests accept `any StoreType<Action, State>`, letting the real
-/// `Store` and a projected `StoreProjection` be used interchangeably.
+/// `Store` and derived types be used interchangeably.
 ///
 /// ```swift
 /// struct CounterView: View {
@@ -37,6 +37,8 @@ public protocol StoreType<Action, State>: Sendable {
     ) -> SubscriptionToken
 }
 
+// MARK: - Convenience overloads
+
 extension StoreType {
     /// Dispatches an action, automatically capturing the call site for provenance.
     @discardableResult
@@ -60,36 +62,5 @@ extension StoreType {
     @discardableResult
     public func observe(willChange: @escaping @MainActor @Sendable () -> Void) -> SubscriptionToken {
         observe(willChange: willChange, didChange: {})
-    }
-
-    /// Projects this store to a narrower action and state interface.
-    ///
-    /// The projection holds no state of its own — `state` is re-computed on every access
-    /// by applying `mapState` to the underlying store's current state.
-    ///
-    /// ```swift
-    /// let counterProjection = appStore.projection(
-    ///     action: AppAction.counter,
-    ///     state:  \.counterState
-    /// )
-    /// ```
-    public func projection<LocalAction: Sendable, LocalState: Sendable>(
-        action mapAction: @escaping @Sendable (LocalAction) -> Action,
-        state mapState: @escaping @MainActor @Sendable (State) -> LocalState
-    ) -> StoreProjection<LocalAction, LocalState> {
-        StoreProjection(store: self, action: mapAction, state: mapState)
-    }
-
-    /// Wraps this store in a `StoreBuffer` that caches state and only fires observers
-    /// when `hasChanged` returns `true`.
-    public func buffer(
-        hasChanged: @escaping @Sendable (State, State) -> Bool
-    ) -> StoreBuffer<Action, State> where State: Sendable {
-        StoreBuffer(self, hasChanged: hasChanged)
-    }
-
-    /// Wraps this store in a `StoreBuffer` using `!=` as the predicate.
-    public func buffer() -> StoreBuffer<Action, State> where State: Equatable & Sendable {
-        StoreBuffer(self)
     }
 }

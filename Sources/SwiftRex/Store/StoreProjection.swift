@@ -40,6 +40,46 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
+    /// Projects to a single `Identifiable` element in a collection.
+    /// `State` must be `C.Element?`; global types appear in the init only.
+    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>, C: Collection & Sendable>(
+        store: S,
+        element id: C.Element.ID,
+        actionReview: @escaping @Sendable (ElementAction<C.Element.ID, Action>) -> GA,
+        stateCollection: KeyPath<GS, C>
+    ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
+        _state    = { store.state[keyPath: stateCollection].first { $0.id == id } }
+        _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
+        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+    }
+
+    /// Projects to the first element whose `identifier` field matches `id`.
+    /// `State` must be `C.Element?`; global types appear in the init only.
+    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>, C: Collection & Sendable, ID: Hashable & Sendable>(
+        store: S,
+        element id: ID,
+        actionReview: @escaping @Sendable (ElementAction<ID, Action>) -> GA,
+        stateCollection: KeyPath<GS, C>,
+        identifier: KeyPath<C.Element, ID>
+    ) where C.Element: Sendable, State == C.Element? {
+        _state    = { store.state[keyPath: stateCollection].first { $0[keyPath: identifier] == id } }
+        _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
+        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+    }
+
+    /// Projects to a value in a `[Key: Value]` dictionary by key.
+    /// `State` must be `Value?`; global types appear in the init only.
+    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>, Key: Hashable & Sendable, Value: Sendable>(
+        store: S,
+        key: Key,
+        actionReview: @escaping @Sendable (ElementAction<Key, Action>) -> GA,
+        stateDictionary: KeyPath<GS, [Key: Value]>
+    ) where State == Value? {
+        _state    = { store.state[keyPath: stateDictionary][key] }
+        _dispatch = { action, source in store.dispatch(actionReview(ElementAction(key, action: action)), source: source) }
+        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+    }
+
     public var state: State { _state() }
 
     public func dispatch(_ action: Action, source: ActionSource) {
