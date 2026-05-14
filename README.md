@@ -125,7 +125,7 @@ More can be easily added later by implementing some abstraction bridges. Pick th
 
 ```swift
 let fetchMiddleware = Middleware<AppAction, AppState, API>.handle { action, stateAccess in
-    guard case .fetchData = action.action else { return Reader { _ in .empty } }
+    guard case .fetchData = action.action else { return .doNothing }
     return Reader { api in
         Effect.throwingTask(AppAction.fetchResult) {
             try await api.loadData()
@@ -531,11 +531,13 @@ Middleware is generic over 3 type parameters:
 
 In its most important function, `Middleware.handle`, the middleware is expected to return a `Reader<Environment, Effect<Action>>`. The `Reader` is a description of side-effects deferred until the environment is provided. `Effect<Action>` is a wrapper for any async or reactive work that may eventually produce more actions to dispatch.
 
-In some cases, we may want to not execute any side-effect, in that case the function can return `.empty` wrapped in a `Reader`:
+In some cases, we may want to not execute any side-effect. Use `.doNothing` — a SwiftRex convenience that reads naturally at call sites:
 
 ```swift
-return Reader { _ in .empty }
+guard case .myAction = action.action else { return .doNothing }
 ```
+
+This is equivalent to `Reader { _ in .empty }` but communicates intent clearly.
 
 #### Dependency Injection
 
@@ -561,9 +563,7 @@ let loggerMiddleware = Middleware<AppAction, AppState, Logger>.handle { action, 
 }
 
 let favoritesMiddleware = Middleware<FavoritesAction, FavoritesModel, API>.handle { action, stateAccess in
-    guard case let .toggleFavorite(movieId) = action.action else {
-        return Reader { _ in .empty }
-    }
+    guard case let .toggleFavorite(movieId) = action.action else { return .doNothing }
     let currentList = stateAccess.snapshotState()
     let makeFavorite = !(currentList?.contains(where: { $0.id == movieId }) ?? false)
     return Reader { api in
