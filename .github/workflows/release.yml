@@ -200,7 +200,7 @@ jobs:
             echo "::notice::Found corresponding release branch: release/$VERSION"
           else
             echo "::warning::No release branch found for release/$VERSION"
-            echo "It's OK to proceed if the tag is on master branch"
+            echo "It's OK to proceed if the tag is on main branch"
           fi
 
   create-release:
