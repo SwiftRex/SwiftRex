@@ -1,30 +1,42 @@
 import CoreFP
+import DataStructure
 
 // MARK: - liftCollection (primitive — AffineTraversal)
+//
+// The primitive overload: provide a closure that returns the local action and an
+// `AffineTraversal` selecting the exact element within its container.
+//
+// Use the `ix` family from the FP library to build the traversal:
+//
+//   todoReducer.liftCollection(
+//       action: { (ea: ElementAction<UUID, TodoAction>?) in
+//           ea.map { (action: $0.action, element: [Todo].ix(id: $0.id)) }
+//       },
+//       stateContainer: \.todos              // WritableKeyPath
+//   )
+//
+// All `ElementAction`-based `liftCollection` overloads delegate here.
 
 extension Reducer {
-    /// The primitive overload: provide a closure that returns the local action and an
-    /// `AffineTraversal` selecting the exact element within its container.
-    ///
-    /// Use the `ix` family from the FP library to build the traversal:
-    ///
-    /// ```swift
-    /// todoReducer.liftCollection(
-    ///     action: { (ea: ElementAction<UUID, TodoAction>?) in
-    ///         ea.map { (action: $0.action, element: [Todo].ix(id: $0.id)) }
-    ///     },
-    ///     stateContainer: \AppState.todos
-    /// )
-    /// ```
-    ///
-    /// All `ElementAction`-based `liftCollection` overloads delegate here.
+    /// Primitive — `WritableKeyPath` for state container.
     public func liftCollection<GA, GS: Sendable, Container: Sendable>(
-        action: @escaping (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
+        action: @escaping @Sendable (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
         stateContainer: WritableKeyPath<GS, Container>
     ) -> Reducer<GA, GS> {
         .reduce { globalAction in
             guard let resolved = action(globalAction) else { return .identity }
             return lens(stateContainer).compose(resolved.element).lift(self.reduce(resolved.action))
+        }
+    }
+
+    /// Primitive — `Lens` for state container (for composed or `let`-property containers).
+    public func liftCollection<GA, GS: Sendable, Container: Sendable>(
+        action: @escaping @Sendable (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
+        stateContainer: Lens<GS, Container>
+    ) -> Reducer<GA, GS> {
+        .reduce { globalAction in
+            guard let resolved = action(globalAction) else { return .identity }
+            return stateContainer.compose(resolved.element).lift(self.reduce(resolved.action))
         }
     }
 }
@@ -33,34 +45,27 @@ extension Reducer {
 
 extension Reducer where StateType: Identifiable {
     /// Lifts to a mutable collection, locating the element by its `Identifiable.id`.
-    ///
-    /// ```swift
-    /// todoReducer.liftCollection(
-    ///     action: { (ea: ElementAction<UUID, TodoAction>?) in ea },
-    ///     stateCollection: \AppState.todos
-    /// )
-    /// ```
+    /// State container via `WritableKeyPath`.
     public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable>(
-        action: @escaping (GA) -> ElementAction<StateType.ID, ActionType>?,
+        action: @escaping @Sendable (GA) -> ElementAction<StateType.ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>
-    ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable {
+    ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable, StateType: Sendable {
         liftCollection(
             action: { ga in action(ga).map { (action: $0.action, element: C.ix(id: $0.id)) } },
             stateContainer: stateCollection
         )
     }
 
-    /// Lifts to a mutable collection via a KeyPath, locating the element by its `Identifiable.id`.
-    ///
-    /// ```swift
-    /// // AppAction has: var updateTodo: ElementAction<UUID, TodoAction>?
-    /// todoReducer.liftCollection(action: \AppAction.updateTodo, stateCollection: \AppState.todos)
-    /// ```
+    /// Lifts to a mutable collection, locating the element by its `Identifiable.id`.
+    /// State container via `Lens`.
     public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable>(
-        action: KeyPath<GA, ElementAction<StateType.ID, ActionType>?>,
-        stateCollection: WritableKeyPath<GS, C>
-    ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable {
-        liftCollection(action: { $0[keyPath: action] }, stateCollection: stateCollection)
+        action: @escaping @Sendable (GA) -> ElementAction<StateType.ID, ActionType>?,
+        stateCollection: Lens<GS, C>
+    ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable, StateType: Sendable {
+        liftCollection(
+            action: { ga in action(ga).map { (action: $0.action, element: C.ix(id: $0.id)) } },
+            stateContainer: stateCollection
+        )
     }
 }
 
@@ -68,41 +73,56 @@ extension Reducer where StateType: Identifiable {
 
 extension Reducer {
     /// Lifts to a mutable collection, locating the element by a custom `Hashable` field.
-    ///
-    /// ```swift
-    /// projectReducer.liftCollection(
-    ///     action: { (ea: ElementAction<String, ProjectAction>?) in ea },
-    ///     stateCollection: \AppState.projects,
-    ///     identifier: \Project.slug
-    /// )
-    /// ```
+    /// The `identifier` closure extracts the ID from an element — no `KeyPath`.
+    /// State container via `WritableKeyPath`.
     public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
-        action: @escaping (GA) -> ElementAction<ID, ActionType>?,
+        action: @escaping @Sendable (GA) -> ElementAction<ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>,
-        identifier: KeyPath<StateType, ID>
+        identifier: @escaping @Sendable (StateType) -> ID
     ) -> Reducer<GA, GS> where C.Element == StateType, C.Element: Sendable, C.Index: Sendable {
         liftCollection(
-            action: { ga in action(ga).map { ea in (action: ea.action, element: C.ix(id: ea.id, by: identifier)) } },
+            action: { ga in
+                action(ga).map { ea in
+                    let id = ea.id
+                    let at = AffineTraversal<C, StateType>(
+                        preview: { $0.first(where: { identifier($0) == id }) },
+                        set: { collection, element in
+                            guard let idx = collection.firstIndex(where: { identifier($0) == id })
+                            else { return collection }
+                            var copy = collection; copy[idx] = element; return copy
+                        }
+                    )
+                    return (action: ea.action, element: at)
+                }
+            },
             stateContainer: stateCollection
         )
     }
 
-    /// Lifts to a mutable collection via a KeyPath, locating the element by a custom `Hashable` field.
-    ///
-    /// ```swift
-    /// // AppAction has: var updateProject: ElementAction<String, ProjectAction>?
-    /// projectReducer.liftCollection(
-    ///     action: \AppAction.updateProject,
-    ///     stateCollection: \AppState.projects,
-    ///     identifier: \Project.slug
-    /// )
-    /// ```
+    /// Lifts to a mutable collection, locating the element by a custom `Hashable` field.
+    /// State container via `Lens`.
     public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
-        action: KeyPath<GA, ElementAction<ID, ActionType>?>,
-        stateCollection: WritableKeyPath<GS, C>,
-        identifier: KeyPath<StateType, ID>
+        action: @escaping @Sendable (GA) -> ElementAction<ID, ActionType>?,
+        stateCollection: Lens<GS, C>,
+        identifier: @escaping @Sendable (StateType) -> ID
     ) -> Reducer<GA, GS> where C.Element == StateType, C.Element: Sendable, C.Index: Sendable {
-        liftCollection(action: { $0[keyPath: action] }, stateCollection: stateCollection, identifier: identifier)
+        liftCollection(
+            action: { ga in
+                action(ga).map { ea in
+                    let id = ea.id
+                    let at = AffineTraversal<C, StateType>(
+                        preview: { $0.first(where: { identifier($0) == id }) },
+                        set: { collection, element in
+                            guard let idx = collection.firstIndex(where: { identifier($0) == id })
+                            else { return collection }
+                            var copy = collection; copy[idx] = element; return copy
+                        }
+                    )
+                    return (action: ea.action, element: at)
+                }
+            },
+            stateContainer: stateCollection
+        )
     }
 }
 
@@ -110,15 +130,9 @@ extension Reducer {
 
 extension Reducer {
     /// Lifts to a `Dictionary`, locating the entry by its key.
-    ///
-    /// ```swift
-    /// configReducer.liftCollection(
-    ///     action: { (ea: ElementAction<String, ConfigAction>?) in ea },
-    ///     stateDictionary: \AppState.configs
-    /// )
-    /// ```
+    /// State container via `WritableKeyPath`.
     public func liftCollection<GA, GS: Sendable, Key: Hashable & Sendable>(
-        action: @escaping (GA) -> ElementAction<Key, ActionType>?,
+        action: @escaping @Sendable (GA) -> ElementAction<Key, ActionType>?,
         stateDictionary: WritableKeyPath<GS, [Key: StateType]>
     ) -> Reducer<GA, GS> where StateType: Sendable {
         liftCollection(
@@ -127,16 +141,15 @@ extension Reducer {
         )
     }
 
-    /// Lifts to a `Dictionary` via a KeyPath, locating the entry by its key.
-    ///
-    /// ```swift
-    /// // AppAction has: var updateConfig: ElementAction<String, ConfigAction>?
-    /// configReducer.liftCollection(action: \AppAction.updateConfig, stateDictionary: \AppState.configs)
-    /// ```
+    /// Lifts to a `Dictionary`, locating the entry by its key.
+    /// State container via `Lens`.
     public func liftCollection<GA, GS: Sendable, Key: Hashable & Sendable>(
-        action: KeyPath<GA, ElementAction<Key, ActionType>?>,
-        stateDictionary: WritableKeyPath<GS, [Key: StateType]>
+        action: @escaping @Sendable (GA) -> ElementAction<Key, ActionType>?,
+        stateDictionary: Lens<GS, [Key: StateType]>
     ) -> Reducer<GA, GS> where StateType: Sendable {
-        liftCollection(action: { $0[keyPath: action] }, stateDictionary: stateDictionary)
+        liftCollection(
+            action: { ga in action(ga).map { (action: $0.action, element: [Key: StateType].ix(key: $0.id)) } },
+            stateContainer: stateDictionary
+        )
     }
 }

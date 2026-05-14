@@ -46,7 +46,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         store: S,
         element id: C.Element.ID,
         actionReview: @escaping @Sendable (ElementAction<C.Element.ID, Action>) -> GA,
-        stateCollection: KeyPath<GS, C>
+        stateCollection: WritableKeyPath<GS, C>
     ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
         _state    = { store.state[keyPath: stateCollection].first { $0.id == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
@@ -59,10 +59,10 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         store: S,
         element id: ID,
         actionReview: @escaping @Sendable (ElementAction<ID, Action>) -> GA,
-        stateCollection: KeyPath<GS, C>,
-        identifier: KeyPath<C.Element, ID>
+        stateCollection: WritableKeyPath<GS, C>,
+        identifier: @escaping @Sendable (C.Element) -> ID
     ) where C.Element: Sendable, State == C.Element? {
-        _state    = { store.state[keyPath: stateCollection].first { $0[keyPath: identifier] == id } }
+        _state    = { store.state[keyPath: stateCollection].first { identifier($0) == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
         _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
