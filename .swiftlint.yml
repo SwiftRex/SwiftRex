@@ -2,19 +2,16 @@ line_length:
   warning: 150
   error: 150
   ignores_comments: true
-file_length:
-  warning: 500
-  error: 1000
 type_body_length:
-  warning: 300
-  error: 350
+  warning: 350
+  error: 400
 nesting:
   type_level: 6
 generic_type_name:
   max_length: 30
 identifier_name:
-  min_length:
-    error: 3
+  min_length: 1
+  validates_start_with_lowercase: true
   max_length:
     warning: 100
     error: 100
@@ -25,9 +22,8 @@ identifier_name:
     - v2
     - io
 type_name:
-  min_length:
-    warning: 2
-    error: 1
+  min_length: 1
+  max_length: 60
   excluded:
     - Id
     - V1
@@ -42,12 +38,14 @@ disabled_rules:
   - function_parameter_count
   - large_tuple
   - multiple_closures_with_trailing_closure
+  - file_length
 excluded:
   - Sources/SwiftRex/CodeGeneration
   - Pods
   - .build
   - DerivedData
   - "Tests/*/XCTestManifests.swift"
+  - .claude
 opt_in_rules: # some rules are only opt-in
   - array_init
   - closure_end_indentation

@@ -1,13 +1,16 @@
 version: 1
 builder:
   configs:
-  - platform: watchos
-    scheme: NoTests
-  - platform: ios
-    scheme: NoTests
-  - platform: macos
-    scheme: SwiftRex-Package
-  - platform: tvos
-    scheme: SwiftRex-Package
-  - platform: linux
-    scheme: SwiftRex-Package
+    - platform: macosSpm
+      documentation_targets:
+        - SwiftRex
+        - SwiftRexOperators
+        - SwiftRexConcurrency
+        - SwiftRexCombine
+        - SwiftRexRxSwift
+        - SwiftRexReactiveSwift
+        - SwiftRexSwiftUI
+    - platform: ios
+    - platform: tvos
+    - platform: watchos
+    - platform: linux

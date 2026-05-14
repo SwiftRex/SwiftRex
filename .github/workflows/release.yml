@@ -1,0 +1,302 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - 'release/*'
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  # ============================================================================
+  # RELEASE CANDIDATE BUILD - Triggered on release/* branches
+  # ============================================================================
+
+  rc-test:
+    name: RC - Test & Validate
+    if: startsWith(github.ref, 'refs/heads/release/')
+    runs-on: macos-26
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
+      - name: Cache Mint packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('Mintfile') }}
+          restore-keys: ${{ runner.os }}-mint-
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-homebrew-${{ hashFiles('.github/workflows/release.yml') }}
+          restore-keys: ${{ runner.os }}-homebrew-
+
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Install SwiftLint and Periphery
+        run: mint bootstrap
+
+      - name: Lint
+        run: mint run swiftlint lint --strict
+
+      - name: Build
+        run: swift build --build-tests
+
+      - name: Test
+        run: swift test
+
+      - name: Periphery
+        run: mint run periphery scan
+
+  rc-test-linux:
+    name: RC - Test (Linux)
+    if: startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-latest
+    needs: rc-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build 2>&1
+
+      - name: Test
+        run: swift test 2>&1
+
+  rc-build-xcframework:
+    name: RC - Build XCFramework
+    if: startsWith(github.ref, 'refs/heads/release/')
+    runs-on: macos-26
+    needs: rc-test
+    strategy:
+      matrix:
+        framework: [SwiftRex, SwiftRexOperators, SwiftRexConcurrency, SwiftRexCombine, SwiftRexSwiftUI]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
+      - name: Resolve Package Dependencies
+        run: swift package resolve
+
+      - name: Build Library in Release Configuration
+        run: |
+          set -x
+          swift build -c release --product ${{ matrix.framework }} -v
+          echo "✓ Build succeeded"
+
+      - name: Create XCFramework Structure
+        run: |
+          XCFWK_PATH="build/${{ matrix.framework }}/${{ matrix.framework }}.xcframework"
+          mkdir -p "$XCFWK_PATH"
+
+          # Copy Swift module files
+          for ext in swiftmodule swiftdoc abi.json swiftsourceinfo; do
+            if [ -f ".build/release/Modules/${{ matrix.framework }}.$ext" ]; then
+              cp ".build/release/Modules/${{ matrix.framework }}.$ext" "$XCFWK_PATH/"
+              echo "✓ Copied ${{ matrix.framework }}.$ext"
+            fi
+          done
+
+          echo "✓ XCFramework structure created"
+
+      - name: Verify XCFramework Created
+        run: |
+          XCFWK_PATH="build/${{ matrix.framework }}/${{ matrix.framework }}.xcframework"
+
+          if [ -d "$XCFWK_PATH" ]; then
+            echo "✓ XCFramework structure created"
+            ls -lah "$XCFWK_PATH"
+            find "$XCFWK_PATH" -type f
+          else
+            echo "✗ XCFramework not found"
+            find build -type d -o -type f | head -50
+            exit 1
+          fi
+
+      - name: Archive XCFramework
+        run: |
+          cd build/${{ matrix.framework }}
+          zip -r ${{ matrix.framework }}.xcframework.zip ${{ matrix.framework }}.xcframework
+          cd ../..
+          ls -lh build/${{ matrix.framework }}/${{ matrix.framework }}.xcframework.zip
+
+      - name: Upload XCFramework Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.framework }}-xcframework
+          path: build/${{ matrix.framework }}/${{ matrix.framework }}.xcframework.zip
+          retention-days: 90
+
+  rc-notify-status:
+    name: RC - Notify Status
+    if: startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-latest
+    needs: [rc-test, rc-test-linux, rc-build-xcframework]
+    steps:
+      - name: Extract Version
+        id: version
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          VERSION=${BRANCH#release/}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Success Notification
+        if: success()
+        run: |
+          echo "::notice::Release Candidate ${{ steps.version.outputs.version }} is ready for promotion"
+          echo ""
+          echo "Next steps:"
+          echo "1. Verify the XCFramework artifacts above"
+          echo "2. When ready, run the 'Promote RC to Release' workflow"
+
+      - name: Failure Notification
+        if: failure()
+        run: |
+          echo "::error::Release Candidate build failed"
+          echo "Push fixes to: ${{ github.ref_name }}"
+
+  # ============================================================================
+  # RELEASE PROMOTION - Triggered on version tags (v*.*.*)
+  # ============================================================================
+
+  promote-test:
+    name: Promote - Verify Tag
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate Tag Format
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "::error::Invalid tag format: $TAG"
+            exit 1
+          fi
+          echo "::notice::Promoting tag: $TAG"
+
+      - name: Verify Tag on Release Branch
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION=${TAG#v}
+          if git show-ref --verify --quiet "refs/remotes/origin/release/$VERSION"; then
+            echo "::notice::Found corresponding release branch: release/$VERSION"
+          else
+            echo "::warning::No release branch found for release/$VERSION"
+            echo "It's OK to proceed if the tag is on master branch"
+          fi
+
+  create-release:
+    name: Promote - Create Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: macos-26
+    needs: promote-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download RC Artifacts
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION=${TAG#v}
+          BRANCH="release/$VERSION"
+
+          RUN_ID=$(gh api "repos/${{ github.repository }}/actions/runs?branch=${BRANCH}&status=success&per_page=20" \
+            --jq '[.workflow_runs[] | select(.name == "Release")] | first | .id')
+
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            echo "::error::No successful RC build found for branch $BRANCH"
+            exit 1
+          fi
+
+          echo "::notice::Downloading artifacts from run $RUN_ID (branch: $BRANCH)"
+          mkdir -p artifacts
+          gh run download "$RUN_ID" --dir artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Generate Release Notes
+        id: notes
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION=${TAG#v}
+          PREV_TAG=$(git describe --tags --abbrev=0 ${TAG}^ 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            BODY="Initial release"
+          else
+            COMMITS=$(git log ${PREV_TAG}..${TAG} --oneline)
+            BODY="## Changes
+
+          ${COMMITS}
+
+          ## Installation
+
+          ### Swift Package Manager
+          \`\`\`swift
+          .package(url: \"https://github.com/SwiftRex/SwiftRex.git\", from: \"${VERSION}\")
+          \`\`\`
+
+          ### XCFrameworks
+          See the attached \`.xcframework.zip\` files for pre-built binaries of the
+          dependency-free products (SwiftRex, SwiftRexOperators, SwiftRexConcurrency,
+          SwiftRexCombine, SwiftRexSwiftUI). The RxSwift and ReactiveSwift bridges
+          are available via SPM only."
+          fi
+
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: List Artifacts
+        run: |
+          echo "Found artifacts:"
+          find artifacts -name "*.zip" -exec ls -lh {} \;
+
+      - name: Create Release
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "Release ${{ github.ref_name }}" \
+            --notes "${{ steps.notes.outputs.body }}" \
+            artifacts/*/*.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  notify-promotion-status:
+    name: Promote - Notify Status
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs: [promote-test, create-release]
+    steps:
+      - name: Success Notification
+        if: success()
+        run: |
+          echo "::notice::Release ${{ github.ref_name }} published successfully"
+          echo "View release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+
+      - name: Failure Notification
+        if: failure()
+        run: |
+          echo "::error::Release promotion failed for tag ${{ github.ref_name }}"
+          echo ""
+          echo "Recovery:"
+          echo "1. Delete the tag: git tag -d ${{ github.ref_name }} && git push origin :refs/tags/${{ github.ref_name }}"
+          echo "2. Fix issues, then retry"

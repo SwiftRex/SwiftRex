@@ -1,56 +1,126 @@
-// swift-tools-version:5.5
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
     name: "SwiftRex",
-    platforms: [.macOS(.v10_10), .iOS(.v9), .tvOS(.v9), .watchOS(.v3)],
+    platforms: [
+        .macOS(.v12),
+        .iOS(.v15),
+        .tvOS(.v15),
+        .watchOS(.v8)
+    ],
     products: [
-        .library(name: "CombineRex", targets: ["SwiftRex", "CombineRex"]),
-        .library(name: "ReactiveSwiftRex", targets: ["SwiftRex", "ReactiveSwiftRex"]),
-        .library(name: "RxSwiftRex", targets: ["SwiftRex", "RxSwiftRex"]),
-
-        .library(name: "CombineRexDynamic", type: .dynamic, targets: ["SwiftRex", "CombineRex"]),
-        .library(name: "ReactiveSwiftRexDynamic", type: .dynamic, targets: ["SwiftRex", "ReactiveSwiftRex"]),
-        .library(name: "RxSwiftRexDynamic", type: .dynamic, targets: ["SwiftRex", "RxSwiftRex"])
+        .library(name: "SwiftRex", targets: ["SwiftRex"]),
+        .library(name: "SwiftRex.Operators", targets: ["SwiftRexOperators"]),
+        .library(name: "SwiftRex.Concurrency", targets: ["SwiftRexConcurrency"]),
+        .library(name: "SwiftRex.Combine", targets: ["SwiftRexCombine"]),
+        .library(name: "SwiftRex.RxSwift", targets: ["SwiftRexRxSwift"]),
+        .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
+        .library(name: "SwiftRex.SwiftUI", targets: ["SwiftRexSwiftUI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.2.0"),
-        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.0.0")
+        .package(url: "https://github.com/luizmb/FP.git", from: "1.6.4"),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
+        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0")
     ],
     targets: [
+        // MARK: - Core
+
         .target(
             name: "SwiftRex",
-            exclude: ["CodeGeneration/Templates"]
+            dependencies: [
+                .product(name: "CoreFP", package: "FP"),
+                .product(name: "DataStructure", package: "FP")
+            ],
+            path: "Sources/SwiftRex"
         ),
-        .target(name: "CombineRex", dependencies: ["SwiftRex"]),
-        .target(name: "ReactiveSwiftRex", dependencies: ["SwiftRex", "ReactiveSwift"]),
-        .target(name: "RxSwiftRex", dependencies: ["SwiftRex", "RxSwift"]),
 
-        .testTarget(name: "SwiftRexTests", dependencies: ["SwiftRex"]),
-        .testTarget(name: "CombineRexTests", dependencies: ["CombineRex"]),
-        .testTarget(name: "ReactiveSwiftRexTests", dependencies: ["ReactiveSwiftRex"]),
-        .testTarget(name: "RxSwiftRexTests", dependencies: ["RxSwiftRex"]),
+        // MARK: - Concurrency bridge
 
-        .testTarget(
-            name: "SwiftRexDeprecationTests",
+        .target(
+            name: "SwiftRexConcurrency",
+            dependencies: [
+                "SwiftRex",
+                .product(name: "CoreFP", package: "FP")
+            ],
+            path: "Sources/SwiftRexConcurrency"
+        ),
+
+        // MARK: - Operators (optional, symbolic sugar)
+
+        .target(
+            name: "SwiftRexOperators",
+            dependencies: [
+                "SwiftRex",
+                .product(name: "CoreFPOperators", package: "FP"),
+                .product(name: "DataStructureOperators", package: "FP")
+            ],
+            path: "Sources/SwiftRexOperators"
+        ),
+
+        // MARK: - Reactive bridges
+
+        .target(
+            name: "SwiftRexCombine",
             dependencies: ["SwiftRex"],
-            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+            path: "Sources/SwiftRexCombine"
+        ),
+        .target(
+            name: "SwiftRexRxSwift",
+            dependencies: [
+                "SwiftRex",
+                .product(name: "RxSwift", package: "RxSwift")
+            ],
+            path: "Sources/SwiftRexRxSwift"
+        ),
+        .target(
+            name: "SwiftRexReactiveSwift",
+            dependencies: [
+                "SwiftRex",
+                .product(name: "ReactiveSwift", package: "ReactiveSwift")
+            ],
+            path: "Sources/SwiftRexReactiveSwift"
+        ),
+
+        // MARK: - SwiftUI wrappers
+
+        .target(
+            name: "SwiftRexSwiftUI",
+            dependencies: ["SwiftRex"],
+            path: "Sources/SwiftRexSwiftUI"
+        ),
+
+        // MARK: - Tests
+
+        .testTarget(
+            name: "SwiftRexTests",
+            dependencies: [
+                "SwiftRex",
+                .product(name: "CoreFP", package: "FP"),
+                .product(name: "DataStructure", package: "FP")
+            ],
+            path: "Tests/SwiftRexTests"
         ),
         .testTarget(
-            name: "CombineRexDeprecationTests",
-            dependencies: ["CombineRex"],
-            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+            name: "SwiftRexConcurrencyTests",
+            dependencies: ["SwiftRexConcurrency", "SwiftRex"],
+            path: "Tests/SwiftRexConcurrencyTests"
         ),
         .testTarget(
-            name: "ReactiveSwiftRexDeprecationTests",
-            dependencies: ["ReactiveSwiftRex"],
-            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+            name: "SwiftRexCombineTests",
+            dependencies: ["SwiftRexCombine"],
+            path: "Tests/SwiftRexCombineTests"
         ),
         .testTarget(
-            name: "RxSwiftRexDeprecationTests",
-            dependencies: ["RxSwiftRex"],
-            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+            name: "SwiftRexRxSwiftTests",
+            dependencies: ["SwiftRexRxSwift"],
+            path: "Tests/SwiftRexRxSwiftTests"
+        ),
+        .testTarget(
+            name: "SwiftRexReactiveSwiftTests",
+            dependencies: ["SwiftRexReactiveSwift"],
+            path: "Tests/SwiftRexReactiveSwiftTests"
         )
     ],
-    swiftLanguageVersions: [.v5]
+    swiftLanguageModes: [.v6]
 )
