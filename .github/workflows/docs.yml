@@ -1,0 +1,55 @@
+name: Documentation
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy-docs:
+    name: Deploy Documentation
+    runs-on: macos-26
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
+      - name: Generate Documentation
+        run: |
+          swift package \
+            --allow-writing-to-directory .docs \
+            generate-documentation \
+            --target SwiftRex \
+            --target SwiftRexOperators \
+            --target SwiftRexConcurrency \
+            --target SwiftRexCombine \
+            --target SwiftRexRxSwift \
+            --target SwiftRexReactiveSwift \
+            --target SwiftRexSwiftUI \
+            --output-path .docs \
+            --transform-for-static-hosting \
+            --hosting-base-path SwiftRex
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .docs
+
+      - name: Deploy
+        id: deploy
+        uses: actions/deploy-pages@v4
