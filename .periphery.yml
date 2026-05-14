@@ -11,8 +11,10 @@ targets:
   - SwiftRexRxSwift
   - SwiftRexReactiveSwift
   - SwiftRexSwiftUI
+  - SwiftRexTesting
   - SwiftRexTests
   - SwiftRexConcurrencyTests
   - SwiftRexCombineTests
   - SwiftRexRxSwiftTests
   - SwiftRexReactiveSwiftTests
+  - SwiftRexTestingTests

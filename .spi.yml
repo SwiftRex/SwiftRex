@@ -10,6 +10,7 @@ builder:
         - SwiftRexRxSwift
         - SwiftRexReactiveSwift
         - SwiftRexSwiftUI
+        - SwiftRexTesting
     - platform: ios
     - platform: tvos
     - platform: watchos

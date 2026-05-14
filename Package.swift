@@ -16,7 +16,8 @@ let package = Package(
         .library(name: "SwiftRex.Combine", targets: ["SwiftRexCombine"]),
         .library(name: "SwiftRex.RxSwift", targets: ["SwiftRexRxSwift"]),
         .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
-        .library(name: "SwiftRex.SwiftUI", targets: ["SwiftRexSwiftUI"])
+        .library(name: "SwiftRex.SwiftUI", targets: ["SwiftRexSwiftUI"]),
+        .library(name: "SwiftRex.Testing", targets: ["SwiftRexTesting"])
     ],
     dependencies: [
         .package(url: "https://github.com/luizmb/FP.git", from: "1.6.6"),
@@ -90,6 +91,14 @@ let package = Package(
             path: "Sources/SwiftRexSwiftUI"
         ),
 
+        // MARK: - Testing utilities
+
+        .target(
+            name: "SwiftRexTesting",
+            dependencies: ["SwiftRex"],
+            path: "Sources/SwiftRexTesting"
+        ),
+
         // MARK: - Tests
 
         .testTarget(
@@ -120,6 +129,11 @@ let package = Package(
             name: "SwiftRexReactiveSwiftTests",
             dependencies: ["SwiftRexReactiveSwift"],
             path: "Tests/SwiftRexReactiveSwiftTests"
+        ),
+        .testTarget(
+            name: "SwiftRexTestingTests",
+            dependencies: ["SwiftRexTesting", "SwiftRex"],
+            path: "Tests/SwiftRexTestingTests"
         )
     ],
     swiftLanguageModes: [.v6]
