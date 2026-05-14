@@ -1,27 +1,12 @@
 import CoreFP
 import DataStructure
 
-// MARK: - Reader: Semigroup / Monoid (@retroactive until luizmb/FP#40 ships)
-//
-// A Reader whose output is a Semigroup/Monoid is itself one under pointwise combination.
-// The conformance lives here temporarily via @retroactive; once FP ships it natively,
-// these two extensions can be removed.
-
-extension Reader: @retroactive Semigroup where Output: Semigroup {
-    public static func combine(_ lhs: Self, _ rhs: Self) -> Self {
-        Reader { env in .combine(lhs.runReader(env), rhs.runReader(env)) }
-    }
-}
-
-extension Reader: @retroactive Monoid where Output: Monoid {
-    public static var identity: Self { .pure(.identity) }
-}
-
 // MARK: - SwiftRex bridge: .doNothing for Effect pipelines
 //
-// `.doNothing` is SwiftRex vocabulary for the Monoid identity of
-// `Reader<Environment, Effect<Action>>` — produce no side-effects for any environment.
-// It reads naturally at Middleware and Behavior call sites:
+// `Reader: Semigroup/Monoid where Output: Semigroup/Monoid` is provided natively
+// by FP 1.6.6+ (luizmb/FP#40). `.doNothing` is SwiftRex vocabulary layered on top —
+// it reads naturally at Middleware and Behavior call sites where the return type is
+// `Reader<Environment, Effect<Action>>`:
 //
 //   guard case .fetchData(let q) = action.action else { return .doNothing }
 
