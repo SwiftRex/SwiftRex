@@ -535,13 +535,19 @@ Middleware is generic over 3 type parameters:
 
 In its most important function, `Middleware.handle`, the middleware is expected to return a `Reader<Environment, Effect<Action>>`. The `Reader` is a description of side-effects deferred until the environment is provided. `Effect<Action>` is a wrapper for any async or reactive work that may eventually produce more actions to dispatch.
 
-In some cases, we may want to not execute any side-effect. Use `.doNothing` — a SwiftRex convenience that reads naturally at call sites:
+SwiftRex defines two conveniences on `Reader<Environment, Effect<Action>>` that mirror the fluent API available in `Consequence`:
 
 ```swift
+// No effect — skip early
 guard case .myAction = action.action else { return .doNothing }
+
+// Produce an effect with environment access
+return .produce { env in
+    Effect.task { .result(await env.api.fetch()) }
+}
 ```
 
-This is equivalent to `Reader { _ in .empty }` but communicates intent clearly.
+`.doNothing` is equivalent to `Reader { _ in .empty }`. `.produce` is equivalent to `Reader { env in … }`. Either form is acceptable; the named versions communicate intent more clearly at the call site.
 
 #### Dependency Injection
 
@@ -570,7 +576,7 @@ let favoritesMiddleware = Middleware<FavoritesAction, FavoritesModel, API>.handl
     guard case let .toggleFavorite(movieId) = action.action else { return .doNothing }
     let currentList = stateAccess.snapshotState()
     let makeFavorite = !(currentList?.contains(where: { $0.id == movieId }) ?? false)
-    return Reader { api in
+    return .produce { api in
         Effect.task {
             let result = await api.changeFavorite(id: movieId, makeFavorite: makeFavorite)
             return .changedFavorite(movieId, isFavorite: result)
@@ -1126,8 +1132,8 @@ import Testing
 @Test func counterIncrements() {
     let store = TestStore(initial: CounterState(), reducer: counterReducer)
 
-    store.send(.increment) { $0.count += 1 }  // assert state after the action
-    store.send(.decrement) { $0.count -= 1 }
+    store.dispatch(.increment) { $0.count += 1 }  // assert state after the action
+    store.dispatch(.decrement) { $0.count -= 1 }
 }
 ```
 
@@ -1145,7 +1151,7 @@ Effects are captured in `pendingEffects` without running. Call `runEffects()` to
         environment: AppEnvironment.mock
     )
 
-    store.send(.fetchItems) { $0.isLoading = true }
+    store.dispatch(.fetchItems) { $0.isLoading = true }
 
     await store.runEffects()
 
@@ -1183,9 +1189,9 @@ let store = TestStore(initial: s, behavior: b, environment: e, exhaustive: false
 
 ```swift
 store
-    .send(.increment) { $0.count = 1 }
-    .send(.increment) { $0.count = 2 }
-    .send(.reset)     { $0.count = 0 }
+    .dispatch(.increment) { $0.count = 1 }
+    .dispatch(.increment) { $0.count = 2 }
+    .dispatch(.reset)     { $0.count = 0 }
 ```
 
 ## Defining Prisms for your action type

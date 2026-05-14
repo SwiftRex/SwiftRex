@@ -4,8 +4,8 @@ import Testing
 
 /// A controllable, synchronous store for testing ``Behavior`` values.
 ///
-/// `TestStore` runs the behavior's dispatch pipeline deterministically:
-/// - ``send(_:sourceLocation:assert:)`` applies phases 1 and 2 immediately (handle → mutate),
+/// `TestStore` drives the dispatch pipeline deterministically:
+/// - ``dispatch(_:sourceLocation:assert:)`` applies phases 1 and 2 immediately (handle → mutate),
 ///   validates the resulting state against an assertion closure, and captures any produced
 ///   ``Effect`` into ``pendingEffects`` without starting it.
 /// - ``runEffects()`` drives all pending effects and collects their output actions into
@@ -17,23 +17,22 @@ import Testing
 ///
 /// ## State assertions
 ///
-/// ``send(_:sourceLocation:assert:)`` requires a trailing closure that describes the expected
-/// state change. The closure receives an `inout` copy of the state before the action and you
-/// mutate it to reflect what you expect after the action runs. Pass `{ _ in }` when no state
-/// change is expected.
+/// Both ``dispatch(_:sourceLocation:assert:)`` and ``receive`` require a trailing closure that
+/// describes the expected state change. The closure receives an `inout` copy of the state
+/// *before* the action and you mutate it to reflect what you expect *after* the action runs.
+/// Pass `{ _ in }` when no state change is expected.
 ///
-/// ``receive`` closures also describe expected state. For actions with an associated value the
-/// closure receives both the extracted value and `inout State`, so you can use the actual value
-/// from the action when specifying what the state should become:
+/// For `receive`, actions with an associated value give you that value in the closure so you
+/// can use the actual payload from the action rather than duplicating it:
 ///
 /// ```swift
-/// // send: describe what state should look like after the action
-/// store.send(.setPage(3)) { $0.currentPage = 3 }
+/// // dispatch: describe the expected state change
+/// store.dispatch(.setPage(3)) { $0.currentPage = 3 }
 ///
-/// // receive with associated value: value comes from the action itself
+/// // receive with associated value — value is extracted from the action by the prism
 /// store.receive(AppAction.prism.didLoad) { items, state in
 ///     state.isLoading = false
-///     state.items = items     // items is the [Item] extracted by the prism
+///     state.items = items
 /// }
 ///
 /// // receive without associated value (Void prism)
@@ -42,24 +41,27 @@ import Testing
 ///
 /// ## Action matching via Prism
 ///
-/// `receive` validates the received action by applying a ``Prism``. If the prism's `preview`
-/// returns `nil` (action is a different case), a failure is recorded but the action is still
-/// dispatched so subsequent assertions remain meaningful.
+/// `receive` validates the received action by applying a ``Prism``. If `preview` returns `nil`
+/// (different action case), a failure is recorded but the action is still dispatched so
+/// subsequent assertions remain meaningful.
 ///
-/// This design avoids requiring `Action: Equatable` — actions are often algebraic types whose
+/// This avoids requiring `Action: Equatable` — actions are often algebraic types whose
 /// associated values are not `Equatable`, and requiring conformance just for testing is
 /// unreasonably restrictive.
 ///
 /// ## Exhaustive mode (default)
 ///
-/// In exhaustive mode (`exhaustive: true`) the store enforces a strict discipline:
+/// When `exhaustive: true` (the default), the store enforces two checks:
 ///
-/// - Calling ``send(_:sourceLocation:assert:)`` while ``receivedActions`` is non-empty records a
-///   test failure — process all received actions first.
-/// - When the `TestStore` is deallocated (end of the test function), any remaining
-///   ``pendingEffects`` or ``receivedActions`` also record failures.
+/// 1. **Ordering** — calling ``dispatch(_:sourceLocation:assert:)`` while ``receivedActions``
+///    is non-empty records a failure. You must process all received actions with `receive`
+///    before dispatching again.
+/// 2. **End-of-test** — when the `TestStore` is deallocated, any remaining ``pendingEffects``
+///    or ``receivedActions`` record failures. Every effect and every action the behavior
+///    produced must be accounted for.
 ///
-/// Pass `exhaustive: false` to opt out of ordering enforcement and end-of-test checks.
+/// Pass `exhaustive: false` to disable **both** checks — neither the ordering check on
+/// dispatch nor the end-of-test check at dealloc will fire.
 @MainActor
 public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable> {
     /// The current state after all dispatched and received actions have been processed.
@@ -84,7 +86,8 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     // storage. These are written on @MainActor and only read in deinit.
     nonisolated(unsafe) private var _pendingCount: Int = 0
     nonisolated(unsafe) private var _receivedCount: Int = 0
-    nonisolated(unsafe) private let _exhaustive: Bool
+    // Bool is Sendable; nonisolated(unsafe) is only needed for the var counts above.
+    private let _exhaustive: Bool
 
     // MARK: - Init
 
@@ -94,8 +97,9 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     ///   - initial: The starting state.
     ///   - behavior: The behavior under test.
     ///   - environment: The environment injected into effects via `Reader`.
-    ///   - exhaustive: When `true` (default), enforces ordering and end-of-test checks.
-    ///     Pass `false` to disable all checks.
+    ///   - exhaustive: When `true` (default), enforces both the ordering check (no dispatch
+    ///     while received actions are pending) and the end-of-test check (no leftover effects
+    ///     or actions at dealloc). Pass `false` to disable both checks.
     public init(
         initial: State,
         behavior: Behavior<Action, State, Environment>,
@@ -132,7 +136,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// to produce the expected post-action state; a mismatch records a test failure.
     ///
     /// In exhaustive mode, a failure is also recorded when ``receivedActions`` is non-empty —
-    /// process them with `receive` first.
+    /// process them with `receive` first. In non-exhaustive mode this check is skipped.
     ///
     /// - Parameters:
     ///   - action: The action to dispatch.
@@ -141,7 +145,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     ///     Pass `{ _ in }` when no state change is expected.
     /// - Returns: `self` for chaining.
     @discardableResult
-    public func send(
+    public func dispatch(
         _ action: Action,
         sourceLocation: SourceLocation = #_sourceLocation,
         assert expectedStateChange: (inout State) -> Void
@@ -149,15 +153,15 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         if _exhaustive && _receivedCount > 0 {
             Issue.record(
                 """
-                send(\(action)) called with \(_receivedCount) unprocessed received action(s). \
+                dispatch(\(action)) called with \(_receivedCount) unprocessed received action(s). \
                 Call receive() for each before dispatching again.
                 """,
                 sourceLocation: sourceLocation
             )
         }
         let before = state
-        dispatch(DispatchedAction(action))
-        assertState(before: before, after: state, label: "send(\(action))", sourceLocation: sourceLocation, expectedChange: expectedStateChange)
+        run(DispatchedAction(action))
+        assertState(before: before, after: state, label: "dispatch(\(action))", sourceLocation: sourceLocation, expectedChange: expectedStateChange)
         return self
     }
 
@@ -198,8 +202,8 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// - Parameters:
     ///   - prism: A ``Prism`` whose `preview` must return non-nil for the expected action case.
     ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Receives the value extracted by `prism` and an `inout` copy of the pre-action
-    ///     state; mutate the state to produce the expected post-action state.
+    ///   - assert: Receives the value extracted by `prism` and an `inout` copy of the
+    ///     pre-action state; mutate the state to produce the expected post-action state.
     @discardableResult
     public func receive<Value>(
         _ prism: Prism<Action, Value>,
@@ -220,11 +224,11 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
                 "Action case mismatch in receive() — prism did not match the dequeued action\nActual: \(action)",
                 sourceLocation: sourceLocation
             )
-            dispatch(DispatchedAction(action))
+            run(DispatchedAction(action))
             return action
         }
         let before = state
-        dispatch(DispatchedAction(action))
+        run(DispatchedAction(action))
         var expected = before
         expectedStateChange(value, &expected)
         if state != expected {
@@ -267,7 +271,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
 
     // MARK: - Private
 
-    private func dispatch(_ dispatched: DispatchedAction<Action>) {
+    private func run(_ dispatched: DispatchedAction<Action>) {
         let stateAccess = StateAccess { [weak self] in self?.state }
         let consequence = behavior.handle(dispatched, stateAccess)
         consequence.mutation.runEndoMut(&state)
@@ -327,7 +331,7 @@ extension TestStore where Environment == Void {
     ///
     /// ```swift
     /// let store = TestStore(initial: CounterState(), reducer: counterReducer)
-    /// store.send(.increment) { $0.count += 1 }
+    /// store.dispatch(.increment) { $0.count += 1 }
     /// ```
     public convenience init(
         initial: State,
