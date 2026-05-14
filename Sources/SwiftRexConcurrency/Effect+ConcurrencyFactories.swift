@@ -58,8 +58,8 @@ extension Effect {
                         }
                     } onCancel: { box.cancel()
                     }
-                    guard !Task.isCancelled else { return }
-                    if let action = result { send(DispatchedAction(action, dispatcher: source)) }
+                    guard !Task.isCancelled, let action = result else { return }
+                    send(DispatchedAction(action, dispatcher: source))
                     complete()
                 }
                 return SubscriptionToken { t.cancel() }
