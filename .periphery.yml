@@ -1,0 +1,18 @@
+retain_public: true
+disable_unused_import_analysis: true
+retain_files:
+  - Tests/**
+
+targets:
+  - SwiftRex
+  - SwiftRexOperators
+  - SwiftRexConcurrency
+  - SwiftRexCombine
+  - SwiftRexRxSwift
+  - SwiftRexReactiveSwift
+  - SwiftRexSwiftUI
+  - SwiftRexTests
+  - SwiftRexConcurrencyTests
+  - SwiftRexCombineTests
+  - SwiftRexRxSwiftTests
+  - SwiftRexReactiveSwiftTests

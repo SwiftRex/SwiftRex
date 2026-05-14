@@ -1,0 +1,68 @@
+name: Promote RC to Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g. 1.2.3)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    name: Tag release/${{ inputs.version }} → v${{ inputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version format: $VERSION — expected X.Y.Z"
+            exit 1
+          fi
+
+      - name: Verify RC branch exists
+        run: |
+          BRANCH="release/${{ inputs.version }}"
+          if ! git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            echo "::error::Release branch $BRANCH not found — create the RC first"
+            exit 1
+          fi
+
+      - name: Verify tag does not already exist
+        run: |
+          TAG="v${{ inputs.version }}"
+          if git ls-remote --exit-code --tags origin "$TAG" > /dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists"
+            exit 1
+          fi
+
+      - name: Verify RC build succeeded
+        run: |
+          BRANCH="release/${{ inputs.version }}"
+          RUN_ID=$(gh api "repos/${{ github.repository }}/actions/runs?branch=${BRANCH}&status=success&per_page=20" \
+            --jq '[.workflow_runs[] | select(.name == "Release")] | first | .id')
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            echo "::error::No successful RC build found for $BRANCH — cannot promote"
+            exit 1
+          fi
+          echo "::notice::RC build $RUN_ID succeeded — proceeding with promotion"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create and push tag
+        run: |
+          BRANCH="release/${{ inputs.version }}"
+          TAG="v${{ inputs.version }}"
+          git fetch origin "$BRANCH"
+          git checkout "$BRANCH"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "::notice::Tagged $TAG on $BRANCH — release promotion started automatically"

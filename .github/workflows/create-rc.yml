@@ -1,0 +1,45 @@
+name: Create Release Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g. 1.2.3)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  create-rc:
+    name: Create release/${{ inputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version format: $VERSION — expected X.Y.Z"
+            exit 1
+          fi
+
+      - name: Ensure branch does not already exist
+        run: |
+          BRANCH="release/${{ inputs.version }}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            echo "::error::Branch $BRANCH already exists"
+            exit 1
+          fi
+
+      - name: Create and push release branch
+        run: |
+          BRANCH="release/${{ inputs.version }}"
+          git checkout -b "$BRANCH"
+          git push origin "$BRANCH"
+          echo "::notice::Branch $BRANCH created — RC build started automatically"

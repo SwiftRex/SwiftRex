@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master, full-rewrite]
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: macos-26
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
+      - name: Cache Mint packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('Mintfile') }}
+          restore-keys: ${{ runner.os }}-mint-
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-homebrew-${{ hashFiles('.github/workflows/ci.yml') }}
+          restore-keys: ${{ runner.os }}-homebrew-
+
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Install SwiftLint and Periphery
+        run: mint bootstrap
+
+      - name: Lint
+        run: mint run swiftlint lint --strict
+
+      - name: Build
+        run: swift build 2>&1
+
+      - name: Test
+        run: swift test 2>&1
+
+      - name: Periphery
+        run: mint run periphery scan
+
+  test-linux:
+    name: Build & Test (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build 2>&1
+
+      - name: Test
+        run: swift test 2>&1
