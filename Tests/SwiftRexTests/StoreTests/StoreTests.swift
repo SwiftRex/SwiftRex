@@ -1,6 +1,6 @@
-import Testing
 import CoreFP
 @testable import SwiftRex
+import Testing
 
 // MARK: - Helpers
 
@@ -175,13 +175,13 @@ struct StoreReducerMiddlewareInitTests {
             initial: 0,
             reducer: Reducer<Int, Int>.reduce { action, state in state += action },
             middleware: Middleware<Int, Int, Void>.handle { action, _ in
-                action.action < 100 ? .just(1000) : .empty
+                action.action < 100 ? .just(1_000) : .empty
             },
             environment: ()
         )
         store.dispatch(5)
         await Task.yield()
         await Task.yield()
-        #expect(store.state == 1005) // 5 from reducer + 1000 from effect loop-back
+        #expect(store.state == 1_005) // 5 from reducer + 1000 from effect loop-back
     }
 }

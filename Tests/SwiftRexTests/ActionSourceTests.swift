@@ -1,5 +1,5 @@
-import XCTest
 @testable import SwiftRex
+import XCTest
 
 final class ActionSourceTests: XCTestCase {
     func testInitStoresAllValues() {

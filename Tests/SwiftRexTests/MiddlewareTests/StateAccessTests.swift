@@ -1,11 +1,10 @@
-import Testing
 import CoreFP
 @testable import SwiftRex
+import Testing
 
 @Suite("StateAccess")
 @MainActor
 struct StateAccessTests {
-
     @Test func snapshotStateReturnsCurrentValue() {
         var state = 42
         let access = StateAccess<Int> { state }

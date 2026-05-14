@@ -26,7 +26,9 @@ extension Publisher where Failure == Never {
     /// Call-site is captured as the dispatcher source.
     public func asEffect(
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Output> where Output: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
         let p = Unchecked(value: self)
@@ -62,7 +64,9 @@ extension Publisher where Failure == Never {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Output) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
         let p = Unchecked(value: self)
@@ -91,7 +95,9 @@ extension Publisher where Failure: Error {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Result<Output, Failure>) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
         let p = Unchecked(value: self)

@@ -1,5 +1,5 @@
-import Testing
 @testable import SwiftRex
+import Testing
 
 @Suite("StoreBuffer")
 @MainActor

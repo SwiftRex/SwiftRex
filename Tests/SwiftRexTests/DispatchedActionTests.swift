@@ -1,5 +1,5 @@
-import XCTest
 @testable import SwiftRex
+import XCTest
 
 final class DispatchedActionTests: XCTestCase {
     private let source = ActionSource(file: "f", function: "fn", line: 1)

@@ -18,7 +18,6 @@ extension AnyHashable: @retroactive @unchecked Sendable {}
 /// ```
 @MainActor
 public final class Store<Action: Sendable, State: Sendable, Environment: Sendable>: StoreType, @unchecked Sendable {
-
     // MARK: - State
 
     public private(set) var state: State
@@ -37,7 +36,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
     /// Both observer closures are stored together under one UUID so a single token cancels both.
     private var stateObservers: [UUID: (willChange: @MainActor @Sendable () -> Void,
-                                        didChange:  @MainActor @Sendable () -> Void)] = [:]
+                                        didChange: @MainActor @Sendable () -> Void)] = [:]
 
     // MARK: - Init
 
@@ -115,7 +114,6 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
     private func schedule(_ component: Effect<Action>.Component) {
         switch component.scheduling {
-
         case .immediately:
             let key = AnyHashable(UUID())
             let token = component.subscribe(makeSend()) { [weak self] in
@@ -134,7 +132,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             effects[key]?.cancel()
             effects.removeValue(forKey: key)
 
-        case .debounce(let key, let delay):
+        case let .debounce(key, delay):
             effects[key]?.cancel()
             let send = makeSend()
             let task = Task { @MainActor [weak self] in
@@ -147,7 +145,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             }
             effects[key] = SubscriptionToken { task.cancel() }
 
-        case .throttle(let key, let interval):
+        case let .throttle(key, interval):
             let now = Date()
             if let last = throttleTimestamps[key], now.timeIntervalSince(last) < interval { return }
             throttleTimestamps[key] = now

@@ -7,8 +7,8 @@ extension Reducer {
     /// Lifts using a getter for action and getter+setter for state.
     public func lift<GlobalAction, GlobalState: Sendable>(
         actionGetter: @escaping @Sendable (GlobalAction) -> ActionType?,
-        stateGetter:  @escaping @Sendable (GlobalState) -> StateType,
-        stateSetter:  @escaping @Sendable (inout GlobalState, StateType) -> Void
+        stateGetter: @escaping @Sendable (GlobalState) -> StateType,
+        stateSetter: @escaping @Sendable (inout GlobalState, StateType) -> Void
     ) -> Reducer<GlobalAction, GlobalState> {
         .reduce { globalAction in
             guard let localAction = actionGetter(globalAction) else { return .identity }

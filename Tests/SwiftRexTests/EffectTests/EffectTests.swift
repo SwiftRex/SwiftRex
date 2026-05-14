@@ -1,7 +1,7 @@
-import XCTest
-import Foundation
 import CoreFP
+import Foundation
 @testable import SwiftRex
+import XCTest
 
 // MARK: - Monoid
 
@@ -174,4 +174,3 @@ final class EffectMapTests: XCTestCase {
         XCTAssertTrue(completed.value)
     }
 }
-

@@ -1,6 +1,6 @@
-import XCTest
 import CoreFP
 @testable import SwiftRex
+import XCTest
 
 final class ReducerLiftCollectionTests: XCTestCase {
     // MARK: - Helpers

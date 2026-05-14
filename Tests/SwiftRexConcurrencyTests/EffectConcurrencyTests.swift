@@ -1,6 +1,6 @@
-import XCTest
 import SwiftRex
 @testable import SwiftRexConcurrency
+import XCTest
 
 final class EffectFutureTests: XCTestCase {
     func testFutureDispatchesAction() async {

@@ -9,7 +9,9 @@ extension Effect {
         _ sequence: S,
         _ transform: @escaping @Sendable (S.Element) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self where S.Element: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
         return Effect(components: [
@@ -33,7 +35,9 @@ extension Effect {
         _ sequence: S,
         _ transform: @escaping @Sendable (Result<S.Element, Error>) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self where S.Element: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
         return Effect(components: [
@@ -86,7 +90,9 @@ extension Effect {
     public static func deferredTask(
         _ task: DeferredTask<Action>,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self {
         Effect.task({ await task.run() }, scheduling: scheduling, file: file, function: function, line: line)
     }
@@ -96,7 +102,9 @@ extension Effect {
         _ task: DeferredTask<Result<Success, Failure>>,
         _ transform: @escaping @Sendable (Result<Success, Failure>) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self {
         Effect.task({ transform(await task.run()) }, scheduling: scheduling, file: file, function: function, line: line)
     }
@@ -129,7 +137,9 @@ extension Effect {
         _ transform: @escaping @Sendable (Result<Success, Error>) -> Action,
         scheduling: EffectScheduling = .immediately,
         _ work: @escaping @Sendable () async throws -> Success,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self {
         let source = ActionSource(file: file, function: function, line: line)
         return Effect(components: [
@@ -160,7 +170,9 @@ extension Effect {
         _ stream: DeferredStream<Element>,
         _ transform: @escaping @Sendable (Element) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self {
         asyncSequence(stream, transform, scheduling: scheduling, file: file, function: function, line: line)
     }
@@ -194,4 +206,3 @@ extension Effect {
         ])
     }
 }
-

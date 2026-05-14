@@ -20,7 +20,6 @@ import SwiftRex
 @Observable
 @MainActor
 public final class ObservableStore<Action: Sendable, State: Sendable>: StoreType {
-
     /// Stored so `@Observable`'s registrar can track which fields views read.
     /// Updated after every mutation via the store's `didChange` callback.
     public private(set) var state: State
@@ -47,7 +46,7 @@ public final class ObservableStore<Action: Sendable, State: Sendable>: StoreType
     @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange:  @escaping @MainActor @Sendable () -> Void
+        didChange: @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken {
         store.observe(willChange: willChange, didChange: didChange)
     }

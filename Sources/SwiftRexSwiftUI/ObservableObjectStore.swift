@@ -19,7 +19,6 @@ import SwiftRex
 @MainActor
 public final class ObservableObjectStore<Action: Sendable, State: Sendable>
     : ObservableObject, StoreType {
-
     public var state: State { store.state }
 
     private let store: any StoreType<Action, State>
@@ -40,7 +39,7 @@ public final class ObservableObjectStore<Action: Sendable, State: Sendable>
     @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange:  @escaping @MainActor @Sendable () -> Void
+        didChange: @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken {
         store.observe(willChange: willChange, didChange: didChange)
     }

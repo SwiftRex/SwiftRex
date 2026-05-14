@@ -1,8 +1,8 @@
 #if canImport(Combine)
-import Testing
 import Combine
 import SwiftRex
 @testable import SwiftRexCombine
+import Testing
 
 // MARK: - Helpers
 

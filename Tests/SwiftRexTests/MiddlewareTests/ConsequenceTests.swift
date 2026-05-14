@@ -1,10 +1,9 @@
-import Testing
 import CoreFP
 @testable import SwiftRex
+import Testing
 
 @Suite("Consequence")
 struct ConsequenceTests {
-
     // MARK: - doNothing / identity
 
     @Test func doNothingLeavesStateUnchanged() {

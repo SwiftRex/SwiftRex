@@ -1,7 +1,7 @@
-import Testing
 import RxSwift
 import SwiftRex
 @testable import SwiftRexRxSwift
+import Testing
 
 // MARK: - Infallible<Action>.asEffect
 
@@ -117,7 +117,10 @@ struct ObservableResultEffectTests {
         let received = LockProtected([Int]())
         _ = subscribeAll(
             Observable<Int>.error(E()).asEffect { (r: Result<Int, Error>) in
-                switch r { case .failure: return -1; case .success: return 0 }
+                switch r {
+                case .failure: return -1
+                case .success: return 0
+                }
             },
             send: { d in received.mutate { $0.append(d.action) } }
         )

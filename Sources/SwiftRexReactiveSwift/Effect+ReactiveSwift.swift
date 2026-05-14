@@ -16,7 +16,9 @@ extension SignalProducer where Error == Never {
     /// Bridges a `SignalProducer<Action, Never>` to `Effect<Action>`.
     public func asEffect(
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Value> where Value: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
         let p = Unchecked(value: self)
@@ -53,7 +55,9 @@ extension SignalProducer where Error == Never {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Value) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
         let p = Unchecked(value: self)
@@ -75,7 +79,9 @@ extension SignalProducer where Error: Swift.Error {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Result<Value, Error>) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
         let p = Unchecked(value: self)
@@ -101,7 +107,9 @@ extension SignalProducer where Error: Swift.Error {
 extension Signal where Error == Never {
     public func asEffect(
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Value> where Value: Sendable {
         SignalProducer(self).asEffect(scheduling: scheduling, file: file, function: function, line: line)
     }
@@ -115,7 +123,9 @@ extension Signal where Error == Never {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Value) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         SignalProducer(self).asEffect(transform, scheduling: scheduling, file: file, function: function, line: line)
     }
@@ -125,7 +135,9 @@ extension Signal where Error: Swift.Error {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Result<Value, Error>) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         SignalProducer(self).asEffect(transform, scheduling: scheduling, file: file, function: function, line: line)
     }
@@ -143,7 +155,7 @@ extension Effect {
                 let (lifetime, token) = Lifetime.make()
                 sp.value.take(during: lifetime).startWithSignal { signal, _ in
                     signal.observeCompleted { complete() }
-                    signal.observeFailed   { _ in complete() }
+                    signal.observeFailed { _ in complete() }
                 }
                 return SubscriptionToken { token.dispose() }
             }, scheduling: .immediately)
@@ -156,4 +168,3 @@ extension Effect {
         fireAndForget(SignalProducer(signal))
     }
 }
-

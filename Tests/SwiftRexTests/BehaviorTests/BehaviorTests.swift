@@ -1,7 +1,7 @@
-import Testing
 import CoreFP
 import DataStructure
 @testable import SwiftRex
+import Testing
 
 // MARK: - Shared fixtures
 
@@ -120,7 +120,7 @@ struct BehaviorMonoidTests {
 
     @Test func combineMutationsAreSequential() {
         let lhs = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action.action } }
-        let rhs = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 *= 2 } }
+        let rhs = Behavior<Int, Int, Void>.handle { _, _ in .reduce { $0 *= 2 } }
         let sut = Behavior.combine(lhs, rhs)
         var state = 0
         consequence(sut, action: 3, state: 0).mutation.runEndoMut(&state)

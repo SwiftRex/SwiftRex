@@ -1,6 +1,6 @@
-import XCTest
 import CoreFP
 @testable import SwiftRex
+import XCTest
 
 final class ReducerTests: XCTestCase {
     // MARK: - Factories: (Action, inout State) -> Void

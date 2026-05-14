@@ -37,7 +37,6 @@ public struct StorePublisher<S: StoreType>: Publisher {
 
 private final class StoreSubscription<S: StoreType, Sub: Subscriber>: Subscription, @unchecked Sendable
 where Sub.Input == S.State, Sub.Failure == Never {
-
     private var subscriber: Sub?
     private var token: SubscriptionToken?
 

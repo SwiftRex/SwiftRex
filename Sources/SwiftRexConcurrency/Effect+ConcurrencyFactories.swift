@@ -21,10 +21,10 @@ extension Effect {
                     let result: Action? = await withTaskCancellationHandler {
                         await withCheckedContinuation { continuation in
                             box.store(continuation)
-                            if Task.isCancelled { box.cancel() }
-                            else { work(FutureCompleter(box)) }
+                            if Task.isCancelled { box.cancel() } else { work(FutureCompleter(box)) }
                         }
-                    } onCancel: { box.cancel() }
+                    } onCancel: { box.cancel()
+                    }
                     guard !Task.isCancelled else { return }
                     if let action = result { send(DispatchedAction(action, dispatcher: source)) }
                     complete()

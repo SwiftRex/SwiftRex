@@ -1,6 +1,6 @@
-import Testing
 import CoreFP
 @testable import SwiftRex
+import Testing
 
 // MARK: - Helpers
 

@@ -15,7 +15,9 @@ extension InfallibleType {
     /// Bridges an `Infallible<Action>` to `Effect<Action>`.
     public func asEffect(
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Element> where Element: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
         let o = Unchecked(value: self)
@@ -50,7 +52,9 @@ extension InfallibleType {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Element) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
         let o = Unchecked(value: self)
@@ -77,15 +81,17 @@ extension ObservableType {
     /// Bridges an `Observable<Action>` to `Effect<Action>`. Errors are silently discarded.
     public func asEffect(
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Element> where Element: Sendable {
         let source = ActionSource(file: file, function: function, line: line)
         let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Element>.Component(subscribe: { send, complete in
                 let d = o.value.subscribe(
-                    onNext:      { send(DispatchedAction($0, dispatcher: source)) },
-                    onError:     { _ in complete() },
+                    onNext: { send(DispatchedAction($0, dispatcher: source)) },
+                    onError: { _ in complete() },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
@@ -102,8 +108,8 @@ extension ObservableType {
         return Effect(components: [
             Effect<Action>.Component(subscribe: { send, complete in
                 let d = o.value.subscribe(
-                    onNext:      { send($0) },
-                    onError:     { _ in complete() },
+                    onNext: { send($0) },
+                    onError: { _ in complete() },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
@@ -116,15 +122,17 @@ extension ObservableType {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Element) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
         let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Action>.Component(subscribe: { send, complete in
                 let d = o.value.subscribe(
-                    onNext:      { send(DispatchedAction(transform($0), dispatcher: source)) },
-                    onError:     { _ in complete() },
+                    onNext: { send(DispatchedAction(transform($0), dispatcher: source)) },
+                    onError: { _ in complete() },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
@@ -137,15 +145,17 @@ extension ObservableType {
     public func asEffect<Action: Sendable>(
         _ transform: @escaping @Sendable (Result<Element, Error>) -> Action,
         scheduling: EffectScheduling = .immediately,
-        file: String = #file, function: String = #function, line: UInt = #line
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
     ) -> Effect<Action> {
         let source = ActionSource(file: file, function: function, line: line)
         let o = Unchecked(value: self)
         return Effect(components: [
             Effect<Action>.Component(subscribe: { send, complete in
                 let d = o.value.subscribe(
-                    onNext:      { send(DispatchedAction(transform(.success($0)), dispatcher: source)) },
-                    onError:     { error in
+                    onNext: { send(DispatchedAction(transform(.success($0)), dispatcher: source)) },
+                    onError: { error in
                         send(DispatchedAction(transform(.failure(error)), dispatcher: source))
                         complete()
                     },
@@ -167,8 +177,8 @@ extension Effect {
         return Effect(components: [
             Component(subscribe: { _, complete in
                 let d = o.value.subscribe(
-                    onNext:      { _ in },
-                    onError:     { _ in complete() },
+                    onNext: { _ in },
+                    onError: { _ in complete() },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
@@ -183,7 +193,7 @@ extension Effect {
         return Effect(components: [
             Component(subscribe: { _, complete in
                 let d = i.value.subscribe(
-                    onNext:      { _ in },
+                    onNext: { _ in },
                     onCompleted: { complete() }
                 )
                 return SubscriptionToken { d.dispose() }
@@ -191,4 +201,3 @@ extension Effect {
         ])
     }
 }
-

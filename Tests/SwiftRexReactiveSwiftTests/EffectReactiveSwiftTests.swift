@@ -1,7 +1,7 @@
-import Testing
 import ReactiveSwift
 import SwiftRex
 @testable import SwiftRexReactiveSwift
+import Testing
 
 // MARK: - SignalProducer<Action, Never>.asEffect
 
@@ -90,7 +90,10 @@ struct SignalProducerResultEffectTests {
         _ = subscribeAll(
             SignalProducer<Int, E>(error: E())
                 .asEffect { (r: Result<Int, E>) in
-                    switch r { case .failure: return -1; case .success: return 0 }
+                    switch r {
+                    case .failure: return -1
+                    case .success: return 0
+                    }
                 },
             send: { d in received.mutate { $0.append(d.action) } }
         )

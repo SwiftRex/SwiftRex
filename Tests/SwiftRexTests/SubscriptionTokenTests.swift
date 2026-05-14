@@ -1,6 +1,6 @@
-import XCTest
 import Foundation
 @testable import SwiftRex
+import XCTest
 
 final class SubscriptionTokenTests: XCTestCase {
     func testCancelCallsClosure() {

@@ -22,14 +22,13 @@ import Foundation
 @MainActor
 public final class StoreBuffer<Action: Sendable, State: Sendable>
     : StoreType, @unchecked Sendable {
-
     public private(set) var state: State
 
     private let underlying: any StoreType<Action, State>
     private let hasChanged: @Sendable (State, State) -> Bool
     private var token: SubscriptionToken?
     private var observers: [UUID: (willChange: @MainActor @Sendable () -> Void,
-                                   didChange:  @MainActor @Sendable () -> Void)] = [:]
+                                   didChange: @MainActor @Sendable () -> Void)] = [:]
 
     public init(
         _ store: some StoreType<Action, State>,
@@ -58,7 +57,7 @@ public final class StoreBuffer<Action: Sendable, State: Sendable>
     @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange:  @escaping @MainActor @Sendable () -> Void
+        didChange: @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken {
         let id = UUID()
         observers[id] = (willChange: willChange, didChange: didChange)

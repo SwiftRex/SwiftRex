@@ -1,6 +1,6 @@
-import SwiftRex
 import CoreFPOperators
 import DataStructureOperators
+import SwiftRex
 
 // MARK: - Semigroup / Monoid
 //

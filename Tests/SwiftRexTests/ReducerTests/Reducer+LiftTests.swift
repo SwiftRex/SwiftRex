@@ -1,6 +1,6 @@
-import XCTest
 import CoreFP
 @testable import SwiftRex
+import XCTest
 
 final class ReducerLiftTests: XCTestCase {
     // MARK: - Helpers
@@ -174,7 +174,7 @@ final class ReducerLiftTests: XCTestCase {
         let sut = addAction.lift(action: actionPrism, state: statePrism)
         var state = LS.active(0)
         sut.reduce(GA(local: 3))(&state)
-        if case .active(let v) = state { XCTAssertEqual(v, 3) } else { XCTFail() }
+        if case .active(let v) = state { XCTAssertEqual(v, 3) } else { XCTFail("Unexpected state") }
     }
 
     func testLiftActionPrismStatePrismSkipsWhenActionNil() {
@@ -187,7 +187,7 @@ final class ReducerLiftTests: XCTestCase {
         let sut = addAction.lift(action: actionPrism, state: statePrism)
         var state = LS.active(0)
         sut.reduce(GA(local: nil))(&state)
-        if case .active(let v) = state { XCTAssertEqual(v, 0) } else { XCTFail() }
+        if case .active(let v) = state { XCTAssertEqual(v, 0) } else { XCTFail("Unexpected state") }
     }
 
     // MARK: - AffineTraversal (state)
@@ -359,7 +359,7 @@ final class ReducerLiftTests: XCTestCase {
         let sut = addAction.lift(action: at, state: statePrism)
         var state = LS.active(0)
         sut.reduce(GA(local: 5))(&state)
-        if case .active(let v) = state { XCTAssertEqual(v, 5) } else { XCTFail() }
+        if case .active(let v) = state { XCTAssertEqual(v, 5) } else { XCTFail("Unexpected state") }
     }
 
     // MARK: - AffineTraversal (action) + AffineTraversal (state)

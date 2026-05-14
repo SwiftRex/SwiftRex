@@ -1,7 +1,7 @@
-import Testing
 import CoreFP
 import DataStructure
 @testable import SwiftRex
+import Testing
 
 // MARK: - Shared fixtures
 

@@ -20,10 +20,9 @@ import Foundation
 /// ```
 @MainActor
 public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
-
-    private let _state:    @MainActor @Sendable () -> State
+    private let _state: @MainActor @Sendable () -> State
     private let _dispatch: @MainActor @Sendable (Action, ActionSource) -> Void
-    private let _observe:  @MainActor @Sendable (
+    private let _observe: @MainActor @Sendable (
         @escaping @MainActor @Sendable () -> Void,
         @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken
@@ -89,7 +88,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange:  @escaping @MainActor @Sendable () -> Void
+        didChange: @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken {
         _observe(willChange, didChange)
     }
