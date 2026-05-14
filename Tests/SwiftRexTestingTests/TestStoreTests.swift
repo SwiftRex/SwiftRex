@@ -1,15 +1,42 @@
+import CoreFP
 import SwiftRex
 import SwiftRexTesting
 import Testing
 
 // MARK: - Fixtures
 
-private enum CounterAction: Equatable, Sendable {
+private enum CounterAction: Sendable {
     case increment
     case decrement
     case set(Int)
     case load
     case loaded(Int)
+}
+
+// Prisms for CounterAction — used in receive() to validate action case + extract value
+extension CounterAction {
+    enum Prisms {
+        static let increment = prism(
+            preview: { if case .increment = $0 { return () } else { return nil } },
+            review: { _ in CounterAction.increment }
+        )
+        static let decrement = prism(
+            preview: { if case .decrement = $0 { return () } else { return nil } },
+            review: { _ in CounterAction.decrement }
+        )
+        static let set = prism(
+            preview: { if case .set(let v) = $0 { return v } else { return nil } },
+            review: CounterAction.set
+        )
+        static let load = prism(
+            preview: { if case .load = $0 { return () } else { return nil } },
+            review: { _ in CounterAction.load }
+        )
+        static let loaded = prism(
+            preview: { if case .loaded(let v) = $0 { return v } else { return nil } },
+            review: CounterAction.loaded
+        )
+    }
 }
 
 private struct CounterState: Equatable, Sendable {
@@ -75,7 +102,6 @@ struct TestStoreReducerTests {
     }
 
     @Test func stateMismatchRecordsFailure() {
-        // non-exhaustive so deinit doesn't add noise
         let store = TestStore(initial: CounterState(), reducer: counterReducer, exhaustive: false)
         withKnownIssue("wrong expected value should record a mismatch failure") {
             store.send(.increment) { $0.count = 99 }  // wrong — actual becomes 1
@@ -90,7 +116,6 @@ struct TestStoreReducerTests {
 @MainActor
 struct TestStoreEffectTests {
     @Test func effectCapturedAsPending() {
-        // non-exhaustive so the un-drained effect doesn't fail at deinit
         let store = TestStore(
             initial: CounterState(),
             behavior: counterBehavior,
@@ -116,12 +141,13 @@ struct TestStoreEffectTests {
         )
         store.send(.load) { $0.isLoading = true }
         await store.runEffects()
-        // receivedActions = [.loaded(99)]; calling send now should record a failure
         withKnownIssue("must process received actions before dispatching again") {
             store.send(.increment) { $0.isLoading = true; $0.count = 1 }
         }
-        // process the pending received action so deinit is clean
-        store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
+        store.receive(CounterAction.Prisms.loaded) { value, state in
+            state.isLoading = false
+            state.count = value
+        }
     }
 }
 
@@ -135,16 +161,25 @@ struct TestStoreRunEffectsTests {
         store.send(.load) { $0.isLoading = true }
         await store.runEffects()
         #expect(store.pendingEffects.isEmpty)
-        #expect(store.receivedActions == [.loaded(99)])
-        store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
+        store.receive(CounterAction.Prisms.loaded) { value, state in
+            state.isLoading = false
+            state.count = value  // value == 99, extracted from .loaded(99)
+        }
     }
 
-    @Test func receiveProcessesActionThroughBehavior() async {
+    @Test func receiveValidatesActionCaseAndExtractsValue() async {
         let store = TestStore(initial: CounterState(), behavior: counterBehavior, environment: ())
         store.send(.load) { $0.isLoading = true }
         await store.runEffects()
-        let action = store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
-        #expect(action == .loaded(99))
+        let action = store.receive(CounterAction.Prisms.loaded) { value, state in
+            #expect(value == 99)
+            state.isLoading = false
+            state.count = value
+        }
+        #expect(store.state.count == 99)
+        #expect(!store.state.isLoading)
+        // Returned action is the dequeued one (for inspection if needed)
+        if case .loaded(let v) = action { #expect(v == 99) }
     }
 
     @Test func receiveWhenEmptyRecordsFailure() {
@@ -155,16 +190,49 @@ struct TestStoreRunEffectsTests {
             exhaustive: false
         )
         withKnownIssue("receive() on empty receivedActions should record a failure") {
-            let result = store.receive(.loaded(0)) { _ in }
-            #expect(result == nil)
+            store.receive(CounterAction.Prisms.loaded) { _, _ in }
         }
+    }
+
+    @Test func receiveActionMismatchRecordsFailure() async {
+        let store = TestStore(
+            initial: CounterState(),
+            behavior: counterBehavior,
+            environment: (),
+            exhaustive: false
+        )
+        store.send(.load) { $0.isLoading = true }
+        await store.runEffects()
+        withKnownIssue("wrong prism should record an action-mismatch failure") {
+            // Actual action is .loaded(99); prism expects .increment (Void prism)
+            store.receive(CounterAction.Prisms.increment) { _ in }
+        }
+    }
+
+    @Test func receiveVoidPrism() async {
+        // .load produces .increment (a case with no associated value) — exercises the Void overload
+        let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
+            switch action.action {
+            case .load:
+                return .produce { _ in Effect.just(.increment) }
+            default:
+                return .reduce { state in counterReducer.reduce(action.action).runEndoMut(&state) }
+            }
+        }
+        let store = TestStore(initial: CounterState(), behavior: behavior, environment: ())
+        store.send(.load) { _ in }
+        await store.runEffects()
+        // Use the Void-prism overload — no value to extract, just (inout State) -> Void
+        store.receive(CounterAction.Prisms.increment) { $0.count += 1 }
     }
 
     @Test func receiveEmptiesReceivedActions() async {
         let store = TestStore(initial: CounterState(), behavior: counterBehavior, environment: ())
         store.send(.load) { $0.isLoading = true }
         await store.runEffects()
-        store.receive(.loaded(99)) { $0.isLoading = false; $0.count = 99 }
+        store.receive(CounterAction.Prisms.loaded) { value, state in
+            state.isLoading = false; state.count = value
+        }
         #expect(store.receivedActions.isEmpty)
     }
 
@@ -187,11 +255,13 @@ struct TestStoreRunEffectsTests {
         store.send(.load) { $0.isLoading = true }
 
         await store.runEffects()
-        store.receive(.loaded(5)) { $0.isLoading = false; $0.count = 5 }
+        store.receive(CounterAction.Prisms.loaded) { value, state in
+            state.isLoading = false; state.count = value
+        }
         #expect(!store.pendingEffects.isEmpty)
 
         await store.runEffects()
-        store.receive(.set(100)) { $0.count = 100 }
+        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
         #expect(store.pendingEffects.isEmpty)
         #expect(store.receivedActions.isEmpty)
     }
@@ -204,36 +274,19 @@ struct TestStoreRunEffectsTests {
             ),
             Effect<CounterAction>.just(.set(3))
         )
-        // Behavior handles .load (effect) + all others via reducer
         let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
             switch action.action {
-            case .load:
-                return .produce { _ in combined }
-            default:
-                return .reduce { state in counterReducer.reduce(action.action).runEndoMut(&state) }
+            case .load:   return .produce { _ in combined }
+            default:      return .reduce { state in counterReducer.reduce(action.action).runEndoMut(&state) }
             }
         }
         let store = TestStore(initial: CounterState(), behavior: behavior, environment: ())
-        store.send(.load) { _ in }  // .load produces no state change in this behavior
+        store.send(.load) { _ in }
         await store.runEffects()
         #expect(store.receivedActions.count == 3)
-        store.receive(.set(1)) { $0.count = 1 }
-        store.receive(.set(2)) { $0.count = 2 }
-        store.receive(.set(3)) { $0.count = 3 }
-    }
-
-    @Test func receiveActionMismatchRecordsFailure() async {
-        let store = TestStore(
-            initial: CounterState(),
-            behavior: counterBehavior,
-            environment: (),
-            exhaustive: false
-        )
-        store.send(.load) { $0.isLoading = true }
-        await store.runEffects()
-        withKnownIssue("wrong expected action should record a mismatch failure") {
-            store.receive(.increment) { $0.isLoading = false; $0.count = 99 }
-        }
+        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
+        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
+        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
     }
 
     @Test func runEffectsOnEmptyIsNoop() async {
@@ -276,6 +329,6 @@ struct TestStoreInitTests {
             exhaustive: false
         )
         store.send(.load) { $0.isLoading = true }
-        // Pending effect intentionally not drained — non-exhaustive mode means no deinit failure
+        // Pending effect intentionally not drained — non-exhaustive: no deinit failure
     }
 }

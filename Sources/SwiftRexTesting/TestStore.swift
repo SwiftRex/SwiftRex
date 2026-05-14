@@ -1,3 +1,4 @@
+import CoreFP
 import SwiftRex
 import Testing
 
@@ -9,62 +10,70 @@ import Testing
 ///   ``Effect`` into ``pendingEffects`` without starting it.
 /// - ``runEffects()`` drives all pending effects and collects their output actions into
 ///   ``receivedActions``.
-/// - ``receive(_:sourceLocation:assert:)`` asserts the next received action equals an expected
-///   value, dispatches it through the behavior, validates the resulting state, and returns the
-///   action.
+/// - ``receive(_:sourceLocation:assert:)-9ofio`` (with associated value) or
+///   ``receive(_:sourceLocation:assert:)-6yjj4`` (without associated value) validates that
+///   the next received action matches a ``Prism``, dispatches it through the behavior, and
+///   validates the resulting state.
 ///
 /// ## State assertions
 ///
-/// Both ``send(_:sourceLocation:assert:)`` and ``receive(_:sourceLocation:assert:)`` require a
-/// trailing closure that describes the **expected** state change. The closure receives an `inout`
-/// copy of the state before the action and you mutate it to what you expect:
+/// ``send(_:sourceLocation:assert:)`` requires a trailing closure that describes the expected
+/// state change. The closure receives an `inout` copy of the state before the action and you
+/// mutate it to reflect what you expect after the action runs. Pass `{ _ in }` when no state
+/// change is expected.
+///
+/// ``receive`` closures also describe expected state. For actions with an associated value the
+/// closure receives both the extracted value and `inout State`, so you can use the actual value
+/// from the action when specifying what the state should become:
 ///
 /// ```swift
-/// store.send(.increment) { $0.count += 1 }
-/// store.send(.setUsername("Alice")) { $0.profile.username = "Alice" }
+/// // send: describe what state should look like after the action
+/// store.send(.setPage(3)) { $0.currentPage = 3 }
+///
+/// // receive with associated value: value comes from the action itself
+/// store.receive(AppAction.prism.didLoad) { items, state in
+///     state.isLoading = false
+///     state.items = items     // items is the [Item] extracted by the prism
+/// }
+///
+/// // receive without associated value (Void prism)
+/// store.receive(AppAction.prism.didReset) { $0 = .initial }
 /// ```
 ///
-/// If the actual state after the action does not equal the expected state produced by the closure,
-/// a test failure is recorded. Pass `{ _ in }` when an action is expected to produce no state
-/// change.
+/// ## Action matching via Prism
+///
+/// `receive` validates the received action by applying a ``Prism``. If the prism's `preview`
+/// returns `nil` (action is a different case), a failure is recorded but the action is still
+/// dispatched so subsequent assertions remain meaningful.
+///
+/// This design avoids requiring `Action: Equatable` — actions are often algebraic types whose
+/// associated values are not `Equatable`, and requiring conformance just for testing is
+/// unreasonably restrictive.
 ///
 /// ## Exhaustive mode (default)
 ///
 /// In exhaustive mode (`exhaustive: true`) the store enforces a strict discipline:
 ///
 /// - Calling ``send(_:sourceLocation:assert:)`` while ``receivedActions`` is non-empty records a
-///   test failure — process all received actions with ``receive(_:sourceLocation:assert:)`` before
-///   dispatching again.
+///   test failure — process all received actions first.
 /// - When the `TestStore` is deallocated (end of the test function), any remaining
 ///   ``pendingEffects`` or ``receivedActions`` also record failures.
 ///
 /// Pass `exhaustive: false` to opt out of ordering enforcement and end-of-test checks.
-///
-/// ```swift
-/// @Test func effectDispatches() async {
-///     let store = TestStore(initial: AppState(), behavior: appBehavior, environment: testEnv)
-///
-///     store.send(.load) { $0.isLoading = true }
-///
-///     await store.runEffects()
-///     store.receive(.didLoad(mockData)) { $0.isLoading = false; $0.data = mockData }
-/// }
-/// ```
 @MainActor
-public final class TestStore<Action: Sendable & Equatable, State: Sendable & Equatable, Environment: Sendable> {
+public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable> {
     /// The current state after all dispatched and received actions have been processed.
     public private(set) var state: State
 
     /// Effects captured from dispatched or received actions that have not yet been run.
     ///
-    /// Each ``send(_:sourceLocation:assert:)`` or ``receive(sourceLocation:assert:)`` call
-    /// appends any produced ``Effect`` here. Call ``runEffects()`` to execute them and collect
-    /// their output.
+    /// Call ``runEffects()`` to execute them and collect their output into ``receivedActions``.
     public private(set) var pendingEffects: [Effect<Action>] = []
 
     /// Actions produced by effects that have not yet been dispatched through the behavior.
     ///
-    /// Call ``receive(sourceLocation:assert:)`` for each entry to propagate it through the
+    /// Call ``receive(_:sourceLocation:assert:)-9ofio`` or
+    /// ``receive(_:sourceLocation:assert:)-6yjj4`` for each entry to propagate it through the
     /// behavior, updating ``state`` and potentially adding new entries to ``pendingEffects``.
     public private(set) var receivedActions: [Action] = []
 
@@ -85,9 +94,8 @@ public final class TestStore<Action: Sendable & Equatable, State: Sendable & Equ
     ///   - initial: The starting state.
     ///   - behavior: The behavior under test.
     ///   - environment: The environment injected into effects via `Reader`.
-    ///   - exhaustive: When `true` (default), enforces ordering: all received actions must be
-    ///     processed before dispatching again, and all pending work must be exhausted by the time
-    ///     the store is released. Pass `false` to disable all checks.
+    ///   - exhaustive: When `true` (default), enforces ordering and end-of-test checks.
+    ///     Pass `false` to disable all checks.
     public init(
         initial: State,
         behavior: Behavior<Action, State, Environment>,
@@ -120,18 +128,17 @@ public final class TestStore<Action: Sendable & Equatable, State: Sendable & Equ
 
     /// Dispatches `action` through the behavior and validates the resulting state.
     ///
-    /// The `assert` closure receives an `inout` copy of the state **before** the action was
-    /// dispatched. Mutate it to produce the **expected** post-action state. If the actual state
-    /// does not equal the expected state, a test failure is recorded.
+    /// The `assert` closure receives an `inout` copy of the state **before** dispatch. Mutate it
+    /// to produce the expected post-action state; a mismatch records a test failure.
     ///
     /// In exhaustive mode, a failure is also recorded when ``receivedActions`` is non-empty —
-    /// call ``receive(sourceLocation:assert:)`` to process all received actions first.
+    /// process them with `receive` first.
     ///
     /// - Parameters:
     ///   - action: The action to dispatch.
     ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: A closure that mutates the pre-action state to produce the expected
-    ///     post-action state. Pass `{ _ in }` when no state change is expected.
+    ///   - assert: Mutates the pre-action state to produce the expected post-action state.
+    ///     Pass `{ _ in }` when no state change is expected.
     /// - Returns: `self` for chaining.
     @discardableResult
     public func send(
@@ -156,11 +163,8 @@ public final class TestStore<Action: Sendable & Equatable, State: Sendable & Equ
 
     /// Executes all ``pendingEffects`` and appends their output actions to ``receivedActions``.
     ///
-    /// After this call, ``pendingEffects`` is empty. Use ``receive(sourceLocation:assert:)`` to
-    /// process each collected action through the behavior.
-    ///
-    /// Effects are run in order; components within each effect run sequentially. Each component
-    /// is driven to completion before the next one starts.
+    /// Effects run in order; components within each effect run sequentially, each driven to
+    /// completion before the next starts.
     public func runEffects() async {
         var toRun: [Effect<Action>] = []
         swap(&toRun, &pendingEffects)
@@ -174,57 +178,91 @@ public final class TestStore<Action: Sendable & Equatable, State: Sendable & Equ
         _receivedCount = receivedActions.count
     }
 
-    /// Dequeues the next action from ``receivedActions``, asserts it equals `expected`,
-    /// dispatches it through the behavior, and validates the resulting state.
+    /// Dequeues the next action from ``receivedActions``, validates it via `prism`, dispatches
+    /// it through the behavior, and validates the resulting state.
     ///
-    /// Both the **action** and the **state change** are validated:
-    /// - If the dequeued action does not equal `expected`, a failure is recorded and the action
-    ///   is still dispatched so subsequent assertions remain meaningful.
-    /// - The `assert` closure receives an `inout` copy of the state **before** dispatch. Mutate
-    ///   it to produce the expected post-action state; a mismatch records a failure.
-    ///
-    /// A failure is also recorded when ``receivedActions`` is empty — call ``runEffects()`` first
-    /// if you expect effect output.
+    /// The `assert` closure receives both the **value extracted by the prism** and an `inout`
+    /// copy of the state before dispatch — use the extracted value when specifying what the
+    /// state should become:
     ///
     /// ```swift
-    /// await store.runEffects()
-    /// store.receive(.didLoad(data)) { $0.isLoading = false; $0.items = data }
+    /// store.receive(AppAction.prism.didLoad) { items, state in
+    ///     state.isLoading = false
+    ///     state.items = items
+    /// }
     /// ```
     ///
+    /// If the prism does not match the dequeued action, an action-mismatch failure is recorded
+    /// and the action is still dispatched so subsequent assertions remain meaningful.
+    ///
     /// - Parameters:
-    ///   - expected: The action you expect to find at the front of ``receivedActions``.
+    ///   - prism: A ``Prism`` whose `preview` must return non-nil for the expected action case.
     ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Mutates the pre-action state to produce the expected post-action state.
-    ///     Pass `{ _ in }` when the action is expected to produce no state change.
+    ///   - assert: Receives the value extracted by `prism` and an `inout` copy of the pre-action
+    ///     state; mutate the state to produce the expected post-action state.
     @discardableResult
-    public func receive(
-        _ expected: Action,
+    public func receive<Value>(
+        _ prism: Prism<Action, Value>,
         sourceLocation: SourceLocation = #_sourceLocation,
-        assert expectedStateChange: (inout State) -> Void
+        assert expectedStateChange: (Value, inout State) -> Void
     ) -> Action? {
         guard !receivedActions.isEmpty else {
             Issue.record(
-                "receive(\(expected)) called but receivedActions is empty — call runEffects() first if you expect effect output",
+                "receive() called but receivedActions is empty — call runEffects() first if you expect effect output",
                 sourceLocation: sourceLocation
             )
             return nil
         }
         let action = receivedActions.removeFirst()
         _receivedCount = receivedActions.count
-        if action != expected {
+        guard let value = prism.preview(action) else {
+            Issue.record(
+                "Action case mismatch in receive() — prism did not match the dequeued action\nActual: \(action)",
+                sourceLocation: sourceLocation
+            )
+            dispatch(DispatchedAction(action))
+            return action
+        }
+        let before = state
+        dispatch(DispatchedAction(action))
+        var expected = before
+        expectedStateChange(value, &expected)
+        if state != expected {
             Issue.record(
                 """
-                Action mismatch in receive()
+                State mismatch after receive(\(action))
                 Expected: \(expected)
-                  Actual: \(action)
+                  Actual: \(state)
                 """,
                 sourceLocation: sourceLocation
             )
         }
-        let before = state
-        dispatch(DispatchedAction(action))
-        assertState(before: before, after: state, label: "receive(\(action))", sourceLocation: sourceLocation, expectedChange: expectedStateChange)
         return action
+    }
+
+    /// Dequeues the next action from ``receivedActions``, validates it via `prism` (no associated
+    /// value), dispatches it through the behavior, and validates the resulting state.
+    ///
+    /// Use this overload for action cases that carry no associated value:
+    ///
+    /// ```swift
+    /// store.receive(AppAction.prism.didReset) { $0 = .initial }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - prism: A ``Prism<Action, Void>`` matching an action case with no associated value.
+    ///   - sourceLocation: Captured automatically; points failures to the call site.
+    ///   - assert: Mutates the pre-action state to produce the expected post-action state.
+    ///     Pass `{ _ in }` when no state change is expected.
+    @discardableResult
+    public func receive(
+        _ prism: Prism<Action, Void>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedStateChange: (inout State) -> Void
+    ) -> Action? {
+        receive(prism, sourceLocation: sourceLocation) { (_, state: inout State) in
+            expectedStateChange(&state)
+        }
     }
 
     // MARK: - Private
