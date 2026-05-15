@@ -2,6 +2,7 @@
 import Observation
 import SwiftRex
 import SwiftRexSwiftUI
+import SwiftUI
 import Testing
 
 /// A controllable, synchronous test harness for a ``Feature``-conforming type.
@@ -15,33 +16,31 @@ import Testing
 /// or ``receive(_:sourceLocation:assert:)-3c7g4`` to match them via a `Prism` and assert the
 /// resulting `ViewState`.
 ///
-/// ## Typical flow
+/// ## View access for snapshot testing
+///
+/// `TestFeature` eagerly constructs ``Feature/Content`` and exposes it as ``view``. The
+/// underlying ``TestStore`` conforms to ``StoreType``, so the ``Feature/ViewModel`` subscribes
+/// to it and its `@Observable` properties update **synchronously** with each state mutation.
+///
+/// To let SwiftUI process those `ObservationRegistrar` notifications before snapshotting, call
+/// ``flush()`` after each step:
 ///
 /// ```swift
-/// @Test @MainActor
-/// func fetchMovies_setsLoadingThenPopulatesRows() async {
-///     let inception = Domain.Movie(id: "1", title: "Inception", isFavorite: false, year: 2010, characters: [])
+/// let feature = TestFeature<MoviesFeature>(environment: .stub)
 ///
-///     let feature = TestFeature<MoviesFeature>(
-///         environment: .init(
-///             fetchMovies:    { .success([inception]) },
-///             toggleFavorite: { _ in .failure(.unknown(CancellationError())) }
-///         )
-///     )
+/// // 1. Initial render
+/// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
 ///
-///     // dispatch a ViewAction; assert the resulting ViewState
-///     feature.dispatch(.onAppear) { $0.isLoading = true }
+/// // 2. Dispatch → Observable updates synchronously → yield for SwiftUI
+/// feature.dispatch(.onAppear) { $0.isLoading = true }
+/// await feature.flush()
+/// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
 ///
-///     await feature.runEffects()
-///
-///     // receive a domain action by Prism; assert ViewState
-///     feature.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in
-///         if case .success(let movies) = result {
-///             viewState.rows = /* expected rows */ []
-///             viewState.isLoading = false
-///         }
-///     }
-/// }
+/// // 3. Async effects → receive → snapshot
+/// await feature.runEffects()
+/// feature.receive(MoviesFeature.Action.prism.moviesResponse) { _, vs in vs.isLoading = false }
+/// await feature.flush()
+/// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
 /// ```
 ///
 /// ## Exhaustive mode
@@ -53,6 +52,13 @@ import Testing
 @MainActor
 public final class TestFeature<F: Feature> where F.State: Equatable {
     private let _store: TestStore<F.Action, F.State, F.Environment>
+    private let _viewModel: F.ViewModel
+
+    /// The feature's live view, driven by `_viewModel`.
+    ///
+    /// Pass this to any snapshot framework after calling ``flush()`` to allow SwiftUI to
+    /// process the latest `@Observable` changes.
+    public let view: F.Content
 
     /// The current domain state, after all dispatched and received actions have been processed.
     public var state: F.State { _store.state }
@@ -68,12 +74,16 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     ///   - environment: The environment injected into effects.
     ///   - exhaustive: When `true` (default), enforces ordering and end-of-test checks.
     public init(environment: F.Environment, exhaustive: Bool = true) {
-        _store = TestStore(
+        let store = TestStore(
             initial: F.initialState(),
             behavior: F.behavior(),
             environment: environment,
             exhaustive: exhaustive
         )
+        let vm = F.ViewModel(store: store.projection(action: F.mapAction, state: F.mapState))
+        _store = store
+        _viewModel = vm
+        view = F.Content(viewModel: vm)
     }
 
     /// Creates a `TestFeature` with a custom initial state (useful for mid-flow test scenarios).
@@ -83,12 +93,36 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     ///   - environment: The environment injected into effects.
     ///   - exhaustive: When `true` (default), enforces ordering and end-of-test checks.
     public init(initial: F.State, environment: F.Environment, exhaustive: Bool = true) {
-        _store = TestStore(
+        let store = TestStore(
             initial: initial,
             behavior: F.behavior(),
             environment: environment,
             exhaustive: exhaustive
         )
+        let vm = F.ViewModel(store: store.projection(action: F.mapAction, state: F.mapState))
+        _store = store
+        _viewModel = vm
+        view = F.Content(viewModel: vm)
+    }
+
+    // MARK: - flush
+
+    /// Yields the current task so SwiftUI can process `@Observable` notifications queued
+    /// during the last ``dispatch(_:sourceLocation:assert:)`` or ``receive``.
+    ///
+    /// Because ``TestStore`` fires `willChange` / `didChange` **synchronously** inside each
+    /// state mutation, the ``Feature/ViewModel``'s `@Observable` backing stores are already
+    /// up-to-date when ``dispatch(_:sourceLocation:assert:)`` returns. `flush()` gives
+    /// SwiftUI's render scheduler one run-loop turn to pick up those changes before you
+    /// snapshot ``view``.
+    ///
+    /// ```swift
+    /// feature.dispatch(.increment) { $0.count = 1 }
+    /// await feature.flush()
+    /// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
+    /// ```
+    public func flush() async {
+        await Task.yield()
     }
 
     // MARK: - Dispatch
@@ -134,10 +168,6 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
 
     /// Dequeues the next action from `receivedActions`, validates it via `prism`, runs it through
     /// the behavior, and validates the resulting `ViewState`.
-    ///
-    /// The `assert` closure receives both the **value extracted by the prism** and an `inout`
-    /// copy of the view state before the action — use the extracted value when specifying what
-    /// the view state should become:
     ///
     /// ```swift
     /// feature.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in

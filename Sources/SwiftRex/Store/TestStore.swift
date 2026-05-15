@@ -1,5 +1,6 @@
 #if DEBUG
 import CoreFP
+import Foundation
 import Testing
 
 /// A controllable, synchronous store for testing ``Behavior`` values.
@@ -62,8 +63,14 @@ import Testing
 ///
 /// Pass `exhaustive: false` to disable **both** checks — neither the ordering check on
 /// dispatch nor the end-of-test check at dealloc will fire.
+///
+/// ## StoreType conformance
+///
+/// `TestStore` conforms to ``StoreType`` so it can be used as a backing store for
+/// ``StoreProjection``, enabling ``TestFeature`` to wire a live ``ViewModel`` directly
+/// to the test store and capture ``view`` for snapshot testing.
 @MainActor
-public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable> {
+public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable>: StoreType, @unchecked Sendable {
     /// The current state after all dispatched and received actions have been processed.
     public private(set) var state: State
 
@@ -81,6 +88,10 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
 
     private let behavior: Behavior<Action, State, Environment>
     private let environment: Environment
+
+    /// Registered will/didChange callbacks — keyed by UUID so a single token cancels both.
+    private var stateObservers: [UUID: (willChange: @MainActor @Sendable () -> Void,
+                                        didChange: @MainActor @Sendable () -> Void)] = [:]
 
     // Mirrored counts for deinit — Swift 6 deinit is nonisolated and cannot read @MainActor
     // storage. These are written on @MainActor and only read in deinit.
@@ -125,6 +136,35 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
             Issue.record(
                 "\(_receivedCount) received action(s) were not processed before the TestStore was released — call receive() for each"
             )
+        }
+    }
+
+    // MARK: - StoreType
+
+    /// Dispatches an action through the behavior without a test assertion.
+    ///
+    /// This satisfies the ``StoreType`` requirement and is used internally when a
+    /// ``StoreProjection`` (e.g. inside a ``TestFeature`` ViewModel) forwards a dispatch.
+    /// For test-driven dispatch with state assertions, use ``dispatch(_:sourceLocation:assert:)``.
+    public func dispatch(_ action: Action, source: ActionSource) {
+        run(DispatchedAction(action, dispatcher: source))
+    }
+
+    /// Registers callbacks for both sides of each state mutation.
+    ///
+    /// Required by ``StoreType``; used by ``StoreProjection`` and ``ViewModel`` to observe
+    /// state changes. In `TestStore`, callbacks fire **synchronously** inside each `run(_:)` call,
+    /// so ``ViewModel``-tracked properties update immediately when ``dispatch(_:sourceLocation:assert:)``
+    /// or ``receive`` runs — one ``TestFeature/flush()`` is enough for SwiftUI to pick up the change.
+    @discardableResult
+    public func observe(
+        willChange: @escaping @MainActor @Sendable () -> Void,
+        didChange: @escaping @MainActor @Sendable () -> Void
+    ) -> SubscriptionToken {
+        let id = UUID()
+        stateObservers[id] = (willChange: willChange, didChange: didChange)
+        return SubscriptionToken { [weak self] in
+            Task { @MainActor [weak self] in self?.stateObservers.removeValue(forKey: id) }
         }
     }
 
@@ -280,7 +320,9 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     private func run(_ dispatched: DispatchedAction<Action>) {
         let stateAccess = StateAccess { [weak self] in self?.state }
         let consequence = behavior.handle(dispatched, stateAccess)
+        stateObservers.values.forEach { $0.willChange() }
         consequence.mutation.runEndoMut(&state)
+        stateObservers.values.forEach { $0.didChange() }
         let effect = consequence.effect.runReader(environment)
         if !effect.components.isEmpty {
             pendingEffects.append(effect)
