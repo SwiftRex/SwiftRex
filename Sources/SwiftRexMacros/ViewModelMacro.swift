@@ -132,7 +132,7 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
         let accessFn: DeclSyntax =
             """
             \(raw: access)nonisolated func access<_Member>(keyPath: KeyPath<\(raw: className), _Member>) {
-                _$observationRegistrar.access(self, keyPath: keyPath)
+                _$observationRegistrar.access(of: self, keyPath: keyPath)
             }
             """
         let withMutationFn: DeclSyntax =
@@ -141,7 +141,7 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
                 keyPath: KeyPath<\(raw: className), _Member>,
                 _ mutation: () throws -> _Result
             ) rethrows -> _Result {
-                try _$observationRegistrar.withMutation(self, keyPath: keyPath, mutation)
+                try _$observationRegistrar.withMutation(of: self, keyPath: keyPath, mutation)
             }
             """
         return infra + [accessFn, withMutationFn]
@@ -157,11 +157,11 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
                 """
                 \(raw: access)var \(raw: name): \(type) {
                     get {
-                        _$observationRegistrar.access(self, keyPath: \\.\(raw: name))
+                        _$observationRegistrar.access(of: self, keyPath: \\.\(raw: name))
                         return _\(raw: name)
                     }
                     set {
-                        _$observationRegistrar.withMutation(self, keyPath: \\.\(raw: name)) {
+                        _$observationRegistrar.withMutation(of: self, keyPath: \\.\(raw: name)) {
                             _\(raw: name) = newValue
                         }
                     }
