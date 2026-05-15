@@ -1,4 +1,4 @@
-#if canImport(Observation)
+#if canImport(Observation) && canImport(SwiftUI)
 import Observation
 @testable import SwiftRex
 @testable import SwiftRexArchitecture
