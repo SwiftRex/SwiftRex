@@ -64,8 +64,8 @@ import SwiftUI
 ///         )
 ///     }
 ///
-///     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { va in
-///         switch va {
+///     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { viewAction in
+///         switch viewAction {
 ///         case .onAppear:           .fetchMovies
 ///         case .didTapStar(let id): .toggleFavorite(id)
 ///         }
@@ -175,5 +175,19 @@ public protocol Feature: Sendable {
     /// view model type matches the feature's. ``FeatureHost/build(store:)`` calls
     /// `Content(viewModel:)` directly via ``HasViewModel``.
     associatedtype Content: HasViewModel & View where Content.VM == ViewModel
+}
+
+// MARK: - Identity mapping defaults
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+extension Feature where State == ViewModel.ViewState {
+    /// Identity projection — no declaration needed when `State` is typealiased to `ViewModel.ViewState`.
+    public static var mapState: @MainActor @Sendable (State) -> ViewModel.ViewState { { $0 } }
+}
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+extension Feature where Action == ViewModel.ViewAction {
+    /// Identity translation — no declaration needed when `Action` is typealiased to `ViewModel.ViewAction`.
+    public static var mapAction: @Sendable (ViewModel.ViewAction) -> Action { { $0 } }
 }
 #endif

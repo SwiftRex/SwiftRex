@@ -181,6 +181,26 @@ extension Behavior {
     }
 }
 
+// MARK: - Void Environment convenience
+
+extension Behavior where Environment == Void {
+    /// Widens the environment axis from `Void` to any `GlobalEnvironment`, discarding the
+    /// global environment entirely.
+    ///
+    /// Use this when a feature has no live dependencies (`Environment == Void`) and is being
+    /// lifted into a parent store that does:
+    ///
+    /// ```swift
+    /// counterBehavior
+    ///     .liftAction(AppAction.prism.counter)
+    ///     .liftState(AppState.lens.counter)
+    ///     .liftEnvironment()   // discards AppEnvironment; counter needs none
+    /// ```
+    public func liftEnvironment<GlobalEnvironment: Sendable>() -> Behavior<Action, State, GlobalEnvironment> {
+        liftEnvironment(ignore)
+    }
+}
+
 // MARK: - Combined lift
 
 extension Behavior {

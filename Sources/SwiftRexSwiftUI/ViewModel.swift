@@ -47,8 +47,8 @@ import SwiftRex
 ///     static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { s in
 ///         .init(count: "\(s.count)", display: "\(s.label): \(s.count)")
 ///     }
-///     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { va in
-///         switch va { case .tappedPlus: .increment; case .tappedMinus: .decrement }
+///     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { viewAction in
+///         switch viewAction { case .tappedPlus: .increment; case .tappedMinus: .decrement }
 ///     }
 ///
 ///     typealias Content = CounterView

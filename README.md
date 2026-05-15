@@ -1120,10 +1120,12 @@ And what about SwiftUI? Is this architecture a good fit for the new UI framework
 
 | Type | Role |
 |---|---|
-| `@ViewModel` | Macro applied to a class. Generates `@Observable` tracked properties for each `ViewState` field, an `init(store:)`, and a `dispatch` method. |
-| `HasViewModel` | Protocol for SwiftUI views driven by a `@ViewModel` class. Requires `var viewModel: VM` and `init(viewModel:)`. |
-| `Feature` | Protocol for a feature module. Declares internal `State`, `Action`, `Environment`, a nested `@ViewModel` class, mapping closures, and the `Content` view type. |
-| `FeatureHost` | Type-erased handle to a `Feature`. Holds `behavior` for parent-store integration and `view(for:)` to produce a `some View` without exposing any view-layer generics. |
+| `@ViewModel` | Macro on a class. Generates `@Observable`-tracked properties per `ViewState` field, `init(store:)`, and `dispatch`. |
+| `HasViewModel` | Protocol for views driven by a `@ViewModel` class. Requires `var viewModel: VM` and `init(viewModel:)`. |
+| `@BoundTo(F.self)` | Macro on a view struct. Generates `typealias VM`, `let viewModel`, `init(viewModel:)`, and `HasViewModel` conformance. |
+| `Feature` | Protocol for a feature module. Declares `State`, `Action`, `Environment`, a nested `@ViewModel`, mapping closures, and `Content`. |
+| `@Feature` | Macro on a feature enum. Adds `Feature` conformance, `@Prisms` on `Action`, `@Lenses` on `State`. |
+| `FeatureHost` | Type-erased handle to a `Feature`. Holds `behavior` for parent-store integration and `view(for:)` returning `some View`. |
 
 ## Field-level view invalidation
 
@@ -1155,18 +1157,25 @@ enum Domain {
 
 // ── App-level types ─────────────────────────────────────────────────────────
 
-@Prisms enum AppAction: Sendable { case movies(MoviesFeature.Action) }
-@Lenses struct AppState: Sendable { var movies = MoviesFeature.initialState() }
+@Prisms enum AppAction: Sendable {
+    case movies(MoviesFeature.Action)
+    case counter(CounterFeature.Action)
+}
+@Lenses struct AppState: Sendable {
+    var movies:  MoviesFeature.State  = MoviesFeature.initialState()
+    var counter: CounterFeature.State = CounterFeature.initialState()
+}
 
 struct AppEnvironment: Sendable {
-    var network:        APIClient           // github.com/luizmb/NetworkTools
+    var network:        APIClient
     var decoderFactory: DataDecoderFactory  // .json → JSONDecoder()
     var encoderFactory: DataEncoderFactory  // .json → JSONEncoder()
 }
 
 // ── Feature ─────────────────────────────────────────────────────────────────
 
-enum MoviesFeature: Feature {
+@Feature   // adds Feature conformance; @Lenses on State, @Prisms on Action
+enum MoviesFeature {
 
     struct State: Sendable {
         var movies:    [Domain.Movie]       = []
@@ -1174,8 +1183,7 @@ enum MoviesFeature: Feature {
         var error:     Domain.NetworkError? = nil
     }
 
-    @Prisms  // generates MoviesFeature.Action.prism.fetchMovies, .moviesResponse, etc.
-    enum Action: Sendable {
+    enum Action: Sendable {   // @Prisms added by @Feature
         case fetchMovies
         case moviesResponse(Result<[Domain.Movie], Domain.NetworkError>)
         case toggleFavorite(String)                                        // movie.id
@@ -1260,10 +1268,8 @@ enum MoviesFeature: Feature {
 
 // ── View ────────────────────────────────────────────────────────────────────
 
-struct MovieListView: View, HasViewModel {
-    typealias VM = MoviesFeature.ViewModel
-    let viewModel: MoviesFeature.ViewModel  // plain let — VM is @Observable AnyObject
-
+@BoundTo(MoviesFeature.self)   // generates typealias VM, let viewModel, init, HasViewModel
+struct MovieListView: View {
     var body: some View {
         List(viewModel.rows) { row in
             HStack {
@@ -1281,7 +1287,55 @@ struct MovieListView: View, HasViewModel {
     }
 }
 
-// ── FeatureHost convenience ─────────────────────────────────────────────────
+// ── Counter feature — simple case: identity mappings, no environment ──────────
+//
+// State  == ViewModel.ViewState  → mapState  defaults to identity (no declaration needed)
+// Action == ViewModel.ViewAction → mapAction defaults to identity (no declaration needed)
+// Environment == Void            → no async effects, no dependencies
+
+@Feature
+enum CounterFeature {
+    @ViewModel
+    final class ViewModel {
+        struct ViewState: Sendable, Equatable {
+            var count: Int = 0
+        }
+        enum ViewAction: Sendable { case increment; case decrement; case reset }
+    }
+
+    typealias State       = ViewModel.ViewState   // ViewState IS the domain state
+    typealias Action      = ViewModel.ViewAction  // ViewAction IS the domain action
+    typealias Environment = Void
+
+    // mapState and mapAction are omitted — identity defaults apply automatically
+
+    static func initialState() -> State { .init() }
+
+    static func behavior() -> Behavior<Action, State, Void> {
+        .handle { action, _ in
+            switch action.action {
+            case .increment: .reduce { $0.count += 1 }
+            case .decrement: .reduce { $0.count -= 1 }
+            case .reset:     .reduce { $0.count  = 0 }
+            }
+        }
+    }
+
+    typealias Content = CounterView
+}
+
+@BoundTo(CounterFeature.self)
+struct CounterView: View {
+    var body: some View {
+        HStack(spacing: 24) {
+            Button("−") { viewModel.dispatch(.decrement) }
+            Text("\(viewModel.count)").font(.title.monospacedDigit())
+            Button("+") { viewModel.dispatch(.increment) }
+        }
+    }
+}
+
+// ── FeatureHost conveniences ─────────────────────────────────────────────────
 
 extension FeatureHost
 where Action      == MoviesFeature.Action,
@@ -1290,37 +1344,58 @@ where Action      == MoviesFeature.Action,
     static var movies: Self { .init(MoviesFeature.self) }
 }
 
-// ── Parent-store integration ─────────────────────────────────────────────────
+extension FeatureHost
+where Action      == CounterFeature.Action,
+      State       == CounterFeature.State,
+      Environment == Void {
+    static var counter: Self { .init(CounterFeature.self) }
+}
+
+// ── Parent-store integration — both features in one Store ────────────────────
 
 let appStore = Store(
     initial: AppState(),
-    behavior: FeatureHost.movies.behavior
-        .liftAction(AppAction.prism.movies)
-        .liftState(AppState.lens.movies)
-        .liftEnvironment { appEnv in
-            let base = "https://api.example.com"
-            return MoviesFeature.Environment(
-                fetchMovies: {
-                    await appEnv.network
-                        .get(from: "\(base)/movies",
-                             decodingWith: appEnv.decoderFactory.dataDecoder(for: [Domain.Movie].self))
-                        .mapError(Domain.NetworkError.api)
-                },
-                toggleFavorite: { id in
-                    await appEnv.network
-                        .post(to: "\(base)/movies/\(id)/favorite",
-                              decodingWith: appEnv.decoderFactory.dataDecoder(for: Domain.Movie.self))
-                        .mapError(Domain.NetworkError.api)
+    behavior: Behavior.combine(
+        FeatureHost.movies.behavior
+            .lift(
+                action:      AppAction.prism.movies,
+                state:       AppState.lens.movies,
+                environment: { appEnv in
+                    let base = "https://api.example.com"
+                    return MoviesFeature.Environment(
+                        fetchMovies: {
+                            await appEnv.network
+                                .get(from: "\(base)/movies",
+                                     decodingWith: appEnv.decoderFactory.dataDecoder(for: [Domain.Movie].self))
+                                .mapError(Domain.NetworkError.api)
+                        },
+                        toggleFavorite: { id in
+                            await appEnv.network
+                                .post(to: "\(base)/movies/\(id)/favorite",
+                                      decodingWith: appEnv.decoderFactory.dataDecoder(for: Domain.Movie.self))
+                                .mapError(Domain.NetworkError.api)
+                        }
+                    )
                 }
+            ),
+        FeatureHost.counter.behavior
+            .lift(
+                action:      AppAction.prism.counter,
+                state:       AppState.lens.counter,
+                environment: ignore                    // Void — discards AppEnvironment
             )
-        },
+    ),
     environment: AppEnvironment(network: .live, decoderFactory: .json, encoderFactory: .json)
 )
 
-// Show the feature — FeatureHost erases all view-layer generics
+// Build views — FeatureHost erases all view-layer generics
 FeatureHost.movies.view(for: appStore.projection(
-    action: AppAction.prism.movies.review,    // Prism embed: (Action) → AppAction
-    state:  AppState.lens.movies.get          // Lens get:    (AppState) → State
+    action: AppAction.prism.movies.review,
+    state:  AppState.lens.movies.get
+))
+FeatureHost.counter.view(for: appStore.projection(
+    action: AppAction.prism.counter.review,
+    state:  AppState.lens.counter.get
 ))
 ```
 
@@ -1411,7 +1486,7 @@ import Testing
 }
 ```
 
-`send(_:assert:)` runs the behavior's handle closure and state mutation synchronously, then validates the resulting state against the closure. The closure receives an `inout` copy of the state *before* the action and you mutate it to what you expect — a mismatch records a `Testing` failure pointing to the call site.
+`dispatch(_:assert:)` runs the behavior's handle closure and state mutation synchronously, then validates the resulting state against the closure. The closure receives an `inout` copy of the state *before* the action and you mutate it to what you expect — a mismatch records a `Testing` failure pointing to the call site.
 
 ## Testing effects
 
@@ -1448,7 +1523,7 @@ store.receive(AppAction.prism.didReset) { $0 = .initial }
 
 By default `TestStore` is exhaustive — it fails the test if you:
 
-- call `send` while `receivedActions` is non-empty (unprocessed received actions)
+- call `dispatch` while `receivedActions` is non-empty (unprocessed received actions)
 - let the store deallocate with leftover `pendingEffects` or `receivedActions`
 
 Pass `exhaustive: false` to opt out:
@@ -1457,9 +1532,9 @@ Pass `exhaustive: false` to opt out:
 let store = TestStore(initial: s, behavior: b, environment: e, exhaustive: false)
 ```
 
-## Chaining sends
+## Chaining dispatches
 
-`send` returns `self`, so multiple dispatches can be chained:
+`dispatch` returns `self`, so multiple calls can be chained:
 
 ```swift
 store
@@ -1468,23 +1543,21 @@ store
     .dispatch(.reset)     { $0.count = 0 }
 ```
 
-## Defining Prisms for your action type
+## Prisms for action matching
 
-`receive` uses `Prism<Action, Value>` from the [FP](https://github.com/luizmb/FP) library to match action cases without requiring `Action: Equatable`. Define prisms for each case you want to assert:
+`receive` uses `Prism<Action, Value>` from the [FP](https://github.com/luizmb/FP) library to match action cases without requiring `Action: Equatable`.
+
+When using `@Feature`, the `@Prisms` macro is applied to your `Action` enum automatically — `Action.prism.caseName` is available with no extra code.
+
+For standalone stores without `@Feature`, apply `@Prisms` to the action enum manually:
 
 ```swift
-extension AppAction {
-    enum prism {
-        static let didFetch = Prism<AppAction, [Item]>(
-            preview: { if case .didFetch(let items) = $0 { return items } else { return nil } },
-            review: AppAction.didFetch
-        )
-        static let didReset = Prism<AppAction, Void>(
-            preview: { if case .didReset = $0 { return () } else { return nil } },
-            review: { _ in .didReset }
-        )
-    }
+@Prisms
+enum AppAction: Sendable {
+    case didFetch([Item])
+    case didReset
 }
+// Generates: AppAction.prism.didFetch, AppAction.prism.didReset
 ```
 
 ---

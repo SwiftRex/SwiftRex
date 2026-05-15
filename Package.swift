@@ -123,7 +123,12 @@ let package = Package(
 
         .target(
             name: "SwiftRexArchitecture",
-            dependencies: ["SwiftRex", "SwiftRexSwiftUI"],
+            dependencies: [
+                "SwiftRex",
+                "SwiftRexSwiftUI",
+                "SwiftRexMacros",
+                .product(name: "FPMacros", package: "FP")
+            ],
             path: "Sources/SwiftRexArchitecture"
         ),
 
