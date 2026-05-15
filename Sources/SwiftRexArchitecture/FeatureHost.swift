@@ -5,71 +5,40 @@ import SwiftUI
 
 /// A type-erased handle for a ``Feature`` that exposes only its domain-level surface.
 ///
-/// `FeatureHost` is the value a parent coordinator or navigation model holds. It knows the
-/// domain types — `Action`, `State`, `Environment` — needed to integrate the feature's
-/// reducer into a parent store, but erases all view-layer types at creation time. After
-/// `init`, nothing outside can see `F.ViewModel`, `F.Content`, `F.ViewState`, or
-/// `F.ViewAction`.
+/// `FeatureHost` holds ``behavior`` for lifting into a parent store, and ``view(for:)``
+/// for producing a `some View` without leaking any view-layer generics.
+/// After `init`, `F.ViewModel`, `F.Content`, `F.ViewState`, and `F.ViewAction` are gone.
 ///
-/// ## Responsibilities
+/// For a complete example including `Feature`, domain types, and app-level wrappers, see the
+/// [SwiftRex Architecture section in the README](https://github.com/SwiftRex/SwiftRex#swiftrex-architecture).
 ///
-/// A `FeatureHost` has exactly two jobs:
-///
-/// 1. **Expose the `Behavior`** so the parent store can embed the feature's reducer and
-///    effects alongside its own.
-/// 2. **Produce the view** on demand by accepting a projected `StoreType` and returning
-///    an opaque `some View`.
-///
-/// ## Full usage example
+/// ## Usage
 ///
 /// ```swift
-/// // 1. Parent store types
-/// struct AppState: Sendable {
-///     var heroDetails: HeroDetailsFeature.State = HeroDetailsFeature.initialState()
-/// }
-/// enum AppAction: Sendable {
-///     case heroDetails(HeroDetailsFeature.Action)
-/// }
-/// struct AppEnvironment: Sendable {
-///     var hero: HeroDetailsFeature.Environment
+/// // Declare a typed convenience alongside the Feature:
+/// extension FeatureHost
+/// where Action      == MoviesFeature.Action,
+///       State       == MoviesFeature.State,
+///       Environment == MoviesFeature.Environment {
+///     static var movies: Self { .init(MoviesFeature.self) }
 /// }
 ///
-/// // 2. Create the host — view generics vanish here
-/// let heroHost = FeatureHost(HeroDetailsFeature.self)
-///
-/// // 3. Embed the feature's behavior in the parent
-/// let appStore = Store(
+/// // Embed behavior in the parent store:
+/// Store(
 ///     initial: AppState(),
-///     behavior: heroHost.behavior
-///         .liftAction { (app: inout AppAction) -> HeroDetailsFeature.Action? in
-///             guard case .heroDetails(let a) = app else { return nil }
-///             return a
-///         }
-///         .liftState(\.heroDetails)
-///         .liftEnvironment(\.hero),
+///     behavior: FeatureHost.movies.behavior
+///         .liftAction(AppAction.prism.movies)
+///         .liftState(AppState.lens.movies)
+///         .liftEnvironment { ... },
 ///     environment: AppEnvironment(...)
 /// )
 ///
-/// // 4. Show the feature's view when navigation demands it
-/// NavigationLink("Hero Details") {
-///     heroHost.view(for: appStore.projection(
-///         action: AppAction.heroDetails,
-///         state: \.heroDetails
-///     ))
-/// }
+/// // Produce the view — all view-layer generics are erased:
+/// FeatureHost.movies.view(for: appStore.projection(
+///     action: AppAction.prism.movies.review,
+///     state:  AppState.lens.movies.get
+/// ))
 /// ```
-///
-/// ## Why not pass the environment to `view(for:)`?
-///
-/// The `Store` already owns the live dependencies. Passing the store is correct because
-/// the feature's environment was injected when the parent `Store` was created —
-/// `view(for:)` only needs the state+dispatch channel, not the environment again.
-///
-/// ## Generic erasure
-///
-/// `FeatureHost<Action, State, Environment>` is generic only over domain types. The
-/// view-layer generics (`F.ViewModel`, `F.Content`, etc.) exist solely inside `init` and
-/// are captured as closures — they do not appear anywhere on the struct's type after that.
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 public struct FeatureHost<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
 

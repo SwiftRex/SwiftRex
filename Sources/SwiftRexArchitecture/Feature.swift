@@ -10,125 +10,66 @@ import SwiftUI
 /// `Action`, and `Environment`; declares the view-layer `@ViewModel` class inline; and
 /// bridges the two layers with `mapState` / `mapAction`.
 ///
-/// ## Full example — Movies list with API calls
+/// For a complete end-to-end example including domain types, app-level wrappers,
+/// `FeatureHost` integration, and the view, see the
+/// [SwiftRex Architecture section in the README](https://github.com/SwiftRex/SwiftRex#swiftrex-architecture).
+///
+/// ## Feature body
 ///
 /// ```swift
-/// // ── Domain namespace ──────────────────────────────────────────────────────────
-///
-/// enum Domain {
-///     struct Actor:     Sendable, Decodable { let id: String; let name: String }
-///     struct Character: Sendable, Decodable { let name: String; let actor: Actor }
-///     struct Movie:     Sendable, Decodable, Identifiable {
-///         let id: String; let title: String
-///         let isFavorite: Bool; let year: Int
-///         let characters: [Character]
-///     }
-///
-///     // Unified network error — four cases covering all failure modes.
-///     enum NetworkError: Error, @unchecked Sendable {
-///         case api(APIError)              // HTTP / connectivity failure
-///         case encoding(EncodingError)    // failed to encode a request body
-///         case decoding(DecodingError)    // failed to decode a response
-///         case unknown(any Error)         // catch-all for unexpected failures
-///     }
-/// }
-///
-/// // ── App-level wrapper types ───────────────────────────────────────────────────
-///
-/// @Prisms                                     // generates AppAction.prism.movies
-/// enum AppAction: Sendable {
-///     case movies(MoviesFeature.Action)
-/// }
-///
-/// @Lenses                                     // generates AppState.lens.movies
-/// struct AppState: Sendable {
-///     var movies = MoviesFeature.initialState()
-/// }
-///
-/// // AppEnvironment holds infrastructure; feature environments hold pre-baked closures.
-/// // .live(network: URLSession.shared.dataTask, decoderFactory: JSONDecoder(), encoderFactory: JSONEncoder())
-/// struct AppEnvironment: Sendable {
-///     var network:        APIClient
-///     var decoderFactory: DataDecoderFactory
-///     var encoderFactory: DataEncoderFactory
-/// }
-///
-/// // ── Feature ───────────────────────────────────────────────────────────────────
-///
 /// enum MoviesFeature: Feature {
 ///
-///     // Internal domain state
 ///     struct State: Sendable {
 ///         var movies:    [Domain.Movie]       = []
 ///         var isLoading: Bool                 = false
 ///         var error:     Domain.NetworkError? = nil
 ///     }
 ///
-///     // Internal domain actions
 ///     enum Action: Sendable {
-///         case fetchMovies                                                  // user pulls to refresh
-///         case moviesResponse(Result<[Domain.Movie], Domain.NetworkError>)  // GET result
-///         case toggleFavorite(String)                                       // movie.id — initiates POST
-///         case favoriteResponse(Result<Domain.Movie, Domain.NetworkError>)  // POST result
+///         case fetchMovies
+///         case moviesResponse(Result<[Domain.Movie], Domain.NetworkError>)
+///         case toggleFavorite(String)                                        // movie.id
+///         case favoriteResponse(Result<Domain.Movie, Domain.NetworkError>)
 ///     }
 ///
-///     // Feature environment: pre-baked closures — no APIClient or encoder/decoder knowledge.
-///     // Constructed once in liftEnvironment; easy to stub in tests.
 ///     struct Environment: Sendable {
 ///         var fetchMovies:    @Sendable () async -> Result<[Domain.Movie], Domain.NetworkError>
 ///         var toggleFavorite: @Sendable (String) async -> Result<Domain.Movie, Domain.NetworkError>
 ///     }
 ///
-///     // ── ViewModel (view-facing types) ─────────────────────────────────────────
-///
 ///     @ViewModel
 ///     final class ViewModel {
-///
 ///         struct ViewState: Sendable, Equatable {
 ///             struct MovieRow: Identifiable, Sendable, Equatable {
-///                 var id:       String
-///                 var title:    String   // "The Avengers (2012)"
-///                 var subtitle: String   // "Spider-Man by Tom Holland, Thor by Chris Hemsworth"
-///                 var starred:  Bool
+///                 var id: String; var title: String; var subtitle: String; var starred: Bool
 ///             }
-///             var rows:      [MovieRow]
-///             var isLoading: Bool
-///             var error:     String?
+///             var rows: [MovieRow]; var isLoading: Bool; var error: String?
 ///         }
-///
 ///         enum ViewAction: Sendable {
-///             case onAppear                    // view appeared → triggers initial fetch
-///             case didTapStar(id: String)      // movie.id — different name, same value type
+///             case onAppear
+///             case didTapStar(id: String)
 ///         }
 ///     }
-///
-///     // ── Mappings ──────────────────────────────────────────────────────────────
 ///
 ///     static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { state in
 ///         .init(
-///             rows: state.movies.map { movie in
-///                 .init(
-///                     id: movie.id,
-///                     title: "\(movie.title) (\(movie.year))",  // title + Int year → String
-///                     subtitle: movie.characters                // [Character] → single String
-///                         .map { "\($0.name) by \($0.actor.name)" }
-///                         .joined(separator: ", "),
-///                     starred:  movie.isFavorite
-///                 )
+///             rows: state.movies.map { m in
+///                 .init(id: m.id,
+///                       title: "\(m.title) (\(m.year))",
+///                       subtitle: m.characters.map { "\($0.name) by \($0.actor.name)" }.joined(separator: ", "),
+///                       starred: m.isFavorite)
 ///             },
 ///             isLoading: state.isLoading,
-///             error:     state.error.map { $0.localizedDescription }
+///             error: state.error.map { $0.localizedDescription }
 ///         )
 ///     }
 ///
-///     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { viewAction in
-///         switch viewAction {
-///         case .onAppear:           .fetchMovies           // onAppear, load the movies
-///         case .didTapStar(let id): .toggleFavorite(id)    // onTapStar, toggle the favorite status of that movie
+///     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { va in
+///         switch va {
+///         case .onAppear:           .fetchMovies
+///         case .didTapStar(let id): .toggleFavorite(id)
 ///         }
 ///     }
-///
-///     // ── Lifecycle ─────────────────────────────────────────────────────────────
 ///
 ///     static func initialState() -> State { .init() }
 ///
@@ -137,17 +78,13 @@ import SwiftUI
 ///             switch action.action {
 ///             case .fetchMovies:
 ///                 .reduce { $0.isLoading = true }
-///                 .produce { env in
-///                     .task { .moviesResponse(await env.fetchMovies()) }
-///                 }
+///                 .produce { env in .task { .moviesResponse(await env.fetchMovies()) } }
 ///             case .moviesResponse(.success(let movies)):
 ///                 .reduce { $0.movies = movies; $0.isLoading = false }
 ///             case .moviesResponse(.failure(let err)):
 ///                 .reduce { $0.error = err; $0.isLoading = false }
 ///             case .toggleFavorite(let id):
-///                 .produce { env in 
-///                     .task { .favoriteResponse(await env.toggleFavorite(id)) } 
-///                 }
+///                 .produce { env in .task { .favoriteResponse(await env.toggleFavorite(id)) } }
 ///             case .favoriteResponse(.success(let movie)):
 ///                 .reduce { $0.movies = [Domain.Movie].ix(id: movie.id).set($0.movies, movie) }
 ///             case .favoriteResponse(.failure):
@@ -158,59 +95,13 @@ import SwiftUI
 ///
 ///     typealias Content = MovieListView
 /// }
-///
-/// // ── FeatureHost convenience ───────────────────────────────────────────────────
-/// //
-/// // Declare alongside MoviesFeature so callers write `.movies` everywhere.
-///
-/// extension FeatureHost
-/// where Action      == MoviesFeature.Action,
-///       State       == MoviesFeature.State,
-///       Environment == MoviesFeature.Environment {
-///     static var movies: Self { .init(MoviesFeature.self) }
-/// }
-///
-/// // ── Parent-store integration ──────────────────────────────────────────────────
-///
-/// let appStore = Store(
-///     initial: AppState(),
-///     behavior: FeatureHost.movies.behavior
-///         .liftAction(AppAction.prism.movies)           // Prism — embed + extract
-///         .liftState(AppState.lens.movies)              // Lens  — read + write
-///         .liftEnvironment { appEnv in
-///             let decoder = appEnv.decoderFactory
-///             return MoviesFeature.Environment(
-///                 fetchMovies: {
-///                     await appEnv.network
-///                         .get(from: "/movies", decoder: decoder.dataDecoder(for: [Domain.Movie].self))
-///                         .mapError(Domain.NetworkError.init)
-///                 },
-///                 toggleFavorite: { id in
-///                     await appEnv.network
-///                         .post(to: "/movies/\(id)/favorite", decoder: decoder.dataDecoder(for: Domain.Movie.self))
-///                         .mapError(Domain.NetworkError.init)
-///                 }
-///             )
-///         },
-///     environment: AppEnvironment(
-///         network: URLSession.shared.apiClient(base: "https://api.example.com"),
-///         decoderFactory: JSONDecoder(),
-///         encoderFactory: JSONEncoder()
-///     )
-/// )
-///
-/// // Build the view when navigation shows the feature:
-/// let view = FeatureHost.movies.view(for: appStore.projection(
-///     action: AppAction.prism.movies.review,    // Prism — embed direction: (Action) -> AppAction
-///     state:  AppState.lens.movies.get          // Lens  — get direction:   (AppState) -> State
-/// ))
 /// ```
 ///
 /// ## Data flow
 ///
 /// ```
 /// AppStore<AppAction, AppState>
-///   → projection(action: AppAction.movies, state: \.movies)
+///   → projection(action: AppAction.prism.movies.review, state: AppState.lens.movies.get)
 ///   → StoreProjection<MoviesFeature.Action, MoviesFeature.State>
 ///   → .projection(action: mapAction, state: mapState)            ← FeatureHost.view(for:)
 ///   → StoreProjection<ViewModel.ViewAction, ViewModel.ViewState>

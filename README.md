@@ -1174,6 +1174,7 @@ enum MoviesFeature: Feature {
         var error:     Domain.NetworkError? = nil
     }
 
+    @Prisms  // generates MoviesFeature.Action.prism.fetchMovies, .moviesResponse, etc.
     enum Action: Sendable {
         case fetchMovies
         case moviesResponse(Result<[Domain.Movie], Domain.NetworkError>)
@@ -1321,6 +1322,66 @@ FeatureHost.movies.view(for: appStore.projection(
     action: AppAction.prism.movies.review,    // Prism embed: (Action) → AppAction
     state:  AppState.lens.movies.get          // Lens get:    (AppState) → State
 ))
+```
+
+## Putting everything together
+
+Because `Feature.Environment` is pre-baked closures with no infrastructure knowledge,
+testing the full behavior requires nothing more than stub closures and `TestStore`:
+
+```swift
+import SwiftRexTesting
+import Testing
+
+@Test @MainActor
+func fetchMovies_setsLoadingThenPopulatesRows() async {
+    let inception = Domain.Movie(id: "1", title: "Inception", isFavorite: false, year: 2010, characters: [])
+
+    let store = TestStore(
+        initial: MoviesFeature.initialState(),
+        behavior: MoviesFeature.behavior(),
+        environment: MoviesFeature.Environment(
+            fetchMovies:    { .success([inception]) },
+            toggleFavorite: { _ in .failure(.unknown(CancellationError())) }
+        )
+    )
+
+    store.dispatch(.fetchMovies) { $0.isLoading = true }
+
+    await store.runEffects()
+
+    store.receive(MoviesFeature.Action.prism.moviesResponse) { result, state in
+        if case .success(let movies) = result {
+            state.movies = movies
+            state.isLoading = false
+        }
+    }
+}
+
+@Test @MainActor
+func toggleFavorite_replacesMovieWithAPIResponse() async {
+    let original = Domain.Movie(id: "1", title: "Inception", isFavorite: false, year: 2010, characters: [])
+    let starred  = Domain.Movie(id: "1", title: "Inception", isFavorite: true,  year: 2010, characters: [])
+
+    let store = TestStore(
+        initial: MoviesFeature.State(movies: [original]),
+        behavior: MoviesFeature.behavior(),
+        environment: MoviesFeature.Environment(
+            fetchMovies:    { .success([]) },
+            toggleFavorite: { _ in .success(starred) }
+        )
+    )
+
+    store.dispatch(.toggleFavorite("1")) { _ in }   // no synchronous state change
+
+    await store.runEffects()
+
+    store.receive(MoviesFeature.Action.prism.favoriteResponse) { result, state in
+        if case .success(let movie) = result {
+            state.movies = [Domain.Movie].ix(id: movie.id).set(state.movies, movie)
+        }
+    }
+}
 ```
 
 ## Layer isolation
