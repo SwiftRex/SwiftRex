@@ -17,14 +17,6 @@ This pattern, also known as ["Redux"](https://redux.js.org/basics/data-flow), al
 
 [API documentation can be found here](https://swiftrex.github.io/SwiftRex/documentation/swiftrex).
 
-# Quick Guide
-
-In a hurry? Already familiar with other redux implementations?
-
-No problem, we have a [TL;DR Quick Guide](docs/markdown/QuickGuide.md) that shows the minimum you need to know about SwiftRex in a very practical approach.
-
-We still recommend reading the full README for a deeper understanding behind SwiftRex concepts.
-
 # Goals
 
 Several architectures and design patterns for mobile development nowadays propose to solve specific issues related to [Single Responsibility Principle](https://www.youtube.com/watch?v=Gt0M_OHKhQE) (such as Massive ViewControllers), or improve testability and dependency management. Other common challenges for mobile developers such as state handling, race conditions, modularization/componentization, thread-safety or dealing properly with UI life-cycle and ownership are less explored but can be equally harmful for an app.
@@ -113,7 +105,8 @@ SwiftRex supports multiple concurrency styles. The core package is self-containe
 | `SwiftRex.Combine` | Apple Combine integration |
 | `SwiftRex.RxSwift` | RxSwift integration |
 | `SwiftRex.ReactiveSwift` | ReactiveSwift integration |
-| `SwiftRex.SwiftUI` | SwiftUI helpers — `asObservableObject()`, `asObservableStore()` |
+| `SwiftRex.SwiftUI` | SwiftUI helpers — `asObservableObject()`, `@ViewModel` macro, `HasViewModel` |
+| `SwiftRex.Architecture` | Opinionated module pattern — `Feature`, `FeatureHost` (iOS 17+) |
 | `SwiftRex.Testing` | Test target only — `TestStore` for deterministic unit tests |
 
 Pick the module(s) that match your project's reactive strategy. For a pure Swift Concurrency setup with no third-party dependencies, `SwiftRex` + `SwiftRex.Concurrency` is sufficient.
@@ -397,9 +390,9 @@ let bufferedCustom = store
     .asObservableObject()
 ```
 
-SwiftUI integration is available in two flavours:
-- `.asObservableObject()` — iOS 13+, produces an `ObservableObject`
-- `.asObservableStore()` — iOS 17+, uses the `@Observable` macro
+SwiftUI integration:
+- `.asObservableObject()` — iOS 13+, produces an `ObservableObject` backed by Combine
+- `@ViewModel` macro — iOS 17+, generates a concrete `@Observable` class with per-field invalidation (see [SwiftRex Architecture](#swiftrex-architecture))
 
 #### All together
 
@@ -1119,6 +1112,226 @@ You can think of Store as a very heavy "Model" layer, completely detached from t
 
 And what about SwiftUI? Is this architecture a good fit for the new UI framework? In fact, this architecture works even better in SwiftUI, because SwiftUI was inspired by several functional patterns and it's reactive and stateless by conception. In SwiftUI, the **View is a function of the state**, and we should always aim for single source of truth — data should always flow in a single direction.
 
+# SwiftRex Architecture
+
+`SwiftRex.Architecture` is an opinionated layer on top of `SwiftRex.SwiftUI` that co-locates every concern of a feature screen into a single namespace. It is available on iOS 17+, macOS 14+, tvOS 17+, and watchOS 10+.
+
+## Core types
+
+| Type | Role |
+|---|---|
+| `@ViewModel` | Macro applied to a class. Generates `@Observable` tracked properties for each `ViewState` field, an `init(store:)`, and a `dispatch` method. |
+| `HasViewModel` | Protocol for SwiftUI views driven by a `@ViewModel` class. Requires `var viewModel: VM` and `init(viewModel:)`. |
+| `Feature` | Protocol for a feature module. Declares internal `State`, `Action`, `Environment`, a nested `@ViewModel` class, mapping closures, and the `Content` view type. |
+| `FeatureHost` | Type-erased handle to a `Feature`. Holds `behavior` for parent-store integration and `view(for:)` to produce a `some View` without exposing any view-layer generics. |
+
+## Field-level view invalidation
+
+The `@ViewModel` macro generates one `@Observable`-tracked stored property per `ViewState` field. SwiftUI registers per-property dependencies during `body` evaluation, so only views that read a changed field re-render — unlike `ObservableObject`, which invalidates every observer on any `@Published` change.
+
+## Full example — Movies list with API
+
+The snippet below shows all four concepts working together.
+
+```swift
+// ── Domain namespace ────────────────────────────────────────────────────────
+
+enum Domain {
+    struct Actor:     Sendable, Decodable { let id: String; let name: String }
+    struct Character: Sendable, Decodable { let name: String; let actor: Actor }
+    struct Movie:     Sendable, Decodable, Identifiable {
+        let id: String; let title: String
+        let isFavorite: Bool; let year: Int
+        let characters: [Character]
+    }
+
+    enum NetworkError: Error, @unchecked Sendable {
+        case api(APIError)
+        case encoding(EncodingError)
+        case decoding(DecodingError)
+        case unknown(any Error)
+    }
+}
+
+// ── App-level types ─────────────────────────────────────────────────────────
+
+@Prisms enum AppAction: Sendable { case movies(MoviesFeature.Action) }
+@Lenses struct AppState: Sendable { var movies = MoviesFeature.initialState() }
+
+struct AppEnvironment: Sendable {
+    var network:        APIClient           // github.com/luizmb/NetworkTools
+    var decoderFactory: DataDecoderFactory  // .json → JSONDecoder()
+    var encoderFactory: DataEncoderFactory  // .json → JSONEncoder()
+}
+
+// ── Feature ─────────────────────────────────────────────────────────────────
+
+enum MoviesFeature: Feature {
+
+    struct State: Sendable {
+        var movies:    [Domain.Movie]       = []
+        var isLoading: Bool                 = false
+        var error:     Domain.NetworkError? = nil
+    }
+
+    enum Action: Sendable {
+        case fetchMovies
+        case moviesResponse(Result<[Domain.Movie], Domain.NetworkError>)
+        case toggleFavorite(String)                                        // movie.id
+        case favoriteResponse(Result<Domain.Movie, Domain.NetworkError>)
+    }
+
+    struct Environment: Sendable {
+        var fetchMovies:    @Sendable () async -> Result<[Domain.Movie], Domain.NetworkError>
+        var toggleFavorite: @Sendable (String) async -> Result<Domain.Movie, Domain.NetworkError>
+    }
+
+    // @ViewModel generates individually @Observable-tracked properties,
+    // init(store:), and dispatch(_:file:function:line:)
+    @ViewModel
+    final class ViewModel {
+        struct ViewState: Sendable, Equatable {
+            struct MovieRow: Identifiable, Sendable, Equatable {
+                var id:       String
+                var title:    String   // "The Avengers (2012)"
+                var subtitle: String   // "Spider-Man by Tom Holland, Thor by Chris Hemsworth"
+                var starred:  Bool
+            }
+            var rows:      [MovieRow]
+            var isLoading: Bool
+            var error:     String?
+        }
+
+        enum ViewAction: Sendable {
+            case onAppear
+            case didTapStar(id: String)
+        }
+    }
+
+    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { state in
+        .init(
+            rows: state.movies.map { movie in
+                .init(
+                    id:       movie.id,
+                    title:    "\(movie.title) (\(movie.year))",
+                    subtitle: movie.characters
+                        .map { "\($0.name) by \($0.actor.name)" }
+                        .joined(separator: ", "),
+                    starred:  movie.isFavorite
+                )
+            },
+            isLoading: state.isLoading,
+            error:     state.error.map { $0.localizedDescription }
+        )
+    }
+
+    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { viewAction in
+        switch viewAction {
+        case .onAppear:           .fetchMovies
+        case .didTapStar(let id): .toggleFavorite(id)
+        }
+    }
+
+    static func initialState() -> State { .init() }
+
+    static func behavior() -> Behavior<Action, State, Environment> {
+        .handle { action, _ in
+            switch action.action {
+            case .fetchMovies:
+                .reduce { $0.isLoading = true }
+                .produce { env in .task { .moviesResponse(await env.fetchMovies()) } }
+            case .moviesResponse(.success(let movies)):
+                .reduce { $0.movies = movies; $0.isLoading = false }
+            case .moviesResponse(.failure(let err)):
+                .reduce { $0.error = err; $0.isLoading = false }
+            case .toggleFavorite(let id):
+                .produce { env in .task { .favoriteResponse(await env.toggleFavorite(id)) } }
+            case .favoriteResponse(.success(let movie)):
+                .reduce { $0.movies = [Domain.Movie].ix(id: movie.id).set($0.movies, movie) }
+            case .favoriteResponse(.failure):
+                .doNothing
+            }
+        }
+    }
+
+    typealias Content = MovieListView
+}
+
+// ── View ────────────────────────────────────────────────────────────────────
+
+struct MovieListView: View, HasViewModel {
+    typealias VM = MoviesFeature.ViewModel
+    let viewModel: MoviesFeature.ViewModel  // plain let — VM is @Observable AnyObject
+
+    var body: some View {
+        List(viewModel.rows) { row in
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(row.title).font(.headline)
+                    Text(row.subtitle).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button { viewModel.dispatch(.didTapStar(id: row.id)) } label: {
+                    Image(systemName: row.starred ? "star.fill" : "star")
+                }
+            }
+        }
+        .onAppear { viewModel.dispatch(.onAppear) }
+    }
+}
+
+// ── FeatureHost convenience ─────────────────────────────────────────────────
+
+extension FeatureHost
+where Action      == MoviesFeature.Action,
+      State       == MoviesFeature.State,
+      Environment == MoviesFeature.Environment {
+    static var movies: Self { .init(MoviesFeature.self) }
+}
+
+// ── Parent-store integration ─────────────────────────────────────────────────
+
+let appStore = Store(
+    initial: AppState(),
+    behavior: FeatureHost.movies.behavior
+        .liftAction(AppAction.prism.movies)
+        .liftState(AppState.lens.movies)
+        .liftEnvironment { appEnv in
+            let base = "https://api.example.com"
+            return MoviesFeature.Environment(
+                fetchMovies: {
+                    await appEnv.network
+                        .get(from: "\(base)/movies",
+                             decodingWith: appEnv.decoderFactory.dataDecoder(for: [Domain.Movie].self))
+                        .mapError(Domain.NetworkError.api)
+                },
+                toggleFavorite: { id in
+                    await appEnv.network
+                        .post(to: "\(base)/movies/\(id)/favorite",
+                              decodingWith: appEnv.decoderFactory.dataDecoder(for: Domain.Movie.self))
+                        .mapError(Domain.NetworkError.api)
+                }
+            )
+        },
+    environment: AppEnvironment(network: .live, decoderFactory: .json, encoderFactory: .json)
+)
+
+// Show the feature — FeatureHost erases all view-layer generics
+FeatureHost.movies.view(for: appStore.projection(
+    action: AppAction.prism.movies.review,    // Prism embed: (Action) → AppAction
+    state:  AppState.lens.movies.get          // Lens get:    (AppState) → State
+))
+```
+
+## Layer isolation
+
+| Layer | Knows | Never sees |
+|---|---|---|
+| `Feature` | State, Action, ViewModel, Content, mappings | Parent store types |
+| `FeatureHost` | Action, State, Environment, Behavior | ViewModel, ViewState, ViewAction, Content |
+| `ViewModel` | ViewState, ViewAction | State, Action, Environment |
+| `Content` | ViewState, ViewAction (via `viewModel`) | All domain types |
+
 # Testing
 
 SwiftRex ships `SwiftRex.Testing` — a `TestStore` that drives the dispatch pipeline synchronously so you can assert mutations and verify effects without spinning up a real `Store`.
@@ -1274,7 +1487,7 @@ Pre-built XCFrameworks for the dependency-free products are attached to each [Gi
 | `SwiftRex.Operators.xcframework.zip` | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
 | `SwiftRex.Concurrency.xcframework.zip` | async/await Effect bridges |
 | `SwiftRex.Combine.xcframework.zip` | Combine publisher bridge |
-| `SwiftRex.SwiftUI.xcframework.zip` | SwiftUI integration (`asObservableObject`, `asObservableStore`) |
+| `SwiftRex.SwiftUI.xcframework.zip` | SwiftUI integration (`asObservableObject`, `@ViewModel`, `HasViewModel`) |
 
 The reactive bridges (`SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`) depend on third-party frameworks that ship their own XCFrameworks; use SPM for those products.
 

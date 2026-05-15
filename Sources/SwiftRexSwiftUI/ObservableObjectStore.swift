@@ -69,4 +69,28 @@ public final class ObservableObjectStore<Action: Sendable, State: Sendable>
         store.observe(willChange: willChange, didChange: didChange)
     }
 }
+
+extension StoreType {
+    /// Wraps this store in an ``ObservableObjectStore`` for use with `@StateObject` / `@ObservedObject`.
+    ///
+    /// Requires iOS 15+ (Combine). The returned wrapper fires `objectWillChange` before each
+    /// mutation, keeping SwiftUI animation snapshots accurate.
+    ///
+    /// Apply ``StoreType/projection(action:state:)`` before calling this method if you need to
+    /// narrow the action or state type:
+    ///
+    /// ```swift
+    /// @StateObject var vm = appStore
+    ///     .projection(action: AppAction.counter, state: \.counterState)
+    ///     .buffer()
+    ///     .asObservableObject()
+    /// ```
+    ///
+    /// On iOS 17+ prefer ``@ViewModel`` for field-level `@Observable` tracking.
+    ///
+    /// - Returns: An ``ObservableObjectStore`` wrapping `self`.
+    public func asObservableObject() -> ObservableObjectStore<Action, State> {
+        ObservableObjectStore(self)
+    }
+}
 #endif
