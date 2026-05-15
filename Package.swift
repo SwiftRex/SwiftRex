@@ -1,6 +1,6 @@
 // swift-tools-version: 6.2
-import PackageDescription
 import CompilerPluginSupport
+import PackageDescription
 
 let package = Package(
     name: "SwiftRex",
@@ -18,7 +18,6 @@ let package = Package(
         .library(name: "SwiftRex.RxSwift", targets: ["SwiftRexRxSwift"]),
         .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
         .library(name: "SwiftRex.SwiftUI", targets: ["SwiftRexSwiftUI"]),
-        .library(name: "SwiftRex.Testing", targets: ["SwiftRexTesting"]),
         .library(name: "SwiftRex.Architecture", targets: ["SwiftRexArchitecture"])
     ],
     dependencies: [
@@ -108,18 +107,8 @@ let package = Package(
             path: "Sources/SwiftRexSwiftUI"
         ),
 
-        // MARK: - Testing utilities
-
-        .target(
-            name: "SwiftRexTesting",
-            dependencies: [
-                "SwiftRex",
-                .product(name: "CoreFP", package: "FP")
-            ],
-            path: "Sources/SwiftRexTesting"
-        ),
-
         // MARK: - Architecture (opinionated Feature module protocol)
+        // TestStore lives in SwiftRex (#if DEBUG); TestFeature lives here (#if DEBUG).
 
         .target(
             name: "SwiftRexArchitecture",
@@ -162,15 +151,6 @@ let package = Package(
             name: "SwiftRexReactiveSwiftTests",
             dependencies: ["SwiftRexReactiveSwift"],
             path: "Tests/SwiftRexReactiveSwiftTests"
-        ),
-        .testTarget(
-            name: "SwiftRexTestingTests",
-            dependencies: [
-                "SwiftRexTesting",
-                "SwiftRex",
-                .product(name: "CoreFP", package: "FP")
-            ],
-            path: "Tests/SwiftRexTestingTests"
         ),
         .testTarget(
             name: "SwiftRexArchitectureTests",

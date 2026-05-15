@@ -108,6 +108,7 @@ public protocol ViewModel: AnyObject {
 ///
 /// See ``ViewModel`` for the full list of what is generated and the constraints that are enforced.
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@attached(memberAttribute)
 @attached(member, names:
     named(_$observationRegistrar),
     named(_dispatch),

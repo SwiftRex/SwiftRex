@@ -41,7 +41,6 @@ import SwiftUI
 /// ```
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 public struct FeatureHost<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
-
     /// The feature's reducer + effects, ready to be lifted and embedded in a parent ``Store``.
     public let behavior: Behavior<Action, State, Environment>
 

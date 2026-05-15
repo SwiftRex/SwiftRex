@@ -18,13 +18,12 @@ private struct HeroDetailsView: View, HasViewModel {
 }
 
 private enum HeroDetailsFeature: Feature {
-
     struct State: Sendable {
-        var codename: String   = "Kryptonian"
-        var aliases:  [String] = ["Superman", "Man of Steel"]
-        var powers:   [String] = ["flight", "heat vision"]
-        var threatIndex: Int   = 1       // 0 = low … 3 = critical
-        var isRetired: Bool    = false
+        var codename: String = "Kryptonian"
+        var aliases: [String] = ["Superman", "Man of Steel"]
+        var powers: [String] = ["flight", "heat vision"]
+        var threatIndex: Int = 1       // 0 = low … 3 = critical
+        var isRetired: Bool = false
     }
 
     enum Action: Sendable, Equatable {
@@ -36,12 +35,13 @@ private enum HeroDetailsFeature: Feature {
     struct Environment: Sendable {}
 
     @ViewModel
+    // swiftlint:disable:next convenience_type
     final class ViewModel {
         struct ViewState: Sendable, Equatable {
             var displayName: String   // aliases.first ?? codename
-            var powersText:  String   // joined for TextField binding
+            var powersText: String   // joined for TextField binding
             var threatIndex: Int      // segmented control index 0…3
-            var isRetired:   Bool
+            var isRetired: Bool
         }
         enum ViewAction: Sendable {
             case editedPowers(String) // raw comma-separated TextField content
@@ -53,9 +53,9 @@ private enum HeroDetailsFeature: Feature {
     static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { s in
         .init(
             displayName: s.aliases.first ?? s.codename,
-            powersText:  s.powers.joined(separator: ", "),
+            powersText: s.powers.joined(separator: ", "),
             threatIndex: s.threatIndex,
-            isRetired:   s.isRetired
+            isRetired: s.isRetired
         )
     }
 
@@ -96,7 +96,7 @@ private func makeViewModel() -> HeroDetailsFeature.ViewModel {
     )
     return HeroDetailsFeature.ViewModel(store: store.projection(
         action: HeroDetailsFeature.mapAction,
-        state:  HeroDetailsFeature.mapState
+        state: HeroDetailsFeature.mapState
     ))
 }
 
@@ -135,8 +135,11 @@ struct MapStateTests {
         let a = HeroDetailsFeature.mapState(.init())
         let b = HeroDetailsFeature.mapState(.init())
         let c = HeroDetailsFeature.mapState(.init(
-            codename: "Kryptonian", aliases: ["Superman", "Man of Steel"],
-            powers: ["flight"], threatIndex: 1, isRetired: false
+            codename: "Kryptonian",
+            aliases: ["Superman", "Man of Steel"],
+            powers: ["flight"],
+            threatIndex: 1,
+            isRetired: false
         ))
         #expect(a == b)
         #expect(a != c)

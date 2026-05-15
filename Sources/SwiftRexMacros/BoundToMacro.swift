@@ -6,7 +6,6 @@ import SwiftSyntaxMacros
 /// - `MemberMacro`    — generates `typealias VM`, `let viewModel`, and `init(viewModel:)`
 /// - `ExtensionMacro` — adds `HasViewModel` protocol conformance
 public struct BoundToMacro: MemberMacro, ExtensionMacro {
-
     // MARK: - MemberMacro
 
     public static func expansion(
@@ -33,7 +32,7 @@ public struct BoundToMacro: MemberMacro, ExtensionMacro {
             \(raw: access)init(viewModel: \(raw: featureName).ViewModel) {
                 self.viewModel = viewModel
             }
-            """,
+            """
         ]
     }
 

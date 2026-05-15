@@ -1,5 +1,5 @@
+#if DEBUG
 import CoreFP
-import SwiftRex
 import Testing
 
 /// A controllable, synchronous store for testing ``Behavior`` values.
@@ -161,7 +161,13 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
         let before = state
         run(DispatchedAction(action))
-        assertState(before: before, after: state, label: "dispatch(\(action))", sourceLocation: sourceLocation, expectedChange: expectedStateChange)
+        assertState(
+            before: before,
+            after: state,
+            label: "dispatch(\(action))",
+            sourceLocation: sourceLocation,
+            expectedChange: expectedStateChange
+        )
         return self
     }
 
@@ -341,3 +347,4 @@ extension TestStore where Environment == Void {
         self.init(initial: initial, behavior: reducer.asBehavior(), environment: (), exhaustive: exhaustive)
     }
 }
+#endif

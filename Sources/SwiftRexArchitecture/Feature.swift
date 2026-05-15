@@ -119,7 +119,6 @@ import SwiftUI
 /// | `Content` | ViewState, ViewAction (via `viewModel`) | All domain types |
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 public protocol Feature: Sendable {
-
     // MARK: - Internal types
 
     /// Full internal state. Never exposed beyond this feature boundary.

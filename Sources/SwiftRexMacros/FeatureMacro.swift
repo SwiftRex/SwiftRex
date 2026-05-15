@@ -7,7 +7,6 @@ import SwiftSyntaxMacros
 /// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action` enum,
 ///                            adds `@Lenses` to nested `State` struct
 public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro {
-
     // MARK: - ExtensionMacro
 
     public static func expansion(
