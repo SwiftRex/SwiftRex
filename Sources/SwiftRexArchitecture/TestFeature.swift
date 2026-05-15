@@ -1,4 +1,4 @@
-#if DEBUG && canImport(Observation)
+#if DEBUG && canImport(Observation) && canImport(SwiftUI)
 import Observation
 import SwiftRex
 import SwiftRexSwiftUI
