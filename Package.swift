@@ -1,4 +1,5 @@
 // swift-tools-version: 6.2
+import CompilerPluginSupport
 import PackageDescription
 
 let package = Package(
@@ -17,12 +18,13 @@ let package = Package(
         .library(name: "SwiftRex.RxSwift", targets: ["SwiftRexRxSwift"]),
         .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
         .library(name: "SwiftRex.SwiftUI", targets: ["SwiftRexSwiftUI"]),
-        .library(name: "SwiftRex.Testing", targets: ["SwiftRexTesting"])
+        .library(name: "SwiftRex.Architecture", targets: ["SwiftRexArchitecture"])
     ],
     dependencies: [
         .package(url: "https://github.com/luizmb/FP.git", from: "1.6.6"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
-        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0")
+        .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0")
     ],
     targets: [
         // MARK: - Core
@@ -83,23 +85,40 @@ let package = Package(
             path: "Sources/SwiftRexReactiveSwift"
         ),
 
+        // MARK: - Macros (implementation — build-time only)
+
+        .macro(
+            name: "SwiftRexMacros",
+            dependencies: [
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+            ],
+            path: "Sources/SwiftRexMacros"
+        ),
+
         // MARK: - SwiftUI wrappers
 
         .target(
             name: "SwiftRexSwiftUI",
-            dependencies: ["SwiftRex"],
+            dependencies: [
+                "SwiftRex",
+                "SwiftRexMacros"
+            ],
             path: "Sources/SwiftRexSwiftUI"
         ),
 
-        // MARK: - Testing utilities
+        // MARK: - Architecture (opinionated Feature module protocol)
+        // TestStore lives in SwiftRex (#if DEBUG); TestFeature lives here (#if DEBUG).
 
         .target(
-            name: "SwiftRexTesting",
+            name: "SwiftRexArchitecture",
             dependencies: [
                 "SwiftRex",
-                .product(name: "CoreFP", package: "FP")
+                "SwiftRexSwiftUI",
+                "SwiftRexMacros",
+                .product(name: "FPMacros", package: "FP")
             ],
-            path: "Sources/SwiftRexTesting"
+            path: "Sources/SwiftRexArchitecture"
         ),
 
         // MARK: - Tests
@@ -134,13 +153,9 @@ let package = Package(
             path: "Tests/SwiftRexReactiveSwiftTests"
         ),
         .testTarget(
-            name: "SwiftRexTestingTests",
-            dependencies: [
-                "SwiftRexTesting",
-                "SwiftRex",
-                .product(name: "CoreFP", package: "FP")
-            ],
-            path: "Tests/SwiftRexTestingTests"
+            name: "SwiftRexArchitectureTests",
+            dependencies: ["SwiftRexArchitecture", "SwiftRex"],
+            path: "Tests/SwiftRexArchitectureTests"
         )
     ],
     swiftLanguageModes: [.v6]
