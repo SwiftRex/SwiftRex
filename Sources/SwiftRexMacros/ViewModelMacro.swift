@@ -132,7 +132,7 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
         let accessFn: DeclSyntax =
             """
             \(raw: access)nonisolated func access<_Member>(keyPath: KeyPath<\(raw: className), _Member>) {
-                _$observationRegistrar.access(of: self, keyPath: keyPath)
+                _$observationRegistrar.access(self, keyPath: keyPath)
             }
             """
         let withMutationFn: DeclSyntax =
@@ -157,7 +157,7 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
                 """
                 \(raw: access)var \(raw: name): \(type) {
                     get {
-                        _$observationRegistrar.access(of: self, keyPath: \\.\(raw: name))
+                        _$observationRegistrar.access(self, keyPath: \\.\(raw: name))
                         return _\(raw: name)
                     }
                     set {
@@ -184,7 +184,7 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
             .joined(separator: "\n")
         let initDecl: DeclSyntax =
             """
-            \(raw: access)init(store: some StoreType<ViewAction, ViewState>) {
+            @MainActor \(raw: access)init(store: some StoreType<ViewAction, ViewState>) {
                 let initial = store.state
             \(raw: seeds)
                 _dispatch = store.dispatch
@@ -197,7 +197,7 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
             """
         let dispatchDecl: DeclSyntax =
             """
-            \(raw: access)func dispatch(
+            @MainActor \(raw: access)func dispatch(
                 _ action: ViewAction,
                 file: String = #file,
                 function: String = #function,
