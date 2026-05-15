@@ -17,15 +17,47 @@ extension Reader where Output: Monoid {
     /// ``Behavior/handle`` closure when an action is not relevant:
     ///
     /// ```swift
-    /// let fetchMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
-    ///     guard case .fetchData(let query) = action.action else { return .doNothing }
-    ///     return Reader { api in
-    ///         Effect.task { try await api.search(query) }
-    ///             .map(AppAction.searchResult)
-    ///     }
-    /// }
+    /// guard case .fetchData(let query) = action.action else { return .doNothing }
     /// ```
     ///
     /// Equivalent to `Reader { _ in .empty }` but communicates intent clearly.
     public static var doNothing: Self { .identity }
+}
+
+// MARK: - .produce for Effect pipelines
+
+extension Reader {
+    /// Creates a `Reader<Environment, Effect<Action>>` from a closure that receives
+    /// the environment and returns an `Effect`.
+    ///
+    /// Mirrors ``Consequence/produce(_:)`` so `Middleware` and `Behavior` handlers
+    /// share the same vocabulary. The two forms below are equivalent:
+    ///
+    /// ```swift
+    /// // Explicit Reader init
+    /// return Reader { api in
+    ///     api.fetch(id: id).asEffect()
+    /// }
+    ///
+    /// // Shorthand — reads like Consequence.produce at the call site
+    /// return .produce { api in
+    ///     api.fetch(id: id).asEffect()
+    /// }
+    /// ```
+    ///
+    /// Full middleware example:
+    ///
+    /// ```swift
+    /// let favMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
+    ///     guard case .toggleFavorite(let id) = action.action else { return .doNothing }
+    ///     return .produce { api in
+    ///         Effect.task { .favResult(await api.toggle(id: id)) }
+    ///     }
+    /// }
+    /// ```
+    public static func produce<Action: Sendable>(
+        _ f: @escaping @Sendable (Environment) -> Effect<Action>
+    ) -> Self where Output == Effect<Action> {
+        Reader(f)
+    }
 }

@@ -95,7 +95,10 @@ let package = Package(
 
         .target(
             name: "SwiftRexTesting",
-            dependencies: ["SwiftRex"],
+            dependencies: [
+                "SwiftRex",
+                .product(name: "CoreFP", package: "FP")
+            ],
             path: "Sources/SwiftRexTesting"
         ),
 
@@ -132,7 +135,11 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftRexTestingTests",
-            dependencies: ["SwiftRexTesting", "SwiftRex"],
+            dependencies: [
+                "SwiftRexTesting",
+                "SwiftRex",
+                .product(name: "CoreFP", package: "FP")
+            ],
             path: "Tests/SwiftRexTestingTests"
         )
     ],
