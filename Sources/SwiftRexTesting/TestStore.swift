@@ -351,7 +351,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     // it at the domain-State layer).
 
     @discardableResult
-    func _dequeueAndRun<Value>(
+    func dequeueAndRun<Value>(
         _ prism: Prism<Action, Value>,
         sourceLocation: SourceLocation
     ) -> (action: Action, value: Value)? {

@@ -241,7 +241,7 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
         assert expectedViewStateChange: (Value, inout F.ViewModel.ViewState) -> Void
     ) -> F.Action? {
         let before = viewState
-        guard let (action, value) = _store._dequeueAndRun(prism, sourceLocation: sourceLocation) else {
+        guard let (action, value) = _store.dequeueAndRun(prism, sourceLocation: sourceLocation) else {
             return nil
         }
         assertViewState(
@@ -398,7 +398,7 @@ public final class FeatureStep<F: Feature> where F.State: Equatable {
     @discardableResult
     public func runEffects(
         before: (inout F.Environment) -> Void = { _ in },
-        after:  (F.Environment) -> Void = { _ in }
+        after: (F.Environment) -> Void = { _ in }
     ) async -> Self {
         before(&_feature._store.environment)
         await _feature._store.runEffects()
