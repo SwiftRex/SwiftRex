@@ -18,7 +18,8 @@ let package = Package(
         .library(name: "SwiftRex.RxSwift", targets: ["SwiftRexRxSwift"]),
         .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
         .library(name: "SwiftRex.SwiftUI", targets: ["SwiftRexSwiftUI"]),
-        .library(name: "SwiftRex.Architecture", targets: ["SwiftRexArchitecture"])
+        .library(name: "SwiftRex.Architecture", targets: ["SwiftRexArchitecture"]),
+        .library(name: "SwiftRex.Testing", targets: ["SwiftRexTesting"])
     ],
     dependencies: [
         .package(url: "https://github.com/luizmb/FP.git", from: "1.6.6"),
@@ -108,7 +109,6 @@ let package = Package(
         ),
 
         // MARK: - Architecture (opinionated Feature module protocol)
-        // TestStore lives in SwiftRex (#if DEBUG); TestFeature lives here (#if DEBUG).
 
         .target(
             name: "SwiftRexArchitecture",
@@ -121,12 +121,28 @@ let package = Package(
             path: "Sources/SwiftRexArchitecture"
         ),
 
+        // MARK: - Testing helpers
+        // TestStore + TestFeature: opt-in product that brings in `Testing`. Kept
+        // out of every other target so apps linking SwiftRex don't drag
+        // `Testing.framework` into their dyld closure at runtime.
+
+        .target(
+            name: "SwiftRexTesting",
+            dependencies: [
+                "SwiftRex",
+                "SwiftRexSwiftUI",
+                "SwiftRexArchitecture"
+            ],
+            path: "Sources/SwiftRexTesting"
+        ),
+
         // MARK: - Tests
 
         .testTarget(
             name: "SwiftRexTests",
             dependencies: [
                 "SwiftRex",
+                "SwiftRexTesting",
                 .product(name: "CoreFP", package: "FP"),
                 .product(name: "DataStructure", package: "FP")
             ],
@@ -154,7 +170,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftRexArchitectureTests",
-            dependencies: ["SwiftRexArchitecture", "SwiftRex"],
+            dependencies: ["SwiftRexArchitecture", "SwiftRex", "SwiftRexTesting"],
             path: "Tests/SwiftRexArchitectureTests"
         )
     ],

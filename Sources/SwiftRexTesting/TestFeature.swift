@@ -1,6 +1,7 @@
-#if DEBUG && canImport(Observation) && canImport(SwiftUI)
+#if canImport(Observation) && canImport(SwiftUI)
 import Observation
 import SwiftRex
+import SwiftRexArchitecture
 import SwiftRexSwiftUI
 import SwiftUI
 import Testing
@@ -53,6 +54,27 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
 
     /// The current view state derived from `state` via `F.mapState`.
     public var viewState: F.ViewModel.ViewState { F.mapState(_store.state) }
+
+    /// Calls ``flush()`` then runs `body` while the underlying ``TestStore`` is frozen:
+    /// any ``TestStore/dispatch(_:source:)`` from the view layer is a no-op for the
+    /// lifetime of the closure.
+    ///
+    /// Designed for snapshot helpers — `assertSnapshot` instantiates a fresh
+    /// `UIHostingController` per call which fires SwiftUI lifecycle hooks
+    /// (`.onAppear`, `.task`) that would otherwise enqueue view actions and pollute
+    /// the test's queue. Use it like:
+    ///
+    /// ```swift
+    /// await feature.ignoringActions {
+    ///     assertSnapshot(of: feature.view, as: .image(...))
+    /// }
+    /// ```
+    public func ignoringActions(_ body: @MainActor () async throws -> Void) async rethrows {
+        await flush()
+        _store.isIgnoringActions = true
+        defer { _store.isIgnoringActions = false }
+        try await body()
+    }
 
     // MARK: - Init
 
@@ -175,26 +197,17 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
         sourceLocation: SourceLocation = #_sourceLocation,
         assert expectedViewStateChange: (Value, inout F.ViewModel.ViewState) -> Void
     ) -> F.Action? {
-        guard !_store.receivedActions.isEmpty else {
-            Issue.record(
-                "receive() called but receivedActions is empty — call runEffects() first if you expect effect output",
-                sourceLocation: sourceLocation
-            )
+        let before = viewState
+        guard let (action, value) = _store._dequeueAndRun(prism, sourceLocation: sourceLocation) else {
             return nil
         }
-        let next = _store.receivedActions.first!
-        let extracted = prism.preview(next)
-        let before = viewState
-        _store.receive(prism, sourceLocation: sourceLocation, assert: { _, _ in })
-        if let value = extracted {
-            assertViewState(
-                before: before,
-                after: viewState,
-                label: "receive(\(next))",
-                sourceLocation: sourceLocation
-            ) { expected in expectedViewStateChange(value, &expected) }
-        }
-        return next
+        assertViewState(
+            before: before,
+            after: viewState,
+            label: "receive(\(action))",
+            sourceLocation: sourceLocation
+        ) { expected in expectedViewStateChange(value, &expected) }
+        return action
     }
 
     /// Dequeues the next action from `receivedActions`, validates it via `prism` (no associated
@@ -283,6 +296,10 @@ extension TestFeature where F.Environment == Void {
 public final class FeatureStep<F: Feature> where F.State: Equatable {
     private let _feature: TestFeature<F>
 
+    /// The owning ``TestFeature``. Exposed so helpers in test code (e.g. snapshot
+    /// chain operators) can reach the view and the ignore-actions hook.
+    public var feature: TestFeature<F> { _feature }
+
     // Mirrored for nonisolated deinit — written on @MainActor, read only in deinit.
     nonisolated(unsafe) private var _pendingCount: Int
     nonisolated(unsafe) private var _receivedCount: Int
@@ -355,6 +372,35 @@ public final class FeatureStep<F: Feature> where F.State: Equatable {
         _feature.receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
         syncCounts()
         return self
+    }
+
+    // MARK: - mapped(to:)
+    //
+    // Reads like the test reads: `dispatch(viewAction).mapped(to: prism) { ... }`
+    // asserts the result of the view-action → domain-action mapping. Mechanically
+    // identical to ``receive(_:sourceLocation:assert:)-6u6eu``, but the name draws
+    // a line between the first hop (view layer) and subsequent receives (effects).
+
+    /// First receive after ``TestFeature/dispatch(_:)``: validates the view-action →
+    /// domain-action `mapAction` produced the case named by `prism`, runs it through
+    /// the behavior, and asserts the resulting `ViewState`.
+    @discardableResult
+    public func mapped<Value>(
+        to prism: Prism<F.Action, Value>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedViewStateChange: (Value, inout F.ViewModel.ViewState) -> Void
+    ) -> Self {
+        receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
+    }
+
+    /// First receive after ``TestFeature/dispatch(_:)`` for a no-associated-value action case.
+    @discardableResult
+    public func mapped(
+        to prism: Prism<F.Action, Void>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedViewStateChange: (inout F.ViewModel.ViewState) -> Void
+    ) -> Self {
+        receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
     }
 }
 #endif

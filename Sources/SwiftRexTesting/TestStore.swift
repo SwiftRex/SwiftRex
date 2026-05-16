@@ -1,6 +1,6 @@
-#if DEBUG
 import CoreFP
 import Foundation
+import SwiftRex
 import Testing
 
 /// A controllable, synchronous store for testing ``Behavior`` values.
@@ -100,6 +100,13 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     // Bool is Sendable; nonisolated(unsafe) is only needed for the var counts above.
     private let _exhaustive: Bool
 
+    /// When `true`, ``dispatch(_:source:)`` is a no-op — view-driven dispatches are dropped
+    /// while the store is "frozen". Test-driven dispatch (``TestFeature/dispatch(_:)``) and
+    /// ``receive`` keep working.
+    ///
+    /// Toggle via ``TestFeature/ignoringActions(_:)``.
+    public var isIgnoringActions: Bool = false
+
     // MARK: - Init
 
     /// Creates a `TestStore` with a ``Behavior`` and an environment.
@@ -147,6 +154,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// ``StoreProjection`` (e.g. inside a ``TestFeature`` ViewModel) forwards a dispatch.
     /// For test-driven dispatch with state assertions, use ``dispatch(_:sourceLocation:assert:)``.
     public func dispatch(_ action: Action, source: ActionSource) {
+        guard !isIgnoringActions else { return }
         run(DispatchedAction(action, dispatcher: source))
     }
 
@@ -327,6 +335,36 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
+    // MARK: - Module-internal (used by TestFeature, which asserts on ViewState
+    // and therefore must dispatch the domain action without TestStore second-guessing
+    // it at the domain-State layer).
+
+    @discardableResult
+    func _dequeueAndRun<Value>(
+        _ prism: Prism<Action, Value>,
+        sourceLocation: SourceLocation
+    ) -> (action: Action, value: Value)? {
+        guard !receivedActions.isEmpty else {
+            Issue.record(
+                "receive() called but receivedActions is empty — call runEffects() first if you expect effect output",
+                sourceLocation: sourceLocation
+            )
+            return nil
+        }
+        let action = receivedActions.removeFirst()
+        _receivedCount = receivedActions.count
+        guard let value = prism.preview(action) else {
+            Issue.record(
+                "Action case mismatch in receive() — prism did not match the dequeued action\nActual: \(action)",
+                sourceLocation: sourceLocation
+            )
+            run(DispatchedAction(action))
+            return nil
+        }
+        run(DispatchedAction(action))
+        return (action, value)
+    }
+
     // MARK: - Private
 
     private func run(_ dispatched: DispatchedAction<Action>) {
@@ -401,4 +439,3 @@ extension TestStore where Environment == Void {
         self.init(initial: initial, behavior: reducer.asBehavior(), environment: (), exhaustive: exhaustive)
     }
 }
-#endif
