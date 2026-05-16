@@ -1434,119 +1434,6 @@ FeatureHost.counter.view(for: appStore.projection(
 
 </details>
 
-## Testing a feature
-
-`Feature.Environment` is plain closures, so testing requires only stub functions — no mocks, no protocols. `TestStore` is built into `SwiftRex` (debug builds only) and `TestFeature` is in `SwiftRexArchitecture`.
-
-### `TestStore` — assert on domain `State`
-
-Use `TestStore` when you want to test the behavior layer directly: dispatch domain `Action`s, assert on `State`, and verify effects.
-
-```swift
-import SwiftRex
-import Testing
-
-@Test @MainActor
-func fetchMovies_setsLoadingThenPopulatesRows() async {
-    let inception = Domain.Movie(id: "1", title: "Inception", isFavorite: false, year: 2010, characters: [])
-
-    let store = TestStore(
-        initial: MoviesFeature.initialState(),
-        behavior: MoviesFeature.behavior(),
-        environment: MoviesFeature.Environment(
-            fetchMovies:    { .success([inception]) },
-            toggleFavorite: { _ in .failure(.unknown(CancellationError())) }
-        )
-    )
-
-    // dispatch runs the behavior synchronously; assert the resulting State.
-    store.dispatch(.fetchMovies) { $0.isLoading = true }
-
-    // runEffects drives all pending effects and collects their output actions.
-    await store.runEffects()
-
-    // receive matches the next collected action via Prism and asserts State.
-    store.receive(MoviesFeature.Action.prism.moviesResponse) { result, state in
-        if case .success(let movies) = result {
-            state.movies = movies
-            state.isLoading = false
-        }
-    }
-}
-```
-
-### `TestFeature` — assert on `ViewState`, dispatch `ViewAction`
-
-Use `TestFeature` when you want to test the full feature boundary: dispatch `ViewAction`s (converted via `mapAction`), assert on `ViewState` (mapped via `mapState`), and receive domain actions emitted by effects.
-
-```swift
-import SwiftRexArchitecture
-import Testing
-
-@Test @MainActor
-func onAppear_setsLoadingThenPopulatesRows() async {
-    let inception = Domain.Movie(id: "1", title: "Inception", isFavorite: false, year: 2010, characters: [])
-
-    let feature = TestFeature<MoviesFeature>(
-        environment: .init(
-            fetchMovies:    { .success([inception]) },
-            toggleFavorite: { _ in .failure(.unknown(CancellationError())) }
-        )
-    )
-
-    // dispatch enqueues the mapped domain action (.fetchMovies) as the first received action.
-    let step = feature.dispatch(.onAppear)
-
-    // receive runs .fetchMovies through the behavior and asserts the ViewState change.
-    step.receive(MoviesFeature.Action.prism.fetchMovies) { _, viewState in
-        viewState.isLoading = true
-    }
-
-    // runEffects drives the async network effect → .moviesResponse lands in the queue.
-    await step.runEffects()
-
-    // receive runs .moviesResponse through the behavior and asserts the final ViewState.
-    step.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in
-        if case .success = result {
-            viewState.isLoading = false
-        }
-    }
-}
-```
-
-### Snapshot testing (optional)
-
-`TestFeature` also exposes `view` — the live `F.Content` instance wired to the test store. You can pass it to any snapshot framework. Call `flush()` first to give SwiftUI one run-loop turn to process `@Observable` changes before rendering.
-
-> This requires a third-party snapshot library such as [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing). SwiftRex has no snapshot dependency.
-
-```swift
-import SwiftRexArchitecture
-import SnapshotTesting   // third-party
-import Testing
-
-@Test @MainActor
-func moviesFeature_snapshots() async {
-    let feature = TestFeature<MoviesFeature>(environment: .stub)
-
-    // Initial state
-    await feature.flush()
-    assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
-
-    // After triggering load — dispatch enqueues .fetchMovies, receive runs it
-    let step = feature.dispatch(.onAppear)
-    step.receive(MoviesFeature.Action.prism.fetchMovies) { _, vs in vs.isLoading = true }
-    await feature.flush()
-    assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
-
-    // After effects resolve
-    await step.runEffects()
-    step.receive(MoviesFeature.Action.prism.moviesResponse) { _, vs in vs.isLoading = false }
-    await feature.flush()
-    assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
-}
-```
-
 ## Layer isolation
 
 | Layer | Knows | Never sees |
@@ -1558,71 +1445,66 @@ func moviesFeature_snapshots() async {
 
 # Testing
 
-SwiftRex ships `TestStore` inside the core `SwiftRex` module (available in debug builds via `#if DEBUG`). It drives the dispatch pipeline synchronously so you can assert mutations and verify effects without spinning up a real `Store`.
+Both test types live in the **`SwiftRex.Testing`** product. Add it to your **test** target only — production targets that depend on `SwiftRex` never link `Testing.framework`:
 
-## TestStore basics
+```swift
+.testTarget(
+    name: "MyFeatureTests",
+    dependencies: [
+        "MyFeature",
+        .product(name: "SwiftRex.Testing", package: "SwiftRex")
+    ]
+)
+```
+
+`Feature.Environment` is plain closures, so tests need only stub functions — no mocks, no protocols.
+
+## Two harnesses
+
+| | `TestStore` | `TestFeature` |
+|---|---|---|
+| **Layer** | Domain — `Action`, `State` | View — `ViewAction`, `ViewState` |
+| **Use when** | You're testing a `Behavior` standalone (no `Feature` protocol). | You have a `Feature` and want to assert on what the view actually sees, plus optionally snapshot the live `Content`. |
+| **Surface** | `dispatch`, `runEffects`, `receive` | adds `mapped(to:)`, `ignoringActions`, `flush`, `view` + chainable `FeatureStep` |
+
+For a `Feature`-conforming type, prefer `TestFeature` — it gives you `ViewState` assertions, the live view, and the fluent chaining surface. `TestStore` is the lower-level primitive that `TestFeature` is built on top of.
+
+## `TestStore` — assert on domain `State`
+
+`dispatch` runs the behavior synchronously and asserts the resulting `State`. Effects are captured in `pendingEffects` without firing; `runEffects` drives them and collects their output actions into `receivedActions`, which `receive` then matches against a `Prism`.
 
 ```swift
 import SwiftRex
+import SwiftRexTesting
 import Testing
 
-@Test func counterIncrements() {
-    let store = TestStore(initial: CounterState(), reducer: counterReducer)
+@MainActor
+@Test func fetchMovies_setsLoadingThenPopulatesRows() async {
+    let movies = [Domain.Movie(id: "1", title: "Inception", isFavorite: false, year: 2010, cast: [])]
 
-    store.dispatch(.increment) { $0.count += 1 }  // assert state after the action
-    store.dispatch(.decrement) { $0.count -= 1 }
-}
-```
-
-`dispatch(_:assert:)` runs the behavior's handle closure and state mutation synchronously, then validates the resulting state against the closure. The closure receives an `inout` copy of the state *before* the action and you mutate it to what you expect — a mismatch records a `Testing` failure pointing to the call site.
-
-## Testing effects
-
-Effects are captured in `pendingEffects` without running. Call `runEffects()` to drive them, then `receive` each resulting action:
-
-```swift
-@Test func fetchPopulatesItems() async {
     let store = TestStore(
-        initial: AppState(),
-        behavior: appBehavior,
-        environment: AppEnvironment.mock
+        initial: MoviesFeature.initialState(),
+        behavior: MoviesFeature.behavior(),
+        environment: MoviesFeature.Environment(
+            fetchMovies:    { .success(movies) },
+            toggleFavorite: { _ in .failure(.server("unused")) }
+        )
     )
 
-    store.dispatch(.fetchItems) { $0.isLoading = true }
-
+    store.dispatch(.fetchMovies) { $0.isLoading = true }
     await store.runEffects()
-
-    // receive(prism:assert:) validates the action case via Prism and gives
-    // you the extracted associated value for the state assertion
-    store.receive(AppAction.prism.didFetch) { items, state in
-        state.isLoading = false
-        state.items = items   // `items` is the [Item] extracted from .didFetch([Item])
+    store.receive(MoviesFeature.Action.prism.moviesResponse) { result, state in
+        if case .success(let m) = result {
+            state.movies = m
+            state.isLoading = false
+        }
     }
 }
 ```
 
-For action cases with no associated value, use a `Prism<Action, Void>` and the shorter closure:
+The assertion closure receives an `inout` copy of the state **before** the action; mutate it to describe the expected post-action state. A mismatch records a `Testing` failure pointing to the call site.
 
-```swift
-store.receive(AppAction.prism.didReset) { $0 = .initial }
-```
-
-## Exhaustive mode
-
-By default `TestStore` is exhaustive — it fails the test if you:
-
-- call `dispatch` while `receivedActions` is non-empty (unprocessed received actions)
-- let the store deallocate with leftover `pendingEffects` or `receivedActions`
-
-Pass `exhaustive: false` to opt out:
-
-```swift
-let store = TestStore(initial: s, behavior: b, environment: e, exhaustive: false)
-```
-
-## Chaining dispatches
-
-`dispatch` returns `self`, so multiple calls can be chained:
+`dispatch` returns `self`, so pure (no-effect) chains read tersely:
 
 ```swift
 store
@@ -1631,13 +1513,130 @@ store
     .dispatch(.reset)     { $0.count = 0 }
 ```
 
+## `TestFeature` — assert on `ViewState`, fluent chain
+
+`TestFeature` operates one layer up: you dispatch `ViewAction`s (translated via `mapAction`), assert on `ViewState` (mapped via `mapState`), and get a chainable `FeatureStep` from each call so the full story reads as one expression.
+
+```swift
+import SwiftRex
+import SwiftRexTesting
+import Testing
+@testable import MovieFeature
+
+@MainActor
+@Test func onAppearStory_idleLoadingLoaded() async {
+    let movies = [Domain.Movie(id: "1", title: "Inception", isFavorite: false, year: 2010, cast: [])]
+
+    let env = MoviesFeature.Environment(
+        fetchMovies:    { .success(movies) },
+        toggleFavorite: { _ in .failure(.server("unused")) }
+    )
+
+    await TestFeature<MoviesFeature>(environment: env)
+        .dispatch(.onAppear)
+        .mapped(to: MoviesFeature.Action.prism.fetchMovies) { _, vs in
+            vs.isLoading = true
+        }
+        .runEffects()
+        .receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
+            vs.isLoading = false
+            if case .success(let payload) = result {
+                vs.rows = payload.map(row)
+            }
+        }
+}
+```
+
+- `dispatch(viewAction)` enqueues `mapAction(viewAction)` and returns a `FeatureStep`.
+- **`mapped(to: prism)`** is the first receive — it asserts the view-action → domain-action mapping landed on the right case, runs that action through the behavior, and validates the resulting `ViewState`. Use `mapped(to:)` after `dispatch` and `receive(prism)` for effect-emitted actions, so the chain reads "I dispatched X, which mapped to Y, ran effects, and received Z".
+- `FeatureStep.dispatch(viewAction)` chains a second dispatch without breaking the chain (the prior step has already drained its queues).
+
+## Snapshot testing
+
+`TestFeature.view` is the live `Feature.Content` instance, driven by the test store's view model. The `@Observable` properties on the view model update synchronously inside each `dispatch`/`receive`, so the view is immediately renderable for snapshot frameworks like [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing). SwiftRex itself has no snapshot dependency.
+
+`assertSnapshot` instantiates a fresh `UIHostingController` per call, which fires SwiftUI lifecycle hooks like `.onAppear`. Those hooks would dispatch view actions straight into the test store and pollute the action queue. **`ignoringActions(_:)`** freezes the store for the duration of its closure (and calls `flush()` first, so SwiftUI sees the latest `@Observable` updates):
+
+```swift
+private extension TestFeature {
+    @discardableResult
+    func snapshot(named name: String) async -> Self {
+        await ignoringActions {
+            assertSnapshot(of: NavigationStack { self.view },
+                           as: .image(layout: .fixed(width: 402, height: 874)),
+                           named: name)
+        }
+        return self
+    }
+}
+
+private extension FeatureStep {
+    @discardableResult
+    func snapshot(named name: String) async -> Self {
+        await feature.snapshot(named: name)
+        return self
+    }
+}
+```
+
+With those extensions in your test file, snapshots slot into the fluent chain as checkpoints — one test covers logic and visuals together:
+
+```swift
+await TestFeature<MoviesFeature>(environment: env)
+    .snapshot(named: "01-idle")
+    .dispatch(.onAppear)
+    .mapped(to: MoviesFeature.Action.prism.fetchMovies) { _, vs in vs.isLoading = true }
+    .snapshot(named: "02-loading")
+    .runEffects()
+    .receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
+        vs.isLoading = false
+        if case .success(let p) = result { vs.rows = p.map(row) }
+    }
+    .snapshot(named: "03-loaded")
+```
+
+## Swapping the environment mid-chain
+
+`runEffects` has optional `before` / `after` closures for tweaking the environment between effect runs — for example, queueing a different mock response for the second of two consecutive fetches:
+
+```swift
+await TestFeature<MoviesFeature>(environment: envWithEmptyList)
+    .dispatch(.onAppear)
+    .mapped(to: MoviesFeature.Action.prism.fetchMovies) { _, vs in vs.isLoading = true }
+    .runEffects()
+    .receive(MoviesFeature.Action.prism.moviesResponse) { _, vs in
+        vs.isLoading = false
+        vs.rows = []
+    }
+    .dispatch(.onAppear)
+    .mapped(to: MoviesFeature.Action.prism.fetchMovies) { _, vs in vs.isLoading = true }
+    .runEffects(before: { env in
+        env.fetchMovies = { @Sendable in .success(movies) }
+    })
+    .receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
+        vs.isLoading = false
+        if case .success(let p) = result { vs.rows = p.map(row) }
+    }
+```
+
+`before` takes `inout F.Environment` and runs immediately before the effects fire; `after: (F.Environment) -> Void` reads the env after the effects have finished — useful for assertions on side-effect counters or recorded events captured by reference inside the env.
+
+> Pending effects bind an `Environment` at *dispatch* time, so mutating `environment` affects future dispatches and any closure that captures mutable state by reference. It does not retroactively rebind already-pending effects.
+
+## Exhaustive mode
+
+By default `TestStore` (and therefore `TestFeature`) is exhaustive — it fails the test if you:
+
+- call `dispatch` while `receivedActions` is non-empty (unprocessed received actions)
+- let the store deallocate with leftover `pendingEffects` or `receivedActions`
+
+Pass `exhaustive: false` to either init to disable both checks.
+
 ## Prisms for action matching
 
-`receive` uses `Prism<Action, Value>` from the [FP](https://github.com/luizmb/FP) library to match action cases without requiring `Action: Equatable`.
+`receive` and `mapped(to:)` both validate against a `Prism<Action, Value>` from the [FP](https://github.com/luizmb/FP) library, which removes the `Action: Equatable` requirement — useful when actions carry non-`Equatable` associated values like `Result<T, E>` or closures.
 
-When using `@Feature`, the `@Prisms` macro is applied to your `Action` enum automatically — `Action.prism.caseName` is available with no extra code.
-
-For standalone stores without `@Feature`, apply `@Prisms` to the action enum manually:
+When using `@Feature`, `@Prisms` is applied to your `Action` enum automatically — `Action.prism.caseName` is available with no extra code. For standalone stores without `@Feature`, apply `@Prisms` to the action enum manually:
 
 ```swift
 @Prisms

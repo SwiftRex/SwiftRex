@@ -15,28 +15,71 @@ import Testing
 /// ``Feature/ViewModel`` `ViewState` changes (mapped via `mapState`). Domain `State` and
 /// domain `Action` are managed internally.
 ///
-/// ``dispatch(_:sourceLocation:assert:)`` returns a ``FeatureStep`` whose `deinit` records
-/// a failure if any pending effects were not run or any received actions were not processed,
-/// so the full dispatch → effect → receive cycle must be declared explicitly:
+/// ## Fluent test flow
+///
+/// `dispatch`, `mapped(to:)`, `runEffects`, `receive`, and `snapshot` (a test-side
+/// extension) all return a chainable ``FeatureStep``. A complete test reads as one
+/// expression — no `let step = ...` rebinding, no `do { }` blocks.
 ///
 /// ```swift
-/// // Pure action — no effects; step deinit sees empty queues → OK
-/// feature.dispatch(.increment) { $0.count = 1 }
-///
-/// // Action with effects — must chain runEffects() + receive()
-/// let step = feature.dispatch(.onAppear) { $0.isLoading = true }
-/// await step.runEffects()
-/// step.receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
-///     vs.isLoading = false
-/// }
+/// await TestFeature<MoviesFeature>(environment: env)
+///     .snapshot(named: "01-idle")
+///     .dispatch(.onAppear)
+///     .mapped(to: MoviesFeature.Action.prism.fetchMovies) { _, vs in
+///         vs.isLoading = true
+///     }
+///     .snapshot(named: "02-loading")
+///     .runEffects()
+///     .receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
+///         vs.isLoading = false
+///         if case .success(let payload) = result {
+///             vs.rows = payload.map(row)
+///         }
+///     }
+///     .snapshot(named: "03-loaded")
 /// ```
+///
+/// - `dispatch(viewAction)` enqueues `mapAction(viewAction)` and returns a `FeatureStep`.
+/// - `mapped(to: prism) { value, vs in ... }` is the first receive — it asserts the
+///   view-action → domain-action mapping landed on the right case, runs it through the
+///   behavior, and validates the resulting `ViewState`. Subsequent `receive(prism) { ... }`
+///   calls process actions emitted by effects.
+/// - `runEffects` accepts optional `before` and `after` closures (see
+///   ``FeatureStep/runEffects(before:after:)``) for swapping the environment between
+///   effect runs — e.g. queueing different mock responses for paginated requests.
+/// - `FeatureStep.dispatch(viewAction)` chains a second dispatch off the same step,
+///   keeping the whole story in one expression.
+///
+/// ``FeatureStep``'s `deinit` records a failure if any pending effects or received
+/// actions are left unprocessed, so the dispatch → effect → receive cycle is enforced
+/// per step.
 ///
 /// ## View access for snapshot testing
 ///
 /// `TestFeature` eagerly constructs ``Feature/Content`` and exposes it as ``view``. The
 /// underlying ``TestStore`` conforms to ``StoreType``, so the ``Feature/ViewModel`` subscribes
 /// to it and its `@Observable` properties update **synchronously** with each state mutation.
-/// Call ``flush()`` before snapshotting to give SwiftUI one run-loop turn to process the changes.
+///
+/// `assertSnapshot` (from `swift-snapshot-testing` or similar) instantiates a fresh
+/// `UIHostingController` per call, which fires SwiftUI lifecycle hooks like `.onAppear` —
+/// these dispatch view actions and would pollute the test queue. Use
+/// ``ignoringActions(_:)`` to freeze the store while a snapshot is being captured; it
+/// also calls ``flush()`` first so SwiftUI sees the latest `@Observable` updates:
+///
+/// ```swift
+/// // Typical test-file snapshot helper (lives in your test target):
+/// private extension TestFeature {
+///     @discardableResult
+///     func snapshot(named name: String) async -> Self {
+///         await ignoringActions {
+///             assertSnapshot(of: NavigationStack { self.view },
+///                            as: .image(layout: .fixed(width: 402, height: 874)),
+///                            named: name)
+///         }
+///         return self
+///     }
+/// }
+/// ```
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @MainActor
 public final class TestFeature<F: Feature> where F.State: Equatable {

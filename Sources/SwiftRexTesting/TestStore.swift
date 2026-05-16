@@ -3,7 +3,12 @@ import Foundation
 import SwiftRex
 import Testing
 
-/// A controllable, synchronous store for testing ``Behavior`` values.
+/// A controllable, synchronous store for testing ``Behavior`` values at the **domain**
+/// layer (assert on `State`, match on `Action`).
+///
+/// `TestStore` is the lower-level primitive. For a higher-level test harness that
+/// assert at the **view-state** layer and gives you access to the rendered view for
+/// snapshot testing, use ``TestFeature`` from the same module.
 ///
 /// `TestStore` drives the dispatch pipeline deterministically:
 /// - ``dispatch(_:sourceLocation:assert:)`` applies phases 1 and 2 immediately (handle → mutate),
