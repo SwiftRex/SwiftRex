@@ -43,6 +43,16 @@ jobs:
             --transform-for-static-hosting \
             --hosting-base-path SwiftRex
 
+      - name: Redirect site root to /documentation/
+        run: |
+          cat > .docs/index.html <<'EOF'
+          <!doctype html>
+          <meta http-equiv="refresh" content="0; url=./documentation/">
+          <link rel="canonical" href="./documentation/">
+          <title>SwiftRex — Documentation</title>
+          <a href="./documentation/">Redirecting to documentation…</a>
+          EOF
+
       - name: Configure Pages
         uses: actions/configure-pages@v4
 
