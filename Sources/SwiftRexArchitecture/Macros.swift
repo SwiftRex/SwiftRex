@@ -15,6 +15,7 @@
 /// - Adds `Feature` protocol conformance via an extension
 /// - Applies `@Prisms` to the nested `Action` enum (for ``TestStore`` `receive` assertions)
 /// - Applies `@Lenses` to the nested `State` struct (for `liftState` ergonomics)
+/// - Applies `@ViewModel` to the nested `ViewModel` class (no manual annotation needed)
 ///
 /// ```swift
 /// @Feature
@@ -23,7 +24,7 @@
 ///     enum Action: Sendable { ... }          // @Prisms applied automatically
 ///     struct Environment: Sendable { ... }
 ///
-///     @ViewModel final class ViewModel { ... }
+///     final class ViewModel { ... }          // @ViewModel applied automatically
 ///
 ///     static let mapState = ...
 ///     static let mapAction = ...

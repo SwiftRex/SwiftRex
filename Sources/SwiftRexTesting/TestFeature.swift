@@ -60,11 +60,11 @@ import Testing
 /// underlying ``TestStore`` conforms to ``StoreType``, so the ``Feature/ViewModel`` subscribes
 /// to it and its `@Observable` properties update **synchronously** with each state mutation.
 ///
-/// `assertSnapshot` (from `swift-snapshot-testing` or similar) instantiates a fresh
-/// `UIHostingController` per call, which fires SwiftUI lifecycle hooks like `.onAppear` —
-/// these dispatch view actions and would pollute the test queue. Use
-/// ``ignoringActions(_:)`` to freeze the store while a snapshot is being captured; it
-/// also calls ``flush()`` first so SwiftUI sees the latest `@Observable` updates:
+/// Most snapshot frameworks instantiate a fresh `UIHostingController` per call, which
+/// fires SwiftUI lifecycle hooks like `.onAppear` — these dispatch view actions and
+/// would pollute the test queue. Use ``ignoringActions(_:)`` to freeze the store while
+/// a snapshot is being captured; it also calls ``flush()`` first so SwiftUI sees the
+/// latest `@Observable` updates:
 ///
 /// ```swift
 /// // Typical test-file snapshot helper (lives in your test target):
@@ -72,9 +72,8 @@ import Testing
 ///     @discardableResult
 ///     func snapshot(named name: String) async -> Self {
 ///         await ignoringActions {
-///             assertSnapshot(of: NavigationStack { self.view },
-///                            as: .image(layout: .fixed(width: 402, height: 874)),
-///                            named: name)
+///             // call your snapshot framework's record/assert function, passing `self.view`
+///             recordSnapshot(of: NavigationStack { self.view }, named: name)
 ///         }
 ///         return self
 ///     }
@@ -102,14 +101,15 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     /// any ``TestStore/dispatch(_:source:)`` from the view layer is a no-op for the
     /// lifetime of the closure.
     ///
-    /// Designed for snapshot helpers — `assertSnapshot` instantiates a fresh
-    /// `UIHostingController` per call which fires SwiftUI lifecycle hooks
+    /// Designed for snapshot helpers — snapshot frameworks typically instantiate a
+    /// fresh `UIHostingController` per call which fires SwiftUI lifecycle hooks
     /// (`.onAppear`, `.task`) that would otherwise enqueue view actions and pollute
     /// the test's queue. Use it like:
     ///
     /// ```swift
     /// await feature.ignoringActions {
-    ///     assertSnapshot(of: feature.view, as: .image(...))
+    ///     // call your snapshot framework's record/assert function on `feature.view`
+    ///     recordSnapshot(of: feature.view)
     /// }
     /// ```
     public func ignoringActions(_ body: @MainActor () async throws -> Void) async rethrows {
@@ -173,7 +173,7 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     /// ```swift
     /// feature.dispatch(.increment) { $0.count = 1 }
     /// await feature.flush()
-    /// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
+    /// recordSnapshot(of: feature.view)   // your snapshot framework here
     /// ```
     public func flush() async {
         await Task.yield()

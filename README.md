@@ -1123,8 +1123,8 @@ And what about SwiftUI? Is this architecture a good fit for the new UI framework
 | `@ViewModel` | Macro on a class. Generates `@Observable`-tracked properties per `ViewState` field, `init(store:)`, and `dispatch`. |
 | `HasViewModel` | Protocol for views driven by a `@ViewModel` class. Requires `var viewModel: VM` and `init(viewModel:)`. |
 | `@BoundTo(F.self)` | Macro on a view struct. Generates `typealias VM`, `let viewModel`, `init(viewModel:)`, and `HasViewModel` conformance. |
-| `Feature` | Protocol for a feature module. Declares `State`, `Action`, `Environment`, a nested `@ViewModel`, mapping closures, and `Content`. |
-| `@Feature` | Macro on a feature enum. Adds `Feature` conformance, `@Prisms` on `Action`, `@Lenses` on `State`. |
+| `Feature` | Protocol for a feature module. Declares `State`, `Action`, `Environment`, a nested `ViewModel`, mapping closures, and `Content`. |
+| `@Feature` | Macro on a feature enum. Adds `Feature` conformance, `@Prisms` on `Action`, `@Lenses` on `State`, `@ViewModel` on the nested `ViewModel` class. |
 | `FeatureHost` | Type-erased handle to a `Feature`. Holds `behavior` for parent-store integration and `view(for:)` returning `some View`. |
 
 ## Field-level view invalidation
@@ -1189,7 +1189,7 @@ struct AppEnvironment: Sendable {
 <summary><code>MoviesFeature.swift</code> — feature with API effects and view mapping</summary>
 
 ```swift
-@Feature   // adds Feature conformance; @Lenses on State, @Prisms on Action
+@Feature   // adds Feature conformance; @Lenses on State, @Prisms on Action, @ViewModel on ViewModel
 enum MoviesFeature {
 
     struct State: Sendable {
@@ -1210,9 +1210,8 @@ enum MoviesFeature {
         var toggleFavorite: @Sendable (String) async -> Result<Domain.Movie, Domain.NetworkError>
     }
 
-    // @ViewModel generates individually @Observable-tracked properties,
-    // init(store:), and dispatch(_:file:function:line:)
-    @ViewModel
+    // @ViewModel is auto-applied by @Feature — it generates the @Observable-tracked
+    // properties (per ViewState field), init(store:), and dispatch(_:file:function:line:).
     final class ViewModel {
         struct ViewState: Sendable, Equatable {
             struct MovieRow: Identifiable, Sendable, Equatable {
@@ -1320,7 +1319,6 @@ struct MovieListView: View {
 
 @Feature
 enum CounterFeature {
-    @ViewModel
     final class ViewModel {
         struct ViewState: Sendable, Equatable {
             var count: Int = 0
@@ -1553,18 +1551,17 @@ import Testing
 
 ## Snapshot testing
 
-`TestFeature.view` is the live `Feature.Content` instance, driven by the test store's view model. The `@Observable` properties on the view model update synchronously inside each `dispatch`/`receive`, so the view is immediately renderable for snapshot frameworks like [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing). SwiftRex itself has no snapshot dependency.
+`TestFeature.view` is the live `Feature.Content` instance, driven by the test store's view model. The `@Observable` properties on the view model update synchronously inside each `dispatch`/`receive`, so the view is immediately renderable for any third-party snapshot framework. SwiftRex itself has no snapshot dependency.
 
-`assertSnapshot` instantiates a fresh `UIHostingController` per call, which fires SwiftUI lifecycle hooks like `.onAppear`. Those hooks would dispatch view actions straight into the test store and pollute the action queue. **`ignoringActions(_:)`** freezes the store for the duration of its closure (and calls `flush()` first, so SwiftUI sees the latest `@Observable` updates):
+Most snapshot frameworks instantiate a fresh `UIHostingController` per call, which fires SwiftUI lifecycle hooks like `.onAppear`. Those hooks would dispatch view actions straight into the test store and pollute the action queue. **`ignoringActions(_:)`** freezes the store for the duration of its closure (and calls `flush()` first, so SwiftUI sees the latest `@Observable` updates):
 
 ```swift
 private extension TestFeature {
     @discardableResult
     func snapshot(named name: String) async -> Self {
         await ignoringActions {
-            assertSnapshot(of: NavigationStack { self.view },
-                           as: .image(layout: .fixed(width: 402, height: 874)),
-                           named: name)
+            // call your framework's snapshot function here, passing `self.view`
+            recordSnapshot(of: NavigationStack { self.view }, named: name)
         }
         return self
     }
