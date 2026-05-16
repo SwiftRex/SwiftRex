@@ -5,6 +5,8 @@ import SwiftRexSwiftUI
 import SwiftUI
 import Testing
 
+// MARK: - TestFeature
+
 /// A controllable, synchronous test harness for a ``Feature``-conforming type.
 ///
 /// `TestFeature` wraps a ``TestStore`` and operates at the view-model layer: you dispatch
@@ -12,46 +14,32 @@ import Testing
 /// ``Feature/ViewModel`` `ViewState` changes (mapped via `mapState`). Domain `State` and
 /// domain `Action` are managed internally.
 ///
-/// Effects still emit domain `Action`s from the behavior — use ``receive(_:sourceLocation:assert:)-8jfre``
-/// or ``receive(_:sourceLocation:assert:)-3c7g4`` to match them via a `Prism` and assert the
-/// resulting `ViewState`.
+/// ``dispatch(_:sourceLocation:assert:)`` returns a ``FeatureStep`` whose `deinit` records
+/// a failure if any pending effects were not run or any received actions were not processed,
+/// so the full dispatch → effect → receive cycle must be declared explicitly:
+///
+/// ```swift
+/// // Pure action — no effects; step deinit sees empty queues → OK
+/// feature.dispatch(.increment) { $0.count = 1 }
+///
+/// // Action with effects — must chain runEffects() + receive()
+/// let step = feature.dispatch(.onAppear) { $0.isLoading = true }
+/// await step.runEffects()
+/// step.receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
+///     vs.isLoading = false
+/// }
+/// ```
 ///
 /// ## View access for snapshot testing
 ///
 /// `TestFeature` eagerly constructs ``Feature/Content`` and exposes it as ``view``. The
 /// underlying ``TestStore`` conforms to ``StoreType``, so the ``Feature/ViewModel`` subscribes
 /// to it and its `@Observable` properties update **synchronously** with each state mutation.
-///
-/// To let SwiftUI process those `ObservationRegistrar` notifications before snapshotting, call
-/// ``flush()`` after each step:
-///
-/// ```swift
-/// let feature = TestFeature<MoviesFeature>(environment: .stub)
-///
-/// // 1. Initial render
-/// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
-///
-/// // 2. Dispatch → Observable updates synchronously → yield for SwiftUI
-/// feature.dispatch(.onAppear) { $0.isLoading = true }
-/// await feature.flush()
-/// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
-///
-/// // 3. Async effects → receive → snapshot
-/// await feature.runEffects()
-/// feature.receive(MoviesFeature.Action.prism.moviesResponse) { _, vs in vs.isLoading = false }
-/// await feature.flush()
-/// assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
-/// ```
-///
-/// ## Exhaustive mode
-///
-/// `TestFeature` is exhaustive by default (delegated to the underlying `TestStore`). Pass
-/// `exhaustive: false` to opt out — the store will not fail when effects or received actions
-/// are left unprocessed at deallocation.
+/// Call ``flush()`` before snapshotting to give SwiftUI one run-loop turn to process the changes.
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @MainActor
 public final class TestFeature<F: Feature> where F.State: Equatable {
-    private let _store: TestStore<F.Action, F.State, F.Environment>
+    fileprivate let _store: TestStore<F.Action, F.State, F.Environment>
     private let _viewModel: F.ViewModel
 
     /// The feature's live view, driven by `_viewModel`.
@@ -72,7 +60,8 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     ///
     /// - Parameters:
     ///   - environment: The environment injected into effects.
-    ///   - exhaustive: When `true` (default), enforces ordering and end-of-test checks.
+    ///   - exhaustive: When `true` (default), each ``FeatureStep`` fails if effects or received
+    ///     actions are left unprocessed when the step goes out of scope.
     public init(environment: F.Environment, exhaustive: Bool = true) {
         let store = TestStore(
             initial: F.initialState(),
@@ -108,7 +97,7 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     // MARK: - flush
 
     /// Yields the current task so SwiftUI can process `@Observable` notifications queued
-    /// during the last ``dispatch(_:sourceLocation:assert:)`` or ``receive``.
+    /// during the last dispatch or receive.
     ///
     /// Because ``TestStore`` fires `willChange` / `didChange` **synchronously** inside each
     /// state mutation, the ``Feature/ViewModel``'s `@Observable` backing stores are already
@@ -127,41 +116,39 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
 
     // MARK: - Dispatch
 
-    /// Dispatches a `ViewAction` through the behavior (via `F.mapAction`) and validates the
-    /// resulting `ViewState`.
+    /// Translates `viewAction` via `F.mapAction` and enqueues the resulting domain action into
+    /// `receivedActions`, then returns a ``FeatureStep`` for the rest of the cycle.
     ///
-    /// The `assert` closure receives an `inout` copy of the view state **before** the action and
-    /// you mutate it to produce the expected post-action view state. A mismatch records a failure.
+    /// Unlike a direct dispatch, the domain action is **not** run through the behavior immediately —
+    /// it sits as the first entry in the received queue. This keeps the full cycle symmetric:
+    /// every domain action goes through ``FeatureStep/receive(_:sourceLocation:assert:)-6u6eu``,
+    /// so assertions and effects are always declared in the same place.
+    ///
+    /// ```swift
+    /// // dispatch(.onAppear) enqueues .fetchMovies as the first received action.
+    /// // receive() runs .fetchMovies through the behavior (isLoading = true, effect produced).
+    /// // runEffects() drives the network effect → .moviesResponse lands in the queue.
+    /// // receive() runs .moviesResponse through the behavior (rows populated).
+    ///
+    /// let step = feature.dispatch(.onAppear)
+    /// step.receive(Action.prism.fetchMovies) { _, vs in vs.isLoading = true }
+    /// await step.runEffects()
+    /// step.receive(Action.prism.moviesResponse) { result, vs in
+    ///     vs.isLoading = false
+    /// }
+    /// ```
+    ///
+    /// The ``FeatureStep``'s `deinit` records a failure if effects or received actions are left
+    /// unprocessed, so the full cycle must always be declared.
     ///
     /// - Parameters:
-    ///   - viewAction: The view-layer action to dispatch.
-    ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Mutates the pre-action `ViewState` to produce the expected post-action value.
-    ///     Pass `{ _ in }` when no view-state change is expected.
-    /// - Returns: `self` for chaining.
+    ///   - viewAction: The view-layer action to translate and enqueue.
+    /// - Returns: A ``FeatureStep`` for chaining ``FeatureStep/receive(_:sourceLocation:assert:)-6u6eu``
+    ///   and ``FeatureStep/runEffects()``.
     @discardableResult
-    public func dispatch(
-        _ viewAction: F.ViewModel.ViewAction,
-        sourceLocation: SourceLocation = #_sourceLocation,
-        assert expectedViewStateChange: (inout F.ViewModel.ViewState) -> Void
-    ) -> Self {
-        let before = viewState
-        _store.dispatch(F.mapAction(viewAction), sourceLocation: sourceLocation, assert: { _ in })
-        assertViewState(
-            before: before,
-            after: viewState,
-            label: "dispatch(\(viewAction))",
-            sourceLocation: sourceLocation,
-            expectedChange: expectedViewStateChange
-        )
-        return self
-    }
-
-    // MARK: - runEffects
-
-    /// Executes all pending effects and collects their output actions into `receivedActions`.
-    public func runEffects() async {
-        await _store.runEffects()
+    public func dispatch(_ viewAction: F.ViewModel.ViewAction) -> FeatureStep<F> {
+        _store.enqueue(F.mapAction(viewAction))
+        return FeatureStep(self)
     }
 
     // MARK: - receive
@@ -169,20 +156,19 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     /// Dequeues the next action from `receivedActions`, validates it via `prism`, runs it through
     /// the behavior, and validates the resulting `ViewState`.
     ///
+    /// The `assert` closure receives both the **value extracted by the prism** and an `inout`
+    /// copy of the view state before the action:
+    ///
     /// ```swift
     /// feature.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in
-    ///     if case .success(let movies) = result {
-    ///         viewState.rows = expectedRows
-    ///         viewState.isLoading = false
-    ///     }
+    ///     if case .success = result { viewState.isLoading = false }
     /// }
     /// ```
     ///
     /// - Parameters:
     ///   - prism: A ``Prism`` matching the expected domain action case.
     ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Receives the value extracted by `prism` and an `inout` copy of the
-    ///     pre-action view state; mutate it to produce the expected post-action view state.
+    ///   - assert: Receives the extracted value and an `inout` copy of the pre-action view state.
     @discardableResult
     public func receive<Value>(
         _ prism: Prism<F.Action, Value>,
@@ -217,11 +203,6 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     /// ```swift
     /// feature.receive(MoviesFeature.Action.prism.resetCompleted) { $0 = .init() }
     /// ```
-    ///
-    /// - Parameters:
-    ///   - prism: A ``Prism<Action, Void>`` matching an action case with no associated value.
-    ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Mutates the pre-action view state to produce the expected post-action value.
     @discardableResult
     public func receive(
         _ prism: Prism<F.Action, Void>,
@@ -233,9 +214,9 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
         }
     }
 
-    // MARK: - Private
+    // MARK: - Internal helpers (used by FeatureStep)
 
-    private func assertViewState(
+    fileprivate func assertViewState(
         before: F.ViewModel.ViewState,
         after: F.ViewModel.ViewState,
         label: String,
@@ -268,6 +249,112 @@ extension TestFeature where F.Environment == Void {
     /// Creates a `TestFeature` with a `Void` environment and a custom initial state.
     public convenience init(initial: F.State, exhaustive: Bool = true) {
         self.init(initial: initial, environment: (), exhaustive: exhaustive)
+    }
+}
+
+// MARK: - FeatureStep
+
+/// The result of a ``TestFeature/dispatch(_:sourceLocation:assert:)`` call.
+///
+/// `FeatureStep` sequences the dispatch → effects → receive cycle and enforces completeness
+/// via `deinit`: if the step is released while effects are pending or received actions remain
+/// unprocessed, a `Testing` failure is recorded pointing to the call site.
+///
+/// ```swift
+/// let step = feature.dispatch(.onAppear) { $0.isLoading = true }
+/// await step.runEffects()
+/// step.receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
+///     vs.isLoading = false
+/// }
+/// // step goes out of scope: pending = 0, received = 0 → OK
+/// ```
+///
+/// Alternatively, chain directly when there is exactly one received action per dispatch:
+///
+/// ```swift
+/// let step = feature.dispatch(.onAppear) { $0.isLoading = true }
+/// await step.runEffects()
+/// step.receive(MoviesFeature.Action.prism.moviesResponse) { result, vs in
+///     vs.isLoading = false
+/// }
+/// ```
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@MainActor
+public final class FeatureStep<F: Feature> where F.State: Equatable {
+    private let _feature: TestFeature<F>
+
+    // Mirrored for nonisolated deinit — written on @MainActor, read only in deinit.
+    nonisolated(unsafe) private var _pendingCount: Int
+    nonisolated(unsafe) private var _receivedCount: Int
+
+    init(_ feature: TestFeature<F>) {
+        _feature = feature
+        _pendingCount = feature._store.pendingEffects.count
+        _receivedCount = feature._store.receivedActions.count
+    }
+
+    nonisolated deinit {
+        if _pendingCount > 0 {
+            Issue.record(
+                "\(_pendingCount) pending effect(s) not run — call runEffects() on this FeatureStep"
+            )
+        } else if _receivedCount > 0 {
+            Issue.record(
+                "\(_receivedCount) received action(s) not processed — call receive() on this FeatureStep"
+            )
+        }
+    }
+
+    // MARK: - runEffects
+
+    /// Executes all pending effects and collects their output actions into `receivedActions`.
+    ///
+    /// Must be called before ``receive(_:sourceLocation:assert:)-6u6eu`` when the dispatched
+    /// action triggers async effects.
+    ///
+    /// - Returns: `self` for chaining ``receive(_:sourceLocation:assert:)-6u6eu``.
+    @discardableResult
+    public func runEffects() async -> Self {
+        await _feature._store.runEffects()
+        syncCounts()
+        return self
+    }
+
+    private func syncCounts() {
+        _pendingCount = _feature._store.pendingEffects.count
+        _receivedCount = _feature._store.receivedActions.count
+    }
+
+    // MARK: - receive
+
+    /// Dequeues the next action from `receivedActions`, validates it via `prism`, and asserts
+    /// the resulting `ViewState`. Delegates to ``TestFeature/receive(_:sourceLocation:assert:)-6u6eu``.
+    ///
+    /// - Returns: `self` for chaining additional `receive` calls.
+    @discardableResult
+    public func receive<Value>(
+        _ prism: Prism<F.Action, Value>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedViewStateChange: (Value, inout F.ViewModel.ViewState) -> Void
+    ) -> Self {
+        _feature.receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
+        syncCounts()
+        return self
+    }
+
+    /// Dequeues the next action (no associated value), validates via `prism`, and asserts `ViewState`.
+    /// Delegates to ``TestFeature/receive(_:sourceLocation:assert:)-2oy2y``.
+    ///
+    /// - Returns: `self` for chaining additional `receive` calls.
+    @discardableResult
+    public func receive(
+        _ prism: Prism<F.Action, Void>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedViewStateChange: (inout F.ViewModel.ViewState) -> Void
+    ) -> Self {
+        _feature.receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
+        syncCounts()
+        return self
     }
 }
 #endif
