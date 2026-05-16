@@ -116,54 +116,38 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
 
     // MARK: - Dispatch
 
-    /// Dispatches a `ViewAction` through the behavior (via `F.mapAction`), validates the
-    /// resulting `ViewState`, and returns a ``FeatureStep`` for handling effects and received actions.
+    /// Translates `viewAction` via `F.mapAction` and enqueues the resulting domain action into
+    /// `receivedActions`, then returns a ``FeatureStep`` for the rest of the cycle.
     ///
-    /// The `assert` closure receives an `inout` copy of the view state **before** the action;
-    /// mutate it to produce the expected post-action view state.
-    ///
-    /// The returned ``FeatureStep``'s `deinit` records a failure if:
-    /// - effects were produced but ``FeatureStep/runEffects()`` was not called, or
-    /// - received actions remain after effects ran but ``FeatureStep/receive(_:sourceLocation:assert:)-6u6eu``
-    ///   was not called for each.
-    ///
-    /// For pure actions with no side effects the step can be discarded — its `deinit` sees
-    /// empty queues and passes silently.
+    /// Unlike a direct dispatch, the domain action is **not** run through the behavior immediately —
+    /// it sits as the first entry in the received queue. This keeps the full cycle symmetric:
+    /// every domain action goes through ``FeatureStep/receive(_:sourceLocation:assert:)-6u6eu``,
+    /// so assertions and effects are always declared in the same place.
     ///
     /// ```swift
-    /// // Pure — discard the step
-    /// feature.dispatch(.increment) { $0.count = 1 }
+    /// // dispatch(.onAppear) enqueues .fetchMovies as the first received action.
+    /// // receive() runs .fetchMovies through the behavior (isLoading = true, effect produced).
+    /// // runEffects() drives the network effect → .moviesResponse lands in the queue.
+    /// // receive() runs .moviesResponse through the behavior (rows populated).
     ///
-    /// // With effects — must handle the full cycle
-    /// let step = feature.dispatch(.onAppear) { $0.isLoading = true }
+    /// let step = feature.dispatch(.onAppear)
+    /// step.receive(Action.prism.fetchMovies) { _, vs in vs.isLoading = true }
     /// await step.runEffects()
     /// step.receive(Action.prism.moviesResponse) { result, vs in
     ///     vs.isLoading = false
     /// }
     /// ```
     ///
+    /// The ``FeatureStep``'s `deinit` records a failure if effects or received actions are left
+    /// unprocessed, so the full cycle must always be declared.
+    ///
     /// - Parameters:
-    ///   - viewAction: The view-layer action to dispatch.
-    ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Mutates the pre-action `ViewState` to produce the expected post-action value.
-    ///     Pass `{ _ in }` when no view-state change is expected.
-    /// - Returns: A ``FeatureStep`` for chaining ``FeatureStep/runEffects()`` and
-    ///   ``FeatureStep/receive(_:sourceLocation:assert:)-6u6eu``.
+    ///   - viewAction: The view-layer action to translate and enqueue.
+    /// - Returns: A ``FeatureStep`` for chaining ``FeatureStep/receive(_:sourceLocation:assert:)-6u6eu``
+    ///   and ``FeatureStep/runEffects()``.
     @discardableResult
-    public func dispatch(
-        _ viewAction: F.ViewModel.ViewAction,
-        sourceLocation: SourceLocation = #_sourceLocation,
-        assert expectedViewStateChange: (inout F.ViewModel.ViewState) -> Void
-    ) -> FeatureStep<F> {
-        let before = viewState
-        _store.dispatch(F.mapAction(viewAction), sourceLocation: sourceLocation, assert: { _ in })
-        assertViewState(
-            before: before,
-            after: viewState,
-            label: "dispatch(\(viewAction))",
-            sourceLocation: sourceLocation,
-            expectedChange: expectedViewStateChange
-        )
+    public func dispatch(_ viewAction: F.ViewModel.ViewAction) -> FeatureStep<F> {
+        _store.enqueue(F.mapAction(viewAction))
         return FeatureStep(self)
     }
 
@@ -332,9 +316,13 @@ public final class FeatureStep<F: Feature> where F.State: Equatable {
     @discardableResult
     public func runEffects() async -> Self {
         await _feature._store.runEffects()
-        _pendingCount = 0
-        _receivedCount = _feature._store.receivedActions.count
+        syncCounts()
         return self
+    }
+
+    private func syncCounts() {
+        _pendingCount = _feature._store.pendingEffects.count
+        _receivedCount = _feature._store.receivedActions.count
     }
 
     // MARK: - receive
@@ -350,7 +338,7 @@ public final class FeatureStep<F: Feature> where F.State: Equatable {
         assert expectedViewStateChange: (Value, inout F.ViewModel.ViewState) -> Void
     ) -> Self {
         _feature.receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
-        _receivedCount = _feature._store.receivedActions.count
+        syncCounts()
         return self
     }
 
@@ -365,7 +353,7 @@ public final class FeatureStep<F: Feature> where F.State: Equatable {
         assert expectedViewStateChange: (inout F.ViewModel.ViewState) -> Void
     ) -> Self {
         _feature.receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
-        _receivedCount = _feature._store.receivedActions.count
+        syncCounts()
         return self
     }
 }

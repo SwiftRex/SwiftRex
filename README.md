@@ -1494,13 +1494,19 @@ func onAppear_setsLoadingThenPopulatesRows() async {
         )
     )
 
-    // dispatch a ViewAction; assert the resulting ViewState.
-    feature.dispatch(.onAppear) { $0.isLoading = true }
+    // dispatch enqueues the mapped domain action (.fetchMovies) as the first received action.
+    let step = feature.dispatch(.onAppear)
 
-    await feature.runEffects()
+    // receive runs .fetchMovies through the behavior and asserts the ViewState change.
+    step.receive(MoviesFeature.Action.prism.fetchMovies) { _, viewState in
+        viewState.isLoading = true
+    }
 
-    // receive a domain action by Prism; assert ViewState.
-    feature.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in
+    // runEffects drives the async network effect → .moviesResponse lands in the queue.
+    await step.runEffects()
+
+    // receive runs .moviesResponse through the behavior and asserts the final ViewState.
+    step.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in
         if case .success = result {
             viewState.isLoading = false
         }
@@ -1527,14 +1533,15 @@ func moviesFeature_snapshots() async {
     await feature.flush()
     assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
 
-    // After triggering load
-    feature.dispatch(.onAppear) { $0.isLoading = true }
+    // After triggering load — dispatch enqueues .fetchMovies, receive runs it
+    let step = feature.dispatch(.onAppear)
+    step.receive(MoviesFeature.Action.prism.fetchMovies) { _, vs in vs.isLoading = true }
     await feature.flush()
     assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
 
     // After effects resolve
-    await feature.runEffects()
-    feature.receive(MoviesFeature.Action.prism.moviesResponse) { _, vs in vs.isLoading = false }
+    await step.runEffects()
+    step.receive(MoviesFeature.Action.prism.moviesResponse) { _, vs in vs.isLoading = false }
     await feature.flush()
     assertSnapshot(of: feature.view, as: .image(on: .iPhone16))
 }
