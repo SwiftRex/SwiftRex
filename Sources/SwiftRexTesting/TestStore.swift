@@ -87,7 +87,13 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     public private(set) var receivedActions: [Action] = []
 
     private let behavior: Behavior<Action, State, Environment>
-    private let environment: Environment
+    /// The injected environment. Publicly mutable so test code can swap or tweak it
+    /// between effect runs — see ``FeatureStep/runEffects(before:after:)``.
+    ///
+    /// Note: pending effects are reader-provided at dispatch time; mutating `environment`
+    /// affects future dispatches and any closure that captures mutable state, but does
+    /// not retroactively rebind already-pending effects.
+    public var environment: Environment
 
     /// Registered will/didChange callbacks — keyed by UUID so a single token cancels both.
     private var stateObservers: [UUID: (willChange: @MainActor @Sendable () -> Void,

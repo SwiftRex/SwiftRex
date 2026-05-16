@@ -322,17 +322,44 @@ public final class FeatureStep<F: Feature> where F.State: Equatable {
         }
     }
 
+    // MARK: - dispatch (chained — returns a NEW step)
+
+    /// Enqueues another view action mid-chain. The current step's counts are already
+    /// synced (its `receive`/`runEffects` calls have left both queues empty), so its
+    /// `deinit` is clean; a fresh ``FeatureStep`` is returned to continue the chain.
+    @discardableResult
+    public func dispatch(_ viewAction: F.ViewModel.ViewAction) -> FeatureStep<F> {
+        _feature.dispatch(viewAction)
+    }
+
     // MARK: - runEffects
 
     /// Executes all pending effects and collects their output actions into `receivedActions`.
     ///
-    /// Must be called before ``receive(_:sourceLocation:assert:)-6u6eu`` when the dispatched
-    /// action triggers async effects.
+    /// `before` runs synchronously with `inout` access to the environment, immediately
+    /// before the effects fire — use it to swap an environment dependency or mutate state
+    /// captured by closures inside it (e.g. queue the next mock response for a paginated
+    /// list, swap a clock to a stubbed value, flip a feature flag). `after` runs once the
+    /// effects have finished and their output actions have been collected; use it to
+    /// assert on environment state (request counts, recorded events).
     ///
-    /// - Returns: `self` for chaining ``receive(_:sourceLocation:assert:)-6u6eu``.
+    /// ```swift
+    /// .runEffects(
+    ///     before: { env in env.fetchMovies = { .success(secondPage) } },
+    ///     after:  { env in #expect(env.api.callCount == 2) }
+    /// )
+    /// ```
+    ///
+    /// Both default to no-ops, so existing call sites that just write `runEffects()`
+    /// keep working unchanged.
     @discardableResult
-    public func runEffects() async -> Self {
+    public func runEffects(
+        before: (inout F.Environment) -> Void = { _ in },
+        after:  (F.Environment) -> Void = { _ in }
+    ) async -> Self {
+        before(&_feature._store.environment)
         await _feature._store.runEffects()
+        after(_feature._store.environment)
         syncCounts()
         return self
     }
