@@ -14,26 +14,39 @@ import SwiftUI
 ///
 /// ## Usage
 ///
+/// Co-locate the typed `FeatureHost.<name>` convenience **inside the feature's own
+/// module** — usually right next to the `@Feature enum`. That way the parent app
+/// (or any other consumer) gets `FeatureHost.movies` for free as soon as it imports
+/// `MovieFeature`, without having to know how to construct one.
+///
 /// ```swift
-/// // Declare a typed convenience alongside the Feature:
-/// extension FeatureHost
+/// // In MovieFeature/Sources/MovieFeature/FeatureHost+MovieFeature.swift
+/// import SwiftRexArchitecture
+///
+/// public extension FeatureHost
 /// where Action      == MoviesFeature.Action,
 ///       State       == MoviesFeature.State,
 ///       Environment == MoviesFeature.Environment {
 ///     static var movies: Self { .init(MoviesFeature.self) }
 /// }
+/// ```
 ///
-/// // Embed behavior in the parent store:
+/// Embed behavior in the parent store:
+///
+/// ```swift
 /// Store(
 ///     initial: AppState(),
 ///     behavior: FeatureHost.movies.behavior
 ///         .liftAction(AppAction.prism.movies)
 ///         .liftState(AppState.lens.movies)
-///         .liftEnvironment { ... },
+///         .liftEnvironment { appEnv in MoviesFeature.Environment(...) },
 ///     environment: AppEnvironment(...)
 /// )
+/// ```
 ///
-/// // Produce the view — all view-layer generics are erased:
+/// Produce the view — all view-layer generics are erased:
+///
+/// ```swift
 /// FeatureHost.movies.view(for: appStore.projection(
 ///     action: AppAction.prism.movies.review,
 ///     state:  AppState.lens.movies.get

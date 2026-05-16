@@ -37,7 +37,7 @@ import SwiftUI
 ///         var toggleFavorite: @Sendable (String) async -> Result<Domain.Movie, Domain.NetworkError>
 ///     }
 ///
-///     @ViewModel
+///     // `@ViewModel` is auto-applied by `@Feature` — no annotation needed.
 ///     final class ViewModel {
 ///         struct ViewState: Sendable, Equatable {
 ///             struct MovieRow: Identifiable, Sendable, Equatable {

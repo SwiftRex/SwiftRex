@@ -1,9 +1,14 @@
-#if DEBUG
 import CoreFP
 import Foundation
+import SwiftRex
 import Testing
 
-/// A controllable, synchronous store for testing ``Behavior`` values.
+/// A controllable, synchronous store for testing ``Behavior`` values at the **domain**
+/// layer (assert on `State`, match on `Action`).
+///
+/// `TestStore` is the lower-level primitive. For a higher-level test harness that
+/// assert at the **view-state** layer and gives you access to the rendered view for
+/// snapshot testing, use ``TestFeature`` from the same module.
 ///
 /// `TestStore` drives the dispatch pipeline deterministically:
 /// - ``dispatch(_:sourceLocation:assert:)`` applies phases 1 and 2 immediately (handle → mutate),
@@ -87,7 +92,13 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     public private(set) var receivedActions: [Action] = []
 
     private let behavior: Behavior<Action, State, Environment>
-    private let environment: Environment
+    /// The injected environment. Publicly mutable so test code can swap or tweak it
+    /// between effect runs — see ``FeatureStep/runEffects(before:after:)``.
+    ///
+    /// Note: pending effects are reader-provided at dispatch time; mutating `environment`
+    /// affects future dispatches and any closure that captures mutable state, but does
+    /// not retroactively rebind already-pending effects.
+    public var environment: Environment
 
     /// Registered will/didChange callbacks — keyed by UUID so a single token cancels both.
     private var stateObservers: [UUID: (willChange: @MainActor @Sendable () -> Void,
@@ -99,6 +110,13 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     nonisolated(unsafe) private var _receivedCount: Int = 0
     // Bool is Sendable; nonisolated(unsafe) is only needed for the var counts above.
     private let _exhaustive: Bool
+
+    /// When `true`, ``dispatch(_:source:)`` is a no-op — view-driven dispatches are dropped
+    /// while the store is "frozen". Test-driven dispatch (``TestFeature/dispatch(_:)``) and
+    /// ``receive`` keep working.
+    ///
+    /// Toggle via ``TestFeature/ignoringActions(_:)``.
+    public var isIgnoringActions: Bool = false
 
     // MARK: - Init
 
@@ -147,6 +165,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// ``StoreProjection`` (e.g. inside a ``TestFeature`` ViewModel) forwards a dispatch.
     /// For test-driven dispatch with state assertions, use ``dispatch(_:sourceLocation:assert:)``.
     public func dispatch(_ action: Action, source: ActionSource) {
+        guard !isIgnoringActions else { return }
         run(DispatchedAction(action, dispatcher: source))
     }
 
@@ -166,6 +185,18 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         return SubscriptionToken { [weak self] in
             Task { @MainActor [weak self] in self?.stateObservers.removeValue(forKey: id) }
         }
+    }
+
+    // MARK: - Enqueue (used by TestFeature)
+
+    /// Appends `action` directly to ``receivedActions`` without running it through the behavior.
+    ///
+    /// Used by ``TestFeature`` so that `dispatch(viewAction:)` makes the mapped domain action
+    /// visible as the first entry in the received queue — keeping the whole dispatch → receive
+    /// cycle symmetric and explicit.
+    public func enqueue(_ action: Action) {
+        receivedActions.append(action)
+        _receivedCount = receivedActions.count
     }
 
     // MARK: - Test API
@@ -315,6 +346,36 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
+    // MARK: - Module-internal (used by TestFeature, which asserts on ViewState
+    // and therefore must dispatch the domain action without TestStore second-guessing
+    // it at the domain-State layer).
+
+    @discardableResult
+    func dequeueAndRun<Value>(
+        _ prism: Prism<Action, Value>,
+        sourceLocation: SourceLocation
+    ) -> (action: Action, value: Value)? {
+        guard !receivedActions.isEmpty else {
+            Issue.record(
+                "receive() called but receivedActions is empty — call runEffects() first if you expect effect output",
+                sourceLocation: sourceLocation
+            )
+            return nil
+        }
+        let action = receivedActions.removeFirst()
+        _receivedCount = receivedActions.count
+        guard let value = prism.preview(action) else {
+            Issue.record(
+                "Action case mismatch in receive() — prism did not match the dequeued action\nActual: \(action)",
+                sourceLocation: sourceLocation
+            )
+            run(DispatchedAction(action))
+            return nil
+        }
+        run(DispatchedAction(action))
+        return (action, value)
+    }
+
     // MARK: - Private
 
     private func run(_ dispatched: DispatchedAction<Action>) {
@@ -389,4 +450,3 @@ extension TestStore where Environment == Void {
         self.init(initial: initial, behavior: reducer.asBehavior(), environment: (), exhaustive: exhaustive)
     }
 }
-#endif

@@ -3,9 +3,10 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 
 /// Implements `@Feature`:
-/// - `ExtensionMacro`     — adds `Feature` protocol conformance
+/// - `ExtensionMacro`       — adds `Feature` protocol conformance
 /// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action` enum,
-///                            adds `@Lenses` to nested `State` struct
+///                            `@Lenses` to nested `State` struct, and
+///                            `@ViewModel` to nested `ViewModel` class.
 public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro {
     // MARK: - ExtensionMacro
 
@@ -40,6 +41,11 @@ public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro {
         if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "State" {
             guard !hasAttribute("Lenses", on: structDecl.attributes) else { return [] }
             return [AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier("Lenses")))]
+        }
+        // Add @ViewModel to nested `class ViewModel`
+        if let classDecl = member.as(ClassDeclSyntax.self), classDecl.name.text == "ViewModel" {
+            guard !hasAttribute("ViewModel", on: classDecl.attributes) else { return [] }
+            return [AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier("ViewModel")))]
         }
         return []
     }

@@ -1,5 +1,6 @@
 import CoreFP
 import SwiftRex
+import SwiftRexTesting
 import Testing
 
 // MARK: - Fixtures
