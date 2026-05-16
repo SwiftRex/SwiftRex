@@ -24,7 +24,8 @@ let package = Package(
         .package(url: "https://github.com/luizmb/FP.git", from: "1.6.6"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),
-        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0")
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0")
     ],
     targets: [
         // MARK: - Core
