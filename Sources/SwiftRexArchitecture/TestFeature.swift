@@ -167,6 +167,69 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
         return FeatureStep(self)
     }
 
+    // MARK: - receive
+
+    /// Dequeues the next action from `receivedActions`, validates it via `prism`, runs it through
+    /// the behavior, and validates the resulting `ViewState`.
+    ///
+    /// The `assert` closure receives both the **value extracted by the prism** and an `inout`
+    /// copy of the view state before the action:
+    ///
+    /// ```swift
+    /// feature.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in
+    ///     if case .success = result { viewState.isLoading = false }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - prism: A ``Prism`` matching the expected domain action case.
+    ///   - sourceLocation: Captured automatically; points failures to the call site.
+    ///   - assert: Receives the extracted value and an `inout` copy of the pre-action view state.
+    @discardableResult
+    public func receive<Value>(
+        _ prism: Prism<F.Action, Value>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedViewStateChange: (Value, inout F.ViewModel.ViewState) -> Void
+    ) -> F.Action? {
+        guard !_store.receivedActions.isEmpty else {
+            Issue.record(
+                "receive() called but receivedActions is empty — call runEffects() first if you expect effect output",
+                sourceLocation: sourceLocation
+            )
+            return nil
+        }
+        let next = _store.receivedActions.first!
+        let extracted = prism.preview(next)
+        let before = viewState
+        _store.receive(prism, sourceLocation: sourceLocation, assert: { _, _ in })
+        if let value = extracted {
+            assertViewState(
+                before: before,
+                after: viewState,
+                label: "receive(\(next))",
+                sourceLocation: sourceLocation
+            ) { expected in expectedViewStateChange(value, &expected) }
+        }
+        return next
+    }
+
+    /// Dequeues the next action from `receivedActions`, validates it via `prism` (no associated
+    /// value), and validates the resulting `ViewState`.
+    ///
+    /// ```swift
+    /// feature.receive(MoviesFeature.Action.prism.resetCompleted) { $0 = .init() }
+    /// ```
+    @discardableResult
+    public func receive(
+        _ prism: Prism<F.Action, Void>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedViewStateChange: (inout F.ViewModel.ViewState) -> Void
+    ) -> F.Action? {
+        receive(prism, sourceLocation: sourceLocation) { (_, vs: inout F.ViewModel.ViewState) in
+            expectedViewStateChange(&vs)
+        }
+    }
+
     // MARK: - Internal helpers (used by FeatureStep)
 
     fileprivate func assertViewState(
@@ -276,72 +339,34 @@ public final class FeatureStep<F: Feature> where F.State: Equatable {
 
     // MARK: - receive
 
-    /// Dequeues the next action from `receivedActions`, validates it via `prism`, runs it through
-    /// the behavior, and validates the resulting `ViewState`.
+    /// Dequeues the next action from `receivedActions`, validates it via `prism`, and asserts
+    /// the resulting `ViewState`. Delegates to ``TestFeature/receive(_:sourceLocation:assert:)-6u6eu``.
     ///
-    /// The `assert` closure receives both the **value extracted by the prism** and an `inout`
-    /// copy of the view state before the action:
-    ///
-    /// ```swift
-    /// step.receive(MoviesFeature.Action.prism.moviesResponse) { result, viewState in
-    ///     if case .success = result { viewState.isLoading = false }
-    /// }
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - prism: A ``Prism`` matching the expected domain action case.
-    ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Receives the extracted value and an `inout` copy of the pre-action view state.
-    /// - Returns: `self` for chaining additional ``receive(_:sourceLocation:assert:)-6u6eu`` calls.
+    /// - Returns: `self` for chaining additional `receive` calls.
     @discardableResult
     public func receive<Value>(
         _ prism: Prism<F.Action, Value>,
         sourceLocation: SourceLocation = #_sourceLocation,
         assert expectedViewStateChange: (Value, inout F.ViewModel.ViewState) -> Void
     ) -> Self {
-        guard !_feature._store.receivedActions.isEmpty else {
-            Issue.record(
-                "receive() called but receivedActions is empty — call runEffects() first",
-                sourceLocation: sourceLocation
-            )
-            return self
-        }
-        let next = _feature._store.receivedActions.first!
-        let extracted = prism.preview(next)
-        let before = _feature.viewState
-        _feature._store.receive(prism, sourceLocation: sourceLocation, assert: { _, _ in })
-        if let value = extracted {
-            _feature.assertViewState(
-                before: before,
-                after: _feature.viewState,
-                label: "receive(\(next))",
-                sourceLocation: sourceLocation
-            ) { expected in expectedViewStateChange(value, &expected) }
-        }
+        _feature.receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
         _receivedCount = _feature._store.receivedActions.count
         return self
     }
 
-    /// Dequeues the next action from `receivedActions`, validates it via `prism` (no associated
-    /// value), and validates the resulting `ViewState`.
+    /// Dequeues the next action (no associated value), validates via `prism`, and asserts `ViewState`.
+    /// Delegates to ``TestFeature/receive(_:sourceLocation:assert:)-2oy2y``.
     ///
-    /// ```swift
-    /// step.receive(MoviesFeature.Action.prism.resetCompleted) { $0 = .init() }
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - prism: A ``Prism<Action, Void>`` matching an action case with no associated value.
-    ///   - sourceLocation: Captured automatically; points failures to the call site.
-    ///   - assert: Mutates the pre-action view state to produce the expected post-action value.
+    /// - Returns: `self` for chaining additional `receive` calls.
     @discardableResult
     public func receive(
         _ prism: Prism<F.Action, Void>,
         sourceLocation: SourceLocation = #_sourceLocation,
         assert expectedViewStateChange: (inout F.ViewModel.ViewState) -> Void
     ) -> Self {
-        receive(prism, sourceLocation: sourceLocation) { (_, vs: inout F.ViewModel.ViewState) in
-            expectedViewStateChange(&vs)
-        }
+        _feature.receive(prism, sourceLocation: sourceLocation, assert: expectedViewStateChange)
+        _receivedCount = _feature._store.receivedActions.count
+        return self
     }
 }
 #endif
