@@ -168,18 +168,6 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
-    // MARK: - Enqueue (used by TestFeature)
-
-    /// Appends `action` directly to ``receivedActions`` without running it through the behavior.
-    ///
-    /// Used by ``TestFeature`` so that `dispatch(viewAction:)` makes the mapped domain action
-    /// visible as the first entry in the received queue — keeping the whole dispatch → receive
-    /// cycle symmetric and explicit.
-    public func enqueue(_ action: Action) {
-        receivedActions.append(action)
-        _receivedCount = receivedActions.count
-    }
-
     // MARK: - Test API
 
     /// Dispatches `action` through the behavior and validates the resulting state.
