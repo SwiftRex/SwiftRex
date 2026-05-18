@@ -60,10 +60,10 @@ extension CounterAction {
             switch (self, value) {
             case (.increment, .increment): true
             case (.decrement, .decrement): true
-            case (.set,       .set):       true
-            case (.load,      .load):      true
-            case (.loaded,    .loaded):    true
-            default:                       false
+            case (.set, .set): true
+            case (.load, .load): true
+            case (.loaded, .loaded): true
+            default: false
             }
         }
     }
