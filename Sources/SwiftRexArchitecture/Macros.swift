@@ -21,7 +21,10 @@
 /// @Feature
 /// enum MoviesFeature {
 ///     struct State: Sendable { ... }         // @Lenses applied automatically
+///
+///     @dynamicMemberLookup                   // see note below
 ///     enum Action: Sendable { ... }          // @Prisms applied automatically
+///
 ///     struct Environment: Sendable { ... }
 ///
 ///     final class ViewModel { ... }          // @ViewModel applied automatically
@@ -37,6 +40,17 @@
 ///
 /// Because `@Feature` re-exports `FPMacros`, importing `SwiftRexArchitecture` is sufficient —
 /// no explicit `import FPMacros` is needed in the file where `@Feature` is used.
+///
+/// ## `@dynamicMemberLookup` is your job
+///
+/// `@Prisms` emits one focus-getter per case (`var caseName: Focus? { ... }`) and
+/// warns that you should add `@dynamicMemberLookup` to collapse them into a single
+/// subscript. Swift's macro expansion order prevents `@Feature` from attaching
+/// `@dynamicMemberLookup` automatically: when `@Prisms` expands on `Action`, it
+/// does not observe attributes added by `@Feature`'s sibling MemberAttributeMacro
+/// pass. Add `@dynamicMemberLookup` to `Action` (and to `ViewModel.ViewAction`)
+/// yourself if you want the subscript form and a clean build. Functionality is
+/// unchanged either way — only the generated shape differs.
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @attached(memberAttribute)
 @attached(extension, conformances: Feature)

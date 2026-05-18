@@ -5,6 +5,12 @@ import Testing
 
 // MARK: - Fixtures
 
+// `CounterAction` is written out by hand in the exact shape that `@Prisms` would
+// generate, so the tests exercise the same call sites users hit in real code
+// (`Action.prism.caseName`, dynamic-member focus access, the `Cases` enum and
+// `is(_:)` predicate). Adding `@Prisms` here would be circular for SwiftRex's
+// own tests — the macro is built in this same package.
+@dynamicMemberLookup
 private enum CounterAction: Sendable {
     case increment
     case decrement
@@ -13,30 +19,56 @@ private enum CounterAction: Sendable {
     case loaded(Int)
 }
 
-// Prisms for CounterAction — used in receive() to validate action case + extract value
 extension CounterAction {
-    enum Prisms {
-        static let increment = prism(
-            preview: { if case .increment = $0 { return () } else { return nil } },
-            review: { _ in CounterAction.increment }
+    struct Prisms: Sendable {
+        let increment: CoreFP.Prism<CounterAction, Void> = CoreFP.prism(
+            preview: { (_ s: CounterAction) in guard case .increment = s else { return nil }; return () },
+            review: { (_: Void) in CounterAction.increment }
         )
-        static let decrement = prism(
-            preview: { if case .decrement = $0 { return () } else { return nil } },
-            review: { _ in CounterAction.decrement }
+        let decrement: CoreFP.Prism<CounterAction, Void> = CoreFP.prism(
+            preview: { (_ s: CounterAction) in guard case .decrement = s else { return nil }; return () },
+            review: { (_: Void) in CounterAction.decrement }
         )
-        static let set = prism(
-            preview: { if case .set(let v) = $0 { return v } else { return nil } },
+        let set: CoreFP.Prism<CounterAction, Int> = CoreFP.prism(
+            preview: { (_ s: CounterAction) in guard case .set(let v) = s else { return nil }; return v },
             review: CounterAction.set
         )
-        static let load = prism(
-            preview: { if case .load = $0 { return () } else { return nil } },
-            review: { _ in CounterAction.load }
+        let load: CoreFP.Prism<CounterAction, Void> = CoreFP.prism(
+            preview: { (_ s: CounterAction) in guard case .load = s else { return nil }; return () },
+            review: { (_: Void) in CounterAction.load }
         )
-        static let loaded = prism(
-            preview: { if case .loaded(let v) = $0 { return v } else { return nil } },
+        let loaded: CoreFP.Prism<CounterAction, Int> = CoreFP.prism(
+            preview: { (_ s: CounterAction) in guard case .loaded(let v) = s else { return nil }; return v },
             review: CounterAction.loaded
         )
     }
+
+    static let prism = Prisms()
+
+    /// Dynamic-member focus access: `action.set` is `Int?`, `action.increment` is `Void?`,
+    /// matching the subscript the `@Prisms` macro emits when `@dynamicMemberLookup` is set.
+    subscript<PrismFocus>(
+        dynamicMember keyPath: KeyPath<Prisms, Prism<CounterAction, PrismFocus>>
+    ) -> PrismFocus? {
+        Self.prism[keyPath: keyPath].preview(self)
+    }
+
+    enum Cases: CoreFP.CaseMatchable {
+        typealias Subject = CounterAction
+        case increment, decrement, set, load, loaded
+        func matches(_ value: CounterAction) -> Bool {
+            switch (self, value) {
+            case (.increment, .increment): true
+            case (.decrement, .decrement): true
+            case (.set,       .set):       true
+            case (.load,      .load):      true
+            case (.loaded,    .loaded):    true
+            default:                       false
+            }
+        }
+    }
+
+    func `is`(_ c: Cases) -> Bool { c.matches(self) }
 }
 
 private struct CounterState: Equatable, Sendable {
@@ -144,7 +176,7 @@ struct TestStoreEffectTests {
         withKnownIssue("must process received actions before dispatching again") {
             store.dispatch(.increment) { $0.isLoading = true; $0.count = 1 }
         }
-        store.receive(CounterAction.Prisms.loaded) { value, state in
+        store.receive(CounterAction.prism.loaded) { value, state in
             state.isLoading = false
             state.count = value
         }
@@ -161,7 +193,7 @@ struct TestStoreRunEffectsTests {
         store.dispatch(.load) { $0.isLoading = true }
         await store.runEffects()
         #expect(store.pendingEffects.isEmpty)
-        store.receive(CounterAction.Prisms.loaded) { value, state in
+        store.receive(CounterAction.prism.loaded) { value, state in
             state.isLoading = false
             state.count = value  // value == 99, extracted from .loaded(99)
         }
@@ -171,7 +203,7 @@ struct TestStoreRunEffectsTests {
         let store = TestStore(initial: CounterState(), behavior: counterBehavior, environment: ())
         store.dispatch(.load) { $0.isLoading = true }
         await store.runEffects()
-        let action = store.receive(CounterAction.Prisms.loaded) { value, state in
+        let action = store.receive(CounterAction.prism.loaded) { value, state in
             #expect(value == 99)
             state.isLoading = false
             state.count = value
@@ -190,7 +222,7 @@ struct TestStoreRunEffectsTests {
             exhaustive: false
         )
         withKnownIssue("receive() on empty receivedActions should record a failure") {
-            store.receive(CounterAction.Prisms.loaded) { _, _ in }
+            store.receive(CounterAction.prism.loaded) { _, _ in }
         }
     }
 
@@ -205,7 +237,7 @@ struct TestStoreRunEffectsTests {
         await store.runEffects()
         withKnownIssue("wrong prism should record an action-mismatch failure") {
             // Actual action is .loaded(99); prism expects .increment (Void prism)
-            store.receive(CounterAction.Prisms.increment) { _ in }
+            store.receive(CounterAction.prism.increment) { _ in }
         }
     }
 
@@ -223,14 +255,14 @@ struct TestStoreRunEffectsTests {
         store.dispatch(.load) { _ in }
         await store.runEffects()
         // Use the Void-prism overload — no value to extract, just (inout State) -> Void
-        store.receive(CounterAction.Prisms.increment) { $0.count += 1 }
+        store.receive(CounterAction.prism.increment) { $0.count += 1 }
     }
 
     @Test func receiveEmptiesReceivedActions() async {
         let store = TestStore(initial: CounterState(), behavior: counterBehavior, environment: ())
         store.dispatch(.load) { $0.isLoading = true }
         await store.runEffects()
-        store.receive(CounterAction.Prisms.loaded) { value, state in
+        store.receive(CounterAction.prism.loaded) { value, state in
             state.isLoading = false; state.count = value
         }
         #expect(store.receivedActions.isEmpty)
@@ -255,13 +287,13 @@ struct TestStoreRunEffectsTests {
         store.dispatch(.load) { $0.isLoading = true }
 
         await store.runEffects()
-        store.receive(CounterAction.Prisms.loaded) { value, state in
+        store.receive(CounterAction.prism.loaded) { value, state in
             state.isLoading = false; state.count = value
         }
         #expect(!store.pendingEffects.isEmpty)
 
         await store.runEffects()
-        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
+        store.receive(CounterAction.prism.set) { value, state in state.count = value }
         #expect(store.pendingEffects.isEmpty)
         #expect(store.receivedActions.isEmpty)
     }
@@ -284,9 +316,9 @@ struct TestStoreRunEffectsTests {
         store.dispatch(.load) { _ in }
         await store.runEffects()
         #expect(store.receivedActions.count == 3)
-        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
-        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
-        store.receive(CounterAction.Prisms.set) { value, state in state.count = value }
+        store.receive(CounterAction.prism.set) { value, state in state.count = value }
+        store.receive(CounterAction.prism.set) { value, state in state.count = value }
+        store.receive(CounterAction.prism.set) { value, state in state.count = value }
     }
 
     @Test func runEffectsOnEmptyIsNoop() async {
@@ -330,5 +362,41 @@ struct TestStoreInitTests {
         )
         store.dispatch(.load) { $0.isLoading = true }
         // Pending effect intentionally not drained — non-exhaustive: no deinit failure
+    }
+}
+
+// MARK: - Prism shape (mirrors @Prisms macro expansion)
+
+@Suite("CounterAction — generated prism surface")
+struct CounterActionPrismShapeTests {
+    @Test func dynamicMemberFocusExtractsAssociatedValue() {
+        #expect(CounterAction.set(42).set == 42)
+        #expect(CounterAction.loaded(99).loaded == 99)
+        #expect(CounterAction.increment.set == nil)
+    }
+
+    @Test func dynamicMemberFocusReturnsVoidForCasesWithoutPayload() {
+        #expect(CounterAction.increment.increment != nil)
+        #expect(CounterAction.decrement.increment == nil)
+    }
+
+    @Test func isPredicateMatchesCaseRegardlessOfPayload() {
+        #expect(CounterAction.set(1).is(.set))
+        #expect(CounterAction.set(2).is(.set))
+        #expect(!CounterAction.set(3).is(.loaded))
+        #expect(CounterAction.increment.is(.increment))
+    }
+
+    @Test func casesEnumIsCaseIterable() {
+        #expect(CounterAction.Cases.allCases.count == 5)
+        #expect(CounterAction.Cases.allCases.contains(.set))
+        #expect(CounterAction.Cases.allCases.contains(.loaded))
+    }
+
+    @Test func reviewReconstructsAction() {
+        // `Action.prism.case.review` is the named-case constructor — useful for
+        // typed dispatch of cases with associated values.
+        let action = CounterAction.prism.loaded.review(7)
+        if case .loaded(let v) = action { #expect(v == 7) } else { Issue.record() }
     }
 }

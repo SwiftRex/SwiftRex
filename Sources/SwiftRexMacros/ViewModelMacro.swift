@@ -79,6 +79,11 @@ public struct ViewModelMacro: MemberMacro, MemberAttributeMacro, ExtensionMacro 
         providingAttributesFor member: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
+        // `@dynamicMemberLookup` cannot be attached here too — Swift's macro
+        // ordering means `@Prisms` would not observe it during its expansion,
+        // and the compiler would later fail validation when no subscript is
+        // generated. Users wanting the subscript form must add
+        // `@dynamicMemberLookup` to their `ViewAction` enum directly.
         guard let enumDecl = member.as(EnumDeclSyntax.self),
               enumDecl.name.text == "ViewAction",
               !hasAttribute("Prisms", on: enumDecl.attributes) else { return [] }

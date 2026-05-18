@@ -7,6 +7,14 @@ import SwiftSyntaxMacros
 /// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action` enum,
 ///                            `@Lenses` to nested `State` struct, and
 ///                            `@ViewModel` to nested `ViewModel` class.
+///
+/// `@Prisms` will emit a warning suggesting `@dynamicMemberLookup` to collapse
+/// per-case property accessors into a single subscript. Swift's macro expansion
+/// order prevents us from attaching `@dynamicMemberLookup` automatically here —
+/// when `@Prisms` expands on `Action`, it cannot observe attributes added by
+/// this same MemberAttributeMacro pass, so it always takes the per-case branch.
+/// Users wanting the subscript form should add `@dynamicMemberLookup` to their
+/// `Action` enum directly.
 public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro {
     // MARK: - ExtensionMacro
 
