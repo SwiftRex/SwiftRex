@@ -5,16 +5,34 @@ import DataStructure
 ///
 /// `Middleware` is the pure, side-effect-producing half of a feature's logic. It receives every
 /// dispatched action together with a lazy read-only view of the current state, and returns a
-/// `Reader<Environment, Effect<Action>>` — a deferred effect that the ``Store`` will schedule in
+/// `Reader<Environment, Effect<Action>>` — a deferred computation the ``Store`` will run in
 /// phase 3 of dispatch, after all state mutations have completed.
 ///
 /// ```
-/// dispatch         Middleware.handle                 Reader runs (phase 3, post-mutation)
-///    │                    │                                    │
-///    ▼                    ▼                                    ▼
-/// Action ──► state.snapshotState() = pre-mutation    state.snapshotState() = post-mutation
-///                          └──► Reader<Environment, Effect<Action>>
-///                                         └──► environment injected by Store
+/// dispatch         Middleware.handle                 Reader.runReader(env) (phase 3)
+///    │                   │                                   │
+///    ▼                   ▼                                   ▼
+/// Action ──► stateAccess.state = pre-mutation       stateAccess.state = post-mutation
+///                         └──► Reader<Environment, Effect<Action>>
+///                                       └──► env injected by Store at phase 3
+/// ```
+///
+/// ## Pre- and post-mutation state
+///
+/// `StateAccess` is `Sendable` and can be captured from the `handle` closure into the returned
+/// `Reader`. Because `StateAccess.state` is a `@MainActor` computed property backed by a lazy
+/// closure, calling it during phase 1 yields pre-mutation state and calling it from the `Reader`
+/// (also `@MainActor`) yields post-mutation state — no copy overhead and no race conditions:
+///
+/// ```swift
+/// Middleware<MyAction, MyState, MyEnvironment>.handle { action, stateAccess in
+///     let pre = stateAccess.state    // pre-mutation state (phase 1)
+///
+///     return Reader { env in
+///         let post = stateAccess.state   // post-mutation state (phase 3)
+///         return .just(.log(before: pre, after: post))
+///     }
+/// }
 /// ```
 ///
 /// ## Single action type
@@ -27,42 +45,15 @@ import DataStructure
 /// ## Always @MainActor
 ///
 /// The ``Store`` is `@MainActor`, so `handle` is always called on the main actor. This lets
-/// middleware call `stateAccess.snapshotState()` directly (also `@MainActor`) and keeps state
-/// reads safe by construction, with no manual actor-hopping required.
+/// middleware read `stateAccess.state` directly (also `@MainActor`) in phase 1. Because the
+/// `Store` runs the returned `Reader` from its `@MainActor` dispatch loop, `stateAccess.state`
+/// inside the Reader is likewise safe to call synchronously.
 ///
 /// ## Middleware is stateless
 ///
 /// `Middleware` holds no instance state. Patterns that seem to require state — debouncing,
-/// throttling, keeping track of in-flight requests — are expressed as ``EffectScheduling``
-/// directives on the returned ``Effect``. The Store manages all lifecycle state.
-///
-/// ```swift
-/// // Debounce without instance state on the middleware
-/// Middleware<SearchAction, SearchState, SearchEnvironment> { action, _ in
-///     guard case .queryChanged(let q) = action.action else {
-///         return Reader { _ in .empty }
-///     }
-///     return Reader { env in
-///         env.api.search(q).asEffect()
-///             .scheduling(.debounce(id: "search", delay: 0.3))
-///     }
-/// }
-/// ```
-///
-/// ## Pre- and post-mutation state
-///
-/// The same `StateAccess` reference yields different values depending on when it is called:
-///
-/// ```swift
-/// Middleware<MyAction, MyState, MyEnvironment> { action, state in
-///     let pre = state.snapshotState()    // pre-mutation state (phase 1)
-///
-///     return Reader { env in
-///         let post = state.snapshotState()  // post-mutation state (phase 3)
-///         return .just(.log(before: pre, after: post))
-///     }
-/// }
-/// ```
+/// throttling, tracking in-flight requests — are expressed as ``EffectScheduling`` directives
+/// on the returned ``Effect``.
 ///
 /// ## Composition
 ///
@@ -84,11 +75,11 @@ import DataStructure
 /// - ``lift(action:state:environment:)-5ttmj`` and overloads — all three axes at once
 public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
     /// The core function: given a dispatched action and lazy state access, returns a deferred
-    /// `Reader` that the Store will run in phase 3 (post-mutation) to obtain the ``Effect``.
+    /// `Reader<Environment, Effect<Action>>` that the Store will run in phase 3 (post-mutation).
     ///
     /// - **Phase 1**: Called with `state` reflecting the current (pre-mutation) state.
-    /// - **Phase 3**: The returned `Reader` is run with the environment after all mutations
-    ///   complete; at that point `state.snapshotState()` yields post-mutation state.
+    /// - **Phase 3**: The returned `Reader` is run with the injected environment; `stateAccess.state`
+    ///   yields post-mutation state (the Reader closure runs on `@MainActor`).
     ///
     /// - Note: Always called on `@MainActor`. Do not perform blocking work here.
     public let handle: @MainActor @Sendable (
@@ -118,7 +109,7 @@ extension Middleware {
     ///
     /// ```swift
     /// let myMiddleware = Middleware<AppAction, AppState, AppEnvironment>.handle { action, state in
-    ///     // return a Reader<AppEnvironment, Effect<AppAction>>
+    ///     Reader { env in ... }
     /// }
     /// ```
     ///
@@ -134,7 +125,8 @@ extension Middleware {
     /// Convenience constructor for middlewares that do not need the environment.
     ///
     /// When `Environment == Void`, the middleware's effect does not depend on any injected
-    /// dependency. This overload avoids the boilerplate of wrapping the result in a `Reader`:
+    /// dependency. This overload avoids the boilerplate of wrapping in a `Reader` manually —
+    /// the closure may return an ``Effect`` directly:
     ///
     /// ```swift
     /// // No environment needed — return Effect directly
@@ -144,15 +136,19 @@ extension Middleware {
     /// }
     /// ```
     ///
-    /// - Parameter fn: A closure that returns an ``Effect`` directly (not wrapped in a `Reader`).
-    /// - Returns: A `Middleware` that wraps `fn`'s result in `Reader { _ in ... }`.
+    /// - Parameter fn: A `@Sendable` closure that returns an ``Effect`` directly (not wrapped
+    ///   in a `Reader`). The closure is captured and called lazily inside a `Reader { _ in ... }`
+    ///   — it is NOT called during phase 1; it runs in phase 3 when the Store evaluates the Reader.
+    /// - Returns: A `Middleware` that wraps `fn` in a `Reader`.
     public static func handle(
-        _ fn: @escaping @MainActor @Sendable (
+        _ fn: @escaping @Sendable (
             _ action: DispatchedAction<Action>,
             _ state: StateAccess<State>
         ) -> Effect<Action>
     ) -> Self where Environment == Void {
-        Middleware { action, state in Reader { _ in fn(action, state) } }
+        Middleware { action, state in
+            Reader { _ in fn(action, state) }
+        }
     }
 }
 
@@ -172,12 +168,11 @@ extension Middleware: Semigroup {
     /// - Returns: A middleware whose effect is the parallel combination of both inputs.
     public static func combine(_ lhs: Middleware, _ rhs: Middleware) -> Middleware {
         Middleware { action, state in
-            Reader { env in
-                .combine(
-                    lhs.handle(action, state).runReader(env),
-                    rhs.handle(action, state).runReader(env)
-                )
-            }
+            // Capture both readers on @MainActor in phase 1; the combined Reader
+            // then calls both lazily in phase 3 — no eager effect evaluation.
+            let lhsReader = lhs.handle(action, state)
+            let rhsReader = rhs.handle(action, state)
+            return Reader { env in .combine(lhsReader.runReader(env), rhsReader.runReader(env)) }
         }
     }
 }

@@ -27,7 +27,7 @@ private func receivedActions(
 ) -> [Int] {
     let c = consequence(behavior, action: action, state: state)
     let received = LockProtected([Int]())
-    subscribeAll(c.effect.runReader(())) { d in received.mutate { $0.append(d.action) } }
+    subscribeAll(c.effect(())) { d in received.mutate { $0.append(d.action) } }
     return received.value
 }
 
@@ -165,7 +165,7 @@ struct BehaviorMonoidTests {
 // MARK: - liftAction
 
 @Suite("Behavior liftAction")
-@MainActor
+@MainActor  // effect calls are @MainActor
 struct BehaviorLiftActionTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let doubler = Behavior<Int, Int, Void>.handle { action, _ in
@@ -186,14 +186,14 @@ struct BehaviorLiftActionTests {
         var state = 42
         c.mutation.runEndoMut(&state)
         #expect(state == 42)
-        #expect(c.effect.runReader(()).components.isEmpty)
+        #expect(c.effect(()).components.isEmpty)
     }
 
     @Test func outputActionIsWrappedViaReview() {
         let sut = doubler.liftAction(prism)
         let c = sut.handle(DispatchedAction(GA(local: 4, other: nil), dispatcher: anySource), StateAccess { 0 })
         let received = LockProtected([GA]())
-        subscribeAll(c.effect.runReader(())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.effect(())) { d in received.mutate { $0.append(d.action) } }
         // review(4*2) → GA(local: 8)
         #expect(received.value.first?.local == 8)
     }
@@ -300,7 +300,7 @@ struct BehaviorLiftEnvironmentTests {
             .liftEnvironment { (ge: GE) in ge.sub }
         let c = sut.handle(DispatchedAction(0, dispatcher: anySource), StateAccess { 0 })
         let received = LockProtected([Int]())
-        subscribeAll(c.effect.runReader(GE(sub: 42))) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.effect(GE(sub: 42))) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [42])
     }
 }
@@ -325,7 +325,7 @@ struct BehaviorCombinedLiftTests {
         #expect(state.local == 3)
         // Effect produces env value (7) wrapped via prism.review → GA(local: 7)
         let received = LockProtected([GA]())
-        subscribeAll(c.effect.runReader(GE(sub: 7))) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.effect(GE(sub: 7))) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value.first?.local == 7)
     }
 
@@ -348,6 +348,6 @@ struct BehaviorCombinedLiftTests {
         let c = sut.handle(DispatchedAction(GA(local: nil, other: "x"), dispatcher: anySource), StateAccess { initial })
         c.mutation.runEndoMut(&state)
         #expect(state.local == 0)
-        #expect(c.effect.runReader(GE(sub: 0)).components.isEmpty)
+        #expect(c.effect(GE(sub: 0)).components.isEmpty)
     }
 }

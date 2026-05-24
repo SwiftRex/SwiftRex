@@ -31,7 +31,7 @@ extension Behavior {
             let c = self.handle(local, stateAccess)
             return Consequence(
                 mutation: c.mutation,
-                effect: Reader { env in c.effect.runReader(env).map(prism.review) }
+                effect: c.effect.map { $0.map(prism.review) }
             )
         }
     }

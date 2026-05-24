@@ -19,7 +19,7 @@ import DataStructure
 
 extension Reducer {
     /// Primitive — `WritableKeyPath` for state container.
-    public func liftCollection<GA, GS: Sendable, Container: Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, Container: Sendable>(
         action: @escaping @Sendable (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
         stateContainer: WritableKeyPath<GS, Container>
     ) -> Reducer<GA, GS> {
@@ -30,7 +30,7 @@ extension Reducer {
     }
 
     /// Primitive — `Lens` for state container (for composed or `let`-property containers).
-    public func liftCollection<GA, GS: Sendable, Container: Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, Container: Sendable>(
         action: @escaping @Sendable (GA) -> (action: ActionType, element: AffineTraversal<Container, StateType>)?,
         stateContainer: Lens<GS, Container>
     ) -> Reducer<GA, GS> {
@@ -46,7 +46,7 @@ extension Reducer {
 extension Reducer where StateType: Identifiable {
     /// Lifts to a mutable collection, locating the element by its `Identifiable.id`.
     /// State container via `WritableKeyPath`.
-    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, C: MutableCollection & Sendable>(
         action: @escaping @Sendable (GA) -> ElementAction<StateType.ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>
     ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable, StateType: Sendable {
@@ -58,7 +58,7 @@ extension Reducer where StateType: Identifiable {
 
     /// Lifts to a mutable collection, locating the element by its `Identifiable.id`.
     /// State container via `Lens`.
-    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, C: MutableCollection & Sendable>(
         action: @escaping @Sendable (GA) -> ElementAction<StateType.ID, ActionType>?,
         stateCollection: Lens<GS, C>
     ) -> Reducer<GA, GS> where C.Element == StateType, C.Index: Sendable, StateType.ID: Sendable, StateType: Sendable {
@@ -75,7 +75,7 @@ extension Reducer {
     /// Lifts to a mutable collection, locating the element by a custom `Hashable` field.
     /// The `identifier` closure extracts the ID from an element.
     /// State container via `WritableKeyPath`.
-    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> ElementAction<ID, ActionType>?,
         stateCollection: WritableKeyPath<GS, C>,
         identifier: @escaping @Sendable (StateType) -> ID
@@ -88,7 +88,7 @@ extension Reducer {
 
     /// Lifts to a mutable collection, locating the element by a custom `Hashable` field.
     /// State container via `Lens`.
-    public func liftCollection<GA, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, C: MutableCollection & Sendable, ID: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> ElementAction<ID, ActionType>?,
         stateCollection: Lens<GS, C>,
         identifier: @escaping @Sendable (StateType) -> ID
@@ -105,7 +105,7 @@ extension Reducer {
 extension Reducer {
     /// Lifts to a `Dictionary`, locating the entry by its key.
     /// State container via `WritableKeyPath`.
-    public func liftCollection<GA, GS: Sendable, Key: Hashable & Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, Key: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> ElementAction<Key, ActionType>?,
         stateDictionary: WritableKeyPath<GS, [Key: StateType]>
     ) -> Reducer<GA, GS> where StateType: Sendable {
@@ -117,7 +117,7 @@ extension Reducer {
 
     /// Lifts to a `Dictionary`, locating the entry by its key.
     /// State container via `Lens`.
-    public func liftCollection<GA, GS: Sendable, Key: Hashable & Sendable>(
+    public func liftCollection<GA: Sendable, GS: Sendable, Key: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> ElementAction<Key, ActionType>?,
         stateDictionary: Lens<GS, [Key: StateType]>
     ) -> Reducer<GA, GS> where StateType: Sendable {

@@ -8,8 +8,8 @@ import CoreFP
 ///
 /// ## Internal representation
 ///
-/// Internally a `Reducer` stores `(ActionType) -> EndoMut<StateType>`: given an action, it
-/// returns an in-place endomorphism on `State`. This representation:
+/// Internally a `Reducer` stores `@Sendable (ActionType) -> EndoMut<StateType>`: given an action,
+/// it returns an in-place endomorphism on `State`. This representation:
 ///
 /// - Avoids copying state on every action — mutations are applied directly via `inout`.
 /// - Makes the `Monoid` structure a direct, pointwise lift of `EndoMut`'s `Monoid`.
@@ -64,18 +64,18 @@ import CoreFP
 /// ``identity`` as the neutral element. `combine(a, b)` runs `a`'s mutation then `b`'s on
 /// the same `inout State`, so `b` observes `a`'s changes.
 ///
-/// - Note: `@unchecked Sendable` is used because `ActionType` and `StateType` do not have a
-///   `Sendable` constraint at the type level, but the stored closure is always called on
-///   `@MainActor`, making it safe in practice.
-public struct Reducer<ActionType, StateType>: @unchecked Sendable {
+/// - Note: Both `ActionType` and `StateType` are constrained to `Sendable`, matching the
+///   constraints on ``Behavior`` and ``Middleware``. The stored `reduce` closure is `@Sendable`
+///   so `Reducer` itself satisfies `Sendable` without `@unchecked`.
+public struct Reducer<ActionType: Sendable, StateType: Sendable>: Sendable {
     /// Given an action, produces an in-place endomorphism on `StateType`.
     ///
     /// The ``Store`` uses this as `reduce(action).runEndoMut(&_state)` in phase 2 of
     /// dispatch. The resulting `EndoMut` captures the action and modifies the state
     /// in-place when run.
-    public let reduce: (ActionType) -> EndoMut<StateType>
+    public let reduce: @Sendable (ActionType) -> EndoMut<StateType>
 
-    private init(_ reduce: @escaping (ActionType) -> EndoMut<StateType>) {
+    private init(_ reduce: @escaping @Sendable (ActionType) -> EndoMut<StateType>) {
         self.reduce = reduce
     }
 }
@@ -83,7 +83,7 @@ public struct Reducer<ActionType, StateType>: @unchecked Sendable {
 // MARK: - Constructors
 
 extension Reducer {
-    /// Creates a `Reducer` from `(Action) -> EndoMut<State>` — the primary internal form.
+    /// Creates a `Reducer` from `@Sendable (Action) -> EndoMut<State>` — the primary internal form.
     ///
     /// Use this when you already have an `EndoMut` per action or when composing with other
     /// `EndoMut`-based pipelines. The closure is stored directly with no bridging overhead.
@@ -98,20 +98,20 @@ extension Reducer {
     /// }
     /// ```
     ///
-    /// - Parameter f: A function from action to `EndoMut<State>`.
+    /// - Parameter f: A `@Sendable` function from action to `EndoMut<State>`.
     /// - Returns: A `Reducer` that applies the returned `EndoMut` for each action.
-    public static func reduce(_ f: @escaping (ActionType) -> EndoMut<StateType>) -> Reducer {
+    public static func reduce(_ f: @escaping @Sendable (ActionType) -> EndoMut<StateType>) -> Reducer {
         Reducer(f)
     }
 
-    /// Creates a `Reducer` from `(Action) -> Endo<State>`. Bridges via `.toEndoMut()`.
+    /// Creates a `Reducer` from `@Sendable (Action) -> Endo<State>`. Bridges via `.toEndoMut()`.
     ///
     /// Use this when the transformation is naturally expressed as a pure `(State) -> State`
     /// function per action. One `Endo → EndoMut` bridge is applied on each action dispatch.
     ///
-    /// - Parameter f: A function from action to `Endo<State>` (a `State -> State` function).
+    /// - Parameter f: A `@Sendable` function from action to `Endo<State>` (a `State -> State` function).
     /// - Returns: A `Reducer` that converts each `Endo` to an `EndoMut` via `.toEndoMut()`.
-    public static func reduce(_ f: @escaping (ActionType) -> Endo<StateType>) -> Reducer {
+    public static func reduce(_ f: @escaping @Sendable (ActionType) -> Endo<StateType>) -> Reducer {
         Reducer { action in f(action).toEndoMut() }
     }
 
@@ -131,13 +131,13 @@ extension Reducer {
     /// }
     /// ```
     ///
-    /// - Parameter f: A closure that receives the action and mutates `state` in place.
+    /// - Parameter f: A `@Sendable` closure that receives the action and mutates `state` in place.
     /// - Returns: A `Reducer` that wraps each `inout` mutation in an `EndoMut`.
-    public static func reduce(_ f: @escaping (ActionType, inout StateType) -> Void) -> Reducer {
+    public static func reduce(_ f: @escaping @Sendable (ActionType, inout StateType) -> Void) -> Reducer {
         Reducer { action in EndoMut { state in f(action, &state) } }
     }
 
-    /// Creates a `Reducer` from a pure `(Action, State) -> State` function.
+    /// Creates a `Reducer` from a pure `@Sendable (Action, State) -> State` function.
     /// Bridges via `Endo.toEndoMut()`.
     ///
     /// Use this form when the new state is naturally expressed as a whole-value
@@ -155,9 +155,9 @@ extension Reducer {
     /// - Note: This form copies `state` on every action dispatch. Prefer the `inout` overload
     ///   for large mutable state trees.
     ///
-    /// - Parameter f: A pure function from `(ActionType, StateType)` to a new `StateType`.
+    /// - Parameter f: A `@Sendable` pure function from `(ActionType, StateType)` to a new `StateType`.
     /// - Returns: A `Reducer` that bridges each invocation through `Endo.toEndoMut()`.
-    public static func reduce(_ f: @escaping (ActionType, StateType) -> StateType) -> Reducer {
+    public static func reduce(_ f: @escaping @Sendable (ActionType, StateType) -> StateType) -> Reducer {
         Reducer { action in Endo { state in f(action, state) }.toEndoMut() }
     }
 }
@@ -235,7 +235,7 @@ extension Reducer: Monoid {
     ///
     /// - Parameter reducers: The reducers listed in the builder block.
     /// - Returns: A single `Reducer` that is the sequential composition of all inputs.
-    public static func buildBlock<Action, State>(
+    public static func buildBlock<Action: Sendable, State: Sendable>(
         _ reducers: Reducer<Action, State>...
     ) -> Reducer<Action, State> {
         mconcat(reducers)

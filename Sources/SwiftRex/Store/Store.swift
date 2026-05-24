@@ -232,7 +232,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         stateObservers.values.forEach { $0.didChange() }
 
         // Phase 4 — schedule effects (stateAccess now reflects post-mutation state)
-        let effect = consequence.effect.runReader(environment)
+        let effect = consequence.effect(environment)
         effect.components.forEach { schedule($0) }
     }
 

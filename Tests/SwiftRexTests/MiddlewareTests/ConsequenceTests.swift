@@ -3,6 +3,7 @@ import CoreFP
 import Testing
 
 @Suite("Consequence")
+@MainActor
 struct ConsequenceTests {
     // MARK: - doNothing / identity
 
@@ -13,14 +14,14 @@ struct ConsequenceTests {
     }
 
     @Test func doNothingProducesNoEffect() {
-        #expect(Consequence<Int, Void, Int>.doNothing.effect.runReader(()).components.isEmpty)
+        #expect(Consequence<Int, Void, Int>.doNothing.effect(()).components.isEmpty)
     }
 
     @Test func identityIsDoNothing() {
         var state = 7
         Consequence<Int, Void, Int>.identity.mutation.runEndoMut(&state)
         #expect(state == 7)
-        #expect(Consequence<Int, Void, Int>.identity.effect.runReader(()).components.isEmpty)
+        #expect(Consequence<Int, Void, Int>.identity.effect(()).components.isEmpty)
     }
 
     // MARK: - reduce
@@ -32,7 +33,7 @@ struct ConsequenceTests {
     }
 
     @Test func reduceProducesNoEffect() {
-        #expect(Consequence<Int, Void, Never>.reduce { $0 += 1 }.effect.runReader(()).components.isEmpty)
+        #expect(Consequence<Int, Void, Never>.reduce { $0 += 1 }.effect(()).components.isEmpty)
     }
 
     // MARK: - produce
@@ -46,7 +47,7 @@ struct ConsequenceTests {
     @Test func produceDispatchesAction() {
         let c = Consequence<Int, Void, Int>.produce { _ in .just(42) }
         let received = LockProtected([Int]())
-        subscribeAll(c.effect.runReader(())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.effect(())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [42])
     }
 
@@ -54,7 +55,7 @@ struct ConsequenceTests {
         struct Env { let value: Int }
         let c = Consequence<Int, Env, Int>.produce { env in .just(env.value) }
         let received = LockProtected([Int]())
-        subscribeAll(c.effect.runReader(Env(value: 7))) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.effect(Env(value: 7))) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [7])
     }
 
@@ -66,7 +67,7 @@ struct ConsequenceTests {
         c.mutation.runEndoMut(&state)
         #expect(state == 5)
         let received = LockProtected([Int]())
-        subscribeAll(c.effect.runReader(())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.effect(())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [99])
     }
 
@@ -75,7 +76,7 @@ struct ConsequenceTests {
             .produce { _ in .just(1) }
             .produce { _ in .just(2) }
         let received = LockProtected([Int]())
-        subscribeAll(c.effect.runReader(())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.effect(())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value.sorted() == [1, 2])
     }
 
@@ -93,7 +94,7 @@ struct ConsequenceTests {
         let lhs = Consequence<Int, Void, Int>.produce { _ in .just(10) }
         let rhs = Consequence<Int, Void, Int>.produce { _ in .just(20) }
         let received = LockProtected([Int]())
-        subscribeAll(Consequence.combine(lhs, rhs).effect.runReader(())) { d in
+        subscribeAll(Consequence.combine(lhs, rhs).effect(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value.sorted() == [10, 20])

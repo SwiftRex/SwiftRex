@@ -24,7 +24,7 @@ extension Reducer {
     ///   - stateSetter: Writes the local `StateType` back into the global state (via `inout`).
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that delegates to this reducer when
     ///   `actionGetter` returns a non-nil value.
-    public func lift<GlobalAction, GlobalState: Sendable>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         actionGetter: @escaping @Sendable (GlobalAction) -> ActionType?,
         stateGetter: @escaping @Sendable (GlobalState) -> StateType,
         stateSetter: @escaping @Sendable (inout GlobalState, StateType) -> Void
@@ -48,7 +48,7 @@ extension Reducer {
     ///
     /// - Parameter actionGetter: Extracts an optional local `ActionType` from the global action.
     /// - Returns: A `Reducer<GlobalAction, StateType>` that is a no-op for unmatched global actions.
-    public func lift<GlobalAction>(
+    public func lift<GlobalAction: Sendable>(
         actionGetter: @escaping @Sendable (GlobalAction) -> ActionType?
     ) -> Reducer<GlobalAction, StateType> {
         .reduce { globalAction in
@@ -97,7 +97,7 @@ extension Reducer {
     ///   sub-state property.
     /// - Returns: A `Reducer<ActionType, GlobalState>` that reads and writes only the
     ///   property identified by `state`.
-    public func lift<GlobalState>(
+    public func lift<GlobalState: Sendable>(
         state: WritableKeyPath<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
         .reduce { action in EndoMut { globalState in self.reduce(action)(&globalState[keyPath: state]) } }
@@ -118,7 +118,7 @@ extension Reducer {
     /// - Parameter prism: A `Prism<GlobalAction, ActionType>` where `preview` extracts the
     ///   local action from a global action.
     /// - Returns: A `Reducer<GlobalAction, StateType>` that is a no-op for unmatched actions.
-    public func lift<GlobalAction>(
+    public func lift<GlobalAction: Sendable>(
         action prism: Prism<GlobalAction, ActionType>
     ) -> Reducer<GlobalAction, StateType> {
         .reduce { globalAction in
@@ -142,7 +142,7 @@ extension Reducer {
     ///   - prism: A `Prism<GlobalAction, ActionType>` for the action axis.
     ///   - keyPath: A `WritableKeyPath<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that is a no-op for unmatched actions.
-    public func lift<GlobalAction, GlobalState: Sendable>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         action prism: Prism<GlobalAction, ActionType>,
         state keyPath: WritableKeyPath<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
@@ -165,7 +165,7 @@ extension Reducer {
     ///   - prism: A `Prism<GlobalAction, ActionType>` for the action axis.
     ///   - lens: A `Lens<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that is a no-op for unmatched actions.
-    public func lift<GlobalAction, GlobalState>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         action prism: Prism<GlobalAction, ActionType>,
         state lens: Lens<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
@@ -192,7 +192,7 @@ extension Reducer {
     ///   - statePrism: A `Prism<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that is a no-op for unmatched actions
     ///   or when the state prism's focused case is absent.
-    public func lift<GlobalAction, GlobalState>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         action actionPrism: Prism<GlobalAction, ActionType>,
         state statePrism: Prism<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
@@ -219,7 +219,7 @@ extension Reducer {
     ///   - traversal: An `AffineTraversal<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that is a no-op for unmatched actions
     ///   or when the traversal's focus is absent.
-    public func lift<GlobalAction, GlobalState>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         action prism: Prism<GlobalAction, ActionType>,
         state traversal: AffineTraversal<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
@@ -247,7 +247,7 @@ extension Reducer {
     ///
     /// - Parameter traversal: An `AffineTraversal<GlobalAction, ActionType>` for the action axis.
     /// - Returns: A `Reducer<GlobalAction, StateType>` that is a no-op for unmatched actions.
-    public func lift<GlobalAction>(
+    public func lift<GlobalAction: Sendable>(
         action traversal: AffineTraversal<GlobalAction, ActionType>
     ) -> Reducer<GlobalAction, StateType> {
         .reduce { globalAction in
@@ -278,7 +278,7 @@ extension Reducer {
     ///   - traversal: An `AffineTraversal<GlobalAction, ActionType>` for the action axis.
     ///   - lens: A `Lens<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that is a no-op for unmatched actions.
-    public func lift<GlobalAction, GlobalState>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         action traversal: AffineTraversal<GlobalAction, ActionType>,
         state lens: Lens<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
@@ -297,7 +297,7 @@ extension Reducer {
     ///   - traversal: An `AffineTraversal<GlobalAction, ActionType>` for the action axis.
     ///   - prism: A `Prism<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that is a no-op for unmatched inputs.
-    public func lift<GlobalAction, GlobalState>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         action traversal: AffineTraversal<GlobalAction, ActionType>,
         state prism: Prism<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
@@ -316,7 +316,7 @@ extension Reducer {
     ///   - actionTraversal: An `AffineTraversal<GlobalAction, ActionType>` for the action axis.
     ///   - stateTraversal: An `AffineTraversal<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<GlobalAction, GlobalState>` that is a no-op for unmatched inputs.
-    public func lift<GlobalAction, GlobalState>(
+    public func lift<GlobalAction: Sendable, GlobalState: Sendable>(
         action actionTraversal: AffineTraversal<GlobalAction, ActionType>,
         state stateTraversal: AffineTraversal<GlobalState, StateType>
     ) -> Reducer<GlobalAction, GlobalState> {
@@ -339,7 +339,7 @@ extension Reducer {
     /// - Parameter lens: A `Lens<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<ActionType, GlobalState>` that applies this reducer's mutation
     ///   through the lens.
-    public func lift<GlobalState>(
+    public func lift<GlobalState: Sendable>(
         state lens: Lens<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
         .reduce { action in lens.lift(self.reduce(action)) }
@@ -356,7 +356,7 @@ extension Reducer {
     /// - Parameter prism: A `Prism<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<ActionType, GlobalState>` that is a no-op when the focused
     ///   case is absent from the global state.
-    public func lift<GlobalState>(
+    public func lift<GlobalState: Sendable>(
         state prism: Prism<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
         .reduce { action in prism.lift(self.reduce(action)) }
@@ -372,7 +372,7 @@ extension Reducer {
     ///
     /// - Parameter traversal: An `AffineTraversal<GlobalState, StateType>` for the state axis.
     /// - Returns: A `Reducer<ActionType, GlobalState>` that is a no-op when the focus is absent.
-    public func lift<GlobalState>(
+    public func lift<GlobalState: Sendable>(
         state traversal: AffineTraversal<GlobalState, StateType>
     ) -> Reducer<ActionType, GlobalState> {
         .reduce { action in traversal.lift(self.reduce(action)) }

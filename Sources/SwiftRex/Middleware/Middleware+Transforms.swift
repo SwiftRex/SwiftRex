@@ -74,7 +74,7 @@ extension Middleware {
     ///
     /// The middleware sees `nil` state both when the ``Store`` has been deallocated and when
     /// the focused enum case is not the currently active case. In both situations,
-    /// ``StateAccess/snapshotState()`` returns `nil`, and well-written middlewares skip
+    /// ``StateAccess/state`` returns `nil`, and well-written middlewares skip
     /// producing effects in that case.
     ///
     /// ```swift

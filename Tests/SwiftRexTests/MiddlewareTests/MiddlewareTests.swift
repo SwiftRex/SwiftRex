@@ -11,8 +11,10 @@ private struct GE: Sendable { var sub: Int = 0; var other: String = "" }
 
 private let anySource = ActionSource(file: #file, function: #function, line: #line)
 
+// MARK: - Test helpers
+
 @MainActor
-private func dispatch<A, S, E>(
+private func dispatch<A: Sendable, S: Sendable, E: Sendable>(
     _ middleware: Middleware<A, S, E>,
     action: A,
     state: S,
@@ -24,7 +26,7 @@ private func dispatch<A, S, E>(
 }
 
 @MainActor
-private func actions<A: Sendable, S, E>(
+private func actions<A: Sendable, S: Sendable, E: Sendable>(
     _ middleware: Middleware<A, S, E>,
     action: A,
     state: S,
@@ -139,9 +141,10 @@ struct MiddlewareLiftActionTests {
 @MainActor
 struct MiddlewareLiftStateTests {
     private let statePasser = Middleware<Int, Int, Void>.handle { _, stateAccess in
-        Reader { _ in
-            guard let s = stateAccess.snapshotState() else { return .empty }
-            return .just(s)
+        let pre = stateAccess.state
+        return Reader { _ in
+            guard let pre else { return .empty }
+            return .just(pre)
         }
     }
 
@@ -202,9 +205,10 @@ struct MiddlewareLiftEnvironmentTests {
 @MainActor
 struct MiddlewareLiftStateATTests {
     private let statePasser = Middleware<Int, Int, Void>.handle { _, stateAccess in
-        Reader { _ in
-            guard let s = stateAccess.snapshotState() else { return .empty }
-            return .just(s)
+        let pre = stateAccess.state
+        return Reader { _ in
+            guard let pre else { return .empty }
+            return .just(pre)
         }
     }
 
@@ -216,7 +220,8 @@ struct MiddlewareLiftStateATTests {
     @Test func liftStateATProjectsSubStateWhenFocusPresent() {
         let sut = statePasser.liftState(optionalIntAT)
         let received = LockProtected([Int]())
-        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource), StateAccess<Int?> { .some(55) }).runReader(())) { d in
+        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource),
+                                StateAccess<Int?> { .some(55) }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value == [55])
@@ -225,7 +230,8 @@ struct MiddlewareLiftStateATTests {
     @Test func liftStateATReturnsNilWhenFocusAbsent() {
         let sut = statePasser.liftState(optionalIntAT)
         let received = LockProtected([Int]())
-        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource), StateAccess<Int?> { nil }).runReader(())) { d in
+        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource),
+                                StateAccess<Int?> { nil }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value.isEmpty)
@@ -289,9 +295,11 @@ struct MiddlewareStateAccessTimingTests {
         let stateBox = LockProtected(0)
         let access = StateAccess<Int> { stateBox.value }
         let sut = Middleware<Int, Int, Void>.handle { _, stateAccess in
-            let pre = stateAccess.snapshotState() ?? 0
+            let pre = stateAccess.state ?? 0   // phase 1 — @MainActor, reads pre-mutation state
             return Reader { _ in
-                let post = stateAccess.snapshotState() ?? 0
+                // Reader runs on @MainActor (called by Store or test on main actor),
+                // so assumeIsolated is safe for post-mutation state access.
+                let post = MainActor.assumeIsolated { stateAccess.state } ?? 0
                 return .just(pre + post)
             }
         }
