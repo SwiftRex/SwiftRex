@@ -25,9 +25,10 @@ extension Middleware {
     ) -> Middleware<GlobalAction, State, Environment> {
         Middleware<GlobalAction, State, Environment> { action, state in
             guard let local = action.compactMap(prism.preview) else {
-                return Reader { _ in .empty }
+                return MiddlewareReader { _ in .empty }
             }
-            return self.handle(local, state).map { $0.map(prism.review) }
+            let mReader = self.handle(local, state)
+            return MiddlewareReader { ctx in mReader.run(ctx).map(prism.review) }
         }
     }
 
@@ -50,7 +51,8 @@ extension Middleware {
         _ f: @escaping @Sendable @MainActor (GlobalState) -> State
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.map(f))
+            let mReader = self.handle(action, globalAccess.map(f))
+            return mReader.liftState(f)
         }
     }
 
@@ -89,7 +91,8 @@ extension Middleware {
         _ prism: Prism<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.flatMap(prism.preview))
+            let mReader = self.handle(action, globalAccess.flatMap(prism.preview))
+            return mReader.liftState(prism.preview)
         }
     }
 
@@ -111,7 +114,8 @@ extension Middleware {
         _ traversal: AffineTraversal<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.flatMap(traversal.preview))
+            let mReader = self.handle(action, globalAccess.flatMap(traversal.preview))
+            return mReader.liftState(traversal.preview)
         }
     }
 

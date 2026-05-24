@@ -151,9 +151,15 @@ extension Behavior {
         middleware: Middleware<Action, State, Environment>
     ) {
         self.handle = { action, stateAccess in
-            Consequence(
+            let mReader = middleware.handle(action, stateAccess)
+            return Consequence(
                 mutation: reducer.reduce(action.action),
-                effect: middleware.handle(action, stateAccess)
+                effect: { env in
+                    mReader.run(MiddlewareEnvironment(
+                        environment: env,
+                        stateAccess: { stateAccess.snapshotState() }
+                    ))
+                }
             )
         }
     }

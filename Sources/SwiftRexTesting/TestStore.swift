@@ -384,7 +384,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         stateObservers.values.forEach { $0.willChange() }
         consequence.mutation.runEndoMut(&state)
         stateObservers.values.forEach { $0.didChange() }
-        let effect = consequence.effect.runReader(environment)
+        let effect = consequence.effect(environment)
         if !effect.components.isEmpty {
             pendingEffects.append(effect)
         }
