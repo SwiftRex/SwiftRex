@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/luiz.barbosa/code/FP/Sources/CoreFPOperators -name \"*.swift\" | sort)",
+      "Read(//Users/luiz.barbosa/code/FP/Sources/CoreFPOperators/**)",
+      "Bash(cd /Users/luiz.barbosa/code/FP && swift test 2>&1 | xcsift | tail -20)",
+      "Read(//Users/luiz.barbosa/code/FP/**)"
+    ],
+    "additionalDirectories": [
+      "/Users/luiz.barbosa/code/FP/Sources/CoreFPOperators/Utilities"
+    ]
+  }
+}

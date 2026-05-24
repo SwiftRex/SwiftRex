@@ -8,10 +8,9 @@ extension Middleware {
     /// calling a non-isolated `@Sendable` closure from `@MainActor` is always permitted.
     public var asBehavior: Behavior<Action, State, Environment> {
         Behavior { action, stateAccess in
-            let reader = self.handle(action, stateAccess)
             return Consequence(
                 mutation: .identity,
-                effect: { env in reader.runReader(env) }
+                effect: self.handle(action, stateAccess)
             )
         }
     }

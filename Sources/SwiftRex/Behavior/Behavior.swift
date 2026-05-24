@@ -151,10 +151,9 @@ extension Behavior {
         middleware: Middleware<Action, State, Environment>
     ) {
         self.handle = { action, stateAccess in
-            let reader = middleware.handle(action, stateAccess)
             return Consequence(
                 mutation: reducer.reduce(action.action),
-                effect: { env in reader.runReader(env) }
+                effect: middleware.handle(action, stateAccess)
             )
         }
     }
