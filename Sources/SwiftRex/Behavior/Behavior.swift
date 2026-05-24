@@ -151,7 +151,7 @@ extension Behavior {
         middleware: Middleware<Action, State, Environment>
     ) {
         self.handle = { action, stateAccess in
-            return Consequence(
+            Consequence(
                 mutation: reducer.reduce(action.action),
                 effect: middleware.handle(action, stateAccess)
             )
