@@ -107,4 +107,4 @@ Thumbs.db
 *.DSYM.zip
 *.dSYM.zip
 
-.claude/settings.local.json
+.claude/settings.local.json.claude/
