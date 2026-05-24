@@ -48,7 +48,7 @@
 /// - Note: `StateAccess` is `@MainActor`. ``state`` is synchronous when called from a
 ///   `@MainActor` context and `await`-able from any other async context.
 @MainActor
-public struct StateAccess<State: Sendable>: Sendable {
+public struct StateAccess<State: Sendable> {
     private let _get: @Sendable @MainActor () -> State?
 
     package init(_ get: @escaping @Sendable @MainActor () -> State?) {
