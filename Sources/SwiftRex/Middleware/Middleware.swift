@@ -152,7 +152,10 @@ extension Middleware {
             _ state: StateAccess<State>
         ) -> Effect<Action>
     ) -> Self where Environment == Void {
-        Middleware { action, state in Reader { _ in fn(action, state) } }
+        Middleware { action, state in
+            let effect = fn(action, state)   // evaluated on @MainActor (we're in the @MainActor handle closure)
+            return Reader { _ in effect }
+        }
     }
 }
 
@@ -172,11 +175,11 @@ extension Middleware: Semigroup {
     /// - Returns: A middleware whose effect is the parallel combination of both inputs.
     public static func combine(_ lhs: Middleware, _ rhs: Middleware) -> Middleware {
         Middleware { action, state in
-            Reader { env in
-                .combine(
-                    lhs.handle(action, state).runReader(env),
-                    rhs.handle(action, state).runReader(env)
-                )
+            // Pre-compute on @MainActor before entering the non-isolated Reader closure.
+            let lhsReader = lhs.handle(action, state)
+            let rhsReader = rhs.handle(action, state)
+            return Reader { env in
+                .combine(lhsReader.runReader(env), rhsReader.runReader(env))
             }
         }
     }

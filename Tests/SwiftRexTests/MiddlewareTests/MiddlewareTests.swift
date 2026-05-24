@@ -139,8 +139,9 @@ struct MiddlewareLiftActionTests {
 @MainActor
 struct MiddlewareLiftStateTests {
     private let statePasser = Middleware<Int, Int, Void>.handle { _, stateAccess in
-        Reader { _ in
-            guard let s = stateAccess.snapshotState() else { return .empty }
+        let s = stateAccess.snapshotState()
+        return Reader { _ in
+            guard let s else { return .empty }
             return .just(s)
         }
     }
@@ -202,8 +203,9 @@ struct MiddlewareLiftEnvironmentTests {
 @MainActor
 struct MiddlewareLiftStateATTests {
     private let statePasser = Middleware<Int, Int, Void>.handle { _, stateAccess in
-        Reader { _ in
-            guard let s = stateAccess.snapshotState() else { return .empty }
+        let s = stateAccess.snapshotState()
+        return Reader { _ in
+            guard let s else { return .empty }
             return .just(s)
         }
     }
@@ -290,8 +292,10 @@ struct MiddlewareStateAccessTimingTests {
         let access = StateAccess<Int> { stateBox.value }
         let sut = Middleware<Int, Int, Void>.handle { _, stateAccess in
             let pre = stateAccess.snapshotState() ?? 0
+            // Phase 3: Reader runs on @MainActor; use assumeIsolated to cross the
+            // @Sendable closure boundary while preserving the Swift 6.2 type safety.
             return Reader { _ in
-                let post = stateAccess.snapshotState() ?? 0
+                let post = MainActor.assumeIsolated { stateAccess.snapshotState() } ?? 0
                 return .just(pre + post)
             }
         }
