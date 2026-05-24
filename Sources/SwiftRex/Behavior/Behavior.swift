@@ -30,9 +30,9 @@ import DataStructure
 /// ```swift
 /// // Full form — pre/post state access, environment injection in produce
 /// let loggerBehavior = Behavior<AppAction, AppState, AppEnvironment> { action, stateAccess in
-///     let before = stateAccess.snapshotState()
+///     let before = stateAccess.state
 ///     return .produce { _ in
-///         .just(.log(action: action.action, before: before, after: stateAccess.snapshotState()))
+///         .just(.log(action: action.action, before: before, after: stateAccess.state))
 ///     }
 /// }
 ///
@@ -71,7 +71,7 @@ import DataStructure
 /// - ``lift(action:state:environment:)-9azuf`` and overloads — all three axes at once
 ///
 /// - Note: `Behavior.handle` is `@MainActor`. The ``Store`` calls it on the main actor,
-///   so `stateAccess.snapshotState()` is always safe to call directly inside the closure.
+///   so `stateAccess.state` is always safe to call directly inside the closure.
 public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
     /// The core function: given a dispatched action and lazy state access, returns the
     /// complete consequence (mutation + effect) for this action.
@@ -151,15 +151,10 @@ extension Behavior {
         middleware: Middleware<Action, State, Environment>
     ) {
         self.handle = { action, stateAccess in
-            let mReader = middleware.handle(action, stateAccess)
+            let reader = middleware.handle(action, stateAccess)
             return Consequence(
                 mutation: reducer.reduce(action.action),
-                effect: { env in
-                    mReader.run(MiddlewareEnvironment(
-                        environment: env,
-                        stateAccess: { stateAccess.snapshotState() }
-                    ))
-                }
+                effect: { env in reader.runReader(env) }
             )
         }
     }

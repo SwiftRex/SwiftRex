@@ -22,9 +22,7 @@ private func dispatch<A: Sendable, S: Sendable, E: Sendable>(
 ) -> Effect<A> {
     let dispatched = DispatchedAction(action, dispatcher: anySource)
     let access = StateAccess<S> { state }
-    let mReader = middleware.handle(dispatched, access)
-    let ctx = MiddlewareEnvironment(environment: env, stateAccess: { access.snapshotState() })
-    return mReader.run(ctx)
+    return middleware.handle(dispatched, access).runReader(env)
 }
 
 @MainActor
@@ -41,29 +39,6 @@ private func actions<A: Sendable, S: Sendable, E: Sendable>(
     return received.value
 }
 
-/// Convenience: run a `MiddlewareReader` with a fixed state snapshot.
-@MainActor
-private func runMReader<A: Sendable, S: Sendable, E: Sendable>(
-    _ mReader: MiddlewareReader<A, E, S>,
-    state: S,
-    env: E
-) -> Effect<A> {
-    let access = StateAccess<S> { state }
-    let ctx = MiddlewareEnvironment(environment: env, stateAccess: { access.snapshotState() })
-    return mReader.run(ctx)
-}
-
-/// Convenience: run a `MiddlewareReader` with a `StateAccess` and explicit env.
-@MainActor
-private func runMReader<A: Sendable, S: Sendable, E: Sendable>(
-    _ mReader: MiddlewareReader<A, E, S>,
-    access: StateAccess<S>,
-    env: E
-) -> Effect<A> {
-    let ctx = MiddlewareEnvironment(environment: env, stateAccess: { access.snapshotState() })
-    return mReader.run(ctx)
-}
-
 // MARK: - Named constructors
 
 @Suite("Middleware constructors")
@@ -71,7 +46,7 @@ private func runMReader<A: Sendable, S: Sendable, E: Sendable>(
 struct MiddlewareConstructorTests {
     @Test func handleClosureReturnsExpectedEffect() {
         let sut = Middleware<Int, Int, Void>.handle { action, _ in
-            MiddlewareReader { _ in .just(action.action * 2) }
+            Reader { _ in .just(action.action * 2) }
         }
         #expect(actions(sut, action: 5, state: 0, env: ()) == [10])
     }
@@ -92,30 +67,30 @@ struct MiddlewareMonoidTests {
     }
 
     @Test func combineMergesEffectsFromBoth() {
-        let lhs = Middleware<Int, Int, Void>.handle { action, _ in MiddlewareReader { _ in .just(action.action) } }
-        let rhs = Middleware<Int, Int, Void>.handle { action, _ in MiddlewareReader { _ in .just(action.action * 10) } }
+        let lhs = Middleware<Int, Int, Void>.handle { action, _ in Reader { _ in .just(action.action) } }
+        let rhs = Middleware<Int, Int, Void>.handle { action, _ in Reader { _ in .just(action.action * 10) } }
         #expect(actions(Middleware.combine(lhs, rhs), action: 2, state: 0, env: ()).sorted() == [2, 20])
     }
 
     @Test func combineBothSeeTheSameAction() {
         let seen = LockProtected([Int]())
         let lhs = Middleware<Int, Int, Void>.handle { action, _ in
-            MiddlewareReader { _ in seen.mutate { $0.append(action.action) }; return .empty }
+            Reader { _ in seen.mutate { $0.append(action.action) }; return .empty }
         }
         let rhs = Middleware<Int, Int, Void>.handle { action, _ in
-            MiddlewareReader { _ in seen.mutate { $0.append(action.action) }; return .empty }
+            Reader { _ in seen.mutate { $0.append(action.action) }; return .empty }
         }
         _ = actions(Middleware.combine(lhs, rhs), action: 7, state: 0, env: ())
         #expect(seen.value == [7, 7])
     }
 
     @Test func leftIdentityLaw() {
-        let m = Middleware<Int, Int, Void>.handle { action, _ in MiddlewareReader { _ in .just(action.action) } }
+        let m = Middleware<Int, Int, Void>.handle { action, _ in Reader { _ in .just(action.action) } }
         #expect(actions(Middleware.combine(.identity, m), action: 5, state: 0, env: ()) == [5])
     }
 
     @Test func rightIdentityLaw() {
-        let m = Middleware<Int, Int, Void>.handle { action, _ in MiddlewareReader { _ in .just(action.action) } }
+        let m = Middleware<Int, Int, Void>.handle { action, _ in Reader { _ in .just(action.action) } }
         #expect(actions(Middleware.combine(m, .identity), action: 5, state: 0, env: ()) == [5])
     }
 }
@@ -127,14 +102,14 @@ struct MiddlewareMonoidTests {
 struct MiddlewareLiftActionTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let doubler = Middleware<Int, Int, Void>.handle { action, _ in
-        MiddlewareReader { _ in .just(action.action * 2) }
+        Reader { _ in .just(action.action * 2) }
     }
 
     @Test func matchingActionReachesMiddleware() {
         let sut = doubler.liftAction(prism)
         let dispatched = DispatchedAction(GA(local: 4, other: nil), dispatcher: anySource)
         let received = LockProtected([GA]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess { 0 }), state: 0, env: ())) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess { 0 }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value.first?.local == 8)
@@ -143,7 +118,7 @@ struct MiddlewareLiftActionTests {
     @Test func nonMatchingActionProducesEmptyEffect() {
         let sut = doubler.liftAction(prism)
         let dispatched = DispatchedAction(GA(local: nil, other: "x"), dispatcher: anySource)
-        let effect = runMReader(sut.handle(dispatched, StateAccess { 0 }), state: 0, env: ())
+        let effect = sut.handle(dispatched, StateAccess { 0 }).runReader(())
         #expect(effect.components.isEmpty)
     }
 
@@ -151,7 +126,7 @@ struct MiddlewareLiftActionTests {
         let sut = doubler.liftAction(prism)
         let dispatched = DispatchedAction(GA(local: 3, other: nil), dispatcher: anySource)
         let received = LockProtected([GA]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess { 0 }), state: 0, env: ())) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess { 0 }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         // review(3*2) → GA(local: 6, other: nil)
@@ -166,8 +141,8 @@ struct MiddlewareLiftActionTests {
 @MainActor
 struct MiddlewareLiftStateTests {
     private let statePasser = Middleware<Int, Int, Void>.handle { _, stateAccess in
-        let pre = stateAccess.snapshotState()
-        return MiddlewareReader { _ in
+        let pre = stateAccess.state
+        return Reader { _ in
             guard let pre else { return .empty }
             return .just(pre)
         }
@@ -177,8 +152,7 @@ struct MiddlewareLiftStateTests {
         let sut = statePasser.liftState { (gs: GS) in gs.local }
         let dispatched = DispatchedAction(0, dispatcher: anySource)
         let received = LockProtected([Int]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess { GS(local: 55, other: 0) }),
-                                state: GS(local: 55, other: 0), env: ())) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess { GS(local: 55, other: 0) }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value == [55])
@@ -189,8 +163,7 @@ struct MiddlewareLiftStateTests {
         let sut = statePasser.liftState(lens)
         let dispatched = DispatchedAction(0, dispatcher: anySource)
         let received = LockProtected([Int]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess { GS(local: 77, other: 0) }),
-                                state: GS(local: 77, other: 0), env: ())) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess { GS(local: 77, other: 0) }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value == [77])
@@ -201,8 +174,7 @@ struct MiddlewareLiftStateTests {
         let sut = statePasser.liftState(prism)
         let dispatched = DispatchedAction(0, dispatcher: anySource)
         let received = LockProtected([Int]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess<Int?> { nil }),
-                                state: Optional<Int>.none, env: ())) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess<Int?> { nil }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value.isEmpty)
@@ -216,12 +188,11 @@ struct MiddlewareLiftStateTests {
 struct MiddlewareLiftEnvironmentTests {
     @Test func liftEnvironmentProjectsEnv() {
         let sut = Middleware<Int, Int, Int>.handle { _, _ in
-            MiddlewareReader { ctx in .just(ctx.environment) }
+            Reader { env in .just(env) }
         }.liftEnvironment { (ge: GE) in ge.sub }
         let dispatched = DispatchedAction(0, dispatcher: anySource)
         let received = LockProtected([Int]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess { 0 }),
-                                state: 0, env: GE(sub: 33, other: ""))) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess { 0 }).runReader(GE(sub: 33, other: ""))) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value == [33])
@@ -234,8 +205,8 @@ struct MiddlewareLiftEnvironmentTests {
 @MainActor
 struct MiddlewareLiftStateATTests {
     private let statePasser = Middleware<Int, Int, Void>.handle { _, stateAccess in
-        let pre = stateAccess.snapshotState()
-        return MiddlewareReader { _ in
+        let pre = stateAccess.state
+        return Reader { _ in
             guard let pre else { return .empty }
             return .just(pre)
         }
@@ -249,9 +220,8 @@ struct MiddlewareLiftStateATTests {
     @Test func liftStateATProjectsSubStateWhenFocusPresent() {
         let sut = statePasser.liftState(optionalIntAT)
         let received = LockProtected([Int]())
-        subscribeAll(runMReader(sut.handle(DispatchedAction(0, dispatcher: anySource),
-                                           StateAccess<Int?> { .some(55) }),
-                                state: Optional<Int>.some(55), env: ())) { d in
+        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource),
+                                StateAccess<Int?> { .some(55) }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value == [55])
@@ -260,9 +230,8 @@ struct MiddlewareLiftStateATTests {
     @Test func liftStateATReturnsNilWhenFocusAbsent() {
         let sut = statePasser.liftState(optionalIntAT)
         let received = LockProtected([Int]())
-        subscribeAll(runMReader(sut.handle(DispatchedAction(0, dispatcher: anySource),
-                                           StateAccess<Int?> { nil }),
-                                state: Optional<Int>.none, env: ())) { d in
+        subscribeAll(sut.handle(DispatchedAction(0, dispatcher: anySource),
+                                StateAccess<Int?> { nil }).runReader(())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value.isEmpty)
@@ -276,7 +245,7 @@ struct MiddlewareLiftStateATTests {
 struct MiddlewareCombinedLiftTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let base = Middleware<Int, Int, Int>.handle { action, _ in
-        MiddlewareReader { ctx in .just(action.action + ctx.environment) }
+        Reader { env in .just(action.action + env) }
     }
 
     @Test func liftAllThreeAxesClosure() {
@@ -287,8 +256,7 @@ struct MiddlewareCombinedLiftTests {
         )
         let dispatched = DispatchedAction(GA(local: 2, other: nil), dispatcher: anySource)
         let received = LockProtected([GA]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess { GS() }),
-                                state: GS(), env: GE(sub: 3, other: ""))) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess { GS() }).runReader(GE(sub: 3, other: ""))) { d in
             received.mutate { $0.append(d.action) }
         }
         // action=2 + env=3 = 5, wrapped via review → GA(local: 5)
@@ -300,8 +268,7 @@ struct MiddlewareCombinedLiftTests {
         let sut = base.lift(action: prism, state: stateLens, environment: { (ge: GE) in ge.sub })
         let dispatched = DispatchedAction(GA(local: 1, other: nil), dispatcher: anySource)
         let received = LockProtected([GA]())
-        subscribeAll(runMReader(sut.handle(dispatched, StateAccess { GS() }),
-                                state: GS(), env: GE(sub: 4, other: ""))) { d in
+        subscribeAll(sut.handle(dispatched, StateAccess { GS() }).runReader(GE(sub: 4, other: ""))) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value.first?.local == 5)
@@ -314,8 +281,7 @@ struct MiddlewareCombinedLiftTests {
             environment: { (ge: GE) in ge.sub }
         )
         let dispatched = DispatchedAction(GA(local: nil, other: "x"), dispatcher: anySource)
-        let effect = runMReader(sut.handle(dispatched, StateAccess { GS() }),
-                                state: GS(), env: GE(sub: 0, other: ""))
+        let effect = sut.handle(dispatched, StateAccess { GS() }).runReader(GE(sub: 0, other: ""))
         #expect(effect.components.isEmpty)
     }
 }
@@ -329,18 +295,18 @@ struct MiddlewareStateAccessTimingTests {
         let stateBox = LockProtected(0)
         let access = StateAccess<Int> { stateBox.value }
         let sut = Middleware<Int, Int, Void>.handle { _, stateAccess in
-            let pre = stateAccess.snapshotState() ?? 0
-            // Phase 3: MiddlewareReader.run is @MainActor — ctx.stateAccess() is directly callable.
-            return MiddlewareReader { ctx in
-                let post = ctx.stateAccess() ?? 0   // No assumeIsolated needed!
+            let pre = stateAccess.state ?? 0   // phase 1 — @MainActor, reads pre-mutation state
+            return Reader { _ in
+                // Reader runs on @MainActor (called by Store or test on main actor),
+                // so assumeIsolated is safe for post-mutation state access.
+                let post = MainActor.assumeIsolated { stateAccess.state } ?? 0
                 return .just(pre + post)
             }
         }
-        let mReader = sut.handle(DispatchedAction(0, dispatcher: anySource), access)
+        let reader = sut.handle(DispatchedAction(0, dispatcher: anySource), access)
         stateBox.set(10)   // mutate after handle captures pre-state
         let received = LockProtected([Int]())
-        let ctx = MiddlewareEnvironment(environment: (), stateAccess: { access.snapshotState() })
-        subscribeAll(mReader.run(ctx)) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(reader.runReader(())) { d in received.mutate { $0.append(d.action) } }
         // pre=0, post=10 → 0+10=10
         #expect(received.value == [10])
     }

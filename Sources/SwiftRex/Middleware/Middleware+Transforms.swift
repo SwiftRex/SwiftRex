@@ -25,10 +25,9 @@ extension Middleware {
     ) -> Middleware<GlobalAction, State, Environment> {
         Middleware<GlobalAction, State, Environment> { action, state in
             guard let local = action.compactMap(prism.preview) else {
-                return MiddlewareReader { _ in .empty }
+                return Reader { _ in .empty }
             }
-            let mReader = self.handle(local, state)
-            return MiddlewareReader { ctx in mReader.run(ctx).map(prism.review) }
+            return self.handle(local, state).map { $0.map(prism.review) }
         }
     }
 
@@ -51,8 +50,7 @@ extension Middleware {
         _ f: @escaping @Sendable @MainActor (GlobalState) -> State
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            let mReader = self.handle(action, globalAccess.map(f))
-            return mReader.liftState(f)
+            self.handle(action, globalAccess.map(f))
         }
     }
 
@@ -76,7 +74,7 @@ extension Middleware {
     ///
     /// The middleware sees `nil` state both when the ``Store`` has been deallocated and when
     /// the focused enum case is not the currently active case. In both situations,
-    /// ``StateAccess/snapshotState()`` returns `nil`, and well-written middlewares skip
+    /// ``StateAccess/state`` returns `nil`, and well-written middlewares skip
     /// producing effects in that case.
     ///
     /// ```swift
@@ -91,8 +89,7 @@ extension Middleware {
         _ prism: Prism<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            let mReader = self.handle(action, globalAccess.flatMap(prism.preview))
-            return mReader.liftState(prism.preview)
+            self.handle(action, globalAccess.flatMap(prism.preview))
         }
     }
 
@@ -114,8 +111,7 @@ extension Middleware {
         _ traversal: AffineTraversal<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            let mReader = self.handle(action, globalAccess.flatMap(traversal.preview))
-            return mReader.liftState(traversal.preview)
+            self.handle(action, globalAccess.flatMap(traversal.preview))
         }
     }
 
