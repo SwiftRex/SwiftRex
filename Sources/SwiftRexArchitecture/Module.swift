@@ -77,9 +77,23 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
         }
     }
 
-    // MARK: - Internal init (used by lift and eraseToAnyView)
+    // MARK: - Direct init
 
-    init(
+    /// Creates a `Module` directly from a behavior and a view factory closure.
+    ///
+    /// Use this when you need to bridge between internal and public types — for example, when a
+    /// feature's domain types are internal and the public `Content` is a type-erasing wrapper:
+    ///
+    /// ```swift
+    /// Module(
+    ///     behavior: InternalFeature.behavior(),
+    ///     view: { store in
+    ///         let vm = InternalFeature.ViewModel(store: store.projection(...))
+    ///         return PublicContent(InternalFeature.Content(viewModel: vm))
+    ///     }
+    /// )
+    /// ```
+    public init(
         behavior: Behavior<Action, State, Environment>,
         view: @escaping @MainActor @Sendable (any StoreType<Action, State>) -> Content
     ) {
