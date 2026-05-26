@@ -191,4 +191,25 @@ extension Feature where Action == ViewModel.ViewAction {
     /// Identity translation — no declaration needed when `Action` is typealiased to `ViewModel.ViewAction`.
     public static var mapAction: @Sendable (ViewModel.ViewAction) -> Action { { $0 } }
 }
+
+// MARK: - Module factory
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+extension Feature {
+    /// Creates a typed `Module` for this feature.
+    ///
+    /// The returned `Module` preserves the concrete `Content` view type — no `AnyView` wrapping.
+    /// Lift it to your app's types with ``Module/lift(action:state:environment:)``.
+    ///
+    /// ```swift
+    /// let lifted = HomeFeature.module.lift(
+    ///     action:      AppAction.prism.home,
+    ///     state:       AppState.lens.home,
+    ///     environment: \.xmlDecoder >>> HomeFeature.Environment.init
+    /// )
+    /// ```
+    public static var module: Module<Action, State, Environment, Content> {
+        Module(Self.self)
+    }
+}
 #endif
