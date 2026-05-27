@@ -600,36 +600,33 @@ let favoritesMiddleware = Middleware<FavoritesAction, FavoritesModel, API>.handl
 
 #### Middleware Bridge — declarative routing with `.on(...)`
 
-Instead of writing a `handle` closure for simple action-routing middlewares, use the `.on(...)` builder methods. They compose onto any existing `Middleware` value via `.combine` and cover 12 patterns — from a plain closure to Prism/KeyPath matching with optional state guards:
+Instead of writing a `handle` closure for simple action-routing middlewares, use the `.on(...)` builder methods. They compose onto any existing `Middleware` value via `.combine` and cover 12 patterns across three families — Prism, KeyPath, and Bool predicate. State is **never copied** unless the action filter passes first.
 
 ```swift
 // Start from identity and chain .on(...) calls
 let bridge = Middleware<AppAction, AppState, World>.identity
-    // 1. Free closure — return non-nil to dispatch
-    .on { action in
-        guard case .didSearch(let q) = action else { return nil }
-        return .performSearch(q)
-    }
-    // 2. Same, guarded by a state predicate
-    .on({ action in
-        guard case .retry = action else { return nil }
-        return .reload
-    }, when: { $0.retryCount < 3 })
-    // 3. Prism + dispatch closure
+    // — Prism family —
+    // 1. Prism + dispatch closure
     .on(AppAction.prism.didSearch, dispatch: AppAction.performSearch)
-    // 4. Prism + dispatch + state guard
+    // 2. Prism + dispatch + state guard (state read only if prism matches)
     .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
-    // 5. Prism pair (same payload T — no dispatch: label)
+    // 3. Prism pair (same payload T — no dispatch: label)
     .on(AppAction.prism.searchQuery, AppAction.prism.updateSearch)
-    // 7. Void prism → fixed action
+    // 5. Void prism → fixed action
     .on(AppAction.prism.didTapLogout, dispatch: AppAction.auth(.logout))
-    // 9. KeyPath (macro-generated enum case property)
+    // — KeyPath family —
+    // 7. KeyPath (macro-generated enum case property)
     .on(\.didSearch, dispatch: AppAction.performSearch)
-    // 11. Void key path → fixed action
+    // 9. Void key path → fixed action
     .on(\.didTapLogout, dispatch: AppAction.auth(.logout))
+    // — Bool predicate family —
+    // 11. Bool predicate + fixed dispatch (no state ever read)
+    .on({ case .reset = $0 }, dispatch: .clearAll)
+    // 12. Bool predicate + fixed dispatch + state guard
+    .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
 ```
 
-All `when:` variants capture `context.stateBefore` on `@MainActor` before entering the `@Sendable` `Reader`, so the closure receives a plain (non-optional) `State`.
+All `when:` variants read state only after the action filter passes; unmatched actions never touch the store's state.
 
 ---
 
@@ -678,46 +675,57 @@ let appBehavior = counterBehavior <> authBehavior <> networkBehavior
 
 #### Behavior Bridge — declarative routing with `.on(...)`
 
-`Behavior` has the same `.on(...)` builder methods as `Middleware`, plus an optional `reduce:` parameter that lets you co-locate the state mutation with the routing. There are 14 patterns in total:
+`Behavior` has the same `.on(...)` builder methods as `Middleware`, plus an optional `reduce:` parameter that lets you co-locate the state mutation with the routing. There are 18 patterns across four families. State is **never copied** unless the action filter passes first; if neither `reduce:` nor `when:` is present, state is never touched at all.
 
 ```swift
 let behavior = Behavior<AppAction, AppState, World>.identity
-    // 1. Closure with inout State — mutation and optional dispatch in one go
-    .on { action, state in
-        guard case .increment = action else { return nil }
-        state.count += 1
-        return state.count > 10 ? .showWarning : nil
-    }
-    // 3. Prism + dispatch + optional reduce:
+    // — Prism family (variants 1–6) —
+    // 1. Prism + dispatch + optional reduce:
     .on(AppAction.prism.didLoad,
         dispatch: AppAction.renderItems,
         reduce: { items, state in state.items = items; state.isLoading = false })
-    // 4. Prism + dispatch + reduce + state guard
+    // 2. Prism + dispatch + reduce + state guard (state read only if prism matches)
     .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout,
         reduce: { _, state in state.isCheckingOut = true },
         when: { $0.isLoggedIn })
-    // 7. Void prism → fixed action + reduce
+    // 5. Void prism → fixed action + reduce
     .on(AppAction.prism.didTapLogout,
         dispatch: AppAction.auth(.logout),
         reduce: { state in state.isLoggingOut = true })
-    // 9. KeyPath + dispatch + optional reduce
+    // — KeyPath family (variants 7–10) —
+    // 7. KeyPath + dispatch + optional reduce
     .on(\.didLoad,
         dispatch: AppAction.renderItems,
         reduce: { items, state in state.items = items; state.isLoading = false })
-    // 11. Void key path → fixed action + reduce
+    // 9. Void key path → fixed action + reduce
     .on(\.didTapLogout,
         dispatch: AppAction.auth(.logout),
         reduce: { state in state.isLoggingOut = true })
-    // 13. Free closure — pure routing, no mutation (same as Middleware overload)
+    // — Bool predicate family (variants 11–16) —
+    // 11. Predicate only + fixed dispatch — no state ever read
+    .on({ case .reset = $0 }, dispatch: .clearAll)
+    // 12. Predicate + state guard (state read only if predicate matches)
+    .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+    // 13. Predicate + mutation only (no dispatch)
+    .on({ case .toggle = $0 }, reduce: { $0.isActive.toggle() })
+    // 14. Predicate + mutation + dispatch
+    .on({ case .didLoad = $0 }, reduce: { $0.isLoading = false }, dispatch: .renderItems)
+    // 15. Predicate + mutation + guard (no dispatch)
+    .on({ case .submit = $0 }, reduce: { $0.isSubmitting = true }, when: { !$0.isSubmitting })
+    // 16. Predicate + mutation + dispatch + guard — full
+    .on({ case .submit = $0 },
+        reduce: { $0.isSubmitting = true },
+        dispatch: .doSubmit,
+        when: { !$0.isSubmitting })
+    // — Pure routing, no mutation (variants 17–18) —
+    // 17. (Action) -> Action? — derived dispatch, no state
     .on { action in
         guard case .didSearch(let q) = action else { return nil }
         return .performSearch(q)
     }
 ```
 
-The `reduce:` parameter defaults to `{ _, _ in }` (no-op), so you can always omit it when no mutation is needed.
-
-> **Note**: The closure in variant 1 is called **twice** — once on a throwaway copy to capture the return value, then on the real `inout State` for the actual mutation. The closure must be a pure function of `(Action, inout State)` with no observable side effects beyond state changes.
+The `reduce:` parameter defaults to a no-op in Prism/KeyPath variants, so you can always omit it when no mutation is needed.
 
 ---
 
