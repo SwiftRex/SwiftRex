@@ -254,7 +254,139 @@ extension Behavior {
         on(extract, dispatch: { _ in out }, reduce: { _, s in reduce(&s) }, when: condition)
     }
 
-    // MARK: 13. Closure (Action) -> Action? (no mutation — pure routing)
+    // MARK: 13–20. Labeled `action:` predicate variants
+    //
+    // Unlike the blob-closure variants above, these separate the action filter from state
+    // access so the compiler (and the implementation) can guarantee:
+    //   - no state copy if `action` predicate returns false
+    //   - no state copy if neither `reduce:` nor `when:` is provided
+    //
+    // Dispatch is always a fixed `Action`; for cases where dispatch depends on state after
+    // mutation, use `.produce { ctx in }` directly on the returned `Consequence`.
+
+    // MARK: 13. action: predicate — pure routing, no state
+
+    /// Routes actions that satisfy `predicate`, dispatching `out`. No state is ever read.
+    ///
+    /// ```swift
+    /// .on(action: { case .didLogOut = $0 }, dispatch: .auth(.logOut))
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        dispatch out: Action
+    ) -> Self {
+        .combine(self, Behavior { action, _ in
+            guard predicate(action) else { return .doNothing }
+            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out) })
+        })
+    }
+
+    // MARK: 14. action: predicate + when: — dispatch guarded by pre-mutation state
+
+    /// Routes actions that satisfy `predicate`, dispatching `out` only when `condition` holds.
+    /// State is read only after `predicate` returns `true`.
+    ///
+    /// ```swift
+    /// .on(action: { case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        dispatch out: Action,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        .combine(self, Behavior { action, context in
+            guard predicate(action) else { return .doNothing }
+            guard let state = context.stateBefore, condition(state) else { return .doNothing }
+            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out) })
+        })
+    }
+
+    // MARK: 15. action: predicate + reduce: — mutation only, no dispatch
+
+    /// Applies `reduce` when `predicate` returns `true`. No action is dispatched.
+    /// No state copy occurs if `predicate` returns `false`.
+    ///
+    /// ```swift
+    /// .on(action: { case .toggle = $0 }, reduce: { $0.isActive.toggle() })
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        reduce: @escaping @Sendable (inout State) -> Void
+    ) -> Self {
+        .combine(self, Behavior { action, _ in
+            guard predicate(action) else { return .doNothing }
+            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in .empty })
+        })
+    }
+
+    // MARK: 16. action: predicate + reduce: + dispatch:
+
+    /// Applies `reduce` and dispatches `out` when `predicate` returns `true`.
+    /// No state copy occurs if `predicate` returns `false`.
+    ///
+    /// ```swift
+    /// .on(action: { case .didLoad = $0 },
+    ///     reduce: { $0.isLoading = false },
+    ///     dispatch: .renderItems)
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        reduce: @escaping @Sendable (inout State) -> Void,
+        dispatch out: Action
+    ) -> Self {
+        .combine(self, Behavior { action, _ in
+            guard predicate(action) else { return .doNothing }
+            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in Effect.just(out) })
+        })
+    }
+
+    // MARK: 17. action: predicate + reduce: + when: — mutation guarded by pre-mutation state
+
+    /// Applies `reduce` when `predicate` returns `true` AND `condition` holds.
+    /// State is read only after `predicate` returns `true`. No action is dispatched.
+    ///
+    /// ```swift
+    /// .on(action: { case .submit = $0 },
+    ///     reduce: { $0.isSubmitting = true },
+    ///     when: { !$0.isSubmitting })
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        reduce: @escaping @Sendable (inout State) -> Void,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        .combine(self, Behavior { action, context in
+            guard predicate(action) else { return .doNothing }
+            guard let state = context.stateBefore, condition(state) else { return .doNothing }
+            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in .empty })
+        })
+    }
+
+    // MARK: 18. action: predicate + reduce: + dispatch: + when: — full
+
+    /// Applies `reduce` and dispatches `out` when `predicate` returns `true` AND `condition` holds.
+    /// State is read only after `predicate` returns `true`.
+    ///
+    /// ```swift
+    /// .on(action: { case .submit = $0 },
+    ///     reduce: { $0.isSubmitting = true },
+    ///     dispatch: .submitForm,
+    ///     when: { !$0.isSubmitting })
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        reduce: @escaping @Sendable (inout State) -> Void,
+        dispatch out: Action,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        .combine(self, Behavior { action, context in
+            guard predicate(action) else { return .doNothing }
+            guard let state = context.stateBefore, condition(state) else { return .doNothing }
+            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in Effect.just(out) })
+        })
+    }
+
+    // MARK: 19. Closure (Action) -> Action? (no mutation — pure routing)
 
     /// Routes actions using a free closure with no state mutation.
     ///
@@ -278,7 +410,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 14. Closure (Action) -> Action? + when: (no mutation — pure routing)
+    // MARK: 20. Closure (Action) -> Action? + when: (no mutation — pure routing)
 
     /// Routes actions using a free closure with no state mutation, guarded by a predicate.
     public func on(
@@ -286,10 +418,11 @@ extension Behavior {
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         .combine(self, Behavior { action, context in
+            guard let out = fn(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
             return Consequence(
                 mutation: .identity,
-                effect: Reader { _ in fn(action).map { Effect.just($0) } ?? .empty }
+                effect: Reader { _ in Effect.just(out) }
             )
         })
     }
