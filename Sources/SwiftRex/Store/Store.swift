@@ -234,7 +234,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         // Phase 3 — post-mutation: notify observers and run Reader
         stateObservers.values.forEach { $0.didChange() }
 
-        // Phase 4 — schedule effects (postCtx._getter now reflects post-mutation state)
+        // Phase 4 — schedule effects (postCtx.stateGetter now reflects post-mutation state)
         let postCtx = PostReducerContext<State, Environment>(
             environment: environment,
             getter: { [weak self] in self?.state }

@@ -36,7 +36,7 @@
 /// let localContext = context.map { $0.authState }
 /// ```
 ///
-/// - Note: The stored `_getter` is intentionally `@Sendable` so lifting transforms can safely
+/// - Note: The stored ``stateGetter`` is intentionally `@Sendable` so lifting transforms can safely
 ///   extract it and compose it when constructing child `PreReducerContext` instances. The
 ///   non-Sendability of the struct itself comes from a non-`@Sendable` sentinel property.
 @MainActor
@@ -52,13 +52,13 @@ public struct PreReducerContext<State: Sendable> {
     /// The state immediately before this dispatch cycle's mutations ran.
     ///
     /// Always called on `@MainActor`. Returns `nil` if the ``Store`` has been deallocated.
-    public var stateBefore: State? { _getter() }
+    public var stateBefore: State? { stateGetter() }
 
     // MARK: - Package-internal
 
     /// The raw getter closure. Marked `@Sendable` so lifting transforms can extract it and
     /// compose it into child `PreReducerContext` instances without violating Sendable rules.
-    package let _getter: @Sendable @MainActor () -> State?
+    package let stateGetter: @Sendable @MainActor () -> State?
 
     // MARK: - Non-Sendable sentinel
 
@@ -72,7 +72,7 @@ public struct PreReducerContext<State: Sendable> {
 
     package init(source: ActionSource, getter: @escaping @Sendable @MainActor () -> State?) {
         self.source = source
-        _getter = getter
+        stateGetter = getter
         _nonSendable = {}
     }
 }
@@ -96,7 +96,7 @@ extension PreReducerContext {
     public func map<LocalState: Sendable>(
         _ f: @escaping @Sendable (State) -> LocalState
     ) -> PreReducerContext<LocalState> {
-        PreReducerContext<LocalState>(source: source, getter: { _getter().map(f) })
+        PreReducerContext<LocalState>(source: source, getter: { stateGetter().map(f) })
     }
 
     /// Projects this context to a narrower state type using a partial transformation.
@@ -115,6 +115,6 @@ extension PreReducerContext {
     public func compactMap<LocalState: Sendable>(
         _ f: @escaping @Sendable (State) -> LocalState?
     ) -> PreReducerContext<LocalState> {
-        PreReducerContext<LocalState>(source: source, getter: { _getter().flatMap(f) })
+        PreReducerContext<LocalState>(source: source, getter: { stateGetter().flatMap(f) })
     }
 }

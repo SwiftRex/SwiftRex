@@ -9,16 +9,16 @@ import Testing
 struct PreReducerContextTests {
     @Test func stateBeforeReturnsCurrentValue() {
         var state = 42
-        let ctx = PreReducerContext<Int>(source: ActionSource(file: #file, function: #function, line: #line),
-                                        getter: { state })
+        let src = ActionSource(file: #file, function: #function, line: #line)
+        let ctx = PreReducerContext<Int>(source: src, getter: { state })
         #expect(ctx.stateBefore == 42)
         state = 99
         #expect(ctx.stateBefore == 99)
     }
 
     @Test func stateBeforeReturnsNilWhenGetterReturnsNil() {
-        let ctx = PreReducerContext<Int>(source: ActionSource(file: #file, function: #function, line: #line),
-                                        getter: { nil })
+        let src = ActionSource(file: #file, function: #function, line: #line)
+        let ctx = PreReducerContext<Int>(source: src, getter: { nil })
         #expect(ctx.stateBefore == nil)
     }
 
@@ -73,7 +73,8 @@ struct PreReducerContextTests {
     @Test func mapPreservesSource() {
         let src = ActionSource(file: "x.swift", function: "f()", line: 1)
         let ctx = PreReducerContext<Int>(source: src, getter: { 0 })
-        #expect(ctx.map { $0 }.source.file == "x.swift")
+        let mapped: PreReducerContext<String> = ctx.map(String.init)
+        #expect(mapped.source.file == "x.swift")
     }
 }
 
