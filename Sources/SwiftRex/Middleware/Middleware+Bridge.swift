@@ -49,10 +49,10 @@ extension Middleware {
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         .combine(self, Middleware { action, context in
-            // Capture state on @MainActor before entering the @Sendable Reader
+            // Filter action first — only copy state when the action actually matches.
+            guard let out = fn(action) else { return Reader { _ in .empty } }
             let stateBefore = context.stateBefore
             return Reader { _ in
-                guard let out = fn(action) else { return .empty }
                 guard let state = stateBefore, condition(state) else { return .empty }
                 return Effect.just(out)
             }
@@ -88,9 +88,9 @@ extension Middleware {
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         .combine(self, Middleware { action, context in
+            guard let value = prism.preview(action) else { return Reader { _ in .empty } }
             let stateBefore = context.stateBefore
             return Reader { _ in
-                guard let value = prism.preview(action) else { return .empty }
                 guard let state = stateBefore, condition(state) else { return .empty }
                 return Effect.just(out(value))
             }
@@ -180,9 +180,9 @@ extension Middleware {
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         .combine(self, Middleware { action, context in
+            guard let value = action[keyPath: extract] else { return Reader { _ in .empty } }
             let stateBefore = context.stateBefore
             return Reader { _ in
-                guard let value = action[keyPath: extract] else { return .empty }
                 guard let state = stateBefore, condition(state) else { return .empty }
                 return Effect.just(out(value))
             }
@@ -213,5 +213,52 @@ extension Middleware {
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         on(extract, dispatch: { _ in out }, when: condition)
+    }
+
+    // MARK: 13–14. Labeled `action:` predicate variants
+    //
+    // These complement the unlabeled closure variants above with a Bool predicate
+    // and fixed dispatch, guaranteeing:
+    //   - no state copy if `action` predicate returns `false`
+    //   - no state copy at all when `when:` is absent
+
+    // MARK: 13. action: Bool predicate + dispatch: (no state)
+
+    /// Routes actions that satisfy `predicate`, dispatching `out`. No state is ever read.
+    ///
+    /// ```swift
+    /// .on(action: { case .didLogOut = $0 }, dispatch: AppAction.auth(.logOut))
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        dispatch out: Action
+    ) -> Self {
+        .combine(self, Middleware { action, _ in
+            guard predicate(action) else { return Reader { _ in .empty } }
+            return Reader { _ in Effect.just(out) }
+        })
+    }
+
+    // MARK: 14. action: Bool predicate + dispatch: + when: (state read after action match)
+
+    /// Routes actions that satisfy `predicate`, dispatching `out` only when `condition` holds.
+    /// State is read only after `predicate` returns `true`.
+    ///
+    /// ```swift
+    /// .on(action: { case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+    /// ```
+    public func on(
+        action predicate: @escaping @Sendable (Action) -> Bool,
+        dispatch out: Action,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        .combine(self, Middleware { action, context in
+            guard predicate(action) else { return Reader { _ in .empty } }
+            let stateBefore = context.stateBefore
+            return Reader { _ in
+                guard let state = stateBefore, condition(state) else { return .empty }
+                return Effect.just(out)
+            }
+        })
     }
 }
