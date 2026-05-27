@@ -47,7 +47,6 @@ import SwiftUI
 /// ```
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, Content: View>: Sendable {
-
     // MARK: - Stored properties
 
     /// The feature's reducer + effects, ready to be lifted and embedded in a parent ``Store``.
@@ -71,7 +70,7 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
         _makeView = { @MainActor store in
             let vm = F.ViewModel(store: store.projection(
                 action: F.mapAction,
-                state:  F.mapState
+                state: F.mapState
             ))
             return F.Content(viewModel: vm)
         }
@@ -98,7 +97,7 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
         view: @escaping @MainActor @Sendable (any StoreType<Action, State>) -> Content
     ) {
         self.behavior = behavior
-        _makeView    = view
+        _makeView = view
     }
 
     // MARK: - View production
@@ -138,7 +137,7 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
     /// - Returns: A `Module<GA, GS, GE, Content>` ready for the parent store.
     public func lift<GA: Sendable, GS: Sendable, GE: Sendable>(
         action: Prism<GA, Action>,
-        state:  Lens<GS, State>,
+        state: Lens<GS, State>,
         environment: @escaping @Sendable (GE) -> Environment
     ) -> Module<GA, GS, GE, Content> {
         let makeView = _makeView
@@ -174,19 +173,18 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
 // MARK: - AnyView-erasing Feature init
 
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-public extension Module where Content == AnyView {
-
+extension Module where Content == AnyView {
     /// Creates an AnyView-erased `Module` from a ``Feature`` type.
     ///
     /// Prefer `Feature.module` (which preserves the concrete view type). This init is retained
     /// for sites that explicitly need a `Module<..., AnyView>` without a separate `.eraseToAnyView()` call.
-    init<F: Feature>(_ feature: F.Type)
+    public init<F: Feature>(_ feature: F.Type)
     where F.Action == Action, F.State == State, F.Environment == Environment {
         behavior = F.behavior()
         _makeView = { @MainActor store in
             let vm = F.ViewModel(store: store.projection(
                 action: F.mapAction,
-                state:  F.mapState
+                state: F.mapState
             ))
             return AnyView(F.Content(viewModel: vm))
         }
