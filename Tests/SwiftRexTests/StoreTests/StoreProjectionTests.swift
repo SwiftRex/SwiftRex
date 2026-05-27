@@ -12,7 +12,7 @@ private func appStore(count: Int = 0, label: String = "") -> Store<AppAction, Ap
     Store(
         initial: AppState(count: count, label: label),
         behavior: Behavior<AppAction, AppState, Void>.handle { action, _ in
-            guard let n = action.action.counter else { return .doNothing }
+            guard let n = action.counter else { return .doNothing }
             return .reduce { $0.count += n }
         },
         environment: ()
@@ -80,8 +80,8 @@ struct StoreProjectionIdentifiableTests {
             initial: ListState(items: items),
             behavior: Behavior<ElementAction<Int, String>, ListState, Void>.handle { action, _ in
                 .reduce { state in
-                    guard let idx = state.items.firstIndex(where: { $0.id == action.action.id }) else { return }
-                    state.items[idx].value = action.action.action
+                    guard let idx = state.items.firstIndex(where: { $0.id == action.id }) else { return }
+                    state.items[idx].value = action.action
                 }
             },
             environment: ()
@@ -134,8 +134,8 @@ struct StoreProjectionCustomIdentifierTests {
             initial: TaggedState(entries: entries),
             behavior: Behavior<ElementAction<String, Int>, TaggedState, Void>.handle { action, _ in
                 .reduce { state in
-                    guard let idx = state.entries.firstIndex(where: { $0.tag == action.action.id }) else { return }
-                    state.entries[idx].score = action.action.action
+                    guard let idx = state.entries.firstIndex(where: { $0.tag == action.id }) else { return }
+                    state.entries[idx].score = action.action
                 }
             },
             environment: ()
@@ -189,7 +189,7 @@ struct StoreProjectionDictionaryTests {
         Store(
             initial: DictState(map: map),
             behavior: Behavior<ElementAction<String, Int>, DictState, Void>.handle { action, _ in
-                .reduce { state in state.map[action.action.id] = action.action.action }
+                .reduce { state in state.map[action.id] = action.action }
             },
             environment: ()
         )

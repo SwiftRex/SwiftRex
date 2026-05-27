@@ -1,4 +1,5 @@
 import CoreFP
+import DataStructure
 @testable import SwiftRex
 import Testing
 
@@ -48,8 +49,8 @@ struct StoreDispatchTests {
         let seen = LockProtected([ActionSource]())
         let store = Store(
             initial: 0,
-            behavior: Behavior<Int, Int, Void>.handle { action, _ in
-                seen.mutate { $0.append(action.dispatcher) }
+            behavior: Behavior<Int, Int, Void>.handle { _, context in
+                seen.mutate { $0.append(context.source) }
                 return .doNothing
             },
             environment: ()
@@ -118,7 +119,7 @@ struct StoreEffectSchedulingTests {
         let store = Store(
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
-                action.action == 0
+                action == 0
                     ? .produce { _ in .just(99) }
                     : .doNothing
             },
@@ -135,7 +136,7 @@ struct StoreEffectSchedulingTests {
         let store = Store(
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
-                .produce { _ in Effect<Int>.just(action.action).scheduling(.replacing(id: "key")) }
+                .produce { _ in Effect<Int>.just(action).scheduling(.replacing(id: "key")) }
             },
             environment: ()
         )
@@ -152,7 +153,7 @@ struct StoreEffectSchedulingTests {
         let store = Store(
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
-                action.action == 0
+                action == 0
                     ? .produce { _ in Effect<Int>.just(1).scheduling(.cancelInFlight(id: "key")) }
                     : .doNothing
             },
@@ -175,7 +176,7 @@ struct StoreReducerMiddlewareInitTests {
             initial: 0,
             reducer: Reducer<Int, Int>.reduce { action, state in state += action },
             middleware: Middleware<Int, Int, Void>.handle { action, _ in
-                action.action < 100 ? .just(1_000) : .empty
+                Reader { _ in action < 100 ? .just(1_000) : .empty }
             },
             environment: ()
         )

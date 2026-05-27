@@ -3,14 +3,14 @@ import CoreFP
 extension Middleware {
     /// Wraps this middleware as a `Behavior` with an identity reducer (no state mutation).
     ///
-    /// Bridges `Reader<Environment, Effect<Action>>` to ``Consequence/effect``: the
-    /// `@MainActor @Sendable` effect closure calls `reader.runReader(env)` — valid because
-    /// calling a non-isolated `@Sendable` closure from `@MainActor` is always permitted.
+    /// The middleware's `handle` closure is called during phase 1 on `@MainActor`, producing a
+    /// `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that the Store runs in
+    /// phase 3 after all mutations complete.
     public var asBehavior: Behavior<Action, State, Environment> {
-        Behavior { action, stateAccess in
+        Behavior { action, context in
             Consequence(
                 mutation: .identity,
-                effect: self.handle(action, stateAccess)
+                effect: self.handle(action, context)
             )
         }
     }

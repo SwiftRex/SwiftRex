@@ -14,9 +14,9 @@ import DataStructure
 /// ordered phases:
 ///
 /// ```
-/// Phase 1  behavior.handle(action, stateAccess)   — all Behaviors, pre-mutation state
+/// Phase 1  behavior.handle(action, preCtx)   — all Behaviors, pre-mutation state
 /// Phase 2  consequence.mutation.runEndoMut(&state) — all mutations, zero-copy inout
-/// Phase 3  consequence.effect.runReader(env)       — all effects, post-mutation state
+/// Phase 3  consequence.effect.runReader(postCtx)  — all effects, post-mutation state
 /// ```
 ///
 /// Because every `Behavior.handle` call in phase 1 sees the same pre-mutation state, composing
@@ -25,14 +25,15 @@ import DataStructure
 ///
 /// ## Creating a Behavior
 ///
-/// The full closure form gives access to both the dispatched action and a lazy state view:
+/// The full closure form gives access to the bare action and a ``PreReducerContext`` with
+/// pre-mutation state and call-site information:
 ///
 /// ```swift
-/// // Full form — pre/post state access, environment injection in produce
-/// let loggerBehavior = Behavior<AppAction, AppState, AppEnvironment> { action, stateAccess in
-///     let before = stateAccess.state
-///     return .produce { _ in
-///         .just(.log(action: action.action, before: before, after: stateAccess.state))
+/// // Full form — action and pre-mutation context; environment in produce
+/// let loggerBehavior = Behavior<AppAction, AppState, AppEnvironment> { action, context in
+///     let before = context.stateBefore
+///     return .produce { ctx in
+///         .just(.log(action: action, before: before, after: await ctx.stateAfter))
 ///     }
 /// }
 ///
@@ -71,29 +72,30 @@ import DataStructure
 /// - ``lift(action:state:environment:)-9azuf`` and overloads — all three axes at once
 ///
 /// - Note: `Behavior.handle` is `@MainActor`. The ``Store`` calls it on the main actor,
-///   so `stateAccess.state` is always safe to call directly inside the closure.
+///   so `context.stateBefore` is always safe to call directly inside the closure.
 public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
-    /// The core function: given a dispatched action and lazy state access, returns the
-    /// complete consequence (mutation + effect) for this action.
+    /// The core function: given an action and a pre-mutation context, returns the complete
+    /// consequence (mutation + effect) for this action.
     ///
-    /// - **Phase 1**: Called with `stateAccess` reflecting the current (pre-mutation) state.
+    /// - **Phase 1**: Called with `context` reflecting the current (pre-mutation) state and
+    ///   the call-site source location.
     /// - The returned ``Consequence`` is applied by the Store in phases 2 and 3.
     ///
     /// - Note: Always called on `@MainActor`. Do not perform blocking work here — move
     ///   async work into the returned ``Consequence/produce(_:)`` closure.
     public let handle: @MainActor @Sendable (
-        _ action: DispatchedAction<Action>,
-        _ state: StateAccess<State>
+        _ action: Action,
+        _ context: PreReducerContext<State>
     ) -> Consequence<State, Environment, Action>
 
     /// Creates a `Behavior` from a `handle` closure.
     ///
-    /// - Parameter handle: The closure that maps `(DispatchedAction<Action>, StateAccess<State>)`
-    ///   to ``Consequence``. Called on `@MainActor` by the Store during phase 1.
+    /// - Parameter handle: The closure that maps `(Action, PreReducerContext<State>)` to
+    ///   ``Consequence``. Called on `@MainActor` by the Store during phase 1.
     public init(
         handle: @escaping @MainActor @Sendable (
-            _ action: DispatchedAction<Action>,
-            _ state: StateAccess<State>
+            _ action: Action,
+            _ context: PreReducerContext<State>
         ) -> Consequence<State, Environment, Action>
     ) {
         self.handle = handle
@@ -107,7 +109,7 @@ extension Behavior {
     /// at the call site:
     ///
     /// ```swift
-    /// let myBehavior = Behavior<AppAction, AppState, AppEnvironment>.handle { action, state in
+    /// let myBehavior = Behavior<AppAction, AppState, AppEnvironment>.handle { action, context in
     ///     // ...
     /// }
     /// ```
@@ -116,8 +118,8 @@ extension Behavior {
     /// - Returns: A `Behavior` wrapping `fn`.
     public static func handle(
         _ fn: @escaping @MainActor @Sendable (
-            _ action: DispatchedAction<Action>,
-            _ state: StateAccess<State>
+            _ action: Action,
+            _ context: PreReducerContext<State>
         ) -> Consequence<State, Environment, Action>
     ) -> Self { Behavior(handle: fn) }
 }
@@ -128,8 +130,8 @@ extension Behavior {
     /// Creates a `Behavior` by pairing a ``Reducer`` with a ``Middleware``.
     ///
     /// The reducer provides the `EndoMut` (phase 2 mutation) and the middleware provides the
-    /// `Reader<Environment, Effect<Action>>` (phase 3 effect). Both are composed into a
-    /// ``Consequence`` without any intermediate state copies.
+    /// `Reader<PostReducerContext<State, Environment>, Effect<Action>>` (phase 3 effect). Both
+    /// are composed into a ``Consequence`` without any intermediate state copies.
     ///
     /// Use this when you already have separate reducer and middleware values and want to
     /// combine them into one unit for a feature:
@@ -144,16 +146,16 @@ extension Behavior {
     /// - Parameters:
     ///   - reducer: Handles state mutation for the feature. Called for every action.
     ///   - middleware: Handles side effects for the feature. Sees pre-mutation state via
-    ///     `StateAccess` during its `handle` call and post-mutation state inside the returned
-    ///     `Reader`.
+    ///     ``PreReducerContext`` during its `handle` call and post-mutation state inside
+    ///     the returned `Reader` via ``PostReducerContext``.
     public init(
         reducer: Reducer<Action, State>,
         middleware: Middleware<Action, State, Environment>
     ) {
-        self.handle = { action, stateAccess in
+        self.handle = { action, context in
             Consequence(
-                mutation: reducer.reduce(action.action),
-                effect: middleware.handle(action, stateAccess)
+                mutation: reducer.reduce(action),
+                effect: middleware.handle(action, context)
             )
         }
     }
@@ -183,8 +185,8 @@ extension Behavior: Semigroup {
     ///   - rhs: The second behavior; its mutation sees lhs's mutations.
     /// - Returns: A combined behavior that runs both handle closures and merges their consequences.
     public static func combine(_ lhs: Behavior, _ rhs: Behavior) -> Behavior {
-        Behavior { action, stateAccess in
-            .combine(lhs.handle(action, stateAccess), rhs.handle(action, stateAccess))
+        Behavior { action, context in
+            .combine(lhs.handle(action, context), rhs.handle(action, context))
         }
     }
 }

@@ -2,44 +2,147 @@ import CoreFP
 @testable import SwiftRex
 import Testing
 
-@Suite("StateAccess")
+// MARK: - PreReducerContext tests
+
+@Suite("PreReducerContext")
 @MainActor
-struct StateAccessTests {
-    @Test func snapshotStateReturnsCurrentValue() {
+struct PreReducerContextTests {
+    @Test func stateBeforeReturnsCurrentValue() {
         var state = 42
-        let access = StateAccess<Int> { state }
-        #expect(access.snapshotState() == 42)
+        let ctx = PreReducerContext<Int>(source: ActionSource(file: #file, function: #function, line: #line),
+                                        getter: { state })
+        #expect(ctx.stateBefore == 42)
         state = 99
-        #expect(access.snapshotState() == 99)
+        #expect(ctx.stateBefore == 99)
     }
 
-    @Test func snapshotStateReturnsNilWhenGetReturnsNil() {
-        let access = StateAccess<Int> { nil }
-        #expect(access.snapshotState() == nil)
+    @Test func stateBeforeReturnsNilWhenGetterReturnsNil() {
+        let ctx = PreReducerContext<Int>(source: ActionSource(file: #file, function: #function, line: #line),
+                                        getter: { nil })
+        #expect(ctx.stateBefore == nil)
+    }
+
+    @Test func sourceIsPreserved() {
+        let src = ActionSource(file: "foo.swift", function: "bar()", line: 7)
+        let ctx = PreReducerContext<Int>(source: src, getter: { 0 })
+        #expect(ctx.source.file == "foo.swift")
+        #expect(ctx.source.function == "bar()")
+        #expect(ctx.source.line == 7)
     }
 
     @Test func mapProjectsToSubState() {
-        let access = StateAccess<(Int, String)> { (10, "hello") }
-        #expect(access.map { $0.0 }.snapshotState() == 10)
+        let ctx = PreReducerContext<(Int, String)>(
+            source: ActionSource(file: #file, function: #function, line: #line),
+            getter: { (10, "hello") }
+        )
+        #expect(ctx.map { $0.0 }.stateBefore == 10)
     }
 
     @Test func mapReturnsNilWhenParentIsNil() {
-        let access = StateAccess<Int> { nil }
-        #expect(access.map { $0 * 2 }.snapshotState() == nil)
+        let ctx = PreReducerContext<Int>(
+            source: ActionSource(file: #file, function: #function, line: #line),
+            getter: { nil }
+        )
+        #expect(ctx.map { $0 * 2 }.stateBefore == nil)
     }
 
-    @Test func flatMapProjectsToOptionalSubState() {
-        let access = StateAccess<Int?> { .some(5) }
-        #expect(access.flatMap { $0 }.snapshotState() == 5)
+    @Test func compactMapProjectsToOptionalSubState() {
+        let ctx = PreReducerContext<Int?>(
+            source: ActionSource(file: #file, function: #function, line: #line),
+            getter: { .some(5) }
+        )
+        #expect(ctx.compactMap { $0 }.stateBefore == 5)
     }
 
-    @Test func flatMapReturnsNilWhenFReturnsNil() {
-        let access = StateAccess<Int> { 42 }
-        #expect(access.flatMap { _ in nil as Int? }.snapshotState() == nil)
+    @Test func compactMapReturnsNilWhenFReturnsNil() {
+        let ctx = PreReducerContext<Int>(
+            source: ActionSource(file: #file, function: #function, line: #line),
+            getter: { 42 }
+        )
+        #expect(ctx.compactMap { _ in nil as Int? }.stateBefore == nil)
     }
 
-    @Test func flatMapReturnsNilWhenParentIsNil() {
-        let access = StateAccess<Int> { nil }
-        #expect(access.flatMap { Optional($0) }.snapshotState() == nil)
+    @Test func compactMapReturnsNilWhenParentIsNil() {
+        let ctx = PreReducerContext<Int>(
+            source: ActionSource(file: #file, function: #function, line: #line),
+            getter: { nil }
+        )
+        #expect(ctx.compactMap { Optional($0) }.stateBefore == nil)
+    }
+
+    @Test func mapPreservesSource() {
+        let src = ActionSource(file: "x.swift", function: "f()", line: 1)
+        let ctx = PreReducerContext<Int>(source: src, getter: { 0 })
+        #expect(ctx.map { $0 }.source.file == "x.swift")
+    }
+}
+
+// MARK: - PostReducerContext tests
+
+@Suite("PostReducerContext")
+@MainActor
+struct PostReducerContextTests {
+    @Test func stateAfterReturnsCurrentValue() {
+        var state = 42
+        let ctx = PostReducerContext<Int, Void>(environment: (), getter: { state })
+        #expect(ctx.stateAfter == 42)
+        state = 99
+        #expect(ctx.stateAfter == 99)
+    }
+
+    @Test func stateAfterReturnsNilWhenGetterReturnsNil() {
+        let ctx = PostReducerContext<Int, Void>(environment: (), getter: { nil })
+        #expect(ctx.stateAfter == nil)
+    }
+
+    @Test func environmentIsPreserved() {
+        struct Deps: Sendable { let x: Int }
+        let ctx = PostReducerContext<Int, Deps>(environment: Deps(x: 7), getter: { nil })
+        #expect(ctx.environment.x == 7)
+    }
+
+    @Test func mapProjectsStateToSubState() {
+        let ctx = PostReducerContext<(Int, String), Void>(environment: (), getter: { (10, "hello") })
+        #expect(ctx.map { $0.0 }.stateAfter == 10)
+    }
+
+    @Test func mapReturnsNilWhenParentIsNil() {
+        let ctx = PostReducerContext<Int, Void>(environment: (), getter: { nil })
+        #expect(ctx.map { $0 * 2 }.stateAfter == nil)
+    }
+
+    @Test func mapPreservesEnvironment() {
+        struct E: Sendable { let v: Int }
+        let ctx = PostReducerContext<Int, E>(environment: E(v: 99), getter: { 0 })
+        #expect(ctx.map { $0 + 1 }.environment.v == 99)
+    }
+
+    @Test func compactMapProjectsToOptionalSubState() {
+        let ctx = PostReducerContext<Int?, Void>(environment: (), getter: { .some(5) })
+        #expect(ctx.compactMap { $0 }.stateAfter == 5)
+    }
+
+    @Test func compactMapReturnsNilWhenFReturnsNil() {
+        let ctx = PostReducerContext<Int, Void>(environment: (), getter: { 42 })
+        #expect(ctx.compactMap { _ in nil as Int? }.stateAfter == nil)
+    }
+
+    @Test func compactMapReturnsNilWhenParentIsNil() {
+        let ctx = PostReducerContext<Int, Void>(environment: (), getter: { nil })
+        #expect(ctx.compactMap { Optional($0) }.stateAfter == nil)
+    }
+
+    @Test func mapEnvironmentTransformsEnvironment() {
+        struct Global: Sendable { let sub: Int }
+        let ctx = PostReducerContext<Int, Global>(environment: Global(sub: 42), getter: { nil })
+        let projected = ctx.mapEnvironment { $0.sub }
+        #expect(projected.environment == 42)
+    }
+
+    @Test func mapEnvironmentPreservesGetter() {
+        struct Global: Sendable { let sub: Int }
+        let ctx = PostReducerContext<Int, Global>(environment: Global(sub: 0), getter: { 77 })
+        let projected = ctx.mapEnvironment { $0.sub }
+        #expect(projected.stateAfter == 77)
     }
 }

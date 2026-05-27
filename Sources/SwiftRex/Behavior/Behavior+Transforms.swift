@@ -26,9 +26,9 @@ extension Behavior {
     public func liftAction<GlobalAction: Sendable>(
         _ prism: Prism<GlobalAction, Action>
     ) -> Behavior<GlobalAction, State, Environment> {
-        Behavior<GlobalAction, State, Environment> { action, stateAccess in
-            guard let local = action.compactMap(prism.preview) else { return .doNothing }
-            let c = self.handle(local, stateAccess)
+        Behavior<GlobalAction, State, Environment> { action, context in
+            guard let local = prism.preview(action) else { return .doNothing }
+            let c = self.handle(local, context)
             return Consequence(
                 mutation: c.mutation,
                 effect: c.effect.map { $0.map(prism.review) }
@@ -44,9 +44,13 @@ extension Behavior {
     /// global state type.
     ///
     /// The key path is used in two ways:
-    /// - To project `StateAccess<GlobalState>` to `StateAccess<State>` (pre- and post-mutation reads).
+    /// - To project the ``PreReducerContext<GlobalState>`` to ``PreReducerContext<State>``
+    ///   (pre-mutation reads via ``PreReducerContext/map(_:)``).
     /// - To lift the returned `EndoMut<State>` through the key path so it mutates the correct
     ///   property inside `GlobalState`.
+    /// - To project the ``PostReducerContext<GlobalState, Environment>`` to
+    ///   ``PostReducerContext<State, Environment>`` (post-mutation reads via `contramapEnvironment`
+    ///   on the returned `Reader`).
     ///
     /// ```swift
     /// // counterBehavior sees CounterState; after lift it sees AppState.counterState
@@ -60,11 +64,11 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ keyPath: WritableKeyPath<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, globalAccess in
-            let c = self.handle(action, globalAccess.map { $0[keyPath: keyPath] })
+        Behavior<Action, GlobalState, Environment> { action, context in
+            let c = self.handle(action, context.map { $0[keyPath: keyPath] })
             return Consequence(
                 mutation: lens(keyPath).lift(c.mutation),
-                effect: c.effect
+                effect: c.effect.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
             )
         }
     }
@@ -72,8 +76,8 @@ extension Behavior {
     /// Lifts the state axis of this behavior using a `Lens`, embedding it in a wider global
     /// state type.
     ///
-    /// The lens `get` is used to map `StateAccess<GlobalState>` to `StateAccess<State>`;
-    /// the lens `lift` is used to promote `EndoMut<State>` to `EndoMut<GlobalState>`.
+    /// The lens `get` is used to project the contexts (pre- and post-mutation); the lens `lift`
+    /// promotes `EndoMut<State>` to `EndoMut<GlobalState>`.
     ///
     /// ```swift
     /// let lifted = authBehavior.liftState(AppState.lens.auth)
@@ -85,11 +89,11 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ stateLens: Lens<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, globalAccess in
-            let c = self.handle(action, globalAccess.map(stateLens.get))
+        Behavior<Action, GlobalState, Environment> { action, context in
+            let c = self.handle(action, context.map(stateLens.get))
             return Consequence(
                 mutation: stateLens.lift(c.mutation),
-                effect: c.effect
+                effect: c.effect.contramapEnvironment { $0.map(stateLens.get) }
             )
         }
     }
@@ -97,9 +101,9 @@ extension Behavior {
     /// Lifts the state axis of this behavior using a `Prism`, embedding it in an enum-shaped
     /// global state.
     ///
-    /// When the focused enum case is absent, both the mutation and the `StateAccess` return
-    /// "absent" — the mutation becomes a no-op and ``StateAccess/snapshotState()`` returns `nil`.
-    /// This means the behavior is completely skipped when the relevant state case is not active.
+    /// When the focused enum case is absent, ``PreReducerContext/stateBefore`` returns `nil`
+    /// and the mutation becomes a no-op. The behavior is completely skipped when the relevant
+    /// state case is not active.
     ///
     /// ```swift
     /// // The behavior only runs while AppState is in the .authenticated(_) case
@@ -112,11 +116,11 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ statePrism: Prism<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, globalAccess in
-            let c = self.handle(action, globalAccess.flatMap(statePrism.preview))
+        Behavior<Action, GlobalState, Environment> { action, context in
+            let c = self.handle(action, context.compactMap(statePrism.preview))
             return Consequence(
                 mutation: statePrism.lift(c.mutation),
-                effect: c.effect
+                effect: c.effect.contramapEnvironment { $0.compactMap(statePrism.preview) }
             )
         }
     }
@@ -125,8 +129,8 @@ extension Behavior {
     /// partially-focused global state.
     ///
     /// When the traversal's focus is absent (e.g., an optional property is `nil` or the
-    /// targeted enum case is not active), both the mutation and the `StateAccess` are treated
-    /// as absent — the mutation becomes a no-op and ``StateAccess/snapshotState()`` returns `nil`.
+    /// targeted enum case is not active), ``PreReducerContext/stateBefore`` returns `nil`
+    /// and the mutation becomes a no-op.
     ///
     /// ```swift
     /// // Run only when AppState.user is non-nil
@@ -140,11 +144,11 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ traversal: AffineTraversal<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, globalAccess in
-            let c = self.handle(action, globalAccess.flatMap(traversal.preview))
+        Behavior<Action, GlobalState, Environment> { action, context in
+            let c = self.handle(action, context.compactMap(traversal.preview))
             return Consequence(
                 mutation: traversal.lift(c.mutation),
-                effect: c.effect
+                effect: c.effect.contramapEnvironment { $0.compactMap(traversal.preview) }
             )
         }
     }
@@ -171,11 +175,11 @@ extension Behavior {
     public func liftEnvironment<GlobalEnvironment: Sendable>(
         _ f: @escaping @Sendable (GlobalEnvironment) -> Environment
     ) -> Behavior<Action, State, GlobalEnvironment> {
-        Behavior<Action, State, GlobalEnvironment> { action, stateAccess in
-            let c = self.handle(action, stateAccess)
+        Behavior<Action, State, GlobalEnvironment> { action, context in
+            let c = self.handle(action, context)
             return Consequence(
                 mutation: c.mutation,
-                effect: c.effect.contramapEnvironment(f)
+                effect: c.effect.contramapEnvironment { $0.mapEnvironment(f) }
             )
         }
     }

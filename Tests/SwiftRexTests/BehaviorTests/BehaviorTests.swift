@@ -16,7 +16,7 @@ private func consequence(
     action: Int,
     state: Int
 ) -> Consequence<Int, Void, Int> {
-    behavior.handle(DispatchedAction(action, dispatcher: anySource), StateAccess { state })
+    behavior.handle(action, PreReducerContext(source: anySource, getter: { state }))
 }
 
 @MainActor
@@ -27,7 +27,8 @@ private func receivedActions(
 ) -> [Int] {
     let c = consequence(behavior, action: action, state: state)
     let received = LockProtected([Int]())
-    subscribeAll(c.effect(())) { d in received.mutate { $0.append(d.action) } }
+    let postCtx = PostReducerContext<Int, Void>(environment: (), getter: { state })
+    subscribeAll(c.effect(postCtx)) { d in received.mutate { $0.append(d.action) } }
     return received.value
 }
 
@@ -37,7 +38,7 @@ private func receivedActions(
 @MainActor
 struct BehaviorConstructorTests {
     @Test func handleClosureProducesConsequence() {
-        let sut = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action.action } }
+        let sut = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action } }
         var state = 0
         consequence(sut, action: 5, state: 0).mutation.runEndoMut(&state)
         #expect(state == 5)
@@ -50,7 +51,7 @@ struct BehaviorConstructorTests {
 @MainActor
 struct BehaviorReducerMiddlewareInitTests {
     private let reducer = Reducer<Int, Int>.reduce { action, state in state += action }
-    private let middleware = Middleware<Int, Int, Void>.handle { action, _ in .just(action.action * 10) }
+    private let middleware = Middleware<Int, Int, Void>.handle { action, _ in Reader { _ in .just(action * 10) } }
 
     @Test func reducerMutatesState() {
         let sut = Behavior(reducer: reducer, middleware: middleware)
@@ -90,13 +91,13 @@ struct ReducerAsBehaviorTests {
 @Suite("Middleware.asBehavior")
 @MainActor
 struct MiddlewareAsBehaviorTests {
-    private let middleware = Middleware<Int, Int, Void>.handle { action, _ in .just(action.action + 100) }
+    private let middleware = Middleware<Int, Int, Void>.handle { action, _ in Reader { _ in .just(action + 100) } }
 
     @Test func leavesStateUnchanged() {
         var state = 42
         middleware.asBehavior.handle(
-            DispatchedAction(1, dispatcher: anySource),
-            StateAccess { 0 }
+            1,
+            PreReducerContext(source: anySource, getter: { 0 })
         ).mutation.runEndoMut(&state)
         #expect(state == 42)
     }
@@ -119,7 +120,7 @@ struct BehaviorMonoidTests {
     }
 
     @Test func combineMutationsAreSequential() {
-        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action.action } }
+        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action } }
         let rhs = Behavior<Int, Int, Void>.handle { _, _ in .reduce { $0 *= 2 } }
         let sut = Behavior.combine(lhs, rhs)
         var state = 0
@@ -128,19 +129,19 @@ struct BehaviorMonoidTests {
     }
 
     @Test func combineEffectsAreMerged() {
-        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action.action) } }
-        let rhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action.action * 10) } }
+        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action) } }
+        let rhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action * 10) } }
         #expect(receivedActions(Behavior.combine(lhs, rhs), action: 2, state: 0).sorted() == [2, 20])
     }
 
     @Test func combineBothSeePreMutationState() {
         let seen = LockProtected([Int]())
-        let lhs = Behavior<Int, Int, Void>.handle { _, stateAccess in
-            seen.mutate { $0.append(stateAccess.snapshotState() ?? -1) }
+        let lhs = Behavior<Int, Int, Void>.handle { _, context in
+            seen.mutate { $0.append(context.stateBefore ?? -1) }
             return .reduce { $0 += 10 }
         }
-        let rhs = Behavior<Int, Int, Void>.handle { _, stateAccess in
-            seen.mutate { $0.append(stateAccess.snapshotState() ?? -1) }
+        let rhs = Behavior<Int, Int, Void>.handle { _, context in
+            seen.mutate { $0.append(context.stateBefore ?? -1) }
             return .doNothing
         }
         _ = consequence(Behavior.combine(lhs, rhs), action: 0, state: 5)
@@ -148,14 +149,14 @@ struct BehaviorMonoidTests {
     }
 
     @Test func leftIdentityLaw() {
-        let b = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action.action } }
+        let b = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action } }
         var state = 0
         consequence(Behavior.combine(.identity, b), action: 4, state: 0).mutation.runEndoMut(&state)
         #expect(state == 4)
     }
 
     @Test func rightIdentityLaw() {
-        let b = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action.action } }
+        let b = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action } }
         var state = 0
         consequence(Behavior.combine(b, .identity), action: 4, state: 0).mutation.runEndoMut(&state)
         #expect(state == 4)
@@ -169,12 +170,12 @@ struct BehaviorMonoidTests {
 struct BehaviorLiftActionTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let doubler = Behavior<Int, Int, Void>.handle { action, _ in
-        .reduce { $0 += action.action }.produce { _ in .just(action.action * 2) }
+        .reduce { $0 += action }.produce { _ in .just(action * 2) }
     }
 
     @Test func matchingActionReachesHandler() {
         let sut = doubler.liftAction(prism)
-        let c = sut.handle(DispatchedAction(GA(local: 3, other: nil), dispatcher: anySource), StateAccess { 0 })
+        let c = sut.handle(GA(local: 3, other: nil), PreReducerContext(source: anySource, getter: { 0 }))
         var state = 0
         c.mutation.runEndoMut(&state)
         #expect(state == 3)
@@ -182,18 +183,20 @@ struct BehaviorLiftActionTests {
 
     @Test func nonMatchingActionProducesDoNothing() {
         let sut = doubler.liftAction(prism)
-        let c = sut.handle(DispatchedAction(GA(local: nil, other: "x"), dispatcher: anySource), StateAccess { 0 })
+        let c = sut.handle(GA(local: nil, other: "x"), PreReducerContext(source: anySource, getter: { 0 }))
         var state = 42
         c.mutation.runEndoMut(&state)
         #expect(state == 42)
-        #expect(c.effect(()).components.isEmpty)
+        #expect(c.effect(PostReducerContext<Int, Void>(environment: (), getter: { nil })).components.isEmpty)
     }
 
     @Test func outputActionIsWrappedViaReview() {
         let sut = doubler.liftAction(prism)
-        let c = sut.handle(DispatchedAction(GA(local: 4, other: nil), dispatcher: anySource), StateAccess { 0 })
+        let c = sut.handle(GA(local: 4, other: nil), PreReducerContext(source: anySource, getter: { 0 }))
         let received = LockProtected([GA]())
-        subscribeAll(c.effect(())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(
+            c.effect(PostReducerContext<Int, Void>(environment: (), getter: { nil }))
+        ) { d in received.mutate { $0.append(d.action) } }
         // review(4*2) → GA(local: 8)
         #expect(received.value.first?.local == 8)
     }
@@ -204,11 +207,11 @@ struct BehaviorLiftActionTests {
 @Suite("Behavior liftState")
 @MainActor
 struct BehaviorLiftStateTests {
-    private let adder = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action.action } }
+    private let adder = Behavior<Int, Int, Void>.handle { action, _ in .reduce { $0 += action } }
 
     @Test func liftStateKeyPathMutatesSubState() {
         let sut = adder.liftState(\GS.local)
-        let c = sut.handle(DispatchedAction(5, dispatcher: anySource), StateAccess { GS() })
+        let c = sut.handle(5, PreReducerContext(source: anySource, getter: { GS() }))
         var state = GS()
         c.mutation.runEndoMut(&state)
         #expect(state.local == 5)
@@ -218,7 +221,7 @@ struct BehaviorLiftStateTests {
     @Test func liftStateLensMutatesSubState() {
         let stateLens = Lens<GS, Int>(get: { $0.local }, set: { GS(local: $1, other: $0.other) })
         let sut = adder.liftState(stateLens)
-        let c = sut.handle(DispatchedAction(7, dispatcher: anySource), StateAccess { GS() })
+        let c = sut.handle(7, PreReducerContext(source: anySource, getter: { GS() }))
         var state = GS()
         c.mutation.runEndoMut(&state)
         #expect(state.local == 7)
@@ -227,12 +230,12 @@ struct BehaviorLiftStateTests {
 
     @Test func liftStateKeyPathStateAccessSeesSubState() {
         let seen = LockProtected([Int]())
-        let observer = Behavior<Int, Int, Void>.handle { _, stateAccess in
-            seen.mutate { $0.append(stateAccess.snapshotState() ?? -1) }
+        let observer = Behavior<Int, Int, Void>.handle { _, context in
+            seen.mutate { $0.append(context.stateBefore ?? -1) }
             return .doNothing
         }
         let sut = observer.liftState(\GS.local)
-        _ = sut.handle(DispatchedAction(0, dispatcher: anySource), StateAccess { GS(local: 42, other: 0) })
+        _ = sut.handle(0, PreReducerContext(source: anySource, getter: { GS(local: 42, other: 0) }))
         #expect(seen.value == [42])
     }
 
@@ -245,7 +248,7 @@ struct BehaviorLiftStateTests {
         let sut = adder.liftState(statePrism)
         let initial = LS.active(0)
         var state = initial
-        sut.handle(DispatchedAction(4, dispatcher: anySource), StateAccess { initial }).mutation.runEndoMut(&state)
+        sut.handle(4, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
         if case .active(let v) = state { #expect(v == 4) } else { Issue.record("Expected .active") }
     }
 
@@ -258,7 +261,7 @@ struct BehaviorLiftStateTests {
         let sut = adder.liftState(statePrism)
         let initial = LS.inactive
         var state = initial
-        sut.handle(DispatchedAction(4, dispatcher: anySource), StateAccess { initial }).mutation.runEndoMut(&state)
+        sut.handle(4, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
         if case .inactive = state {} else { Issue.record("Expected .inactive") }
     }
 
@@ -271,7 +274,7 @@ struct BehaviorLiftStateTests {
         let sut = adder.liftState(traversal)
         let initial = Container(nums: [0, 99])
         var state = initial
-        sut.handle(DispatchedAction(6, dispatcher: anySource), StateAccess { initial }).mutation.runEndoMut(&state)
+        sut.handle(6, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
         #expect(state.nums == [6, 99])
     }
 
@@ -284,7 +287,7 @@ struct BehaviorLiftStateTests {
         let sut = adder.liftState(traversal)
         let initial = Container(nums: [])
         var state = initial
-        sut.handle(DispatchedAction(6, dispatcher: anySource), StateAccess { initial }).mutation.runEndoMut(&state)
+        sut.handle(6, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
         #expect(state.nums.isEmpty)
     }
 }
@@ -296,11 +299,13 @@ struct BehaviorLiftStateTests {
 struct BehaviorLiftEnvironmentTests {
     @Test func liftEnvironmentProjectsEnv() {
         struct GE: Sendable { var sub: Int }
-        let sut = Behavior<Int, Int, Int>.handle { _, _ in .produce { env in .just(env) } }
+        let sut = Behavior<Int, Int, Int>.handle { _, _ in .produce { ctx in .just(ctx.environment) } }
             .liftEnvironment { (ge: GE) in ge.sub }
-        let c = sut.handle(DispatchedAction(0, dispatcher: anySource), StateAccess { 0 })
+        let c = sut.handle(0, PreReducerContext(source: anySource, getter: { 0 }))
         let received = LockProtected([Int]())
-        subscribeAll(c.effect(GE(sub: 42))) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(
+            c.effect(PostReducerContext(environment: GE(sub: 42), getter: { 0 }))
+        ) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [42])
     }
 }
@@ -312,7 +317,7 @@ struct BehaviorLiftEnvironmentTests {
 struct BehaviorCombinedLiftTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let base = Behavior<Int, Int, Int>.handle { action, _ in
-        .reduce { $0 += action.action }.produce { env in .just(env) }
+        .reduce { $0 += action }.produce { ctx in .just(ctx.environment) }
     }
 
     @Test func liftAllThreeAxesWKP() {
@@ -320,12 +325,14 @@ struct BehaviorCombinedLiftTests {
         let sut = base.lift(action: prism, state: \GS.local, environment: { (ge: GE) in ge.sub })
         let initial = GS()
         var state = initial
-        let c = sut.handle(DispatchedAction(GA(local: 3, other: nil), dispatcher: anySource), StateAccess { initial })
+        let c = sut.handle(GA(local: 3, other: nil), PreReducerContext(source: anySource, getter: { initial }))
         c.mutation.runEndoMut(&state)
         #expect(state.local == 3)
         // Effect produces env value (7) wrapped via prism.review → GA(local: 7)
         let received = LockProtected([GA]())
-        subscribeAll(c.effect(GE(sub: 7))) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(
+            c.effect(PostReducerContext(environment: GE(sub: 7), getter: { initial }))
+        ) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value.first?.local == 7)
     }
 
@@ -335,7 +342,7 @@ struct BehaviorCombinedLiftTests {
         let sut = base.lift(action: prism, state: stateLens, environment: { (ge: GE) in ge.sub })
         let initial = GS()
         var state = initial
-        let c = sut.handle(DispatchedAction(GA(local: 5, other: nil), dispatcher: anySource), StateAccess { initial })
+        let c = sut.handle(GA(local: 5, other: nil), PreReducerContext(source: anySource, getter: { initial }))
         c.mutation.runEndoMut(&state)
         #expect(state.local == 5)
     }
@@ -345,9 +352,9 @@ struct BehaviorCombinedLiftTests {
         let sut = base.lift(action: prism, state: \GS.local, environment: { (ge: GE) in ge.sub })
         let initial = GS()
         var state = initial
-        let c = sut.handle(DispatchedAction(GA(local: nil, other: "x"), dispatcher: anySource), StateAccess { initial })
+        let c = sut.handle(GA(local: nil, other: "x"), PreReducerContext(source: anySource, getter: { initial }))
         c.mutation.runEndoMut(&state)
         #expect(state.local == 0)
-        #expect(c.effect(GE(sub: 0)).components.isEmpty)
+        #expect(c.effect(PostReducerContext(environment: GE(sub: 0), getter: { initial })).components.isEmpty)
     }
 }

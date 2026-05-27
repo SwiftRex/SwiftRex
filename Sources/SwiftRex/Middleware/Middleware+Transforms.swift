@@ -23,20 +23,22 @@ extension Middleware {
     public func liftAction<GlobalAction: Sendable>(
         _ prism: Prism<GlobalAction, Action>
     ) -> Middleware<GlobalAction, State, Environment> {
-        Middleware<GlobalAction, State, Environment> { action, state in
-            guard let local = action.compactMap(prism.preview) else {
+        Middleware<GlobalAction, State, Environment> { action, context in
+            guard let local = prism.preview(action) else {
                 return Reader { _ in .empty }
             }
-            return self.handle(local, state).map { $0.map(prism.review) }
+            return self.handle(local, context).map { $0.map(prism.review) }
         }
     }
 
     /// Lifts the state axis of this middleware using a projection closure, embedding it in a
     /// wider global state type.
     ///
-    /// `StateAccess<GlobalState>` is mapped to `StateAccess<State>` using `f`, giving this
-    /// middleware a narrowly-typed view of state. Because ``Middleware`` is read-only on state,
-    /// only the `get` direction of the mapping is needed.
+    /// The ``PreReducerContext<GlobalState>`` is projected to ``PreReducerContext<State>`` using
+    /// `f` via ``PreReducerContext/map(_:)``. The same projection is applied in
+    /// ``PostReducerContext`` (via `contramapEnvironment` on the returned `Reader`) so the
+    /// middleware sees the correct post-mutation state in phase 3. Because ``Middleware`` is
+    /// read-only on state, only the `get` direction is needed.
     ///
     /// ```swift
     /// let lifted = authMiddleware.liftState { $0.authState }
@@ -47,10 +49,11 @@ extension Middleware {
     /// - Returns: A `Middleware<Action, GlobalState, Environment>` that projects the state
     ///   before passing it to this middleware.
     public func liftState<GlobalState: Sendable>(
-        _ f: @escaping @Sendable @MainActor (GlobalState) -> State
+        _ f: @escaping @Sendable (GlobalState) -> State
     ) -> Middleware<Action, GlobalState, Environment> {
-        Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.map(f))
+        Middleware<Action, GlobalState, Environment> { action, context in
+            self.handle(action, context.map(f))
+                .contramapEnvironment { $0.map(f) }
         }
     }
 
@@ -73,9 +76,7 @@ extension Middleware {
     /// of the global state.
     ///
     /// The middleware sees `nil` state both when the ``Store`` has been deallocated and when
-    /// the focused enum case is not the currently active case. In both situations,
-    /// ``StateAccess/state`` returns `nil`, and well-written middlewares skip
-    /// producing effects in that case.
+    /// the focused enum case is not the currently active case.
     ///
     /// ```swift
     /// // Middleware runs only while AppState is in the .loggedIn(_) case
@@ -88,8 +89,9 @@ extension Middleware {
     public func liftState<GlobalState: Sendable>(
         _ prism: Prism<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
-        Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.flatMap(prism.preview))
+        Middleware<Action, GlobalState, Environment> { action, context in
+            self.handle(action, context.compactMap(prism.preview))
+                .contramapEnvironment { $0.compactMap(prism.preview) }
         }
     }
 
@@ -110,8 +112,9 @@ extension Middleware {
     public func liftState<GlobalState: Sendable>(
         _ traversal: AffineTraversal<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
-        Middleware<Action, GlobalState, Environment> { action, globalAccess in
-            self.handle(action, globalAccess.flatMap(traversal.preview))
+        Middleware<Action, GlobalState, Environment> { action, context in
+            self.handle(action, context.compactMap(traversal.preview))
+                .contramapEnvironment { $0.compactMap(traversal.preview) }
         }
     }
 
@@ -133,8 +136,9 @@ extension Middleware {
     public func liftEnvironment<GlobalEnvironment: Sendable>(
         _ f: @escaping @Sendable (GlobalEnvironment) -> Environment
     ) -> Middleware<Action, State, GlobalEnvironment> {
-        Middleware<Action, State, GlobalEnvironment> { action, state in
-            self.handle(action, state).contramapEnvironment(f)
+        Middleware<Action, State, GlobalEnvironment> { action, context in
+            self.handle(action, context)
+                .contramapEnvironment { $0.mapEnvironment(f) }
         }
     }
 }
@@ -164,7 +168,7 @@ extension Middleware {
     /// - Returns: A fully-lifted `Middleware<GlobalAction, GlobalState, GlobalEnvironment>`.
     public func lift<GA: Sendable, GS: Sendable, GE: Sendable>(
         action prism: Prism<GA, Action>,
-        state f: @escaping @Sendable @MainActor (GS) -> State,
+        state f: @escaping @Sendable (GS) -> State,
         environment g: @escaping @Sendable (GE) -> Environment
     ) -> Middleware<GA, GS, GE> {
         liftAction(prism).liftState(f).liftEnvironment(g)

@@ -88,12 +88,12 @@ private let counterReducer = Reducer<CounterAction, CounterState>.reduce { actio
 
 // Behavior that routes all actions through the reducer and adds a side effect on .load
 private let counterBehavior = Behavior<CounterAction, CounterState, Void> { action, _ in
-    switch action.action {
+    switch action {
     case .load:
         return .reduce { $0.isLoading = true }
                .produce { _ in Effect.just(.loaded(99)) }
     default:
-        return .reduce { state in counterReducer.reduce(action.action).runEndoMut(&state) }
+        return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
     }
 }
 
@@ -244,11 +244,11 @@ struct TestStoreRunEffectsTests {
     @Test func receiveVoidPrism() async {
         // .load produces .increment (a case with no associated value) — exercises the Void overload
         let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
-            switch action.action {
+            switch action {
             case .load:
                 return .produce { _ in Effect.just(.increment) }
             default:
-                return .reduce { state in counterReducer.reduce(action.action).runEndoMut(&state) }
+                return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
         }
         let store = TestStore(initial: CounterState(), behavior: behavior, environment: ())
@@ -270,7 +270,7 @@ struct TestStoreRunEffectsTests {
 
     @Test func receiveProducedEffectsAreCaptured() async {
         let chainedBehavior = Behavior<CounterAction, CounterState, Void> { action, _ in
-            switch action.action {
+            switch action {
             case .load:
                 return .reduce { $0.isLoading = true }
                        .produce { _ in Effect.just(.loaded(5)) }
@@ -280,7 +280,7 @@ struct TestStoreRunEffectsTests {
                     state.count = v
                 }.produce { _ in Effect.just(.set(100)) }
             default:
-                return .reduce { state in counterReducer.reduce(action.action).runEndoMut(&state) }
+                return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
         }
         let store = TestStore(initial: CounterState(), behavior: chainedBehavior, environment: ())
@@ -307,9 +307,9 @@ struct TestStoreRunEffectsTests {
             Effect<CounterAction>.just(.set(3))
         )
         let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
-            switch action.action {
+            switch action {
             case .load:   return .produce { _ in combined }
-            default:      return .reduce { state in counterReducer.reduce(action.action).runEndoMut(&state) }
+            default:      return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
         }
         let store = TestStore(initial: CounterState(), behavior: behavior, environment: ())
