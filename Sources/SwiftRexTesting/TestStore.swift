@@ -379,12 +379,19 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     // MARK: - Private
 
     private func run(_ dispatched: DispatchedAction<Action>) {
-        let stateAccess = StateAccess { [weak self] in self?.state }
-        let consequence = behavior.handle(dispatched, stateAccess)
+        let preCtx = PreReducerContext<State>(
+            source: dispatched.dispatcher,
+            getter: { [weak self] in self?.state }
+        )
+        let consequence = behavior.handle(dispatched.action, preCtx)
         stateObservers.values.forEach { $0.willChange() }
         consequence.mutation.runEndoMut(&state)
         stateObservers.values.forEach { $0.didChange() }
-        let effect = consequence.effect(environment)
+        let postCtx = PostReducerContext<State, Environment>(
+            environment: environment,
+            getter: { [weak self] in self?.state }
+        )
+        let effect = consequence.effect(postCtx)
         if !effect.components.isEmpty {
             pendingEffects.append(effect)
         }

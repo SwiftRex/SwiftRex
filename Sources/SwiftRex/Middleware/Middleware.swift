@@ -4,33 +4,32 @@ import DataStructure
 /// Observes dispatched actions and produces side effects without mutating state.
 ///
 /// `Middleware` is the pure, side-effect-producing half of a feature's logic. It receives every
-/// dispatched action together with a lazy read-only view of the current state, and returns a
-/// `Reader<Environment, Effect<Action>>` — a deferred computation the ``Store`` will run in
-/// phase 3 of dispatch, after all state mutations have completed.
+/// dispatched action together with a ``PreReducerContext`` giving read-only access to the current
+/// (pre-mutation) state, and returns a
+/// `Reader<PostReducerContext<State, Environment>, Effect<Action>>` — a deferred computation the
+/// ``Store`` will run in phase 3 of dispatch, after all state mutations have completed.
 ///
 /// ```
-/// dispatch         Middleware.handle                 Reader.runReader(env) (phase 3)
-///    │                   │                                   │
-///    ▼                   ▼                                   ▼
-/// Action ──► stateAccess.state = pre-mutation       stateAccess.state = post-mutation
-///                         └──► Reader<Environment, Effect<Action>>
-///                                       └──► env injected by Store at phase 3
+/// dispatch    Middleware.handle                   Reader.runReader(postCtx) (phase 3)
+///    │               │                                       │
+///    ▼               ▼                                       ▼
+/// Action ──► context.stateBefore = pre-mutation   ctx.stateAfter = post-mutation
+///                     └──► Reader<PostReducerContext, Effect<Action>>
+///                                     └──► postCtx injected by Store at phase 3
 /// ```
 ///
 /// ## Pre- and post-mutation state
 ///
-/// `StateAccess` is `Sendable` and can be captured from the `handle` closure into the returned
-/// `Reader`. Because `StateAccess.state` is a `@MainActor` computed property backed by a lazy
-/// closure, calling it during phase 1 yields pre-mutation state and calling it from the `Reader`
-/// (also `@MainActor`) yields post-mutation state — no copy overhead and no race conditions:
+/// Use ``PreReducerContext/stateBefore`` in phase 1 and ``PostReducerContext/stateAfter`` (or
+/// ``PostReducerContext/readStateAfter()``) in the returned `Reader` for post-mutation state:
 ///
 /// ```swift
-/// Middleware<MyAction, MyState, MyEnvironment>.handle { action, stateAccess in
-///     let pre = stateAccess.state    // pre-mutation state (phase 1)
+/// Middleware<MyAction, MyState, MyEnvironment>.handle { action, context in
+///     let pre = context.stateBefore    // pre-mutation state (phase 1)
 ///
-///     return Reader { env in
-///         let post = stateAccess.state   // post-mutation state (phase 3)
-///         return .just(.log(before: pre, after: post))
+///     return Reader { ctx in
+///         // ctx.stateAfter — post-mutation state (phase 3, @MainActor)
+///         return .just(.log(before: pre))
 ///     }
 /// }
 /// ```
@@ -45,9 +44,7 @@ import DataStructure
 /// ## Always @MainActor
 ///
 /// The ``Store`` is `@MainActor`, so `handle` is always called on the main actor. This lets
-/// middleware read `stateAccess.state` directly (also `@MainActor`) in phase 1. Because the
-/// `Store` runs the returned `Reader` from its `@MainActor` dispatch loop, `stateAccess.state`
-/// inside the Reader is likewise safe to call synchronously.
+/// middleware read `context.stateBefore` directly (also `@MainActor`) in phase 1.
 ///
 /// ## Middleware is stateless
 ///
@@ -58,7 +55,7 @@ import DataStructure
 /// ## Composition
 ///
 /// `Middleware` is a **Semigroup** and **Monoid**. ``combine(_:_:)`` gives both middlewares the
-/// same action and state access; their effects are merged via ``Effect/combine(_:_:)`` and run
+/// same action and context; their effects are merged via ``Effect/combine(_:_:)`` and run
 /// concurrently. Order does not affect what each middleware observes.
 ///
 /// ## Lifting
@@ -74,28 +71,30 @@ import DataStructure
 /// - ``liftEnvironment(_:)`` — narrows via a projection closure
 /// - ``lift(action:state:environment:)-5ttmj`` and overloads — all three axes at once
 public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
-    /// The core function: given a dispatched action and lazy state access, returns a deferred
-    /// `Reader<Environment, Effect<Action>>` that the Store will run in phase 3 (post-mutation).
+    /// The core function: given an action and a pre-mutation context, returns a deferred
+    /// `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that the Store will
+    /// run in phase 3 (post-mutation).
     ///
-    /// - **Phase 1**: Called with `state` reflecting the current (pre-mutation) state.
-    /// - **Phase 3**: The returned `Reader` is run with the injected environment; `stateAccess.state`
-    ///   yields post-mutation state (the Reader closure runs on `@MainActor`).
+    /// - **Phase 1**: Called with `context` reflecting the current (pre-mutation) state.
+    /// - **Phase 3**: The returned `Reader` is run with a ``PostReducerContext`` that gives
+    ///   access to `environment` and post-mutation `stateAfter`.
     ///
     /// - Note: Always called on `@MainActor`. Do not perform blocking work here.
     public let handle: @MainActor @Sendable (
-        _ action: DispatchedAction<Action>,
-        _ state: StateAccess<State>
-    ) -> Reader<Environment, Effect<Action>>
+        _ action: Action,
+        _ context: PreReducerContext<State>
+    ) -> Reader<PostReducerContext<State, Environment>, Effect<Action>>
 
     /// Creates a `Middleware` from a `handle` closure.
     ///
-    /// - Parameter handle: The closure mapping `(DispatchedAction, StateAccess)` to a
-    ///   `Reader<Environment, Effect<Action>>`. Called on `@MainActor` during phase 1.
+    /// - Parameter handle: The closure mapping `(Action, PreReducerContext<State>)` to a
+    ///   `Reader<PostReducerContext<State, Environment>, Effect<Action>>`.
+    ///   Called on `@MainActor` during phase 1.
     public init(
         handle: @escaping @MainActor @Sendable (
-            _ action: DispatchedAction<Action>,
-            _ state: StateAccess<State>
-        ) -> Reader<Environment, Effect<Action>>
+            _ action: Action,
+            _ context: PreReducerContext<State>
+        ) -> Reader<PostReducerContext<State, Environment>, Effect<Action>>
     ) {
         self.handle = handle
     }
@@ -108,8 +107,8 @@ extension Middleware {
     /// at the call site:
     ///
     /// ```swift
-    /// let myMiddleware = Middleware<AppAction, AppState, AppEnvironment>.handle { action, state in
-    ///     Reader { env in ... }
+    /// let myMiddleware = Middleware<AppAction, AppState, AppEnvironment>.handle { action, context in
+    ///     Reader { ctx in ... }
     /// }
     /// ```
     ///
@@ -117,45 +116,16 @@ extension Middleware {
     /// - Returns: A `Middleware` wrapping `fn`.
     public static func handle(
         _ fn: @escaping @MainActor @Sendable (
-            _ action: DispatchedAction<Action>,
-            _ state: StateAccess<State>
-        ) -> Reader<Environment, Effect<Action>>
+            _ action: Action,
+            _ context: PreReducerContext<State>
+        ) -> Reader<PostReducerContext<State, Environment>, Effect<Action>>
     ) -> Self { Middleware(handle: fn) }
-
-    /// Convenience constructor for middlewares that do not need the environment.
-    ///
-    /// When `Environment == Void`, the middleware's effect does not depend on any injected
-    /// dependency. This overload avoids the boilerplate of wrapping in a `Reader` manually —
-    /// the closure may return an ``Effect`` directly:
-    ///
-    /// ```swift
-    /// // No environment needed — return Effect directly
-    /// let loggingMiddleware = Middleware<AppAction, AppState, Void>.handle { action, _ in
-    ///     print("Action dispatched:", action.action)
-    ///     return .empty
-    /// }
-    /// ```
-    ///
-    /// - Parameter fn: A `@Sendable` closure that returns an ``Effect`` directly (not wrapped
-    ///   in a `Reader`). The closure is captured and called lazily inside a `Reader { _ in ... }`
-    ///   — it is NOT called during phase 1; it runs in phase 3 when the Store evaluates the Reader.
-    /// - Returns: A `Middleware` that wraps `fn` in a `Reader`.
-    public static func handle(
-        _ fn: @escaping @Sendable (
-            _ action: DispatchedAction<Action>,
-            _ state: StateAccess<State>
-        ) -> Effect<Action>
-    ) -> Self where Environment == Void {
-        Middleware { action, state in
-            Reader { _ in fn(action, state) }
-        }
-    }
 }
 
 // MARK: - Semigroup & Monoid
 
 extension Middleware: Semigroup {
-    /// Combines two middlewares: both see the same action and pre-mutation state; their
+    /// Combines two middlewares: both see the same action and pre-mutation context; their
     /// effects are merged via ``Effect/combine(_:_:)`` and run concurrently.
     ///
     /// ```swift
@@ -167,12 +137,12 @@ extension Middleware: Semigroup {
     ///   - rhs: The second middleware.
     /// - Returns: A middleware whose effect is the parallel combination of both inputs.
     public static func combine(_ lhs: Middleware, _ rhs: Middleware) -> Middleware {
-        Middleware { action, state in
+        Middleware { action, context in
             // Capture both readers on @MainActor in phase 1; the combined Reader
             // then calls both lazily in phase 3 — no eager effect evaluation.
-            let lhsReader = lhs.handle(action, state)
-            let rhsReader = rhs.handle(action, state)
-            return Reader { env in .combine(lhsReader.runReader(env), rhsReader.runReader(env)) }
+            let lhsReader = lhs.handle(action, context)
+            let rhsReader = rhs.handle(action, context)
+            return Reader { ctx in .combine(lhsReader.runReader(ctx), rhsReader.runReader(ctx)) }
         }
     }
 }

@@ -217,10 +217,13 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     // MARK: - Dispatch loop
 
     private func handle(_ dispatched: DispatchedAction<Action>) {
-        let stateAccess = StateAccess { [weak self] in self?.state }
+        let preCtx = PreReducerContext<State>(
+            source: dispatched.dispatcher,
+            getter: { [weak self] in self?.state }
+        )
 
         // Phase 1 — pre-mutation: collect EndoMut + Reader from the behavior
-        let consequence = behavior.handle(dispatched, stateAccess)
+        let consequence = behavior.handle(dispatched.action, preCtx)
 
         // Notify will-change BEFORE mutation (ObservableObject.objectWillChange requirement)
         stateObservers.values.forEach { $0.willChange() }
@@ -231,8 +234,12 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         // Phase 3 — post-mutation: notify observers and run Reader
         stateObservers.values.forEach { $0.didChange() }
 
-        // Phase 4 — schedule effects (stateAccess now reflects post-mutation state)
-        let effect = consequence.effect(environment)
+        // Phase 4 — schedule effects (postCtx._getter now reflects post-mutation state)
+        let postCtx = PostReducerContext<State, Environment>(
+            environment: environment,
+            getter: { [weak self] in self?.state }
+        )
+        let effect = consequence.effect(postCtx)
         effect.components.forEach { schedule($0) }
     }
 
