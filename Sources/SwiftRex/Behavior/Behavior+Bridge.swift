@@ -7,30 +7,83 @@ import DataStructure
 // existing `Behavior` value. They mirror `Middleware+Bridge.swift` but with an extra optional
 // `reduce:` parameter that lets you co-locate the state mutation with the routing.
 //
-// All state access is lazy: state is never copied unless the action filter passes first.
+// All state access is lazy. The key invariant:
+//   – State is **never** accessed unless the action filter passes.
+//   – If neither `reduce:` nor `when:` is provided, `mutation` is `.identity` — state is not
+//     even passed by inout reference to any closure, guaranteeing zero CoW interaction.
+//   – Overloads that accept `reduce:` make it a *required* parameter (no default). When you
+//     want routing-only, use the overload *without* the `reduce:` label — it reaches `.identity`
+//     directly rather than through a wrapped no-op closure.
 //
-// Three families of overloads, 18 variants total:
+// Four families of overloads, 28 variants total:
 //
-//   Prism / AffineTraversal — extract a typed payload from the action (variants 1–6):
+//   Prism / AffineTraversal — extract a typed payload from the action (variants 1–12):
+//     .on(AppAction.prism.didLoad, dispatch: .renderItems)
+//     .on(AppAction.prism.didLoad, dispatch: .renderItems, when: { !$0.isLoaded })
 //     .on(AppAction.prism.didLoad, dispatch: .renderItems, reduce: { items, s in s.items = items })
+//     .on(AppAction.prism.didLoad, dispatch: .renderItems,
+//         reduce: { items, s in s.items = items }, when: { !$0.isLoaded })
 //
-//   KeyPath (macro-generated enum case properties) — variants 7–10:
+//   KeyPath (macro-generated enum case properties) — variants 13–20:
+//     .on(\.didLoad, dispatch: .renderItems)
+//     .on(\.didLoad, dispatch: .renderItems, when: { !$0.isLoaded })
 //     .on(\.didLoad, dispatch: .renderItems, reduce: { items, s in s.items = items })
+//     .on(\.didLoad, dispatch: .renderItems,
+//         reduce: { items, s in s.items = items }, when: { !$0.isLoaded })
 //
-//   Bool predicate — general action test, fixed dispatch (variants 11–16):
+//   Bool predicate — general action test, fixed dispatch (variants 21–26):
 //     .on({ case .reset = $0 }, reduce: { $0.count = 0 })
-//     .on({ case .submit = $0 }, reduce: { $0.isLoading = true }, dispatch: .doSubmit, when: { !$0.isLoading })
+//     .on({ case .submit = $0 }, reduce: { $0.isLoading = true }, dispatch: .doSubmit,
+//         when: { !$0.isLoading })
 //
-//   Pure routing (no mutation, (Action) -> Action?) — variants 17–18:
+//   Pure routing (no mutation, (Action) -> Action?) — variants 27–28:
 //     .on { action in guard case .didSearch(let q) = action else { return nil }; return .search(q) }
 //
 // Every `.on(...)` call is equivalent to `.combine(self, routingBehavior)`.
 
 extension Behavior {
-    // MARK: 1. Prism + dispatch: + reduce:
+    // MARK: 1. Prism + dispatch: (no reduce, no when — zero state interaction)
+
+    /// Routes actions matched by a `Prism`, dispatching the extracted value. No state is ever
+    /// accessed; `mutation` is `.identity`.
+    ///
+    /// ```swift
+    /// .on(AppAction.prism.didLoad, dispatch: AppAction.renderItems)
+    /// ```
+    public func on<T: Sendable>(
+        _ prism: Prism<Action, T>,
+        dispatch out: @escaping @Sendable (T) -> Action
+    ) -> Self {
+        .combine(self, Behavior { action, _ in
+            guard let value = prism.preview(action) else { return .doNothing }
+            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+        })
+    }
+
+    // MARK: 2. Prism + dispatch: + when: (no reduce — one state copy for predicate)
+
+    /// Routes actions matched by a `Prism`, dispatching the extracted value, guarded by a
+    /// state predicate. `mutation` is `.identity`; one state copy for the predicate check.
+    ///
+    /// ```swift
+    /// .on(AppAction.prism.didLoad, dispatch: AppAction.renderItems, when: { !$0.isLoaded })
+    /// ```
+    public func on<T: Sendable>(
+        _ prism: Prism<Action, T>,
+        dispatch out: @escaping @Sendable (T) -> Action,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        .combine(self, Behavior { action, context in
+            guard let value = prism.preview(action) else { return .doNothing }
+            guard let state = context.stateBefore, condition(state) else { return .doNothing }
+            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+        })
+    }
+
+    // MARK: 3. Prism + dispatch: + reduce: (no when)
 
     /// Routes actions matched by a `Prism`, transforming the extracted value into a dispatch,
-    /// with an optional state mutation.
+    /// with a state mutation.
     ///
     /// ```swift
     /// .on(AppAction.prism.didLoad,
@@ -40,7 +93,7 @@ extension Behavior {
     public func on<T: Sendable>(
         _ prism: Prism<Action, T>,
         dispatch out: @escaping @Sendable (T) -> Action,
-        reduce: @escaping @Sendable (T, inout State) -> Void = { _, _ in }
+        reduce: @escaping @Sendable (T, inout State) -> Void
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = prism.preview(action) else { return .doNothing }
@@ -51,13 +104,13 @@ extension Behavior {
         })
     }
 
-    // MARK: 2. Prism + dispatch: + reduce: + when:
+    // MARK: 4. Prism + dispatch: + reduce: + when: (full)
 
     /// Routes actions matched by a `Prism`, with mutation and dispatch guarded by a predicate.
     public func on<T: Sendable>(
         _ prism: Prism<Action, T>,
         dispatch out: @escaping @Sendable (T) -> Action,
-        reduce: @escaping @Sendable (T, inout State) -> Void = { _, _ in },
+        reduce: @escaping @Sendable (T, inout State) -> Void,
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         .combine(self, Behavior { action, context in
@@ -70,10 +123,37 @@ extension Behavior {
         })
     }
 
-    // MARK: 3. Prism pair (no dispatch: label) + reduce:
+    // MARK: 5. Prism pair (no reduce, no when — zero state interaction)
+
+    /// Routes actions matched by `inPrism`, embedding the value through `outPrism`.
+    /// No state is ever accessed; `mutation` is `.identity`.
+    ///
+    /// ```swift
+    /// .on(AppAction.prism.searchQuery, AppAction.prism.updateSearch)
+    /// ```
+    public func on<T: Sendable>(
+        _ inPrism: Prism<Action, T>,
+        _ outPrism: Prism<Action, T>
+    ) -> Self {
+        on(inPrism, dispatch: outPrism.review)
+    }
+
+    // MARK: 6. Prism pair + when: (no reduce — one state copy for predicate)
+
+    /// Routes actions matched by `inPrism` through `outPrism`, guarded by a state predicate.
+    /// `mutation` is `.identity`; one state copy for the predicate check.
+    public func on<T: Sendable>(
+        _ inPrism: Prism<Action, T>,
+        _ outPrism: Prism<Action, T>,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        on(inPrism, dispatch: outPrism.review, when: condition)
+    }
+
+    // MARK: 7. Prism pair + reduce: (no when)
 
     /// Routes actions matched by `inPrism`, embedding the value through `outPrism`, with
-    /// optional state mutation.
+    /// a state mutation.
     ///
     /// ```swift
     /// .on(AppAction.prism.searchQuery, AppAction.prism.updateSearch,
@@ -82,25 +162,52 @@ extension Behavior {
     public func on<T: Sendable>(
         _ inPrism: Prism<Action, T>,
         _ outPrism: Prism<Action, T>,
-        reduce: @escaping @Sendable (T, inout State) -> Void = { _, _ in }
+        reduce: @escaping @Sendable (T, inout State) -> Void
     ) -> Self {
         on(inPrism, dispatch: outPrism.review, reduce: reduce)
     }
 
-    // MARK: 4. Prism pair + reduce: + when:
+    // MARK: 8. Prism pair + reduce: + when: (full)
 
     /// Routes actions matched by `inPrism` through `outPrism`, with mutation and dispatch
     /// guarded by a predicate.
     public func on<T: Sendable>(
         _ inPrism: Prism<Action, T>,
         _ outPrism: Prism<Action, T>,
-        reduce: @escaping @Sendable (T, inout State) -> Void = { _, _ in },
+        reduce: @escaping @Sendable (T, inout State) -> Void,
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         on(inPrism, dispatch: outPrism.review, reduce: reduce, when: condition)
     }
 
-    // MARK: 5. Void prism + dispatch: Action value + reduce:
+    // MARK: 9. Void prism + dispatch: (no reduce, no when — zero state interaction)
+
+    /// Routes a Void-payload action matched by `prism`, dispatching a fixed `out` action.
+    /// No state is ever accessed; `mutation` is `.identity`.
+    ///
+    /// ```swift
+    /// .on(AppAction.prism.didTapLogout, dispatch: AppAction.auth(.logout))
+    /// ```
+    public func on(
+        _ prism: Prism<Action, Void>,
+        dispatch out: Action
+    ) -> Self {
+        on(prism, dispatch: { _ in out })
+    }
+
+    // MARK: 10. Void prism + dispatch: + when: (no reduce — one state copy for predicate)
+
+    /// Routes a Void-payload action matched by `prism`, dispatching a fixed `out` action,
+    /// guarded by a state predicate. `mutation` is `.identity`.
+    public func on(
+        _ prism: Prism<Action, Void>,
+        dispatch out: Action,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        on(prism, dispatch: { _ in out }, when: condition)
+    }
+
+    // MARK: 11. Void prism + dispatch: + reduce: (no when)
 
     /// Routes a Void-payload action matched by `prism`, dispatching a fixed `out` action,
     /// with optional state mutation.
@@ -113,28 +220,65 @@ extension Behavior {
     public func on(
         _ prism: Prism<Action, Void>,
         dispatch out: Action,
-        reduce: @escaping @Sendable (inout State) -> Void = { _ in }
+        reduce: @escaping @Sendable (inout State) -> Void
     ) -> Self {
         on(prism, dispatch: { _ in out }, reduce: { _, s in reduce(&s) })
     }
 
-    // MARK: 6. Void prism + dispatch: + reduce: + when:
+    // MARK: 12. Void prism + dispatch: + reduce: + when: (full)
 
     /// Routes a Void-payload action matched by `prism`, with mutation and dispatch guarded
     /// by a predicate.
     public func on(
         _ prism: Prism<Action, Void>,
         dispatch out: Action,
-        reduce: @escaping @Sendable (inout State) -> Void = { _ in },
+        reduce: @escaping @Sendable (inout State) -> Void,
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         on(prism, dispatch: { _ in out }, reduce: { _, s in reduce(&s) }, when: condition)
     }
 
-    // MARK: 7. KeyPath<Action, T?> + dispatch: + reduce:
+    // MARK: 13. KeyPath<Action, T?> + dispatch: (no reduce, no when — zero state interaction)
 
     /// Routes actions using an optional key path (macro-generated enum case properties),
-    /// with optional state mutation.
+    /// dispatching the extracted value. No state is ever accessed; `mutation` is `.identity`.
+    ///
+    /// ```swift
+    /// .on(\.didLoad, dispatch: AppAction.renderItems)
+    /// ```
+    public func on<T: Sendable>(
+        _ extract: KeyPath<Action, T?>,
+        dispatch out: @escaping @Sendable (T) -> Action
+    ) -> Self {
+        .combine(self, Behavior { action, _ in
+            guard let value = action[keyPath: extract] else { return .doNothing }
+            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+        })
+    }
+
+    // MARK: 14. KeyPath<Action, T?> + dispatch: + when: (no reduce — one state copy for predicate)
+
+    /// Routes actions using an optional key path, guarded by a state predicate.
+    /// `mutation` is `.identity`; one state copy for the predicate check.
+    ///
+    /// ```swift
+    /// .on(\.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
+    /// ```
+    public func on<T: Sendable>(
+        _ extract: KeyPath<Action, T?>,
+        dispatch out: @escaping @Sendable (T) -> Action,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        .combine(self, Behavior { action, context in
+            guard let value = action[keyPath: extract] else { return .doNothing }
+            guard let state = context.stateBefore, condition(state) else { return .doNothing }
+            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+        })
+    }
+
+    // MARK: 15. KeyPath<Action, T?> + dispatch: + reduce: (no when)
+
+    /// Routes actions using an optional key path, with a state mutation.
     ///
     /// ```swift
     /// .on(\.didLoad,
@@ -144,7 +288,7 @@ extension Behavior {
     public func on<T: Sendable>(
         _ extract: KeyPath<Action, T?>,
         dispatch out: @escaping @Sendable (T) -> Action,
-        reduce: @escaping @Sendable (T, inout State) -> Void = { _, _ in }
+        reduce: @escaping @Sendable (T, inout State) -> Void
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = action[keyPath: extract] else { return .doNothing }
@@ -155,17 +299,13 @@ extension Behavior {
         })
     }
 
-    // MARK: 8. KeyPath<Action, T?> + dispatch: + reduce: + when:
+    // MARK: 16. KeyPath<Action, T?> + dispatch: + reduce: + when: (full)
 
     /// Routes actions using a key path, with mutation and dispatch guarded by a predicate.
-    ///
-    /// ```swift
-    /// .on(\.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
-    /// ```
     public func on<T: Sendable>(
         _ extract: KeyPath<Action, T?>,
         dispatch out: @escaping @Sendable (T) -> Action,
-        reduce: @escaping @Sendable (T, inout State) -> Void = { _, _ in },
+        reduce: @escaping @Sendable (T, inout State) -> Void,
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         .combine(self, Behavior { action, context in
@@ -178,10 +318,36 @@ extension Behavior {
         })
     }
 
-    // MARK: 9. KeyPath<Action, Void?> + dispatch: Action value + reduce:
+    // MARK: 17. KeyPath<Action, Void?> + dispatch: (no reduce, no when — zero state interaction)
 
-    /// Routes a Void-payload key path action, dispatching a fixed `out` action, with optional
-    /// state mutation.
+    /// Routes a Void-payload key path action, dispatching a fixed `out` action.
+    /// No state is ever accessed; `mutation` is `.identity`.
+    ///
+    /// ```swift
+    /// .on(\.didTapLogout, dispatch: AppAction.auth(.logout))
+    /// ```
+    public func on(
+        _ extract: KeyPath<Action, Void?>,
+        dispatch out: Action
+    ) -> Self {
+        on(extract, dispatch: { _ in out })
+    }
+
+    // MARK: 18. KeyPath<Action, Void?> + dispatch: + when: (no reduce — one state copy for predicate)
+
+    /// Routes a Void-payload key path action, dispatching a fixed action, guarded by a predicate.
+    /// `mutation` is `.identity`; one state copy for the predicate check.
+    public func on(
+        _ extract: KeyPath<Action, Void?>,
+        dispatch out: Action,
+        when condition: @escaping @Sendable (State) -> Bool
+    ) -> Self {
+        on(extract, dispatch: { _ in out }, when: condition)
+    }
+
+    // MARK: 19. KeyPath<Action, Void?> + dispatch: + reduce: (no when)
+
+    /// Routes a Void-payload key path action, dispatching a fixed `out` action, with state mutation.
     ///
     /// ```swift
     /// .on(\.didTapLogout,
@@ -191,35 +357,35 @@ extension Behavior {
     public func on(
         _ extract: KeyPath<Action, Void?>,
         dispatch out: Action,
-        reduce: @escaping @Sendable (inout State) -> Void = { _ in }
+        reduce: @escaping @Sendable (inout State) -> Void
     ) -> Self {
         on(extract, dispatch: { _ in out }, reduce: { _, s in reduce(&s) })
     }
 
-    // MARK: 10. KeyPath<Action, Void?> + dispatch: + reduce: + when:
+    // MARK: 20. KeyPath<Action, Void?> + dispatch: + reduce: + when: (full)
 
     /// Routes a Void-payload key path action, dispatching a fixed action, with mutation and
     /// dispatch guarded by a predicate.
     public func on(
         _ extract: KeyPath<Action, Void?>,
         dispatch out: Action,
-        reduce: @escaping @Sendable (inout State) -> Void = { _ in },
+        reduce: @escaping @Sendable (inout State) -> Void,
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
         on(extract, dispatch: { _ in out }, reduce: { _, s in reduce(&s) }, when: condition)
     }
 
-    // MARK: 11–18. Bool predicate variants (lazy state access)
+    // MARK: 21–26. Bool predicate variants (lazy state access)
     //
-    // Unlike the blob-closure variants above, these separate the action filter from state
+    // Unlike the Prism/KeyPath variants above, these separate the action filter from state
     // access so the compiler (and the implementation) can guarantee:
-    //   - no state copy if the predicate returns false
-    //   - no state copy if neither `reduce:` nor `when:` is provided
+    //   – no state copy if the predicate returns false
+    //   – no state copy at all when `reduce:` and `when:` are both absent (variants 21, 27–28)
     //
     // Dispatch is always a fixed `Action`; for cases where dispatch depends on state after
     // mutation, use `.produce { ctx in }` directly on the returned `Consequence`.
 
-    // MARK: 11. Bool predicate — pure routing, no state
+    // MARK: 21. Bool predicate — pure routing, no state
 
     /// Routes actions that satisfy `predicate`, dispatching `out`. No state is ever read.
     ///
@@ -236,7 +402,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 12. Bool predicate + when: — dispatch guarded by pre-mutation state
+    // MARK: 22. Bool predicate + when: — dispatch guarded by pre-mutation state
 
     /// Routes actions that satisfy `predicate`, dispatching `out` only when `condition` holds.
     /// State is read only after `predicate` returns `true`.
@@ -256,7 +422,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 13. Bool predicate + reduce: — mutation only, no dispatch
+    // MARK: 23. Bool predicate + reduce: — mutation only, no dispatch
 
     /// Applies `reduce` when `predicate` returns `true`. No action is dispatched.
     /// No state copy occurs if `predicate` returns `false`.
@@ -274,7 +440,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 14. Bool predicate + reduce: + dispatch:
+    // MARK: 24. Bool predicate + reduce: + dispatch:
 
     /// Applies `reduce` and dispatches `out` when `predicate` returns `true`.
     /// No state copy occurs if `predicate` returns `false`.
@@ -295,7 +461,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 15. Bool predicate + reduce: + when: — mutation guarded by pre-mutation state
+    // MARK: 25. Bool predicate + reduce: + when: — mutation guarded by pre-mutation state
 
     /// Applies `reduce` when `predicate` returns `true` AND `condition` holds.
     /// State is read only after `predicate` returns `true`. No action is dispatched.
@@ -317,7 +483,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 16. Bool predicate + reduce: + dispatch: + when: — full
+    // MARK: 26. Bool predicate + reduce: + dispatch: + when: — full
 
     /// Applies `reduce` and dispatches `out` when `predicate` returns `true` AND `condition` holds.
     /// State is read only after `predicate` returns `true`.
@@ -341,7 +507,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 17. Closure (Action) -> Action? (no mutation — pure routing)
+    // MARK: 27. Closure (Action) -> Action? (no mutation — pure routing)
 
     /// Routes actions using a free closure with no state mutation.
     ///
@@ -365,7 +531,7 @@ extension Behavior {
         })
     }
 
-    // MARK: 18. Closure (Action) -> Action? + when: (no mutation — pure routing)
+    // MARK: 28. Closure (Action) -> Action? + when: (no mutation — pure routing)
 
     /// Routes actions using a free closure with no state mutation, guarded by a predicate.
     public func on(
