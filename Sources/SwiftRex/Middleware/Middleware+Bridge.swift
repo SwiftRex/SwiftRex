@@ -15,7 +15,6 @@ import DataStructure
 // `routingMiddleware` handles the matched action and dispatches the result.
 
 extension Middleware {
-
     // MARK: 1. Closure (Action) -> Action?
 
     /// Routes actions using a free closure: on match, dispatches the returned action.

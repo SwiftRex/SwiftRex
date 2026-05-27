@@ -71,19 +71,19 @@ public struct PostReducerContext<State: Sendable, Environment: Sendable>: Sendab
     /// Requires `@MainActor`. From a non-`@MainActor` context, use
     /// `await MainActor.run { ctx.stateAfter }` or the `readStateAfter()` helper.
     @MainActor
-    public var stateAfter: State? { _getter() }
+    public var stateAfter: State? { stateGetter() }
 
     // MARK: - Package-internal
 
     /// The raw getter closure. Marked `@Sendable @MainActor` so that lifting transforms can
     /// forward it to child `PostReducerContext` instances without actor or Sendable violations.
-    package let _getter: @Sendable @MainActor () -> State?
+    package let stateGetter: @Sendable @MainActor () -> State?
 
     // MARK: - Init
 
     package init(environment: Environment, getter: @escaping @Sendable @MainActor () -> State?) {
         self.environment = environment
-        _getter = getter
+        stateGetter = getter
     }
 }
 
@@ -104,7 +104,7 @@ extension PostReducerContext {
     public func map<LocalState: Sendable>(
         _ f: @escaping @Sendable (State) -> LocalState
     ) -> PostReducerContext<LocalState, Environment> {
-        PostReducerContext<LocalState, Environment>(environment: environment, getter: { _getter().map(f) })
+        PostReducerContext<LocalState, Environment>(environment: environment, getter: { stateGetter().map(f) })
     }
 
     /// Projects this context to a narrower state type using a partial transformation.
@@ -122,7 +122,7 @@ extension PostReducerContext {
     public func compactMap<LocalState: Sendable>(
         _ f: @escaping @Sendable (State) -> LocalState?
     ) -> PostReducerContext<LocalState, Environment> {
-        PostReducerContext<LocalState, Environment>(environment: environment, getter: { _getter().flatMap(f) })
+        PostReducerContext<LocalState, Environment>(environment: environment, getter: { stateGetter().flatMap(f) })
     }
 }
 
@@ -145,6 +145,6 @@ extension PostReducerContext {
     public func mapEnvironment<NewEnvironment: Sendable>(
         _ f: @escaping @Sendable (Environment) -> NewEnvironment
     ) -> PostReducerContext<State, NewEnvironment> {
-        PostReducerContext<State, NewEnvironment>(environment: f(environment), getter: _getter)
+        PostReducerContext<State, NewEnvironment>(environment: f(environment), getter: stateGetter)
     }
 }

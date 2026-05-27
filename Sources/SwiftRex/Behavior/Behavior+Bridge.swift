@@ -15,7 +15,6 @@ import DataStructure
 // Every `on(...)` call is equivalent to `.combine(self, routingBehavior)`.
 
 extension Behavior {
-
     // MARK: 1. Closure (Action, inout State) -> Action?
 
     /// Routes actions using a closure that mutates state and optionally dispatches an action.
