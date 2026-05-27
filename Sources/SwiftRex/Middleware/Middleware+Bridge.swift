@@ -5,61 +5,29 @@ import DataStructure
 //
 // These overloads add action-to-action routing on top of any existing `Middleware` value.
 // Start from `Middleware.identity` and chain `.on(...)` calls to build pure routing pipelines
-// without opening a `Reader` or touching the environment:
+// without opening a `Reader` or touching the environment.
 //
-//   let bridge = Middleware<AppAction, AppState, World>.identity
-//       .on(\.didSearch, dispatch: AppAction.performSearch)
-//       .on(AppAction.prism.didTapLogout, dispatch: AppAction.auth(.logout))
+// All state access is lazy: state is never copied unless the action filter passes first.
 //
-// Every `on(...)` call is equivalent to `.combine(self, routingMiddleware)` where
+// Three families of overloads, 12 variants total:
+//
+//   Prism / AffineTraversal — extract a typed payload from the action (variants 1–6):
+//     .on(AppAction.prism.didSearch, dispatch: AppAction.performSearch)
+//     .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
+//
+//   KeyPath (macro-generated enum case properties) — variants 7–10:
+//     .on(\.didSearch, dispatch: AppAction.performSearch)
+//     .on(\.didTapLogout, dispatch: AppAction.auth(.logout))
+//
+//   Bool predicate — general action test, fixed dispatch (variants 11–12):
+//     .on({ case .reset = $0 }, dispatch: .clearAll)
+//     .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+//
+// Every `.on(...)` call is equivalent to `.combine(self, routingMiddleware)` where
 // `routingMiddleware` handles the matched action and dispatches the result.
 
 extension Middleware {
-    // MARK: 1. Closure (Action) -> Action?
-
-    /// Routes actions using a free closure: on match, dispatches the returned action.
-    ///
-    /// ```swift
-    /// .on { action in
-    ///     guard case .didSearch(let q) = action else { return nil }
-    ///     return .performSearch(q)
-    /// }
-    /// ```
-    public func on(
-        _ fn: @escaping @Sendable (Action) -> Action?
-    ) -> Self {
-        .combine(self, Middleware { action, _ in
-            Reader { _ in fn(action).map { Effect.just($0) } ?? .empty }
-        })
-    }
-
-    // MARK: 2. Closure (Action) -> Action? + when:
-
-    /// Routes actions using a free closure, guarded by a state predicate.
-    ///
-    /// The dispatch only occurs when both `fn` returns non-nil **and** `condition` returns `true`
-    /// for the current pre-mutation state.
-    ///
-    /// ```swift
-    /// .on({ action in guard case .retry = action else { return nil }; return .reload },
-    ///     when: { $0.retryCount < 3 })
-    /// ```
-    public func on(
-        _ fn: @escaping @Sendable (Action) -> Action?,
-        when condition: @escaping @Sendable (State) -> Bool
-    ) -> Self {
-        .combine(self, Middleware { action, context in
-            // Filter action first — only copy state when the action actually matches.
-            guard let out = fn(action) else { return Reader { _ in .empty } }
-            let stateBefore = context.stateBefore
-            return Reader { _ in
-                guard let state = stateBefore, condition(state) else { return .empty }
-                return Effect.just(out)
-            }
-        })
-    }
-
-    // MARK: 3. Prism + dispatch:
+    // MARK: 1. Prism + dispatch:
 
     /// Routes actions matched by a `Prism`, transforming the extracted value into a dispatch.
     ///
@@ -75,7 +43,7 @@ extension Middleware {
         })
     }
 
-    // MARK: 4. Prism + dispatch: + when:
+    // MARK: 2. Prism + dispatch: + when:
 
     /// Routes actions matched by a `Prism`, guarded by a state predicate.
     ///
@@ -97,7 +65,7 @@ extension Middleware {
         })
     }
 
-    // MARK: 5. Prism pair (no dispatch: label)
+    // MARK: 3. Prism pair (no dispatch: label)
 
     /// Routes actions matched by `inPrism`, embedding the extracted value back through `outPrism`.
     ///
@@ -113,7 +81,7 @@ extension Middleware {
         on(inPrism, dispatch: outPrism.review)
     }
 
-    // MARK: 6. Prism pair + when:
+    // MARK: 4. Prism pair + when:
 
     /// Routes actions matched by `inPrism` through `outPrism`, guarded by a state predicate.
     public func on<T: Sendable>(
@@ -124,7 +92,7 @@ extension Middleware {
         on(inPrism, dispatch: outPrism.review, when: condition)
     }
 
-    // MARK: 7. Void prism + dispatch: Action value
+    // MARK: 5. Void prism + dispatch: Action value
 
     /// Routes a Void-payload action matched by `prism`, dispatching a fixed `out` action.
     ///
@@ -138,7 +106,7 @@ extension Middleware {
         on(prism, dispatch: { _ in out })
     }
 
-    // MARK: 8. Void prism + dispatch: + when:
+    // MARK: 6. Void prism + dispatch: + when:
 
     /// Routes a Void-payload action matched by `prism`, dispatching a fixed `out` action,
     /// guarded by a state predicate.
@@ -150,7 +118,7 @@ extension Middleware {
         on(prism, dispatch: { _ in out }, when: condition)
     }
 
-    // MARK: 9. KeyPath<Action, T?> + dispatch:
+    // MARK: 7. KeyPath<Action, T?> + dispatch:
 
     /// Routes actions using an optional key path (macro-generated enum case properties),
     /// transforming the extracted value into a dispatch.
@@ -167,7 +135,7 @@ extension Middleware {
         })
     }
 
-    // MARK: 10. KeyPath<Action, T?> + dispatch: + when:
+    // MARK: 8. KeyPath<Action, T?> + dispatch: + when:
 
     /// Routes actions using an optional key path, guarded by a state predicate.
     ///
@@ -189,7 +157,7 @@ extension Middleware {
         })
     }
 
-    // MARK: 11. KeyPath<Action, Void?> + dispatch: Action value
+    // MARK: 9. KeyPath<Action, Void?> + dispatch: Action value
 
     /// Routes a Void-payload key path action, dispatching a fixed `out` action.
     ///
@@ -203,7 +171,7 @@ extension Middleware {
         on(extract, dispatch: { _ in out })
     }
 
-    // MARK: 12. KeyPath<Action, Void?> + dispatch: + when:
+    // MARK: 10. KeyPath<Action, Void?> + dispatch: + when:
 
     /// Routes a Void-payload key path action, dispatching a fixed `out` action,
     /// guarded by a state predicate.
@@ -215,22 +183,22 @@ extension Middleware {
         on(extract, dispatch: { _ in out }, when: condition)
     }
 
-    // MARK: 13–14. Labeled `action:` predicate variants
+    // MARK: 11–12. Bool predicate variants (lazy state access)
     //
     // These complement the unlabeled closure variants above with a Bool predicate
     // and fixed dispatch, guaranteeing:
-    //   - no state copy if `action` predicate returns `false`
+    //   - no state copy if the predicate returns `false`
     //   - no state copy at all when `when:` is absent
 
-    // MARK: 13. action: Bool predicate + dispatch: (no state)
+    // MARK: 11. Bool predicate + dispatch: (no state)
 
     /// Routes actions that satisfy `predicate`, dispatching `out`. No state is ever read.
     ///
     /// ```swift
-    /// .on(action: { case .didLogOut = $0 }, dispatch: AppAction.auth(.logOut))
+    /// .on({ case .didLogOut = $0 }, dispatch: AppAction.auth(.logOut))
     /// ```
     public func on(
-        action predicate: @escaping @Sendable (Action) -> Bool,
+        _ predicate: @escaping @Sendable (Action) -> Bool,
         dispatch out: Action
     ) -> Self {
         .combine(self, Middleware { action, _ in
@@ -239,16 +207,16 @@ extension Middleware {
         })
     }
 
-    // MARK: 14. action: Bool predicate + dispatch: + when: (state read after action match)
+    // MARK: 12. Bool predicate + dispatch: + when: (state read after action match)
 
     /// Routes actions that satisfy `predicate`, dispatching `out` only when `condition` holds.
     /// State is read only after `predicate` returns `true`.
     ///
     /// ```swift
-    /// .on(action: { case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+    /// .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
     /// ```
     public func on(
-        action predicate: @escaping @Sendable (Action) -> Bool,
+        _ predicate: @escaping @Sendable (Action) -> Bool,
         dispatch out: Action,
         when condition: @escaping @Sendable (State) -> Bool
     ) -> Self {
