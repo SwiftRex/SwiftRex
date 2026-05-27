@@ -675,57 +675,71 @@ let appBehavior = counterBehavior <> authBehavior <> networkBehavior
 
 #### Behavior Bridge — declarative routing with `.on(...)`
 
-`Behavior` has the same `.on(...)` builder methods as `Middleware`, plus an optional `reduce:` parameter that lets you co-locate the state mutation with the routing. There are 18 patterns across four families. State is **never copied** unless the action filter passes first; if neither `reduce:` nor `when:` is present, state is never touched at all.
+`Behavior` has the same `.on(...)` builder methods as `Middleware`, plus an optional `reduce:` parameter that lets you co-locate the state mutation with the routing. There are 28 variants across four families. State is **never copied** unless the action filter passes first; if neither `reduce:` nor `when:` is provided, `mutation` is `.identity` — state is never passed by inout reference at all, guaranteeing zero CoW interaction.
+
+Prism/KeyPath overloads come in two distinct forms: without `reduce:` (uses `mutation: .identity`) and with `reduce:` (required, no default). Use the dispatch-only form when you have no mutation to co-locate — it's structurally zero-cost, not just documented as such.
 
 ```swift
 let behavior = Behavior<AppAction, AppState, World>.identity
-    // — Prism family (variants 1–6) —
-    // 1. Prism + dispatch + optional reduce:
+    // — Prism family (variants 1–12) —
+    // 1. Prism + dispatch only — mutation: .identity, no state interaction
+    .on(AppAction.prism.didLoad, dispatch: AppAction.renderItems)
+    // 2. Prism + dispatch + state guard — mutation: .identity, one copy for condition
+    .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
+    // 3. Prism + dispatch + reduce (required)
     .on(AppAction.prism.didLoad,
         dispatch: AppAction.renderItems,
         reduce: { items, state in state.items = items; state.isLoading = false })
-    // 2. Prism + dispatch + reduce + state guard (state read only if prism matches)
+    // 4. Prism + dispatch + reduce + state guard
     .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout,
         reduce: { _, state in state.isCheckingOut = true },
         when: { $0.isLoggedIn })
-    // 5. Void prism → fixed action + reduce
+    // 9. Void prism + dispatch only
+    .on(AppAction.prism.didTapLogout, dispatch: AppAction.auth(.logout))
+    // 11. Void prism + dispatch + reduce (required)
     .on(AppAction.prism.didTapLogout,
         dispatch: AppAction.auth(.logout),
         reduce: { state in state.isLoggingOut = true })
-    // — KeyPath family (variants 7–10) —
-    // 7. KeyPath + dispatch + optional reduce
+    // — KeyPath family (variants 13–20) —
+    // 13. KeyPath + dispatch only — mutation: .identity, no state interaction
+    .on(\.didLoad, dispatch: AppAction.renderItems)
+    // 14. KeyPath + dispatch + state guard — mutation: .identity, one copy for condition
+    .on(\.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
+    // 15. KeyPath + dispatch + reduce (required)
     .on(\.didLoad,
         dispatch: AppAction.renderItems,
         reduce: { items, state in state.items = items; state.isLoading = false })
-    // 9. Void key path → fixed action + reduce
+    // 17. Void key path + dispatch only
+    .on(\.didTapLogout, dispatch: AppAction.auth(.logout))
+    // 19. Void key path + dispatch + reduce (required)
     .on(\.didTapLogout,
         dispatch: AppAction.auth(.logout),
         reduce: { state in state.isLoggingOut = true })
-    // — Bool predicate family (variants 11–16) —
-    // 11. Predicate only + fixed dispatch — no state ever read
+    // — Bool predicate family (variants 21–26) —
+    // 21. Predicate + fixed dispatch — no state ever read
     .on({ case .reset = $0 }, dispatch: .clearAll)
-    // 12. Predicate + state guard (state read only if predicate matches)
+    // 22. Predicate + state guard (state read only if predicate matches)
     .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
-    // 13. Predicate + mutation only (no dispatch)
+    // 23. Predicate + mutation only (no dispatch)
     .on({ case .toggle = $0 }, reduce: { $0.isActive.toggle() })
-    // 14. Predicate + mutation + dispatch
+    // 24. Predicate + mutation + dispatch
     .on({ case .didLoad = $0 }, reduce: { $0.isLoading = false }, dispatch: .renderItems)
-    // 15. Predicate + mutation + guard (no dispatch)
+    // 25. Predicate + mutation + guard (no dispatch)
     .on({ case .submit = $0 }, reduce: { $0.isSubmitting = true }, when: { !$0.isSubmitting })
-    // 16. Predicate + mutation + dispatch + guard — full
+    // 26. Predicate + mutation + dispatch + guard — full
     .on({ case .submit = $0 },
         reduce: { $0.isSubmitting = true },
         dispatch: .doSubmit,
         when: { !$0.isSubmitting })
-    // — Pure routing, no mutation (variants 17–18) —
-    // 17. (Action) -> Action? — derived dispatch, no state
+    // — Pure routing, no mutation (variants 27–28) —
+    // 27. (Action) -> Action? — derived dispatch, no state
     .on { action in
         guard case .didSearch(let q) = action else { return nil }
         return .performSearch(q)
     }
 ```
 
-The `reduce:` parameter defaults to a no-op in Prism/KeyPath variants, so you can always omit it when no mutation is needed.
+All `when:` variants read state only after the action filter passes; unmatched actions never touch the store's state. Variants without `reduce:` and without `when:` have zero state interaction — not even an inout reference is taken.
 
 ---
 
