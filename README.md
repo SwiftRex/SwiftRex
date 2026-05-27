@@ -121,11 +121,11 @@ Pick the module(s) that match your project's reactive strategy. For a pure Swift
 - `store.stream` — a `DeferredStream<State>` for iterating over state changes with `for await state in store.stream { ... }`
 
 ```swift
-let fetchMiddleware = Middleware<AppAction, AppState, API>.handle { action, stateAccess in
-    guard case .fetchData = action.action else { return .doNothing }
-    return Reader { api in
+let fetchMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
+    guard case .fetchData = action else { return .doNothing }
+    return Reader { ctx in
         Effect.throwingTask(AppAction.fetchResult) {
-            try await api.loadData()
+            try await ctx.environment.loadData()
         }
     }
 }
@@ -146,10 +146,13 @@ Let's understand the components of SwiftRex by splitting them into 3 sections:
         - [All together](#all-together)
     - [Middleware](#middleware)
         - [Generics](#generics)
+        - [Two-phase context model](#two-phase-context-model)
         - [Returning Reader and performing side-effects](#returning-reader-and-performing-side-effects)
         - [Dependency Injection](#dependency-injection)
         - [Middleware Examples](#middleware-examples)
+        - [Middleware Bridge — declarative routing with `.on(...)`](#middleware-bridge--declarative-routing-with-on)
     - [Behavior](#behavior)
+        - [Behavior Bridge — declarative routing with `.on(...)`](#behavior-bridge--declarative-routing-with-on)
     - [Reducer](#reducer)
 - [Projection and Lifting](#projection-and-lifting)
     - [Store Projection](#store-projection-1)
@@ -276,10 +279,13 @@ Annotating the whole state as Equatable helps us to reduce the UI updates in cas
     - [All together](#all-together)
 - [Middleware](#middleware)
     - [Generics](#generics)
+    - [Two-phase context model](#two-phase-context-model)
     - [Returning Reader and performing side-effects](#returning-reader-and-performing-side-effects)
     - [Dependency Injection](#dependency-injection)
     - [Middleware Examples](#middleware-examples)
+    - [Middleware Bridge — declarative routing with `.on(...)`](#middleware-bridge--declarative-routing-with-on)
 - [Behavior](#behavior)
+    - [Behavior Bridge — declarative routing with `.on(...)`](#behavior-bridge--declarative-routing-with-on)
 - [Reducer](#reducer)
 
 ---
@@ -514,7 +520,7 @@ Middleware is generic over 3 type parameters:
 
 - **State**:
 
-    The State part that this `Middleware` needs to read in order to make decisions. This middleware will be able to read the most up-to-date `State` from the store via a `StateAccess<State>` value, but it can never write or make changes to it.
+    The State part that this `Middleware` needs to read in order to make decisions. This middleware will receive a `PreReducerContext<State>` in phase 1 (before mutation) and a `PostReducerContext<State, Environment>` in phase 3 (after mutation), but it can never write or mutate the state.
 
     Most of the times middlewares don't need reading the whole global state, so we can decide to allow it to read only a subset of the state, or maybe this middleware doesn't need to read any state, so the `State` can safely be set to `Void`.
 
@@ -524,23 +530,35 @@ Middleware is generic over 3 type parameters:
 
     The dependency type that this `Middleware` needs to perform its work. Dependencies are injected via the `Reader` wrapper at call time, so you never store them on the middleware itself.
 
+#### Two-phase context model
+
+`Middleware.handle` receives two arguments:
+
+- `action: Action` — the action being dispatched (plain value, no wrapper needed).
+- `context: PreReducerContext<State>` — a `@MainActor`, **non-`Sendable`** snapshot of pre-mutation state; holds `context.stateBefore: State?` and `context.source: ActionSource`.
+
+It returns `Reader<PostReducerContext<State, Environment>, Effect<Action>>`. The `Reader` closure runs in phase 3, after mutations, and receives a `PostReducerContext<State, Environment>` with:
+
+- `ctx.environment: Environment` — dependencies injected at that point.
+- `ctx.stateAfter: State?` — post-mutation state (callable on `@MainActor`).
+
+`PreReducerContext` is **non-Sendable by design** — the compiler prevents you from capturing it into the `@Sendable` phase-3 closure. If you need to compare before/after, capture `context.stateBefore` into a local `let` first.
+
 #### Returning Reader and performing side-effects
 
-In its most important function, `Middleware.handle`, the middleware is expected to return a `Reader<Environment, Effect<Action>>`. The `Reader` is a description of side-effects deferred until the environment is provided. `Effect<Action>` is a wrapper for any async or reactive work that may eventually produce more actions to dispatch.
-
-SwiftRex defines two conveniences on `Reader<Environment, Effect<Action>>` that mirror the fluent API available in `Consequence`:
+SwiftRex defines two conveniences on `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that mirror the fluent API available in `Consequence`:
 
 ```swift
 // No effect — skip early
-guard case .myAction = action.action else { return .doNothing }
+guard case .myAction = action else { return .doNothing }
 
 // Produce an effect with environment access
-return .produce { env in
-    Effect.task { .result(await env.api.fetch()) }
+return .produce { ctx in
+    Effect.task { .result(await ctx.environment.api.fetch()) }
 }
 ```
 
-`.doNothing` is equivalent to `Reader { _ in .empty }`. `.produce` is equivalent to `Reader { env in … }`. Either form is acceptable; the named versions communicate intent more clearly at the call site.
+`.doNothing` is equivalent to `Reader { _ in .empty }`. `.produce` is equivalent to `Reader { ctx in … }`. Either form is acceptable; the named versions communicate intent more clearly at the call site.
 
 #### Dependency Injection
 
@@ -555,28 +573,63 @@ All external dependencies are injected through the `Reader<Environment, Effect<A
 When implementing your Middleware, all you have to do is handle the incoming actions:
 
 ```swift
-let loggerMiddleware = Middleware<AppAction, AppState, Logger>.handle { action, stateAccess in
-    let stateBefore = stateAccess.snapshotState()
-    return Reader { logger in
-        let stateAfter = stateAccess.snapshotState() // post-mutation state
-        let source = "\(action.dispatcher.file):\(action.dispatcher.line)"
-        logger.log(action: action.action, from: source, before: stateBefore, after: stateAfter)
+// Logger: capture pre-mutation state in phase 1, compare with post-mutation state in phase 3
+let loggerMiddleware = Middleware<AppAction, AppState, Logger>.handle { action, context in
+    let stateBefore = context.stateBefore          // phase 1 — pre-mutation state
+    let source = "\(context.source.file):\(context.source.line)"
+    return Reader { ctx in
+        let stateAfter = ctx.stateAfter            // phase 3 — post-mutation state
+        ctx.environment.log(action: action, from: source, before: stateBefore, after: stateAfter)
         return .empty
     }
 }
 
-let favoritesMiddleware = Middleware<FavoritesAction, FavoritesModel, API>.handle { action, stateAccess in
-    guard case let .toggleFavorite(movieId) = action.action else { return .doNothing }
-    let currentList = stateAccess.snapshotState()
+// Favorites: read state before mutation, then call the API in phase 3
+let favoritesMiddleware = Middleware<FavoritesAction, FavoritesModel, API>.handle { action, context in
+    guard case let .toggleFavorite(movieId) = action else { return .doNothing }
+    let currentList = context.stateBefore          // capture before any mutation
     let makeFavorite = !(currentList?.contains(where: { $0.id == movieId }) ?? false)
-    return .produce { api in
+    return .produce { ctx in
         Effect.task {
-            let result = await api.changeFavorite(id: movieId, makeFavorite: makeFavorite)
+            let result = await ctx.environment.changeFavorite(id: movieId, makeFavorite: makeFavorite)
             return .changedFavorite(movieId, isFavorite: result)
         }
     }
 }
 ```
+
+#### Middleware Bridge — declarative routing with `.on(...)`
+
+Instead of writing a `handle` closure for simple action-routing middlewares, use the `.on(...)` builder methods. They compose onto any existing `Middleware` value via `.combine` and cover 12 patterns — from a plain closure to Prism/KeyPath matching with optional state guards:
+
+```swift
+// Start from identity and chain .on(...) calls
+let bridge = Middleware<AppAction, AppState, World>.identity
+    // 1. Free closure — return non-nil to dispatch
+    .on { action in
+        guard case .didSearch(let q) = action else { return nil }
+        return .performSearch(q)
+    }
+    // 2. Same, guarded by a state predicate
+    .on({ action in
+        guard case .retry = action else { return nil }
+        return .reload
+    }, when: { $0.retryCount < 3 })
+    // 3. Prism + dispatch closure
+    .on(AppAction.prism.didSearch, dispatch: AppAction.performSearch)
+    // 4. Prism + dispatch + state guard
+    .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
+    // 5. Prism pair (same payload T — no dispatch: label)
+    .on(AppAction.prism.searchQuery, AppAction.prism.updateSearch)
+    // 7. Void prism → fixed action
+    .on(AppAction.prism.didTapLogout, dispatch: AppAction.auth(.logout))
+    // 9. KeyPath (macro-generated enum case property)
+    .on(\.didSearch, dispatch: AppAction.performSearch)
+    // 11. Void key path → fixed action
+    .on(\.didTapLogout, dispatch: AppAction.auth(.logout))
+```
+
+All `when:` variants capture `context.stateBefore` on `@MainActor` before entering the `@Sendable` `Reader`, so the closure receives a plain (non-optional) `State`.
 
 ---
 
@@ -588,8 +641,8 @@ There are three creation paths:
 
 ```swift
 // 1. Direct — mutation and effect in one shot (no separate Reducer or Middleware needed)
-let counterBehavior = Behavior<CounterAction, CounterState, Void>.handle { action, stateAccess in
-    switch action.action {
+let counterBehavior = Behavior<CounterAction, CounterState, Void>.handle { action, _ in
+    switch action {
     case .increment: return .reduce { $0.count += 1 }
     case .decrement: return .reduce { $0.count -= 1 }
     case .fetch(let query): return .produce { _ in apiEffect(query) }
@@ -603,13 +656,18 @@ let reducerBehavior: Behavior<CounterAction, CounterState, Void> = counterReduce
 let fullBehavior = Behavior(reducer: counterReducer, middleware: loggingMiddleware)
 ```
 
-The return value of `Behavior.handle` is a `Consequence`, which describes what should happen in response to an action:
+`Behavior.handle` takes the same two arguments as `Middleware.handle`:
+
+- `action: Action` — the plain action value.
+- `context: PreReducerContext<State>` — pre-mutation state (`context.stateBefore`) and call-site info (`context.source`).
+
+The return value is a `Consequence`, which describes what should happen in response to an action:
 
 ```swift
-.doNothing              // no mutation, no effect
-.reduce { $0.x += 1 }  // mutation only
-.produce { env in ... } // effect only
-.reduce { $0.x += 1 }.produce { env in ... }  // both mutation and effect
+.doNothing                // no mutation, no effect
+.reduce { $0.x += 1 }    // mutation only
+.produce { ctx in ... }   // effect only (ctx: PostReducerContext<State, Environment>)
+.reduce { $0.x += 1 }.produce { ctx in ... }  // both mutation and effect
 ```
 
 Behaviors compose with `<>`:
@@ -617,6 +675,49 @@ Behaviors compose with `<>`:
 ```swift
 let appBehavior = counterBehavior <> authBehavior <> networkBehavior
 ```
+
+#### Behavior Bridge — declarative routing with `.on(...)`
+
+`Behavior` has the same `.on(...)` builder methods as `Middleware`, plus an optional `reduce:` parameter that lets you co-locate the state mutation with the routing. There are 14 patterns in total:
+
+```swift
+let behavior = Behavior<AppAction, AppState, World>.identity
+    // 1. Closure with inout State — mutation and optional dispatch in one go
+    .on { action, state in
+        guard case .increment = action else { return nil }
+        state.count += 1
+        return state.count > 10 ? .showWarning : nil
+    }
+    // 3. Prism + dispatch + optional reduce:
+    .on(AppAction.prism.didLoad,
+        dispatch: AppAction.renderItems,
+        reduce: { items, state in state.items = items; state.isLoading = false })
+    // 4. Prism + dispatch + reduce + state guard
+    .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout,
+        reduce: { _, state in state.isCheckingOut = true },
+        when: { $0.isLoggedIn })
+    // 7. Void prism → fixed action + reduce
+    .on(AppAction.prism.didTapLogout,
+        dispatch: AppAction.auth(.logout),
+        reduce: { state in state.isLoggingOut = true })
+    // 9. KeyPath + dispatch + optional reduce
+    .on(\.didLoad,
+        dispatch: AppAction.renderItems,
+        reduce: { items, state in state.items = items; state.isLoading = false })
+    // 11. Void key path → fixed action + reduce
+    .on(\.didTapLogout,
+        dispatch: AppAction.auth(.logout),
+        reduce: { state in state.isLoggingOut = true })
+    // 13. Free closure — pure routing, no mutation (same as Middleware overload)
+    .on { action in
+        guard case .didSearch(let q) = action else { return nil }
+        return .performSearch(q)
+    }
+```
+
+The `reduce:` parameter defaults to `{ _, _ in }` (no-op), so you can always omit it when no mutation is needed.
+
+> **Note**: The closure in variant 1 is called **twice** — once on a throwaway copy to capture the return value, then on the real `inout State` for the actual mutation. The closure must be a pure function of `(Action, inout State)` with no observable side effects beyond state changes.
 
 ---
 
@@ -1282,16 +1383,16 @@ enum MoviesFeature {
 
     static func behavior() -> Behavior<Action, State, Environment> {
         .handle { action, _ in
-            switch action.action {
+            switch action {
             case .fetchMovies:
                 .reduce { $0.isLoading = true }
-                .produce { env in .task { .moviesResponse(await env.fetchMovies()) } }
+                .produce { ctx in .task { .moviesResponse(await ctx.environment.fetchMovies()) } }
             case .moviesResponse(.success(let movies)):
                 .reduce { $0.movies = movies; $0.isLoading = false }
             case .moviesResponse(.failure(let err)):
                 .reduce { $0.error = err; $0.isLoading = false }
             case .toggleFavorite(let id):
-                .produce { env in .task { .favoriteResponse(await env.toggleFavorite(id)) } }
+                .produce { ctx in .task { .favoriteResponse(await ctx.environment.toggleFavorite(id)) } }
             case .favoriteResponse(.success(let movie)):
                 .reduce { $0.movies = [Domain.Movie].ix(id: movie.id).set($0.movies, movie) }
             case .favoriteResponse(.failure):
@@ -1360,7 +1461,7 @@ enum CounterFeature {
 
     static func behavior() -> Behavior<Action, State, Void> {
         .handle { action, _ in
-            switch action.action {
+            switch action {
             case .increment: .reduce { $0.count += 1 }
             case .decrement: .reduce { $0.count -= 1 }
             case .reset:     .reduce { $0.count  = 0 }
