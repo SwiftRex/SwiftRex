@@ -21,7 +21,8 @@ import DataStructure
 /// ## Pre- and post-mutation state
 ///
 /// Use ``PreReducerContext/stateBefore`` in phase 1 and ``PostReducerContext/stateAfter`` (or
-/// ``PostReducerContext/readStateAfter()``) in the returned `Reader` for post-mutation state:
+/// the `readStateAfter()` helper from `SwiftRex.Combine`, `SwiftRex.RxSwift`, or
+/// `SwiftRex.ReactiveSwift`) in the returned `Reader` for post-mutation state:
 ///
 /// ```swift
 /// Middleware<MyAction, MyState, MyEnvironment>.handle { action, context in

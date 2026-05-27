@@ -102,9 +102,9 @@ SwiftRex supports multiple concurrency styles. The core package is self-containe
 |---|---|
 | `SwiftRex` | Always — the core store, reducers, behaviors, effects |
 | `SwiftRex.Concurrency` | async/await — Effect bridges for `Task`, `AsyncSequence`, `DeferredStream` |
-| `SwiftRex.Combine` | Apple Combine integration |
-| `SwiftRex.RxSwift` | RxSwift integration |
-| `SwiftRex.ReactiveSwift` | ReactiveSwift integration |
+| `SwiftRex.Combine` | Apple Combine integration — `asEffect()` on `Publisher`, `store.publisher`, `ctx.readStateAfter() -> AnyPublisher` |
+| `SwiftRex.RxSwift` | RxSwift integration — `asEffect()` on `Observable`, `store.observable`, `ctx.readStateAfter() -> Observable` |
+| `SwiftRex.ReactiveSwift` | ReactiveSwift integration — `asEffect()` on `SignalProducer`/`Signal`, `store.signal`, `ctx.readStateAfter() -> SignalProducer` |
 | `SwiftRex.SwiftUI` | SwiftUI helpers — `asObservableObject()`, `@ViewModel` macro, `HasViewModel` |
 | `SwiftRex.Architecture` | Opinionated module pattern — `Feature`, `FeatureHost` (iOS 17+) |
 | `SwiftRex.Testing` | Test target only — `TestStore` for deterministic unit tests |
@@ -540,9 +540,36 @@ Middleware is generic over 3 type parameters:
 It returns `Reader<PostReducerContext<State, Environment>, Effect<Action>>`. The `Reader` closure runs in phase 3, after mutations, and receives a `PostReducerContext<State, Environment>` with:
 
 - `ctx.environment: Environment` — dependencies injected at that point.
-- `ctx.stateAfter: State?` — post-mutation state (callable on `@MainActor`).
+- `ctx.stateAfter: State?` — post-mutation state; requires `@MainActor`. From a non-`@MainActor` context use `await MainActor.run { ctx.stateAfter }`, or the `readStateAfter()` helper described below.
 
 `PreReducerContext` is **non-Sendable by design** — the compiler prevents you from capturing it into the `@Sendable` phase-3 closure. If you need to compare before/after, capture `context.stateBefore` into a local `let` first.
+
+**Reading post-mutation state from a reactive pipeline** — `SwiftRex.Combine`, `SwiftRex.RxSwift`, and `SwiftRex.ReactiveSwift` each add a `readStateAfter()` extension on `PostReducerContext` that returns a single-element stream and hops to `@MainActor` automatically:
+
+```swift
+// Combine (AnyPublisher)
+return .produce { ctx in
+    ctx.readStateAfter()                                    // AnyPublisher<State, Never>
+        .flatMap { state in ctx.environment.api.save(state.draft) }
+        .asEffect()
+}
+
+// RxSwift (Observable)
+return .produce { ctx in
+    ctx.readStateAfter()                                    // Observable<State>
+        .flatMap { state in ctx.environment.api.save(state.draft) }
+        .asEffect()
+}
+
+// ReactiveSwift (SignalProducer)
+return .produce { ctx in
+    ctx.readStateAfter()                                    // SignalProducer<State, Never>
+        .flatMap(.latest) { state in ctx.environment.api.save(state.draft) }
+        .asEffect()
+}
+```
+
+The state is read lazily — only when a subscriber attaches — so it always reflects the post-mutation value from the current dispatch cycle.
 
 #### Returning Reader and performing side-effects
 
