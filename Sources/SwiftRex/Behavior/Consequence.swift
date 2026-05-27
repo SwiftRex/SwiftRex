@@ -42,7 +42,7 @@ import DataStructure
 ///    atomically, on `@MainActor`.
 /// 3. **Phase 3** — `effect.runReader(postCtx)` is called. ``PostReducerContext/stateAfter``
 ///    now returns post-mutation state — read it via `await MainActor.run { ctx.stateAfter }`
-///    or use the Combine / RxSwift `readStateAfter()` helpers.
+///    or use the Combine / RxSwift / ReactiveSwift `readStateAfter()` helpers.
 ///
 /// ## Semigroup: sequential mutations, parallel effects
 ///

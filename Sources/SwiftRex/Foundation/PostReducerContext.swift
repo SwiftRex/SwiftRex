@@ -8,7 +8,7 @@
 ///   context, without `await`.
 /// - ``stateAfter``: the state **after** all `EndoMut` values from this dispatch cycle ran.
 ///   It is `@MainActor`, so a non-`@MainActor` effect must hop to the main actor
-///   (or use the Combine / RxSwift `readStateAfter()` helpers) to read it.
+///   (or use the Combine / RxSwift / ReactiveSwift `readStateAfter()` helpers) to read it.
 ///
 /// ## Usage
 ///
@@ -44,8 +44,9 @@
 /// }
 /// ```
 ///
-/// From a Combine / RxSwift effect, use the `readStateAfter()` helper defined in the
-/// corresponding target.
+/// From a Combine, RxSwift, or ReactiveSwift effect, use the `readStateAfter()` helper
+/// defined in the corresponding target (`SwiftRex.Combine`, `SwiftRex.RxSwift`, or
+/// `SwiftRex.ReactiveSwift`).
 ///
 /// ## Functor (covariant on State, covariant on Environment)
 ///
@@ -69,7 +70,8 @@ public struct PostReducerContext<State: Sendable, Environment: Sendable>: Sendab
     /// The state after all mutations from this dispatch cycle have been applied.
     ///
     /// Requires `@MainActor`. From a non-`@MainActor` context, use
-    /// `await MainActor.run { ctx.stateAfter }` or the `readStateAfter()` helper.
+    /// `await MainActor.run { ctx.stateAfter }` or the `readStateAfter()` helper defined in
+    /// `SwiftRex.Combine`, `SwiftRex.RxSwift`, or `SwiftRex.ReactiveSwift`.
     @MainActor
     public var stateAfter: State? { stateGetter() }
 
