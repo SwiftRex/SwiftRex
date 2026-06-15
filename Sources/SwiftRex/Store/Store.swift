@@ -180,6 +180,24 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         self.init(initial: state, behavior: reducer.asBehavior(), environment: ())
     }
 
+    /// Creates a `Store` from a ``Behavior`` when the environment is `Void`.
+    ///
+    /// Saves the `environment: ()` boilerplate for behaviors that need no dependencies:
+    ///
+    /// ```swift
+    /// let store = Store(initial: AppState.initial, behavior: appBehavior)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - state: The initial state value.
+    ///   - behavior: The single ``Behavior`` that handles all dispatched actions.
+    public convenience init(
+        initial state: State,
+        behavior: Behavior<Action, State, Environment>
+    ) where Environment == Void {
+        self.init(initial: state, behavior: behavior, environment: ())
+    }
+
     /// Creates a `Store` by composing a ``Reducer`` and a ``Middleware`` internally.
     ///
     /// Equivalent to calling `Behavior(reducer:middleware:)` then using the primary init.
@@ -263,7 +281,20 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         guard !isProcessing else { return }
         isProcessing = true
         defer { isProcessing = false }
+        var drained = 0
         while !queue.isEmpty {
+            drained += 1
+            if drained > StoreHooks.reentranceThreshold {
+                let next = queue.first
+                StoreHooks.onReentranceDetected(StoreReentranceInfo(
+                    drainedCount: drained,
+                    threshold: StoreHooks.reentranceThreshold,
+                    source: next?.dispatcher,
+                    actionDescription: next.map { String(describing: $0.action) }
+                ))
+                queue.removeAll()   // drop the runaway so the app can't hang
+                break
+            }
             runPhases(queue.removeFirst())
         }
     }
