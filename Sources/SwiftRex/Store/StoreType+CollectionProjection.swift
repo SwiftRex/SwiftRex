@@ -37,7 +37,7 @@ extension StoreType {
     public func projection<SubAction: Sendable, C: Collection & Sendable>(
         element id: C.Element.ID,
         actionReview: @escaping @Sendable (ElementAction<C.Element.ID, SubAction>) -> Action,
-        stateCollection: WritableKeyPath<State, C>
+        stateCollection: KeyPath<State, C>
     ) -> StoreProjection<SubAction, C.Element?>
     where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable {
         StoreProjection(store: self, element: id, actionReview: actionReview, stateCollection: stateCollection)
@@ -75,7 +75,7 @@ extension StoreType {
     public func projection<SubAction: Sendable, C: Collection & Sendable, ID: Hashable & Sendable>(
         element id: ID,
         actionReview: @escaping @Sendable (ElementAction<ID, SubAction>) -> Action,
-        stateCollection: WritableKeyPath<State, C>,
+        stateCollection: KeyPath<State, C>,
         identifier: @escaping @Sendable (C.Element) -> ID
     ) -> StoreProjection<SubAction, C.Element?>
     where C.Element: Sendable {

@@ -13,23 +13,25 @@ import DataStructure
 /// dispatch    Middleware.handle                   Reader.runReader(postCtx) (phase 3)
 ///    │               │                                       │
 ///    ▼               ▼                                       ▼
-/// Action ──► context.stateBefore = pre-mutation   ctx.stateAfter = post-mutation
+/// Action ──► context.stateBefore = pre-mutation   ctx.liveState = current (post-mutation)
 ///                     └──► Reader<PostReducerContext, Effect<Action>>
 ///                                     └──► postCtx injected by Store at phase 3
 /// ```
 ///
 /// ## Pre- and post-mutation state
 ///
-/// Use ``PreReducerContext/stateBefore`` in phase 1 and ``PostReducerContext/stateAfter`` (or
-/// the `readStateAfter()` helper from `SwiftRex.Combine`, `SwiftRex.RxSwift`, or
-/// `SwiftRex.ReactiveSwift`) in the returned `Reader` for post-mutation state:
+/// Use ``PreReducerContext/stateBefore`` in phase 1 and ``PostReducerContext/liveState`` (or
+/// the `readLiveState()` helper from `SwiftRex.Combine`, `SwiftRex.RxSwift`, or
+/// `SwiftRex.ReactiveSwift`) in the returned `Reader`. Read synchronously there, `liveState`
+/// is this cycle's post-mutation state; read later from an async effect, it is the Store's
+/// current state at that moment:
 ///
 /// ```swift
 /// Middleware<MyAction, MyState, MyEnvironment>.handle { action, context in
 ///     let pre = context.stateBefore    // pre-mutation state (phase 1)
 ///
 ///     return Reader { ctx in
-///         // ctx.stateAfter — post-mutation state (phase 3, @MainActor)
+///         // ctx.liveState — post-mutation state when read here (phase 3, @MainActor)
 ///         return .just(.log(before: pre))
 ///     }
 /// }
@@ -78,7 +80,7 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
     ///
     /// - **Phase 1**: Called with `context` reflecting the current (pre-mutation) state.
     /// - **Phase 3**: The returned `Reader` is run with a ``PostReducerContext`` that gives
-    ///   access to `environment` and post-mutation `stateAfter`.
+    ///   access to `environment` and `liveState` (this cycle's post-mutation state when read here).
     ///
     /// - Note: Always called on `@MainActor`. Do not perform blocking work here.
     public let handle: @MainActor @Sendable (

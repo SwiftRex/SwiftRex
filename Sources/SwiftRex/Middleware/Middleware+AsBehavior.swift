@@ -9,7 +9,7 @@ extension Middleware {
     public var asBehavior: Behavior<Action, State, Environment> {
         Behavior { action, context in
             Consequence(
-                mutation: .identity,
+                mutation: .unchanged,
                 effect: self.handle(action, context)
             )
         }

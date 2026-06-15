@@ -175,7 +175,6 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// state changes. In `TestStore`, callbacks fire **synchronously** inside each `run(_:)` call,
     /// so ``ViewModel``-tracked properties update immediately when ``dispatch(_:sourceLocation:assert:)``
     /// or ``receive`` runs — one ``TestFeature/flush()`` is enough for SwiftUI to pick up the change.
-    @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void
@@ -384,9 +383,15 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
             getter: { [weak self] in self?.state }
         )
         let consequence = behavior.handle(dispatched.action, preCtx)
-        stateObservers.values.forEach { $0.willChange() }
-        consequence.mutation.runEndoMut(&state)
-        stateObservers.values.forEach { $0.didChange() }
+        // Mirror the Store: notify observers only when the action actually mutates state.
+        switch consequence.mutation {
+        case .unchanged:
+            break
+        case .mutation(let mutation):
+            stateObservers.values.forEach { $0.willChange() }
+            mutation.runEndoMut(&state)
+            stateObservers.values.forEach { $0.didChange() }
+        }
         let postCtx = PostReducerContext<State, Environment>(
             environment: environment,
             getter: { [weak self] in self?.state }

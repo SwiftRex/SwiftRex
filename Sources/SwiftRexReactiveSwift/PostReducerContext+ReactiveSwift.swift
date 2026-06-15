@@ -2,30 +2,31 @@
 import SwiftRex
 
 extension PostReducerContext {
-    /// Returns a single-element `SignalProducer` that reads the post-mutation state on the
+    /// Returns a single-element `SignalProducer` that reads the Store's current state on the
     /// main actor.
     ///
     /// `SignalProducer` is cold — the state read is deferred until a subscriber starts the
-    /// producer. This ensures the state read always reflects the Store's state at the moment
-    /// of subscription, which inside a `produce` closure is post-mutation state.
+    /// producer. The emitted value reflects the Store's state at the moment of subscription;
+    /// starting it synchronously inside a `produce` closure yields this cycle's post-mutation
+    /// state, while a later start yields whatever the Store holds then.
     ///
     /// ```swift
     /// Behavior<MyAction, MyState, API>.handle { action, _ in
     ///     guard case .save(let data) = action else { return .doNothing }
     ///     return .produce { ctx in
-    ///         ctx.readStateAfter()
+    ///         ctx.readLiveState()
     ///             .flatMap { state in ctx.environment.api.save(data, revision: state.revision) }
     ///             .asEffect()
     ///     }
     /// }
     /// ```
     ///
-    /// - Returns: A `SignalProducer<State, Never>` that emits the post-mutation state once and
+    /// - Returns: A `SignalProducer<State, Never>` that emits the current state once and
     ///   completes. Emits nothing (only completes) if the Store has been deallocated.
-    public func readStateAfter() -> SignalProducer<State, Never> {
+    public func readLiveState() -> SignalProducer<State, Never> {
         SignalProducer { [self] observer, _ in
             Task { @MainActor [self] in
-                if let state = self.stateAfter {
+                if let state = self.liveState {
                     observer.send(value: state)
                 }
                 observer.sendCompleted()

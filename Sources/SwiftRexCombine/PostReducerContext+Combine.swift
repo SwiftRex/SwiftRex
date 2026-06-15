@@ -11,31 +11,32 @@ private final class _PromiseBox<T>: @unchecked Sendable {
 }
 
 extension PostReducerContext {
-    /// Returns a single-element publisher that reads the post-mutation state on the main actor.
+    /// Returns a single-element publisher that reads the Store's current state on the main actor.
     ///
     /// Uses `Deferred { Future }` so the state is read lazily — only when a subscriber
-    /// attaches, not when the publisher is constructed. This ensures the state read always
-    /// reflects the Store's state at the moment of subscription, which inside a `produce`
-    /// closure is post-mutation state.
+    /// attaches, not when the publisher is constructed. The emitted value reflects the Store's
+    /// state at the moment of subscription; subscribing synchronously inside a `produce` closure
+    /// yields this cycle's post-mutation state, while a later subscription yields whatever the
+    /// Store holds then.
     ///
     /// ```swift
     /// Behavior<MyAction, MyState, API>.handle { action, _ in
     ///     guard case .save(let data) = action else { return .doNothing }
     ///     return .produce { ctx in
-    ///         ctx.readStateAfter()
+    ///         ctx.readLiveState()
     ///             .flatMap { state in ctx.environment.api.save(data, revision: state.revision) }
     ///             .asEffect()
     ///     }
     /// }
     /// ```
     ///
-    /// - Returns: An `AnyPublisher<State, Never>` that emits the post-mutation state once and
+    /// - Returns: An `AnyPublisher<State, Never>` that emits the current state once and
     ///   completes. Emits nothing if the Store has been deallocated.
-    public func readStateAfter() -> AnyPublisher<State, Never> {
+    public func readLiveState() -> AnyPublisher<State, Never> {
         Deferred {
             Future<State?, Never> { [self] promise in
                 let box = _PromiseBox(promise)
-                Task { @MainActor [self] in box.call(.success(self.stateAfter)) }
+                Task { @MainActor [self] in box.call(.success(self.liveState)) }
             }
         }
         .compactMap { $0 }

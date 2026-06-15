@@ -83,17 +83,18 @@ struct PreReducerContextTests {
 @Suite("PostReducerContext")
 @MainActor
 struct PostReducerContextTests {
-    @Test func stateAfterReturnsCurrentValue() {
+    @Test func liveStateReflectsCurrentStoreState() {
+        // liveState is a live read: it tracks the backing state, it is not a frozen snapshot.
         var state = 42
         let ctx = PostReducerContext<Int, Void>(environment: (), getter: { state })
-        #expect(ctx.stateAfter == 42)
+        #expect(ctx.liveState == 42)
         state = 99
-        #expect(ctx.stateAfter == 99)
+        #expect(ctx.liveState == 99)
     }
 
-    @Test func stateAfterReturnsNilWhenGetterReturnsNil() {
+    @Test func liveStateReturnsNilWhenGetterReturnsNil() {
         let ctx = PostReducerContext<Int, Void>(environment: (), getter: { nil })
-        #expect(ctx.stateAfter == nil)
+        #expect(ctx.liveState == nil)
     }
 
     @Test func environmentIsPreserved() {
@@ -104,12 +105,12 @@ struct PostReducerContextTests {
 
     @Test func mapProjectsStateToSubState() {
         let ctx = PostReducerContext<(Int, String), Void>(environment: (), getter: { (10, "hello") })
-        #expect(ctx.map { $0.0 }.stateAfter == 10)
+        #expect(ctx.map { $0.0 }.liveState == 10)
     }
 
     @Test func mapReturnsNilWhenParentIsNil() {
         let ctx = PostReducerContext<Int, Void>(environment: (), getter: { nil })
-        #expect(ctx.map { $0 * 2 }.stateAfter == nil)
+        #expect(ctx.map { $0 * 2 }.liveState == nil)
     }
 
     @Test func mapPreservesEnvironment() {
@@ -120,17 +121,17 @@ struct PostReducerContextTests {
 
     @Test func compactMapProjectsToOptionalSubState() {
         let ctx = PostReducerContext<Int?, Void>(environment: (), getter: { .some(5) })
-        #expect(ctx.compactMap { $0 }.stateAfter == 5)
+        #expect(ctx.compactMap { $0 }.liveState == 5)
     }
 
     @Test func compactMapReturnsNilWhenFReturnsNil() {
         let ctx = PostReducerContext<Int, Void>(environment: (), getter: { 42 })
-        #expect(ctx.compactMap { _ in nil as Int? }.stateAfter == nil)
+        #expect(ctx.compactMap { _ in nil as Int? }.liveState == nil)
     }
 
     @Test func compactMapReturnsNilWhenParentIsNil() {
         let ctx = PostReducerContext<Int, Void>(environment: (), getter: { nil })
-        #expect(ctx.compactMap { Optional($0) }.stateAfter == nil)
+        #expect(ctx.compactMap { Optional($0) }.liveState == nil)
     }
 
     @Test func mapEnvironmentTransformsEnvironment() {
@@ -144,6 +145,6 @@ struct PostReducerContextTests {
         struct Global: Sendable { let sub: Int }
         let ctx = PostReducerContext<Int, Global>(environment: Global(sub: 0), getter: { 77 })
         let projected = ctx.mapEnvironment { $0.sub }
-        #expect(projected.stateAfter == 77)
+        #expect(projected.liveState == 77)
     }
 }

@@ -9,10 +9,14 @@ import Foundation
 ///
 /// ## Cancellation registry
 ///
-/// Every case that carries an `id` shares a single `[AnyHashable: SubscriptionToken]` dictionary
-/// inside the Store. A component registered under `"searchQuery"` can be cancelled by dispatching
-/// `Effect.cancelInFlight(id: "searchQuery")`, regardless of whether it was originally debounced,
-/// throttled, or replaced. There is no separate "make cancellable" step.
+/// Every case that carries an `id` shares a single `[AnyHashableSendable: SubscriptionToken]`
+/// dictionary inside the Store. A component registered under `"searchQuery"` can be cancelled by
+/// dispatching `Effect.cancelInFlight(id: "searchQuery")`, regardless of whether it was originally
+/// debounced, throttled, or replaced. There is no separate "make cancellable" step.
+///
+/// Id equality is **type-aware**: `1` (Int), `1.0` (Double), and `true` (Bool) are three distinct
+/// ids on every platform. Prefer module-private enum ids so features can never collide — see
+/// ``AnyHashableSendable``.
 ///
 /// ## Choosing a policy
 ///
@@ -42,10 +46,9 @@ import Foundation
 ///     return .produce { _ in .cancelInFlight(id: "upload") }
 /// ```
 ///
-/// - Note: `@unchecked Sendable` is used because `AnyHashable` does not formally conform to
-///   `Sendable`. In practice, effect ids are always value types (strings, ints, enums) that
-///   are safe to send across isolation boundaries.
-public enum EffectScheduling: @unchecked Sendable {
+/// - Note: Ids are stored as ``AnyHashableSendable``, so `Sendable` is compiler-checked —
+///   only `Hashable & Sendable` value types can be used as effect ids.
+public enum EffectScheduling: Sendable {
     /// Start the component immediately with no cancellation tracking.
     ///
     /// Each `.immediately` component is registered under a freshly generated `UUID` key that is
@@ -69,8 +72,8 @@ public enum EffectScheduling: @unchecked Sendable {
     /// }
     /// ```
     ///
-    /// - Parameter id: The shared key in the Store's effect registry. Must be `Hashable`.
-    case replacing(id: AnyHashable)
+    /// - Parameter id: The shared key in the Store's effect registry.
+    case replacing(id: AnyHashableSendable)
 
     /// Cancel any pending component with `id`, then start a new one after `delay` seconds.
     ///
@@ -92,7 +95,7 @@ public enum EffectScheduling: @unchecked Sendable {
     /// - Parameters:
     ///   - id: The shared key in the Store's effect registry.
     ///   - delay: Seconds to wait after the latest dispatch before starting the component.
-    case debounce(id: AnyHashable, delay: TimeInterval)
+    case debounce(id: AnyHashableSendable, delay: TimeInterval)
 
     /// Start the component immediately, but only if no component with `id` ran within the last
     /// `interval` seconds.
@@ -114,7 +117,7 @@ public enum EffectScheduling: @unchecked Sendable {
     /// - Parameters:
     ///   - id: The shared key in the Store's effect registry.
     ///   - interval: Minimum seconds between consecutive executions.
-    case throttle(id: AnyHashable, interval: TimeInterval)
+    case throttle(id: AnyHashableSendable, interval: TimeInterval)
 
     /// Remove `id` from the registry and cancel whatever was registered there.
     ///
@@ -128,5 +131,40 @@ public enum EffectScheduling: @unchecked Sendable {
     /// ```
     ///
     /// - Parameter id: The shared key in the Store's effect registry to remove.
-    case cancelInFlight(id: AnyHashable)
+    case cancelInFlight(id: AnyHashableSendable)
+}
+
+// MARK: - Generic id factories
+
+// Enum cases cannot be generic and `AnyHashableSendable` has no implicit conversion, so these
+// same-name factories keep the natural call-site spelling: `.replacing(id: "fetch")`,
+// `.debounce(id: EffectID.search, delay: 0.3)`. `AnyHashableSendable` itself satisfies
+// `some Hashable & Sendable`, so without `@_disfavoredOverload` a call passing the wrapper
+// (including the delegation inside each factory) would be ambiguous between the case
+// constructor and the factory.
+
+extension EffectScheduling {
+    /// Creates a ``replacing(id:)`` policy from any `Hashable & Sendable` id.
+    @_disfavoredOverload
+    public static func replacing(id: some Hashable & Sendable) -> Self {
+        .replacing(id: AnyHashableSendable(id))
+    }
+
+    /// Creates a ``debounce(id:delay:)`` policy from any `Hashable & Sendable` id.
+    @_disfavoredOverload
+    public static func debounce(id: some Hashable & Sendable, delay: TimeInterval) -> Self {
+        .debounce(id: AnyHashableSendable(id), delay: delay)
+    }
+
+    /// Creates a ``throttle(id:interval:)`` policy from any `Hashable & Sendable` id.
+    @_disfavoredOverload
+    public static func throttle(id: some Hashable & Sendable, interval: TimeInterval) -> Self {
+        .throttle(id: AnyHashableSendable(id), interval: interval)
+    }
+
+    /// Creates a ``cancelInFlight(id:)`` policy from any `Hashable & Sendable` id.
+    @_disfavoredOverload
+    public static func cancelInFlight(id: some Hashable & Sendable) -> Self {
+        .cancelInFlight(id: AnyHashableSendable(id))
+    }
 }

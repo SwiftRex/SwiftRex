@@ -32,9 +32,12 @@ import DataStructure
 //         reduce: { items, s in s.items = items }, when: { !$0.isLoaded })
 //
 //   Bool predicate — general action test, fixed dispatch (variants 21–26):
-//     .on({ case .reset = $0 }, reduce: { $0.count = 0 })
-//     .on({ case .submit = $0 }, reduce: { $0.isLoading = true }, dispatch: .doSubmit,
-//         when: { !$0.isLoading })
+//   Use these when the test is a genuine boolean condition over the action's payload, not just
+//   a case match — for pure case matching prefer the KeyPath form above (`\.case`), which needs
+//   no `if case` boilerplate. A closure cannot hold a bare `case` pattern (patterns are not
+//   values in Swift), so a real payload test reads as an `if case` expression:
+//     .on({ if case .setVolume(let v) = $0, v > 11 { true } else { false } }, reduce: { $0.muted = false })
+//     .on({ if case .retry(let n) = $0, n < 3 { true } else { false } }, dispatch: .reload)
 //
 //   Pure routing (no mutation, (Action) -> Action?) — variants 27–28:
 //     .on { action in guard case .didSearch(let q) = action else { return nil }; return .search(q) }
@@ -56,7 +59,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = prism.preview(action) else { return .doNothing }
-            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -76,7 +79,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard let value = prism.preview(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -98,7 +101,7 @@ extension Behavior {
         .combine(self, Behavior { action, _ in
             guard let value = prism.preview(action) else { return .doNothing }
             return Consequence(
-                mutation: EndoMut { state in reduce(value, &state) },
+                mutation: .mutation(EndoMut { state in reduce(value, &state) }),
                 effect: Reader { _ in Effect.just(out(value)) }
             )
         })
@@ -117,7 +120,7 @@ extension Behavior {
             guard let value = prism.preview(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
             return Consequence(
-                mutation: EndoMut { s in reduce(value, &s) },
+                mutation: .mutation(EndoMut { s in reduce(value, &s) }),
                 effect: Reader { _ in Effect.just(out(value)) }
             )
         })
@@ -252,7 +255,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = action[keyPath: extract] else { return .doNothing }
-            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -272,7 +275,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard let value = action[keyPath: extract] else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out(value)) })
+            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -293,7 +296,7 @@ extension Behavior {
         .combine(self, Behavior { action, _ in
             guard let value = action[keyPath: extract] else { return .doNothing }
             return Consequence(
-                mutation: EndoMut { state in reduce(value, &state) },
+                mutation: .mutation(EndoMut { state in reduce(value, &state) }),
                 effect: Reader { _ in Effect.just(out(value)) }
             )
         })
@@ -312,7 +315,7 @@ extension Behavior {
             guard let value = action[keyPath: extract] else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
             return Consequence(
-                mutation: EndoMut { s in reduce(value, &s) },
+                mutation: .mutation(EndoMut { s in reduce(value, &s) }),
                 effect: Reader { _ in Effect.just(out(value)) }
             )
         })
@@ -389,8 +392,11 @@ extension Behavior {
 
     /// Routes actions that satisfy `predicate`, dispatching `out`. No state is ever read.
     ///
+    /// Use a Bool predicate when the test inspects the action's payload; for a plain case match
+    /// prefer the KeyPath form `.on(\.case, dispatch:)`.
+    ///
     /// ```swift
-    /// .on({ case .didLogOut = $0 }, dispatch: .auth(.logOut))
+    /// .on({ if case .setVolume(let v) = $0, v == 0 { true } else { false } }, dispatch: .showMutedBanner)
     /// ```
     public func on(
         _ predicate: @escaping @Sendable (Action) -> Bool,
@@ -398,7 +404,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard predicate(action) else { return .doNothing }
-            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out) })
+            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -408,7 +414,9 @@ extension Behavior {
     /// State is read only after `predicate` returns `true`.
     ///
     /// ```swift
-    /// .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+    /// .on({ if case .seek(let t) = $0, t < 0 { true } else { false } },
+    ///     dispatch: .clampToStart,
+    ///     when: { $0.isPlaying })
     /// ```
     public func on(
         _ predicate: @escaping @Sendable (Action) -> Bool,
@@ -418,7 +426,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard predicate(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .identity, effect: Reader { _ in Effect.just(out) })
+            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -427,8 +435,12 @@ extension Behavior {
     /// Applies `reduce` when `predicate` returns `true`. No action is dispatched.
     /// No state copy occurs if `predicate` returns `false`.
     ///
+    /// This is the one shape no KeyPath/Prism overload covers — a payload-conditional mutation
+    /// with no dispatch:
+    ///
     /// ```swift
-    /// .on({ case .toggle = $0 }, reduce: { $0.isActive.toggle() })
+    /// // Clamp out-of-range volume requests in place.
+    /// .on({ if case .setVolume(let v) = $0, v > 11 { true } else { false } }, reduce: { $0.volume = 11 })
     /// ```
     public func on(
         _ predicate: @escaping @Sendable (Action) -> Bool,
@@ -436,7 +448,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard predicate(action) else { return .doNothing }
-            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in .empty })
+            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in .empty })
         })
     }
 
@@ -446,9 +458,9 @@ extension Behavior {
     /// No state copy occurs if `predicate` returns `false`.
     ///
     /// ```swift
-    /// .on({ case .didLoad = $0 },
-    ///     reduce: { $0.isLoading = false },
-    ///     dispatch: .renderItems)
+    /// .on({ if case .didReceive(let bytes) = $0, bytes.isEmpty { true } else { false } },
+    ///     reduce: { $0.isEmpty = true },
+    ///     dispatch: .retry)
     /// ```
     public func on(
         _ predicate: @escaping @Sendable (Action) -> Bool,
@@ -457,7 +469,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard predicate(action) else { return .doNothing }
-            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in Effect.just(out) })
+            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -467,9 +479,9 @@ extension Behavior {
     /// State is read only after `predicate` returns `true`. No action is dispatched.
     ///
     /// ```swift
-    /// .on({ case .submit = $0 },
-    ///     reduce: { $0.isSubmitting = true },
-    ///     when: { !$0.isSubmitting })
+    /// .on({ if case .keyPressed(.space) = $0 { true } else { false } },
+    ///     reduce: { $0.isPaused.toggle() },
+    ///     when: { $0.canPause })
     /// ```
     public func on(
         _ predicate: @escaping @Sendable (Action) -> Bool,
@@ -479,7 +491,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard predicate(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in .empty })
+            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in .empty })
         })
     }
 
@@ -489,9 +501,9 @@ extension Behavior {
     /// State is read only after `predicate` returns `true`.
     ///
     /// ```swift
-    /// .on({ case .submit = $0 },
+    /// .on({ if case .submit(let form) = $0, form.isValid { true } else { false } },
     ///     reduce: { $0.isSubmitting = true },
-    ///     dispatch: .submitForm,
+    ///     dispatch: .performSubmit,
     ///     when: { !$0.isSubmitting })
     /// ```
     public func on(
@@ -503,7 +515,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard predicate(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: EndoMut(reduce), effect: Reader { _ in Effect.just(out) })
+            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -525,7 +537,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             Consequence(
-                mutation: .identity,
+                mutation: .unchanged,
                 effect: Reader { _ in fn(action).map { Effect.just($0) } ?? .empty }
             )
         })
@@ -542,7 +554,7 @@ extension Behavior {
             guard let out = fn(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
             return Consequence(
-                mutation: .identity,
+                mutation: .unchanged,
                 effect: Reader { _ in Effect.just(out) }
             )
         })

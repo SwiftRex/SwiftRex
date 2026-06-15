@@ -106,8 +106,9 @@ public protocol StoreType<Action, State>: Sendable {
     /// - Parameters:
     ///   - willChange: Called on `@MainActor` immediately before each state mutation.
     ///   - didChange: Called on `@MainActor` immediately after each state mutation.
-    /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when cancelled.
-    @discardableResult
+    /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when released or cancelled.
+    ///   You **must** retain it for as long as you want the callbacks to fire — dropping it
+    ///   cancels the observation immediately (RAII, like `AnyCancellable`).
     func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void
@@ -156,8 +157,7 @@ extension StoreType {
     /// ```
     ///
     /// - Parameter didChange: Called on `@MainActor` after each state mutation.
-    /// - Returns: A ``SubscriptionToken`` that cancels the callback when cancelled.
-    @discardableResult
+    /// - Returns: A ``SubscriptionToken`` you must retain; releasing it cancels the callback.
     public func observe(didChange: @escaping @MainActor @Sendable () -> Void) -> SubscriptionToken {
         observe(willChange: {}, didChange: didChange)
     }
@@ -174,8 +174,7 @@ extension StoreType {
     /// ```
     ///
     /// - Parameter willChange: Called on `@MainActor` before each state mutation.
-    /// - Returns: A ``SubscriptionToken`` that cancels the callback when cancelled.
-    @discardableResult
+    /// - Returns: A ``SubscriptionToken`` you must retain; releasing it cancels the callback.
     public func observe(willChange: @escaping @MainActor @Sendable () -> Void) -> SubscriptionToken {
         observe(willChange: willChange, didChange: {})
     }

@@ -24,38 +24,43 @@
 /// SubscriptionToken.empty
 /// ```
 ///
-/// ## Lifetime management
+/// ## Lifetime management — RAII, like `AnyCancellable`
 ///
-/// Store the returned token in a property or collection and call ``cancel()`` when the
-/// subscriber's lifetime ends (e.g., in `deinit` or on view disappear):
+/// `SubscriptionToken` is a **reference type** whose `deinit` calls ``cancel()``. Releasing the
+/// last reference therefore cancels automatically — there is no "leak on discard". Two
+/// consequences follow:
+///
+/// - **Effect subscriptions** are owned by the ``Store``'s registry. Replacing the token under a
+///   key (`.replacing`, `.debounce`, `.throttle`) releases the previous one and cancels its
+///   effect; tearing down the Store releases the whole registry and cancels everything in flight.
+/// - **Observations** are owned by *you*. Retain the token for as long as you want the callbacks
+///   to fire — store it in a property or a `Set`/array — exactly like Combine's `AnyCancellable`:
 ///
 /// ```swift
 /// var tokens: [SubscriptionToken] = []
 ///
 /// func subscribe() {
-///     tokens.append(
-///         store.observe(didChange: { self.updateUI() })
-///     )
+///     tokens.append(store.observe(didChange: { self.updateUI() }))
 /// }
-///
-/// deinit {
-///     tokens.forEach { $0.cancel() }
-/// }
+/// // Dropping `tokens` (or this object) cancels the observation automatically.
 /// ```
 ///
-/// If you discard the token without cancelling, the subscription leaks — the observer or
-/// effect keeps running for the lifetime of the ``Store``.
+/// Discarding an observation token without retaining it cancels the observation **immediately** —
+/// the callbacks never fire. This is why ``StoreType/observe(willChange:didChange:)`` is not
+/// `@discardableResult`.
 ///
-/// - Note: `cancel()` may be called from any thread. The ``Store`` and ``StoreBuffer``
-///   implement observer removal via `Task { @MainActor }` to ensure thread safety.
-public struct SubscriptionToken: Sendable {
+/// - Note: `cancel()` may be called from any thread, and is also called by `deinit`, so it may
+///   run more than once — keeping the underlying cancellation idempotent is the resource's
+///   responsibility (`Task.cancel()`, `AnyCancellable.cancel()`, `Disposable.dispose()` all are).
+///   The ``Store`` and ``StoreBuffer`` remove observers via `Task { @MainActor }` for thread safety.
+public final class SubscriptionToken: Sendable {
     private let _cancel: @Sendable () -> Void
 
     /// Creates a `SubscriptionToken` backed by a cancellation closure.
     ///
-    /// - Parameter cancel: A `@Sendable` closure invoked when ``cancel()`` is called.
-    ///   May be called from any thread, any number of times (idempotency is the caller's
-    ///   responsibility for the underlying resource).
+    /// - Parameter cancel: A `@Sendable` closure invoked when ``cancel()`` is called or when the
+    ///   token is released. May be called from any thread, any number of times (idempotency is
+    ///   the caller's responsibility for the underlying resource).
     public init(_ cancel: @escaping @Sendable () -> Void) {
         _cancel = cancel
     }
@@ -64,15 +69,22 @@ public struct SubscriptionToken: Sendable {
     ///
     /// For effect subscriptions, this calls the ``SubscriptionToken`` returned from the
     /// ``Effect/Component/subscribe`` closure. For state observers registered via
-    /// ``StoreType/observe(willChange:didChange:)``, this removes both callbacks.
+    /// ``StoreType/observe(willChange:didChange:)``, this removes both callbacks. Also invoked
+    /// automatically by `deinit` when the last reference is released.
     public func cancel() {
+        _cancel()
+    }
+
+    /// Cancels automatically when the last reference is released (RAII / `AnyCancellable` style).
+    deinit {
         _cancel()
     }
 
     /// A token that does nothing when cancelled.
     ///
     /// Use as a placeholder when an effect or subscription cannot be cancelled, or as a
-    /// default return value when no real cancellation is needed:
+    /// default return value when no real cancellation is needed. It is a single shared instance,
+    /// so it is never deallocated and its no-op `deinit` never matters:
     ///
     /// ```swift
     /// // Effect that completes immediately and cannot be cancelled

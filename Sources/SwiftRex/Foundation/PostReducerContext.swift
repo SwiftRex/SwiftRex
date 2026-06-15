@@ -6,9 +6,9 @@
 ///
 /// - ``environment``: the store's injected dependencies — accessible synchronously, from any
 ///   context, without `await`.
-/// - ``stateAfter``: the state **after** all `EndoMut` values from this dispatch cycle ran.
-///   It is `@MainActor`, so a non-`@MainActor` effect must hop to the main actor
-///   (or use the Combine / RxSwift / ReactiveSwift `readStateAfter()` helpers) to read it.
+/// - ``liveState``: the store's **current** state, read live on the main actor. It is
+///   `@MainActor`, so a non-`@MainActor` effect must hop to the main actor (or use the
+///   Combine / RxSwift / ReactiveSwift `readLiveState()` helpers) to read it.
 ///
 /// ## Usage
 ///
@@ -31,20 +31,32 @@
 /// }
 /// ```
 ///
-/// ## Reading post-mutation state
+/// ## Reading state
+///
+/// ``liveState`` is a **live** read of the Store's current state, not a frozen snapshot of this
+/// dispatch cycle:
+///
+/// - Read **synchronously** (inside the `produce`/`Reader` closure, or an `.immediately`
+///   subscribe) it equals this cycle's post-mutation state — nothing else can mutate in between.
+/// - Read **asynchronously** (after a main-actor hop in `Effect.task`, a delayed
+///   debounce/throttle, etc.) it reflects whatever the Store holds at that later moment, which
+///   may include mutations from subsequent actions.
+///
+/// If you need a deterministic value tied to *this* action, fold it into the action itself
+/// (Elm-style) rather than reading `liveState` from an async effect.
 ///
 /// From an `async` context, hop to the main actor:
 ///
 /// ```swift
 /// return .produce { ctx in
 ///     Effect.task {
-///         let count = await ctx.stateAfter?.count  // main-actor hop happens here
+///         let count = await ctx.liveState?.count  // main-actor hop happens here
 ///         return .log(count: count)
 ///     }
 /// }
 /// ```
 ///
-/// From a Combine, RxSwift, or ReactiveSwift effect, use the `readStateAfter()` helper
+/// From a Combine, RxSwift, or ReactiveSwift effect, use the `readLiveState()` helper
 /// defined in the corresponding target (`SwiftRex.Combine`, `SwiftRex.RxSwift`, or
 /// `SwiftRex.ReactiveSwift`).
 ///
@@ -67,13 +79,17 @@ public struct PostReducerContext<State: Sendable, Environment: Sendable>: Sendab
     /// The store's injected environment — accessible from any context without `await`.
     public let environment: Environment
 
-    /// The state after all mutations from this dispatch cycle have been applied.
+    /// The Store's **current** state, read live on the main actor.
+    ///
+    /// When read synchronously inside the effect closure this equals the state after this
+    /// dispatch cycle's mutations; when read later (after an async hop) it reflects whatever the
+    /// Store holds at that moment — see the type-level "Reading state" discussion.
     ///
     /// Requires `@MainActor`. From a non-`@MainActor` context, use
-    /// `await MainActor.run { ctx.stateAfter }` or the `readStateAfter()` helper defined in
+    /// `await MainActor.run { ctx.liveState }` or the `readLiveState()` helper defined in
     /// `SwiftRex.Combine`, `SwiftRex.RxSwift`, or `SwiftRex.ReactiveSwift`.
     @MainActor
-    public var stateAfter: State? { stateGetter() }
+    public var liveState: State? { stateGetter() }
 
     // MARK: - Package-internal
 
@@ -111,7 +127,7 @@ extension PostReducerContext {
 
     /// Projects this context to a narrower state type using a partial transformation.
     ///
-    /// The resulting ``stateAfter`` is `nil` when the Store is deallocated **or** when `f`
+    /// The resulting ``liveState`` is `nil` when the Store is deallocated **or** when `f`
     /// returns `nil`.
     ///
     /// ```swift

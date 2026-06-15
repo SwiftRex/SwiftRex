@@ -121,6 +121,40 @@ struct StoreProjectionIdentifiableTests {
     }
 }
 
+// MARK: - Collection element projection via a read-only key path
+
+private struct ComputedListState: Sendable {
+    var raw: [Item] = []
+    /// Get-only computed property — it forms a `KeyPath`, never a `WritableKeyPath`. Projecting
+    /// through it would not compile under the former `WritableKeyPath` signature.
+    var visibleItems: [Item] { raw.filter { !$0.value.isEmpty } }
+}
+
+@Suite("StoreProjection collection element via read-only key path")
+@MainActor
+struct StoreProjectionReadOnlyKeyPathTests {
+    private func store(raw: [Item]) -> Store<ElementAction<Int, String>, ComputedListState, Void> {
+        Store(initial: ComputedListState(raw: raw), behavior: .handle { _, _ in .doNothing }, environment: ())
+    }
+
+    @Test func projectsThroughGetOnlyComputedCollection() {
+        let store = store(raw: [Item(id: 1, value: "a"), Item(id: 2, value: ""), Item(id: 3, value: "c")])
+        let proj = store.projection(
+            element: 3,
+            actionReview: { $0 },
+            stateCollection: \.visibleItems // KeyPath, not WritableKeyPath
+        )
+        #expect(proj.state?.value == "c")
+    }
+
+    @Test func projectionIsNilWhenElementFilteredOut() {
+        let store = store(raw: [Item(id: 1, value: "a"), Item(id: 2, value: "")])
+        // id 2 has an empty value, so it is excluded from `visibleItems` → nil projection.
+        let proj = store.projection(element: 2, actionReview: { $0 }, stateCollection: \.visibleItems)
+        #expect(proj.state == nil)
+    }
+}
+
 // MARK: - Collection element projection (custom identifier closure)
 
 private struct Tagged: Sendable { let tag: String; var score: Int }

@@ -1,43 +1,44 @@
 @testable import SwiftRex
-import XCTest
+import Testing
 
-final class DispatchedActionTests: XCTestCase {
+@Suite
+struct DispatchedActionTests {
     private let source = ActionSource(file: "f", function: "fn", line: 1)
 
-    func testInitStoresActionAndDispatcher() {
+    @Test func initStoresActionAndDispatcher() {
         let sut = DispatchedAction(42, dispatcher: source)
-        XCTAssertEqual(sut.action, 42)
-        XCTAssertEqual(sut.dispatcher, source)
+        #expect(sut.action == 42)
+        #expect(sut.dispatcher == source)
     }
 
-    func testMapTransformsActionPreservesDispatcher() {
+    @Test func mapTransformsActionPreservesDispatcher() {
         let sut = DispatchedAction(3, dispatcher: source).map { $0 * 2 }
-        XCTAssertEqual(sut.action, 6)
-        XCTAssertEqual(sut.dispatcher, source)
+        #expect(sut.action == 6)
+        #expect(sut.dispatcher == source)
     }
 
-    func testMapStringToInt() {
+    @Test func mapStringToInt() {
         let sut = DispatchedAction("hello", dispatcher: source).map(\.count)
-        XCTAssertEqual(sut.action, 5)
-        XCTAssertEqual(sut.dispatcher, source)
+        #expect(sut.action == 5)
+        #expect(sut.dispatcher == source)
     }
 
-    func testCompactMapReturnsSomeWhenTransformSucceeds() {
+    @Test func compactMapReturnsSomeWhenTransformSucceeds() {
         let sut = DispatchedAction(1, dispatcher: source).compactMap { $0 + 10 }
-        XCTAssertEqual(sut?.action, 11)
-        XCTAssertEqual(sut?.dispatcher, source)
+        #expect(sut?.action == 11)
+        #expect(sut?.dispatcher == source)
     }
 
-    func testCompactMapReturnsNilWhenTransformReturnsNil() {
+    @Test func compactMapReturnsNilWhenTransformReturnsNil() {
         let sut: DispatchedAction<Int>? = DispatchedAction(1, dispatcher: source).compactMap { _ in nil }
-        XCTAssertNil(sut)
+        #expect(sut == nil)
     }
 
-    func testCompactMapStringToOptionalInt() {
+    @Test func compactMapStringToOptionalInt() {
         let valid = DispatchedAction("42", dispatcher: source).compactMap(Int.init)
-        XCTAssertEqual(valid?.action, 42)
+        #expect(valid?.action == 42)
 
         let invalid = DispatchedAction("abc", dispatcher: source).compactMap(Int.init)
-        XCTAssertNil(invalid)
+        #expect(invalid == nil)
     }
 }
