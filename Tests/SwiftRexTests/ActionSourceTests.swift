@@ -1,36 +1,37 @@
 @testable import SwiftRex
-import XCTest
+import Testing
 
-final class ActionSourceTests: XCTestCase {
-    func testInitStoresAllValues() {
+@Suite
+struct ActionSourceTests {
+    @Test func initStoresAllValues() {
         let sut = ActionSource(file: "File.swift", function: "myFunc()", line: 42)
-        XCTAssertEqual(sut.file, "File.swift")
-        XCTAssertEqual(sut.function, "myFunc()")
-        XCTAssertEqual(sut.line, 42)
+        #expect(sut.file == "File.swift")
+        #expect(sut.function == "myFunc()")
+        #expect(sut.line == 42)
     }
 
-    func testDefaultParametersCaptureCallSite() {
+    @Test func defaultParametersCaptureCallSite() {
         let line: UInt = #line; let sut = ActionSource()
-        XCTAssertFalse(sut.file.isEmpty)
-        XCTAssertFalse(sut.function.isEmpty)
-        XCTAssertEqual(sut.line, line)
+        #expect(!(sut.file.isEmpty))
+        #expect(!(sut.function.isEmpty))
+        #expect(sut.line == line)
     }
 
-    func testEquatableEqualWhenSameValues() {
+    @Test func equatableEqualWhenSameValues() {
         let a = ActionSource(file: "f", function: "fn", line: 1)
         let b = ActionSource(file: "f", function: "fn", line: 1)
-        XCTAssertEqual(a, b)
+        #expect(a == b)
     }
 
-    func testEquatableNotEqualWhenDifferentLine() {
+    @Test func equatableNotEqualWhenDifferentLine() {
         let a = ActionSource(file: "f", function: "fn", line: 1)
         let b = ActionSource(file: "f", function: "fn", line: 2)
-        XCTAssertNotEqual(a, b)
+        #expect(a != b)
     }
 
-    func testHashableConsistentWithEquatable() {
+    @Test func hashableConsistentWithEquatable() {
         let a = ActionSource(file: "f", function: "fn", line: 1)
         let b = ActionSource(file: "f", function: "fn", line: 1)
-        XCTAssertEqual(a.hashValue, b.hashValue)
+        #expect(a.hashValue == b.hashValue)
     }
 }

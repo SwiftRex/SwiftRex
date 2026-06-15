@@ -13,7 +13,7 @@ let package = Package(
     products: [
         .library(name: "SwiftRex", targets: ["SwiftRex"]),
         .library(name: "SwiftRex.Operators", targets: ["SwiftRexOperators"]),
-        .library(name: "SwiftRex.Concurrency", targets: ["SwiftRexConcurrency"]),
+        .library(name: "SwiftRex.SwiftConcurrency", targets: ["SwiftRexSwiftConcurrency"]),
         .library(name: "SwiftRex.Combine", targets: ["SwiftRexCombine"]),
         .library(name: "SwiftRex.RxSwift", targets: ["SwiftRexRxSwift"]),
         .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
@@ -22,10 +22,10 @@ let package = Package(
         .library(name: "SwiftRex.Testing", targets: ["SwiftRexTesting"])
     ],
     dependencies: [
-        .package(url: "https://github.com/luizmb/FP.git", from: "1.8.1"),
+        .package(url: "https://github.com/luizmb/FP.git", from: "1.10.0"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),
-        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "603.0.1"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0")
     ],
     targets: [
@@ -43,12 +43,11 @@ let package = Package(
         // MARK: - Concurrency bridge
 
         .target(
-            name: "SwiftRexConcurrency",
+            name: "SwiftRexSwiftConcurrency",
             dependencies: [
-                "SwiftRex",
-                .product(name: "CoreFP", package: "FP")
+                "SwiftRex"
             ],
-            path: "Sources/SwiftRexConcurrency"
+            path: "Sources/SwiftRexSwiftConcurrency"
         ),
 
         // MARK: - Operators (optional, symbolic sugar)
@@ -150,9 +149,9 @@ let package = Package(
             path: "Tests/SwiftRexTests"
         ),
         .testTarget(
-            name: "SwiftRexConcurrencyTests",
-            dependencies: ["SwiftRexConcurrency", "SwiftRex"],
-            path: "Tests/SwiftRexConcurrencyTests"
+            name: "SwiftRexSwiftConcurrencyTests",
+            dependencies: ["SwiftRexSwiftConcurrency", "SwiftRex"],
+            path: "Tests/SwiftRexSwiftConcurrencyTests"
         ),
         .testTarget(
             name: "SwiftRexCombineTests",

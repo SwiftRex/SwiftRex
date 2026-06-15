@@ -1,29 +1,33 @@
+import Foundation
 @testable import SwiftRex
-import XCTest
+import Testing
 
-final class ElementActionTests: XCTestCase {
-    func testStoresIdAndAction() {
+@Suite
+struct ElementActionTests {
+    @Test func storesIdAndAction() {
         let ea = ElementAction("key", action: 42)
-        XCTAssertEqual(ea.id, "key")
-        XCTAssertEqual(ea.action, 42)
+        #expect(ea.id == "key")
+        #expect(ea.action == 42)
     }
 
-    func testEquatableEqual() {
-        XCTAssertEqual(ElementAction(1, action: "a"), ElementAction(1, action: "a"))
+    @Test func equatableEqual() {
+        let lhs = ElementAction(1, action: "a")
+        let rhs = ElementAction(1, action: "a")
+        #expect(lhs == rhs)
     }
 
-    func testEquatableUnequalId() {
-        XCTAssertNotEqual(ElementAction(1, action: "a"), ElementAction(2, action: "a"))
+    @Test func equatableUnequalId() {
+        #expect(ElementAction(1, action: "a") != ElementAction(2, action: "a"))
     }
 
-    func testEquatableUnequalAction() {
-        XCTAssertNotEqual(ElementAction(1, action: "a"), ElementAction(1, action: "b"))
+    @Test func equatableUnequalAction() {
+        #expect(ElementAction(1, action: "a") != ElementAction(1, action: "b"))
     }
 
-    func testUUIDId() {
+    @Test func uUIDId() {
         let id = UUID()
         let ea = ElementAction(id, action: true)
-        XCTAssertEqual(ea.id, id)
-        XCTAssertTrue(ea.action)
+        #expect(ea.id == id)
+        #expect(ea.action)
     }
 }

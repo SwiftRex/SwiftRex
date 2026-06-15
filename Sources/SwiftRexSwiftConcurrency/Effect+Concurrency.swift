@@ -1,4 +1,3 @@
-import CoreFP
 import SwiftRex
 
 // MARK: - AsyncSequence → Effect
@@ -150,110 +149,9 @@ extension Effect {
     }
 }
 
-// MARK: - DeferredTask → Effect
+// MARK: - Throwing async task → Effect
 
 extension Effect {
-    /// Creates an ``Effect`` from a `DeferredTask<Action>`, dispatching its result as an action.
-    ///
-    /// `DeferredTask` is a lazy wrapper around an `async` closure from the `CoreFP` library.
-    /// Unlike a raw `Task`, a `DeferredTask` does not start until it is explicitly run. This
-    /// factory runs it inside a cancellable `Task` and dispatches its result.
-    ///
-    /// ```swift
-    /// let fetch: DeferredTask<AppAction> = DeferredTask { await loadNextAction() }
-    /// let effect = Effect<AppAction>.deferredTask(fetch)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - task: A `DeferredTask<Action>` to run.
-    ///   - scheduling: The ``EffectScheduling`` policy. Defaults to
-    ///     ``EffectScheduling/immediately``.
-    ///   - file: Source file; captured automatically.
-    ///   - function: Source function; captured automatically.
-    ///   - line: Source line; captured automatically.
-    /// - Returns: An `Effect<Action>` that dispatches the task's result.
-    public static func deferredTask(
-        _ task: DeferredTask<Action>,
-        scheduling: EffectScheduling = .immediately,
-        file: String = #file,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Self {
-        Effect.task({ await task.run() }, scheduling: scheduling, file: file, function: function, line: line)
-    }
-
-    /// Creates an ``Effect`` from a failable `DeferredTask`, mapping its `Result` to an action.
-    ///
-    /// Use this overload when the deferred task can either succeed or fail, and your action
-    /// type models that duality with a `Result`:
-    ///
-    /// ```swift
-    /// enum AppAction {
-    ///     case didFetch(Result<MyModel, APIError>)
-    /// }
-    ///
-    /// let fetch: DeferredTask<Result<MyModel, APIError>> = DeferredTask {
-    ///     await apiClient.fetch()
-    /// }
-    /// let effect = Effect<AppAction>.deferredTask(fetch, AppAction.didFetch)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - task: A `DeferredTask<Result<Success, Failure>>` to run.
-    ///   - transform: Maps the `Result` to an `Action`.
-    ///   - scheduling: The ``EffectScheduling`` policy. Defaults to
-    ///     ``EffectScheduling/immediately``.
-    ///   - file: Source file; captured automatically.
-    ///   - function: Source function; captured automatically.
-    ///   - line: Source line; captured automatically.
-    /// - Returns: An `Effect<Action>` that dispatches the mapped result.
-    public static func deferredTask<Success: Sendable, Failure: Error>(
-        _ task: DeferredTask<Result<Success, Failure>>,
-        _ transform: @escaping @Sendable (Result<Success, Failure>) -> Action,
-        scheduling: EffectScheduling = .immediately,
-        file: String = #file,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Self {
-        Effect.task({ transform(await task.run()) }, scheduling: scheduling, file: file, function: function, line: line)
-    }
-
-    /// Creates an ``Effect`` from a `DeferredTask<DispatchedAction<Action>>`, preserving its dispatcher.
-    ///
-    /// Use when the deferred task produces a pre-sourced ``DispatchedAction`` — for example,
-    /// when another middleware hands you a task already tagged with its call-site. No new
-    /// ``ActionSource`` is created; the existing dispatcher flows through unchanged.
-    ///
-    /// ```swift
-    /// let task: DeferredTask<DispatchedAction<AppAction>> = DeferredTask {
-    ///     await pipeline.nextAction()
-    /// }
-    /// let effect = Effect<AppAction>.deferredTask(task)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - task: A `DeferredTask<DispatchedAction<Action>>` to run.
-    ///   - scheduling: The ``EffectScheduling`` policy. Defaults to
-    ///     ``EffectScheduling/immediately``.
-    /// - Returns: An `Effect<Action>` that forwards the ``DispatchedAction`` as-is.
-    public static func deferredTask(
-        _ task: DeferredTask<DispatchedAction<Action>>,
-        scheduling: EffectScheduling = .immediately
-    ) -> Self {
-        Effect(components: [
-            Component(subscribe: { send, complete in
-                let t = Task {
-                    guard !Task.isCancelled else { return }
-                    let dispatched = await task.run()
-                    guard !Task.isCancelled else { return }
-                    send(dispatched)
-                    complete()
-                }
-                return SubscriptionToken { t.cancel() }
-            }, scheduling: scheduling)
-        ])
-    }
-
     /// Creates an ``Effect`` from a `throws`-marked async closure, wrapping the outcome in `Result`.
     ///
     /// This is the idiomatic way to bridge a throwing `async` function when you want to feed
@@ -309,71 +207,6 @@ extension Effect {
                 return SubscriptionToken { t.cancel() }
             }, scheduling: scheduling)
         ])
-    }
-}
-
-// MARK: - DeferredStream → Effect
-
-extension Effect {
-    /// Creates an ``Effect`` from a `DeferredStream<Element>`, mapping each element to an action.
-    ///
-    /// `DeferredStream` is a lazy `AsyncSequence` wrapper from the `CoreFP` library that
-    /// constructs an `AsyncStream` on demand — iteration only begins when the Store runs the
-    /// effect. Each element is transformed to an action and dispatched independently.
-    ///
-    /// ```swift
-    /// let stream: DeferredStream<DataPacket> = DeferredStream {
-    ///     AsyncStream { continuation in
-    ///         socketClient.onReceive { continuation.yield($0) }
-    ///     }
-    /// }
-    ///
-    /// enum AppAction { case didReceive(DataPacket) }
-    ///
-    /// let effect = Effect<AppAction>.deferredStream(stream, AppAction.didReceive)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - stream: A `DeferredStream<Element>` to iterate.
-    ///   - transform: Maps each element to an `Action`.
-    ///   - scheduling: The ``EffectScheduling`` policy. Defaults to
-    ///     ``EffectScheduling/immediately``.
-    ///   - file: Source file; captured automatically.
-    ///   - function: Source function; captured automatically.
-    ///   - line: Source line; captured automatically.
-    /// - Returns: An `Effect<Action>` that dispatches one action per stream element.
-    public static func deferredStream<Element: Sendable>(
-        _ stream: DeferredStream<Element>,
-        _ transform: @escaping @Sendable (Element) -> Action,
-        scheduling: EffectScheduling = .immediately,
-        file: String = #file,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Self {
-        asyncSequence(stream, transform, scheduling: scheduling, file: file, function: function, line: line)
-    }
-
-    /// Creates an ``Effect`` from a `DeferredStream<DispatchedAction<Action>>`, preserving dispatchers.
-    ///
-    /// Use when the stream already carries pre-sourced ``DispatchedAction`` values and you want
-    /// the original dispatcher provenance to flow through unchanged. No new ``ActionSource`` is
-    /// created.
-    ///
-    /// ```swift
-    /// let stream: DeferredStream<DispatchedAction<AppAction>> = pipeline.preSourcedStream()
-    /// let effect = Effect<AppAction>.deferredStream(stream)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - stream: A `DeferredStream<DispatchedAction<Action>>` to iterate.
-    ///   - scheduling: The ``EffectScheduling`` policy. Defaults to
-    ///     ``EffectScheduling/immediately``.
-    /// - Returns: An `Effect<Action>` that forwards each ``DispatchedAction`` as-is.
-    public static func deferredStream(
-        _ stream: DeferredStream<DispatchedAction<Action>>,
-        scheduling: EffectScheduling = .immediately
-    ) -> Self {
-        asyncSequence(stream, scheduling: scheduling)
     }
 }
 

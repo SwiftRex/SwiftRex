@@ -61,7 +61,6 @@ public final class ObservableObjectStore<Action: Sendable, State: Sendable>
         store.dispatch(action, source: source)
     }
 
-    @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void

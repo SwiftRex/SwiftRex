@@ -296,7 +296,7 @@ struct MiddlewareContextTimingTests {
         let sut = Middleware<Int, Int, Void>.handle { _, context in
             let pre = context.stateBefore ?? 0   // phase 1 — @MainActor, reads pre-mutation state
             return Reader { ctx in
-                let post = MainActor.assumeIsolated { ctx.stateAfter } ?? 0
+                let post = MainActor.assumeIsolated { ctx.liveState } ?? 0
                 return .just(pre + post)
             }
         }

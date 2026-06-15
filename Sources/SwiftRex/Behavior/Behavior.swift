@@ -33,7 +33,7 @@ import DataStructure
 /// let loggerBehavior = Behavior<AppAction, AppState, AppEnvironment> { action, context in
 ///     let before = context.stateBefore
 ///     return .produce { ctx in
-///         .just(.log(action: action, before: before, after: await ctx.stateAfter))
+///         .just(.log(action: action, before: before, after: await ctx.liveState))
 ///     }
 /// }
 ///
@@ -154,7 +154,7 @@ extension Behavior {
     ) {
         self.handle = { action, context in
             Consequence(
-                mutation: reducer.reduce(action),
+                mutation: .mutation(reducer.reduce(action)),
                 effect: middleware.handle(action, context)
             )
         }

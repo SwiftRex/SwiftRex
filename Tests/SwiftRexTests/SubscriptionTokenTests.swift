@@ -1,32 +1,33 @@
 import Foundation
 @testable import SwiftRex
-import XCTest
+import Testing
 
-final class SubscriptionTokenTests: XCTestCase {
-    func testCancelCallsClosure() {
+@Suite
+struct SubscriptionTokenTests {
+    @Test func cancelCallsClosure() {
         let called = LockProtected(false)
         let sut = SubscriptionToken { called.set(true) }
         sut.cancel()
-        XCTAssertTrue(called.value)
+        #expect(called.value)
     }
 
-    func testEmptyDoesNotCrashOnCancel() {
+    @Test func emptyDoesNotCrashOnCancel() {
         SubscriptionToken.empty.cancel()
     }
 
-    func testCancelIsCalledEachTime() {
+    @Test func cancelIsCalledEachTime() {
         let count = LockProtected(0)
         let sut = SubscriptionToken { count.mutate { $0 += 1 } }
         sut.cancel()
         sut.cancel()
-        XCTAssertEqual(count.value, 2)
+        #expect(count.value == 2)
     }
 
-    func testClosureReceivesNoArguments() {
+    @Test func closureReceivesNoArguments() {
         let received = LockProtected(false)
         let sut = SubscriptionToken { received.set(true) }
-        XCTAssertFalse(received.value)
+        #expect(!(received.value))
         sut.cancel()
-        XCTAssertTrue(received.value)
+        #expect(received.value)
     }
 }

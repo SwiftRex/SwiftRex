@@ -1,124 +1,128 @@
 import CoreFP
 import Foundation
 @testable import SwiftRex
-import XCTest
+import Testing
 
 // MARK: - Monoid
 
-final class EffectMonoidTests: XCTestCase {
-    func testIdentityHasNoComponents() {
-        XCTAssertTrue(Effect<Int>.identity.components.isEmpty)
+@Suite
+struct EffectMonoidTests {
+    @Test func identityHasNoComponents() {
+        #expect(Effect<Int>.identity.components.isEmpty)
     }
 
-    func testEmptyIsIdentity() {
-        XCTAssertTrue(Effect<Int>.empty.components.isEmpty)
+    @Test func emptyIsIdentity() {
+        #expect(Effect<Int>.empty.components.isEmpty)
     }
 
-    func testCombineAppendsComponents() {
-        XCTAssertEqual(Effect.combine(Effect<Int>.just(1), Effect<Int>.just(2)).components.count, 2)
+    @Test func combineAppendsComponents() {
+        #expect(Effect.combine(Effect<Int>.just(1), Effect<Int>.just(2)).components.count == 2)
     }
 
-    func testCombineLeftIdentityLaw() {
+    @Test func combineLeftIdentityLaw() {
         let e = Effect<Int>.just(42)
-        XCTAssertEqual(Effect.combine(.identity, e).components.count, e.components.count)
+        #expect(Effect.combine(.identity, e).components.count == e.components.count)
     }
 
-    func testCombineRightIdentityLaw() {
+    @Test func combineRightIdentityLaw() {
         let e = Effect<Int>.just(42)
-        XCTAssertEqual(Effect.combine(e, .identity).components.count, e.components.count)
+        #expect(Effect.combine(e, .identity).components.count == e.components.count)
     }
 
-    func testCombinePreservesIndividualScheduling() {
+    @Test func combinePreservesIndividualScheduling() {
         let a = Effect<Int>.just(1).scheduling(.replacing(id: "a"))
         let b = Effect<Int>.just(2).scheduling(.debounce(id: "b", delay: 0.3))
         let combined = Effect.combine(a, b)
-        guard combined.components.count == 2 else { XCTFail("Expected 2 components"); return }
+        guard combined.components.count == 2 else { Issue.record("Expected 2 components"); return }
         if case .replacing(let id) = combined.components[0].scheduling {
-            XCTAssertEqual(id, AnyHashable("a"))
-        } else { XCTFail("Expected .replacing") }
+            #expect(id == AnyHashableSendable("a"))
+        } else { Issue.record("Expected .replacing") }
         if case .debounce(let id, _) = combined.components[1].scheduling {
-            XCTAssertEqual(id, AnyHashable("b"))
-        } else { XCTFail("Expected .debounce") }
+            #expect(id == AnyHashableSendable("b"))
+        } else { Issue.record("Expected .debounce") }
     }
 }
 
 // MARK: - Convenience factories
 
-final class EffectConvenienceFactoryTests: XCTestCase {
-    func testJustProducesOneComponent() {
-        XCTAssertEqual(Effect<Int>.just(42).components.count, 1)
+@Suite
+struct EffectConvenienceFactoryTests {
+    @Test func justProducesOneComponent() {
+        #expect(Effect<Int>.just(42).components.count == 1)
     }
 
-    func testJustDispatchesAction() {
+    @Test func justDispatchesAction() {
         let received = LockProtected([Int]())
         subscribeAll(Effect<Int>.just(42)) { d in received.mutate { $0.append(d.action) } }
-        XCTAssertEqual(received.value, [42])
+        #expect(received.value == [42])
     }
 
-    func testJustCapturesCallSite() {
+    @Test func justCapturesCallSite() {
         let line: UInt = #line; let effect = Effect<Int>.just(1, line: line)
         let received = LockProtected([DispatchedAction<Int>]())
         subscribeAll(effect) { d in received.mutate { $0.append(d) } }
-        XCTAssertEqual(received.value[0].dispatcher.line, line)
+        #expect(received.value[0].dispatcher.line == line)
     }
 
-    func testJustCallsComplete() {
+    @Test func justCallsComplete() {
         let completed = LockProtected(false)
         subscribeAll(Effect<Int>.just(42), send: { _ in }, onComplete: { completed.set(true) })
-        XCTAssertTrue(completed.value)
+        #expect(completed.value)
     }
 
-    func testSequenceDispatchesAllActionsInOrder() {
+    @Test func sequenceDispatchesAllActionsInOrder() {
         let received = LockProtected([Int]())
         subscribeAll(Effect<Int>.sequence([1, 2, 3])) { d in received.mutate { $0.append(d.action) } }
-        XCTAssertEqual(received.value, [1, 2, 3])
+        #expect(received.value == [1, 2, 3])
     }
 
-    func testSequenceCallsComplete() {
+    @Test func sequenceCallsComplete() {
         let completed = LockProtected(false)
         subscribeAll(Effect<Int>.sequence([1, 2, 3]), send: { _ in }, onComplete: { completed.set(true) })
-        XCTAssertTrue(completed.value)
+        #expect(completed.value)
     }
 
-    func testSequenceEmptyProducesNoActions() {
+    @Test func sequenceEmptyProducesNoActions() {
         let received = LockProtected([Int]())
         subscribeAll(Effect<Int>.sequence([])) { d in received.mutate { $0.append(d.action) } }
-        XCTAssertTrue(received.value.isEmpty)
+        #expect(received.value.isEmpty)
     }
 }
 
 // MARK: - Forwarding factories
 
-final class EffectForwardingFactoryTests: XCTestCase {
+@Suite
+struct EffectForwardingFactoryTests {
     private let source = ActionSource(file: "original.swift", function: "originalFunc()", line: 99)
 
-    func testJustDispatchedPreservesSource() {
+    @Test func justDispatchedPreservesSource() {
         let dispatched = DispatchedAction(42, dispatcher: source)
         let received = LockProtected([DispatchedAction<Int>]())
         subscribeAll(Effect<Int>.just(dispatched)) { d in received.mutate { $0.append(d) } }
-        XCTAssertEqual(received.value[0].dispatcher.file, "original.swift")
-        XCTAssertEqual(received.value[0].dispatcher.line, 99)
-        XCTAssertEqual(received.value[0].action, 42)
+        #expect(received.value[0].dispatcher.file == "original.swift")
+        #expect(received.value[0].dispatcher.line == 99)
+        #expect(received.value[0].action == 42)
     }
 
-    func testSequenceDispatchedPreservesAllSources() {
+    @Test func sequenceDispatchedPreservesAllSources() {
         let d1 = DispatchedAction(1, dispatcher: source)
         let d2 = DispatchedAction(2, dispatcher: ActionSource(file: "b.swift", function: "f()", line: 5))
         let received = LockProtected([DispatchedAction<Int>]())
         subscribeAll(Effect<Int>.sequence([d1, d2])) { d in received.mutate { $0.append(d) } }
-        XCTAssertEqual(received.value[0].dispatcher.file, "original.swift")
-        XCTAssertEqual(received.value[1].dispatcher.file, "b.swift")
+        #expect(received.value[0].dispatcher.file == "original.swift")
+        #expect(received.value[1].dispatcher.file == "b.swift")
     }
 }
 
 // MARK: - Scheduling modifier
 
-final class EffectSchedulingModifierTests: XCTestCase {
-    func testSchedulingModifierReplacesAllComponents() {
+@Suite
+struct EffectSchedulingModifierTests {
+    @Test func schedulingModifierReplacesAllComponents() {
         let combined = Effect.combine(Effect<Int>.just(1), Effect<Int>.just(2))
         let rescheduled = combined.scheduling(.replacing(id: "x"))
-        XCTAssertTrue(rescheduled.components.allSatisfy {
-            if case .replacing(let id) = $0.scheduling { return id == AnyHashable("x") }
+        #expect(rescheduled.components.allSatisfy {
+            if case .replacing(let id) = $0.scheduling { return id == AnyHashableSendable("x") }
             return false
         })
     }
@@ -126,51 +130,53 @@ final class EffectSchedulingModifierTests: XCTestCase {
 
 // MARK: - cancelInFlight sentinel
 
-final class EffectCancelInFlightTests: XCTestCase {
-    func testCancelInFlightHasOneComponent() {
-        XCTAssertEqual(Effect<Int>.cancelInFlight(id: "search").components.count, 1)
+@Suite
+struct EffectCancelInFlightTests {
+    @Test func cancelInFlightHasOneComponent() {
+        #expect(Effect<Int>.cancelInFlight(id: "search").components.count == 1)
     }
 
-    func testCancelInFlightHasCancelScheduling() {
+    @Test func cancelInFlightHasCancelScheduling() {
         let effect = Effect<Int>.cancelInFlight(id: "search")
         if case .cancelInFlight(let id) = effect.components[0].scheduling {
-            XCTAssertEqual(id, AnyHashable("search"))
-        } else { XCTFail("Expected .cancelInFlight scheduling") }
+            #expect(id == AnyHashableSendable("search"))
+        } else { Issue.record("Expected .cancelInFlight scheduling") }
     }
 }
 
 // MARK: - map
 
-final class EffectMapTests: XCTestCase {
-    func testMapTransformsAction() {
+@Suite
+struct EffectMapTests {
+    @Test func mapTransformsAction() {
         let received = LockProtected([String]())
         subscribeAll(Effect<Int>.just(5).map(String.init)) { d in received.mutate { $0.append(d.action) } }
-        XCTAssertEqual(received.value, ["5"])
+        #expect(received.value == ["5"])
     }
 
-    func testMapPreservesDispatcher() {
+    @Test func mapPreservesDispatcher() {
         let line: UInt = #line; let effect = Effect<Int>.just(1, line: line)
         let received = LockProtected([DispatchedAction<String>]())
         subscribeAll(effect.map(String.init)) { d in received.mutate { $0.append(d) } }
-        XCTAssertEqual(received.value[0].dispatcher.line, line)
+        #expect(received.value[0].dispatcher.line == line)
     }
 
-    func testMapPreservesComponentCount() {
+    @Test func mapPreservesComponentCount() {
         let combined = Effect.combine(Effect<Int>.just(1), Effect<Int>.just(2))
-        XCTAssertEqual(combined.map(String.init).components.count, 2)
+        #expect(combined.map(String.init).components.count == 2)
     }
 
-    func testMapPreservesScheduling() {
+    @Test func mapPreservesScheduling() {
         let effect = Effect<Int>.just(1).scheduling(.replacing(id: "x"))
         let mapped = effect.map { $0 * 2 }
         if case .replacing(let id) = mapped.components[0].scheduling {
-            XCTAssertEqual(id, AnyHashable("x"))
-        } else { XCTFail("Expected .replacing scheduling preserved after map") }
+            #expect(id == AnyHashableSendable("x"))
+        } else { Issue.record("Expected .replacing scheduling preserved after map") }
     }
 
-    func testMapThreadsComplete() {
+    @Test func mapThreadsComplete() {
         let completed = LockProtected(false)
         subscribeAll(Effect<Int>.just(1).map { $0 * 2 }, send: { _ in }, onComplete: { completed.set(true) })
-        XCTAssertTrue(completed.value)
+        #expect(completed.value)
     }
 }

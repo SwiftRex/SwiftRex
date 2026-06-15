@@ -110,7 +110,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         store: S,
         element id: C.Element.ID,
         actionReview: @escaping @Sendable (ElementAction<C.Element.ID, Action>) -> GA,
-        stateCollection: WritableKeyPath<GS, C>
+        stateCollection: KeyPath<GS, C>
     ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
         _state    = { store.state[keyPath: stateCollection].first { $0.id == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
@@ -141,7 +141,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         store: S,
         element id: ID,
         actionReview: @escaping @Sendable (ElementAction<ID, Action>) -> GA,
-        stateCollection: WritableKeyPath<GS, C>,
+        stateCollection: KeyPath<GS, C>,
         identifier: @escaping @Sendable (C.Element) -> ID
     ) where C.Element: Sendable, State == C.Element? {
         _state    = { store.state[keyPath: stateCollection].first { identifier($0) == id } }
@@ -201,7 +201,6 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ///   - willChange: Called before each underlying mutation.
     ///   - didChange: Called after each underlying mutation.
     /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when cancelled.
-    @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void

@@ -20,8 +20,11 @@ import DataStructure
 //     .on(\.didTapLogout, dispatch: AppAction.auth(.logout))
 //
 //   Bool predicate — general action test, fixed dispatch (variants 11–12):
-//     .on({ case .reset = $0 }, dispatch: .clearAll)
-//     .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+//   Use these when the test inspects the action's payload; for a plain case match prefer the
+//   KeyPath form above (`\.case`). A closure cannot hold a bare `case` pattern (patterns are not
+//   values in Swift), so a payload test reads as an `if case` expression:
+//     .on({ if case .setVolume(let v) = $0, v == 0 { true } else { false } }, dispatch: .showMutedBanner)
+//     .on({ if case .seek(let t) = $0, t < 0 { true } else { false } }, dispatch: .clampToStart)
 //
 // Every `.on(...)` call is equivalent to `.combine(self, routingMiddleware)` where
 // `routingMiddleware` handles the matched action and dispatches the result.
@@ -194,8 +197,11 @@ extension Middleware {
 
     /// Routes actions that satisfy `predicate`, dispatching `out`. No state is ever read.
     ///
+    /// Use a Bool predicate when the test inspects the action's payload; for a plain case match
+    /// prefer the KeyPath form `.on(\.case, dispatch:)`.
+    ///
     /// ```swift
-    /// .on({ case .didLogOut = $0 }, dispatch: AppAction.auth(.logOut))
+    /// .on({ if case .setVolume(let v) = $0, v == 0 { true } else { false } }, dispatch: AppAction.showMutedBanner)
     /// ```
     public func on(
         _ predicate: @escaping @Sendable (Action) -> Bool,
@@ -213,7 +219,9 @@ extension Middleware {
     /// State is read only after `predicate` returns `true`.
     ///
     /// ```swift
-    /// .on({ case .retry = $0 }, dispatch: .reload, when: { $0.retryCount < 3 })
+    /// .on({ if case .seek(let t) = $0, t < 0 { true } else { false } },
+    ///     dispatch: .clampToStart,
+    ///     when: { $0.isPlaying })
     /// ```
     public func on(
         _ predicate: @escaping @Sendable (Action) -> Bool,

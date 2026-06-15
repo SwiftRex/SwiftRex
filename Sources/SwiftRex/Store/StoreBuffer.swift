@@ -125,7 +125,6 @@ public final class StoreBuffer<Action: Sendable, State: Sendable>
     ///   - willChange: Called before `self.state` is updated (after the underlying mutation).
     ///   - didChange: Called after `self.state` is updated.
     /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when cancelled.
-    @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void

@@ -1,8 +1,10 @@
 import CoreFP
+import Foundation
 @testable import SwiftRex
-import XCTest
+import Testing
 
-final class ReducerLiftCollectionTests: XCTestCase {
+@Suite
+struct ReducerLiftCollectionTests {
     // MARK: - Helpers
 
     private struct Item: Identifiable {
@@ -27,52 +29,52 @@ final class ReducerLiftCollectionTests: XCTestCase {
 
     // MARK: - Identifiable (closure)
 
-    func testLiftCollectionIdentifiableClosure() {
+    @Test func liftCollectionIdentifiableClosure() {
         let sut = addToValue.liftCollection(
             action: { (ea: ElementAction<UUID, Int>?) in ea },
             stateCollection: \AppState.items
         )
         var state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 10)])
         sut.reduce(ElementAction(id1, action: 3))(&state)
-        XCTAssertEqual(state.items[0].value, 3)
-        XCTAssertEqual(state.items[1].value, 10)
+        #expect(state.items[0].value == 3)
+        #expect(state.items[1].value == 10)
     }
 
-    func testLiftCollectionIdentifiableClosureSkipsWhenNil() {
+    @Test func liftCollectionIdentifiableClosureSkipsWhenNil() {
         let sut = addToValue.liftCollection(
             action: { (ea: ElementAction<UUID, Int>?) in ea },
             stateCollection: \AppState.items
         )
         var state = AppState(items: [Item(id: id1, value: 5)])
         sut.reduce(ElementAction<UUID, Int>?.none)(&state)
-        XCTAssertEqual(state.items[0].value, 5)
+        #expect(state.items[0].value == 5)
     }
 
-    func testLiftCollectionIdentifiableClosureSkipsWhenIdMissing() {
+    @Test func liftCollectionIdentifiableClosureSkipsWhenIdMissing() {
         let sut = addToValue.liftCollection(
             action: { (ea: ElementAction<UUID, Int>?) in ea },
             stateCollection: \AppState.items
         )
         var state = AppState(items: [Item(id: id1, value: 5)])
         sut.reduce(ElementAction(id2, action: 99))(&state)
-        XCTAssertEqual(state.items[0].value, 5)
+        #expect(state.items[0].value == 5)
     }
 
     // MARK: - Identifiable (KeyPath)
 
-    func testLiftCollectionIdentifiableKeyPath() {
+    @Test func liftCollectionIdentifiableKeyPath() {
         struct GAId { var update: ElementAction<UUID, Int>? }
         let sut = addToValue.liftCollection(action: \GAId.update, stateCollection: \AppState.items)
         var state = AppState(items: [Item(id: id1, value: 0)])
         sut.reduce(GAId(update: ElementAction(id1, action: 7)))(&state)
-        XCTAssertEqual(state.items[0].value, 7)
+        #expect(state.items[0].value == 7)
         sut.reduce(GAId(update: nil))(&state)
-        XCTAssertEqual(state.items[0].value, 7)
+        #expect(state.items[0].value == 7)
     }
 
     // MARK: - Custom Hashable identifier (closure)
 
-    func testLiftCollectionCustomIdentifierClosure() {
+    @Test func liftCollectionCustomIdentifierClosure() {
         struct Named { var name: String; var score: Int }
         struct NamedState { var entries: [Named] = [] }
         let addToScore = Reducer<Int, Named>.reduce { delta, item in item.score += delta }
@@ -83,13 +85,13 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = NamedState(entries: [Named(name: "alice", score: 0), Named(name: "bob", score: 5)])
         sut.reduce(ElementAction("alice", action: 3))(&state)
-        XCTAssertEqual(state.entries[0].score, 3)
-        XCTAssertEqual(state.entries[1].score, 5)
+        #expect(state.entries[0].score == 3)
+        #expect(state.entries[1].score == 5)
     }
 
     // MARK: - Custom Hashable identifier (KeyPath)
 
-    func testLiftCollectionCustomIdentifierKeyPath() {
+    @Test func liftCollectionCustomIdentifierKeyPath() {
         struct Named { var name: String; var score: Int }
         struct GACustom { var update: ElementAction<String, Int>? }
         struct NamedState { var entries: [Named] = [] }
@@ -101,12 +103,12 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = NamedState(entries: [Named(name: "alice", score: 0)])
         sut.reduce(GACustom(update: ElementAction("alice", action: 4)))(&state)
-        XCTAssertEqual(state.entries[0].score, 4)
+        #expect(state.entries[0].score == 4)
     }
 
     // MARK: - Index-based (primitive AffineTraversal)
 
-    func testLiftCollectionIndexViaPrimitive() {
+    @Test func liftCollectionIndexViaPrimitive() {
         let sut = addToInt.liftCollection(
             action: { (ea: ElementAction<Int, Int>?) -> (action: Int, element: AffineTraversal<[Int], Int>)? in
                 ea.map { (action: $0.action, element: [Int].ix($0.id)) }
@@ -115,52 +117,52 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = Container(nums: [10, 20, 30])
         sut.reduce(ElementAction(1, action: 5))(&state)
-        XCTAssertEqual(state.nums, [10, 25, 30])
+        #expect(state.nums == [10, 25, 30])
         sut.reduce(ElementAction<Int, Int>?.none)(&state)
-        XCTAssertEqual(state.nums, [10, 25, 30])
+        #expect(state.nums == [10, 25, 30])
     }
 
     // MARK: - Dictionary key-based (closure)
 
-    func testLiftCollectionDictionaryClosure() {
+    @Test func liftCollectionDictionaryClosure() {
         let sut = addToInt.liftCollection(
             action: { (ea: ElementAction<String, Int>?) in ea },
             stateDictionary: \AppState.lookup
         )
         var state = AppState(lookup: ["a": 0, "b": 10])
         sut.reduce(ElementAction("a", action: 3))(&state)
-        XCTAssertEqual(state.lookup["a"], 3)
-        XCTAssertEqual(state.lookup["b"], 10)
+        #expect(state.lookup["a"] == 3)
+        #expect(state.lookup["b"] == 10)
     }
 
     // MARK: - Dictionary key-based (KeyPath)
 
-    func testLiftCollectionDictionaryKeyPath() {
+    @Test func liftCollectionDictionaryKeyPath() {
         struct GADict { var update: ElementAction<String, Int>? }
         let sut = addToInt.liftCollection(action: \GADict.update, stateDictionary: \AppState.lookup)
         var state = AppState(lookup: ["x": 5])
         sut.reduce(GADict(update: ElementAction("x", action: 2)))(&state)
-        XCTAssertEqual(state.lookup["x"], 7)
+        #expect(state.lookup["x"] == 7)
         sut.reduce(GADict(update: nil))(&state)
-        XCTAssertEqual(state.lookup["x"], 7)
+        #expect(state.lookup["x"] == 7)
     }
 
     // MARK: - Dictionary: missing key is a no-op
 
-    func testLiftCollectionDictionaryMissingKeyIsNoOp() {
+    @Test func liftCollectionDictionaryMissingKeyIsNoOp() {
         let sut = addToInt.liftCollection(
             action: { (ea: ElementAction<String, Int>?) in ea },
             stateDictionary: \AppState.lookup
         )
         var state = AppState(lookup: ["a": 1])
         sut.reduce(ElementAction("z", action: 99))(&state)
-        XCTAssertNil(state.lookup["z"])
-        XCTAssertEqual(state.lookup["a"], 1)
+        #expect(state.lookup["z"] == nil)
+        #expect(state.lookup["a"] == 1)
     }
 
     // MARK: - Custom identifier: missing ID is a no-op
 
-    func testLiftCollectionCustomIdentifierMissingIdIsNoOp() {
+    @Test func liftCollectionCustomIdentifierMissingIdIsNoOp() {
         struct Named { var name: String; var score: Int }
         struct NamedState { var entries: [Named] = [] }
         let addToScore = Reducer<Int, Named>.reduce { delta, item in item.score += delta }
@@ -171,12 +173,12 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = NamedState(entries: [Named(name: "alice", score: 5)])
         sut.reduce(ElementAction("nobody", action: 99))(&state)
-        XCTAssertEqual(state.entries[0].score, 5)
+        #expect(state.entries[0].score == 5)
     }
 
     // MARK: - Custom identifier: only the targeted element changes
 
-    func testLiftCollectionCustomIdentifierIsolated() {
+    @Test func liftCollectionCustomIdentifierIsolated() {
         struct Named: Equatable { var name: String; var score: Int }
         struct NamedState { var entries: [Named] = [] }
         let addToScore = Reducer<Int, Named>.reduce { delta, item in item.score += delta }
@@ -191,14 +193,14 @@ final class ReducerLiftCollectionTests: XCTestCase {
             Named(name: "carol", score: 0)
         ])
         sut.reduce(ElementAction("bob", action: 7))(&state)
-        XCTAssertEqual(state.entries[0].score, 0)
-        XCTAssertEqual(state.entries[1].score, 7)
-        XCTAssertEqual(state.entries[2].score, 0)
+        #expect(state.entries[0].score == 0)
+        #expect(state.entries[1].score == 7)
+        #expect(state.entries[2].score == 0)
     }
 
     // MARK: - Primitive AffineTraversal: out-of-bounds is a no-op
 
-    func testLiftCollectionPrimitiveOutOfBoundsIsNoOp() {
+    @Test func liftCollectionPrimitiveOutOfBoundsIsNoOp() {
         let sut = addToInt.liftCollection(
             action: { (ea: ElementAction<Int, Int>?) -> (action: Int, element: AffineTraversal<[Int], Int>)? in
                 ea.map { (action: $0.action, element: [Int].ix($0.id)) }
@@ -207,12 +209,12 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = Container(nums: [10, 20, 30])
         sut.reduce(ElementAction(99, action: 5))(&state)
-        XCTAssertEqual(state.nums, [10, 20, 30])
+        #expect(state.nums == [10, 20, 30])
     }
 
     // MARK: - Identifiable: only the targeted element changes
 
-    func testLiftCollectionIdentifiableIsolated() {
+    @Test func liftCollectionIdentifiableIsolated() {
         let sut = addToValue.liftCollection(
             action: { (ea: ElementAction<UUID, Int>?) in ea },
             stateCollection: \AppState.items
@@ -222,13 +224,13 @@ final class ReducerLiftCollectionTests: XCTestCase {
             Item(id: id2, value: 0)
         ])
         sut.reduce(ElementAction(id2, action: 5))(&state)
-        XCTAssertEqual(state.items[0].value, 0)
-        XCTAssertEqual(state.items[1].value, 5)
+        #expect(state.items[0].value == 0)
+        #expect(state.items[1].value == 5)
     }
 
     // MARK: - Lens state container (primitive)
 
-    func testLiftCollectionPrimitiveLensStateContainer() {
+    @Test func liftCollectionPrimitiveLensStateContainer() {
         let containerLens = Lens<AppState, [Int]>(
             get: { $0.items.map(\.value) },
             setMut: { appState, ints in
@@ -244,13 +246,13 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 10)])
         sut.reduce((action: 5, element: [Int].ix(0)))(&state)
-        XCTAssertEqual(state.items[0].value, 5)
-        XCTAssertEqual(state.items[1].value, 10)
+        #expect(state.items[0].value == 5)
+        #expect(state.items[1].value == 10)
     }
 
     // MARK: - Identifiable with Lens state container
 
-    func testLiftCollectionIdentifiableLensState() {
+    @Test func liftCollectionIdentifiableLensState() {
         let itemsLens = Lens<AppState, [Item]>(get: { $0.items }, setMut: { $0.items = $1 })
         let sut = addToValue.liftCollection(
             action: { (ea: ElementAction<UUID, Int>?) in ea },
@@ -258,13 +260,13 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 10)])
         sut.reduce(ElementAction(id1, action: 3))(&state)
-        XCTAssertEqual(state.items[0].value, 3)
-        XCTAssertEqual(state.items[1].value, 10)
+        #expect(state.items[0].value == 3)
+        #expect(state.items[1].value == 10)
     }
 
     // MARK: - Custom identifier with closure (genuine closure call)
 
-    func testLiftCollectionCustomIdentifierClosureNotKeyPath() {
+    @Test func liftCollectionCustomIdentifierClosureNotKeyPath() {
         struct Named: Sendable { var tag: String; var count: Int }
         struct NamedState { var entries: [Named] = [] }
         let inc = Reducer<Int, Named>.reduce { delta, item in item.count += delta }
@@ -275,13 +277,15 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = NamedState(entries: [Named(tag: "a", count: 0), Named(tag: "b", count: 5)])
         sut.reduce(ElementAction("b", action: 2))(&state)
-        XCTAssertEqual(state.entries[0].count, 0)
-        XCTAssertEqual(state.entries[1].count, 7)
+        // `Named.count` is a domain field, not a collection size.
+        // swiftlint:disable:next empty_count
+        #expect(state.entries[0].count == 0)
+        #expect(state.entries[1].count == 7)
     }
 
     // MARK: - Custom identifier with Lens state container
 
-    func testLiftCollectionCustomIdentifierLensState() {
+    @Test func liftCollectionCustomIdentifierLensState() {
         struct Named: Sendable { var tag: String; var count: Int }
         struct NamedState { var entries: [Named] = [] }
         let inc = Reducer<Int, Named>.reduce { delta, item in item.count += delta }
@@ -293,12 +297,12 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = NamedState(entries: [Named(tag: "x", count: 1)])
         sut.reduce(ElementAction("x", action: 9))(&state)
-        XCTAssertEqual(state.entries[0].count, 10)
+        #expect(state.entries[0].count == 10)
     }
 
     // MARK: - Dictionary with Lens state container
 
-    func testLiftCollectionDictionaryLensState() {
+    @Test func liftCollectionDictionaryLensState() {
         let lookupLens = Lens<AppState, [String: Int]>(get: { $0.lookup }, setMut: { $0.lookup = $1 })
         let sut = addToInt.liftCollection(
             action: { (ea: ElementAction<String, Int>?) in ea },
@@ -306,6 +310,6 @@ final class ReducerLiftCollectionTests: XCTestCase {
         )
         var state = AppState(items: [], lookup: ["score": 10])
         sut.reduce(ElementAction("score", action: 5))(&state)
-        XCTAssertEqual(state.lookup["score"], 15)
+        #expect(state.lookup["score"] == 15)
     }
 }

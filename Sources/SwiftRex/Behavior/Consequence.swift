@@ -4,9 +4,9 @@ import DataStructure
 /// The complete outcome of a ``Behavior`` handling one action: an optional state mutation
 /// and an optional side effect.
 ///
-/// `Consequence` is the return value of every ``Behavior/handle`` call. It pairs an
-/// `EndoMut<State>` (the mutation to apply in phase 2) with a
-/// `Reader<PostReducerContext<State, Environment>, Effect<Action>>`
+/// `Consequence` is the return value of every ``Behavior/handle`` call. It pairs a
+/// ``ReducerOutcome`` (the state mutation to apply in phase 2, or ``ReducerOutcome/unchanged``)
+/// with a `Reader<PostReducerContext<State, Environment>, Effect<Action>>`
 /// (the effect to schedule in phase 3). Either half can be absent — use the static factories
 /// to express intent clearly:
 ///
@@ -40,9 +40,10 @@ import DataStructure
 ///    to pre-mutation state. The `Consequence` is produced but nothing has changed yet.
 /// 2. **Phase 2** — `mutation.runEndoMut(&state)` is called. All state changes happen here,
 ///    atomically, on `@MainActor`.
-/// 3. **Phase 3** — `effect.runReader(postCtx)` is called. ``PostReducerContext/stateAfter``
-///    now returns post-mutation state — read it via `await MainActor.run { ctx.stateAfter }`
-///    or use the Combine / RxSwift / ReactiveSwift `readStateAfter()` helpers.
+/// 3. **Phase 3** — `effect.runReader(postCtx)` is called. ``PostReducerContext/liveState``
+///    read here returns this cycle's post-mutation state — via `await MainActor.run { ctx.liveState }`
+///    or the Combine / RxSwift / ReactiveSwift `readLiveState()` helpers. (Read later, from an
+///    async effect, it reflects the Store's state at that moment instead.)
 ///
 /// ## Semigroup: sequential mutations, parallel effects
 ///
@@ -50,11 +51,11 @@ import DataStructure
 /// later mutations see earlier ones. Their effects are merged via ``Effect/combine(_:_:)``
 /// and run concurrently by the Store.
 public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendable>: Sendable {
-    package let mutation: EndoMut<State>
+    package let mutation: ReducerOutcome<State>
     package let effect: Reader<PostReducerContext<State, Environment>, Effect<Action>>
 
     package init(
-        mutation: EndoMut<State>,
+        mutation: ReducerOutcome<State>,
         effect: Reader<PostReducerContext<State, Environment>, Effect<Action>>
     ) {
         self.mutation = mutation
@@ -71,7 +72,7 @@ public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendab
     ///     return .doNothing
     /// ```
     public static var doNothing: Self {
-        Self(mutation: .identity, effect: Reader { _ in .empty })
+        Self(mutation: .unchanged, effect: Reader { _ in .empty })
     }
 
     /// A consequence that mutates state in-place without producing any effect.
@@ -91,13 +92,13 @@ public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendab
     /// - Parameter f: A closure that mutates the state in place.
     /// - Returns: A `Consequence` with `f` as its mutation and an empty effect.
     public static func reduce(_ f: @escaping @Sendable (inout State) -> Void) -> Self {
-        Self(mutation: EndoMut(f), effect: Reader { _ in .empty })
+        Self(mutation: .mutation(EndoMut(f)), effect: Reader { _ in .empty })
     }
 
     /// A consequence that produces a side effect without mutating state.
     ///
     /// The ``PostReducerContext`` is injected by the Store when phase 3 runs. It gives access
-    /// to `ctx.environment` (synchronously, from any context) and `ctx.stateAfter` (on
+    /// to `ctx.environment` (synchronously, from any context) and `ctx.liveState` (on
     /// `@MainActor`). The closure must be synchronous — async work is expressed as an ``Effect``
     /// value returned from `f`:
     ///
@@ -115,7 +116,7 @@ public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendab
     public static func produce(
         _ f: @escaping @Sendable (PostReducerContext<State, Environment>) -> Effect<Action>
     ) -> Self {
-        Self(mutation: .identity, effect: Reader(f))
+        Self(mutation: .unchanged, effect: Reader(f))
     }
 
     /// Chains an additional effect onto an existing `Consequence`, merging it with any

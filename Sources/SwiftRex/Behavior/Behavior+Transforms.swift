@@ -35,6 +35,21 @@ extension Behavior {
             )
         }
     }
+
+    /// Lifts the action axis using a `\.case` key path (``PrismKeyPath``) — the case-key-path
+    /// spelling of ``liftAction(_:)``.
+    ///
+    /// ```swift
+    /// let lifted = authBehavior.liftAction(\.auth)   // instead of AppAction.prism.auth
+    /// ```
+    ///
+    /// - Parameter path: A `\.case` key path from the global action to this behavior's action.
+    /// - Returns: A `Behavior<GlobalAction, State, Environment>` lifted through the recovered prism.
+    public func liftAction<GlobalAction: Prismatic & Sendable>(
+        _ path: PrismKeyPath<GlobalAction, Action>
+    ) -> Behavior<GlobalAction, State, Environment> {
+        liftAction(Prism(path))
+    }
 }
 
 // MARK: - State axis
@@ -67,7 +82,7 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment> { action, context in
             let c = self.handle(action, context.map { $0[keyPath: keyPath] })
             return Consequence(
-                mutation: lens(keyPath).lift(c.mutation),
+                mutation: c.mutation.map { lens(keyPath).lift($0) },
                 effect: c.effect.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
             )
         }
@@ -92,7 +107,7 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment> { action, context in
             let c = self.handle(action, context.map(stateLens.get))
             return Consequence(
-                mutation: stateLens.lift(c.mutation),
+                mutation: c.mutation.map { stateLens.lift($0) },
                 effect: c.effect.contramapEnvironment { $0.map(stateLens.get) }
             )
         }
@@ -119,7 +134,7 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment> { action, context in
             let c = self.handle(action, context.compactMap(statePrism.preview))
             return Consequence(
-                mutation: statePrism.lift(c.mutation),
+                mutation: c.mutation.map { statePrism.lift($0) },
                 effect: c.effect.contramapEnvironment { $0.compactMap(statePrism.preview) }
             )
         }
@@ -147,7 +162,7 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment> { action, context in
             let c = self.handle(action, context.compactMap(traversal.preview))
             return Consequence(
-                mutation: traversal.lift(c.mutation),
+                mutation: c.mutation.map { traversal.lift($0) },
                 effect: c.effect.contramapEnvironment { $0.compactMap(traversal.preview) }
             )
         }
@@ -312,5 +327,49 @@ extension Behavior {
         environment g: @escaping @Sendable (GE) -> Environment
     ) -> Behavior<GA, GS, GE> {
         liftAction(prism).liftState(traversal).liftEnvironment(g)
+    }
+}
+
+// MARK: - Combined lift with a `\.case` action key path
+
+// Case-key-path (`\.case`) spellings of the combined three-axis lifts: pass `action: \.case`
+// instead of `action: AppAction.prism.case`. Each recovers the prism via `Prism(path)` and
+// delegates to the corresponding `Prism`-action overload above.
+
+extension Behavior {
+    /// Lifts all three axes — `\.case` action, `WritableKeyPath` state, closure environment.
+    public func lift<GA: Prismatic & Sendable, GS: Sendable, GE: Sendable>(
+        action path: PrismKeyPath<GA, Action>,
+        state keyPath: WritableKeyPath<GS, State>,
+        environment g: @escaping @Sendable (GE) -> Environment
+    ) -> Behavior<GA, GS, GE> {
+        lift(action: Prism(path), state: keyPath, environment: g)
+    }
+
+    /// Lifts all three axes — `\.case` action, `Lens` state, closure environment.
+    public func lift<GA: Prismatic & Sendable, GS: Sendable, GE: Sendable>(
+        action path: PrismKeyPath<GA, Action>,
+        state stateLens: Lens<GS, State>,
+        environment g: @escaping @Sendable (GE) -> Environment
+    ) -> Behavior<GA, GS, GE> {
+        lift(action: Prism(path), state: stateLens, environment: g)
+    }
+
+    /// Lifts all three axes — `\.case` action, `Prism` state, closure environment.
+    public func lift<GA: Prismatic & Sendable, GS: Sendable, GE: Sendable>(
+        action path: PrismKeyPath<GA, Action>,
+        state statePrism: Prism<GS, State>,
+        environment g: @escaping @Sendable (GE) -> Environment
+    ) -> Behavior<GA, GS, GE> {
+        lift(action: Prism(path), state: statePrism, environment: g)
+    }
+
+    /// Lifts all three axes — `\.case` action, `AffineTraversal` state, closure environment.
+    public func lift<GA: Prismatic & Sendable, GS: Sendable, GE: Sendable>(
+        action path: PrismKeyPath<GA, Action>,
+        state traversal: AffineTraversal<GS, State>,
+        environment g: @escaping @Sendable (GE) -> Environment
+    ) -> Behavior<GA, GS, GE> {
+        lift(action: Prism(path), state: traversal, environment: g)
     }
 }

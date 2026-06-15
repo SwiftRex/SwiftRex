@@ -167,7 +167,7 @@ extension Effect {
         Effect(components: [
             Component(
                 subscribe: { _, complete in complete(); return .empty },
-                scheduling: .cancelInFlight(id: AnyHashable(id))
+                scheduling: .cancelInFlight(id: AnyHashableSendable(id))
             )
         ])
     }

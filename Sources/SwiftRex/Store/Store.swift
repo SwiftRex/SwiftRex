@@ -2,10 +2,6 @@ import CoreFP
 import DataStructure
 import Foundation
 
-// Swift 6.3+ stdlib declares AnyHashable: Sendable, but SourceKit lags behind the compiler.
-// Repeating it here keeps IDE diagnostics clean; the compiler ignores the duplicate.
-extension AnyHashable: @retroactive @unchecked Sendable {}
-
 /// The sole owner of mutable `State` and the central coordinator of the three-phase dispatch pipeline.
 ///
 /// Create one `Store` per application and pass it — or narrowed ``StoreProjection`` values — to
@@ -14,7 +10,7 @@ extension AnyHashable: @retroactive @unchecked Sendable {}
 ///
 /// ## Three-phase dispatch
 ///
-/// Every call to ``dispatch(_:source:)`` runs through four steps:
+/// Every dispatched action runs through four steps in ``runPhases``:
 ///
 /// ```
 /// 1. behavior.handle(action, stateAccess)    — all Behaviors; stateAccess = pre-mutation state
@@ -29,6 +25,18 @@ extension AnyHashable: @retroactive @unchecked Sendable {}
 /// after) means observers never see a partially-mutated state. `withAnimation { store.dispatch(...) }`
 /// works correctly because SwiftUI animation transactions are thread-local and the mutation lands
 /// on `@MainActor` inside the transaction.
+///
+/// ## Serialized, never-nested processing
+///
+/// Actions are serialized through a FIFO ``queue`` guarded by an `isProcessing` flag, so
+/// ``runPhases`` never runs nested. A synchronous ``dispatch(_:source:)`` runs its action — and
+/// any actions dispatched synchronously while it runs (for example a `didChange` observer that
+/// re-dispatches) — within the same run loop turn, draining the queue in order. Because the
+/// pipeline is never re-entered mid-action, observers always see a fully-committed state.
+///
+/// Actions produced by effects re-enter through a `Task` hop (see ``makeSend``), so they are
+/// always processed on a later turn rather than inline — keeping effect work off the run loop
+/// turn that drove the original UI dispatch.
 ///
 /// ## Initialisation
 ///
@@ -59,12 +67,17 @@ extension AnyHashable: @retroactive @unchecked Sendable {}
 ///
 /// ## Effect lifecycle
 ///
-/// Each ``Effect/Component`` is tracked in `effects: [AnyHashable: SubscriptionToken]`.
+/// Each ``Effect/Component`` is tracked in `effects: [AnyHashableSendable: SubscriptionToken]`.
 /// Anonymous (`.immediately`) components use a `UUID` key that is removed on `complete`.
 /// Named components (`.replacing`, `.debounce`, `.throttle`) use the caller-supplied id.
 ///
-/// Dispatching from inside an effect re-enters the pipeline on `@MainActor` via `Task`, so
-/// reentrancy is always safe — effects never interleave with an in-progress dispatch.
+/// ``SubscriptionToken`` cancels on release, so the registry behaves like a `Set<AnyCancellable>`:
+/// replacing the token under a key cancels the effect it displaced, and deallocating the Store
+/// releases the whole dictionary, cancelling every in-flight effect — no explicit `deinit` is needed.
+///
+/// Dispatching from inside an effect re-enters the pipeline on `@MainActor` via `Task`, and the
+/// `isProcessing` guard defers it behind any in-progress action, so reentrancy is always safe —
+/// effects never interleave with, or nest inside, an in-progress dispatch.
 ///
 /// - Note: `@unchecked Sendable` is used because the mutable stored properties (`state`,
 ///   `effects`, etc.) are only accessed on `@MainActor`, but Swift cannot statically prove
@@ -83,14 +96,38 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
     // MARK: - Registries
 
-    /// All effects — both named (user-provided AnyHashable key) and anonymous (UUID key).
-    /// UUID is Hashable, so AnyHashable(UUID()) fits naturally alongside named keys.
-    private var effects: [AnyHashable: SubscriptionToken] = [:]
-    private var throttleTimestamps: [AnyHashable: Date]   = [:]
+    /// All effects — both named (user-provided id) and anonymous (UUID key).
+    /// UUID is Hashable & Sendable, so AnyHashableSendable(UUID()) fits naturally
+    /// alongside named keys. Each `SubscriptionToken` cancels its effect when released, so
+    /// removing/replacing an entry — or deallocating the Store, which releases this whole
+    /// dictionary — cancels the corresponding in-flight work automatically (no `deinit` needed).
+    private var effects: [AnyHashableSendable: SubscriptionToken] = [:]
+
+    /// Last-fire timestamps for `.throttle` keys, each paired with the interval that produced it
+    /// so expired entries can be pruned — keeps the dictionary bounded under unbounded distinct keys.
+    private var throttleTimestamps: [AnyHashableSendable: (last: Date, interval: TimeInterval)] = [:]
 
     /// Both observer closures are stored together under one UUID so a single token cancels both.
     private var stateObservers: [UUID: (willChange: @MainActor @Sendable () -> Void,
                                         didChange: @MainActor @Sendable () -> Void)] = [:]
+
+    // MARK: - Dispatch serialization
+    //
+    // `queue` + `isProcessing` serialize the three-phase pipeline so it never runs nested.
+    // Both are MainActor-isolated (no lock needed): the only off-actor caller is an effect's
+    // `send`, which hops onto the main actor via `Task` before touching either.
+    //
+    // The rule: a synchronous `dispatch` runs its action — and any further actions dispatched
+    // synchronously while it runs (e.g. a `didChange` observer that re-dispatches) — within the
+    // current run loop turn, draining the queue in FIFO order without re-entering `runPhases`.
+    // Effect-produced actions arrive through `makeSend`'s `Task` hop, so they are always
+    // processed on a later turn.
+
+    /// Actions awaiting processing. Drained in FIFO order by the active `process` loop.
+    private var queue: [DispatchedAction<Action>] = []
+
+    /// `true` while the `process` drain loop is running. Guards against re-entrant nesting.
+    private var isProcessing = false
 
     // MARK: - Init
 
@@ -187,7 +224,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     ///   - action: The action to dispatch.
     ///   - source: The call-site origin for logging and tracing.
     public func dispatch(_ action: Action, source: ActionSource) {
-        handle(DispatchedAction(action, dispatcher: source))
+        process(DispatchedAction(action, dispatcher: source))
     }
 
     /// Registers callbacks for both sides of each state mutation.
@@ -202,7 +239,6 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     ///   - willChange: Called on `@MainActor` before each mutation.
     ///   - didChange: Called on `@MainActor` after each mutation.
     /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when cancelled.
-    @discardableResult
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void
@@ -216,23 +252,44 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
     // MARK: - Dispatch loop
 
-    private func handle(_ dispatched: DispatchedAction<Action>) {
+    /// Enqueues `dispatched` and drains the queue in FIFO order, unless a drain is already
+    /// running — in which case the active loop will pick it up after the current action.
+    ///
+    /// This is the single entry point for every action, whether it comes from a synchronous
+    /// `dispatch` call or (via `makeSend`'s `Task` hop) from an effect. The `isProcessing`
+    /// guard guarantees the three-phase pipeline in ``runPhases`` never runs nested.
+    private func process(_ dispatched: DispatchedAction<Action>) {
+        queue.append(dispatched)
+        guard !isProcessing else { return }
+        isProcessing = true
+        defer { isProcessing = false }
+        while !queue.isEmpty {
+            runPhases(queue.removeFirst())
+        }
+    }
+
+    private func runPhases(_ dispatched: DispatchedAction<Action>) {
         let preCtx = PreReducerContext<State>(
             source: dispatched.dispatcher,
             getter: { [weak self] in self?.state }
         )
 
-        // Phase 1 — pre-mutation: collect EndoMut + Reader from the behavior
+        // Phase 1 — pre-mutation: collect ReducerOutcome + Reader from the behavior
         let consequence = behavior.handle(dispatched.action, preCtx)
 
-        // Notify will-change BEFORE mutation (ObservableObject.objectWillChange requirement)
-        stateObservers.values.forEach { $0.willChange() }
-
-        // Phase 2 — zero-copy mutation: apply EndoMut directly to stored state
-        consequence.mutation.runEndoMut(&state)
-
-        // Phase 3 — post-mutation: notify observers and run Reader
-        stateObservers.values.forEach { $0.didChange() }
+        // Phase 2 — zero-copy mutation, bracketed by observer notifications. A provably no-op
+        // action (`.unchanged` — pure routing, effect-only, `.doNothing`) fires no notifications,
+        // so ObservableObject/@Observable consumers never re-render on actions that can't change
+        // state. `willChange` still precedes the mutation (ObservableObject.objectWillChange
+        // requirement) and `didChange` follows it.
+        switch consequence.mutation {
+        case .unchanged:
+            break
+        case .mutation(let mutation):
+            stateObservers.values.forEach { $0.willChange() }
+            mutation.runEndoMut(&state)
+            stateObservers.values.forEach { $0.didChange() }
+        }
 
         // Phase 4 — schedule effects (postCtx.stateGetter now reflects post-mutation state)
         let postCtx = PostReducerContext<State, Environment>(
@@ -248,7 +305,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     private func schedule(_ component: Effect<Action>.Component) {
         switch component.scheduling {
         case .immediately:
-            let key = AnyHashable(UUID())
+            let key = AnyHashableSendable(UUID())
             let token = component.subscribe(makeSend()) { [weak self] in
                 Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
             }
@@ -269,7 +326,8 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             effects[key]?.cancel()
             let send = makeSend()
             let task = Task { @MainActor [weak self] in
-                try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                // Clamp negative delays to zero — `UInt64(negative)` traps.
+                try await Task.sleep(nanoseconds: UInt64(max(0, delay) * 1_000_000_000))
                 guard !Task.isCancelled, let self else { return }
                 let token = component.subscribe(send) { [weak self] in
                     Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
@@ -280,8 +338,10 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
         case let .throttle(key, interval):
             let now = Date()
-            if let last = throttleTimestamps[key], now.timeIntervalSince(last) < interval { return }
-            throttleTimestamps[key] = now
+            // Prune entries whose interval has elapsed so the dictionary stays bounded.
+            throttleTimestamps = throttleTimestamps.filter { now.timeIntervalSince($0.value.last) < $0.value.interval }
+            if let entry = throttleTimestamps[key], now.timeIntervalSince(entry.last) < interval { return }
+            throttleTimestamps[key] = (last: now, interval: interval)
             effects[key]?.cancel()
             let token = component.subscribe(makeSend()) { [weak self] in
                 Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
@@ -292,7 +352,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
     private func makeSend() -> @Sendable (DispatchedAction<Action>) -> Void {
         { [weak self] dispatched in
-            Task { @MainActor [weak self] in self?.handle(dispatched) }
+            Task { @MainActor [weak self] in self?.process(dispatched) }
         }
     }
 }
