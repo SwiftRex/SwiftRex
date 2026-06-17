@@ -97,6 +97,39 @@ struct StoreObserveTests {
         #expect(count.value == 2)
     }
 
+    @Test func composedNoOpBehaviorsSkipNotifications() {
+        // Item-21 guard: a composition of many no-op behaviors must still fold to `.unchanged`,
+        // so the Store fires NEITHER willChange NOR didChange. If the flat fold ever collapsed
+        // them into a non-`.unchanged` mutation, every routing/effect-only action would re-render.
+        let noop = Behavior<Int, Int, Void>.identity
+        let doNothing = Behavior<Int, Int, Void>.handle { _, _ in .doNothing }
+        let composed = mconcat(Array(repeating: noop, count: 8) + Array(repeating: doNothing, count: 8))
+        let store = Store(initial: 0, behavior: composed)
+        let count = LockProtected(0)
+        _ = store.observe(
+            willChange: { count.mutate { $0 += 1 } },
+            didChange: { count.mutate { $0 += 1 } }
+        )
+        store.dispatch(1)
+        #expect(count.value == 0) // folded mutation is `.unchanged` → no notifications
+        #expect(store.state == 0)
+    }
+
+    @Test func composedWithOneMutatorStillNotifies() {
+        // Sanity counterpart: one real mutation among many no-ops must survive the fold and notify.
+        let noop = Behavior<Int, Int, Void>.identity
+        let mutator: Behavior<Int, Int, Void> = Reducer<Int, Int>.reduce { action, state in
+            state += action
+        }.asBehavior()
+        let composed = mconcat([noop, noop, mutator, noop])
+        let store = Store(initial: 0, behavior: composed)
+        let count = LockProtected(0)
+        _ = store.observe(willChange: {}, didChange: { count.mutate { $0 += 1 } })
+        store.dispatch(5)
+        #expect(count.value == 1)
+        #expect(store.state == 5)
+    }
+
     @Test func cancellingTokenRemovesObserver() async {
         let store = makeStore()
         let count = LockProtected(0)
