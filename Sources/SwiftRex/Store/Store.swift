@@ -1,6 +1,7 @@
 import CoreFP
 import DataStructure
 import Foundation
+import Hourglass
 
 /// The sole owner of mutable `State` and the central coordinator of the three-phase dispatch pipeline.
 ///
@@ -96,20 +97,39 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
     // MARK: - Registries
 
-    /// All effects — both named (user-provided id) and anonymous (UUID key).
-    /// UUID is Hashable & Sendable, so AnyHashableSendable(UUID()) fits naturally
+    /// All effects — both named (user-provided id) and anonymous (UUID key drawn from ``idGen``).
+    /// UUID is Hashable & Sendable, so `AnyHashableSendable(idGen(&rng))` fits naturally
     /// alongside named keys. Each `SubscriptionToken` cancels its effect when released, so
     /// removing/replacing an entry — or deallocating the Store, which releases this whole
     /// dictionary — cancels the corresponding in-flight work automatically (no `deinit` needed).
     private var effects: [AnyHashableSendable: SubscriptionToken] = [:]
 
-    /// Last-fire timestamps for `.throttle` keys, each paired with the interval that produced it
-    /// so expired entries can be pruned — keeps the dictionary bounded under unbounded distinct keys.
-    private var throttleTimestamps: [AnyHashableSendable: (last: Date, interval: TimeInterval)] = [:]
+    /// Last-fire instants for `.throttle` keys (measured on the injected ``clock``), each paired
+    /// with the interval that produced it so expired entries can be pruned — keeps the dictionary
+    /// bounded under unbounded distinct keys.
+    private var throttleTimestamps: [AnyHashableSendable: (last: AnyClock<Swift.Duration>.Instant, interval: Duration)] = [:]
 
-    /// Both observer closures are stored together under one UUID so a single token cancels both.
-    private var stateObservers: [UUID: (willChange: @MainActor @Sendable () -> Void,
-                                        didChange: @MainActor @Sendable () -> Void)] = [:]
+    /// Both observer closures are stored together under one key so a single token cancels both.
+    /// Keys come from ``nextObserverKey`` — a monotonic counter; these keys are internal and never
+    /// surfaced, so no `UUID`/RNG is needed (a wrapping `UInt64` cannot realistically collide).
+    private var stateObservers: [UInt64: (willChange: @MainActor @Sendable () -> Void,
+                                          didChange: @MainActor @Sendable () -> Void)] = [:]
+    private var nextObserverKey: UInt64 = 0
+
+    // MARK: - Injected co-effects
+
+    /// Clock used for all ``EffectScheduling`` timing (debounce sleep, throttle window). Erased to
+    /// ``AnyClock`` so the Store carries no clock generic; injected at `init` (defaults to
+    /// `ContinuousClock`, swappable for a `TestClock`/`ImmediateClock` of the same `Duration`).
+    private let clock: AnyClock<Swift.Duration>
+
+    /// Source of randomness for anonymous effect ids, threaded through ``idGen``. A seeded generator
+    /// yields reproducible ids; defaults to the system RNG. Only mutated on `@MainActor`.
+    private var rng: AnyRandomNumberGenerator
+
+    /// Pure recipe turning ``rng`` into anonymous effect-registry ids — the `Gen`-based replacement
+    /// for `UUID()`.
+    private let idGen = Gen<UUID>.uuid()
 
     // MARK: - Dispatch serialization
     //
@@ -131,7 +151,8 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
     // MARK: - Init
 
-    /// Creates a `Store` with a pre-composed ``Behavior`` and an environment.
+    /// Creates a `Store` with a pre-composed ``Behavior`` and an environment, driving
+    /// ``EffectScheduling`` timing with a live `ContinuousClock`.
     ///
     /// Use this when you have already assembled your feature behaviors into a single
     /// `Behavior` using ``Behavior/combine(_:_:)`` or the `Monoid` fold:
@@ -144,18 +165,51 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// )
     /// ```
     ///
+    /// To drive scheduling with a `TestClock`/`ImmediateClock` — or to read the clock from the
+    /// environment — use ``init(initial:behavior:environment:clock:rng:)``.
+    ///
     /// - Parameters:
     ///   - state: The initial state value. The store takes exclusive ownership.
     ///   - behavior: The single ``Behavior`` that handles all dispatched actions.
     ///   - environment: The environment injected into ``Effect`` readers in phase 3.
-    public init(
+    ///   - rng: Extracts the randomness source for anonymous effect ids from the environment.
+    ///     Defaults to the system RNG; inject a seeded `SplitMix64` for reproducible ids.
+    public convenience init(
         initial state: State,
         behavior: Behavior<Action, State, Environment>,
-        environment: Environment
+        environment: Environment,
+        rng: (Environment) -> AnyRandomNumberGenerator = { _ in AnyRandomNumberGenerator(SystemRandomNumberGenerator()) }
     ) {
+        self.init(initial: state, behavior: behavior, environment: environment, clock: { _ in ContinuousClock() }, rng: rng)
+    }
+
+    /// Creates a `Store` extracting the scheduling clock — and optionally the RNG — from the
+    /// environment.
+    ///
+    /// The concrete clock `C` is inferred at the call site and erased to ``AnyClock`` at
+    /// construction, so `Store` carries no clock generic. Pass a `TestClock`/`ImmediateClock`
+    /// for deterministic ``EffectScheduling`` in tests.
+    ///
+    /// - Parameters:
+    ///   - state: The initial state value. The store takes exclusive ownership.
+    ///   - behavior: The single ``Behavior`` that handles all dispatched actions.
+    ///   - environment: The environment injected into ``Effect`` readers in phase 3.
+    ///   - clock: Extracts the clock driving ``EffectScheduling`` timing from the environment.
+    ///     Must have `Duration == Swift.Duration` (`ContinuousClock`, `TestClock`, `ImmediateClock`).
+    ///   - rng: Extracts the randomness source for anonymous effect ids from the environment.
+    ///     Defaults to the system RNG; inject a seeded `SplitMix64` for reproducible ids.
+    public init<C: Clock>(
+        initial state: State,
+        behavior: Behavior<Action, State, Environment>,
+        environment: Environment,
+        clock: (Environment) -> C,
+        rng: (Environment) -> AnyRandomNumberGenerator = { _ in AnyRandomNumberGenerator(SystemRandomNumberGenerator()) }
+    ) where C: Sendable, C.Duration == Swift.Duration {
         self.state = state
         self.behavior = behavior
         self.environment = environment
+        self.clock = clock(environment).eraseToAnyClock()
+        self.rng = rng(environment)
     }
 
     /// Creates a `Store` with a ``Reducer`` only (no side effects, `Environment == Void`).
@@ -261,7 +315,8 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken {
-        let id = UUID()
+        let id = nextObserverKey
+        nextObserverKey &+= 1
         stateObservers[id] = (willChange: willChange, didChange: didChange)
         return SubscriptionToken { [weak self] in
             Task { @MainActor [weak self] in self?.stateObservers.removeValue(forKey: id) }
@@ -336,7 +391,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     private func schedule(_ component: Effect<Action>.Component) {
         switch component.scheduling {
         case .immediately:
-            let key = AnyHashableSendable(UUID())
+            let key = AnyHashableSendable(idGen(&rng))
             let token = component.subscribe(makeSend()) { [weak self] in
                 Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
             }
@@ -356,9 +411,10 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         case let .debounce(key, delay):
             effects[key]?.cancel()
             let send = makeSend()
+            let clock = clock
             let task = Task { @MainActor [weak self] in
-                // Clamp negative delays to zero — `UInt64(negative)` traps.
-                try await Task.sleep(nanoseconds: UInt64(max(0, delay) * 1_000_000_000))
+                // Clamp negative delays to zero so a past deadline resolves immediately.
+                try await clock.sleep(for: max(.zero, delay))
                 guard !Task.isCancelled, let self else { return }
                 let token = component.subscribe(send) { [weak self] in
                     Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
@@ -368,10 +424,10 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             effects[key] = SubscriptionToken { task.cancel() }
 
         case let .throttle(key, interval):
-            let now = Date()
+            let now = clock.now
             // Prune entries whose interval has elapsed so the dictionary stays bounded.
-            throttleTimestamps = throttleTimestamps.filter { now.timeIntervalSince($0.value.last) < $0.value.interval }
-            if let entry = throttleTimestamps[key], now.timeIntervalSince(entry.last) < interval { return }
+            throttleTimestamps = throttleTimestamps.filter { $0.value.last.duration(to: now) < $0.value.interval }
+            if let entry = throttleTimestamps[key], entry.last.duration(to: now) < interval { return }
             throttleTimestamps[key] = (last: now, interval: interval)
             effects[key]?.cancel()
             let token = component.subscribe(makeSend()) { [weak self] in

@@ -1,5 +1,6 @@
 import CoreFP
 import DataStructure
+import Hourglass
 @testable import SwiftRex
 import Testing
 
@@ -164,14 +165,14 @@ struct StoreEffectSchedulingTests {
         #expect(store.state == 0)
     }
 
-    /// A negative debounce delay must not trap in `UInt64(delay * 1e9)`; it is clamped to zero,
-    /// so the effect fires (effectively immediately) and loops its action back.
+    /// A negative debounce delay must not trap; it is clamped to `.zero`, so the effect fires
+    /// (effectively immediately) and loops its action back.
     @Test func negativeDebounceDelayIsClampedAndFires() async {
         let store = Store(
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
                 action == 0
-                    ? .produce { _ in Effect<Int>.just(5).scheduling(.debounce(id: "d", delay: -1)) }
+                    ? .produce { _ in Effect<Int>.just(5).scheduling(.debounce(id: "d", delay: .seconds(-1))) }
                     : .reduce { $0 = action }
             },
             environment: ()
@@ -179,6 +180,89 @@ struct StoreEffectSchedulingTests {
         store.dispatch(0)
         try? await Task.sleep(nanoseconds: 100_000_000)
         #expect(store.state == 5)
+    }
+}
+
+// MARK: - Clock injection (deterministic scheduling)
+
+@Suite("Store clock injection")
+@MainActor
+struct StoreClockInjectionTests {
+    /// Drains `@MainActor` `Task` hops (effect → action loopback) until `condition` holds or a
+    /// bounded number of yields elapse.
+    private func poll(until condition: @MainActor () -> Bool) async {
+        for _ in 0..<1_000 {
+            if condition() { return }
+            await Task.yield()
+        }
+    }
+
+    @Test func debounceFiresOnlyAfterInjectedClockAdvancesPastDelay() async {
+        let clock = TestClock()
+        let store = Store(
+            initial: 0,
+            behavior: Behavior<Int, Int, Void>.handle { action, _ in
+                action == 0
+                    ? .produce { _ in Effect<Int>.just(5).scheduling(.debounce(id: "d", delay: .seconds(1))) }
+                    : .reduce { $0 = action }
+            },
+            environment: (),
+            clock: { _ in clock }
+        )
+        store.dispatch(0)
+        await clock.waitForSleepers()          // the debounce task is parked on clock.sleep
+        #expect(store.state == 0)              // nothing fired before the delay elapses
+        await clock.advance(by: .seconds(1))
+        await poll { store.state == 5 }        // delay elapsed → effect fires, loops 5 back
+        #expect(store.state == 5)
+    }
+
+    @Test func debounceCollapsesRapidDispatchesOnInjectedClock() async {
+        enum A: Sendable { case trigger, fired }
+        let clock = TestClock()
+        let store = Store(
+            initial: 0,
+            behavior: Behavior<A, Int, Void>.handle { action, _ in
+                switch action {
+                case .trigger: .produce { _ in Effect<A>.just(.fired).scheduling(.debounce(id: "d", delay: .seconds(1))) }
+                case .fired: .reduce { $0 += 1 }
+                }
+            },
+            environment: (),
+            clock: { _ in clock }
+        )
+        store.dispatch(.trigger)
+        await clock.waitForSleepers()
+        store.dispatch(.trigger)               // resets the timer: cancels the first pending task
+        await clock.waitForSleepers()
+        await clock.advance(by: .seconds(1))
+        await poll { store.state == 1 }
+        #expect(store.state == 1)              // collapsed to a single fire
+    }
+
+    @Test func throttleDropsWithinIntervalThenFiresAfterAdvance() async {
+        enum A: Sendable { case ping, tick }
+        let clock = TestClock()
+        let store = Store(
+            initial: 0,
+            behavior: Behavior<A, Int, Void>.handle { action, _ in
+                switch action {
+                case .ping: .produce { _ in Effect<A>.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
+                case .tick: .reduce { $0 += 1 }
+                }
+            },
+            environment: (),
+            clock: { _ in clock }
+        )
+        store.dispatch(.ping)
+        await poll { store.state == 1 }        // first one fires immediately
+        store.dispatch(.ping)                  // still within the interval → dropped
+        for _ in 0..<20 { await Task.yield() }
+        #expect(store.state == 1)
+        await clock.advance(by: .seconds(1))   // interval elapses on the injected clock
+        store.dispatch(.ping)
+        await poll { store.state == 2 }        // now fires again
+        #expect(store.state == 2)
     }
 }
 

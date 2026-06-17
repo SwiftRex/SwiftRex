@@ -5,10 +5,10 @@ import PackageDescription
 let package = Package(
     name: "SwiftRex",
     platforms: [
-        .macOS(.v12),
-        .iOS(.v15),
-        .tvOS(.v15),
-        .watchOS(.v8)
+        .macOS(.v13),
+        .iOS(.v16),
+        .tvOS(.v16),
+        .watchOS(.v9)
     ],
     products: [
         .library(name: "SwiftRex", targets: ["SwiftRex"]),
@@ -23,6 +23,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/luizmb/FP.git", from: "1.10.0"),
+        .package(url: "https://github.com/luizmb/Hourglass.git", from: "0.5.0"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "603.0.1"),
@@ -35,7 +36,8 @@ let package = Package(
             name: "SwiftRex",
             dependencies: [
                 .product(name: "CoreFP", package: "FP"),
-                .product(name: "DataStructure", package: "FP")
+                .product(name: "DataStructure", package: "FP"),
+                .product(name: "Hourglass", package: "Hourglass")
             ],
             path: "Sources/SwiftRex"
         ),
@@ -144,7 +146,8 @@ let package = Package(
                 "SwiftRex",
                 "SwiftRexTesting",
                 .product(name: "CoreFP", package: "FP"),
-                .product(name: "DataStructure", package: "FP")
+                .product(name: "DataStructure", package: "FP"),
+                .product(name: "Hourglass", package: "Hourglass")
             ],
             path: "Tests/SwiftRexTests"
         ),

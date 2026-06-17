@@ -1,5 +1,3 @@
-import Foundation
-
 /// A type-erasing, stateless projection of a ``StoreType`` that presents a narrower
 /// action and state interface.
 ///

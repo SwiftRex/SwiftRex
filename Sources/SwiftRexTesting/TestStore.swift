@@ -1,5 +1,4 @@
 import CoreFP
-import Foundation
 import SwiftRex
 import Testing
 
@@ -100,9 +99,11 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// not retroactively rebind already-pending effects.
     public var environment: Environment
 
-    /// Registered will/didChange callbacks — keyed by UUID so a single token cancels both.
-    private var stateObservers: [UUID: (willChange: @MainActor @Sendable () -> Void,
-                                        didChange: @MainActor @Sendable () -> Void)] = [:]
+    /// Registered will/didChange callbacks — keyed by a monotonic counter (internal, never
+    /// surfaced) so a single token cancels both.
+    private var stateObservers: [UInt64: (willChange: @MainActor @Sendable () -> Void,
+                                          didChange: @MainActor @Sendable () -> Void)] = [:]
+    private var nextObserverKey: UInt64 = 0
 
     // Mirrored counts for deinit — Swift 6 deinit is nonisolated and cannot read @MainActor
     // storage. These are written on @MainActor and only read in deinit.
@@ -179,7 +180,8 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken {
-        let id = UUID()
+        let id = nextObserverKey
+        nextObserverKey &+= 1
         stateObservers[id] = (willChange: willChange, didChange: didChange)
         return SubscriptionToken { [weak self] in
             Task { @MainActor [weak self] in self?.stateObservers.removeValue(forKey: id) }

@@ -1,5 +1,3 @@
-import Foundation
-
 /// Declares how the ``Store`` should schedule and manage the lifecycle of an ``Effect`` component.
 ///
 /// Every `Effect` component carries an `EffectScheduling` value. The Store reads it after every
@@ -32,13 +30,13 @@ import Foundation
 /// // Debounce live search: reset the 300 ms timer on every keystroke
 /// return .produce { env in
 ///     env.api.search(query).asEffect()
-///         .scheduling(.debounce(id: "liveSearch", delay: 0.3))
+///         .scheduling(.debounce(id: "liveSearch", delay: .milliseconds(300)))
 /// }
 ///
 /// // Throttle location updates to at most once every 5 seconds
 /// return .produce { env in
 ///     env.gps.currentLocation().asEffect()
-///         .scheduling(.throttle(id: "gps", interval: 5.0))
+///         .scheduling(.throttle(id: "gps", interval: .seconds(5)))
 /// }
 ///
 /// // Cancel any in-flight upload when the user taps "Discard"
@@ -88,14 +86,14 @@ public enum EffectScheduling: Sendable {
     /// // Trigger a search no sooner than 300 ms after the last keystroke
     /// return .produce { env in
     ///     env.api.search(query).asEffect()
-    ///         .scheduling(.debounce(id: "search", delay: 0.3))
+    ///         .scheduling(.debounce(id: "search", delay: .milliseconds(300)))
     /// }
     /// ```
     ///
     /// - Parameters:
     ///   - id: The shared key in the Store's effect registry.
-    ///   - delay: Seconds to wait after the latest dispatch before starting the component.
-    case debounce(id: AnyHashableSendable, delay: TimeInterval)
+    ///   - delay: Duration to wait after the latest dispatch before starting the component.
+    case debounce(id: AnyHashableSendable, delay: Duration)
 
     /// Start the component immediately, but only if no component with `id` ran within the last
     /// `interval` seconds.
@@ -110,14 +108,14 @@ public enum EffectScheduling: Sendable {
     /// // Update the UI at most once every second when scrolling
     /// return .produce { env in
     ///     env.analytics.trackScroll(position).asEffect()
-    ///         .scheduling(.throttle(id: "scroll", interval: 1.0))
+    ///         .scheduling(.throttle(id: "scroll", interval: .seconds(1)))
     /// }
     /// ```
     ///
     /// - Parameters:
     ///   - id: The shared key in the Store's effect registry.
-    ///   - interval: Minimum seconds between consecutive executions.
-    case throttle(id: AnyHashableSendable, interval: TimeInterval)
+    ///   - interval: Minimum duration between consecutive executions.
+    case throttle(id: AnyHashableSendable, interval: Duration)
 
     /// Remove `id` from the registry and cancel whatever was registered there.
     ///
@@ -138,7 +136,7 @@ public enum EffectScheduling: Sendable {
 
 // Enum cases cannot be generic and `AnyHashableSendable` has no implicit conversion, so these
 // same-name factories keep the natural call-site spelling: `.replacing(id: "fetch")`,
-// `.debounce(id: EffectID.search, delay: 0.3)`. `AnyHashableSendable` itself satisfies
+// `.debounce(id: EffectID.search, delay: .milliseconds(300))`. `AnyHashableSendable` itself satisfies
 // `some Hashable & Sendable`, so without `@_disfavoredOverload` a call passing the wrapper
 // (including the delegation inside each factory) would be ambiguous between the case
 // constructor and the factory.
@@ -152,13 +150,13 @@ extension EffectScheduling {
 
     /// Creates a ``debounce(id:delay:)`` policy from any `Hashable & Sendable` id.
     @_disfavoredOverload
-    public static func debounce(id: some Hashable & Sendable, delay: TimeInterval) -> Self {
+    public static func debounce(id: some Hashable & Sendable, delay: Duration) -> Self {
         .debounce(id: AnyHashableSendable(id), delay: delay)
     }
 
     /// Creates a ``throttle(id:interval:)`` policy from any `Hashable & Sendable` id.
     @_disfavoredOverload
-    public static func throttle(id: some Hashable & Sendable, interval: TimeInterval) -> Self {
+    public static func throttle(id: some Hashable & Sendable, interval: Duration) -> Self {
         .throttle(id: AnyHashableSendable(id), interval: interval)
     }
 

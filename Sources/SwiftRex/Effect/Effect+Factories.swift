@@ -16,7 +16,7 @@ extension Effect {
     ///
     /// // Debounce a single action
     /// return .produce { _ in
-    ///     .just(.refreshFeed, scheduling: .debounce(id: "refresh", delay: 1.0))
+    ///     .just(.refreshFeed, scheduling: .debounce(id: "refresh", delay: .seconds(1)))
     /// }
     /// ```
     ///

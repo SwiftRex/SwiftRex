@@ -72,22 +72,22 @@ struct EffectSchedulingIdFactoryTests {
     @Test("UUID id round-trips through debounce")
     func debounceUUIDId() {
         let uuid = UUID(uuidString: "00000000-0000-0000-0000-000000000042")!
-        guard case .debounce(let id, let delay) = EffectScheduling.debounce(id: uuid, delay: 0.3) else {
+        guard case .debounce(let id, let delay) = EffectScheduling.debounce(id: uuid, delay: .milliseconds(300)) else {
             Issue.record("Expected .debounce")
             return
         }
         #expect(id == AnyHashableSendable(uuid))
-        #expect(delay == 0.3)
+        #expect(delay == .milliseconds(300))
     }
 
     @Test("Enum id round-trips through throttle")
     func throttleEnumId() {
-        guard case .throttle(let id, let interval) = EffectScheduling.throttle(id: FeatureAID.search, interval: 1.0) else {
+        guard case .throttle(let id, let interval) = EffectScheduling.throttle(id: FeatureAID.search, interval: .seconds(1)) else {
             Issue.record("Expected .throttle")
             return
         }
         #expect(id == AnyHashableSendable(FeatureAID.search))
-        #expect(interval == 1.0)
+        #expect(interval == .seconds(1))
     }
 
     @Test("Enum id round-trips through cancelInFlight, distinct across enum types")

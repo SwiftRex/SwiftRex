@@ -31,7 +31,7 @@ struct EffectMonoidTests {
 
     @Test func combinePreservesIndividualScheduling() {
         let a = Effect<Int>.just(1).scheduling(.replacing(id: "a"))
-        let b = Effect<Int>.just(2).scheduling(.debounce(id: "b", delay: 0.3))
+        let b = Effect<Int>.just(2).scheduling(.debounce(id: "b", delay: .milliseconds(300)))
         let combined = Effect.combine(a, b)
         guard combined.components.count == 2 else { Issue.record("Expected 2 components"); return }
         if case .replacing(let id) = combined.components[0].scheduling {
