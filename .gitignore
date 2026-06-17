@@ -41,6 +41,9 @@ Packages/
 Package.pins
 # Package.resolved
 *.xcodeproj
+# Xcode's auto-generated GUI state for the SwiftPM package (schemes + workspace);
+# regenerated on open, referenced by nothing in CI.
+.swiftpm/xcode/
 #
 
 .build/
