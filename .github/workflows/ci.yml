@@ -67,3 +67,27 @@ jobs:
 
       - name: Test
         run: swift test 2>&1
+
+  # Non-gating: builds and runs the nested BenchmarkSuite package (which pulls in
+  # package-benchmark + jemalloc — kept out of the main package). `continue-on-error`
+  # ensures it never blocks a PR; it exists to surface dispatch-throughput and
+  # CoW/allocation numbers, not to gate. Baselines/thresholds can be added later.
+  benchmarks:
+    name: Benchmarks (non-gating)
+    runs-on: macos-26
+    continue-on-error: true
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
+      - name: Install jemalloc
+        run: brew install jemalloc
+
+      - name: Run benchmarks
+        working-directory: BenchmarkSuite
+        run: swift package --disable-sandbox benchmark --no-progress
