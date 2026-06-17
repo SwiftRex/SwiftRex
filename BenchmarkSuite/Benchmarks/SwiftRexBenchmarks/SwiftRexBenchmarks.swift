@@ -33,6 +33,17 @@ func reduceBenchmarks() {
         }
     }
 
+    // Folding 64 identities — once identity is structurally empty (item 21) this should collapse
+    // to ~nothing (empty unit list → no work, no allocation). Today it builds a 64-deep tree.
+    let identities = mconcat(Array(repeating: Reducer<BenchAction, BenchState>.identity, count: 64))
+    Benchmark("Reducer.mconcat identity x64 — reduce") { benchmark in
+        var state = BenchState()
+        for _ in benchmark.scaledIterations {
+            identities.reduce(.tick).runEndoMut(&state)
+            blackHole(state.counter)
+        }
+    }
+
     // EndoMut zero-copy guard: apply a scalar-field mutation to a state holding a large array.
     // EndoMut runs the mutation through `inout`, so `payload` must NOT be copied — its wall
     // clock should track the raw control below, independent of array size.

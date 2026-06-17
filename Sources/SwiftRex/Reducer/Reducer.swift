@@ -68,15 +68,31 @@ import CoreFP
 ///   constraints on ``Behavior`` and ``Middleware``. The stored `reduce` closure is `@Sendable`
 ///   so `Reducer` itself satisfies `Sendable` without `@unchecked`.
 public struct Reducer<ActionType: Sendable, StateType: Sendable>: Sendable {
+    /// The in-place mutation units, in composition order.
+    ///
+    /// ``identity`` is the **empty** list, so composing with it adds nothing structurally;
+    /// ``combine(_:_:)`` concatenates. Keeping the units flat (rather than a nested closure
+    /// tree) means folding N reducers is an O(N) single pass, and identities simply vanish.
+    let units: [@Sendable (ActionType, inout StateType) -> Void]
+
     /// Given an action, produces an in-place endomorphism on `StateType`.
     ///
     /// The ``Store`` uses this as `reduce(action).runEndoMut(&_state)` in phase 2 of
-    /// dispatch. The resulting `EndoMut` captures the action and modifies the state
-    /// in-place when run.
+    /// dispatch. Built once from ``units``: a single `EndoMut` that runs every unit in order,
+    /// so even a composition of many reducers allocates just one wrapper per call.
     public let reduce: @Sendable (ActionType) -> EndoMut<StateType>
 
-    private init(_ reduce: @escaping @Sendable (ActionType) -> EndoMut<StateType>) {
-        self.reduce = reduce
+    init(units: [@Sendable (ActionType, inout StateType) -> Void]) {
+        self.units = units
+        if units.isEmpty {
+            self.reduce = { _ in .identity }
+        } else {
+            self.reduce = { @Sendable action in
+                EndoMut { state in
+                    for unit in units { unit(action, &state) }
+                }
+            }
+        }
     }
 }
 
@@ -101,7 +117,7 @@ extension Reducer {
     /// - Parameter f: A `@Sendable` function from action to `EndoMut<State>`.
     /// - Returns: A `Reducer` that applies the returned `EndoMut` for each action.
     public static func reduce(_ f: @escaping @Sendable (ActionType) -> EndoMut<StateType>) -> Reducer {
-        Reducer(f)
+        Reducer(units: [{ action, state in f(action).runEndoMut(&state) }])
     }
 
     /// Creates a `Reducer` from `@Sendable (Action) -> Endo<State>`. Bridges via `.toEndoMut()`.
@@ -112,7 +128,7 @@ extension Reducer {
     /// - Parameter f: A `@Sendable` function from action to `Endo<State>` (a `State -> State` function).
     /// - Returns: A `Reducer` that converts each `Endo` to an `EndoMut` via `.toEndoMut()`.
     public static func reduce(_ f: @escaping @Sendable (ActionType) -> Endo<StateType>) -> Reducer {
-        Reducer { action in f(action).toEndoMut() }
+        Reducer(units: [{ action, state in state = f(action)(state) }])
     }
 
     /// Creates a `Reducer` from an `inout` mutation function — the idiomatic Swift form.
@@ -134,7 +150,7 @@ extension Reducer {
     /// - Parameter f: A `@Sendable` closure that receives the action and mutates `state` in place.
     /// - Returns: A `Reducer` that wraps each `inout` mutation in an `EndoMut`.
     public static func reduce(_ f: @escaping @Sendable (ActionType, inout StateType) -> Void) -> Reducer {
-        Reducer { action in EndoMut { state in f(action, &state) } }
+        Reducer(units: [f])
     }
 
     /// Creates a `Reducer` from a pure `@Sendable (Action, State) -> State` function.
@@ -158,7 +174,7 @@ extension Reducer {
     /// - Parameter f: A `@Sendable` pure function from `(ActionType, StateType)` to a new `StateType`.
     /// - Returns: A `Reducer` that bridges each invocation through `Endo.toEndoMut()`.
     public static func reduce(_ f: @escaping @Sendable (ActionType, StateType) -> StateType) -> Reducer {
-        Reducer { action in Endo { state in f(action, state) }.toEndoMut() }
+        Reducer(units: [{ action, state in state = f(action, state) }])
     }
 }
 
@@ -177,7 +193,15 @@ extension Reducer: Semigroup {
     ///   - rhs: The second reducer; its mutation sees lhs's changes.
     /// - Returns: A reducer whose `EndoMut` is the sequential composition of both.
     public static func combine(_ lhs: Reducer, _ rhs: Reducer) -> Reducer {
-        Reducer { action in .combine(lhs.reduce(action), rhs.reduce(action)) }
+        Reducer(units: lhs.units + rhs.units)
+    }
+
+    /// Flattens a non-empty run of reducers in a single pass — O(total units), no nesting.
+    ///
+    /// Overrides the default `Semigroup` fold so `@ReducerBuilder` and the free `sconcat`/`compose`
+    /// build one flat unit list instead of `combine`-ing pairwise (which would be O(n²)).
+    public static func sconcat(_ first: Reducer, _ rest: [Reducer]) -> Reducer {
+        Reducer(units: rest.reduce(into: first.units) { $0 += $1.units })
     }
 }
 
@@ -187,7 +211,15 @@ extension Reducer: Monoid {
     /// Composing with `identity` leaves the other reducer unchanged.
     /// An empty ``compose(content:)`` block also produces this.
     public static var identity: Reducer {
-        .reduce { _ in EndoMut<StateType>.identity }
+        Reducer(units: [])
+    }
+
+    /// Flattens any (possibly empty) array of reducers in a single pass — O(total units).
+    ///
+    /// Overrides the default `Monoid` fold so `mconcat` (and the `@ReducerBuilder` block that
+    /// delegates to it) builds one flat unit list. Identities contribute empty lists and vanish.
+    public static func mconcat(_ values: [Reducer]) -> Reducer {
+        Reducer(units: values.flatMap(\.units))
     }
 }
 

@@ -1,13 +1,13 @@
 {
-  "originHash" : "9249e3631fa1816298ebc84d8cee92c8654069a5fdb698b25874525a22718816",
+  "originHash" : "40927dcc37a86536ac1f2ea5cfe66890947ad9f92570007ef4f3d757a5198f9a",
   "pins" : [
     {
       "identity" : "fp",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/luizmb/FP.git",
       "state" : {
-        "revision" : "7d94724b29c47cc60695fe6c4d6cb813f25341aa",
-        "version" : "1.11.1"
+        "revision" : "1b93d54ee5d35a9696c038b323563d2f22f60a2c",
+        "version" : "1.12.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/luizmb/Hourglass.git",
       "state" : {
-        "revision" : "6d35df23dcce1477bb244d51eb045707eec5506c",
-        "version" : "0.5.0"
+        "revision" : "ec2ff5aac99e59d2ea208e4d391fe54da8961608",
+        "version" : "0.6.2"
       }
     },
     {

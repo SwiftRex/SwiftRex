@@ -88,6 +88,43 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
         _ context: PreReducerContext<State>
     ) -> Consequence<State, Environment, Action>
 
+    /// The per-feature units, in composition order. ``identity`` is the empty list, ``combine(_:_:)``
+    /// concatenates, and ``handle`` is a single flat pass over them — no nested closure tree.
+    let units: [@MainActor @Sendable (
+        _ action: Action,
+        _ context: PreReducerContext<State>
+    ) -> Consequence<State, Environment, Action>]
+
+    init(
+        units: [@MainActor @Sendable (
+            _ action: Action,
+            _ context: PreReducerContext<State>
+        ) -> Consequence<State, Environment, Action>]
+    ) {
+        self.units = units
+        if units.isEmpty {
+            self.handle = { _, _ in .doNothing }
+        } else if units.count == 1 {
+            self.handle = units[0]
+        } else {
+            self.handle = { @MainActor action, context in
+                // Run each unit once (all see the same pre-mutation state), then fold flatly.
+                // ReducerOutcome.combine absorbs `.unchanged`, so an all-no-op composition stays
+                // `.unchanged` and the Store skips notifications. Effects merge in phase 3.
+                let consequences = units.map { $0(action, context) }
+                let mutation = consequences.reduce(ReducerOutcome<State>.unchanged) {
+                    .combine($0, $1.mutation)
+                }
+                let effect = Reader<PostReducerContext<State, Environment>, Effect<Action>> { postContext in
+                    consequences.reduce(Effect<Action>.empty) {
+                        .combine($0, $1.effect.runReader(postContext))
+                    }
+                }
+                return Consequence(mutation: mutation, effect: effect)
+            }
+        }
+    }
+
     /// Creates a `Behavior` from a `handle` closure.
     ///
     /// - Parameter handle: The closure that maps `(Action, PreReducerContext<State>)` to
@@ -98,7 +135,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
             _ context: PreReducerContext<State>
         ) -> Consequence<State, Environment, Action>
     ) {
-        self.handle = handle
+        self.init(units: [handle])
     }
 }
 
@@ -152,12 +189,14 @@ extension Behavior {
         reducer: Reducer<Action, State>,
         middleware: Middleware<Action, State, Environment>
     ) {
-        self.handle = { action, context in
-            Consequence(
-                mutation: .mutation(reducer.reduce(action)),
-                effect: middleware.handle(action, context)
-            )
-        }
+        self.init(units: [
+            { action, context in
+                Consequence(
+                    mutation: .mutation(reducer.reduce(action)),
+                    effect: middleware.handle(action, context)
+                )
+            }
+        ])
     }
 }
 
@@ -185,9 +224,12 @@ extension Behavior: Semigroup {
     ///   - rhs: The second behavior; its mutation sees lhs's mutations.
     /// - Returns: A combined behavior that runs both handle closures and merges their consequences.
     public static func combine(_ lhs: Behavior, _ rhs: Behavior) -> Behavior {
-        Behavior { action, context in
-            .combine(lhs.handle(action, context), rhs.handle(action, context))
-        }
+        Behavior(units: lhs.units + rhs.units)
+    }
+
+    /// Flattens a non-empty run of behaviors in a single pass — O(total units), no nesting.
+    public static func sconcat(_ first: Behavior, _ rest: [Behavior]) -> Behavior {
+        Behavior(units: rest.reduce(into: first.units) { $0 += $1.units })
     }
 }
 
@@ -197,6 +239,12 @@ extension Behavior: Monoid {
     /// Acts as the identity element for ``combine(_:_:)``:
     /// `combine(b, identity) == combine(identity, b) == b` for any behavior `b`.
     public static var identity: Behavior {
-        Behavior { _, _ in .doNothing }
+        Behavior(units: [])
+    }
+
+    /// Flattens any (possibly empty) array of behaviors in a single pass — O(total units).
+    /// Identities contribute empty lists and vanish.
+    public static func mconcat(_ values: [Behavior]) -> Behavior {
+        Behavior(units: values.flatMap(\.units))
     }
 }
