@@ -22,7 +22,7 @@ let package = Package(
         .library(name: "SwiftRex.Testing", targets: ["SwiftRexTesting"])
     ],
     dependencies: [
-        .package(url: "https://github.com/luizmb/FP.git", from: "1.11.0"),
+        .package(url: "https://github.com/luizmb/FP.git", from: "1.11.1"),
         .package(url: "https://github.com/luizmb/Hourglass.git", from: "0.5.0"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),

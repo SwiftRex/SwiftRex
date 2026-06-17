@@ -7,15 +7,28 @@ import SwiftSyntaxMacros
 /// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action` enum,
 ///                            `@Lenses` to nested `State` struct, and
 ///                            `@ViewModel` to nested `ViewModel` class.
-///
-/// `@Prisms` will emit a warning suggesting `@dynamicMemberLookup` to collapse
-/// per-case property accessors into a single subscript. Swift's macro expansion
-/// order prevents us from attaching `@dynamicMemberLookup` automatically here —
-/// when `@Prisms` expands on `Action`, it cannot observe attributes added by
-/// this same MemberAttributeMacro pass, so it always takes the per-case branch.
-/// Users wanting the subscript form should add `@dynamicMemberLookup` to their
-/// `Action` enum directly.
-public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro {
+/// - `MemberMacro`          — synthesizes `static func initialState() -> State { .init() }`
+///                            when the feature has a nested `State` and hasn't written its own.
+public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro, MemberMacro {
+    // MARK: - MemberMacro
+
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingMembersOf declaration: some DeclGroupSyntax,
+        conformingTo protocols: [TypeSyntax],
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        // `initialState()` defaults to `State.init()` — the common case where every
+        // `State` property has a default. Only synthesize when the feature has a nested
+        // `State` type and hasn't supplied its own `initialState()`; a `State` without an
+        // empty initializer must declare `initialState()` explicitly.
+        guard declaration.is(EnumDeclSyntax.self),
+              hasNestedType("State", in: declaration),
+              !hasInitialState(in: declaration)
+        else { return [] }
+        return ["static func initialState() -> State { .init() }"]
+    }
+
     // MARK: - ExtensionMacro
 
     public static func expansion(
@@ -40,20 +53,20 @@ public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro {
         providingAttributesFor member: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
-        // Add @Prisms to nested `enum Action`
+        // Add @Prisms (prism namespace + cases) to nested `enum Action`
         if let enumDecl = member.as(EnumDeclSyntax.self), enumDecl.name.text == "Action" {
             guard !hasAttribute("Prisms", on: enumDecl.attributes) else { return [] }
-            return [AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier("Prisms")))]
+            return ["@Prisms"]
         }
         // Add @Lenses to nested `struct State`
         if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "State" {
             guard !hasAttribute("Lenses", on: structDecl.attributes) else { return [] }
-            return [AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier("Lenses")))]
+            return ["@Lenses"]
         }
         // Add @ViewModel to nested `class ViewModel`
         if let classDecl = member.as(ClassDeclSyntax.self), classDecl.name.text == "ViewModel" {
             guard !hasAttribute("ViewModel", on: classDecl.attributes) else { return [] }
-            return [AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier("ViewModel")))]
+            return ["@ViewModel"]
         }
         return []
     }
@@ -66,6 +79,25 @@ public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro {
                 .attributeName
                 .as(IdentifierTypeSyntax.self)?
                 .name.text == name
+        }
+    }
+
+    /// Whether the feature declares a nested type (struct/enum/class/actor/typealias) with `name`.
+    private static func hasNestedType(_ name: String, in declaration: some DeclGroupSyntax) -> Bool {
+        declaration.memberBlock.members.contains { member in
+            let decl = member.decl
+            return decl.as(StructDeclSyntax.self)?.name.text == name
+                || decl.as(EnumDeclSyntax.self)?.name.text == name
+                || decl.as(ClassDeclSyntax.self)?.name.text == name
+                || decl.as(ActorDeclSyntax.self)?.name.text == name
+                || decl.as(TypeAliasDeclSyntax.self)?.name.text == name
+        }
+    }
+
+    /// Whether the feature already declares an `initialState` function (user-supplied override).
+    private static func hasInitialState(in declaration: some DeclGroupSyntax) -> Bool {
+        declaration.memberBlock.members.contains {
+            $0.decl.as(FunctionDeclSyntax.self)?.name.text == "initialState"
         }
     }
 }

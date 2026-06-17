@@ -25,7 +25,6 @@ import SwiftUI
 ///         var error:     Domain.NetworkError? = nil
 ///     }
 ///
-///     @dynamicMemberLookup
 ///     enum Action: Sendable {
 ///         case fetchMovies
 ///         case moviesResponse(Result<[Domain.Movie], Domain.NetworkError>)
@@ -46,7 +45,6 @@ import SwiftUI
 ///             }
 ///             var rows: [MovieRow]; var isLoading: Bool; var error: String?
 ///         }
-///         @dynamicMemberLookup
 ///         enum ViewAction: Sendable {
 ///             case onAppear
 ///             case didTapStar(id: String)
