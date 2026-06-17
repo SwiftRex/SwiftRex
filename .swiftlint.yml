@@ -41,6 +41,7 @@ disabled_rules:
   - file_length
 excluded:
   - Sources/SwiftRex/CodeGeneration
+  - Sources/SwiftRex/__Generated__
   - Pods
   - .build
   - DerivedData
