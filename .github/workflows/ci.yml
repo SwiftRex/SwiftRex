@@ -42,6 +42,11 @@ jobs:
       - name: Lint
         run: mint run swiftlint lint --strict
 
+      - name: Codegen freshness
+        run: |
+          swift run GenerateLifts Sources/SwiftRex
+          git diff --exit-code Sources/SwiftRex/__Generated__
+
       - name: Build
         run: swift build 2>&1
 
