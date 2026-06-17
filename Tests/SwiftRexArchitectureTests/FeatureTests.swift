@@ -207,4 +207,119 @@ struct ViewModelTests {
         #expect(vm.threatIndex == 3)
     }
 }
+
+// MARK: - @Feature macro — initialState synthesis
+//
+// Exercises the `@Feature` macro end-to-end (extension + memberAttribute + member roles).
+// This fixture deliberately omits `initialState()` — `@Feature` synthesizes it as `State.init()`.
+
+private struct CounterView: View, HasViewModel {
+    typealias VM = CounterFeature.ViewModel
+    let viewModel: CounterFeature.ViewModel
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature
+private enum CounterFeature {
+    struct State: Sendable {
+        var count: Int = 7
+        var label: String = "ready"
+    }
+
+    enum Action: Sendable, Equatable {
+        case increment
+    }
+
+    struct Environment: Sendable {}
+
+    // swiftlint:disable:next convenience_type
+    final class ViewModel {
+        struct ViewState: Sendable, Equatable {
+            var count: Int
+        }
+        enum ViewAction: Sendable {
+            case tapped
+        }
+    }
+
+    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { .init(count: $0.count) }
+    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .increment }
+
+    // No `initialState()` here — synthesized by `@Feature`.
+
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (action: Action, state: inout State) in
+            switch action {
+            case .increment: state.count += 1
+            }
+        }.asBehavior()
+    }
+
+    typealias Content = CounterView
+}
+
+// A feature that supplies its own `initialState()` — `@Feature` must NOT also synthesize one
+// (a second declaration would be an "invalid redeclaration" compile error).
+
+private struct OverrideView: View, HasViewModel {
+    typealias VM = OverrideFeature.ViewModel
+    let viewModel: OverrideFeature.ViewModel
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature
+private enum OverrideFeature {
+    struct State: Sendable {
+        var count: Int = 0
+    }
+
+    enum Action: Sendable, Equatable {
+        case noop
+    }
+
+    struct Environment: Sendable {}
+
+    // swiftlint:disable:next convenience_type
+    final class ViewModel {
+        struct ViewState: Sendable, Equatable {
+            var count: Int
+        }
+        enum ViewAction: Sendable {
+            case tapped
+        }
+    }
+
+    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { .init(count: $0.count) }
+    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
+
+    static func initialState() -> State { .init(count: 99) }
+
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
+    }
+
+    typealias Content = OverrideView
+}
+
+@Suite("@Feature — initialState synthesis")
+struct FeatureInitialStateTests {
+    @Test func synthesizesInitialStateFromStateDefaults() {
+        let state = CounterFeature.initialState()
+        #expect(state.count == 7)
+        #expect(state.label == "ready")
+    }
+
+    @Test func attachesPrismsNamespaceToAction() {
+        // Confirms `@Feature` attaches `@Prisms`: the prism namespace exists…
+        #expect(CounterFeature.Action.prism.increment.preview(.increment) != nil)
+        // …and the cases mirror is emitted.
+        #expect(CounterFeature.Action.increment.is(.increment))
+    }
+
+    @Test func userSuppliedInitialStateWins() {
+        // Compiles only because `@Feature` skipped synthesis (no redeclaration), and returns
+        // the user's value rather than `State.init()` defaults.
+        #expect(OverrideFeature.initialState().count == 99)
+    }
+}
 #endif
