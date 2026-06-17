@@ -1,5 +1,3 @@
-import Foundation
-
 /// A reference-type store wrapper that caches state and gates observer notifications
 /// through a `hasChanged` predicate.
 ///
@@ -67,8 +65,10 @@ public final class StoreBuffer<Action: Sendable, State: Sendable>
     private let underlying: any StoreType<Action, State>
     private let hasChanged: @Sendable (State, State) -> Bool
     private var token: SubscriptionToken?
-    private var observers: [UUID: (willChange: @MainActor @Sendable () -> Void,
-                                   didChange: @MainActor @Sendable () -> Void)] = [:]
+    // Observer keys are a monotonic counter — internal, never surfaced, so no UUID/RNG is needed.
+    private var observers: [UInt64: (willChange: @MainActor @Sendable () -> Void,
+                                     didChange: @MainActor @Sendable () -> Void)] = [:]
+    private var nextObserverKey: UInt64 = 0
 
     /// Creates a `StoreBuffer` wrapping `store` with a custom change predicate.
     ///
@@ -129,7 +129,8 @@ public final class StoreBuffer<Action: Sendable, State: Sendable>
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void
     ) -> SubscriptionToken {
-        let id = UUID()
+        let id = nextObserverKey
+        nextObserverKey &+= 1
         observers[id] = (willChange: willChange, didChange: didChange)
         return SubscriptionToken { [weak self] in
             Task { @MainActor [weak self] in self?.observers.removeValue(forKey: id) }

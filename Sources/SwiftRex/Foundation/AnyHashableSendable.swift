@@ -27,7 +27,7 @@
 ///
 /// return .produce { ctx in
 ///     ctx.environment.api.search(query).asEffect()
-///         .scheduling(.debounce(id: EffectID.search, delay: 0.3))
+///         .scheduling(.debounce(id: EffectID.search, delay: .milliseconds(300)))
 /// }
 /// ```
 ///

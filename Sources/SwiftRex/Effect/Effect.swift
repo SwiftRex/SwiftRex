@@ -147,7 +147,7 @@ extension Effect {
     /// ```swift
     /// // Debounce a search effect by 300 ms
     /// let searchEffect = apiEffect
-    ///     .scheduling(.debounce(id: "search", delay: 0.3))
+    ///     .scheduling(.debounce(id: "search", delay: .milliseconds(300)))
     ///
     /// // Ensure only one fetch runs at a time
     /// let fetchEffect = fetchData()
