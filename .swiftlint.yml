@@ -44,6 +44,7 @@ excluded:
   - Sources/SwiftRex/__Generated__
   - Pods
   - .build
+  - BenchmarkSuite/.build
   - DerivedData
   - "Tests/*/XCTestManifests.swift"
   - .claude
