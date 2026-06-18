@@ -30,7 +30,7 @@ extension Reader {
     /// Creates a `Reader<PostReducerContext<State, Environment>, Effect<Action>>` from a
     /// closure that receives the post-reducer context and returns an `Effect`.
     ///
-    /// Mirrors ``Consequence/produce(_:)`` so `Middleware` and `Behavior` handlers share the
+    /// Mirrors `Consequence.produce(_:)` so `Middleware` and `Behavior` handlers share the
     /// same vocabulary. The two forms below are equivalent:
     ///
     /// ```swift

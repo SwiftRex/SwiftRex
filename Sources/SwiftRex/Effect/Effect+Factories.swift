@@ -145,7 +145,7 @@ extension Effect {
     /// without starting a new one.
     ///
     /// This is a pure cancellation operation — no `subscribe` closure is ever called. The
-    /// Store interprets the embedded ``EffectScheduling/cancelInFlight(id:)`` scheduling by
+    /// Store interprets the embedded `EffectScheduling.cancelInFlight(id:)` scheduling by
     /// removing `id` from its registry and calling ``SubscriptionToken/cancel()`` on whatever
     /// was stored there.
     ///
@@ -178,7 +178,7 @@ extension Effect {
 extension Effect {
     /// An effect that does nothing — no actions produced, no work started.
     ///
-    /// Equivalent to ``Monoid/identity`` and useful as a readable no-op return:
+    /// Equivalent to `Monoid.identity` and useful as a readable no-op return:
     ///
     /// ```swift
     /// case .noop:

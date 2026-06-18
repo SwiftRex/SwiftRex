@@ -34,7 +34,7 @@ extension Middleware {
     /// Lifts the state axis of this middleware using a projection closure, embedding it in a
     /// wider global state type.
     ///
-    /// The ``PreReducerContext<GlobalState>`` is projected to ``PreReducerContext<State>`` using
+    /// The `PreReducerContext<GlobalState>` is projected to `PreReducerContext<State>` using
     /// `f` via ``PreReducerContext/map(_:)``. The same projection is applied in
     /// ``PostReducerContext`` (via `contramapEnvironment` on the returned `Reader`) so the
     /// middleware sees the correct post-mutation state in phase 3. Because ``Middleware`` is
@@ -149,7 +149,7 @@ extension Middleware {
     /// Lifts all three axes simultaneously using a `Prism` for action, a closure for state,
     /// and a closure for environment.
     ///
-    /// Equivalent to chaining ``liftAction(_:)``, ``liftState(_:)-9kjxz``, and
+    /// Equivalent to chaining `liftAction(_:)`, `liftState(_:)`, and
     /// ``liftEnvironment(_:)`` in sequence. The state projection uses a plain function, which
     /// is the most flexible form:
     ///

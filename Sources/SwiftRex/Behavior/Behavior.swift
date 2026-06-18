@@ -63,13 +63,13 @@ import DataStructure
 /// Feature behaviors operate on local types. Use the lift family to embed them in the app's
 /// global types without changing their logic:
 ///
-/// - ``liftAction(_:)`` — narrows via a `Prism` (enum case)
-/// - ``liftState(_:)-7bmm8`` — widens via `WritableKeyPath`
-/// - ``liftState(_:)-7r4jg`` — widens via `Lens`
-/// - ``liftState(_:)-4hwa6`` — widens via `Prism` (optional enum state)
-/// - ``liftState(_:)-8tflj`` — widens via `AffineTraversal`
+/// - `liftAction(_:)` — narrows via a `Prism` (enum case)
+/// - `liftState(_:)` — widens via `WritableKeyPath`
+/// - `liftState(_:)` — widens via `Lens`
+/// - `liftState(_:)` — widens via `Prism` (optional enum state)
+/// - `liftState(_:)` — widens via `AffineTraversal`
 /// - ``liftEnvironment(_:)`` — narrows via a projection closure
-/// - ``lift(action:state:environment:)-9azuf`` and overloads — all three axes at once
+/// - `lift(action:state:environment:)` and overloads — all three axes at once
 ///
 /// - Note: `Behavior.handle` is `@MainActor`. The ``Store`` calls it on the main actor,
 ///   so `context.stateBefore` is always safe to call directly inside the closure.
@@ -82,7 +82,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     /// - The returned ``Consequence`` is applied by the Store in phases 2 and 3.
     ///
     /// - Note: Always called on `@MainActor`. Do not perform blocking work here — move
-    ///   async work into the returned ``Consequence/produce(_:)`` closure.
+    ///   async work into the returned `Consequence.produce(_:)` closure.
     public let handle: @MainActor @Sendable (
         _ action: Action,
         _ context: PreReducerContext<State>

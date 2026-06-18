@@ -78,7 +78,7 @@ public struct Reducer<ActionType: Sendable, StateType: Sendable>: Sendable {
     /// Given an action, produces an in-place endomorphism on `StateType`.
     ///
     /// The ``Store`` uses this as `reduce(action).runEndoMut(&_state)` in phase 2 of
-    /// dispatch. Built once from ``units``: a single `EndoMut` that runs every unit in order,
+    /// dispatch. Built once from `units`: a single `EndoMut` that runs every unit in order,
     /// so even a composition of many reducers allocates just one wrapper per call.
     public let reduce: @Sendable (ActionType) -> EndoMut<StateType>
 

@@ -163,7 +163,7 @@ extension Middleware {
 // MARK: - liftEach (general container — IndexedTraversal)
 
 extension Middleware {
-    /// Broadcasts across every focus of an ``IndexedTraversal`` (any container); each focus's
+    /// Broadcasts across every focus of an `IndexedTraversal` (any container); each focus's
     /// index is its scoping id. State container via `Lens`.
     public func liftEach<GA: Sendable, GS: Sendable, Container: Sendable, ID: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> Action?,
@@ -180,7 +180,7 @@ extension Middleware {
         )
     }
 
-    /// Broadcasts across every focus of an ``IndexedTraversal``. State container via `WritableKeyPath`.
+    /// Broadcasts across every focus of an `IndexedTraversal`. State container via `WritableKeyPath`.
     public func liftEach<GA: Sendable, GS: Sendable, Container: Sendable, ID: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> Action?,
         embed: @escaping @Sendable (Action, ID) -> GA,

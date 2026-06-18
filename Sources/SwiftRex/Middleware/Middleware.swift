@@ -40,7 +40,7 @@ import DataStructure
 /// ## Single action type
 ///
 /// `Middleware<Action, State, Environment>` uses a single `Action` type for both incoming and
-/// outgoing actions. To narrow the action scope, use ``liftAction(_:)`` with a `Prism` — actions
+/// outgoing actions. To narrow the action scope, use `liftAction(_:)` with a `Prism` — actions
 /// not matched by the prism are silently ignored, and produced actions are wrapped through the
 /// prism's `review` function before re-entering the Store.
 ///
@@ -66,13 +66,13 @@ import DataStructure
 /// Feature middlewares operate on local types. Use the lift family to embed them in the app's
 /// global types:
 ///
-/// - ``liftAction(_:)`` — narrows via a `Prism`
-/// - ``liftState(_:)-9kjxz`` — widens via a getter closure
-/// - ``liftState(_:)-5j4jz`` — widens via a `Lens`
-/// - ``liftState(_:)-3cpnb`` — widens via a `Prism` (optional enum state)
-/// - ``liftState(_:)-4f8n1`` — widens via an `AffineTraversal`
+/// - `liftAction(_:)` — narrows via a `Prism`
+/// - `liftState(_:)` — widens via a getter closure
+/// - `liftState(_:)` — widens via a `Lens`
+/// - `liftState(_:)` — widens via a `Prism` (optional enum state)
+/// - `liftState(_:)` — widens via an `AffineTraversal`
 /// - ``liftEnvironment(_:)`` — narrows via a projection closure
-/// - ``lift(action:state:environment:)-5ttmj`` and overloads — all three axes at once
+/// - `lift(action:state:environment:)` and overloads — all three axes at once
 public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
     /// The core function: given an action and a pre-mutation context, returns a deferred
     /// `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that the Store will

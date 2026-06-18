@@ -11,10 +11,10 @@
 /// via default parameter values:
 ///
 /// - ``StoreType/dispatch(_:file:function:line:)`` — at the UI or coordinator call site.
-/// - ``Effect/just(_:scheduling:file:function:line:)-5i6kl`` — at the effect factory call site.
+/// - `just(_:scheduling:file:function:line:)` — at the effect factory call site.
 /// - ``Effect/sequence(_:scheduling:file:function:line:)`` — same.
 /// - ``DispatchedAction/init(_:file:function:line:)`` — when wrapping manually.
-/// - The ``here()`` free function — for point-free pipelines.
+/// - The `here()` free function — for point-free pipelines.
 ///
 /// ## Usage in middleware
 ///
