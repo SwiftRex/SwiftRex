@@ -124,11 +124,8 @@ struct BehaviorLiftCollectionTests {
             ElementScopedID(element: AnyHashableSendable(id2), inner: AnyHashableSendable("fetch"))
         )
 
-        guard case .replacing(let idA) = effA.components.first?.scheduling,
-              case .replacing(let idB) = effB.components.first?.scheduling else {
-            Issue.record("Expected .replacing scheduling on both elements")
-            return
-        }
+        let idA = effA.components.first?.scheduling.id
+        let idB = effB.components.first?.scheduling.id
         #expect(idA == expectedA)
         #expect(idB == expectedB)
         #expect(idA != idB)   // same inner "fetch", different element → independent
@@ -165,11 +162,7 @@ struct BehaviorLiftCollectionTests {
         let expected = AnyHashableSendable(
             ElementScopedID(element: AnyHashableSendable("b"), inner: AnyHashableSendable("fetch"))
         )
-        guard case .replacing(let id) = eff.components.first?.scheduling else {
-            Issue.record("Expected .replacing scheduling")
-            return
-        }
-        #expect(id == expected)
+        #expect(eff.components.first?.scheduling.id == expected)
     }
 
     // MARK: - Dictionary key-based
@@ -189,10 +182,6 @@ struct BehaviorLiftCollectionTests {
         let expected = AnyHashableSendable(
             ElementScopedID(element: AnyHashableSendable("x"), inner: AnyHashableSendable("fetch"))
         )
-        guard case .replacing(let id) = eff.components.first?.scheduling else {
-            Issue.record("Expected .replacing scheduling")
-            return
-        }
-        #expect(id == expected)
+        #expect(eff.components.first?.scheduling.id == expected)
     }
 }

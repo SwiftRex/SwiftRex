@@ -34,12 +34,10 @@ struct EffectMonoidTests {
         let b = Effect<Int>.just(2).scheduling(.debounce(id: "b", delay: .milliseconds(300)))
         let combined = Effect.combine(a, b)
         guard combined.components.count == 2 else { Issue.record("Expected 2 components"); return }
-        if case .replacing(let id) = combined.components[0].scheduling {
-            #expect(id == AnyHashableSendable("a"))
-        } else { Issue.record("Expected .replacing") }
-        if case .debounce(let id, _) = combined.components[1].scheduling {
-            #expect(id == AnyHashableSendable("b"))
-        } else { Issue.record("Expected .debounce") }
+        #expect(combined.components[0].scheduling.id == AnyHashableSendable("a"))
+        #expect(combined.components[0].scheduling.exclusive)
+        #expect(combined.components[1].scheduling.id == AnyHashableSendable("b"))
+        #expect(combined.components[1].scheduling.coalesce == .debounce(.milliseconds(300)))
     }
 }
 
@@ -122,8 +120,7 @@ struct EffectSchedulingModifierTests {
         let combined = Effect.combine(Effect<Int>.just(1), Effect<Int>.just(2))
         let rescheduled = combined.scheduling(.replacing(id: "x"))
         #expect(rescheduled.components.allSatisfy {
-            if case .replacing(let id) = $0.scheduling { return id == AnyHashableSendable("x") }
-            return false
+            $0.scheduling.id == AnyHashableSendable("x") && $0.scheduling.exclusive
         })
     }
 }
@@ -138,9 +135,8 @@ struct EffectCancelInFlightTests {
 
     @Test func cancelInFlightHasCancelScheduling() {
         let effect = Effect<Int>.cancelInFlight(id: "search")
-        if case .cancelInFlight(let id) = effect.components[0].scheduling {
-            #expect(id == AnyHashableSendable("search"))
-        } else { Issue.record("Expected .cancelInFlight scheduling") }
+        #expect(effect.components[0].scheduling.cancelsOnly)
+        #expect(effect.components[0].scheduling.id == AnyHashableSendable("search"))
     }
 }
 
@@ -169,9 +165,8 @@ struct EffectMapTests {
     @Test func mapPreservesScheduling() {
         let effect = Effect<Int>.just(1).scheduling(.replacing(id: "x"))
         let mapped = effect.map { $0 * 2 }
-        if case .replacing(let id) = mapped.components[0].scheduling {
-            #expect(id == AnyHashableSendable("x"))
-        } else { Issue.record("Expected .replacing scheduling preserved after map") }
+        #expect(mapped.components[0].scheduling.id == AnyHashableSendable("x"))
+        #expect(mapped.components[0].scheduling.exclusive)
     }
 
     @Test func mapThreadsComplete() {

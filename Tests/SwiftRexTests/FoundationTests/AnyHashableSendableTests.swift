@@ -62,50 +62,36 @@ struct AnyHashableSendableTests {
 struct EffectSchedulingIdFactoryTests {
     @Test("String id round-trips through replacing")
     func replacingStringId() {
-        guard case .replacing(let id) = EffectScheduling.replacing(id: "fetch") else {
-            Issue.record("Expected .replacing")
-            return
-        }
-        #expect(id == AnyHashableSendable("fetch"))
+        let scheduling = EffectScheduling.replacing(id: "fetch")
+        #expect(scheduling.id == AnyHashableSendable("fetch"))
+        #expect(scheduling.exclusive)
     }
 
     @Test("UUID id round-trips through debounce")
     func debounceUUIDId() {
         let uuid = UUID(uuidString: "00000000-0000-0000-0000-000000000042")!
-        guard case .debounce(let id, let delay) = EffectScheduling.debounce(id: uuid, delay: .milliseconds(300)) else {
-            Issue.record("Expected .debounce")
-            return
-        }
-        #expect(id == AnyHashableSendable(uuid))
-        #expect(delay == .milliseconds(300))
+        let scheduling = EffectScheduling.debounce(id: uuid, delay: .milliseconds(300))
+        #expect(scheduling.id == AnyHashableSendable(uuid))
+        #expect(scheduling.coalesce == .debounce(.milliseconds(300)))
     }
 
     @Test("Enum id round-trips through throttle")
     func throttleEnumId() {
-        guard case .throttle(let id, let interval) = EffectScheduling.throttle(id: FeatureAID.search, interval: .seconds(1)) else {
-            Issue.record("Expected .throttle")
-            return
-        }
-        #expect(id == AnyHashableSendable(FeatureAID.search))
-        #expect(interval == .seconds(1))
+        let scheduling = EffectScheduling.throttle(id: FeatureAID.search, interval: .seconds(1))
+        #expect(scheduling.id == AnyHashableSendable(FeatureAID.search))
+        #expect(scheduling.coalesce == .throttle(.seconds(1)))
     }
 
     @Test("Enum id round-trips through cancelInFlight, distinct across enum types")
     func cancelInFlightEnumId() {
-        guard case .cancelInFlight(let id) = EffectScheduling.cancelInFlight(id: FeatureAID.fetch) else {
-            Issue.record("Expected .cancelInFlight")
-            return
-        }
-        #expect(id == AnyHashableSendable(FeatureAID.fetch))
-        #expect(id != AnyHashableSendable(FeatureBID.fetch))
+        let scheduling = EffectScheduling.cancelInFlight(id: FeatureAID.fetch)
+        #expect(scheduling.cancelsOnly)
+        #expect(scheduling.id == AnyHashableSendable(FeatureAID.fetch))
+        #expect(scheduling.id != AnyHashableSendable(FeatureBID.fetch))
     }
 
     @Test("Pre-wrapped id is accepted unambiguously")
     func preWrappedId() {
-        guard case .replacing(let id) = EffectScheduling.replacing(id: AnyHashableSendable("x")) else {
-            Issue.record("Expected .replacing")
-            return
-        }
-        #expect(id == AnyHashableSendable("x"))
+        #expect(EffectScheduling.replacing(id: AnyHashableSendable("x")).id == AnyHashableSendable("x"))
     }
 }
