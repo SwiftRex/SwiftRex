@@ -25,6 +25,23 @@ extension StoreType {
     /// // todoStore: StoreProjection<TodoAction, Todo?>
     /// ```
     ///
+    /// **Performance.** The element is resolved with a linear `first { $0.id == id }` scan **on
+    /// every state read** — i.e. on every observation/render — so projecting one element out of a
+    /// collection of `n` costs O(n) per read. Choosing a container:
+    ///
+    /// - Prefer a plain `Array` (this factory) for **small collections**, for collections with
+    ///   **frequent inserts / removals / reordering**, or **whenever display order matters** — the
+    ///   O(n) read is negligible at small `n`, and `Array` keeps insertion order and cheap
+    ///   structural edits.
+    /// - For **large, read-heavy (or edit-in-place-by-id) collections where order is irrelevant**,
+    ///   store the data as `[ID: Element]` and use ``projection(key:actionReview:stateDictionary:)``
+    ///   instead — dictionary lookup is O(1) per read.
+    /// - Caveat: a dictionary is **unordered**, so driving a list UI directly from one produces
+    ///   arbitrary, unstable row order. If you need both O(1) by-id access *and* stable order,
+    ///   keep a separate `[ID]` order array alongside it, or wait for a dedicated ordered indexed
+    ///   container. Do **not** reach for a dictionary purely to avoid the O(n) read when order
+    ///   matters — accept the linear read on the `Array` instead.
+    ///
     /// Delegates to ``StoreProjection/init(store:element:actionReview:stateCollection:)``.
     ///
     /// - Parameters:
@@ -64,6 +81,11 @@ extension StoreType {
     /// // featureStore: StoreProjection<FeatureAction, Feature?>
     /// ```
     ///
+    /// **Performance.** Same O(n)-per-read cost as
+    /// ``projection(element:actionReview:stateCollection:)`` — a linear `first(where:)` scan runs on
+    /// every state read. See that factory's discussion for when to prefer an `Array`, a dictionary,
+    /// or a dedicated ordered indexed container.
+    ///
     /// Delegates to ``StoreProjection/init(store:element:actionReview:stateCollection:identifier:)``.
     ///
     /// - Parameters:
@@ -101,6 +123,11 @@ extension StoreType {
     /// )
     /// // settingStore: StoreProjection<SettingAction, SettingValue?>
     /// ```
+    ///
+    /// **Performance.** Dictionary lookup is O(1) per read — the O(1) counterpart to the
+    /// `Array`-based ``projection(element:actionReview:stateCollection:)``. Prefer this for large,
+    /// read-heavy collections keyed by id where ordering is **not** required; if you need stable
+    /// display order, see that factory's discussion (a dictionary alone cannot provide it).
     ///
     /// Delegates to ``StoreProjection/init(store:key:actionReview:stateDictionary:)``.
     ///
