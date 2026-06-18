@@ -98,27 +98,30 @@ I'm not gonna lie, it's a completely different way of writing apps, as most reac
 
 SwiftRex supports multiple concurrency styles. The core package is self-contained and sufficient on its own; the reactive, concurrency, and testing bridges are optional add-ons:
 
-| Product | When to use |
-|---|---|
-| `SwiftRex` | Always — the core store, reducers, behaviors, effects |
-| `SwiftRex.Concurrency` | async/await — Effect bridges for `Task`, `AsyncSequence`, `DeferredStream` |
-| `SwiftRex.Combine` | Apple Combine integration — `asEffect()` on `Publisher`, `store.publisher`, `ctx.readStateAfter() -> AnyPublisher` |
-| `SwiftRex.RxSwift` | RxSwift integration — `asEffect()` on `Observable`, `store.observable`, `ctx.readStateAfter() -> Observable` |
-| `SwiftRex.ReactiveSwift` | ReactiveSwift integration — `asEffect()` on `SignalProducer`/`Signal`, `store.signal`, `ctx.readStateAfter() -> SignalProducer` |
-| `SwiftRex.SwiftUI` | SwiftUI helpers — `asObservableObject()`, `@ViewModel` macro, `HasViewModel` |
-| `SwiftRex.Architecture` | Opinionated module pattern — `Feature`, `FeatureHost` (iOS 17+) |
-| `SwiftRex.Testing` | Test target only — `TestStore` for deterministic unit tests |
+| Product | Trait | When to use |
+|---|---|---|
+| `SwiftRex` | — | Always — the core store, reducers, behaviors, effects |
+| `SwiftRex.SwiftConcurrency` | — | async/await — Effect bridges for `Task`, `AsyncSequence`; `store.stream` |
+| `SwiftRex.Combine` | — | Apple Combine integration — `asEffect()` on `Publisher`, `store.publisher`, `ctx.readLiveState() -> AnyPublisher` |
+| `SwiftRex.RxSwift` | `RxSwift` | RxSwift integration — `asEffect()` on `Observable`, `store.observable`, `ctx.readLiveState() -> Observable` |
+| `SwiftRex.ReactiveSwift` | `ReactiveSwift` | ReactiveSwift integration — `asEffect()` on `SignalProducer`/`Signal`, `store.signal`, `ctx.readLiveState() -> SignalProducer` |
+| `SwiftRex.ReactiveConcurrency` | `ReactiveConcurrency` | [ReactiveConcurrency](https://github.com/luizmb/ReactiveConcurrency) integration — `asEffect()` on its async/await-native `Publisher`, `store.publisher`, `ctx.readLiveState() -> Publisher` |
+| `SwiftRex.SwiftUI` | — | SwiftUI helpers — `asObservableObject()`, `@ViewModel` macro, `HasViewModel` |
+| `SwiftRex.Architecture` | — | Opinionated module pattern — `Feature`, `FeatureHost` (iOS 17+) |
+| `SwiftRex.Testing` | — | Test target only — `TestStore` for deterministic unit tests |
 
-Pick the module(s) that match your project's reactive strategy. For a pure Swift Concurrency setup with no third-party dependencies, `SwiftRex` + `SwiftRex.Concurrency` is sufficient.
+Pick the module(s) that match your project's reactive strategy. For a pure Swift Concurrency setup with no third-party dependencies, `SwiftRex` + `SwiftRex.SwiftConcurrency` is sufficient.
+
+> **Opt-in bridges via package traits.** The three third-party reactive bridges — `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` — are each gated behind a [Swift Package Manager **trait**](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0450-swiftpm-package-traits.md) of the same name. **All traits are off by default**, so a consumer who picks one bridge never downloads — nor sees in their acknowledgements — the other two third-party packages. `SwiftRex.Combine` (system framework) and `SwiftRex.SwiftConcurrency` (no third-party dependency) need no trait. Requires a Swift 6.1+ toolchain. See [Installation](#installation) for how to enable a trait.
 
 ## Swift Concurrency
 
-`SwiftRex.Concurrency` bridges the Effect system to Swift's async/await world:
+`SwiftRex.SwiftConcurrency` bridges the Effect system to Swift's async/await world:
 
 - `Effect.task { await myAsyncFunc() }` — wraps a single async computation
 - `Effect.throwingTask(MyAction.result) { try await api.fetch() }` — throwing async work with automatic `Result` mapping
 - `Effect.asyncSequence(myAsyncStream, MyAction.received)` — bridges any `AsyncSequence` into a stream of dispatched actions
-- `store.stream` — a `DeferredStream<State>` for iterating over state changes with `for await state in store.stream { ... }`
+- `store.stream` — a `@Sendable () -> AsyncStream<State>` factory; each call starts a fresh observation: `for await state in store.stream() { ... }`
 
 ```swift
 let fetchMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
@@ -130,6 +133,30 @@ let fetchMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
     }
 }
 ```
+
+`SwiftRex.SwiftConcurrency` uses Swift's native, *eager* `Task`/`AsyncStream` directly. If you want the lazy, referentially-transparent equivalents (`DeferredTask`, `DeferredStream`) plus a cold, composable `Publisher`, reach for `SwiftRex.ReactiveConcurrency` instead.
+
+## ReactiveConcurrency
+
+`SwiftRex.ReactiveConcurrency` bridges the Effect system to [ReactiveConcurrency](https://github.com/luizmb/ReactiveConcurrency)'s cold, async/await-native `Publisher` — a `Sendable`, Combine-shaped stream backed by `DeferredStream`:
+
+- `publisher.asEffect()` / `.asEffect(AppAction.didReceive)` — map each element to an action (the call-site is captured as the `ActionSource`)
+- `publisher.asEffect(AppAction.didFetch)` on a failing `Publisher<_, Failure>` — delivers `Result<Output, Failure>`
+- `Effect.fireAndForget(publisher)` — run a pipeline for its side effects only
+- `store.publisher` — a cold `Publisher<State, Never>` emitting state after every mutation
+- `ctx.readLiveState()` — a single-element `Publisher<State, Never>` for reading post-mutation state inside a `produce` closure
+
+```swift
+let searchMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
+    guard case .search(let query) = action else { return .doNothing }
+    return Reader { ctx in
+        ctx.environment.search(query)        // a ReactiveConcurrency Publisher<[Result], APIError>
+            .asEffect(AppAction.didSearch)   // Publisher → Effect, errors flow as Result
+    }
+}
+```
+
+> Enable the `ReactiveConcurrency` trait to use this product — see [Installation](#installation).
 
 # Parts
 
@@ -540,31 +567,38 @@ Middleware is generic over 3 type parameters:
 It returns `Reader<PostReducerContext<State, Environment>, Effect<Action>>`. The `Reader` closure runs in phase 3, after mutations, and receives a `PostReducerContext<State, Environment>` with:
 
 - `ctx.environment: Environment` — dependencies injected at that point.
-- `ctx.stateAfter: State?` — post-mutation state; requires `@MainActor`. From a non-`@MainActor` context use `await MainActor.run { ctx.stateAfter }`, or the `readStateAfter()` helper described below.
+- `ctx.liveState: State?` — post-mutation state; requires `@MainActor`. From a non-`@MainActor` context use `await MainActor.run { ctx.liveState }`, or the `readLiveState()` helper described below.
 
 `PreReducerContext` is **non-Sendable by design** — the compiler prevents you from capturing it into the `@Sendable` phase-3 closure. If you need to compare before/after, capture `context.stateBefore` into a local `let` first.
 
-**Reading post-mutation state from a reactive pipeline** — `SwiftRex.Combine`, `SwiftRex.RxSwift`, and `SwiftRex.ReactiveSwift` each add a `readStateAfter()` extension on `PostReducerContext` that returns a single-element stream and hops to `@MainActor` automatically:
+**Reading post-mutation state from a reactive pipeline** — `SwiftRex.Combine`, `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` each add a `readLiveState()` extension on `PostReducerContext` that returns a single-element stream and hops to `@MainActor` automatically:
 
 ```swift
 // Combine (AnyPublisher)
 return .produce { ctx in
-    ctx.readStateAfter()                                    // AnyPublisher<State, Never>
+    ctx.readLiveState()                                     // AnyPublisher<State, Never>
         .flatMap { state in ctx.environment.api.save(state.draft) }
         .asEffect()
 }
 
 // RxSwift (Observable)
 return .produce { ctx in
-    ctx.readStateAfter()                                    // Observable<State>
+    ctx.readLiveState()                                     // Observable<State>
         .flatMap { state in ctx.environment.api.save(state.draft) }
         .asEffect()
 }
 
 // ReactiveSwift (SignalProducer)
 return .produce { ctx in
-    ctx.readStateAfter()                                    // SignalProducer<State, Never>
+    ctx.readLiveState()                                     // SignalProducer<State, Never>
         .flatMap(.latest) { state in ctx.environment.api.save(state.draft) }
+        .asEffect()
+}
+
+// ReactiveConcurrency (Publisher)
+return .produce { ctx in
+    ctx.readLiveState()                                     // Publisher<State, Never>
+        .flatMap { state in ctx.environment.api.save(state.draft) }
         .asEffect()
 }
 ```
@@ -605,8 +639,8 @@ let loggerMiddleware = Middleware<AppAction, AppState, Logger>.handle { action, 
     let stateBefore = context.stateBefore          // phase 1 — pre-mutation state
     let source = "\(context.source.file):\(context.source.line)"
     return Reader { ctx in
-        let stateAfter = ctx.stateAfter            // phase 3 — post-mutation state
-        ctx.environment.log(action: action, from: source, before: stateBefore, after: stateAfter)
+        let liveState = ctx.liveState              // phase 3 — post-mutation state
+        ctx.environment.log(action: action, from: source, before: stateBefore, after: liveState)
         return .empty
     }
 }
@@ -1833,45 +1867,53 @@ enum AppAction: Sendable {
 SwiftRex is distributed exclusively via Swift Package Manager. Add it to your `Package.swift`:
 
 ```swift
-// swift-tools-version:5.9
+// swift-tools-version:6.1   // traits require Swift 6.1+
 
 import PackageDescription
 
 let package = Package(
     name: "MyApp",
-    platforms: [.macOS(.v12), .iOS(.v15), .tvOS(.v15), .watchOS(.v8), .visionOS(.v1)],
+    platforms: [.macOS(.v13), .iOS(.v16), .tvOS(.v16), .watchOS(.v9), .visionOS(.v1)],
     products: [
         .executable(name: "MyApp", targets: ["MyApp"])
     ],
     dependencies: [
-        .package(url: "https://github.com/SwiftRex/SwiftRex.git", from: "1.0.0")
+        // Enable the trait(s) for the third-party bridge(s) you want. Omit `traits:`
+        // entirely if you only use the core, Combine, or SwiftConcurrency products —
+        // then RxSwift/ReactiveSwift/ReactiveConcurrency are never even downloaded.
+        .package(
+            url: "https://github.com/SwiftRex/SwiftRex.git",
+            from: "1.0.0",
+            traits: ["RxSwift"]   // e.g. ["RxSwift", "ReactiveConcurrency"]
+        )
     ],
     targets: [
         .target(
             name: "MyApp",
             dependencies: [
-                // Pick one or more:
-                .product(name: "SwiftRex", package: "SwiftRex"),               // Core only
-                .product(name: "SwiftRex.Concurrency", package: "SwiftRex"),   // async/await bridges
-                .product(name: "SwiftRex.Combine", package: "SwiftRex"),       // Combine
-                .product(name: "SwiftRex.RxSwift", package: "SwiftRex"),       // RxSwift
-                .product(name: "SwiftRex.ReactiveSwift", package: "SwiftRex"), // ReactiveSwift
+                // Pick one or more (a gated bridge also needs its trait above):
+                .product(name: "SwiftRex", package: "SwiftRex"),                    // Core only — no trait
+                .product(name: "SwiftRex.SwiftConcurrency", package: "SwiftRex"),   // async/await — no trait
+                .product(name: "SwiftRex.Combine", package: "SwiftRex"),            // Combine — no trait
+                .product(name: "SwiftRex.RxSwift", package: "SwiftRex"),            // needs trait "RxSwift"
+                // .product(name: "SwiftRex.ReactiveSwift", package: "SwiftRex"),        // needs trait "ReactiveSwift"
+                // .product(name: "SwiftRex.ReactiveConcurrency", package: "SwiftRex"),  // needs trait "ReactiveConcurrency"
             ]
         ),
         .testTarget(
             name: "MyAppTests",
             dependencies: [
                 "MyApp",
-                .product(name: "SwiftRex.Testing", package: "SwiftRex"),       // TestStore
+                .product(name: "SwiftRex.Testing", package: "SwiftRex"),            // TestStore
             ]
         )
     ]
 )
 ```
 
-Supported platforms: macOS 12+, iOS 15+, tvOS 15+, watchOS 8+, visionOS 1+, Linux (Swift 6+).
+Supported platforms: macOS 13+, iOS 16+, tvOS 16+, watchOS 9+, visionOS 1+, Linux (Swift 6.1+).
 
-`SwiftRex.Concurrency`, `SwiftRex`, and `SwiftRex.Testing` are fully cross-platform including Linux. `SwiftRex.Combine` and `SwiftRex.SwiftUI` require Apple platforms. `SwiftRex.RxSwift` and `SwiftRex.ReactiveSwift` require Apple platforms unless the respective frameworks add Linux support.
+`SwiftRex`, `SwiftRex.SwiftConcurrency`, and `SwiftRex.Testing` are fully cross-platform including Linux. `SwiftRex.Combine` and `SwiftRex.SwiftUI` require Apple platforms. `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` require their respective traits enabled (above), and the first two require Apple platforms unless those frameworks add Linux support.
 
 You can also add SwiftRex directly in Xcode via **File > Add Package Dependencies** and entering the repository URL `https://github.com/SwiftRex/SwiftRex.git`.
 
@@ -1883,10 +1925,10 @@ Pre-built XCFrameworks for the dependency-free products are attached to each [Gi
 |---|---|
 | `SwiftRex.xcframework.zip` | Core store, reducers, behaviors, effects |
 | `SwiftRex.Operators.xcframework.zip` | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
-| `SwiftRex.Concurrency.xcframework.zip` | async/await Effect bridges |
+| `SwiftRex.SwiftConcurrency.xcframework.zip` | async/await Effect bridges |
 | `SwiftRex.Combine.xcframework.zip` | Combine publisher bridge |
 | `SwiftRex.SwiftUI.xcframework.zip` | SwiftUI integration (`asObservableObject`, `@ViewModel`, `HasViewModel`) |
 
-The reactive bridges (`SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`) depend on third-party frameworks that ship their own XCFrameworks; use SPM for those products.
+The third-party reactive bridges (`SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, `SwiftRex.ReactiveConcurrency`) are trait-gated and depend on third-party frameworks; use SPM for those products.
 
 To integrate an XCFramework manually: download the `.zip` from the release, unzip it, and drag the `.xcframework` bundle into your Xcode project's **Frameworks, Libraries, and Embedded Content** section.

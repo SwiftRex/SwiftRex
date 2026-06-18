@@ -1,3 +1,4 @@
+#if RxSwift
 import RxSwift
 import SwiftRex
 @testable import SwiftRexRxSwift
@@ -181,3 +182,4 @@ struct StoreObservableTests {
         #expect(received == [3, 7])
     }
 }
+#endif

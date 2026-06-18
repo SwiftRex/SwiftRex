@@ -52,10 +52,10 @@ jobs:
         run: mint run swiftlint lint --strict
 
       - name: Build
-        run: swift build --build-tests
+        run: swift build --build-tests --enable-all-traits
 
       - name: Test
-        run: swift test
+        run: swift test --enable-all-traits
 
       - name: Periphery
         run: mint run periphery scan
@@ -69,10 +69,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build
-        run: swift build 2>&1
+        run: swift build --enable-all-traits 2>&1
 
       - name: Test
-        run: swift test 2>&1
+        run: swift test --enable-all-traits 2>&1
 
   rc-build-xcframework:
     name: RC - Build XCFramework
@@ -81,7 +81,7 @@ jobs:
     needs: rc-test
     strategy:
       matrix:
-        framework: [SwiftRex, SwiftRexOperators, SwiftRexConcurrency, SwiftRexCombine, SwiftRexSwiftUI]
+        framework: [SwiftRex, SwiftRexOperators, SwiftRexSwiftConcurrency, SwiftRexCombine, SwiftRexSwiftUI]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -96,7 +96,7 @@ jobs:
       - name: Build Library in Release Configuration
         run: |
           set -x
-          swift build -c release --product ${{ matrix.framework }} -v
+          swift build -c release --target ${{ matrix.framework }} -v
           echo "✓ Build succeeded"
 
       - name: Create XCFramework Structure
@@ -257,9 +257,9 @@ jobs:
 
           ### XCFrameworks
           See the attached \`.xcframework.zip\` files for pre-built binaries of the
-          dependency-free products (SwiftRex, SwiftRexOperators, SwiftRexConcurrency,
-          SwiftRexCombine, SwiftRexSwiftUI). The RxSwift and ReactiveSwift bridges
-          are available via SPM only."
+          dependency-free products (SwiftRex, SwiftRexOperators, SwiftRexSwiftConcurrency,
+          SwiftRexCombine, SwiftRexSwiftUI). The RxSwift, ReactiveSwift, and
+          ReactiveConcurrency bridges are available via SPM only."
           fi
 
           echo "body<<EOF" >> $GITHUB_OUTPUT

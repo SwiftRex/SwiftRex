@@ -1,3 +1,4 @@
+#if ReactiveSwift
 import ReactiveSwift
 import SwiftRex
 @testable import SwiftRexReactiveSwift
@@ -174,3 +175,4 @@ struct StoreSignalTests {
         token.dispose()
     }
 }
+#endif

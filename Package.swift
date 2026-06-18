@@ -17,15 +17,29 @@ let package = Package(
         .library(name: "SwiftRex.Combine", targets: ["SwiftRexCombine"]),
         .library(name: "SwiftRex.RxSwift", targets: ["SwiftRexRxSwift"]),
         .library(name: "SwiftRex.ReactiveSwift", targets: ["SwiftRexReactiveSwift"]),
+        .library(name: "SwiftRex.ReactiveConcurrency", targets: ["SwiftRexReactiveConcurrency"]),
         .library(name: "SwiftRex.SwiftUI", targets: ["SwiftRexSwiftUI"]),
         .library(name: "SwiftRex.Architecture", targets: ["SwiftRexArchitecture"]),
         .library(name: "SwiftRex.Testing", targets: ["SwiftRexTesting"])
+    ],
+    // Each third-party reactive bridge is behind an opt-in trait. A consumer who only
+    // wants one (e.g. RxSwift) enables that trait and SwiftPM resolves/clones ONLY that
+    // package — the others are never fetched and never appear in their acknowledgements.
+    // Default is none: pick your champion explicitly. Combine (system) and
+    // SwiftConcurrency (no external dependency) need no trait. CI runs with
+    // `--enable-all-traits` so every bridge is built and tested.
+    traits: [
+        .trait(name: "RxSwift"),
+        .trait(name: "ReactiveSwift"),
+        .trait(name: "ReactiveConcurrency"),
+        .default(enabledTraits: [])
     ],
     dependencies: [
         .package(url: "https://github.com/luizmb/FP.git", from: "1.12.0"),
         .package(url: "https://github.com/luizmb/Hourglass.git", from: "0.6.2"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),
+        .package(url: "https://github.com/luizmb/ReactiveConcurrency.git", from: "0.1.0"),
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "603.0.1"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0")
     ],
@@ -75,7 +89,7 @@ let package = Package(
             name: "SwiftRexRxSwift",
             dependencies: [
                 "SwiftRex",
-                .product(name: "RxSwift", package: "RxSwift")
+                .product(name: "RxSwift", package: "RxSwift", condition: .when(traits: ["RxSwift"]))
             ],
             path: "Sources/SwiftRexRxSwift"
         ),
@@ -83,9 +97,21 @@ let package = Package(
             name: "SwiftRexReactiveSwift",
             dependencies: [
                 "SwiftRex",
-                .product(name: "ReactiveSwift", package: "ReactiveSwift")
+                .product(name: "ReactiveSwift", package: "ReactiveSwift", condition: .when(traits: ["ReactiveSwift"]))
             ],
             path: "Sources/SwiftRexReactiveSwift"
+        ),
+        .target(
+            name: "SwiftRexReactiveConcurrency",
+            dependencies: [
+                "SwiftRex",
+                .product(
+                    name: "ReactiveConcurrency",
+                    package: "ReactiveConcurrency",
+                    condition: .when(traits: ["ReactiveConcurrency"])
+                )
+            ],
+            path: "Sources/SwiftRexReactiveConcurrency"
         ),
 
         // MARK: - Macros (implementation — build-time only)
@@ -177,6 +203,11 @@ let package = Package(
             name: "SwiftRexReactiveSwiftTests",
             dependencies: ["SwiftRexReactiveSwift"],
             path: "Tests/SwiftRexReactiveSwiftTests"
+        ),
+        .testTarget(
+            name: "SwiftRexReactiveConcurrencyTests",
+            dependencies: ["SwiftRexReactiveConcurrency"],
+            path: "Tests/SwiftRexReactiveConcurrencyTests"
         ),
         .testTarget(
             name: "SwiftRexArchitectureTests",

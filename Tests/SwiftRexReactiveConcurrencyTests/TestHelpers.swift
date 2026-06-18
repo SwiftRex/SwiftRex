@@ -1,4 +1,4 @@
-#if RxSwift
+#if ReactiveConcurrency
 import Foundation
 import SwiftRex
 

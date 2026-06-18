@@ -50,9 +50,9 @@ SwiftRex (Package.swift)
 ├── Products
 │   ├── SwiftRex            — core; imports FP[CoreFP, DataStructure]
 │   ├── SwiftRexOperators   — operator sugar; imports FP[CoreFPOperators, DataStructureOperators]
-│   ├── CombineRex          — Combine bridges
-│   ├── RxSwiftRex          — RxSwift bridges
-│   └── ReactiveSwiftRex    — ReactiveSwift bridges
+│   ├── SwiftRexCombine          — Combine bridges
+│   ├── SwiftRexRxSwift          — RxSwift bridges
+│   └── SwiftRexReactiveSwift    — ReactiveSwift bridges
 │
 └── Targets
     ├── SwiftRex/
@@ -79,18 +79,18 @@ SwiftRex (Package.swift)
     │   ├── Middleware+Operators.swift
     │   └── Lift+Operators.swift
     │
-    ├── CombineRex/
+    ├── SwiftRexCombine/
     │   ├── Effect+Publisher.swift
     │   ├── Store+Publisher.swift
     │   └── SwiftUI/
     │       ├── ObservableViewModel.swift      — ObservableObject (iOS 13+)
     │       └── ObservableStore.swift          — @Observable (iOS 17+)
     │
-    ├── RxSwiftRex/
+    ├── SwiftRexRxSwift/
     │   ├── Effect+Observable.swift
     │   └── Store+Observable.swift
     │
-    └── ReactiveSwiftRex/
+    └── SwiftRexReactiveSwift/
         ├── Effect+SignalProducer.swift
         └── Store+SignalProducer.swift
 ```
@@ -116,8 +116,8 @@ public struct Cancellation {
 
 Bridge packages wrap their framework's token:
 ```swift
-Cancellation { combineCancellable.cancel() }  // CombineRex
-Cancellation { disposable.dispose() }          // RxSwiftRex
+Cancellation { combineCancellable.cancel() }  // SwiftRexCombine
+Cancellation { disposable.dispose() }          // SwiftRexRxSwift
 Cancellation { task.cancel() }                // async/await
 ```
 
@@ -314,21 +314,21 @@ extension Effect {
 
 **Bridge factories (in their respective targets):**
 ```swift
-// CombineRex
+// SwiftRexCombine
 extension Effect {
     public static func publisher<P: Publisher>(
         _ p: P, file: String = #file, function: String = #function
     ) -> Self where P.Output == Action, P.Failure == Never
 }
 
-// RxSwiftRex
+// SwiftRexRxSwift
 extension Effect {
     public static func observable<O: ObservableType>(
         _ o: O, file: String = #file, function: String = #function
     ) -> Self where O.Element == Action
 }
 
-// ReactiveSwiftRex
+// SwiftRexReactiveSwift
 extension Effect {
     public static func signalProducer<SP: SignalProducerConvertible>(
         _ sp: SP, file: String = #file, function: String = #function
@@ -702,21 +702,21 @@ The Store always notifies after a dispatch — fine-grained diffing is left to S
 
 **State observation bridges (in respective targets):**
 ```swift
-// CombineRex
+// SwiftRexCombine
 extension Store {
     public var statePublisher: AnyPublisher<State, Never> { … }
 }
 
-// CombineRex + SwiftUI
+// SwiftRexCombine + SwiftUI
 // iOS 13+: ObservableObject wrapper
 // iOS 17+: @Observable wrapper
 
-// RxSwiftRex
+// SwiftRexRxSwift
 extension Store {
     public var stateObservable: Observable<State> { … }
 }
 
-// ReactiveSwiftRex
+// SwiftRexReactiveSwift
 extension Store {
     public var stateSignalProducer: SignalProducer<State, Never> { … }
 }
@@ -872,9 +872,9 @@ extension Store {
 6. `ActionHandler` — bundles Reducer + Middleware; `asActionHandler` bridges; Monoid; `lift`/`liftCollection`
 7. `Store` — `@MainActor actor`, ActionHandler-based dispatch flow, effect scheduling, push-based `observe`
 8. `StoreProjection` — class, `State → LocalState` mapping, `Equatable` deduplication, `@Observable` (iOS 17+) and `ObservableObject` (iOS 13+) variants; this is where SwiftUI observation lives, not on `Store`
-9. `CombineRex` bridges — `Effect+Publisher`, `Store+Publisher`
-10. `RxSwiftRex` bridges
-11. `ReactiveSwiftRex` bridges
+9. `SwiftRexCombine` bridges — `Effect+Publisher`, `Store+Publisher`
+10. `SwiftRexRxSwift` bridges
+11. `SwiftRexReactiveSwift` bridges
 12. `SwiftRexOperators` — `<>` and other symbolic operators via FP operator modules
 13. Swift Macro for `lift` overload generation
 14. Tests for each layer

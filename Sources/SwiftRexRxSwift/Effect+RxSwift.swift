@@ -1,3 +1,4 @@
+#if RxSwift
 @preconcurrency import RxSwift
 import SwiftRex
 
@@ -366,3 +367,4 @@ extension Effect {
         ])
     }
 }
+#endif

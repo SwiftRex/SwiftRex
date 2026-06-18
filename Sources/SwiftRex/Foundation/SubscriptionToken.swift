@@ -11,13 +11,13 @@
 /// wrap their framework-specific cancellation handles into this single, framework-agnostic type:
 ///
 /// ```swift
-/// // CombineRex — wraps an AnyCancellable
+/// // SwiftRexCombine — wraps an AnyCancellable
 /// SubscriptionToken { anyCancellable.cancel() }
 ///
-/// // RxSwiftRex — wraps a Disposable
+/// // SwiftRexRxSwift — wraps a Disposable
 /// SubscriptionToken { disposable.dispose() }
 ///
-/// // Swift concurrency — wraps a Task
+/// // SwiftRexSwiftConcurrency — wraps a Task
 /// SubscriptionToken { task.cancel() }
 ///
 /// // A no-op token (e.g., for effects that can't be cancelled)
