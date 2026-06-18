@@ -11,21 +11,15 @@ package struct ElementScopedID: Hashable, Sendable {
 }
 
 extension EffectScheduling {
-    /// Re-tags the id-carrying policies with `ElementScopedID(element:, inner: existing)`.
-    /// `.immediately` (which carries no id) is returned unchanged.
+    /// Re-tags the id (if any) with `ElementScopedID(element:, inner: existing)`, leaving every
+    /// other knob — `delay`, `coalesce`, `exclusive`, the cancel-only flag — untouched. Anonymous
+    /// scheduling (no id) is returned unchanged.
     package func scopedToElement(_ element: AnyHashableSendable) -> EffectScheduling {
-        switch self {
-        case .immediately:                    .immediately
-        case .replacing(let id):              .replacing(id: scoped(element, id))
-        case let .debounce(id, delay):        .debounce(id: scoped(element, id), delay: delay)
-        case let .throttle(id, interval):     .throttle(id: scoped(element, id), interval: interval)
-        case .cancelInFlight(let id):         .cancelInFlight(id: scoped(element, id))
-        }
+        guard let id else { return self }
+        var copy = self
+        copy.id = AnyHashableSendable(ElementScopedID(element: element, inner: id))
+        return copy
     }
-}
-
-private func scoped(_ element: AnyHashableSendable, _ inner: AnyHashableSendable) -> AnyHashableSendable {
-    AnyHashableSendable(ElementScopedID(element: element, inner: inner))
 }
 
 extension Effect {

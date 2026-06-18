@@ -19,7 +19,7 @@ import Hourglass
 ///    consequence.mutation.runEndoMut(&state)  — zero-copy inout; refcount stays at 1
 ///    stateObservers.didChange fired           — @Observable / push-based observers
 /// 3. consequence.effect.runReader(env)        — Reader runs; stateAccess = post-mutation state
-/// 4. schedule(component) per Effect.Component — per-component EffectScheduling applied
+/// 4. scheduler.apply(component) per component — the EffectScheduler honours each EffectScheduling
 /// ```
 ///
 /// Grouping all `willChange` notifications before the mutation (and all `didChange` notifications
@@ -68,21 +68,22 @@ import Hourglass
 ///
 /// ## Effect lifecycle
 ///
-/// Each `Effect.Component` is tracked in `effects: [AnyHashableSendable: SubscriptionToken]`.
-/// Anonymous (`.immediately`) components use a `UUID` key that is removed on `complete`.
-/// Named components (`.replacing`, `.debounce`, `.throttle`) use the caller-supplied id.
+/// Scheduling is delegated to an ``EffectScheduler`` the Store owns. It tracks each `Effect.Component`
+/// in a registry keyed by ``EffectScheduling/id`` (or a fresh anonymous key for id-less components),
+/// honouring `delay`, `coalesce` (debounce/throttle), `exclusive` (replace), and the cancel-only
+/// sentinel.
 ///
 /// ``SubscriptionToken`` cancels on release, so the registry behaves like a `Set<AnyCancellable>`:
 /// replacing the token under a key cancels the effect it displaced, and deallocating the Store
-/// releases the whole dictionary, cancelling every in-flight effect — no explicit `deinit` is needed.
+/// (and with it the scheduler) cancels every in-flight effect — no explicit `deinit` is needed.
 ///
 /// Dispatching from inside an effect re-enters the pipeline on `@MainActor` via `Task`, and the
 /// `isProcessing` guard defers it behind any in-progress action, so reentrancy is always safe —
 /// effects never interleave with, or nest inside, an in-progress dispatch.
 ///
-/// - Note: `@unchecked Sendable` is used because the mutable stored properties (`state`,
-///   `effects`, etc.) are only accessed on `@MainActor`, but Swift cannot statically prove
-///   this for a `final class` without `nonisolated(unsafe)` annotations on each property.
+/// - Note: `@unchecked Sendable` is used because the mutable stored properties (`state`, the
+///   scheduler's registries, etc.) are only accessed on `@MainActor`, but Swift cannot statically
+///   prove this for a `final class` without `nonisolated(unsafe)` annotations on each property.
 @MainActor
 public final class Store<Action: Sendable, State: Sendable, Environment: Sendable>: StoreType, @unchecked Sendable {
     // MARK: - State
@@ -95,19 +96,12 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     private let behavior: Behavior<Action, State, Environment>
     private let environment: Environment
 
-    // MARK: - Registries
+    // MARK: - Effect scheduling
 
-    /// All effects — both named (user-provided id) and anonymous (UUID key drawn from ``idGen``).
-    /// UUID is Hashable & Sendable, so `AnyHashableSendable(idGen(&rng))` fits naturally
-    /// alongside named keys. Each `SubscriptionToken` cancels its effect when released, so
-    /// removing/replacing an entry — or deallocating the Store, which releases this whole
-    /// dictionary — cancels the corresponding in-flight work automatically (no `deinit` needed).
-    private var effects: [AnyHashableSendable: SubscriptionToken] = [:]
-
-    /// Last-fire instants for `.throttle` keys (measured on the injected ``clock``), each paired
-    /// with the interval that produced it so expired entries can be pruned — keeps the dictionary
-    /// bounded under unbounded distinct keys.
-    private var throttleTimestamps: [AnyHashableSendable: (last: AnyClock<Swift.Duration>.Instant, interval: Duration)] = [:]
+    /// The engine driving all effect scheduling and cancellation. Owns the effect registry, the
+    /// throttle bookkeeping, the injected clock, and anonymous-id generation. Releasing it — when
+    /// the Store deallocates — cancels every in-flight effect, so no `deinit` is needed.
+    private let scheduler: EffectScheduler<Action>
 
     /// Both observer closures are stored together under one key so a single token cancels both.
     /// Keys come from ``nextObserverKey`` — a monotonic counter; these keys are internal and never
@@ -115,21 +109,6 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     private var stateObservers: [UInt64: (willChange: @MainActor @Sendable () -> Void,
                                           didChange: @MainActor @Sendable () -> Void)] = [:]
     private var nextObserverKey: UInt64 = 0
-
-    // MARK: - Injected co-effects
-
-    /// Clock used for all ``EffectScheduling`` timing (debounce sleep, throttle window). Erased to
-    /// `AnyClock` so the Store carries no clock generic; injected at `init` (defaults to
-    /// `ContinuousClock`, swappable for a `TestClock`/`ImmediateClock` of the same `Duration`).
-    private let clock: AnyClock<Swift.Duration>
-
-    /// Source of randomness for anonymous effect ids, threaded through ``idGen``. A seeded generator
-    /// yields reproducible ids; defaults to the system RNG. Only mutated on `@MainActor`.
-    private var rng: AnyRandomNumberGenerator
-
-    /// Pure recipe turning ``rng`` into anonymous effect-registry ids — the `Gen`-based replacement
-    /// for `UUID()`.
-    private let idGen = Gen<UUID>.uuid()
 
     // MARK: - Dispatch serialization
     //
@@ -208,8 +187,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         self.state = state
         self.behavior = behavior
         self.environment = environment
-        self.clock = clock(environment).eraseToAnyClock()
-        self.rng = rng(environment)
+        self.scheduler = EffectScheduler(clock: clock(environment).eraseToAnyClock(), rng: rng(environment))
     }
 
     /// Creates a `Store` with a ``Reducer`` only (no side effects, `Environment == Void`).
@@ -383,58 +361,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             getter: { [weak self] in self?.state }
         )
         let effect = consequence.effect(postCtx)
-        effect.components.forEach { schedule($0) }
-    }
-
-    // MARK: - Effect scheduling
-
-    private func schedule(_ component: Effect<Action>.Component) {
-        switch component.scheduling {
-        case .immediately:
-            let key = AnyHashableSendable(idGen(&rng))
-            let token = component.subscribe(makeSend()) { [weak self] in
-                Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
-            }
-            effects[key] = token
-
-        case .replacing(let key):
-            effects[key]?.cancel()
-            let token = component.subscribe(makeSend()) { [weak self] in
-                Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
-            }
-            effects[key] = token
-
-        case .cancelInFlight(let key):
-            effects[key]?.cancel()
-            effects.removeValue(forKey: key)
-
-        case let .debounce(key, delay):
-            effects[key]?.cancel()
-            let send = makeSend()
-            let clock = clock
-            let task = Task { @MainActor [weak self] in
-                // Clamp negative delays to zero so a past deadline resolves immediately.
-                try await clock.sleep(for: max(.zero, delay))
-                guard !Task.isCancelled, let self else { return }
-                let token = component.subscribe(send) { [weak self] in
-                    Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
-                }
-                self.effects[key] = token
-            }
-            effects[key] = SubscriptionToken { task.cancel() }
-
-        case let .throttle(key, interval):
-            let now = clock.now
-            // Prune entries whose interval has elapsed so the dictionary stays bounded.
-            throttleTimestamps = throttleTimestamps.filter { $0.value.last.duration(to: now) < $0.value.interval }
-            if let entry = throttleTimestamps[key], entry.last.duration(to: now) < interval { return }
-            throttleTimestamps[key] = (last: now, interval: interval)
-            effects[key]?.cancel()
-            let token = component.subscribe(makeSend()) { [weak self] in
-                Task { @MainActor [weak self] in self?.effects.removeValue(forKey: key) }
-            }
-            effects[key] = token
-        }
+        effect.components.forEach { scheduler.apply($0, send: makeSend()) }
     }
 
     private func makeSend() -> @Sendable (DispatchedAction<Action>) -> Void {
