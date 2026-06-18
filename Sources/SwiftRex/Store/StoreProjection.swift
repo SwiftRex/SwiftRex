@@ -110,6 +110,8 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         actionReview: @escaping @Sendable (ElementAction<C.Element.ID, Action>) -> GA,
         stateCollection: KeyPath<GS, C>
     ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
+        // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
+        // StoreType.projection(element:actionReview:stateCollection:) for the Array/dictionary trade-off.
         _state    = { store.state[keyPath: stateCollection].first { $0.id == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
         _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
@@ -142,6 +144,8 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         stateCollection: KeyPath<GS, C>,
         identifier: @escaping @Sendable (C.Element) -> ID
     ) where C.Element: Sendable, State == C.Element? {
+        // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
+        // StoreType.projection(element:actionReview:stateCollection:identifier:) for the trade-off.
         _state    = { store.state[keyPath: stateCollection].first { identifier($0) == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
         _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
