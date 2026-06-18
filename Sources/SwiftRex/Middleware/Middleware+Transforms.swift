@@ -149,7 +149,7 @@ extension Middleware {
     /// Lifts all three axes simultaneously using a `Prism` for action, a closure for state,
     /// and a closure for environment.
     ///
-    /// Equivalent to chaining `liftAction(_:)`, `liftState(_:)`, and
+    /// Equivalent to chaining ``liftAction(_:)``, ``liftState(_:)``, and
     /// ``liftEnvironment(_:)`` in sequence. The state projection uses a plain function, which
     /// is the most flexible form:
     ///

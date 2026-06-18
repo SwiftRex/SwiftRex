@@ -17,7 +17,7 @@ extension Effect {
     /// let mapped = authEffect.map { AppAction.auth($0) }
     /// ```
     ///
-    /// Internally used by `Middleware.liftAction(_:)` and `Behavior.liftAction(_:)` to
+    /// Internally used by ``Middleware/liftAction(_:)`` and ``Behavior/liftAction(_:)`` to
     /// re-wrap outgoing actions through a `Prism.review` function.
     ///
     /// - Parameter f: A `@Sendable` function from `Action` to `B`. Applied to every emitted

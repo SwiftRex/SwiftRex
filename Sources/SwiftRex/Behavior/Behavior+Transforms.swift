@@ -37,7 +37,7 @@ extension Behavior {
     }
 
     /// Lifts the action axis using a `\.case` key path (`PrismKeyPath`) — the case-key-path
-    /// spelling of `liftAction(_:)`.
+    /// spelling of ``liftAction(_:)``.
     ///
     /// ```swift
     /// let lifted = authBehavior.liftAction(\.auth)   // instead of AppAction.prism.auth
@@ -226,7 +226,7 @@ extension Behavior {
     /// Lifts all three axes simultaneously using a `Prism` for action, a `WritableKeyPath`
     /// for state, and a closure for environment.
     ///
-    /// Equivalent to chaining `liftAction(_:)`, `liftState(_:)`, and
+    /// Equivalent to chaining ``liftAction(_:)``, ``liftState(_:)``, and
     /// ``liftEnvironment(_:)`` in sequence. Use this when all three axes need widening in a
     /// single step:
     ///
