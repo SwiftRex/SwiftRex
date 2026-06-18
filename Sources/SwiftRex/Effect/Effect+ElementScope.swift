@@ -26,7 +26,7 @@ extension Effect {
     /// Scopes every component's scheduling id to `element` (see ``ElementScopedID``).
     package func scopedToElement(_ element: AnyHashableSendable) -> Effect {
         Effect(components: components.map {
-            Component(subscribe: $0.subscribe, scheduling: $0.scheduling.scopedToElement(element))
+            Component(subscribe: $0.subscribe, channel: $0.channel, scheduling: $0.scheduling.scopedToElement(element))
         })
     }
 }

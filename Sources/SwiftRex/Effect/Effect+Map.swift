@@ -30,6 +30,14 @@ extension Effect {
                 subscribe: { send, complete in
                     component.subscribe({ send($0.map(f)) }, complete)
                 },
+                channel: component.channel.map { channel in
+                    Effect<B>.Component.Channel(
+                        value: channel.value,
+                        start: { firstValue, send, complete in
+                            channel.start(firstValue, { send($0.map(f)) }, complete)
+                        }
+                    )
+                },
                 scheduling: component.scheduling
             )
         })

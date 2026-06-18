@@ -80,6 +80,13 @@ public struct Effect<Action: Sendable>: Sendable {
             _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
             _ complete: @escaping @Sendable () -> Void
         ) -> SubscriptionToken
+        /// The pipeable channel, present iff this component was built with ``Effect/channel(value:scheduling:file:function:line:_:)``.
+        ///
+        /// When non-`nil`, the Store ignores `subscribe` and instead pipes `value` into the
+        /// long-lived effect keyed by `scheduling.id` — starting it on the first dispatch and
+        /// feeding subsequent values into the same live effect, rather than tearing it down and
+        /// recreating it. See ``Channel``.
+        package let channel: Channel?
         /// The scheduling policy the Store applies before starting this component.
         package let scheduling: EffectScheduling
 
@@ -88,10 +95,42 @@ public struct Effect<Action: Sendable>: Sendable {
                 _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
                 _ complete: @escaping @Sendable () -> Void
             ) -> SubscriptionToken,
+            channel: Channel? = nil,
             scheduling: EffectScheduling
         ) {
             self.subscribe = subscribe
+            self.channel = channel
             self.scheduling = scheduling
+        }
+
+        /// A long-lived, pipeable effect: the Store starts it once and feeds subsequent values
+        /// into the same running instance — the non-destructive alternative to recreate-on-dispatch.
+        ///
+        /// The author-facing value type is fully type-safe (``ChannelHandler``); this package-level
+        /// representation erases the value so the Store can treat every channel uniformly. The
+        /// erasure is recovered inside `start`/`sink`, which the typed factory synthesised.
+        package struct Channel: Sendable {
+            /// The value to deliver this dispatch, type-erased.
+            package let value: any Sendable
+            /// Starts the long-lived body from its first value and returns the cancel token plus a
+            /// type-restoring sink the Store calls to pipe every subsequent value into the live effect.
+            package let start: @Sendable (
+                _ firstValue: any Sendable,
+                _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
+                _ complete: @escaping @Sendable () -> Void
+            ) -> (token: SubscriptionToken, sink: @Sendable (any Sendable) -> Void)
+
+            package init(
+                value: any Sendable,
+                start: @escaping @Sendable (
+                    _ firstValue: any Sendable,
+                    _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
+                    _ complete: @escaping @Sendable () -> Void
+                ) -> (token: SubscriptionToken, sink: @Sendable (any Sendable) -> Void)
+            ) {
+                self.value = value
+                self.start = start
+            }
         }
     }
 
