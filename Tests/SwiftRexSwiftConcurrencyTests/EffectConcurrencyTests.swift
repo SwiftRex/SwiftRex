@@ -183,7 +183,13 @@ struct EffectAutoCancelTests {
         await MainActor.run { _ = store.dispatch(1) }     // starts job for action 1
         try? await Task.sleep(nanoseconds: 50_000_000)
         await MainActor.run { _ = store.dispatch(2) }     // replaces under "job" → cancels job 1
-        try? await Task.sleep(nanoseconds: 400_000_000)
+        // Poll (up to ~2s) for job 2 to complete rather than asserting after one fixed wait —
+        // the fixed 400ms window raced the 300ms job under load on CI. Job 1 is cancelled and
+        // guarded by `!Task.isCancelled`, so it never appends; `[2]` is the only valid outcome.
+        for _ in 0..<200 {
+            if completedActions.value == [2] { break }
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
         #expect(completedActions.value == [2])   // job 1 cancelled, only job 2 completed
         _ = store
     }
