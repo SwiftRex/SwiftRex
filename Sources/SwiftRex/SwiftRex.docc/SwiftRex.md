@@ -28,8 +28,14 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 
 ## Topics
 
+### Start Here
+
+- <doc:BuildYourFirstFeature>
+- <doc:AddingEffects>
+
 ### Concepts
 
+- <doc:StateAndActions>
 - <doc:Algebra>
 - <doc:Lifting>
 - <doc:Modularisation>
