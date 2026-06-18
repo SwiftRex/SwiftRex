@@ -4,7 +4,7 @@ import Foundation
 
 /// Thread-safe continuation box used internally by ``Effect/future(_:scheduling:file:function:line:)``.
 ///
-/// This type is an implementation detail of the `SwiftRexConcurrency` module. It has no public
+/// This type is an implementation detail of the `SwiftRexSwiftConcurrency` module. It has no public
 /// surface and is not part of SwiftRex's public API.
 ///
 /// ### Responsibility

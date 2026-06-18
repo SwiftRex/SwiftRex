@@ -17,8 +17,9 @@ import CoreFP
 ///   subscription getting its own independent stream of values.
 /// - **Cross-platform**: the model works on Linux, Windows, and WASM where Swift Concurrency
 ///   may be unavailable or constrained.
-/// - **Framework-agnostic**: bridge targets (CombineRex, RxSwiftRex, ReactiveSwiftRex) wrap
-///   their respective publisher/observable/signal types into this single representation.
+/// - **Framework-agnostic**: bridge targets (`SwiftRexCombine`, `SwiftRexRxSwift`,
+///   `SwiftRexReactiveSwift`, `SwiftRexReactiveConcurrency`) wrap their respective
+///   publisher/observable/signal types into this single representation.
 ///
 /// ## The subscribe closure
 ///
@@ -112,7 +113,7 @@ public struct Effect<Action: Sendable>: Sendable {
 extension Effect {
     /// Creates a single-component `Effect` from a subscribe closure and an optional scheduling policy.
     ///
-    /// This SPI initialiser is intended for bridge targets (CombineRex, RxSwiftRex, etc.) and
+    /// This SPI initialiser is intended for bridge targets (`SwiftRexCombine`, `SwiftRexRxSwift`, etc.) and
     /// extension packages that need to wrap a framework-specific publisher into an `Effect`
     /// without access to the internal `Component` type. Application code should prefer the
     /// typed factories: ``just(_:scheduling:file:function:line:)-5i6kl``,

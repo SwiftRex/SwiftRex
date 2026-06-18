@@ -5,11 +5,13 @@ builder:
       documentation_targets:
         - SwiftRex
         - SwiftRexOperators
-        - SwiftRexConcurrency
+        - SwiftRexSwiftConcurrency
         - SwiftRexCombine
         - SwiftRexRxSwift
         - SwiftRexReactiveSwift
+        - SwiftRexReactiveConcurrency
         - SwiftRexSwiftUI
+        - SwiftRexArchitecture
         - SwiftRexTesting
     - platform: ios
     - platform: tvos

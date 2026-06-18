@@ -47,12 +47,17 @@ jobs:
           swift run GenerateLifts Sources/SwiftRex
           git diff --exit-code Sources/SwiftRex/__Generated__
 
+      # --enable-all-traits builds every reactive bridge (RxSwift, ReactiveSwift,
+      # ReactiveConcurrency). Without it only the core + always-on bridges compile.
       - name: Build
-        run: swift build 2>&1
+        run: swift build --enable-all-traits 2>&1
 
       - name: Test
-        run: swift test 2>&1
+        run: swift test --enable-all-traits 2>&1
 
+      # Periphery runs on the default-trait build; the trait-gated bridge targets are
+      # pruned here and therefore skipped (they are all-public API anyway, retained via
+      # retain_public).
       - name: Periphery
         run: mint run periphery scan
 
@@ -63,10 +68,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build
-        run: swift build 2>&1
+        run: swift build --enable-all-traits 2>&1
 
       - name: Test
-        run: swift test 2>&1
+        run: swift test --enable-all-traits 2>&1
 
   # Non-gating: builds and runs the nested BenchmarkSuite package (which pulls in
   # package-benchmark + jemalloc — kept out of the main package). `continue-on-error`

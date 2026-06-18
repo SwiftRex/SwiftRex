@@ -1,3 +1,4 @@
+#if ReactiveSwift
 @preconcurrency import ReactiveSwift
 import SwiftRex
 
@@ -34,3 +35,4 @@ extension PostReducerContext {
         }
     }
 }
+#endif

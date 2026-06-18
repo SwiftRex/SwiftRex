@@ -30,14 +30,17 @@ jobs:
         run: |
           swift package \
             --allow-writing-to-directory .docs \
+            --enable-all-traits \
             generate-documentation \
             --target SwiftRex \
             --target SwiftRexOperators \
-            --target SwiftRexConcurrency \
+            --target SwiftRexSwiftConcurrency \
             --target SwiftRexCombine \
             --target SwiftRexRxSwift \
             --target SwiftRexReactiveSwift \
+            --target SwiftRexReactiveConcurrency \
             --target SwiftRexSwiftUI \
+            --target SwiftRexArchitecture \
             --enable-experimental-combined-documentation \
             --output-path .docs \
             --transform-for-static-hosting \

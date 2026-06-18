@@ -1,3 +1,4 @@
+#if ReactiveSwift
 @preconcurrency import ReactiveSwift
 import SwiftRex
 
@@ -334,3 +335,4 @@ extension Effect {
         fireAndForget(SignalProducer(signal))
     }
 }
+#endif

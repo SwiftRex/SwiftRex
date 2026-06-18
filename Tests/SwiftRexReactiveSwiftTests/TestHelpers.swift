@@ -1,3 +1,4 @@
+#if ReactiveSwift
 import Foundation
 import SwiftRex
 
@@ -25,3 +26,4 @@ func subscribeAll<A: Sendable>(
     _effectSubscriptionSink.mutate { $0.append(contentsOf: tokens) }
     return tokens
 }
+#endif

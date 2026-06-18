@@ -6,15 +6,18 @@ retain_files:
 targets:
   - SwiftRex
   - SwiftRexOperators
-  - SwiftRexConcurrency
+  - SwiftRexSwiftConcurrency
   - SwiftRexCombine
   - SwiftRexRxSwift
   - SwiftRexReactiveSwift
+  - SwiftRexReactiveConcurrency
   - SwiftRexSwiftUI
+  - SwiftRexArchitecture
   - SwiftRexTesting
   - SwiftRexTests
-  - SwiftRexConcurrencyTests
+  - SwiftRexSwiftConcurrencyTests
   - SwiftRexCombineTests
   - SwiftRexRxSwiftTests
   - SwiftRexReactiveSwiftTests
-  - SwiftRexTestingTests
+  - SwiftRexReactiveConcurrencyTests
+  - SwiftRexArchitectureTests

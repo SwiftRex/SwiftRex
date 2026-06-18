@@ -1,3 +1,4 @@
+#if ReactiveSwift
 @preconcurrency import ReactiveSwift
 import SwiftRex
 
@@ -38,3 +39,4 @@ extension StoreType {
         }
     }
 }
+#endif
