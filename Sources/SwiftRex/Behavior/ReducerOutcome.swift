@@ -14,11 +14,11 @@ import CoreFP
 ///
 /// ## Monoid
 ///
-/// `ReducerOutcome` is a ``Monoid`` whose identity is ``unchanged``. ``combine(_:_:)`` short-circuits
+/// `ReducerOutcome` is a `Monoid` whose identity is ``unchanged``. ``combine(_:_:)`` short-circuits
 /// the common case (one mutator among many `unchanged` siblings folds to a single `mutation`, no
 /// nesting); two real mutations compose sequentially via `EndoMut`'s own `Monoid` (lhs then rhs).
 ///
-/// - SeeAlso: ``Consequence``, ``EndoMut``
+/// - SeeAlso: ``Consequence``, `EndoMut`
 public enum ReducerOutcome<State: Sendable>: Sendable {
     /// No mutation — the Store applies nothing and fires no observer notifications.
     case unchanged

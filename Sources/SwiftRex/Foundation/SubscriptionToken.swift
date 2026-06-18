@@ -68,7 +68,7 @@ public final class SubscriptionToken: Sendable {
     /// Cancels the associated subscription or observation.
     ///
     /// For effect subscriptions, this calls the ``SubscriptionToken`` returned from the
-    /// ``Effect/Component/subscribe`` closure. For state observers registered via
+    /// `Effect.Component.subscribe` closure. For state observers registered via
     /// ``StoreType/observe(willChange:didChange:)``, this removes both callbacks. Also invoked
     /// automatically by `deinit` when the last reference is released.
     public func cancel() {

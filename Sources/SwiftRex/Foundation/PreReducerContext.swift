@@ -36,7 +36,7 @@
 /// let localContext = context.map { $0.authState }
 /// ```
 ///
-/// - Note: The stored ``stateGetter`` is intentionally `@Sendable` so lifting transforms can safely
+/// - Note: The stored `stateGetter` is intentionally `@Sendable` so lifting transforms can safely
 ///   extract it and compose it when constructing child `PreReducerContext` instances. The
 ///   non-Sendability of the struct itself comes from a non-`@Sendable` sentinel property.
 @MainActor

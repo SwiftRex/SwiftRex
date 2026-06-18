@@ -9,7 +9,7 @@
 ///
 /// - ``Store/dispatch(_:file:function:line:)`` captures `#file`, `#function`, and `#line`
 ///   at the call site automatically.
-/// - ``Effect`` factories (``Effect/just(_:scheduling:file:function:line:)-5i6kl``,
+/// - ``Effect`` factories (`just(_:scheduling:file:function:line:)`,
 ///   ``Effect/sequence(_:scheduling:file:function:line:)``) do the same.
 /// - The `here()` free function packages the source location into a reusable closure for
 ///   point-free pipelines.

@@ -21,10 +21,10 @@
 /// | Goal | Policy |
 /// |---|---|
 /// | Fire-and-forget, no cancellation | ``immediately`` |
-/// | At most one concurrent run | ``replacing(id:)`` |
-/// | Wait for quiet period (search-as-you-type) | ``debounce(id:delay:)`` |
-/// | Rate-limit (scroll events, sensor data) | ``throttle(id:interval:)`` |
-/// | Explicit cancel without replacement | ``cancelInFlight(id:)`` |
+/// | At most one concurrent run | `replacing(id:)` |
+/// | Wait for quiet period (search-as-you-type) | `debounce(id:delay:)` |
+/// | Rate-limit (scroll events, sensor data) | `throttle(id:interval:)` |
+/// | Explicit cancel without replacement | `cancelInFlight(id:)` |
 ///
 /// ```swift
 /// // Debounce live search: reset the 300 ms timer on every keystroke
@@ -58,7 +58,7 @@ public enum EffectScheduling: Sendable {
 
     /// Cancel any existing component registered under `id`, then start this one in its place.
     ///
-    /// Unlike ``cancelInFlight(id:)`` which only removes the existing entry, `.replacing`
+    /// Unlike `cancelInFlight(id:)` which only removes the existing entry, `.replacing`
     /// starts a new component after cancelling the old one. This ensures there is always at most
     /// one component running under a given `id`.
     ///
@@ -79,7 +79,7 @@ public enum EffectScheduling: Sendable {
     /// resets and the previous pending work is cancelled. Only the component whose delay
     /// completes without interruption actually starts executing.
     ///
-    /// Debounced components are also cancellable via ``cancelInFlight(id:)`` at any point —
+    /// Debounced components are also cancellable via `cancelInFlight(id:)` at any point —
     /// both during the delay and after the component has started.
     ///
     /// ```swift
@@ -102,7 +102,7 @@ public enum EffectScheduling: Sendable {
     /// dropped — no work starts. When the interval has elapsed, the component starts and the
     /// timestamp is recorded for future throttle checks.
     ///
-    /// Throttled components are cancellable via ``cancelInFlight(id:)`` while they are running.
+    /// Throttled components are cancellable via `cancelInFlight(id:)` while they are running.
     ///
     /// ```swift
     /// // Update the UI at most once every second when scrolling
@@ -142,25 +142,25 @@ public enum EffectScheduling: Sendable {
 // constructor and the factory.
 
 extension EffectScheduling {
-    /// Creates a ``replacing(id:)`` policy from any `Hashable & Sendable` id.
+    /// Creates a `replacing(id:)` policy from any `Hashable & Sendable` id.
     @_disfavoredOverload
     public static func replacing(id: some Hashable & Sendable) -> Self {
         .replacing(id: AnyHashableSendable(id))
     }
 
-    /// Creates a ``debounce(id:delay:)`` policy from any `Hashable & Sendable` id.
+    /// Creates a `debounce(id:delay:)` policy from any `Hashable & Sendable` id.
     @_disfavoredOverload
     public static func debounce(id: some Hashable & Sendable, delay: Duration) -> Self {
         .debounce(id: AnyHashableSendable(id), delay: delay)
     }
 
-    /// Creates a ``throttle(id:interval:)`` policy from any `Hashable & Sendable` id.
+    /// Creates a `throttle(id:interval:)` policy from any `Hashable & Sendable` id.
     @_disfavoredOverload
     public static func throttle(id: some Hashable & Sendable, interval: Duration) -> Self {
         .throttle(id: AnyHashableSendable(id), interval: interval)
     }
 
-    /// Creates a ``cancelInFlight(id:)`` policy from any `Hashable & Sendable` id.
+    /// Creates a `cancelInFlight(id:)` policy from any `Hashable & Sendable` id.
     @_disfavoredOverload
     public static func cancelInFlight(id: some Hashable & Sendable) -> Self {
         .cancelInFlight(id: AnyHashableSendable(id))

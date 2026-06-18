@@ -11,7 +11,7 @@ import Hourglass
 ///
 /// ## Three-phase dispatch
 ///
-/// Every dispatched action runs through four steps in ``runPhases``:
+/// Every dispatched action runs through four steps in `runPhases`:
 ///
 /// ```
 /// 1. behavior.handle(action, stateAccess)    — all Behaviors; stateAccess = pre-mutation state
@@ -29,13 +29,13 @@ import Hourglass
 ///
 /// ## Serialized, never-nested processing
 ///
-/// Actions are serialized through a FIFO ``queue`` guarded by an `isProcessing` flag, so
-/// ``runPhases`` never runs nested. A synchronous ``dispatch(_:source:)`` runs its action — and
+/// Actions are serialized through a FIFO `queue` guarded by an `isProcessing` flag, so
+/// `runPhases` never runs nested. A synchronous ``dispatch(_:source:)`` runs its action — and
 /// any actions dispatched synchronously while it runs (for example a `didChange` observer that
 /// re-dispatches) — within the same run loop turn, draining the queue in order. Because the
 /// pipeline is never re-entered mid-action, observers always see a fully-committed state.
 ///
-/// Actions produced by effects re-enter through a `Task` hop (see ``makeSend``), so they are
+/// Actions produced by effects re-enter through a `Task` hop (see `makeSend`), so they are
 /// always processed on a later turn rather than inline — keeping effect work off the run loop
 /// turn that drove the original UI dispatch.
 ///
@@ -68,7 +68,7 @@ import Hourglass
 ///
 /// ## Effect lifecycle
 ///
-/// Each ``Effect/Component`` is tracked in `effects: [AnyHashableSendable: SubscriptionToken]`.
+/// Each `Effect.Component` is tracked in `effects: [AnyHashableSendable: SubscriptionToken]`.
 /// Anonymous (`.immediately`) components use a `UUID` key that is removed on `complete`.
 /// Named components (`.replacing`, `.debounce`, `.throttle`) use the caller-supplied id.
 ///
@@ -119,7 +119,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     // MARK: - Injected co-effects
 
     /// Clock used for all ``EffectScheduling`` timing (debounce sleep, throttle window). Erased to
-    /// ``AnyClock`` so the Store carries no clock generic; injected at `init` (defaults to
+    /// `AnyClock` so the Store carries no clock generic; injected at `init` (defaults to
     /// `ContinuousClock`, swappable for a `TestClock`/`ImmediateClock` of the same `Duration`).
     private let clock: AnyClock<Swift.Duration>
 
@@ -186,7 +186,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// Creates a `Store` extracting the scheduling clock — and optionally the RNG — from the
     /// environment.
     ///
-    /// The concrete clock `C` is inferred at the call site and erased to ``AnyClock`` at
+    /// The concrete clock `C` is inferred at the call site and erased to `AnyClock` at
     /// construction, so `Store` carries no clock generic. Pass a `TestClock`/`ImmediateClock`
     /// for deterministic ``EffectScheduling`` in tests.
     ///
@@ -330,7 +330,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     ///
     /// This is the single entry point for every action, whether it comes from a synchronous
     /// `dispatch` call or (via `makeSend`'s `Task` hop) from an effect. The `isProcessing`
-    /// guard guarantees the three-phase pipeline in ``runPhases`` never runs nested.
+    /// guard guarantees the three-phase pipeline in `runPhases` never runs nested.
     private func process(_ dispatched: DispatchedAction<Action>) {
         queue.append(dispatched)
         guard !isProcessing else { return }

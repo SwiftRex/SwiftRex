@@ -35,7 +35,7 @@ import CoreFP
 ///
 /// ## Array-of-components internal representation
 ///
-/// Combining two effects (via ``combine(_:_:)`` or the ``Monoid`` instance) appends their
+/// Combining two effects (via ``combine(_:_:)`` or the `Monoid` instance) appends their
 /// component arrays. The Store schedules each component independently under its own
 /// ``EffectScheduling`` policy, so cancelling by id never affects components with a
 /// different id.
@@ -44,8 +44,8 @@ import CoreFP
 ///
 /// Apply ``scheduling(_:)`` to override the default ``EffectScheduling/immediately`` policy
 /// on all components at once, or build components with individual policies using the
-/// ``Effect/init(subscribe:scheduling:)`` SPI. For most production code, use the dedicated
-/// factories (``just(_:scheduling:file:function:line:)-5i6kl``, ``sequence(_:scheduling:file:function:line:)``).
+/// `Effect.init(subscribe:scheduling:)` SPI. For most production code, use the dedicated
+/// factories (`just(_:scheduling:file:function:line:)`, ``sequence(_:scheduling:file:function:line:)``).
 ///
 /// ## Composing effects
 ///
@@ -116,7 +116,7 @@ extension Effect {
     /// This SPI initialiser is intended for bridge targets (`SwiftRexCombine`, `SwiftRexRxSwift`, etc.) and
     /// extension packages that need to wrap a framework-specific publisher into an `Effect`
     /// without access to the internal `Component` type. Application code should prefer the
-    /// typed factories: ``just(_:scheduling:file:function:line:)-5i6kl``,
+    /// typed factories: `just(_:scheduling:file:function:line:)`,
     /// ``sequence(_:scheduling:file:function:line:)``, or the async/Combine/Rx overloads in
     /// the respective bridge modules.
     ///

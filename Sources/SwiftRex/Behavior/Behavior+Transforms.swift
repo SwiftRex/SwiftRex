@@ -36,8 +36,8 @@ extension Behavior {
         }
     }
 
-    /// Lifts the action axis using a `\.case` key path (``PrismKeyPath``) — the case-key-path
-    /// spelling of ``liftAction(_:)``.
+    /// Lifts the action axis using a `\.case` key path (`PrismKeyPath`) — the case-key-path
+    /// spelling of `liftAction(_:)`.
     ///
     /// ```swift
     /// let lifted = authBehavior.liftAction(\.auth)   // instead of AppAction.prism.auth
@@ -59,12 +59,12 @@ extension Behavior {
     /// global state type.
     ///
     /// The key path is used in two ways:
-    /// - To project the ``PreReducerContext<GlobalState>`` to ``PreReducerContext<State>``
+    /// - To project the `PreReducerContext<GlobalState>` to `PreReducerContext<State>`
     ///   (pre-mutation reads via ``PreReducerContext/map(_:)``).
     /// - To lift the returned `EndoMut<State>` through the key path so it mutates the correct
     ///   property inside `GlobalState`.
-    /// - To project the ``PostReducerContext<GlobalState, Environment>`` to
-    ///   ``PostReducerContext<State, Environment>`` (post-mutation reads via `contramapEnvironment`
+    /// - To project the `PostReducerContext<GlobalState, Environment>` to
+    ///   `PostReducerContext<State, Environment>` (post-mutation reads via `contramapEnvironment`
     ///   on the returned `Reader`).
     ///
     /// ```swift
@@ -226,7 +226,7 @@ extension Behavior {
     /// Lifts all three axes simultaneously using a `Prism` for action, a `WritableKeyPath`
     /// for state, and a closure for environment.
     ///
-    /// Equivalent to chaining ``liftAction(_:)``, ``liftState(_:)-7bmm8``, and
+    /// Equivalent to chaining `liftAction(_:)`, `liftState(_:)`, and
     /// ``liftEnvironment(_:)`` in sequence. Use this when all three axes need widening in a
     /// single step:
     ///
