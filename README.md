@@ -1860,6 +1860,46 @@ enum AppAction: Sendable {
 
 ---
 
+# Architecture & the Algebra
+
+SwiftRex's core types form a small, lawful algebra. Composition is always the same idea — a **monoid** (`combine`, with an `identity`) — and there is exactly **one interpreter**, the `Store`. Everything else is a pure, composable value.
+
+## The monoid lattice
+
+Each type is a monoid; composing two values of a type gives a third of the same type, with an `identity` that does nothing:
+
+| Type | `combine` semantics | `identity` |
+|---|---|---|
+| `Reducer<Action, State>` | **sequential** — run `lhs` then `rhs` on the same `inout State` (order matters; `rhs` sees `lhs`'s mutation) | no-op reducer |
+| `Effect<Action>` | **parallel** — both subscribe closures run; the Store interprets them concurrently | `.empty` |
+| `ReducerOutcome<State>` | absorb `.unchanged`; otherwise compose the `EndoMut` mutations | `.unchanged` |
+| `Consequence<State, Env, Action>` | **product monoid** — componentwise: `ReducerOutcome` (sequential) × effect `Reader` (parallel) | `.doNothing` |
+| `Behavior<Action, State, Env>` | the primary composition unit (Reducer + Middleware); a flat fold over its units | `.identity` |
+| `Middleware<Action, State, Env>` | the effect-only half; effects merged | `.identity` |
+
+A `Behavior`'s `handle` maps an action to a `Consequence` — the pair of *what state change to apply* (`ReducerOutcome`) and *what effect to run afterward* (`Reader<PostReducerContext, Effect>`). `Consequence` being a product monoid is what lets you compose whole features by composing their `Behavior`s: the state mutations fold sequentially, the effects merge in parallel, all in one value.
+
+## The Store is the only interpreter (an IO runtime)
+
+`Reducer`, `Effect`, `Middleware`, and `Behavior` are inert descriptions — constructing them runs nothing. The `Store` is the sole place effects execute and state mutates. It dispatches each action, on `@MainActor`, in phases:
+
+1. **Phase 1 — pre-mutation.** `behavior.handle(action, preReducerContext)` returns a `Consequence`. The context exposes the *pre-mutation* state.
+2. **Phase 2 — mutation (zero-copy).** If the outcome is `.unchanged`, nothing happens — **no observer is notified**. Otherwise: `willChange` → the `EndoMut` mutates `state` in place (no copy) → `didChange`.
+3. **Phase 3 — effects.** A `PostReducerContext` (now exposing *post-mutation* state and the `Environment`) resolves the effect `Reader`; each resulting component is scheduled per its `EffectScheduling` (`.immediately`, `.replacing(id:)`, `.debounce(id:delay:)`, `.throttle(id:interval:)`, `.cancelInFlight(id:)`). Actions produced by effects loop back to Phase 1.
+
+This yields the framework's guarantees:
+
+- **One notification per state-changing action.** A composed `Behavior` runs *all* its units inside a single `handle` call; by Swift's Law of Exclusivity the Store regains `state` only after the whole pipeline finishes — observers never see a half-applied state. Actions that can't change state (`.unchanged`) notify **zero** times.
+- **Zero-copy mutation.** State is mutated through `inout` / `EndoMut`, never copied to diff.
+- **Effects see committed state.** Effect closures resolve against post-mutation state.
+- **Re-entrancy is safe.** Actions dispatched while the Store is mid-drain are queued and processed FIFO; a runaway loop is cut off at `StoreHooks.reentranceThreshold`.
+
+`Store` is a `final class` with a fully `@MainActor` surface (so `withAnimation { store.dispatch(...) }` just works). Two pure boundary helpers narrow it for views: **`StoreProjection`** is a *stateless* `struct` that maps global action/state to a local slice (a lens with no storage of its own), and **`StoreBuffer`** is the caching/deduplicating layer (skips propagation when the projected slice is unchanged, via `Equatable` or a custom predicate).
+
+> The upcoming state-driven-effects redesign adds a fourth entity (`Subscription`) and decomposes the effect engine; this section is updated in the same PR when that lands.
+
+---
+
 # Installation
 
 ## Swift Package Manager
