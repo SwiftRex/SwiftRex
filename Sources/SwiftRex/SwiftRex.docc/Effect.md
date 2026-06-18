@@ -12,8 +12,15 @@ An `Effect<Action>` is the unit of side effect a ``Middleware`` (or a ``Behavior
 
 - ``just(_:scheduling:file:function:line:)`` — dispatch a single action.
 - ``sequence(_:scheduling:file:function:line:)`` — dispatch a fixed list of actions.
+- ``channel(value:scheduling:file:function:line:_:)`` — a long-lived, *pipeable* effect.
 - ``empty`` — do nothing (the monoid identity).
 - a companion product's `asEffect()` — bridge a publisher / observable / async sequence.
+
+### Recreate vs. pipe
+
+The factories above are **recreate-on-dispatch**: each dispatch starts fresh work, and an id-scoped ``EffectScheduling`` (replace / debounce / throttle) cancels the displaced run. That is the right model for one-shot work — a search request, a save.
+
+For *long-lived* work that must **not** be torn down — a WebSocket, a location or audio pipeline — use ``channel(value:scheduling:file:function:line:_:)``. The Store opens it once and pipes every subsequent value into the **same** running effect, with `debounce`/`throttle` gating the value delivery rather than the effect's lifetime. See ``ChannelHandler``.
 
 ### Scheduling
 
@@ -35,6 +42,11 @@ api.search(query).asEffect(AppAction.results)
 - ``just(_:scheduling:file:function:line:)``
 - ``sequence(_:scheduling:file:function:line:)``
 - ``empty``
+
+### Pipeable channels
+
+- ``channel(value:scheduling:file:function:line:_:)``
+- ``ChannelHandler``
 
 ### Scheduling
 

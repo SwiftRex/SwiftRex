@@ -102,6 +102,15 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// deallocating the Store, which releases this dictionary — cancels the in-flight work.
     private var runningEffects: [AnyHashableSendable: SubscriptionToken] = [:]
 
+    /// Live value-sinks for running ``Effect/channel(value:scheduling:file:function:line:_:)`` effects, keyed the same
+    /// as `runningEffects`. Present iff a channel under that key is open; the Store pipes subsequent
+    /// values through the sink instead of recreating the effect.
+    private var channelSinks: [AnyHashableSendable: @Sendable (any Sendable) -> Void] = [:]
+
+    /// Pending debounce/delay timers for channel value delivery, kept *separate* from
+    /// `runningEffects` so coalescing a value never tears down the live channel it pipes into.
+    private var pendingDeliver: [AnyHashableSendable: SubscriptionToken] = [:]
+
     /// Last-fire instants for `.throttle` keys, paired with the interval so expired entries are
     /// pruned — keeps the dictionary bounded under unbounded distinct keys.
     private var throttleStamps: [AnyHashableSendable: (last: AnyClock<Swift.Duration>.Instant, interval: Duration)] = [:]
@@ -388,6 +397,8 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             if let id = scheduling.id {
                 runningEffects[id]?.cancel()
                 runningEffects.removeValue(forKey: id)
+                channelSinks.removeValue(forKey: id)
+                pendingDeliver.removeValue(forKey: id)
             }
             return
         }
@@ -399,6 +410,12 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         } else {
             nextAnonymousEffectKey &+= 1
             key = AnyHashableSendable(AnonymousEffectKey(value: nextAnonymousEffectKey))
+        }
+
+        // Pipeable channel: feed the value into the live effect (or start it) — never recreate.
+        if let channel = component.channel {
+            scheduleChannel(channel, key: key, scheduling: scheduling)
+            return
         }
 
         // Throttle gate: drop entirely if a run happened within the interval.
@@ -434,6 +451,60 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             runningEffects[key] = component.subscribe(send) { [weak self] in
                 Task { @MainActor [weak self] in self?.runningEffects.removeValue(forKey: key) }
             }
+        }
+    }
+
+    /// Honours scheduling for a pipeable ``Effect/channel(value:scheduling:file:function:line:_:)``: gates the *value
+    /// delivery* (throttle drops, debounce/delay defers) and then pipes it into the live channel —
+    /// starting the channel on first use — without ever tearing the running effect down.
+    private func scheduleChannel(
+        _ channel: Effect<Action>.Component.Channel,
+        key: AnyHashableSendable,
+        scheduling: EffectScheduling
+    ) {
+        // Throttle gate: drop this value if a delivery happened within the interval. The live
+        // channel is untouched — only the value is dropped.
+        if case .throttle(let interval) = scheduling.coalesce {
+            let now = clock.now
+            throttleStamps = throttleStamps.filter { $0.value.last.duration(to: now) < $0.value.interval }
+            if let entry = throttleStamps[key], entry.last.duration(to: now) < interval { return }
+            throttleStamps[key] = (last: now, interval: interval)
+        }
+
+        let debounceDelay: Duration?
+        if case .debounce(let delay) = scheduling.coalesce { debounceDelay = delay } else { debounceDelay = nil }
+        let preWait = max(.zero, (debounceDelay ?? .zero) + (scheduling.delay ?? .zero))
+        let value = channel.value
+
+        let deliver: @MainActor @Sendable () -> Void = { [weak self] in
+            guard let self else { return }
+            self.pendingDeliver.removeValue(forKey: key)
+            if let sink = self.channelSinks[key] {
+                sink(value)
+            } else {
+                let (token, sink) = channel.start(value, self.makeSend()) { [weak self] in
+                    Task { @MainActor [weak self] in
+                        self?.runningEffects.removeValue(forKey: key)
+                        self?.channelSinks.removeValue(forKey: key)
+                    }
+                }
+                self.runningEffects[key] = token
+                self.channelSinks[key] = sink
+            }
+        }
+
+        if preWait > .zero {
+            // Restart the debounce window; the live channel (in `runningEffects`) is left running.
+            pendingDeliver[key]?.cancel()
+            let clock = clock
+            let task = Task { @MainActor [weak self] in
+                try await clock.sleep(for: preWait)
+                guard !Task.isCancelled, self != nil else { return }
+                deliver()
+            }
+            pendingDeliver[key] = SubscriptionToken { task.cancel() }
+        } else {
+            deliver()
         }
     }
 
