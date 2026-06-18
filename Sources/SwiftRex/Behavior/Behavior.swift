@@ -63,13 +63,13 @@ import DataStructure
 /// Feature behaviors operate on local types. Use the lift family to embed them in the app's
 /// global types without changing their logic:
 ///
-/// - `liftAction(_:)` — narrows via a `Prism` (enum case)
-/// - `liftState(_:)` — widens via `WritableKeyPath`
-/// - `liftState(_:)` — widens via `Lens`
-/// - `liftState(_:)` — widens via `Prism` (optional enum state)
-/// - `liftState(_:)` — widens via `AffineTraversal`
+/// - ``liftAction(_:)`` — narrows via a `Prism` (enum case)
+/// - ``liftState(_:)`` — widens via `WritableKeyPath`
+/// - ``liftState(_:)`` — widens via `Lens`
+/// - ``liftState(_:)`` — widens via `Prism` (optional enum state)
+/// - ``liftState(_:)`` — widens via `AffineTraversal`
 /// - ``liftEnvironment(_:)`` — narrows via a projection closure
-/// - `lift(action:state:environment:)` and overloads — all three axes at once
+/// - ``lift(action:state:environment:)`` and overloads — all three axes at once
 ///
 /// - Note: `Behavior.handle` is `@MainActor`. The ``Store`` calls it on the main actor,
 ///   so `context.stateBefore` is always safe to call directly inside the closure.

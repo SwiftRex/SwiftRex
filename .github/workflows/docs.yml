@@ -42,6 +42,7 @@ jobs:
             --target SwiftRexSwiftUI \
             --target SwiftRexArchitecture \
             --enable-experimental-combined-documentation \
+            --enable-experimental-overloaded-symbol-presentation \
             --output-path .docs \
             --transform-for-static-hosting \
             --hosting-base-path SwiftRex

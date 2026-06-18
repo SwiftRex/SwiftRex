@@ -50,9 +50,11 @@ See <doc:Algebra> for why lifting composes cleanly, and ``ElementAction`` for ho
 
 ``asBehavior()`` turns a `Reducer` into a ``Behavior`` whose effect is always empty — the bridge for combining pure reducers with effectful middleware under one type.
 
-> The `reduce`, `lift`, `liftCollection`, and `liftEach` families are overloaded; DocC lists each overload in the automatic method sections below. They're walked through in the Overview above and in the upcoming Lifting article.
-
 ## Topics
+
+### Creating a Reducer
+
+- ``reduce(_:)``
 
 ### Composing
 
@@ -61,6 +63,12 @@ See <doc:Algebra> for why lifting composes cleanly, and ``ElementAction`` for ho
 - ``mconcat(_:)``
 - ``sconcat(_:_:)``
 - ``ReducerBuilder``
+
+### Lifting to a Larger Scope
+
+- ``lift(action:state:)``
+- ``liftCollection(action:stateContainer:)``
+- ``liftEach(action:each:stateContainer:)``
 
 ### Bridging
 
