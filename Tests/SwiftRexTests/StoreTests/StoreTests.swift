@@ -211,7 +211,13 @@ struct StoreEffectSchedulingTests {
             environment: ()
         )
         store.dispatch(0)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // The clamped-to-zero debounce still fires through a real-time scheduler hop, so poll
+        // (up to ~2s) for the looped-back action rather than asserting after one fixed sleep —
+        // the fixed 100ms wait raced under load on the Linux CI runner.
+        for _ in 0..<200 {
+            if store.state == 5 { break }
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
         #expect(store.state == 5)
     }
 }
