@@ -32,6 +32,7 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 
 - <doc:Algebra>
 - <doc:Lifting>
+- <doc:Modularisation>
 
 ### The Core Loop
 
