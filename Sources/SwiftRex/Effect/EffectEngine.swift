@@ -36,6 +36,11 @@ package final class EffectEngine<Action: Sendable> {
     /// Monotonic source of anonymous effect keys (internal, never surfaced).
     private var nextAnonymousEffectKey: UInt64 = 0
 
+    /// The last desired-set this engine reconciled, keyed by `(owner, id)` → value-identity. This is
+    /// the *only* memory a state-driven `Reaction` needs: the reaction recomputes the full desired set
+    /// each cycle and the engine diffs it against this, deriving start/stop/pipe operations.
+    private var reconciledValues: [AnyHashableSendable: AnyHashableSendable] = [:]
+
     private let clock: AnyClock<Swift.Duration>
     private let send: @Sendable (DispatchedAction<Action>) -> Void
 
@@ -70,12 +75,7 @@ package final class EffectEngine<Action: Sendable> {
 
         // Cancel-only sentinel: remove the id and start nothing.
         if scheduling.cancelsOnly {
-            if let id = scheduling.id {
-                runningEffects[id]?.cancel()
-                runningEffects.removeValue(forKey: id)
-                channelSinks.removeValue(forKey: id)
-                pendingDeliver.removeValue(forKey: id)
-            }
+            if let id = scheduling.id { cancel(key: id) }
             return
         }
 
@@ -182,5 +182,57 @@ package final class EffectEngine<Action: Sendable> {
         } else {
             deliver()
         }
+    }
+
+    /// Cancels and forgets whatever runs under `key` across all registries (the cancel-only path,
+    /// and the "no longer desired" path of ``reconcile(_:)``). A no-op if nothing is registered.
+    ///
+    /// Cancellation is driven by releasing the token (RAII `deinit`), not an explicit `cancel()` call:
+    /// the token is sole-owned by `runningEffects`, so `removeValue` drops the last reference and
+    /// cancels it **exactly once**. Calling `cancel()` *and* releasing would fire a side-effecting
+    /// teardown (e.g. a channel's `socket.close()`) twice.
+    private func cancel(key: AnyHashableSendable) {
+        runningEffects.removeValue(forKey: key)
+        channelSinks.removeValue(forKey: key)
+        pendingDeliver.removeValue(forKey: key)
+    }
+
+    // MARK: - Reconcile (state-driven `Reaction`)
+
+    /// A single desired state-driven effect for one reconcile cycle.
+    ///
+    /// The `component`'s `scheduling.id` is the owner-stamped `(owner, id)` key — state-driven effects
+    /// must be keyed (an unkeyed entry is skipped). `valueIdentity` drives change detection: when it
+    /// changes between cycles the engine re-schedules (which **pipes** for a channel, **recreates** for
+    /// a one-shot); `nil` means presence-only (started once, never re-scheduled until it drops out).
+    package struct ReconcileEntry: Sendable {
+        package let component: Effect<Action>.Component
+        package let valueIdentity: AnyHashableSendable?
+
+        package init(component: Effect<Action>.Component, valueIdentity: AnyHashableSendable?) {
+            self.component = component
+            self.valueIdentity = valueIdentity
+        }
+    }
+
+    /// Sentinel value-identity for presence-only entries, so "still desired, unchanged" compares equal.
+    private struct PresenceMarker: Hashable, Sendable {}
+
+    /// Reconciles the running state-driven effects against the **complete** `desired` set for this
+    /// cycle: starts keys newly present, cancels keys now absent, and re-schedules keys whose
+    /// `valueIdentity` changed. An unchanged desired set produces **zero** operations — the engine
+    /// keeps the registry; the caller (a `Reaction`) keeps nothing.
+    package func reconcile(_ desired: [ReconcileEntry]) {
+        let presence = AnyHashableSendable(PresenceMarker())
+        var next: [AnyHashableSendable: AnyHashableSendable] = [:]
+        next.reserveCapacity(desired.count)
+        for entry in desired {
+            guard let key = entry.component.scheduling.id else { continue }
+            let identity = entry.valueIdentity ?? presence
+            next[key] = identity
+            if reconciledValues[key] != identity { schedule(entry.component) }
+        }
+        for key in reconciledValues.keys where next[key] == nil { cancel(key: key) }
+        reconciledValues = next
     }
 }
