@@ -86,6 +86,14 @@ extension EffectScheduling {
     /// Start immediately with no cancellation tracking. Use for fire-and-forget work.
     public static var immediately: Self { .init() }
 
+    /// Register under `id` with no coalescing and no replacement — the canonical scheduling for a
+    /// pipeable ``Effect/channel(value:scheduling:file:function:line:_:)``: the Store keys the live
+    /// effect by `id` and pipes every value into it. (For recreate-on-dispatch effects this simply
+    /// tags the run with `id`, leaving `delay`/`coalesce`/`exclusive` unset.)
+    public static func keyed(id: AnyHashableSendable) -> Self {
+        .init(id: id)
+    }
+
     /// Cancel any existing component under `id`, then start this one in its place (at most one run).
     public static func replacing(id: AnyHashableSendable) -> Self {
         .init(id: id, exclusive: true)
@@ -124,6 +132,12 @@ extension EffectScheduling {
 // between the `AnyHashableSendable` factory and this one.
 
 extension EffectScheduling {
+    /// Creates a `keyed(id:)` policy from any `Hashable & Sendable` id.
+    @_disfavoredOverload
+    public static func keyed(id: some Hashable & Sendable) -> Self {
+        .keyed(id: AnyHashableSendable(id))
+    }
+
     /// Creates a `replacing(id:)` policy from any `Hashable & Sendable` id.
     @_disfavoredOverload
     public static func replacing(id: some Hashable & Sendable) -> Self {

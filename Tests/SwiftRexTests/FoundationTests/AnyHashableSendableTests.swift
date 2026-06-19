@@ -67,6 +67,16 @@ struct EffectSchedulingIdFactoryTests {
         #expect(scheduling.exclusive)
     }
 
+    @Test("keyed sets the id with no coalesce, delay, or replacement")
+    func keyedIdHasNoOtherKnobs() {
+        let scheduling = EffectScheduling.keyed(id: "socket")
+        #expect(scheduling.id == AnyHashableSendable("socket"))
+        #expect(scheduling.coalesce == nil)
+        #expect(scheduling.delay == nil)
+        #expect(!scheduling.exclusive)
+        #expect(!scheduling.cancelsOnly)
+    }
+
     @Test("UUID id round-trips through debounce")
     func debounceUUIDId() {
         let uuid = UUID(uuidString: "00000000-0000-0000-0000-000000000042")!

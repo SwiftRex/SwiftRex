@@ -46,6 +46,7 @@ api.search(query).asEffect(AppAction.results)
 ### Pipeable channels
 
 - ``channel(value:scheduling:file:function:line:_:)``
+- ``channel(value:scheduling:bufferingPolicy:file:function:line:consume:)``
 - ``ChannelHandler``
 
 ### Scheduling
