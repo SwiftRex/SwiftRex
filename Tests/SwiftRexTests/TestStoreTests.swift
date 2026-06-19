@@ -1,4 +1,5 @@
 import CoreFP
+import Hourglass
 import SwiftRex
 import SwiftRexTesting
 import Testing
@@ -398,5 +399,125 @@ struct CounterActionPrismShapeTests {
         // typed dispatch of cases with associated values.
         let action = CounterAction.prism.loaded.review(7)
         if case .loaded(let v) = action { #expect(v == 7) } else { Issue.record() }
+    }
+}
+
+// MARK: - Scheduling & channels (driven through the shared EffectEngine)
+
+private enum SocketAction: Sendable, Equatable {
+    case connect(Int)
+    case received(Int)
+    case disconnect
+    case ping
+    case tick
+}
+
+private let socketReceivedPrism = CoreFP.Prism<SocketAction, Int>(
+    preview: { if case .received(let v) = $0 { v } else { nil } },
+    review: SocketAction.received
+)
+
+private let socketTickPrism = CoreFP.Prism<SocketAction, Void>(
+    preview: { if case .tick = $0 { () } else { nil } },
+    review: { SocketAction.tick }
+)
+
+// A long-lived channel keyed "socket" that echoes each piped value back as `.received`.
+private let socketBehavior = Behavior<SocketAction, Int, Void> { action, _ in
+    switch action {
+    case .connect(let n):
+        .produce { _ in
+            .channel(value: n, scheduling: .keyed(id: "socket")) { send, _ in
+                ChannelHandler(receive: { send(.received($0)) }, cancel: {})
+            }
+        }
+    case .received(let v):
+        .reduce { $0 = v }
+    case .disconnect:
+        .produce { _ in .cancelInFlight(id: "socket") }
+    default:
+        .doNothing
+    }
+}
+
+@Suite("TestStore — scheduling & channels")
+@MainActor
+struct TestStoreSchedulingTests {
+    @Test func channelOpensPipesAndClosesCleanly() async {
+        let store = TestStore(initial: 0, behavior: socketBehavior, environment: ())
+        store.dispatch(.connect(1)) { _ in }       // opens the channel, pipes 1 → send(.received(1))
+        await store.runEffects()
+        store.receive(socketReceivedPrism) { v, s in s = v }
+        #expect(store.state == 1)
+
+        store.dispatch(.connect(2)) { _ in }        // pipes 2 into the SAME live channel
+        await store.runEffects()
+        store.receive(socketReceivedPrism) { v, s in s = v }
+        #expect(store.state == 2)
+
+        store.dispatch(.disconnect) { _ in }        // cancelInFlight(id: "socket") → closes it
+        await store.runEffects()
+        // clean end: channel closed, nothing pending — no exhaustive failure
+    }
+
+    @Test func openChannelLeftRunningRecordsAnExhaustiveFailure() async {
+        await withKnownIssue("a channel left open at end-of-test must be cancelled") {
+            let store = TestStore(initial: 0, behavior: socketBehavior, environment: ())
+            store.dispatch(.connect(1)) { _ in }
+            await store.runEffects()
+            store.receive(socketReceivedPrism) { v, s in s = v }
+            // never disconnect → channel still open at deinit → failure recorded
+        }
+    }
+
+    @Test func throttleDropsTheSecondValueOnAFrozenClock() async {
+        // ImmediateClock's `now` is frozen, so a throttle window never elapses: the first .tick
+        // fires, the second is dropped — exactly what a live Store would do (the miscount fix).
+        let store = TestStore(
+            initial: 0,
+            behavior: Behavior<SocketAction, Int, Void> { action, _ in
+                switch action {
+                case .ping: .produce { _ in Effect.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
+                case .tick: .reduce { $0 += 1 }
+                default: .doNothing
+                }
+            },
+            environment: ()
+        )
+        store.dispatch(.ping) { _ in }
+        await store.runEffects()
+        store.receive(socketTickPrism) { $0 += 1 }     // first fires
+        #expect(store.state == 1)
+
+        store.dispatch(.ping) { _ in }                  // within the (frozen) interval → dropped
+        await store.runEffects()
+        #expect(store.receivedActions.isEmpty)          // no spurious second .tick to receive
+        #expect(store.state == 1)
+    }
+
+    @Test func throttleFiresAgainAfterAdvancingAnInjectedTestClock() async {
+        let clock = TestClock()
+        let store = TestStore(
+            initial: 0,
+            behavior: Behavior<SocketAction, Int, Void> { action, _ in
+                switch action {
+                case .ping: .produce { _ in Effect.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
+                case .tick: .reduce { $0 += 1 }
+                default: .doNothing
+                }
+            },
+            environment: (),
+            clock: { _ in clock }
+        )
+        store.dispatch(.ping) { _ in }
+        await store.runEffects()
+        store.receive(socketTickPrism) { $0 += 1 }
+        #expect(store.state == 1)
+
+        await clock.advance(by: .seconds(1))            // interval elapses on the injected clock
+        store.dispatch(.ping) { _ in }
+        await store.runEffects()
+        store.receive(socketTickPrism) { $0 += 1 }      // now fires again
+        #expect(store.state == 2)
     }
 }
