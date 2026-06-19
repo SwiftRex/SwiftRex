@@ -1,4 +1,5 @@
 import CoreFP
+import Hourglass
 import SwiftRex
 import Testing
 
@@ -56,7 +57,7 @@ import Testing
 ///
 /// ## Exhaustive mode (default)
 ///
-/// When `exhaustive: true` (the default), the store enforces two checks:
+/// When `exhaustive: true` (the default), the store enforces three checks:
 ///
 /// 1. **Ordering** — calling ``dispatch(_:sourceLocation:assert:)`` while ``receivedActions``
 ///    is non-empty records a failure. You must process all received actions with `receive`
@@ -64,9 +65,16 @@ import Testing
 /// 2. **End-of-test** — when the `TestStore` is deallocated, any remaining ``pendingEffects``
 ///    or ``receivedActions`` record failures. Every effect and every action the behavior
 ///    produced must be accounted for.
+/// 3. **Open channels** — a pipeable `Effect.channel` left open at deallocation records a
+///    failure. Long-lived channels don't end on their own, so each must be torn down with
+///    `cancelInFlight(id:)` before the test ends.
 ///
-/// Pass `exhaustive: false` to disable **both** checks — neither the ordering check on
-/// dispatch nor the end-of-test check at dealloc will fire.
+/// Because `runEffects()` schedules through the same ``EffectScheduling`` engine the production
+/// `Store` uses, the action set you must exhaustively account for is exactly what a live Store
+/// would emit — a displaced (`.replacing`), throttled, or `cancelInFlight`-ed effect does **not**
+/// produce phantom actions.
+///
+/// Pass `exhaustive: false` to disable **all three** checks.
 ///
 /// ## StoreType conformance
 ///
@@ -109,8 +117,28 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     // storage. These are written on @MainActor and only read in deinit.
     nonisolated(unsafe) private var _pendingCount: Int = 0
     nonisolated(unsafe) private var _receivedCount: Int = 0
+    nonisolated(unsafe) private var _openChannelCount: Int = 0
     // Bool is Sendable; nonisolated(unsafe) is only needed for the var counts above.
     private let _exhaustive: Bool
+
+    /// The scheduling clock, extracted from the environment at `init`. Defaults to `ImmediateClock`
+    /// (delays/debounce collapse to immediate); inject a `TestClock` for deterministic timing.
+    private let resolvedClock: AnyClock<Swift.Duration>
+
+    /// The same ``EffectEngine`` the production `Store` uses, so `TestStore` honours every
+    /// ``EffectScheduling`` (replace/debounce/throttle/cancel) and the pipeable channel path —
+    /// identical logic, driven by the injected (controllable) clock. `lazy` so its `send` sink can
+    /// capture the fully-initialised store; it appends produced actions to ``receivedActions``.
+    private lazy var engine = EffectEngine<Action>(
+        clock: resolvedClock,
+        send: { [weak self] dispatched in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.receivedActions.append(dispatched.action)
+                self._receivedCount = self.receivedActions.count
+            }
+        }
+    )
 
     /// When `true`, ``dispatch(_:source:)`` is a no-op — view-driven dispatches are dropped
     /// while the store is "frozen". Test-driven dispatch (``TestFeature/dispatch(_:)``) and
@@ -121,25 +149,54 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
 
     // MARK: - Init
 
-    /// Creates a `TestStore` with a ``Behavior`` and an environment.
+    /// Creates a `TestStore` with a ``Behavior`` and an environment, scheduling effects on an
+    /// `ImmediateClock` (delays and `debounce` collapse to immediate).
     ///
     /// - Parameters:
     ///   - initial: The starting state.
     ///   - behavior: The behavior under test.
     ///   - environment: The environment injected into effects via `Reader`.
-    ///   - exhaustive: When `true` (default), enforces both the ordering check (no dispatch
-    ///     while received actions are pending) and the end-of-test check (no leftover effects
-    ///     or actions at dealloc). Pass `false` to disable both checks.
-    public init(
+    ///   - exhaustive: When `true` (default), enforces the ordering check (no dispatch while
+    ///     received actions are pending), the end-of-test check (no leftover effects or actions at
+    ///     dealloc), and the open-channel check (a channel left open at end-of-test must be
+    ///     cancelled). Pass `false` to disable all three.
+    public convenience init(
         initial: State,
         behavior: Behavior<Action, State, Environment>,
         environment: Environment,
         exhaustive: Bool = true
     ) {
+        self.init(
+            initial: initial,
+            behavior: behavior,
+            environment: environment,
+            exhaustive: exhaustive,
+            clock: { _ in ImmediateClock() }
+        )
+    }
+
+    /// Creates a `TestStore` extracting the scheduling clock from the environment — pass a
+    /// `TestClock` to drive ``EffectScheduling`` timing (`debounce`/`throttle`/`delay`)
+    /// deterministically, advancing it between ``runEffects()`` calls.
+    ///
+    /// - Parameters:
+    ///   - initial: The starting state.
+    ///   - behavior: The behavior under test.
+    ///   - environment: The environment injected into effects via `Reader`.
+    ///   - exhaustive: See ``init(initial:behavior:environment:exhaustive:)``.
+    ///   - clock: A `Reader<Environment, Clock>` extracting the clock (`Duration == Swift.Duration`).
+    public init<C: Clock>(
+        initial: State,
+        behavior: Behavior<Action, State, Environment>,
+        environment: Environment,
+        exhaustive: Bool = true,
+        clock: @escaping @Sendable (Environment) -> C
+    ) where C: Sendable, C.Duration == Swift.Duration {
         self.state = initial
         self.behavior = behavior
         self.environment = environment
         self._exhaustive = exhaustive
+        self.resolvedClock = clock(environment).eraseToAnyClock()
     }
 
     // MARK: - Deinit check
@@ -154,6 +211,14 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         if _receivedCount > 0 {
             Issue.record(
                 "\(_receivedCount) received action(s) were not processed before the TestStore was released — call receive() for each"
+            )
+        }
+        if _openChannelCount > 0 {
+            Issue.record(
+                """
+                \(_openChannelCount) channel(s) were still open when the TestStore was released \
+                — cancel each with cancelInFlight(id:) before the test ends
+                """
             )
         }
     }
@@ -243,21 +308,30 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         return self
     }
 
-    /// Executes all ``pendingEffects`` and appends their output actions to ``receivedActions``.
+    /// Schedules all ``pendingEffects`` through the shared ``EffectEngine`` and appends their output
+    /// actions to ``receivedActions``.
     ///
-    /// Effects run in order; components within each effect run sequentially, each driven to
-    /// completion before the next starts.
+    /// Because scheduling goes through the same engine the production `Store` uses, this honours every
+    /// ``EffectScheduling``: a displaced `.replacing(id:)` effect, a throttled or `cancelInFlight`-ed
+    /// one, no longer emits actions the way a naive drain would — so the exhaustive action set matches
+    /// production. Pipeable channels start and pipe here too; a channel stays open across `runEffects`
+    /// calls until cancelled.
+    ///
+    /// With the default `ImmediateClock`, delays and `debounce` collapse, so effects settle within
+    /// this call. With an injected `TestClock`, advance the clock (e.g. `await clock.advance(by:)`)
+    /// before calling `runEffects()` to release parked timers deterministically.
     public func runEffects() async {
         var toRun: [Effect<Action>] = []
         swap(&toRun, &pendingEffects)
         _pendingCount = 0
         for effect in toRun {
             for component in effect.components {
-                let actions = await drain(component)
-                receivedActions.append(contentsOf: actions)
+                engine.schedule(component)
             }
         }
+        await drainToQuiescence()
         _receivedCount = receivedActions.count
+        _openChannelCount = engine.openChannelKeys.count
     }
 
     /// Dequeues the next action from ``receivedActions``, validates it via `prism`, dispatches
@@ -425,16 +499,21 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         )
     }
 
-    private func drain(_ component: Effect<Action>.Component) async -> [Action] {
-        let (stream, continuation) = AsyncStream.makeStream(of: Action.self)
-        let token = component.subscribe(
-            { dispatched in continuation.yield(dispatched.action) },
-            { continuation.finish() }
-        )
-        var actions: [Action] = []
-        for await action in stream { actions.append(action) }
-        _ = token
-        return actions
+    /// Yields the `@MainActor` runloop until the engine has no outstanding one-shot work *and* the
+    /// received-action stream has gone quiet (open channels are left running). Bounded so a stuck or
+    /// genuinely-infinite effect can't hang the test forever.
+    private func drainToQuiescence() async {
+        var stable = 0
+        for _ in 0..<10_000 {
+            let before = receivedActions.count
+            await Task.yield()
+            if engine.isQuiescent && receivedActions.count == before {
+                stable += 1
+                if stable >= 3 { return }
+            } else {
+                stable = 0
+            }
+        }
     }
 }
 
