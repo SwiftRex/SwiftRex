@@ -69,7 +69,6 @@ extension Effect {
     ///   - value: The value to pipe this dispatch (e.g. the byte to write, the query to search).
     ///   - scheduling: The ``EffectScheduling`` policy. Its `id` identifies the live channel and
     ///     must be set; `debounce`/`throttle` gate value delivery, not the effect's lifetime.
-    ///   - scheduling: see above.
     ///   - file: Source file — captured automatically.
     ///   - function: Function name — captured automatically.
     ///   - line: Source line — captured automatically.
@@ -107,5 +106,63 @@ extension Effect {
                 scheduling: scheduling
             )
         ])
+    }
+}
+
+// MARK: - Channel sugar: AsyncStream
+
+extension Effect {
+    /// Creates a pipeable ``channel(value:scheduling:file:function:line:_:)`` whose body consumes the
+    /// piped values as an `AsyncStream` — the rich layer over the raw ``ChannelHandler`` sink, for
+    /// when you want `for await` and async-sequence operators instead of a per-value callback.
+    ///
+    /// Each piped value is yielded into `values`; the channel ends when `consume` returns or `cancel`
+    /// fires (which finishes the stream and cancels the consuming task). This is the natural seam to
+    /// bridge a reactive publisher: feed it into the stream from inside `consume`.
+    ///
+    /// ```swift
+    /// // Debounce a live search over a single long-lived stream — the consumer stays alive.
+    /// case .queryChanged(let text):
+    ///     .produce { env in
+    ///         .channel(value: text, scheduling: .debounce(id: "search", delay: .milliseconds(300))) { queries, send, _ in
+    ///             for await query in queries {
+    ///                 let results = await env.api.search(query)
+    ///                 send(.results(results))
+    ///             }
+    ///         }
+    ///     }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - value: The value to pipe this dispatch.
+    ///   - scheduling: The ``EffectScheduling`` policy; its `id` must be set (see the sink form).
+    ///   - bufferingPolicy: The backing `AsyncStream` buffering policy. Defaults to `.unbounded`.
+    ///   - file: Source file — captured automatically.
+    ///   - function: Function name — captured automatically.
+    ///   - line: Source line — captured automatically.
+    ///   - consume: Drives the channel: reads piped values from `values`, dispatches actions via
+    ///     `send`, and may end the channel via `complete`. Runs until it returns or the channel is cancelled.
+    /// - Returns: A single-component ``Effect`` carrying the pipeable channel.
+    public static func channel<Value: Sendable>(
+        value: Value,
+        scheduling: EffectScheduling,
+        bufferingPolicy: AsyncStream<Value>.Continuation.BufferingPolicy = .unbounded,
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        consume: @escaping @Sendable (
+            _ values: AsyncStream<Value>,
+            _ send: @escaping @Sendable (Action) -> Void,
+            _ complete: @escaping @Sendable () -> Void
+        ) async -> Void
+    ) -> Self {
+        channel(value: value, scheduling: scheduling, file: file, function: function, line: line) { send, complete in
+            let (stream, continuation) = AsyncStream<Value>.makeStream(bufferingPolicy: bufferingPolicy)
+            let task = Task { await consume(stream, send, complete) }
+            return ChannelHandler(
+                receive: { continuation.yield($0) },
+                cancel: { continuation.finish(); task.cancel() }
+            )
+        }
     }
 }

@@ -32,7 +32,7 @@ struct StoreChannelTests {
                 switch action {
                 case .write(let n):
                     .produce { _ in
-                        .channel(value: n, scheduling: .replacing(id: "socket")) { _, _ in
+                        .channel(value: n, scheduling: .keyed(id: "socket")) { _, _ in
                             starts.mutate { $0 += 1 }
                             return ChannelHandler(receive: { v in received.mutate { $0.append(v) } }, cancel: {})
                         }
@@ -58,7 +58,7 @@ struct StoreChannelTests {
                 switch action {
                 case .write(let n):
                     .produce { _ in
-                        .channel(value: n, scheduling: .replacing(id: "socket")) { send, _ in
+                        .channel(value: n, scheduling: .keyed(id: "socket")) { send, _ in
                             ChannelHandler(receive: { v in send(.received(v)) }, cancel: {})
                         }
                     }
@@ -152,7 +152,7 @@ struct StoreChannelTests {
                 switch action {
                 case .write(let n):
                     .produce { _ in
-                        .channel(value: n, scheduling: .replacing(id: "socket")) { _, _ in
+                        .channel(value: n, scheduling: .keyed(id: "socket")) { _, _ in
                             ChannelHandler(
                                 receive: { v in received.mutate { $0.append(v) } },
                                 cancel: { cancelled.set(true) }
@@ -174,8 +174,35 @@ struct StoreChannelTests {
         #expect(cancelled.value)
     }
 
+    @Test func streamFormConsumesEveryPipedValueInOneConsumer() async {
+        let store = Store(
+            initial: 0,
+            behavior: Behavior<A, Int, Void>.handle { action, _ in
+                switch action {
+                case .write(let n):
+                    .produce { _ in
+                        .channel(value: n, scheduling: .keyed(id: "socket")) { values, send, _ in
+                            for await v in values { send(.received(v)) }
+                        }
+                    }
+                case .received(let v):
+                    .reduce { $0 += v }
+                case .close:
+                    .doNothing
+                }
+            },
+            environment: ()
+        )
+        store.dispatch(.write(1))
+        await poll { store.state == 1 }
+        store.dispatch(.write(2))
+        store.dispatch(.write(3))
+        await poll { store.state == 6 }     // 1 + 2 + 3, all through a single live for-await consumer
+        #expect(store.state == 6)
+    }
+
     @Test func mapCarriesTheChannel() {
-        let effect = Effect<Int>.channel(value: 7, scheduling: .replacing(id: "x")) { _, _ in
+        let effect = Effect<Int>.channel(value: 7, scheduling: .keyed(id: "x")) { _, _ in
             ChannelHandler(receive: { _ in }, cancel: {})
         }
         #expect(effect.components.first?.channel != nil)
