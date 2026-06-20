@@ -171,7 +171,7 @@ struct EffectAutoCancelTests {
                 behavior: Behavior<Int, Int, Void>.handle { action, _ in
                     .produce { _ in
                         Effect<Int>.task {
-                            try? await Task.sleep(nanoseconds: 300_000_000)
+                            try? await Task.sleep(nanoseconds: 1_000_000_000)
                             if !Task.isCancelled { completedActions.mutate { $0.append(action) } }
                             return nil
                         }.scheduling(.replacing(id: "job"))
@@ -180,13 +180,13 @@ struct EffectAutoCancelTests {
                 environment: ()
             )
         }
-        await MainActor.run { _ = store.dispatch(1) }     // starts job for action 1
+        await MainActor.run { _ = store.dispatch(1) }     // starts job for action 1 (registered synchronously)
         try? await Task.sleep(nanoseconds: 50_000_000)
         await MainActor.run { _ = store.dispatch(2) }     // replaces under "job" → cancels job 1
-        // Poll (up to ~2s) for job 2 to complete rather than asserting after one fixed wait —
-        // the fixed 400ms window raced the 300ms job under load on CI. Job 1 is cancelled and
-        // guarded by `!Task.isCancelled`, so it never appends; `[2]` is the only valid outcome.
-        for _ in 0..<200 {
+        // Poll for job 2 rather than asserting after a fixed wait. Job 1 lives 1s, so the 50ms gap can
+        // stretch far under full-suite parallel load and still cancel job 1 before it appends —
+        // guarded by `!Task.isCancelled`, so `[2]` is the only valid outcome.
+        for _ in 0..<400 {
             if completedActions.value == [2] { break }
             try? await Task.sleep(nanoseconds: 10_000_000)
         }
