@@ -9,9 +9,9 @@ import Hourglass
 /// your features. The ``Store`` is `@MainActor`, so all state reads, mutations, and observer
 /// notifications happen on the main thread without any manual actor-hopping.
 ///
-/// ## Three-phase dispatch
+/// ## Dispatch pipeline
 ///
-/// Every dispatched action runs through four steps in `runPhases`:
+/// Every dispatched action runs through these steps in `runPhases`:
 ///
 /// ```
 /// 1. behavior.handle(action, stateAccess)    — all Behaviors; stateAccess = pre-mutation state
@@ -19,7 +19,8 @@ import Hourglass
 ///    consequence.mutation.runEndoMut(&state)  — zero-copy inout; refcount stays at 1
 ///    stateObservers.didChange fired           — @Observable / push-based observers
 /// 3. consequence.effect.runReader(env)        — Reader runs; stateAccess = post-mutation state
-/// 4. engine.schedule(component) per component — the shared EffectEngine honours each EffectScheduling
+/// 4. engine.schedule(component) per component — action-driven effects (produce / Cmd)
+/// 5. engine.reconcile(reaction(state))        — state-driven effects (react / Sub); only if state changed
 /// ```
 ///
 /// Grouping all `willChange` notifications before the mutation (and all `didChange` notifications
@@ -97,6 +98,11 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     private let behavior: Behavior<Action, State, Environment>
     private let environment: Environment
 
+    /// The state-driven effect source. After every state change the Store recomputes its complete
+    /// desired set and has the engine reconcile it (start/stop/pipe). Defaults to ``Reaction/identity``
+    /// (no state-driven effects).
+    private let reaction: Reaction<State, Action>
+
     // MARK: - Effect scheduling
 
     /// The scheduling clock, extracted from the (immutable) environment at `init` — `ContinuousClock`
@@ -152,18 +158,27 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// ```
     ///
     /// To drive scheduling with a `TestClock`/`ImmediateClock` — or to read the clock from the
-    /// environment — use ``init(initial:behavior:environment:clock:)``.
+    /// environment — use ``init(initial:behavior:environment:reaction:clock:)``.
     ///
     /// - Parameters:
     ///   - state: The initial state value. The store takes exclusive ownership.
     ///   - behavior: The single ``Behavior`` that handles all dispatched actions.
     ///   - environment: The environment injected into ``Effect`` readers in phase 3.
+    ///   - reaction: The state-driven ``Reaction`` reconciled after every state change. Defaults to
+    ///     ``Reaction/identity`` (no state-driven effects).
     public convenience init(
         initial state: State,
         behavior: Behavior<Action, State, Environment>,
-        environment: Environment
+        environment: Environment,
+        reaction: Reaction<State, Action> = .identity
     ) {
-        self.init(initial: state, behavior: behavior, environment: environment, clock: { _ in ContinuousClock() })
+        self.init(
+            initial: state,
+            behavior: behavior,
+            environment: environment,
+            reaction: reaction,
+            clock: { _ in ContinuousClock() }
+        )
     }
 
     /// Creates a `Store` extracting the scheduling clock — and optionally the RNG — from the
@@ -184,12 +199,16 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         initial state: State,
         behavior: Behavior<Action, State, Environment>,
         environment: Environment,
+        reaction: Reaction<State, Action> = .identity,
         clock: @escaping @Sendable (Environment) -> C
     ) where C: Sendable, C.Duration == Swift.Duration {
         self.state = state
         self.behavior = behavior
         self.environment = environment
+        self.reaction = reaction
         self.resolvedClock = clock(environment).eraseToAnyClock()
+        // Activate the state-driven effects implied by the initial state (no dispatch needed).
+        engine.reconcile(reaction.reconcileEntries(state))
     }
 
     /// Creates a `Store` with a ``Reducer`` only (no side effects, `Environment == Void`).
@@ -225,11 +244,14 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// - Parameters:
     ///   - state: The initial state value.
     ///   - behavior: The single ``Behavior`` that handles all dispatched actions.
+    ///   - reaction: The state-driven ``Reaction`` reconciled after every state change. Defaults to
+    ///     ``Reaction/identity`` (no state-driven effects).
     public convenience init(
         initial state: State,
-        behavior: Behavior<Action, State, Environment>
+        behavior: Behavior<Action, State, Environment>,
+        reaction: Reaction<State, Action> = .identity
     ) where Environment == Void {
-        self.init(initial: state, behavior: behavior, environment: ())
+        self.init(initial: state, behavior: behavior, environment: (), reaction: reaction)
     }
 
     /// Creates a `Store` by composing a ``Reducer`` and a ``Middleware`` internally.
@@ -348,22 +370,28 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         // so ObservableObject/@Observable consumers never re-render on actions that can't change
         // state. `willChange` still precedes the mutation (ObservableObject.objectWillChange
         // requirement) and `didChange` follows it.
+        let didMutate: Bool
         switch consequence.mutation {
         case .unchanged:
-            break
+            didMutate = false
         case .mutation(let mutation):
             stateObservers.values.forEach { $0.willChange() }
             mutation.runEndoMut(&state)
             stateObservers.values.forEach { $0.didChange() }
+            didMutate = true
         }
 
-        // Phase 4 — schedule effects (postCtx.stateGetter now reflects post-mutation state)
+        // Phase 4 — schedule action-driven effects (postCtx.stateGetter now reflects post-mutation state)
         let postCtx = PostReducerContext<State, Environment>(
             environment: environment,
             getter: { [weak self] in self?.state }
         )
         let effect = consequence.effect(postCtx)
         effect.components.forEach { engine.schedule($0) }
+
+        // Phase 5 — reconcile state-driven effects. Only when state actually changed: an `.unchanged`
+        // action cannot alter the desired set, so the reconcile would be a guaranteed no-op.
+        if didMutate { engine.reconcile(reaction.reconcileEntries(state)) }
     }
 
     // MARK: - Effect scheduling
