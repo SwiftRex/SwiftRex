@@ -47,6 +47,24 @@ public struct ChannelHandler<Value: Sendable>: Sendable {
     }
 }
 
+extension ChannelHandler where Value == Never {
+    /// A handler for a **pure receiver** — a channel that is never piped into, only feeds events out
+    /// via `send` and tears down on `cancel` (a location stream, server-sent events). The `Value`
+    /// is `Never`, so there is nothing to `receive`.
+    ///
+    /// ```swift
+    /// .channel(id: "location") { send in
+    ///     let mgr = startLocationUpdates(); mgr.onUpdate { send(.located($0)) }
+    ///     return .cancelOnly { mgr.stop() }
+    /// }
+    /// ```
+    ///
+    /// - Parameter cancel: Tears the resource down when the channel leaves the desired set.
+    public static func cancelOnly(_ cancel: @escaping @Sendable () -> Void) -> ChannelHandler<Never> {
+        ChannelHandler(receive: { _ in }, cancel: cancel)
+    }
+}
+
 // MARK: - Channel factory (pipeable, long-lived effect)
 
 extension Effect {
@@ -104,6 +122,54 @@ extension Effect {
                     }
                 ),
                 scheduling: scheduling
+            )
+        ])
+    }
+}
+
+// MARK: - Pipe (action-driven send into a channel owned elsewhere)
+
+extension Effect {
+    /// Sends `value` into the **live channel** registered under `id`, without opening anything.
+    ///
+    /// This is the action-driven *send* half of a long-lived channel: a `Reaction` keeps the channel
+    /// alive (Elm's `listen`), and a `Middleware`/`produce` routes a value into it by key (Elm's
+    /// `send`). They rendezvous on the shared `id` in the Store's effect registry.
+    ///
+    /// ```swift
+    /// // Reaction owns the socket's lifetime, keyed "socket":
+    /// .channel(id: "socket") { send in
+    ///     let s = openSocket(); s.onMessage { send(.received($0)) }
+    ///     return ChannelHandler(receive: { s.write($0) }, cancel: { s.close() })
+    /// }
+    ///
+    /// // An action sends a message into that same socket — no body, no reopening:
+    /// case .send(let text):
+    ///     .produce { _ in .pipe(text, into: "socket") }
+    /// ```
+    ///
+    /// Unlike ``channel(value:scheduling:file:function:line:_:)``, a pipe **never opens** a channel:
+    /// if nothing is live under `id` the value is dropped. Keep the channel alive (via a reaction or
+    /// an earlier channel) for the pipe to land. The `value`'s type must match the live channel's —
+    /// a mismatch is silently dropped.
+    ///
+    /// - Parameters:
+    ///   - value: The value to deliver into the live channel under `id`.
+    ///   - id: The channel key (the same `id` the channel was opened under).
+    ///   - file/function/line: Captured automatically (carried for symmetry; pipes emit no actions).
+    /// - Returns: A single-component ``Effect`` that pipes `value` into the channel keyed `id`.
+    public static func pipe<Value: Sendable>(
+        _ value: Value,
+        into id: some Hashable & Sendable,
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line
+    ) -> Self {
+        Effect(components: [
+            Component(
+                subscribe: { _, complete in complete(); return .empty },
+                channel: Component.Channel(value: value, start: nil), // pipe-only: never opens
+                scheduling: .keyed(id: id)
             )
         ])
     }

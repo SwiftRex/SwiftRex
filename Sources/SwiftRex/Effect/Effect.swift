@@ -110,24 +110,22 @@ public struct Effect<Action: Sendable>: Sendable {
         /// representation erases the value so the Store can treat every channel uniformly. The
         /// erasure is recovered inside `start`/`sink`, which the typed factory synthesised.
         package struct Channel: Sendable {
-            /// The value to deliver this dispatch, type-erased.
-            package let value: any Sendable
-            /// Starts the long-lived body from its first value and returns the cancel token plus a
-            /// type-restoring sink the Store calls to pipe every subsequent value into the live effect.
-            package let start: @Sendable (
+            /// Opens the long-lived body and returns the cancel token plus a type-restoring sink the
+            /// Store calls to pipe each subsequent value into the live effect.
+            package typealias Start = @Sendable (
                 _ firstValue: any Sendable,
                 _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
                 _ complete: @escaping @Sendable () -> Void
             ) -> (token: SubscriptionToken, sink: @Sendable (any Sendable) -> Void)
 
-            package init(
-                value: any Sendable,
-                start: @escaping @Sendable (
-                    _ firstValue: any Sendable,
-                    _ send: @escaping @Sendable (DispatchedAction<Action>) -> Void,
-                    _ complete: @escaping @Sendable () -> Void
-                ) -> (token: SubscriptionToken, sink: @Sendable (any Sendable) -> Void)
-            ) {
+            /// The value to deliver this dispatch, type-erased.
+            package let value: any Sendable
+            /// The opener, or `nil` for a *pipe-only* channel (``Effect/pipe(_:into:file:function:line:)``):
+            /// such a component never opens anything — if no channel is live under its key the value
+            /// is dropped.
+            package let start: Start?
+
+            package init(value: any Sendable, start: Start?) {
                 self.value = value
                 self.start = start
             }

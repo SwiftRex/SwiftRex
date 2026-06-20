@@ -25,21 +25,30 @@ extension Effect {
     /// - Returns: An `Effect<B>` whose components correspond 1:1 to this effect's components,
     ///   each mapping emitted actions through `f`.
     public func map<B: Sendable>(_ f: @Sendable @escaping (Action) -> B) -> Effect<B> {
-        Effect<B>(components: components.map { component in
-            Effect<B>.Component(
-                subscribe: { send, complete in
-                    component.subscribe({ send($0.map(f)) }, complete)
-                },
-                channel: component.channel.map { channel in
-                    Effect<B>.Component.Channel(
-                        value: channel.value,
-                        start: { firstValue, send, complete in
-                            channel.start(firstValue, { send($0.map(f)) }, complete)
-                        }
-                    )
-                },
-                scheduling: component.scheduling
-            )
-        })
+        Effect<B>(components: components.map { mapComponent($0, f) })
     }
+}
+
+/// Re-types one component's action via `f`: the `subscribe` and the channel's outgoing `send` are
+/// wrapped to map produced actions; `value`, `scheduling`, and the pipe-only (`start == nil`) shape
+/// pass through. Extracted as a named function so the action-mapping types stay explicit (a nested
+/// inline closure here overwhelms the type checker).
+private func mapComponent<A, B>(
+    _ component: Effect<A>.Component,
+    _ f: @escaping @Sendable (A) -> B
+) -> Effect<B>.Component {
+    let mappedChannel = component.channel.map { channel -> Effect<B>.Component.Channel in
+        let mappedStart: Effect<B>.Component.Channel.Start?
+        if let start = channel.start {
+            mappedStart = { firstValue, send, complete in start(firstValue, { send($0.map(f)) }, complete) }
+        } else {
+            mappedStart = nil
+        }
+        return Effect<B>.Component.Channel(value: channel.value, start: mappedStart)
+    }
+    return Effect<B>.Component(
+        subscribe: { send, complete in component.subscribe({ send($0.map(f)) }, complete) },
+        channel: mappedChannel,
+        scheduling: component.scheduling
+    )
 }
