@@ -73,6 +73,11 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 - ``SubscriptionToken``
 - ``AnyHashableSendable``
 
+### State-driven Effects
+
+- ``Reaction``
+- ``DesiredEffect``
+
 ### Composition
 
 - ``ReducerBuilder``

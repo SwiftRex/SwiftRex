@@ -47,6 +47,7 @@ api.search(query).asEffect(AppAction.results)
 
 - ``channel(value:scheduling:file:function:line:_:)``
 - ``channel(value:scheduling:bufferingPolicy:file:function:line:consume:)``
+- ``pipe(_:into:file:function:line:)``
 - ``ChannelHandler``
 
 ### Scheduling
