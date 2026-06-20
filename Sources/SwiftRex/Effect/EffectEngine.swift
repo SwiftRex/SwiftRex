@@ -156,9 +156,9 @@ package final class EffectEngine<Action: Sendable> {
             guard let self else { return }
             self.pendingDeliver.removeValue(forKey: key)
             if let sink = self.channelSinks[key] {
-                sink(value)
-            } else {
-                let (token, sink) = channel.start(value, self.send) { [weak self] in
+                sink(value)                         // a channel is live under this key → pipe into it
+            } else if let start = channel.start {
+                let (token, sink) = start(value, self.send) { [weak self] in
                     Task { @MainActor [weak self] in
                         self?.runningEffects.removeValue(forKey: key)
                         self?.channelSinks.removeValue(forKey: key)
@@ -167,6 +167,7 @@ package final class EffectEngine<Action: Sendable> {
                 self.runningEffects[key] = token
                 self.channelSinks[key] = sink
             }
+            // else: pipe-only component (`start == nil`) and nothing live under this key → drop.
         }
 
         if preWait > .zero {
