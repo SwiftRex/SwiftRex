@@ -19,7 +19,7 @@
 ///     let before = context.stateBefore   // ✅ safe — @MainActor, pre-mutation
 ///
 ///     return .reduce { $0.count += 1 }
-///            .produce { ctx in
+///            .react { ctx in
 ///                // ✅ phase 3: use PostReducerContext
 ///                return .just(.log(before: before, after: ctx.liveState?.count))
 ///            }

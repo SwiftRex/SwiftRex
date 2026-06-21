@@ -154,7 +154,7 @@ struct StoreEffectSchedulingTests {
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
                 action == 0
-                    ? .produce { _ in .just(99) }
+                    ? .react { _ in .just(99) }
                     : .doNothing
             },
             environment: ()
@@ -170,7 +170,7 @@ struct StoreEffectSchedulingTests {
         let store = Store(
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
-                .produce { _ in Effect<Int>.just(action).scheduling(.replacing(id: "key")) }
+                .react { _ in Effect<Int>.just(action).scheduling(.replacing(id: "key")) }
             },
             environment: ()
         )
@@ -188,7 +188,7 @@ struct StoreEffectSchedulingTests {
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
                 action == 0
-                    ? .produce { _ in Effect<Int>.just(1).scheduling(.cancelInFlight(id: "key")) }
+                    ? .react { _ in Effect<Int>.just(1).scheduling(.cancelInFlight(id: "key")) }
                     : .doNothing
             },
             environment: ()
@@ -205,7 +205,7 @@ struct StoreEffectSchedulingTests {
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
                 action == 0
-                    ? .produce { _ in Effect<Int>.just(5).scheduling(.debounce(id: "d", delay: .seconds(-1))) }
+                    ? .react { _ in Effect<Int>.just(5).scheduling(.debounce(id: "d", delay: .seconds(-1))) }
                     : .reduce { $0 = action }
             },
             environment: ()
@@ -242,7 +242,7 @@ struct StoreClockInjectionTests {
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
                 action == 0
-                    ? .produce { _ in Effect<Int>.just(5).scheduling(.debounce(id: "d", delay: .seconds(1))) }
+                    ? .react { _ in Effect<Int>.just(5).scheduling(.debounce(id: "d", delay: .seconds(1))) }
                     : .reduce { $0 = action }
             },
             environment: (),
@@ -263,7 +263,7 @@ struct StoreClockInjectionTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .trigger: .produce { _ in Effect<A>.just(.fired).scheduling(.debounce(id: "d", delay: .seconds(1))) }
+                case .trigger: .react { _ in Effect<A>.just(.fired).scheduling(.debounce(id: "d", delay: .seconds(1))) }
                 case .fired: .reduce { $0 += 1 }
                 }
             },
@@ -286,7 +286,7 @@ struct StoreClockInjectionTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .ping: .produce { _ in Effect<A>.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
+                case .ping: .react { _ in Effect<A>.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
                 case .tick: .reduce { $0 += 1 }
                 }
             },
@@ -360,7 +360,7 @@ struct StoreDispatchSerializationTests {
         let store = Store(
             initial: 0,
             behavior: Behavior<Int, Int, Void>.handle { action, _ in
-                .reduce { $0 += 1 }.produce { _ in schedulingProbe(action == 1 ? "A" : "B", into: log) }
+                .reduce { $0 += 1 }.react { _ in schedulingProbe(action == 1 ? "A" : "B", into: log) }
             },
             environment: ()
         )
@@ -450,7 +450,7 @@ struct StoreNotificationSkippingTests {
 
     @Test func effectOnlyActionDoesNotNotify() {
         let (store, will, did, token) = countingStore(
-            .handle { _, _ in .produce { _ in .empty } }
+            .handle { _, _ in .react { _ in .empty } }
         )
         store.dispatch(1)
         #expect(will.value == 0)

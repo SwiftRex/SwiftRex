@@ -92,7 +92,7 @@ private let counterBehavior = Behavior<CounterAction, CounterState, Void> { acti
     switch action {
     case .load:
         return .reduce { $0.isLoading = true }
-               .produce { _ in Effect.just(.loaded(99)) }
+               .react { _ in Effect.just(.loaded(99)) }
     default:
         return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
     }
@@ -247,7 +247,7 @@ struct TestStoreRunEffectsTests {
         let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
             switch action {
             case .load:
-                return .produce { _ in Effect.just(.increment) }
+                return .react { _ in Effect.just(.increment) }
             default:
                 return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
@@ -274,12 +274,12 @@ struct TestStoreRunEffectsTests {
             switch action {
             case .load:
                 return .reduce { $0.isLoading = true }
-                       .produce { _ in Effect.just(.loaded(5)) }
+                       .react { _ in Effect.just(.loaded(5)) }
             case .loaded(let v):
                 return .reduce { state in
                     state.isLoading = false
                     state.count = v
-                }.produce { _ in Effect.just(.set(100)) }
+                }.react { _ in Effect.just(.set(100)) }
             default:
                 return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
@@ -309,7 +309,7 @@ struct TestStoreRunEffectsTests {
         )
         let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
             switch action {
-            case .load:   return .produce { _ in combined }
+            case .load:   return .react { _ in combined }
             default:      return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
         }
@@ -426,7 +426,7 @@ private let socketTickPrism = CoreFP.Prism<SocketAction, Void>(
 private let socketBehavior = Behavior<SocketAction, Int, Void> { action, _ in
     switch action {
     case .connect(let n):
-        .produce { _ in
+        .react { _ in
             .channel(value: n, scheduling: .keyed(id: "socket")) { send, _ in
                 ChannelHandler(receive: { send(.received($0)) }, cancel: {})
             }
@@ -434,7 +434,7 @@ private let socketBehavior = Behavior<SocketAction, Int, Void> { action, _ in
     case .received(let v):
         .reduce { $0 = v }
     case .disconnect:
-        .produce { _ in .cancel(id: "socket") }
+        .react { _ in .cancel(id: "socket") }
     default:
         .doNothing
     }
@@ -477,7 +477,7 @@ struct TestStoreSchedulingTests {
             initial: 0,
             behavior: Behavior<SocketAction, Int, Void> { action, _ in
                 switch action {
-                case .ping: .produce { _ in Effect.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
+                case .ping: .react { _ in Effect.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
                 case .tick: .reduce { $0 += 1 }
                 default: .doNothing
                 }
@@ -501,7 +501,7 @@ struct TestStoreSchedulingTests {
             initial: 0,
             behavior: Behavior<SocketAction, Int, Void> { action, _ in
                 switch action {
-                case .ping: .produce { _ in Effect.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
+                case .ping: .react { _ in Effect.just(.tick).scheduling(.throttle(id: "t", interval: .seconds(1))) }
                 case .tick: .reduce { $0 += 1 }
                 default: .doNothing
                 }
