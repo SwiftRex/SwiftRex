@@ -3,122 +3,63 @@ import Hourglass
 @testable import SwiftRex
 import Testing
 
-// MARK: - Reaction — state-driven source of Channels
+// MARK: - The supervise axis on Behavior / Middleware (the state-driven Sub side)
 
-@Suite("Reaction")
+@Suite("Behavior/Middleware supervise")
 @MainActor
-struct ReactionTests {
-    private struct AppState: Sendable {
-        var isConnected = false
-        var outbox = 0
+struct SuperviseTests {
+    private struct S: Sendable { var connected = false }
+    private enum A: Sendable {}
+
+    /// The channels a behavior supervises for `state` (Void environment).
+    private func channels(_ behavior: Behavior<A, S, Void>, _ state: S) -> [Channel<A>] {
+        behavior.supervise(state).runReader(())
     }
 
-    private func makeEngine(_ received: LockProtected<[Int]>) -> EffectEngine<Int> {
-        EffectEngine<Int>(
-            clock: ImmediateClock().eraseToAnyClock(),
-            send: { d in received.mutate { $0.append(d.action) } }
-        )
+    nonisolated private func channel(_ id: String) -> Channel<A> {
+        Channel(id: id) { _ in .cancelOnly {} }
     }
 
-    // MARK: Monoid
-
-    @Test func identityDesiresNothing() {
-        let reaction = Reaction<AppState, Int>.identity
-        #expect(reaction.react(AppState(isConnected: true)).isEmpty)
-    }
-
-    @Test func combineUnionsDesiredSets() {
-        let a = Reaction<AppState, Int> { _ in [Channel(id: "a") { d in d(1); return .cancelOnly {} }] }
-        let b = Reaction<AppState, Int> { _ in [Channel(id: "b") { d in d(2); return .cancelOnly {} }] }
-        #expect(Reaction.combine(a, b).react(AppState()).count == 2)
-    }
-
-    @Test func identityIsTheCombineUnit() {
-        let r = Reaction<AppState, Int> { _ in [Channel(id: "x") { d in d(1); return .cancelOnly {} }] }
-        #expect(Reaction.combine(.identity, r).react(AppState()).count == 1)
-        #expect(Reaction.combine(r, .identity).react(AppState()).count == 1)
-    }
-
-    // MARK: Reconcile through the engine
-
-    @Test func channelOpensWhileConnectedAndCancelsWhenDisconnected() {
-        let log = LockProtected([Int]())
-        let cancels = LockProtected([String]())
-        let engine = makeEngine(LockProtected([Int]()))
-
-        let reaction = Reaction<AppState, Int> { state in
-            guard state.isConnected else { return [] }
-            return [
-                Channel(id: "socket", broadcasting: .onChange(state.outbox)) { _ in
-                    ChannelHandler(
-                        receive: { v in log.mutate { $0.append(v) } },
-                        cancel: { cancels.mutate { $0.append("socket") } }
-                    )
-                }
-            ]
+    @Test func behaviorSuperviseDerivesChannelsFromState() {
+        let behavior = Behavior<A, S, Void>.supervise { state in
+            Keep { _ in state.connected ? [channel("socket")] : [] }
         }
-
-        engine.reconcile(reaction.reconcileEntries(AppState(isConnected: true, outbox: 1)))
-        #expect(log.value == [1])              // opened + published outbox on connect
-        #expect(cancels.value.isEmpty)
-
-        engine.reconcile(reaction.reconcileEntries(AppState(isConnected: false)))
-        #expect(cancels.value == ["socket"])   // condition false → reconciler cancels it
+        #expect(channels(behavior, S(connected: true)).count == 1)
+        #expect(channels(behavior, S(connected: false)).isEmpty)
     }
 
-    @Test func broadcastingOnChangePipesIntoTheSameLiveChannel() {
-        let log = LockProtected([Int]())
-        let cancels = LockProtected([String]())
-        let engine = makeEngine(LockProtected([Int]()))
-
-        let reaction = Reaction<AppState, Int> { state in
-            [
-                Channel(id: "socket", broadcasting: .onChange(state.outbox)) { _ in
-                    ChannelHandler(
-                        receive: { v in log.mutate { $0.append(v) } },
-                        cancel: { cancels.mutate { $0.append("socket") } }
-                    )
-                }
-            ]
-        }
-
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))  // unchanged → no-op
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 2)))  // changed → pipe 2
-        #expect(log.value == [1, 2])
-        #expect(cancels.value.isEmpty)         // never torn down across the value change
+    @Test func combineUnionsSupervise() {
+        let a = Behavior<A, S, Void>.supervise { _ in Keep { _ in [channel("a")] } }
+        let b = Behavior<A, S, Void>.supervise { _ in Keep { _ in [channel("b")] } }
+        #expect(channels(.combine(a, b), S()).count == 2)
     }
 
-    @Test func presenceOnlyChannelStartsOnceWhilePresent() {
-        let received = LockProtected([Int]())
-        let engine = makeEngine(received)
-        let reaction = Reaction<AppState, Int> { state in
-            state.isConnected ? [Channel(id: "ping") { d in d(42); return .cancelOnly {} }] : []
-        }
-
-        engine.reconcile(reaction.reconcileEntries(AppState(isConnected: true)))
-        engine.reconcile(reaction.reconcileEntries(AppState(isConnected: true)))  // still present → no re-fire
-        #expect(received.value == [42])
-
-        engine.reconcile(reaction.reconcileEntries(AppState(isConnected: false)))  // drops out
-        engine.reconcile(reaction.reconcileEntries(AppState(isConnected: true)))   // re-enters → fires again
-        #expect(received.value == [42, 42])
+    @Test func identityBehaviorSupervisesNothing() {
+        #expect(channels(.identity, S()).isEmpty)
     }
 
-    @Test func ephemeralChannelReRunsWhenResetKeyChanges() {
-        let received = LockProtected([Int]())
-        let engine = makeEngine(received)
-        let reaction = Reaction<AppState, Int> { state in
-            [
-                Channel(id: "fetch", lifetime: .ephemeral(resetKey: state.outbox)) { d in
-                    d(state.outbox); return .cancelOnly {}
-                }
-            ]
-        }
+    @Test func combineWithIdentityIsTheUnit() {
+        let r = Behavior<A, S, Void>.supervise { _ in Keep { _ in [channel("x")] } }
+        #expect(channels(.combine(.identity, r), S()).count == 1)
+        #expect(channels(.combine(r, .identity), S()).count == 1)
+    }
 
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))  // same resetKey → no re-fire
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 2)))  // resetKey changed → recreate
-        #expect(received.value == [1, 2])
+    @Test func middlewareSuperviseCarriesThroughAsBehavior() {
+        let middleware = Middleware<A, S, Void>.supervise { _ in Keep { _ in [channel("m")] } }
+        #expect(channels(middleware.asBehavior, S()).count == 1)
+    }
+
+    @Test func reducerMiddlewareBehaviorCarriesMiddlewareSupervise() {
+        let middleware = Middleware<A, S, Void>.supervise { _ in Keep { _ in [channel("m")] } }
+        let behavior = Behavior(reducer: .identity, middleware: middleware)
+        #expect(channels(behavior, S()).count == 1)
+    }
+
+    @Test func superviseReadsTheEnvironment() {
+        struct Env: Sendable { let ids: [String] }
+        let behavior = Behavior<A, S, Env>.supervise { _ in
+            Keep { env in env.ids.map { id in Channel(id: id) { _ in .cancelOnly {} } } }
+        }
+        #expect(behavior.supervise(S()).runReader(Env(ids: ["a", "b", "c"])).count == 3)
     }
 }

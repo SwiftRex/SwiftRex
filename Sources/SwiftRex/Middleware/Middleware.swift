@@ -86,20 +86,42 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
     public let handle: @MainActor @Sendable (
         _ action: Action,
         _ context: PreReducerContext<State>
-    ) -> Reader<PostReducerContext<State, Environment>, Effect<Action>>
+    ) -> Reaction<Action, State, Environment>
 
-    /// Creates a `Middleware` from a `handle` closure.
+    /// The **state** side (`supervise`): given the post-mutation state, the complete set of
+    /// ``Channel``s that should be alive (Elm's `Sub`). Reconciled by the Store after every change.
+    /// Defaults to the empty set; ``combine(_:_:)`` unions it.
+    public let supervise: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
+
+    /// Creates a `Middleware` from a `handle` closure (and optional `supervise`).
     ///
-    /// - Parameter handle: The closure mapping `(Action, PreReducerContext<State>)` to a
-    ///   `Reader<PostReducerContext<State, Environment>, Effect<Action>>`.
-    ///   Called on `@MainActor` during phase 1.
+    /// - Parameters:
+    ///   - handle: Maps `(Action, PreReducerContext)` to a ``Reaction`` (the action side).
+    ///   - supervise: Maps state to the channels to keep alive (the state side). Defaults to empty.
     public init(
         handle: @escaping @MainActor @Sendable (
             _ action: Action,
             _ context: PreReducerContext<State>
-        ) -> Reader<PostReducerContext<State, Environment>, Effect<Action>>
+        ) -> Reaction<Action, State, Environment>,
+        supervise: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
     ) {
         self.handle = handle
+        self.supervise = supervise
+    }
+}
+
+extension Middleware {
+    /// Creates a **state-driven** middleware — the `supervise` (Sub) side, handling no actions.
+    ///
+    /// ```swift
+    /// let socketMiddleware = Middleware<A, S, Env>.supervise { state in
+    ///     Keep { env in state.connected ? [Channel(id: "socket") { dispatch in … }] : [] }
+    /// }
+    /// ```
+    public static func supervise(
+        _ keep: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
+    ) -> Self {
+        Middleware(handle: { _, _ in Reader { _ in .empty } }, supervise: keep)
     }
 }
 
@@ -140,13 +162,19 @@ extension Middleware: Semigroup {
     ///   - rhs: The second middleware.
     /// - Returns: A middleware whose effect is the parallel combination of both inputs.
     public static func combine(_ lhs: Middleware, _ rhs: Middleware) -> Middleware {
-        Middleware { action, context in
-            // Capture both readers on @MainActor in phase 1; the combined Reader
-            // then calls both lazily in phase 3 — no eager effect evaluation.
-            let lhsReader = lhs.handle(action, context)
-            let rhsReader = rhs.handle(action, context)
-            return Reader { ctx in .combine(lhsReader.runReader(ctx), rhsReader.runReader(ctx)) }
-        }
+        Middleware(
+            handle: { action, context in
+                // Capture both readers on @MainActor in phase 1; the combined Reader
+                // then calls both lazily in phase 3 — no eager effect evaluation.
+                let lhsReader = lhs.handle(action, context)
+                let rhsReader = rhs.handle(action, context)
+                return Reader { ctx in .combine(lhsReader.runReader(ctx), rhsReader.runReader(ctx)) }
+            },
+            supervise: { @MainActor state in
+                let l = lhs.supervise(state), r = rhs.supervise(state)   // resolve on @MainActor
+                return Reader { env in l.runReader(env) + r.runReader(env) }
+            }
+        )
     }
 }
 
