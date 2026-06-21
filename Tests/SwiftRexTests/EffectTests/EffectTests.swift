@@ -130,11 +130,11 @@ struct EffectSchedulingModifierTests {
 @Suite
 struct EffectCancelInFlightTests {
     @Test func cancelInFlightHasOneComponent() {
-        #expect(Effect<Int>.cancelInFlight(id: "search").components.count == 1)
+        #expect(Effect<Int>.cancel(id: "search").components.count == 1)
     }
 
     @Test func cancelInFlightHasCancelScheduling() {
-        let effect = Effect<Int>.cancelInFlight(id: "search")
+        let effect = Effect<Int>.cancel(id: "search")
         #expect(effect.components[0].scheduling.cancelsOnly)
         #expect(effect.components[0].scheduling.id == AnyHashableSendable("search"))
     }

@@ -141,20 +141,20 @@ extension Effect {
 // MARK: - Cancellation sentinel
 
 extension Effect {
-    /// Creates a sentinel effect that cancels the running component registered under `id`
-    /// without starting a new one.
+    /// Creates a sentinel effect that cancels whatever runs under `id` — a one-shot effect, a
+    /// debounced/throttled effect, or a long-lived ``Channel`` — without starting anything new.
     ///
-    /// This is a pure cancellation operation — no `subscribe` closure is ever called. The
-    /// Store interprets the embedded `EffectScheduling.cancelInFlight(id:)` scheduling by
-    /// removing `id` from its registry and calling ``SubscriptionToken/cancel()`` on whatever
-    /// was stored there.
+    /// This is a pure cancellation operation — no `subscribe` closure is ever called. The Store
+    /// removes `id` from its registry and releases whatever was stored there. It is the imperative
+    /// (action-driven) way to cancel; a `Reaction` instead cancels by dropping the channel from its
+    /// desired set.
     ///
     /// ```swift
     /// case .cancelDownload:
-    ///     return .produce { _ in .cancelInFlight(id: "download") }
+    ///     return .react { _ in .cancel(id: "download") }
     ///
     /// case .startDownload(let url):
-    ///     return .produce { env in
+    ///     return .react { env in
     ///         env.downloader.download(url).asEffect()
     ///             .scheduling(.replacing(id: "download"))
     ///     }
@@ -162,8 +162,8 @@ extension Effect {
     ///
     /// - Parameter id: The key previously used when scheduling the component to cancel.
     ///   Must be `Hashable` and `Sendable`.
-    /// - Returns: A sentinel ``Effect`` whose only purpose is to cancel the component with `id`.
-    public static func cancelInFlight<H: Hashable & Sendable>(id: H) -> Self {
+    /// - Returns: A sentinel ``Effect`` whose only purpose is to cancel whatever is keyed `id`.
+    public static func cancel<H: Hashable & Sendable>(id: H) -> Self {
         Effect(components: [
             Component(
                 subscribe: { _, complete in complete(); return .empty },
