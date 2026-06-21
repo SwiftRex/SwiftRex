@@ -7,11 +7,13 @@ extension Middleware {
     /// `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that the Store runs in
     /// phase 3 after all mutations complete.
     public var asBehavior: Behavior<Action, State, Environment> {
-        Behavior { action, context in
-            Consequence(
-                mutation: .unchanged,
-                effect: self.handle(action, context)
-            )
-        }
+        Behavior(
+            units: [
+                { action, context in
+                    Consequence(mutation: .unchanged, effect: self.handle(action, context))
+                }
+            ],
+            supervise: self.supervise
+        )
     }
 }

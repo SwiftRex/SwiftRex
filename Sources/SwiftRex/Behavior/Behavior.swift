@@ -88,6 +88,11 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
         _ context: PreReducerContext<State>
     ) -> Consequence<State, Environment, Action>
 
+    /// The **state** side: given the post-mutation state, the complete set of ``Channel``s that
+    /// should be alive (Elm's `Sub`). The Store reconciles it after every state change. Defaults to
+    /// the empty set; ``combine(_:_:)`` unions it.
+    public let supervise: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
+
     /// The per-feature units, in composition order. ``identity`` is the empty list, ``combine(_:_:)``
     /// concatenates, and ``handle`` is a single flat pass over them — no nested closure tree.
     let units: [@MainActor @Sendable (
@@ -99,9 +104,11 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
         units: [@MainActor @Sendable (
             _ action: Action,
             _ context: PreReducerContext<State>
-        ) -> Consequence<State, Environment, Action>]
+        ) -> Consequence<State, Environment, Action>],
+        supervise: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
     ) {
         self.units = units
+        self.supervise = supervise
         if units.isEmpty {
             self.handle = { _, _ in .doNothing }
         } else if units.count == 1 {
@@ -159,6 +166,25 @@ extension Behavior {
             _ context: PreReducerContext<State>
         ) -> Consequence<State, Environment, Action>
     ) -> Self { Behavior(handle: fn) }
+
+    /// Creates a **state-driven** behavior — the `supervise` (Sub) side, with no action handling.
+    ///
+    /// `keep` returns the complete set of ``Channel``s that should be alive for the given state; the
+    /// Store reconciles it after every change. Combine it with `reduce`/`react` behaviors:
+    ///
+    /// ```swift
+    /// let appBehavior = Behavior.combine(featureBehavior, .supervise { state in
+    ///     Keep { env in state.connected ? [Channel(id: "socket") { dispatch in … }] : [] }
+    /// })
+    /// ```
+    ///
+    /// - Parameter keep: Maps state to the channels to keep alive (environment via the ``Keep`` reader).
+    /// - Returns: A `Behavior` that handles no actions and supervises `keep`.
+    public static func supervise(
+        _ keep: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
+    ) -> Self {
+        Behavior(units: [], supervise: keep)
+    }
 }
 
 // MARK: - Reducer + Middleware
@@ -189,14 +215,17 @@ extension Behavior {
         reducer: Reducer<Action, State>,
         middleware: Middleware<Action, State, Environment>
     ) {
-        self.init(units: [
-            { action, context in
-                Consequence(
-                    mutation: .mutation(reducer.reduce(action)),
-                    effect: middleware.handle(action, context)
-                )
-            }
-        ])
+        self.init(
+            units: [
+                { action, context in
+                    Consequence(
+                        mutation: .mutation(reducer.reduce(action)),
+                        effect: middleware.handle(action, context)
+                    )
+                }
+            ],
+            supervise: middleware.supervise
+        )
     }
 }
 
@@ -224,12 +253,24 @@ extension Behavior: Semigroup {
     ///   - rhs: The second behavior; its mutation sees lhs's mutations.
     /// - Returns: A combined behavior that runs both handle closures and merges their consequences.
     public static func combine(_ lhs: Behavior, _ rhs: Behavior) -> Behavior {
-        Behavior(units: lhs.units + rhs.units)
+        Behavior(units: lhs.units + rhs.units, supervise: unionSupervise([lhs, rhs]))
     }
 
     /// Flattens a non-empty run of behaviors in a single pass — O(total units), no nesting.
     public static func sconcat(_ first: Behavior, _ rest: [Behavior]) -> Behavior {
-        Behavior(units: rest.reduce(into: first.units) { $0 += $1.units })
+        Behavior(units: rest.reduce(into: first.units) { $0 += $1.units }, supervise: unionSupervise([first] + rest))
+    }
+
+    /// Unions the `supervise` axes of `behaviors`: the desired channel set for a state is the
+    /// concatenation of each behavior's set (the engine reconciles the whole union at once, so an
+    /// `identity`/empty summand contributes nothing). Returns the empty supervisor if none supervise.
+    static func unionSupervise(
+        _ behaviors: [Behavior]
+    ) -> @MainActor @Sendable (State) -> Keep<Action, Environment> {
+        { @MainActor state in
+            let keeps = behaviors.map { $0.supervise(state) }   // resolve each supervisor on @MainActor
+            return Reader { env in keeps.flatMap { $0.runReader(env) } }
+        }
     }
 }
 
