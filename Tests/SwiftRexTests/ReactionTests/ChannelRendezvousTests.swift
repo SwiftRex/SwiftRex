@@ -58,9 +58,9 @@ struct ChannelRendezvousTests {
         engine.reconcile(reaction.reconcileEntries(S(connected: true)))
 
         // send: action-driven pipes route into the SAME "socket" — no reopening
-        engine.schedule(Effect<A>.pipe("hi", into: "socket").components[0])
-        engine.schedule(Effect<A>.pipe("hi", into: "socket").components[0])  // same value twice → both sent
-        engine.schedule(Effect<A>.pipe("bye", into: "socket").components[0])
+        engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])
+        engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])  // same value twice → both sent
+        engine.schedule(Effect<A>.broadcast("bye", channel: "socket").components[0])
         #expect(written.value == ["hi", "hi", "bye"])   // no dedup; rendezvous on the shared id
         #expect(closed.value == 0)                       // never reopened or torn down
 
@@ -72,7 +72,7 @@ struct ChannelRendezvousTests {
     @Test func pipeIntoAnAbsentChannelIsDropped() {
         let engine = makeEngine(LockProtected([A]()))
         // Nothing open under "socket" → pipe never opens anything; the value is dropped.
-        engine.schedule(Effect<A>.pipe("hi", into: "socket").components[0])
+        engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])
         #expect(Bool(true))   // reaching here without a crash is the assertion
     }
 
@@ -94,8 +94,8 @@ struct ChannelRendezvousTests {
         engine.reconcile(reaction.reconcileEntries(S()))
 
         // Same case name, different types → distinct keys → pipes land in the right socket.
-        engine.schedule(Effect<A>.pipe("a", into: FeatureA.socket).components[0])
-        engine.schedule(Effect<A>.pipe("b", into: FeatureB.socket).components[0])
+        engine.schedule(Effect<A>.broadcast("a", channel: FeatureA.socket).components[0])
+        engine.schedule(Effect<A>.broadcast("b", channel: FeatureB.socket).components[0])
         #expect(writtenA.value == ["a"])
         #expect(writtenB.value == ["b"])
     }

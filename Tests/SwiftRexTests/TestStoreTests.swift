@@ -434,7 +434,7 @@ private let socketBehavior = Behavior<SocketAction, Int, Void> { action, _ in
     case .received(let v):
         .reduce { $0 = v }
     case .disconnect:
-        .produce { _ in .cancelInFlight(id: "socket") }
+        .produce { _ in .cancel(id: "socket") }
     default:
         .doNothing
     }
