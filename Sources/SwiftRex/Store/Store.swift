@@ -20,7 +20,7 @@ import Hourglass
 ///    stateObservers.didChange fired           — @Observable / push-based observers
 /// 3. consequence.effect.runReader(env)        — Reader runs; stateAccess = post-mutation state
 /// 4. engine.schedule(component) per component — action-driven effects (produce / Cmd)
-/// 5. engine.reconcile(reaction(state))        — state-driven effects (react / Sub); only if state changed
+/// 5. engine.reconcile(behavior.supervise(state)) — state-driven channels (Sub); only if state changed
 /// ```
 ///
 /// Grouping all `willChange` notifications before the mutation (and all `didChange` notifications
@@ -98,11 +98,6 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     private let behavior: Behavior<Action, State, Environment>
     private let environment: Environment
 
-    /// The state-driven effect source. After every state change the Store recomputes its complete
-    /// desired set and has the engine reconcile it (start/stop/pipe). Defaults to ``Reaction/identity``
-    /// (no state-driven effects).
-    private let reaction: Reaction<State, Action>
-
     // MARK: - Effect scheduling
 
     /// The scheduling clock, extracted from the (immutable) environment at `init` — `ContinuousClock`
@@ -158,25 +153,21 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// ```
     ///
     /// To drive scheduling with a `TestClock`/`ImmediateClock` — or to read the clock from the
-    /// environment — use ``init(initial:behavior:environment:reaction:clock:)``.
+    /// environment — use ``init(initial:behavior:environment:clock:)``.
     ///
     /// - Parameters:
     ///   - state: The initial state value. The store takes exclusive ownership.
-    ///   - behavior: The single ``Behavior`` that handles all dispatched actions.
+    ///   - behavior: The single ``Behavior`` — its `reduce`/`react`/`supervise` drive every phase.
     ///   - environment: The environment injected into ``Effect`` readers in phase 3.
-    ///   - reaction: The state-driven ``Reaction`` reconciled after every state change. Defaults to
-    ///     ``Reaction/identity`` (no state-driven effects).
     public convenience init(
         initial state: State,
         behavior: Behavior<Action, State, Environment>,
-        environment: Environment,
-        reaction: Reaction<State, Action> = .identity
+        environment: Environment
     ) {
         self.init(
             initial: state,
             behavior: behavior,
             environment: environment,
-            reaction: reaction,
             clock: { _ in ContinuousClock() }
         )
     }
@@ -199,16 +190,21 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         initial state: State,
         behavior: Behavior<Action, State, Environment>,
         environment: Environment,
-        reaction: Reaction<State, Action> = .identity,
         clock: @escaping @Sendable (Environment) -> C
     ) where C: Sendable, C.Duration == Swift.Duration {
         self.state = state
         self.behavior = behavior
         self.environment = environment
-        self.reaction = reaction
         self.resolvedClock = clock(environment).eraseToAnyClock()
-        // Activate the state-driven effects implied by the initial state (no dispatch needed).
-        engine.reconcile(reaction.reconcileEntries(state))
+        // Activate the state-driven channels implied by the initial state (no dispatch needed).
+        reconcileSupervised()
+    }
+
+    /// Reconciles the engine against `behavior.supervise(state)` — the complete desired channel set
+    /// for the current state, with the environment injected. Called at construction and after every
+    /// state-changing dispatch.
+    private func reconcileSupervised() {
+        engine.reconcile(behavior.supervise(state).runReader(environment).map { $0.reconcileEntry })
     }
 
     /// Creates a `Store` with a ``Reducer`` only (no side effects, `Environment == Void`).
@@ -244,14 +240,11 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// - Parameters:
     ///   - state: The initial state value.
     ///   - behavior: The single ``Behavior`` that handles all dispatched actions.
-    ///   - reaction: The state-driven ``Reaction`` reconciled after every state change. Defaults to
-    ///     ``Reaction/identity`` (no state-driven effects).
     public convenience init(
         initial state: State,
-        behavior: Behavior<Action, State, Environment>,
-        reaction: Reaction<State, Action> = .identity
+        behavior: Behavior<Action, State, Environment>
     ) where Environment == Void {
-        self.init(initial: state, behavior: behavior, environment: (), reaction: reaction)
+        self.init(initial: state, behavior: behavior, environment: ())
     }
 
     /// Creates a `Store` by composing a ``Reducer`` and a ``Middleware`` internally.
@@ -391,7 +384,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
         // Phase 5 — reconcile state-driven effects. Only when state actually changed: an `.unchanged`
         // action cannot alter the desired set, so the reconcile would be a guaranteed no-op.
-        if didMutate { engine.reconcile(reaction.reconcileEntries(state)) }
+        if didMutate { reconcileSupervised() }
     }
 
     // MARK: - Effect scheduling

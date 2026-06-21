@@ -3,12 +3,11 @@ import Hourglass
 @testable import SwiftRex
 import Testing
 
-// MARK: - listen (reaction) + send (pipe) rendezvous on a shared id — the Elm socket model
+// MARK: - listen (supervise) + send (broadcast) rendezvous on a shared id — the Elm socket model
 
 @Suite("Channel listen/send rendezvous")
 @MainActor
 struct ChannelRendezvousTests {
-    private struct S: Sendable { var connected = false }
     private enum A: Sendable, Equatable { case received(String) }
 
     private func makeEngine(_ received: LockProtected<[A]>) -> EffectEngine<A> {
@@ -18,22 +17,17 @@ struct ChannelRendezvousTests {
         )
     }
 
-    /// A reaction keeping a value-less "socket" alive while connected: piped writes land in `written`,
-    /// teardown bumps `closed`.
-    private func socketReaction(
-        written: LockProtected<[String]>,
-        closed: LockProtected<Int>
-    ) -> Reaction<S, A> {
-        Reaction<S, A> { state in
-            guard state.connected else { return [] }
-            return [
-                Channel(id: "socket") { _ in
-                    ChannelHandler(
-                        receive: { value in written.mutate { $0.append(value) } },
-                        cancel: { closed.mutate { $0 += 1 } }
-                    )
-                }
-            ]
+    private func reconcile(_ engine: EffectEngine<A>, _ channels: [Channel<A>]) {
+        engine.reconcile(channels.map { $0.reconcileEntry })
+    }
+
+    /// A value-less "socket" channel: piped writes land in `written`, teardown bumps `closed`.
+    private func socket(written: LockProtected<[String]>, closed: LockProtected<Int>) -> Channel<A> {
+        Channel(id: "socket") { _ in
+            ChannelHandler(
+                receive: { value in written.mutate { $0.append(value) } },
+                cancel: { closed.mutate { $0 += 1 } }
+            )
         }
     }
 
@@ -41,23 +35,21 @@ struct ChannelRendezvousTests {
         let written = LockProtected([String]())
         let closed = LockProtected(0)
         let engine = makeEngine(LockProtected([A]()))
-        let reaction = socketReaction(written: written, closed: closed)
 
-        engine.reconcile(reaction.reconcileEntries(S(connected: true)))
+        reconcile(engine, [socket(written: written, closed: closed)])
         #expect(written.value.isEmpty)         // value-less open: no spurious initial send
         #expect(closed.value == 0)
     }
 
-    @Test func pipeReachesTheReactionOwnedSocketBySharedId() {
+    @Test func broadcastReachesTheSupervisedSocketBySharedId() {
         let written = LockProtected([String]())
         let closed = LockProtected(0)
         let engine = makeEngine(LockProtected([A]()))
-        let reaction = socketReaction(written: written, closed: closed)
 
-        // listen: reaction opens "socket"
-        engine.reconcile(reaction.reconcileEntries(S(connected: true)))
+        // listen: open "socket"
+        reconcile(engine, [socket(written: written, closed: closed)])
 
-        // send: action-driven pipes route into the SAME "socket" — no reopening
+        // send: action-driven broadcasts route into the SAME "socket" — no reopening
         engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])
         engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])  // same value twice → both sent
         engine.schedule(Effect<A>.broadcast("bye", channel: "socket").components[0])
@@ -65,13 +57,13 @@ struct ChannelRendezvousTests {
         #expect(closed.value == 0)                       // never reopened or torn down
 
         // leaving the desired set closes it
-        engine.reconcile(reaction.reconcileEntries(S(connected: false)))
+        reconcile(engine, [])
         #expect(closed.value == 1)
     }
 
-    @Test func pipeIntoAnAbsentChannelIsDropped() {
+    @Test func broadcastIntoAnAbsentChannelIsDropped() {
         let engine = makeEngine(LockProtected([A]()))
-        // Nothing open under "socket" → pipe never opens anything; the value is dropped.
+        // Nothing open under "socket" → broadcast never opens anything; the value is dropped.
         engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])
         #expect(Bool(true))   // reaching here without a crash is the assertion
     }
@@ -81,19 +73,16 @@ struct ChannelRendezvousTests {
         let writtenB = LockProtected([String]())
         let engine = makeEngine(LockProtected([A]()))
 
-        let reaction = Reaction<S, A> { _ in
-            [
-                Channel(id: FeatureA.socket) { _ in
-                    ChannelHandler(receive: { v in writtenA.mutate { $0.append(v) } }, cancel: {})
-                },
-                Channel(id: FeatureB.socket) { _ in
-                    ChannelHandler(receive: { v in writtenB.mutate { $0.append(v) } }, cancel: {})
-                }
-            ]
-        }
-        engine.reconcile(reaction.reconcileEntries(S()))
+        reconcile(engine, [
+            Channel(id: FeatureA.socket) { _ in
+                ChannelHandler(receive: { v in writtenA.mutate { $0.append(v) } }, cancel: {})
+            },
+            Channel(id: FeatureB.socket) { _ in
+                ChannelHandler(receive: { v in writtenB.mutate { $0.append(v) } }, cancel: {})
+            }
+        ])
 
-        // Same case name, different types → distinct keys → pipes land in the right socket.
+        // Same case name, different types → distinct keys → broadcasts land in the right socket.
         engine.schedule(Effect<A>.broadcast("a", channel: FeatureA.socket).components[0])
         engine.schedule(Effect<A>.broadcast("b", channel: FeatureB.socket).components[0])
         #expect(writtenA.value == ["a"])
