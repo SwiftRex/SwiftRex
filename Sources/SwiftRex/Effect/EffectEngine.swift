@@ -36,10 +36,10 @@ package final class EffectEngine<Action: Sendable> {
     /// Monotonic source of anonymous effect keys (internal, never surfaced).
     private var nextAnonymousEffectKey: UInt64 = 0
 
-    /// The last desired-set this engine reconciled, keyed by `(owner, id)` → value-identity. This is
-    /// the *only* memory a state-driven `Reaction` needs: the reaction recomputes the full desired set
-    /// each cycle and the engine diffs it against this, deriving start/stop/pipe operations.
-    private var reconciledValues: [AnyHashableSendable: AnyHashableSendable] = [:]
+    /// The last desired-set this engine reconciled, keyed by channel id → its reset/broadcast identity
+    /// pair. This is the *only* memory a state-driven `Reaction` needs: the reaction recomputes the full
+    /// desired set each cycle and the engine diffs it against this, deriving open/recreate/pipe/cancel.
+    private var reconciledStates: [AnyHashableSendable: ReconcileState] = [:]
 
     private let clock: AnyClock<Swift.Duration>
     private let send: @Sendable (DispatchedAction<Action>) -> Void
@@ -200,40 +200,60 @@ package final class EffectEngine<Action: Sendable> {
 
     // MARK: - Reconcile (state-driven `Reaction`)
 
-    /// A single desired state-driven effect for one reconcile cycle.
+    /// A single desired `Channel` for one reconcile cycle.
     ///
-    /// The `component`'s `scheduling.id` is the owner-stamped `(owner, id)` key — state-driven effects
-    /// must be keyed (an unkeyed entry is skipped). `valueIdentity` drives change detection: when it
-    /// changes between cycles the engine re-schedules (which **pipes** for a channel, **recreates** for
-    /// a one-shot); `nil` means presence-only (started once, never re-scheduled until it drops out).
+    /// The `component`'s `scheduling.id` is the channel key — state-driven channels must be keyed
+    /// (an unkeyed entry is skipped). Two identities drive the diff independently:
+    /// - `resetIdentity` — the `ephemeral` reset key (`nil` = `permanent`). A change **recreates**
+    ///   the channel (cancel + reopen).
+    /// - `broadcastIdentity` — the `onChange` value (`nil` = `nothing`). A change **pipes** the new
+    ///   value into the live channel.
     package struct ReconcileEntry: Sendable {
         package let component: Effect<Action>.Component
-        package let valueIdentity: AnyHashableSendable?
+        package let resetIdentity: AnyHashableSendable?
+        package let broadcastIdentity: AnyHashableSendable?
 
-        package init(component: Effect<Action>.Component, valueIdentity: AnyHashableSendable?) {
+        package init(
+            component: Effect<Action>.Component,
+            resetIdentity: AnyHashableSendable?,
+            broadcastIdentity: AnyHashableSendable?
+        ) {
             self.component = component
-            self.valueIdentity = valueIdentity
+            self.resetIdentity = resetIdentity
+            self.broadcastIdentity = broadcastIdentity
         }
     }
 
-    /// Sentinel value-identity for presence-only entries, so "still desired, unchanged" compares equal.
-    private struct PresenceMarker: Hashable, Sendable {}
+    /// The reset/broadcast identity pair stored per key — the only memory a reconcile needs.
+    private struct ReconcileState: Equatable, Sendable {
+        let reset: AnyHashableSendable?
+        let broadcast: AnyHashableSendable?
+    }
 
-    /// Reconciles the running state-driven effects against the **complete** `desired` set for this
-    /// cycle: starts keys newly present, cancels keys now absent, and re-schedules keys whose
-    /// `valueIdentity` changed. An unchanged desired set produces **zero** operations — the engine
-    /// keeps the registry; the caller (a `Reaction`) keeps nothing.
+    /// Reconciles the running channels against the **complete** `desired` set for this cycle:
+    /// opens keys newly present, cancels keys now absent, recreates keys whose `resetIdentity`
+    /// changed, and pipes keys whose `broadcastIdentity` changed. An unchanged desired set produces
+    /// **zero** operations — the engine keeps the registry; the caller (a `Reaction`) keeps nothing.
     package func reconcile(_ desired: [ReconcileEntry]) {
-        let presence = AnyHashableSendable(PresenceMarker())
-        var next: [AnyHashableSendable: AnyHashableSendable] = [:]
+        var next: [AnyHashableSendable: ReconcileState] = [:]
         next.reserveCapacity(desired.count)
         for entry in desired {
             guard let key = entry.component.scheduling.id else { continue }
-            let identity = entry.valueIdentity ?? presence
-            next[key] = identity
-            if reconciledValues[key] != identity { schedule(entry.component) }
+            let state = ReconcileState(reset: entry.resetIdentity, broadcast: entry.broadcastIdentity)
+            next[key] = state
+            if let prev = reconciledStates[key] {
+                if prev.reset != state.reset {
+                    cancel(key: key)            // recreate: tear down, then reopen below
+                    schedule(entry.component)
+                } else if prev.broadcast != state.broadcast {
+                    schedule(entry.component)   // pipe: deliver the new value into the live channel
+                }
+                // else: both unchanged → nothing
+            } else {
+                schedule(entry.component)        // newly present → open
+            }
         }
-        for key in reconciledValues.keys where next[key] == nil { cancel(key: key) }
-        reconciledValues = next
+        for key in reconciledStates.keys where next[key] == nil { cancel(key: key) }
+        reconciledStates = next
     }
 }
