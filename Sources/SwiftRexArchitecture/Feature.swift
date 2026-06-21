@@ -78,13 +78,13 @@ import SwiftUI
 ///             switch action.action {
 ///             case .fetchMovies:
 ///                 .reduce { $0.isLoading = true }
-///                 .produce { env in .task { .moviesResponse(await env.fetchMovies()) } }
+///                 .react { env in .task { .moviesResponse(await env.fetchMovies()) } }
 ///             case .moviesResponse(.success(let movies)):
 ///                 .reduce { $0.movies = movies; $0.isLoading = false }
 ///             case .moviesResponse(.failure(let err)):
 ///                 .reduce { $0.error = err; $0.isLoading = false }
 ///             case .toggleFavorite(let id):
-///                 .produce { env in .task { .favoriteResponse(await env.toggleFavorite(id)) } }
+///                 .react { env in .task { .favoriteResponse(await env.toggleFavorite(id)) } }
 ///             case .favoriteResponse(.success(let movie)):
 ///                 .reduce { $0.movies = [Domain.Movie].ix(id: movie.id).set($0.movies, movie) }
 ///             case .favoriteResponse(.failure):

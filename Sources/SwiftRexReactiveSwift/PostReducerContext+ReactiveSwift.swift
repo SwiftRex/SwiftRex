@@ -14,7 +14,7 @@ extension PostReducerContext {
     /// ```swift
     /// Behavior<MyAction, MyState, API>.handle { action, _ in
     ///     guard case .save(let data) = action else { return .doNothing }
-    ///     return .produce { ctx in
+    ///     return .react { ctx in
     ///         ctx.readLiveState()
     ///             .flatMap { state in ctx.environment.api.save(data, revision: state.revision) }
     ///             .asEffect()

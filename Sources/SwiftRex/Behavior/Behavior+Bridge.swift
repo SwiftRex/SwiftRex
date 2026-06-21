@@ -386,7 +386,7 @@ extension Behavior {
     //   – no state copy at all when `reduce:` and `when:` are both absent (variants 21, 27–28)
     //
     // Dispatch is always a fixed `Action`; for cases where dispatch depends on state after
-    // mutation, use `.produce { ctx in }` directly on the returned `Consequence`.
+    // mutation, use `.react { ctx in }` directly on the returned `Consequence`.
 
     // MARK: 21. Bool predicate — pure routing, no state
 

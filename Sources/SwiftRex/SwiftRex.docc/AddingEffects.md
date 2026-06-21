@@ -44,7 +44,7 @@ let loaderBehavior = Behavior<LoaderAction, LoaderState, API>.handle { action, _
     switch action {
     case .load(let id):
         .reduce { $0.isLoading = true }
-            .produce { ctx in
+            .react { ctx in
                 Effect.throwingTask(LoaderAction.didLoad) {
                     try await ctx.environment.fetch(id)
                 }
