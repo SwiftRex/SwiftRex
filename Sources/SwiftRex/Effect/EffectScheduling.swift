@@ -24,7 +24,7 @@
 /// ## Cancellation registry
 ///
 /// Every component with an `id` shares the Store's effect registry. A component registered under
-/// `"search"` can be cancelled with ``Effect/cancelInFlight(id:)`` regardless of how it was
+/// `"search"` can be cancelled with ``Effect/cancel(id:)`` regardless of how it was
 /// scheduled. Id equality is **type-aware** (`1` Int, `1.0` Double, `true` Bool are distinct ids on
 /// every platform) — prefer module-private enum ids so features never collide. See
 /// ``AnyHashableSendable``.
@@ -53,7 +53,7 @@ public struct EffectScheduling: Sendable, Equatable {
     public var exclusive: Bool
 
     /// Internal cancel-only sentinel: when `true`, the engine cancels ``id`` and starts nothing.
-    /// Set only by ``Effect/cancelInFlight(id:)``. Will become a first-class cancel operation in a
+    /// Set only by ``Effect/cancel(id:)``. Will become a first-class cancel operation in a
     /// later stage of the effect-engine redesign.
     package var cancelsOnly: Bool
 
@@ -110,7 +110,7 @@ extension EffectScheduling {
     }
 
     /// Cancel-only scheduling for `id`: the engine cancels whatever is registered there and starts
-    /// nothing. The ergonomic entry point is ``Effect/cancelInFlight(id:)``.
+    /// nothing. The ergonomic entry point is ``Effect/cancel(id:)``.
     public static func cancelInFlight(id: AnyHashableSendable) -> Self {
         var scheduling = Self(id: id)
         scheduling.cancelsOnly = true

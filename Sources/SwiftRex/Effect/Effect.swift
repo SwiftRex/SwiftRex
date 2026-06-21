@@ -120,7 +120,7 @@ public struct Effect<Action: Sendable>: Sendable {
 
             /// The value to deliver this dispatch, type-erased.
             package let value: any Sendable
-            /// The opener, or `nil` for a *pipe-only* channel (``Effect/pipe(_:into:file:function:line:)``):
+            /// The opener, or `nil` for a *pipe-only* channel (``Effect/broadcast(_:channel:file:function:line:)``):
             /// such a component never opens anything — if no channel is live under its key the value
             /// is dropped.
             package let start: Start?

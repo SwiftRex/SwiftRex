@@ -127,40 +127,41 @@ extension Effect {
     }
 }
 
-// MARK: - Pipe (action-driven send into a channel owned elsewhere)
+// MARK: - Broadcast (action-driven send into a channel owned elsewhere)
 
 extension Effect {
-    /// Sends `value` into the **live channel** registered under `id`, without opening anything.
+    /// Sends `value` into the **live channel** registered under `channel`, without opening anything.
     ///
     /// This is the action-driven *send* half of a long-lived channel: a `Reaction` keeps the channel
-    /// alive (Elm's `listen`), and a `Middleware`/`produce` routes a value into it by key (Elm's
-    /// `send`). They rendezvous on the shared `id` in the Store's effect registry.
+    /// alive (Elm's `listen`), and a `Middleware` routes a value into it by key (Elm's `send`). They
+    /// rendezvous on the shared id in the Store's effect registry. Unlike a reaction's
+    /// `broadcasting: .onChange`, a `.broadcast` is **not** deduped — it delivers on every call, so
+    /// sending the same value twice sends it twice.
     ///
     /// ```swift
-    /// // Reaction owns the socket's lifetime, keyed "socket":
-    /// .channel(id: "socket") { send in
-    ///     let s = openSocket(); s.onMessage { send(.received($0)) }
+    /// // A reaction owns the socket's lifetime, keyed "socket":
+    /// Channel(id: "socket") { dispatch in
+    ///     let s = openSocket(); s.onMessage { dispatch(.received($0)) }
     ///     return ChannelHandler(receive: { s.write($0) }, cancel: { s.close() })
     /// }
     ///
     /// // An action sends a message into that same socket — no body, no reopening:
     /// case .send(let text):
-    ///     .produce { _ in .pipe(text, into: "socket") }
+    ///     .react { _ in .broadcast(text, channel: "socket") }
     /// ```
     ///
-    /// Unlike ``channel(value:scheduling:file:function:line:_:)``, a pipe **never opens** a channel:
-    /// if nothing is live under `id` the value is dropped. Keep the channel alive (via a reaction or
-    /// an earlier channel) for the pipe to land. The `value`'s type must match the live channel's —
-    /// a mismatch is silently dropped.
+    /// A broadcast **never opens** a channel: if nothing is live under `channel` the value is dropped.
+    /// Keep the channel alive (via a reaction or an earlier `.open`) for it to land. The `value`'s type
+    /// must match the live channel's — a mismatch is silently dropped.
     ///
     /// - Parameters:
-    ///   - value: The value to deliver into the live channel under `id`.
-    ///   - id: The channel key (the same `id` the channel was opened under).
-    ///   - file/function/line: Captured automatically (carried for symmetry; pipes emit no actions).
-    /// - Returns: A single-component ``Effect`` that pipes `value` into the channel keyed `id`.
-    public static func pipe<Value: Sendable>(
+    ///   - value: The value to deliver into the live channel.
+    ///   - channel: The channel key (the same id the channel was opened under).
+    ///   - file/function/line: Captured automatically (carried for symmetry; a broadcast emits no actions).
+    /// - Returns: A single-component ``Effect`` that delivers `value` into the channel keyed `channel`.
+    public static func broadcast<Value: Sendable>(
         _ value: Value,
-        into id: some Hashable & Sendable,
+        channel id: some Hashable & Sendable,
         file: String = #file,
         function: String = #function,
         line: UInt = #line
@@ -168,10 +169,33 @@ extension Effect {
         Effect(components: [
             Component(
                 subscribe: { _, complete in complete(); return .empty },
-                channel: Component.Channel(value: value, start: nil), // pipe-only: never opens
+                channel: Component.Channel(value: value, start: nil), // send-only: never opens
                 scheduling: .keyed(id: id)
             )
         ])
+    }
+}
+
+// MARK: - Open / cancel a Channel imperatively (action-driven lifetime)
+
+extension Effect {
+    /// Opens a ``Channel`` imperatively — the action-driven way to start a long-lived resource, with
+    /// its lifetime managed by *you* (via ``cancel(id:)``) instead of by a reaction's reconcile.
+    ///
+    /// The same `Channel` value can be opened here (a middleware reacting to `.connect`) or maintained
+    /// declaratively by a `Reaction`; both rendezvous on the channel's id, so a socket opened in either
+    /// world receives `.broadcast`s from the other.
+    ///
+    /// ```swift
+    /// case .connect:    .react { _ in .open(socketChannel) }
+    /// case .send(let t): .react { _ in .broadcast(t, channel: "socket") }
+    /// case .disconnect:  .react { _ in .cancel(id: "socket") }
+    /// ```
+    ///
+    /// - Parameter channel: The channel to open. Its `lifetime`/`broadcasting` are honoured.
+    /// - Returns: A single-component ``Effect`` that opens `channel`.
+    public static func open(_ channel: Channel<Action>) -> Self {
+        Effect(components: [channel.component])
     }
 }
 

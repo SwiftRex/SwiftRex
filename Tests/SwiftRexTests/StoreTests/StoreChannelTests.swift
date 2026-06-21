@@ -160,7 +160,7 @@ struct StoreChannelTests {
                         }
                     }
                 case .close:
-                    .produce { _ in .cancelInFlight(id: "socket") }
+                    .produce { _ in .cancel(id: "socket") }
                 case .received:
                     .doNothing
                 }
