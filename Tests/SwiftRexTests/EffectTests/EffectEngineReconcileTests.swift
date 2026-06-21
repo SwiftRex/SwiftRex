@@ -3,12 +3,11 @@ import Hourglass
 @testable import SwiftRex
 import Testing
 
-// MARK: - EffectEngine.reconcile — the state-driven (Reaction) diff
+// MARK: - EffectEngine.reconcile — the state-driven (Channel) diff
 
 @Suite("EffectEngine reconcile")
 @MainActor
 struct EffectEngineReconcileTests {
-    /// Builds an engine whose produced actions land in `received`, driven by an `ImmediateClock`.
     private func makeEngine(_ received: LockProtected<[Int]>) -> EffectEngine<Int> {
         EffectEngine<Int>(
             clock: ImmediateClock().eraseToAnyClock(),
@@ -16,94 +15,99 @@ struct EffectEngineReconcileTests {
         )
     }
 
-    /// A keyed channel that records every piped value into `log` and its teardown into `cancels`.
-    private func channelEntry(
+    private func entries(_ channels: [Channel<Int>]) -> [EffectEngine<Int>.ReconcileEntry] {
+        channels.map { .init(component: $0.component, resetIdentity: $0.resetIdentity, broadcastIdentity: $0.broadcastIdentity) }
+    }
+
+    /// A broadcasting channel that records every delivered value into `log`, teardown into `cancels`.
+    private func broadcaster(
         id: String,
         value: Int,
         log: LockProtected<[Int]>,
-        cancels: LockProtected<[String]>,
-        valueIdentity: AnyHashableSendable?
-    ) -> EffectEngine<Int>.ReconcileEntry {
-        let effect = Effect<Int>.channel(value: value, scheduling: .keyed(id: id)) { _, _ in
+        cancels: LockProtected<[String]>
+    ) -> Channel<Int> {
+        Channel(id: id, broadcasting: .onChange(value)) { _ in
             ChannelHandler(
                 receive: { v in log.mutate { $0.append(v) } },
                 cancel: { cancels.mutate { $0.append(id) } }
             )
         }
-        return .init(component: effect.components[0], valueIdentity: valueIdentity)
     }
 
-    @Test func startsDesiredAndCancelsWhenItDropsOut() {
+    @Test func opensDesiredAndCancelsWhenItDropsOut() {
         let log = LockProtected([Int]())
         let cancels = LockProtected([String]())
         let engine = makeEngine(LockProtected([Int]()))
 
-        // First cycle: "socket" is desired → opens + delivers 1.
-        engine.reconcile([channelEntry(id: "socket", value: 1, log: log, cancels: cancels, valueIdentity: AnyHashableSendable(1))])
-        #expect(log.value == [1])
+        engine.reconcile(entries([broadcaster(id: "socket", value: 1, log: log, cancels: cancels)]))
+        #expect(log.value == [1])              // opened → delivered 1 on connect
         #expect(cancels.value.isEmpty)
 
-        // Next cycle: "socket" no longer desired → cancelled.
-        engine.reconcile([])
-        #expect(cancels.value == ["socket"])
+        engine.reconcile(entries([]))
+        #expect(cancels.value == ["socket"])   // no longer desired → cancelled
     }
 
-    @Test func unchangedValueIdentityProducesZeroOperations() {
+    @Test func unchangedBroadcastValueDeliversOnce() {
         let log = LockProtected([Int]())
         let cancels = LockProtected([String]())
         let engine = makeEngine(LockProtected([Int]()))
-        let id = AnyHashableSendable(7)
-
-        engine.reconcile([channelEntry(id: "s", value: 1, log: log, cancels: cancels, valueIdentity: id)])
-        engine.reconcile([channelEntry(id: "s", value: 1, log: log, cancels: cancels, valueIdentity: id)])
-        engine.reconcile([channelEntry(id: "s", value: 1, log: log, cancels: cancels, valueIdentity: id)])
-
-        #expect(log.value == [1])          // delivered once — identity never changed
-        #expect(cancels.value.isEmpty)     // still desired across all three cycles
-    }
-
-    @Test func changedValueIdentityPipesIntoTheSameLiveChannel() {
-        let log = LockProtected([Int]())
-        let cancels = LockProtected([String]())
-        let engine = makeEngine(LockProtected([Int]()))
-
-        engine.reconcile([channelEntry(id: "s", value: 1, log: log, cancels: cancels, valueIdentity: AnyHashableSendable(1))])
-        engine.reconcile([channelEntry(id: "s", value: 2, log: log, cancels: cancels, valueIdentity: AnyHashableSendable(2))])
-        engine.reconcile([channelEntry(id: "s", value: 3, log: log, cancels: cancels, valueIdentity: AnyHashableSendable(3))])
-
-        #expect(log.value == [1, 2, 3])    // piped each changed value into the same channel
-        #expect(cancels.value.isEmpty)     // never torn down — the channel stayed alive
-    }
-
-    @Test func presenceOnlyEntryStartsOnceAndIsNotReScheduled() {
-        let log = LockProtected([Int]())
-        let cancels = LockProtected([String]())
-        let engine = makeEngine(LockProtected([Int]()))
-
-        // valueIdentity nil → presence-only. Three cycles, all desired.
         for _ in 0..<3 {
-            engine.reconcile([channelEntry(id: "s", value: 9, log: log, cancels: cancels, valueIdentity: nil)])
+            engine.reconcile(entries([broadcaster(id: "s", value: 1, log: log, cancels: cancels)]))
         }
-        #expect(log.value == [9])          // started once, never re-delivered
+        #expect(log.value == [1])              // delivered once — value never changed
         #expect(cancels.value.isEmpty)
+    }
+
+    @Test func changedBroadcastValuePipesIntoTheLiveChannel() {
+        let log = LockProtected([Int]())
+        let cancels = LockProtected([String]())
+        let engine = makeEngine(LockProtected([Int]()))
+        engine.reconcile(entries([broadcaster(id: "s", value: 1, log: log, cancels: cancels)]))
+        engine.reconcile(entries([broadcaster(id: "s", value: 2, log: log, cancels: cancels)]))
+        engine.reconcile(entries([broadcaster(id: "s", value: 3, log: log, cancels: cancels)]))
+        #expect(log.value == [1, 2, 3])        // piped each change into the same channel
+        #expect(cancels.value.isEmpty)         // never torn down
+    }
+
+    @Test func presenceOnlyChannelOpensOnce() {
+        let received = LockProtected([Int]())
+        let engine = makeEngine(received)
+        // .nothing broadcasting → opens once, body dispatches a single action; no re-open.
+        let channel = Channel<Int>(id: "s") { dispatch in dispatch(42); return .cancelOnly {} }
+        for _ in 0..<3 { engine.reconcile(entries([channel])) }
+        #expect(received.value == [42])
+    }
+
+    @Test func ephemeralRecreatesWhenResetKeyChanges() {
+        let opens = LockProtected(0)
+        let cancels = LockProtected(0)
+        let engine = makeEngine(LockProtected([Int]()))
+        func fetch(_ query: String) -> Channel<Int> {
+            Channel(id: "search", lifetime: .ephemeral(resetKey: query)) { _ in
+                opens.mutate { $0 += 1 }
+                return .cancelOnly { cancels.mutate { $0 += 1 } }
+            }
+        }
+        engine.reconcile(entries([fetch("a")]))   // open
+        engine.reconcile(entries([fetch("a")]))   // same resetKey → no-op
+        #expect(opens.value == 1)
+        #expect(cancels.value == 0)
+        engine.reconcile(entries([fetch("b")]))   // resetKey changed → recreate (cancel + reopen)
+        #expect(opens.value == 2)
+        #expect(cancels.value == 1)
     }
 
     @Test func independentKeysReconcileIndependently() {
         let log = LockProtected([Int]())
         let cancels = LockProtected([String]())
         let engine = makeEngine(LockProtected([Int]()))
-
-        func entryA(_ v: Int) -> EffectEngine<Int>.ReconcileEntry {
-            channelEntry(id: "a", value: v, log: log, cancels: cancels, valueIdentity: AnyHashableSendable(v))
-        }
-        func entryB(_ v: Int) -> EffectEngine<Int>.ReconcileEntry {
-            channelEntry(id: "b", value: v, log: log, cancels: cancels, valueIdentity: AnyHashableSendable(v))
-        }
-
-        engine.reconcile([entryA(1), entryB(10)])     // both start
-        engine.reconcile([entryB(10)])                // a drops out → only a cancelled
-        #expect(cancels.value == ["a"])
-        engine.reconcile([])                          // b drops out
+        engine.reconcile(entries([
+            broadcaster(id: "a", value: 1, log: log, cancels: cancels),
+            broadcaster(id: "b", value: 10, log: log, cancels: cancels)
+        ]))
+        engine.reconcile(entries([broadcaster(id: "b", value: 10, log: log, cancels: cancels)]))
+        #expect(cancels.value == ["a"])        // only a dropped out
+        engine.reconcile(entries([]))
         #expect(cancels.value == ["a", "b"])
     }
 }

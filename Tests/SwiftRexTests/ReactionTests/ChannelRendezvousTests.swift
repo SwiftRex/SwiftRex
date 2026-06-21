@@ -27,7 +27,7 @@ struct ChannelRendezvousTests {
         Reaction<S, A> { state in
             guard state.connected else { return [] }
             return [
-                .channel(id: "socket") { _ in
+                Channel(id: "socket") { _ in
                     ChannelHandler(
                         receive: { value in written.mutate { $0.append(value) } },
                         cancel: { closed.mutate { $0 += 1 } }
@@ -83,10 +83,10 @@ struct ChannelRendezvousTests {
 
         let reaction = Reaction<S, A> { _ in
             [
-                .channel(id: FeatureA.socket) { _ in
+                Channel(id: FeatureA.socket) { _ in
                     ChannelHandler(receive: { v in writtenA.mutate { $0.append(v) } }, cancel: {})
                 },
-                .channel(id: FeatureB.socket) { _ in
+                Channel(id: FeatureB.socket) { _ in
                     ChannelHandler(receive: { v in writtenB.mutate { $0.append(v) } }, cancel: {})
                 }
             ]

@@ -3,7 +3,7 @@ import Hourglass
 @testable import SwiftRex
 import Testing
 
-// MARK: - Reaction — state-driven desired-effect source
+// MARK: - Reaction — state-driven source of Channels
 
 @Suite("Reaction")
 @MainActor
@@ -28,21 +28,20 @@ struct ReactionTests {
     }
 
     @Test func combineUnionsDesiredSets() {
-        let a = Reaction<AppState, Int> { _ in [.effect(id: "a", .just(1))] }
-        let b = Reaction<AppState, Int> { _ in [.effect(id: "b", .just(2))] }
-        let combined = Reaction.combine(a, b)
-        #expect(combined.react(AppState()).count == 2)
+        let a = Reaction<AppState, Int> { _ in [Channel(id: "a") { d in d(1); return .cancelOnly {} }] }
+        let b = Reaction<AppState, Int> { _ in [Channel(id: "b") { d in d(2); return .cancelOnly {} }] }
+        #expect(Reaction.combine(a, b).react(AppState()).count == 2)
     }
 
     @Test func identityIsTheCombineUnit() {
-        let r = Reaction<AppState, Int> { _ in [.effect(id: "x", .just(1))] }
+        let r = Reaction<AppState, Int> { _ in [Channel(id: "x") { d in d(1); return .cancelOnly {} }] }
         #expect(Reaction.combine(.identity, r).react(AppState()).count == 1)
         #expect(Reaction.combine(r, .identity).react(AppState()).count == 1)
     }
 
     // MARK: Reconcile through the engine
 
-    @Test func channelStartsWhileConnectedAndCancelsWhenDisconnected() {
+    @Test func channelOpensWhileConnectedAndCancelsWhenDisconnected() {
         let log = LockProtected([Int]())
         let cancels = LockProtected([String]())
         let engine = makeEngine(LockProtected([Int]()))
@@ -50,7 +49,7 @@ struct ReactionTests {
         let reaction = Reaction<AppState, Int> { state in
             guard state.isConnected else { return [] }
             return [
-                .channel(id: "socket", value: state.outbox) { _, _ in
+                Channel(id: "socket", broadcasting: .onChange(state.outbox)) { _ in
                     ChannelHandler(
                         receive: { v in log.mutate { $0.append(v) } },
                         cancel: { cancels.mutate { $0.append("socket") } }
@@ -60,21 +59,21 @@ struct ReactionTests {
         }
 
         engine.reconcile(reaction.reconcileEntries(AppState(isConnected: true, outbox: 1)))
-        #expect(log.value == [1])              // opened + piped the first outbox value
+        #expect(log.value == [1])              // opened + published outbox on connect
         #expect(cancels.value.isEmpty)
 
         engine.reconcile(reaction.reconcileEntries(AppState(isConnected: false)))
         #expect(cancels.value == ["socket"])   // condition false → reconciler cancels it
     }
 
-    @Test func channelValueChangePipesIntoTheSameLiveChannel() {
+    @Test func broadcastingOnChangePipesIntoTheSameLiveChannel() {
         let log = LockProtected([Int]())
         let cancels = LockProtected([String]())
         let engine = makeEngine(LockProtected([Int]()))
 
         let reaction = Reaction<AppState, Int> { state in
             [
-                .channel(id: "socket", value: state.outbox) { _, _ in
+                Channel(id: "socket", broadcasting: .onChange(state.outbox)) { _ in
                     ChannelHandler(
                         receive: { v in log.mutate { $0.append(v) } },
                         cancel: { cancels.mutate { $0.append("socket") } }
@@ -86,16 +85,15 @@ struct ReactionTests {
         engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))
         engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))  // unchanged → no-op
         engine.reconcile(reaction.reconcileEntries(AppState(outbox: 2)))  // changed → pipe 2
-        #expect(log.value == [1, 2])           // inferred version from value drove the pipe
+        #expect(log.value == [1, 2])
         #expect(cancels.value.isEmpty)         // never torn down across the value change
     }
 
-    @Test func presenceOnlyOneShotStartsOnceWhilePresent() {
+    @Test func presenceOnlyChannelStartsOnceWhilePresent() {
         let received = LockProtected([Int]())
         let engine = makeEngine(received)
-
         let reaction = Reaction<AppState, Int> { state in
-            state.isConnected ? [.effect(id: "ping", .just(42))] : []
+            state.isConnected ? [Channel(id: "ping") { d in d(42); return .cancelOnly {} }] : []
         }
 
         engine.reconcile(reaction.reconcileEntries(AppState(isConnected: true)))
@@ -107,17 +105,20 @@ struct ReactionTests {
         #expect(received.value == [42, 42])
     }
 
-    @Test func versionedOneShotReRunsWhenVersionChanges() {
+    @Test func ephemeralChannelReRunsWhenResetKeyChanges() {
         let received = LockProtected([Int]())
         let engine = makeEngine(received)
-
         let reaction = Reaction<AppState, Int> { state in
-            [.effect(id: "fetch", version: state.outbox, .just(state.outbox))]
+            [
+                Channel(id: "fetch", lifetime: .ephemeral(resetKey: state.outbox)) { d in
+                    d(state.outbox); return .cancelOnly {}
+                }
+            ]
         }
 
         engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))  // same version → no re-fire
-        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 2)))  // version changed → re-fire
+        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 1)))  // same resetKey → no re-fire
+        engine.reconcile(reaction.reconcileEntries(AppState(outbox: 2)))  // resetKey changed → recreate
         #expect(received.value == [1, 2])
     }
 }

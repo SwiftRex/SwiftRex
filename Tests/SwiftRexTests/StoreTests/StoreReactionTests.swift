@@ -43,10 +43,10 @@ struct StoreReactionTests {
         let reaction = Reaction<S, A> { state in
             guard state.connected else { return [] }
             return [
-                .channel(id: "socket", value: state.outbox) { send, _ in
+                Channel(id: "socket", broadcasting: .onChange(state.outbox)) { dispatch in
                     opens.mutate { $0 += 1 }
                     return ChannelHandler(
-                        receive: { send(.received($0)) },
+                        receive: { dispatch(.received($0)) },
                         cancel: { cancels.mutate { $0 += 1 } }
                     )
                 }
@@ -76,7 +76,7 @@ struct StoreReactionTests {
     @Test func initialStateActivatesItsReactionWithoutADispatch() async {
         let opens = LockProtected(0)
         let reaction = Reaction<S, A> { state in
-            state.connected ? [.effect(id: "ping", .just(.received(99)))] : []
+            state.connected ? [Channel(id: "ping") { dispatch in dispatch(.received(99)); return .cancelOnly {} }] : []
         }
         // Start already connected — the initial reconcile should fire the effect with no dispatch.
         let store = Store(initial: S(connected: true), behavior: behavior, reaction: reaction)
@@ -90,7 +90,7 @@ struct StoreReactionTests {
         let reaction = Reaction<S, A> { state in
             state.connected
                 ? [
-                    .channel(id: "s", value: state.outbox) { _, _ in
+                    Channel(id: "s", broadcasting: .onChange(state.outbox)) { _ in
                         opens.mutate { $0 += 1 }
                         return ChannelHandler(receive: { _ in }, cancel: {})
                     }
