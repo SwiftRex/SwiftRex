@@ -48,7 +48,7 @@ struct BehaviorLiftCollectionTests {
         switch action {
         case .bump:
             .reduce { $0.value += 1 }
-                .produce { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
+                .react { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
         case .done:
             .doNothing
         }
@@ -138,7 +138,7 @@ struct BehaviorLiftCollectionTests {
             switch action {
             case .bump:
                 .reduce { $0.value += 1 }
-                    .produce { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
+                    .react { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
             case .done:
                 .doNothing
             }

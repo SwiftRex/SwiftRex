@@ -129,8 +129,8 @@ struct BehaviorMonoidTests {
     }
 
     @Test func combineEffectsAreMerged() {
-        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action) } }
-        let rhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action * 10) } }
+        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .react { _ in .just(action) } }
+        let rhs = Behavior<Int, Int, Void>.handle { action, _ in .react { _ in .just(action * 10) } }
         #expect(receivedActions(Behavior.combine(lhs, rhs), action: 2, state: 0).sorted() == [2, 20])
     }
 
@@ -170,7 +170,7 @@ struct BehaviorMonoidTests {
 struct BehaviorLiftActionTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let doubler = Behavior<Int, Int, Void>.handle { action, _ in
-        .reduce { $0 += action }.produce { _ in .just(action * 2) }
+        .reduce { $0 += action }.react { _ in .just(action * 2) }
     }
 
     @Test func matchingActionReachesHandler() {
@@ -299,7 +299,7 @@ struct BehaviorLiftStateTests {
 struct BehaviorLiftEnvironmentTests {
     @Test func liftEnvironmentProjectsEnv() {
         struct GE: Sendable { var sub: Int }
-        let sut = Behavior<Int, Int, Int>.handle { _, _ in .produce { ctx in .just(ctx.environment) } }
+        let sut = Behavior<Int, Int, Int>.handle { _, _ in .react { ctx in .just(ctx.environment) } }
             .liftEnvironment { (ge: GE) in ge.sub }
         let c = sut.handle(0, PreReducerContext(source: anySource, getter: { 0 }))
         let received = LockProtected([Int]())
@@ -317,7 +317,7 @@ struct BehaviorLiftEnvironmentTests {
 struct BehaviorCombinedLiftTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let base = Behavior<Int, Int, Int>.handle { action, _ in
-        .reduce { $0 += action }.produce { ctx in .just(ctx.environment) }
+        .reduce { $0 += action }.react { ctx in .just(ctx.environment) }
     }
 
     @Test func liftAllThreeAxesWKP() {

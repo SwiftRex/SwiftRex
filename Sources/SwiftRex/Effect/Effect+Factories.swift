@@ -10,12 +10,12 @@ extension Effect {
     ///
     /// ```swift
     /// // Dispatch .logout immediately after session expiry is detected
-    /// return .produce { _ in
+    /// return .react { _ in
     ///     .just(.logout)
     /// }
     ///
     /// // Debounce a single action
-    /// return .produce { _ in
+    /// return .react { _ in
     ///     .just(.refreshFeed, scheduling: .debounce(id: "refresh", delay: .seconds(1)))
     /// }
     /// ```
@@ -52,7 +52,7 @@ extension Effect {
     ///
     /// ```swift
     /// // Dispatch multiple actions as a unit after a successful login
-    /// return .produce { _ in
+    /// return .react { _ in
     ///     .sequence([.setUser(user), .loadDashboard, .trackLogin])
     /// }
     /// ```
@@ -182,7 +182,7 @@ extension Effect {
     ///
     /// ```swift
     /// case .noop:
-    ///     return .produce { _ in .empty }
+    ///     return .react { _ in .empty }
     /// ```
     ///
     /// - Note: This is exactly `Effect.identity` from the `Monoid` conformance. Both names

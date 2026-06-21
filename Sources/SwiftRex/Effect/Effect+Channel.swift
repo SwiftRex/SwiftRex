@@ -12,7 +12,7 @@
 /// ```swift
 /// // Throttle outgoing socket writes to 16 ms without ever closing the socket.
 /// case .send(let byte):
-///     .produce { env in
+///     .react { env in
 ///         .channel(value: byte, scheduling: .throttle(id: "socket", interval: .milliseconds(16))) { send, complete in
 ///             let socket = env.openSocket()
 ///             socket.onMessage { send(.received($0)) }
@@ -213,7 +213,7 @@ extension Effect {
     /// ```swift
     /// // Debounce a live search over a single long-lived stream — the consumer stays alive.
     /// case .queryChanged(let text):
-    ///     .produce { env in
+    ///     .react { env in
     ///         .channel(value: text, scheduling: .debounce(id: "search", delay: .milliseconds(300))) { queries, send, _ in
     ///             for await query in queries {
     ///                 let results = await env.api.search(query)

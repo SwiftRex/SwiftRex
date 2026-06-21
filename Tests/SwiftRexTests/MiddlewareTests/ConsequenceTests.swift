@@ -46,12 +46,12 @@ struct ConsequenceTests {
 
     @Test func produceLeavesStateUnchanged() {
         var state = 5
-        Consequence<Int, Void, Int>.produce { _ in .just(99) }.mutation.runEndoMut(&state)
+        Consequence<Int, Void, Int>.react { _ in .just(99) }.mutation.runEndoMut(&state)
         #expect(state == 5)
     }
 
     @Test func produceDispatchesAction() {
-        let c = Consequence<Int, Void, Int>.produce { _ in .just(42) }
+        let c = Consequence<Int, Void, Int>.react { _ in .just(42) }
         let received = LockProtected([Int]())
         subscribeAll(c.effect(voidCtx())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [42])
@@ -59,7 +59,7 @@ struct ConsequenceTests {
 
     @Test func produceReceivesEnvironment() {
         struct Env: Sendable { let value: Int }
-        let c = Consequence<Int, Env, Int>.produce { ctx in .just(ctx.environment.value) }
+        let c = Consequence<Int, Env, Int>.react { ctx in .just(ctx.environment.value) }
         let received = LockProtected([Int]())
         subscribeAll(
             c.effect(PostReducerContext<Int, Env>(environment: Env(value: 7), getter: { nil }))
@@ -71,7 +71,7 @@ struct ConsequenceTests {
 
     @Test func chainReduceProduceMutatesAndEmitsEffect() {
         var state = 0
-        let c = Consequence<Int, Void, Int>.reduce { $0 += 5 }.produce { _ in .just(99) }
+        let c = Consequence<Int, Void, Int>.reduce { $0 += 5 }.react { _ in .just(99) }
         c.mutation.runEndoMut(&state)
         #expect(state == 5)
         let received = LockProtected([Int]())
@@ -81,8 +81,8 @@ struct ConsequenceTests {
 
     @Test func chainProduceProduceCombinesEffects() {
         let c = Consequence<Int, Void, Int>
-            .produce { _ in .just(1) }
-            .produce { _ in .just(2) }
+            .react { _ in .just(1) }
+            .react { _ in .just(2) }
         let received = LockProtected([Int]())
         subscribeAll(c.effect(voidCtx())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value.sorted() == [1, 2])
@@ -99,8 +99,8 @@ struct ConsequenceTests {
     }
 
     @Test func combineEffectsAreMerged() {
-        let lhs = Consequence<Int, Void, Int>.produce { _ in .just(10) }
-        let rhs = Consequence<Int, Void, Int>.produce { _ in .just(20) }
+        let lhs = Consequence<Int, Void, Int>.react { _ in .just(10) }
+        let rhs = Consequence<Int, Void, Int>.react { _ in .just(20) }
         let received = LockProtected([Int]())
         subscribeAll(Consequence.combine(lhs, rhs).effect(voidCtx())) { d in
             received.mutate { $0.append(d.action) }

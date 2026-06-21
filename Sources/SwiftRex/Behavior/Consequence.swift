@@ -19,12 +19,12 @@ import DataStructure
 ///
 ///     case .fetch(let query):
 ///         // Pure effect — no mutation
-///         return .produce { ctx in ctx.environment.api.search(query).asEffect() }
+///         return .react { ctx in ctx.environment.api.search(query).asEffect() }
 ///
 ///     case .fetchAndShow(let query):
 ///         // Both: set loading flag, then fire the network request
 ///         return .reduce { $0.isLoading = true }
-///                .produce { ctx in ctx.environment.api.search(query).asEffect() }
+///                .react { ctx in ctx.environment.api.search(query).asEffect() }
 ///
 ///     case .noop:
 ///         return .doNothing
@@ -104,16 +104,16 @@ public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendab
     ///
     /// ```swift
     /// case .load(let id):
-    ///     return .produce { ctx in ctx.environment.api.fetch(id: id).asEffect() }
+    ///     return .react { ctx in ctx.environment.api.fetch(id: id).asEffect() }
     ///
     /// case .trackEvent(let name):
-    ///     return .produce { ctx in ctx.environment.analytics.track(name).asEffect() }
+    ///     return .react { ctx in ctx.environment.analytics.track(name).asEffect() }
     /// ```
     ///
     /// - Parameter f: A `@Sendable` closure that receives a ``PostReducerContext`` and returns
     ///   an ``Effect``.
     /// - Returns: A `Consequence` with identity mutation and `f` as the effect.
-    public static func produce(
+    public static func react(
         _ f: @escaping @Sendable (PostReducerContext<State, Environment>) -> Effect<Action>
     ) -> Self {
         Self(mutation: .unchanged, effect: Reader(f))
@@ -129,19 +129,19 @@ public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendab
     /// ```swift
     /// case .submit(let form):
     ///     return .reduce { $0.isLoading = true }
-    ///            .produce { ctx in ctx.environment.api.submit(form).asEffect() }
+    ///            .react { ctx in ctx.environment.api.submit(form).asEffect() }
     ///
     /// // Multiple effects run concurrently
     /// case .signIn(let credentials):
     ///     return .reduce { $0.isLoading = true }
-    ///            .produce { ctx in ctx.environment.auth.signIn(credentials).asEffect() }
-    ///            .produce { ctx in ctx.environment.analytics.track(.signInAttempt).asEffect() }
+    ///            .react { ctx in ctx.environment.auth.signIn(credentials).asEffect() }
+    ///            .react { ctx in ctx.environment.analytics.track(.signInAttempt).asEffect() }
     /// ```
     ///
     /// - Parameter f: A `@Sendable` closure that receives a ``PostReducerContext`` and returns
     ///   an ``Effect`` to combine with any existing effect.
     /// - Returns: A `Consequence` with the same mutation and a merged effect.
-    public func produce(
+    public func react(
         _ f: @escaping @Sendable (PostReducerContext<State, Environment>) -> Effect<Action>
     ) -> Self {
         Self(mutation: mutation, effect: Reader { ctx in .combine(self.effect.runReader(ctx), f(ctx)) })

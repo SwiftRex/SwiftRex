@@ -10,7 +10,7 @@ A `Consequence<State, Environment, Action>` is what a ``Behavior`` returns: a ``
 
 - ``reduce(_:)`` — a pure state mutation, no effect.
 - `produce { ctx in … }` — an effect, no mutation.
-- chain them — `.reduce { … }.produce { ctx in … }` — for both.
+- chain them — `.reduce { … }.react { ctx in … }` — for both.
 - ``doNothing`` — neither (the monoid identity); the ``Store`` fires no notifications for it.
 
 ### The algebra — a product monoid

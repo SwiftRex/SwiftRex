@@ -16,7 +16,7 @@ let behaviorGen: Gen<Behavior<Int, Int, Void>> = Gen.zip(reducerGen, effectGen).
     let (reducer, effect) = pair
     return Behavior<Int, Int, Void>.handle { action, _ in
         .reduce { state in reducer.reduce(action)(&state) }
-            .produce { _ in effect }
+            .react { _ in effect }
     }
 }
 

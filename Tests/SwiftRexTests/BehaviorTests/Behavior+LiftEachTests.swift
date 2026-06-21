@@ -59,7 +59,7 @@ struct BehaviorLiftEachTests {
     @Test func fansOutEffectsThatLoopBackPerElement() async {
         let perElement = Behavior<TimerAction, Timer, Void>.handle { action, _ in
             switch action {
-            case .tick: .produce { _ in Effect.just(.didTick) }
+            case .tick: .react { _ in Effect.just(.didTick) }
             case .didTick: .reduce { $0.ticked = true }
             }
         }

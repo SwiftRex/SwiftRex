@@ -32,7 +32,7 @@ import DataStructure
 /// // Full form — action and pre-mutation context; environment in produce
 /// let loggerBehavior = Behavior<AppAction, AppState, AppEnvironment> { action, context in
 ///     let before = context.stateBefore
-///     return .produce { ctx in
+///     return .react { ctx in
 ///         .just(.log(action: action, before: before, after: await ctx.liveState))
 ///     }
 /// }
@@ -82,7 +82,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     /// - The returned ``Consequence`` is applied by the Store in phases 2 and 3.
     ///
     /// - Note: Always called on `@MainActor`. Do not perform blocking work here — move
-    ///   async work into the returned `Consequence.produce(_:)` closure.
+    ///   async work into the returned `Consequence.react(_:)` closure.
     public let handle: @MainActor @Sendable (
         _ action: Action,
         _ context: PreReducerContext<State>

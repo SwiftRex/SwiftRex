@@ -10,7 +10,7 @@ A `Behavior<Action, State, Environment>` maps an action and a pre-mutation ``Pre
 let form = Behavior<AppAction, AppState, API> { action, _ in
     guard case .submit(let data) = action else { return .doNothing }
     return .reduce { $0.isLoading = true }
-        .produce { ctx in ctx.environment.api.submit(data).asEffect(AppAction.submitted) }
+        .react { ctx in ctx.environment.api.submit(data).asEffect(AppAction.submitted) }
 }
 ```
 

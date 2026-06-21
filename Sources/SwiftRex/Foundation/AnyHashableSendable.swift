@@ -25,7 +25,7 @@
 /// ```swift
 /// enum EffectID { case fetch, search }
 ///
-/// return .produce { ctx in
+/// return .react { ctx in
 ///     ctx.environment.api.search(query).asEffect()
 ///         .scheduling(.debounce(id: EffectID.search, delay: .milliseconds(300)))
 /// }
