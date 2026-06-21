@@ -76,7 +76,7 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 ### State-driven Effects
 
 - ``Reaction``
-- ``DesiredEffect``
+- ``Channel``
 
 ### Composition
 
