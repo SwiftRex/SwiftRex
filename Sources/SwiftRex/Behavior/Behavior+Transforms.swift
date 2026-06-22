@@ -26,14 +26,15 @@ extension Behavior {
     public func liftAction<GlobalAction: Sendable>(
         _ prism: Prism<GlobalAction, Action>
     ) -> Behavior<GlobalAction, State, Environment> {
-        Behavior<GlobalAction, State, Environment> { action, context in
-            guard let local = prism.preview(action) else { return .doNothing }
-            let c = self.handle(local, context)
-            return Consequence(
-                mutation: c.mutation,
-                effect: c.effect.map { $0.map(prism.review) }
-            )
-        }
+        Behavior<GlobalAction, State, Environment>(
+            handle: { action, context in
+                guard let local = prism.preview(action) else { return .doNothing }
+                let c = self.handle(local, context)
+                return Consequence(mutation: c.mutation, effect: c.effect.map { $0.map(prism.review) })
+            },
+            // Re-embed each supervised channel's actions into the global type.
+            supervisor: { state in self.supervisor(state).map { $0.map { $0.mapAction(prism.review) } } }
+        )
     }
 
     /// Lifts the action axis using a `\.case` key path (`PrismKeyPath`) — the case-key-path
@@ -79,13 +80,16 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ keyPath: WritableKeyPath<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, context in
-            let c = self.handle(action, context.map { $0[keyPath: keyPath] })
-            return Consequence(
-                mutation: c.mutation.map { lens(keyPath).lift($0) },
-                effect: c.effect.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
-            )
-        }
+        Behavior<Action, GlobalState, Environment>(
+            handle: { action, context in
+                let c = self.handle(action, context.map { $0[keyPath: keyPath] })
+                return Consequence(
+                    mutation: c.mutation.map { lens(keyPath).lift($0) },
+                    effect: c.effect.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
+                )
+            },
+            supervisor: { state in self.supervisor(state[keyPath: keyPath]) }
+        )
     }
 
     /// Lifts the state axis of this behavior using a `Lens`, embedding it in a wider global
@@ -104,13 +108,16 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ stateLens: Lens<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, context in
-            let c = self.handle(action, context.map(stateLens.get))
-            return Consequence(
-                mutation: c.mutation.map { stateLens.lift($0) },
-                effect: c.effect.contramapEnvironment { $0.map(stateLens.get) }
-            )
-        }
+        Behavior<Action, GlobalState, Environment>(
+            handle: { action, context in
+                let c = self.handle(action, context.map(stateLens.get))
+                return Consequence(
+                    mutation: c.mutation.map { stateLens.lift($0) },
+                    effect: c.effect.contramapEnvironment { $0.map(stateLens.get) }
+                )
+            },
+            supervisor: { state in self.supervisor(stateLens.get(state)) }
+        )
     }
 
     /// Lifts the state axis of this behavior using a `Prism`, embedding it in an enum-shaped
@@ -131,13 +138,17 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ statePrism: Prism<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, context in
-            let c = self.handle(action, context.compactMap(statePrism.preview))
-            return Consequence(
-                mutation: c.mutation.map { statePrism.lift($0) },
-                effect: c.effect.contramapEnvironment { $0.compactMap(statePrism.preview) }
-            )
-        }
+        Behavior<Action, GlobalState, Environment>(
+            handle: { action, context in
+                let c = self.handle(action, context.compactMap(statePrism.preview))
+                return Consequence(
+                    mutation: c.mutation.map { statePrism.lift($0) },
+                    effect: c.effect.contramapEnvironment { $0.compactMap(statePrism.preview) }
+                )
+            },
+            // Sub-state absent → supervise nothing, so the reconciler cancels the feature's channels.
+            supervisor: { state in statePrism.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+        )
     }
 
     /// Lifts the state axis of this behavior using an `AffineTraversal`, embedding it in a
@@ -159,13 +170,17 @@ extension Behavior {
     public func liftState<GlobalState: Sendable>(
         _ traversal: AffineTraversal<GlobalState, State>
     ) -> Behavior<Action, GlobalState, Environment> {
-        Behavior<Action, GlobalState, Environment> { action, context in
-            let c = self.handle(action, context.compactMap(traversal.preview))
-            return Consequence(
-                mutation: c.mutation.map { traversal.lift($0) },
-                effect: c.effect.contramapEnvironment { $0.compactMap(traversal.preview) }
-            )
-        }
+        Behavior<Action, GlobalState, Environment>(
+            handle: { action, context in
+                let c = self.handle(action, context.compactMap(traversal.preview))
+                return Consequence(
+                    mutation: c.mutation.map { traversal.lift($0) },
+                    effect: c.effect.contramapEnvironment { $0.compactMap(traversal.preview) }
+                )
+            },
+            // Focus absent → supervise nothing, so the reconciler cancels the feature's channels.
+            supervisor: { state in traversal.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+        )
     }
 }
 
@@ -190,13 +205,13 @@ extension Behavior {
     public func liftEnvironment<GlobalEnvironment: Sendable>(
         _ f: @escaping @Sendable (GlobalEnvironment) -> Environment
     ) -> Behavior<Action, State, GlobalEnvironment> {
-        Behavior<Action, State, GlobalEnvironment> { action, context in
-            let c = self.handle(action, context)
-            return Consequence(
-                mutation: c.mutation,
-                effect: c.effect.contramapEnvironment { $0.mapEnvironment(f) }
-            )
-        }
+        Behavior<Action, State, GlobalEnvironment>(
+            handle: { action, context in
+                let c = self.handle(action, context)
+                return Consequence(mutation: c.mutation, effect: c.effect.contramapEnvironment { $0.mapEnvironment(f) })
+            },
+            supervisor: { state in self.supervisor(state).contramapEnvironment(f) }
+        )
     }
 }
 

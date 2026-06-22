@@ -144,6 +144,15 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     ) {
         self.init(units: [handle])
     }
+
+    /// Creates a `Behavior` from a single `handle` closure and a `supervisor` — used by the lifts to
+    /// carry the state-driven axis through a transform.
+    init(
+        handle: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Consequence<State, Environment, Action>,
+        supervisor: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
+    ) {
+        self.init(units: [handle], supervisor: supervisor)
+    }
 }
 
 // MARK: - Named constructors
