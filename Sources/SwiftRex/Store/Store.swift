@@ -20,7 +20,7 @@ import Hourglass
 ///    stateObservers.didChange fired           — @Observable / push-based observers
 /// 3. consequence.effect.runReader(env)        — Reader runs; stateAccess = post-mutation state
 /// 4. engine.schedule(component) per component — action-driven effects (produce / Cmd)
-/// 5. engine.reconcile(behavior.supervise(state)) — state-driven channels (Sub); only if state changed
+/// 5. engine.reconcile(behavior.supervisor(state)) — state-driven channels (Sub); only if state changed
 /// ```
 ///
 /// Grouping all `willChange` notifications before the mutation (and all `didChange` notifications
@@ -200,11 +200,11 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         reconcileSupervised()
     }
 
-    /// Reconciles the engine against `behavior.supervise(state)` — the complete desired channel set
+    /// Reconciles the engine against `behavior.supervisor(state)` — the complete desired channel set
     /// for the current state, with the environment injected. Called at construction and after every
     /// state-changing dispatch.
     private func reconcileSupervised() {
-        engine.reconcile(behavior.supervise(state).runReader(environment).map { $0.reconcileEntry })
+        engine.reconcile(behavior.supervisor(state).runReader(environment).map { $0.reconcileEntry })
     }
 
     /// Creates a `Store` with a ``Reducer`` only (no side effects, `Environment == Void`).
