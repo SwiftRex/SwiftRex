@@ -88,29 +88,34 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
         _ context: PreReducerContext<State>
     ) -> Reaction<Action, State, Environment>
 
-    /// The **state** side (`supervise`): given the post-mutation state, the complete set of
-    /// ``Channel``s that should be alive (Elm's `Sub`). Reconciled by the Store after every change.
-    /// Defaults to the empty set; ``combine(_:_:)`` unions it.
-    public let supervise: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
+    /// The **state** side: given the post-mutation state, the complete set of ``Channel``s that
+    /// should be alive (Elm's `Sub`). Reconciled by the Store after every change. Defaults to the
+    /// empty set; ``combine(_:_:)`` unions it. Build/extend it with ``supervise(_:)``.
+    package let supervisor: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
 
-    /// Creates a `Middleware` from a `handle` closure (and optional `supervise`).
+    /// Creates a `Middleware` from a `handle` closure (and optional supervisor).
     ///
     /// - Parameters:
     ///   - handle: Maps `(Action, PreReducerContext)` to a ``Reaction`` (the action side).
-    ///   - supervise: Maps state to the channels to keep alive (the state side). Defaults to empty.
+    ///   - supervisor: Maps state to the channels to keep alive (the state side). Defaults to empty.
     public init(
         handle: @escaping @MainActor @Sendable (
             _ action: Action,
             _ context: PreReducerContext<State>
         ) -> Reaction<Action, State, Environment>,
-        supervise: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
+        supervisor: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
     ) {
         self.handle = handle
-        self.supervise = supervise
+        self.supervisor = supervisor
     }
 }
 
 extension Middleware {
+    /// Creates an **action-driven** middleware — the `react` (Cmd) side. Equivalent to `Middleware(handle:)`.
+    public static func react(
+        _ fn: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
+    ) -> Self { Middleware(handle: fn) }
+
     /// Creates a **state-driven** middleware — the `supervise` (Sub) side, handling no actions.
     ///
     /// ```swift
@@ -121,8 +126,18 @@ extension Middleware {
     public static func supervise(
         _ keep: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
     ) -> Self {
-        Middleware(handle: { _, _ in Reader { _ in .empty } }, supervise: keep)
+        Middleware(handle: { _, _ in Reader { _ in .empty } }, supervisor: keep)
     }
+
+    /// Adds an effect concern, combining it with `self` — `m.react { … }` ≡ `m <> .react { … }`.
+    public func react(
+        _ fn: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
+    ) -> Self { .combine(self, .react(fn)) }
+
+    /// Adds a state-driven concern, combining it with `self` — `m.supervise { … }` ≡ `m <> .supervise { … }`.
+    public func supervise(
+        _ keep: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
+    ) -> Self { .combine(self, .supervise(keep)) }
 }
 
 // MARK: - Named constructors
@@ -170,8 +185,8 @@ extension Middleware: Semigroup {
                 let rhsReader = rhs.handle(action, context)
                 return Reader { ctx in .combine(lhsReader.runReader(ctx), rhsReader.runReader(ctx)) }
             },
-            supervise: { @MainActor state in
-                let l = lhs.supervise(state), r = rhs.supervise(state)   // resolve on @MainActor
+            supervisor: { @MainActor state in
+                let l = lhs.supervisor(state), r = rhs.supervisor(state)   // resolve on @MainActor
                 return Reader { env in l.runReader(env) + r.runReader(env) }
             }
         )
