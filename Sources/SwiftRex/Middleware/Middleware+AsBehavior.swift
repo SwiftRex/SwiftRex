@@ -13,7 +13,7 @@ extension Middleware {
                     Consequence(mutation: .unchanged, effect: self.handle(action, context))
                 }
             ],
-            supervise: self.supervise
+            supervisor: self.supervisor
         )
     }
 }

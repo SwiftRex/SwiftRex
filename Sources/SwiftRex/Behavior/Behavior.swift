@@ -90,8 +90,8 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
 
     /// The **state** side: given the post-mutation state, the complete set of ``Channel``s that
     /// should be alive (Elm's `Sub`). The Store reconciles it after every state change. Defaults to
-    /// the empty set; ``combine(_:_:)`` unions it.
-    public let supervise: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
+    /// the empty set; ``combine(_:_:)`` unions it. Build/extend it with ``supervise(_:)``.
+    package let supervisor: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
 
     /// The per-feature units, in composition order. ``identity`` is the empty list, ``combine(_:_:)``
     /// concatenates, and ``handle`` is a single flat pass over them — no nested closure tree.
@@ -105,10 +105,10 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
             _ action: Action,
             _ context: PreReducerContext<State>
         ) -> Consequence<State, Environment, Action>],
-        supervise: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
+        supervisor: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
     ) {
         self.units = units
-        self.supervise = supervise
+        self.supervisor = supervisor
         if units.isEmpty {
             self.handle = { _, _ in .doNothing }
         } else if units.count == 1 {
@@ -183,8 +183,43 @@ extension Behavior {
     public static func supervise(
         _ keep: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
     ) -> Self {
-        Behavior(units: [], supervise: keep)
+        Behavior(units: [], supervisor: keep)
     }
+
+    /// A **mutation-only** behavior — reduces state per action, no effects. One of the three
+    /// fluent concerns (`reduce` / `react` / `supervise`).
+    public static func reduce(
+        _ fn: @escaping @Sendable (_ action: Action, _ state: inout State) -> Void
+    ) -> Self {
+        Behavior(units: [{ action, _ in .reduce { (state: inout State) in fn(action, &state) } }])
+    }
+
+    /// An **effect-only** behavior — reacts to an action with an effect, no mutation. Mirrors
+    /// `Middleware.react`. One of the three fluent concerns.
+    public static func react(
+        _ fn: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
+    ) -> Self {
+        Behavior(units: [{ action, context in Consequence(mutation: .unchanged, effect: fn(action, context)) }])
+    }
+}
+
+// MARK: - Fluent chaining (instance == `self <> Self.static(...)`)
+
+extension Behavior {
+    /// Adds a mutation concern, combining it with `self` — `b.reduce { … }` ≡ `b <> .reduce { … }`.
+    public func reduce(
+        _ fn: @escaping @Sendable (Action, inout State) -> Void
+    ) -> Self { .combine(self, .reduce(fn)) }
+
+    /// Adds an effect concern, combining it with `self` — `b.react { … }` ≡ `b <> .react { … }`.
+    public func react(
+        _ fn: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
+    ) -> Self { .combine(self, .react(fn)) }
+
+    /// Adds a state-driven concern, combining it with `self` — `b.supervise { … }` ≡ `b <> .supervise { … }`.
+    public func supervise(
+        _ keep: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
+    ) -> Self { .combine(self, .supervise(keep)) }
 }
 
 // MARK: - Reducer + Middleware
@@ -224,7 +259,7 @@ extension Behavior {
                     )
                 }
             ],
-            supervise: middleware.supervise
+            supervisor: middleware.supervisor
         )
     }
 }
@@ -253,12 +288,12 @@ extension Behavior: Semigroup {
     ///   - rhs: The second behavior; its mutation sees lhs's mutations.
     /// - Returns: A combined behavior that runs both handle closures and merges their consequences.
     public static func combine(_ lhs: Behavior, _ rhs: Behavior) -> Behavior {
-        Behavior(units: lhs.units + rhs.units, supervise: unionSupervise([lhs, rhs]))
+        Behavior(units: lhs.units + rhs.units, supervisor: unionSupervise([lhs, rhs]))
     }
 
     /// Flattens a non-empty run of behaviors in a single pass — O(total units), no nesting.
     public static func sconcat(_ first: Behavior, _ rest: [Behavior]) -> Behavior {
-        Behavior(units: rest.reduce(into: first.units) { $0 += $1.units }, supervise: unionSupervise([first] + rest))
+        Behavior(units: rest.reduce(into: first.units) { $0 += $1.units }, supervisor: unionSupervise([first] + rest))
     }
 
     /// Unions the `supervise` axes of `behaviors`: the desired channel set for a state is the
@@ -268,7 +303,7 @@ extension Behavior: Semigroup {
         _ behaviors: [Behavior]
     ) -> @MainActor @Sendable (State) -> Keep<Action, Environment> {
         { @MainActor state in
-            let keeps = behaviors.map { $0.supervise(state) }   // resolve each supervisor on @MainActor
+            let keeps = behaviors.map { $0.supervisor(state) }   // resolve each supervisor on @MainActor
             return Reader { env in keeps.flatMap { $0.runReader(env) } }
         }
     }

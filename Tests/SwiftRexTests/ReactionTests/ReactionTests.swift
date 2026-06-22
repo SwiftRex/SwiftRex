@@ -13,7 +13,7 @@ struct SuperviseTests {
 
     /// The channels a behavior supervises for `state` (Void environment).
     private func channels(_ behavior: Behavior<A, S, Void>, _ state: S) -> [Channel<A>] {
-        behavior.supervise(state).runReader(())
+        behavior.supervisor(state).runReader(())
     }
 
     nonisolated private func channel(_ id: String) -> Channel<A> {
@@ -60,6 +60,25 @@ struct SuperviseTests {
         let behavior = Behavior<A, S, Env>.supervise { _ in
             Keep { env in env.ids.map { id in Channel(id: id) { _ in .cancelOnly {} } } }
         }
-        #expect(behavior.supervise(S()).runReader(Env(ids: ["a", "b", "c"])).count == 3)
+        #expect(behavior.supervisor(S()).runReader(Env(ids: ["a", "b", "c"])).count == 3)
+    }
+
+    // MARK: - Fluent chaining (instance == self <> static)
+
+    @Test func fluentBehaviorChainFoldsAllThreeConcerns() {
+        // .reduce { … }.react { … }.supervise { … } — three concerns folded by combine.
+        let chained = Behavior<A, S, Void>
+            .reduce { _, state in state.connected = true }
+            .react { _, _ in Reaction { _ in .empty } }
+            .supervise { _ in Keep { _ in [channel("a")] } }
+        #expect(chained.units.count == 2)            // reduce + react folded into the action axis
+        #expect(channels(chained, S()).count == 1)   // supervise carried through the chain
+    }
+
+    @Test func fluentMiddlewareSuperviseAndReactChain() {
+        let middleware = Middleware<A, S, Void>
+            .supervise { _ in Keep { _ in [channel("m")] } }
+            .react { _, _ in Reaction { _ in .empty } }
+        #expect(channels(middleware.asBehavior, S()).count == 1)
     }
 }
