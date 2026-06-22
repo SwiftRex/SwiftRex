@@ -81,4 +81,40 @@ struct SuperviseTests {
             .react { _, _ in Reaction { _ in .empty } }
         #expect(channels(middleware.asBehavior, S()).count == 1)
     }
+
+    // MARK: - supervise threads through the lifts
+
+    @Test func supervisorThreadsThroughStateLift() {
+        struct Global: Sendable { var sub = S() }
+        let feature = Behavior<A, S, Void>.supervise { state in
+            Keep { _ in state.connected ? [channel("socket")] : [] }
+        }
+        let lifted = feature.liftState(\Global.sub)
+        #expect(lifted.supervisor(Global(sub: S(connected: true))).runReader(()).count == 1)
+        #expect(lifted.supervisor(Global(sub: S(connected: false))).runReader(()).isEmpty)
+    }
+
+    private enum Nav: Sendable { case loggedOut; case loggedIn(S) }
+
+    @Test func supervisorIsCancelledWhenPrismStateFocusIsAbsent() {
+        // The state-driven-nav payoff: sub-state gone → no channels → reconciler cancels them.
+        let prism = Prism<Nav, S>(
+            preview: { if case .loggedIn(let s) = $0 { s } else { nil } },
+            review: Nav.loggedIn
+        )
+        let feature = Behavior<A, S, Void>.supervise { _ in Keep { _ in [channel("socket")] } }
+        let lifted = feature.liftState(prism)
+        #expect(lifted.supervisor(.loggedIn(S())).runReader(()).count == 1)
+        #expect(lifted.supervisor(.loggedOut).runReader(()).isEmpty)
+    }
+
+    @Test func supervisorThreadsThroughEnvironmentLift() {
+        struct InnerEnv: Sendable { let ids: [String] }
+        struct GlobalEnv: Sendable { let inner: InnerEnv }
+        let feature = Behavior<A, S, InnerEnv>.supervise { _ in
+            Keep { env in env.ids.map { id in Channel(id: id) { _ in .cancelOnly {} } } }
+        }
+        let lifted = feature.liftEnvironment { (g: GlobalEnv) in g.inner }
+        #expect(lifted.supervisor(S()).runReader(GlobalEnv(inner: InnerEnv(ids: ["a", "b"]))).count == 2)
+    }
 }

@@ -23,12 +23,13 @@ extension Middleware {
     public func liftAction<GlobalAction: Sendable>(
         _ prism: Prism<GlobalAction, Action>
     ) -> Middleware<GlobalAction, State, Environment> {
-        Middleware<GlobalAction, State, Environment> { action, context in
-            guard let local = prism.preview(action) else {
-                return Reader { _ in .empty }
-            }
-            return self.handle(local, context).map { $0.map(prism.review) }
-        }
+        Middleware<GlobalAction, State, Environment>(
+            handle: { action, context in
+                guard let local = prism.preview(action) else { return Reader { _ in .empty } }
+                return self.handle(local, context).map { $0.map(prism.review) }
+            },
+            supervisor: { state in self.supervisor(state).map { $0.map { $0.mapAction(prism.review) } } }
+        )
     }
 
     /// Lifts the state axis of this middleware using a projection closure, embedding it in a
@@ -51,10 +52,10 @@ extension Middleware {
     public func liftState<GlobalState: Sendable>(
         _ f: @escaping @Sendable (GlobalState) -> State
     ) -> Middleware<Action, GlobalState, Environment> {
-        Middleware<Action, GlobalState, Environment> { action, context in
-            self.handle(action, context.map(f))
-                .contramapEnvironment { $0.map(f) }
-        }
+        Middleware<Action, GlobalState, Environment>(
+            handle: { action, context in self.handle(action, context.map(f)).contramapEnvironment { $0.map(f) } },
+            supervisor: { state in self.supervisor(f(state)) }
+        )
     }
 
     /// Lifts the state axis of this middleware using a `Lens`. Only the `get` half is used —
@@ -89,10 +90,12 @@ extension Middleware {
     public func liftState<GlobalState: Sendable>(
         _ prism: Prism<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
-        Middleware<Action, GlobalState, Environment> { action, context in
-            self.handle(action, context.compactMap(prism.preview))
-                .contramapEnvironment { $0.compactMap(prism.preview) }
-        }
+        Middleware<Action, GlobalState, Environment>(
+            handle: { action, context in
+                self.handle(action, context.compactMap(prism.preview)).contramapEnvironment { $0.compactMap(prism.preview) }
+            },
+            supervisor: { state in prism.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+        )
     }
 
     /// Lifts the state axis of this middleware using an `AffineTraversal`, focusing on a
@@ -112,10 +115,12 @@ extension Middleware {
     public func liftState<GlobalState: Sendable>(
         _ traversal: AffineTraversal<GlobalState, State>
     ) -> Middleware<Action, GlobalState, Environment> {
-        Middleware<Action, GlobalState, Environment> { action, context in
-            self.handle(action, context.compactMap(traversal.preview))
-                .contramapEnvironment { $0.compactMap(traversal.preview) }
-        }
+        Middleware<Action, GlobalState, Environment>(
+            handle: { action, context in
+                self.handle(action, context.compactMap(traversal.preview)).contramapEnvironment { $0.compactMap(traversal.preview) }
+            },
+            supervisor: { state in traversal.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+        )
     }
 
     /// Lifts the environment axis of this middleware using a projection closure, embedding it
@@ -136,10 +141,10 @@ extension Middleware {
     public func liftEnvironment<GlobalEnvironment: Sendable>(
         _ f: @escaping @Sendable (GlobalEnvironment) -> Environment
     ) -> Middleware<Action, State, GlobalEnvironment> {
-        Middleware<Action, State, GlobalEnvironment> { action, context in
-            self.handle(action, context)
-                .contramapEnvironment { $0.mapEnvironment(f) }
-        }
+        Middleware<Action, State, GlobalEnvironment>(
+            handle: { action, context in self.handle(action, context).contramapEnvironment { $0.mapEnvironment(f) } },
+            supervisor: { state in self.supervisor(state).contramapEnvironment(f) }
+        )
     }
 }
 

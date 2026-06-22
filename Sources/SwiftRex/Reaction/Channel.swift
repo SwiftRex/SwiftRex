@@ -100,6 +100,34 @@ public struct Channel<Action: Sendable>: Sendable {
     }
 }
 
+// MARK: - Lift support
+
+extension Channel {
+    /// Memberwise init from the already-computed fields (used by ``mapAction(_:)`` and the lifts).
+    package init(
+        id: AnyHashableSendable,
+        resetIdentity: AnyHashableSendable?,
+        broadcastIdentity: AnyHashableSendable?,
+        component: Effect<Action>.Component
+    ) {
+        self.id = id
+        self.resetIdentity = resetIdentity
+        self.broadcastIdentity = broadcastIdentity
+        self.component = component
+    }
+
+    /// Re-types the dispatched actions via `f`, keeping the id, diff identities, and broadcast value.
+    /// Used by the action-axis lifts to re-embed a feature's channel actions into the global type.
+    package func mapAction<B: Sendable>(_ f: @escaping @Sendable (Action) -> B) -> Channel<B> {
+        Channel<B>(
+            id: id,
+            resetIdentity: resetIdentity,
+            broadcastIdentity: broadcastIdentity,
+            component: Effect(components: [component]).map(f).components[0]
+        )
+    }
+}
+
 // MARK: - Knobs
 
 extension Channel {
