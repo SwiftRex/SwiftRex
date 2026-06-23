@@ -84,6 +84,7 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 - <doc:ExampleChatRoom>
 - <doc:ExampleWebSocket>
 - ``Channel``
+- ``ChannelDelivery``
 - ``Keep``
 - ``Reaction``
 

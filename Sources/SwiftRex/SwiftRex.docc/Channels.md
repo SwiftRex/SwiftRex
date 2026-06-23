@@ -40,7 +40,7 @@ Channel(id: "location") { dispatch in
 ``Channel/Lifetime`` controls what a *change in state* does to a running channel:
 
 - ``Channel/Lifetime/permanent`` (default) — open once and keep it open across state changes. Cancelled only when it leaves the desired set entirely.
-- `Channel.Lifetime.ephemeral(resetKey:)` — **recreate** (cancel + reopen) whenever `resetKey` changes between reconcile cycles. A search keyed to the query, a socket keyed to a room id, a poll keyed to a filter.
+- `Channel.Lifetime.ephemeral(resetKey:settle:)` — **recreate** (cancel + reopen) whenever `resetKey` changes between reconcile cycles. A search keyed to the query, a socket keyed to a room id, a poll keyed to a filter.
 
 ```swift
 // Reconnect the socket whenever the room changes; keep it otherwise.
@@ -48,6 +48,18 @@ Channel(id: "room", lifetime: .ephemeral(resetKey: state.roomID)) { dispatch in 
 ```
 
 `resetKey` accepts any `Hashable & Sendable`.
+
+#### `settle` — debounce the recreation
+
+By default a `resetKey` change recreates the channel immediately. Pass `settle:` to **debounce the creation**: the live instance is torn down *now*, but the replacement opens only once the key has been quiet for that long — search-as-you-type reconnection without thrashing.
+
+```swift
+// Type "h","he","hel" fast → nothing opens; quiet for 300ms → one fetch for "hel".
+// Change again → tear the stale fetch down immediately, debounce the next.
+Channel(id: "search", lifetime: .ephemeral(resetKey: state.query, settle: .milliseconds(300))) { dispatch in … }
+```
+
+`settle` paces *creation* only; it is independent of how the channel's *values* are paced (see Delivery, below).
 
 ### Broadcasting — auto-publishing state into the channel
 
@@ -62,6 +74,23 @@ Channel(id: "cursor", broadcasting: .onChange(state.cursor)) { dispatch in … }
 ```
 
 Use `.onChange` for a *state-derived* value that should track state. Use the action-driven ``Effect/broadcast(_:channel:file:function:line:)`` for *discrete, possibly-repeated* sends (sending `"hi"` twice must send it twice) — that path is **not** deduped.
+
+### Delivery — the channel as a throttled subject
+
+``ChannelDelivery`` paces the *values* flowing into a live channel (whether from `.onChange` or `.broadcast`) — the channel behaving like a `PassthroughSubject`/`CurrentValueSubject` with a `.throttle` attached:
+
+- ``ChannelDelivery/immediate`` (default) — deliver every value as it arrives.
+- ``ChannelDelivery/throttle(_:)`` — at most once per interval; values inside the window are dropped.
+- ``ChannelDelivery/debounce(_:)`` — only after the values go quiet, so a burst collapses to its latest.
+
+```swift
+// Location updates flood in; cap the actions to ≤1/sec — without reconnecting the stream.
+Channel(id: "location", delivery: .throttle(.seconds(1))) { dispatch in … }
+```
+
+**Delivery is decoupled from creation.** The channel always **opens immediately** when it enters the desired set — pacing never defers the subscription, only the values. A ``Broadcasting/onChange(_:)`` channel (a CurrentValueSubject) delivers its current value on open and paces the changes after; a ``Broadcasting/nothing`` channel (a PassthroughSubject) opens silently and its **first** broadcast goes straight through, with pacing starting only after. Because delivery state is per-instance, an `ephemeral` recreate also resets the throttle/debounce window. `settle` (creation) and `delivery` (values) are orthogonal — an ephemeral chat socket can `settle` its room-switches *and* `throttle` its inbound messages.
+
+> Already throttling upstream (a publisher's own `.throttle`)? Don't also set `delivery:` — double-pacing behaves exactly like two `.throttle`s in one pipeline. The channel knob is for the non-reactive `.broadcast` path; the `asChannel` bridges leave value pacing to the publisher.
 
 ### The two send paths, side by side
 
@@ -119,6 +148,7 @@ Because the desired set is recomputed from state every cycle, the same channel i
 - ``Channel``
 - ``Channel/Lifetime``
 - ``Broadcasting``
+- ``ChannelDelivery``
 - ``ChannelHandler``
 - ``Keep``
 
