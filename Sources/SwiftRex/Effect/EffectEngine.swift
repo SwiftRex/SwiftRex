@@ -41,6 +41,17 @@ package final class EffectEngine<Action: Sendable> {
     /// desired set each cycle and the engine diffs it against this, deriving open/recreate/pipe/cancel.
     private var reconciledStates: [AnyHashableSendable: ReconcileState] = [:]
 
+    /// The delivery pacing registered when each live channel opened, keyed as `channelSinks`. Subsequent
+    /// deliveries to a key (`.onChange` or `.broadcast`) honour *this*, not the per-call component — so
+    /// the channel acts as a throttled subject and `.broadcast` never has to think about timing.
+    private var channelDelivery: [AnyHashableSendable: ChannelDelivery] = [:]
+
+    /// Pending **creation** debounce timers — the `ephemeral` `settle`. While present, the channel is
+    /// torn down (or never-yet-open) and its reopen is waiting for the reset key to settle; the latest
+    /// desired component to open is held in `pendingCreateComponent`.
+    private var pendingCreate: [AnyHashableSendable: SubscriptionToken] = [:]
+    private var pendingCreateComponent: [AnyHashableSendable: Effect<Action>.Component] = [:]
+
     private let clock: AnyClock<Swift.Duration>
     private let send: @Sendable (DispatchedAction<Action>) -> Void
 
@@ -57,7 +68,9 @@ package final class EffectEngine<Action: Sendable> {
     /// `true` when no one-shot effect is running and no channel-delivery timer is pending. Open
     /// channels are reported separately via ``openChannelKeys`` — a long-lived channel is *not*
     /// outstanding one-shot work, but it *is* an effect that must be cancelled before a test ends.
-    package var isQuiescent: Bool { runningEffects.keys.allSatisfy { channelSinks[$0] != nil } && pendingDeliver.isEmpty }
+    package var isQuiescent: Bool {
+        runningEffects.keys.allSatisfy { channelSinks[$0] != nil } && pendingDeliver.isEmpty && pendingCreate.isEmpty
+    }
 
     /// Keys of channels currently open. Exhaustive test mode fails if any remain at end-of-test.
     package var openChannelKeys: Set<AnyHashableSendable> { Set(channelSinks.keys) }
@@ -88,9 +101,9 @@ package final class EffectEngine<Action: Sendable> {
             key = AnyHashableSendable(AnonymousEffectKey(value: nextAnonymousEffectKey))
         }
 
-        // Pipeable channel: feed the value into the live effect (or start it) — never recreate.
+        // Pipeable channel: open it (immediately) or feed the value into the live effect — never recreate.
         if let channel = component.channel {
-            scheduleChannel(channel, key: key, scheduling: scheduling)
+            scheduleChannel(channel, key: key)
             return
         }
 
@@ -130,59 +143,66 @@ package final class EffectEngine<Action: Sendable> {
         }
     }
 
-    /// Honours scheduling for a pipeable channel: gates the *value delivery* (throttle drops,
-    /// debounce/delay defers) and then pipes it into the live channel — starting the channel on
-    /// first use — without ever tearing the running effect down.
+    /// Opens a pipeable channel **immediately** on first use (creation is never paced), then on every
+    /// later call pipes the value into the live channel — paced by the channel's *registered*
+    /// ``ChannelDelivery`` (throttle drops, debounce defers), never tearing the running effect down.
     private func scheduleChannel(
         _ channel: Effect<Action>.Component.Channel,
-        key: AnyHashableSendable,
-        scheduling: EffectScheduling
+        key: AnyHashableSendable
     ) {
-        // Throttle gate: drop this value if a delivery happened within the interval. The live
-        // channel is untouched — only the value is dropped.
-        if case .throttle(let interval) = scheduling.coalesce {
+        // Not yet open → OPEN NOW. Creation is decoupled from delivery pacing: the channel subscribes
+        // straight away (its first value, if any, delivered by `start`), and registers its delivery
+        // policy for the values that follow.
+        guard channelSinks[key] != nil else {
+            guard let start = channel.start else { return } // pipe-only with nothing live → drop
+            let (token, sink) = start(channel.value, send) { [weak self] in
+                Task { @MainActor [weak self] in self?.disposeOpenChannel(key) }
+            }
+            runningEffects[key] = token
+            channelSinks[key] = sink
+            channelDelivery[key] = channel.delivery
+            // The open's first value (if any) is delivered immediately by `start`; start the throttle
+            // window from here so a value arriving right after the open is paced against it.
+            if case .throttle(let interval) = channel.delivery {
+                throttleStamps[key] = (last: clock.now, interval: interval)
+            }
+            return
+        }
+
+        // Already open → this is a value DELIVERY. Pace it by the channel's registered policy, ignoring
+        // the per-call component's pacing (so a `.broadcast` is timing-agnostic — the channel rules).
+        deliver(channel.value, to: key)
+    }
+
+    /// Paces one value into the already-open channel under `key` per its registered ``ChannelDelivery``.
+    private func deliver(_ value: any Sendable, to key: AnyHashableSendable) {
+        switch channelDelivery[key] ?? .immediate {
+        case .immediate:
+            channelSinks[key]?(value)
+        case .throttle(let interval):
             let now = clock.now
             throttleStamps = throttleStamps.filter { $0.value.last.duration(to: now) < $0.value.interval }
-            if let entry = throttleStamps[key], entry.last.duration(to: now) < interval { return }
+            if let entry = throttleStamps[key], entry.last.duration(to: now) < interval { return } // drop
             throttleStamps[key] = (last: now, interval: interval)
-        }
-
-        let debounceDelay: Duration?
-        if case .debounce(let delay) = scheduling.coalesce { debounceDelay = delay } else { debounceDelay = nil }
-        let preWait = max(.zero, (debounceDelay ?? .zero) + (scheduling.delay ?? .zero))
-        let value = channel.value
-
-        let deliver: @MainActor @Sendable () -> Void = { [weak self] in
-            guard let self else { return }
-            self.pendingDeliver.removeValue(forKey: key)
-            if let sink = self.channelSinks[key] {
-                sink(value)                         // a channel is live under this key → pipe into it
-            } else if let start = channel.start {
-                let (token, sink) = start(value, self.send) { [weak self] in
-                    Task { @MainActor [weak self] in
-                        self?.runningEffects.removeValue(forKey: key)
-                        self?.channelSinks.removeValue(forKey: key)
-                    }
-                }
-                self.runningEffects[key] = token
-                self.channelSinks[key] = sink
-            }
-            // else: pipe-only component (`start == nil`) and nothing live under this key → drop.
-        }
-
-        if preWait > .zero {
-            // Restart the debounce window; the live channel (in `runningEffects`) is left running.
-            pendingDeliver[key]?.cancel()
+            channelSinks[key]?(value)
+        case .debounce(let window):
+            pendingDeliver[key]?.cancel() // restart the quiet window; the live channel keeps running
             let clock = clock
             let task = Task { @MainActor [weak self] in
-                try await clock.sleep(for: preWait)
-                guard !Task.isCancelled, self != nil else { return }
-                deliver()
+                try await clock.sleep(for: window)
+                guard !Task.isCancelled, let self else { return }
+                self.pendingDeliver.removeValue(forKey: key)
+                self.channelSinks[key]?(value)
             }
             pendingDeliver[key] = SubscriptionToken { task.cancel() }
-        } else {
-            deliver()
         }
+    }
+
+    /// Drops the registries for a channel that completed on its own (the `start` completion callback).
+    private func disposeOpenChannel(_ key: AnyHashableSendable) {
+        runningEffects.removeValue(forKey: key)
+        channelSinks.removeValue(forKey: key)
+        channelDelivery.removeValue(forKey: key)
     }
 
     /// Cancels and forgets whatever runs under `key` across all registries (the cancel-only path,
@@ -196,6 +216,13 @@ package final class EffectEngine<Action: Sendable> {
         runningEffects.removeValue(forKey: key)
         channelSinks.removeValue(forKey: key)
         pendingDeliver.removeValue(forKey: key)
+        // Delivery pacing is per-instance: tearing the channel down resets its throttle/debounce state,
+        // so a recreate (cancel + reopen) always starts with a fresh window. Also drop any pending
+        // settle timer so a no-longer-desired channel never opens later.
+        throttleStamps.removeValue(forKey: key)
+        channelDelivery.removeValue(forKey: key)
+        pendingCreate.removeValue(forKey: key)
+        pendingCreateComponent.removeValue(forKey: key)
     }
 
     // MARK: - Reconcile (state-driven `Reaction`)
@@ -212,15 +239,20 @@ package final class EffectEngine<Action: Sendable> {
         package let component: Effect<Action>.Component
         package let resetIdentity: AnyHashableSendable?
         package let broadcastIdentity: AnyHashableSendable?
+        /// Creation debounce (the `ephemeral` `settle`): on a `resetIdentity` change, tear down now and
+        /// defer the reopen until the key is quiet this long. `nil` recreates immediately.
+        package let settle: Duration?
 
         package init(
             component: Effect<Action>.Component,
             resetIdentity: AnyHashableSendable?,
-            broadcastIdentity: AnyHashableSendable?
+            broadcastIdentity: AnyHashableSendable?,
+            settle: Duration? = nil
         ) {
             self.component = component
             self.resetIdentity = resetIdentity
             self.broadcastIdentity = broadcastIdentity
+            self.settle = settle
         }
     }
 
@@ -258,17 +290,42 @@ package final class EffectEngine<Action: Sendable> {
             next[key] = state
             if let prev = reconciledStates[key] {
                 if prev.reset != state.reset {
-                    cancel(key: key)            // recreate: tear down, then reopen below
-                    schedule(entry.component)
+                    cancel(key: key)                       // recreate: tear the stale instance down now…
+                    openChannel(key: key, entry: entry)    // …then reopen, immediately or after `settle`
                 } else if prev.broadcast != state.broadcast {
-                    schedule(entry.component)   // pipe: deliver the new value into the live channel
+                    if pendingCreate[key] != nil {
+                        pendingCreateComponent[key] = entry.component // still settling → open with the latest value
+                    } else {
+                        schedule(entry.component)          // live → deliver the new value (paced by its policy)
+                    }
                 }
                 // else: both unchanged → nothing
             } else {
-                schedule(entry.component)        // newly present → open
+                openChannel(key: key, entry: entry)        // newly present → open, immediately or after `settle`
             }
         }
         for key in reconciledStates.keys where next[key] == nil { cancel(key: key) }
         reconciledStates = next
+    }
+
+    /// Opens the channel for `key` — immediately, or (when the entry carries a `settle`) debounced: the
+    /// open waits for the reset key to stay quiet for `settle`, and the latest desired component wins.
+    private func openChannel(key: AnyHashableSendable, entry: ReconcileEntry) {
+        guard let settle = entry.settle else {
+            schedule(entry.component)
+            return
+        }
+        pendingCreate[key]?.cancel()                       // restart the settle window
+        pendingCreateComponent[key] = entry.component
+        let clock = clock
+        let task = Task { @MainActor [weak self] in
+            try await clock.sleep(for: settle)
+            guard !Task.isCancelled, let self else { return }
+            self.pendingCreate.removeValue(forKey: key)
+            if let component = self.pendingCreateComponent.removeValue(forKey: key) {
+                self.schedule(component)
+            }
+        }
+        pendingCreate[key] = SubscriptionToken { task.cancel() }
     }
 }

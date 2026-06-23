@@ -119,7 +119,8 @@ extension Effect {
                             if let next = erased as? Value { handler.receive(next) }
                         }
                         return (SubscriptionToken(handler.cancel), sink)
-                    }
+                    },
+                    delivery: ChannelDelivery(coalesce: scheduling.coalesce)
                 ),
                 scheduling: scheduling
             )

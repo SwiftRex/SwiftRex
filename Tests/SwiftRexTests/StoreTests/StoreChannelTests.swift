@@ -133,14 +133,17 @@ struct StoreChannelTests {
             environment: (),
             clock: { _ in clock }
         )
-        store.dispatch(.write(1))
-        await clock.waitForSleepers()
-        store.dispatch(.write(2))               // resets the debounce window
+        // Creation is decoupled from delivery pacing: the channel opens *immediately* on the first
+        // write (delivering 1), and only the values that follow are debounced.
+        store.dispatch(.write(1))               // opens now + delivers 1
+        await poll { received.value == [1] }
+        store.dispatch(.write(2))               // debounced…
+        store.dispatch(.write(3))               // …window restarts, only the latest survives
         await clock.waitForSleepers()
         await clock.advance(by: .seconds(1))
-        await poll { received.value == [2] }    // collapsed to the latest value
-        #expect(received.value == [2])
-        #expect(starts.value == 1)
+        await poll { received.value == [1, 3] }
+        #expect(received.value == [1, 3])
+        #expect(starts.value == 1)              // opened once; never recreated by the debounce
     }
 
     @Test func cancelInFlightTearsDownTheChannel() async {
