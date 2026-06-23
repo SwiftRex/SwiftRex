@@ -142,4 +142,50 @@ struct ChannelDeliveryTimingTests {
         await poll { opens.value == ["hel", "hell"] }
         #expect(opens.value == ["hel", "hell"])  // reopened with the new settled key
     }
+
+    // MARK: - A `.nothing` channel is a PassthroughSubject: its FIRST broadcast goes straight through
+
+    private struct Socket: Sendable, Equatable { var connected = false; var received: [Int] = [] }
+    private enum SocketAction: Sendable, Equatable { case connect, send(Int), got(Int) }
+
+    @Test func passthroughChannelDeliversFirstBroadcastThenThrottles() async {
+        let clock = TestClock()
+        let behavior = Behavior<SocketAction, Socket, Void>
+            .reduce { action, state in
+                switch action {
+                case .connect: state.connected = true
+                case .got(let v): state.received.append(v)
+                case .send: break
+                }
+            }
+            .react { action, _ in
+                guard case .send(let v) = action else { return Reaction { _ in .empty } }
+                return Reaction { _ in .broadcast(v, channel: "socket") }
+            }
+            .supervise { state in
+                Keep { _ in
+                    guard state.connected else { return [] }
+                    return [
+                        Channel(id: "socket", delivery: .throttle(.seconds(1))) { dispatch in
+                            ChannelHandler(receive: { dispatch(.got($0)) }, cancel: {})
+                        }
+                    ]
+                }
+            }
+        let store = Store(initial: Socket(), behavior: behavior, environment: (), clock: { _ in clock })
+
+        store.dispatch(.connect)                 // opens the channel — delivers nothing (no initial value)
+        store.dispatch(.send(1))                 // first broadcast → straight through; the open set no window
+        await poll { store.state.received == [1] }
+        #expect(store.state.received == [1])
+
+        store.dispatch(.send(2))                 // inside the window → throttled
+        for _ in 0..<20 { await Task.yield() }
+        #expect(store.state.received == [1])
+
+        await clock.advance(by: .seconds(1))
+        store.dispatch(.send(3))                 // window elapsed → delivered into the same live channel
+        await poll { store.state.received == [1, 3] }
+        #expect(store.state.received == [1, 3])
+    }
 }

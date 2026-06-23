@@ -127,11 +127,21 @@ public struct Effect<Action: Sendable>: Sendable {
             /// How the engine paces *value delivery* into the live channel (never its creation). Registered
             /// when the channel opens; subsequent deliveries — from `.onChange` or `.broadcast` — honour it.
             package let delivery: ChannelDelivery
+            /// Whether `start` delivers `value` on open (a CurrentValueSubject-style initial read). A
+            /// PassthroughSubject-style channel (`.nothing`) delivers nothing on open, so pacing must not
+            /// treat the open as a delivery — its first *broadcast* goes straight through.
+            package let deliversOnOpen: Bool
 
-            package init(value: any Sendable, start: Start?, delivery: ChannelDelivery = .immediate) {
+            package init(
+                value: any Sendable,
+                start: Start?,
+                delivery: ChannelDelivery = .immediate,
+                deliversOnOpen: Bool = false
+            ) {
                 self.value = value
                 self.start = start
                 self.delivery = delivery
+                self.deliversOnOpen = deliversOnOpen
             }
         }
     }
