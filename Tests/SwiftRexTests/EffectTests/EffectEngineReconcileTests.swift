@@ -69,6 +69,21 @@ struct EffectEngineReconcileTests {
         #expect(cancels.value.isEmpty)         // never torn down
     }
 
+    @Test func duplicateKeysInOneCycleRegisterOnce() {
+        // A `liftEach` and a `liftCollection` on the same container can both keep the same
+        // element-scoped channel — identical entries within one desired set must open exactly
+        // once, never double-open. This is what makes threading supervise through both lifts safe.
+        let log = LockProtected([Int]())
+        let cancels = LockProtected([String]())
+        let engine = makeEngine(LockProtected([Int]()))
+        let socket = broadcaster(id: "socket", value: 1, log: log, cancels: cancels)
+        engine.reconcile(entries([socket, socket]))
+        #expect(log.value == [1])              // deduped → opened once, delivered once
+        #expect(cancels.value.isEmpty)
+        engine.reconcile(entries([]))
+        #expect(cancels.value == ["socket"])   // and the single channel tears down exactly once
+    }
+
     @Test func presenceOnlyChannelOpensOnce() {
         let received = LockProtected([Int]())
         let engine = makeEngine(received)

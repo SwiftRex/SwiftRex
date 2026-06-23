@@ -109,4 +109,86 @@ struct StoreReactionTests {
         for _ in 0..<10 { await Task.yield() }
         #expect(opens.value == 1)
     }
+
+    // MARK: - End-to-end: a real Store driving a LIFTED COLLECTION supervise
+
+    private struct Item: Sendable, Equatable, Identifiable {
+        let id: Int
+        var connected: Bool
+    }
+
+    private enum ItemAction: Sendable, Equatable {
+        case received(Int)
+    }
+
+    private struct AppState: Sendable {
+        var items: [Item]
+    }
+
+    private enum AppAction: Sendable {
+        case item(ElementAction<Int, ItemAction>)
+        case addItem(Item)
+        case removeItem(id: Int)
+        case setConnected(id: Int, Bool)
+    }
+
+    private var itemPrism: Prism<AppAction, ElementAction<Int, ItemAction>> {
+        Prism(
+            preview: { if case .item(let e) = $0 { e } else { nil } },
+            review: AppAction.item
+        )
+    }
+
+    private var globalReducer: Behavior<AppAction, AppState, Void> {
+        .reduce { action, state in
+            switch action {
+            case .addItem(let item): state.items.append(item)
+            case .removeItem(let id): state.items.removeAll { $0.id == id }
+            case let .setConnected(id, value):
+                if let i = state.items.firstIndex(where: { $0.id == id }) { state.items[i].connected = value }
+            case .item: break
+            }
+        }
+    }
+
+    /// The headline scenario: per-element sockets kept by state, lifted across a collection. Each
+    /// element's channel opens under its own stamped id, and dropping one element's implying state
+    /// cancels *exactly* that element's channel — the others are untouched and never reopened.
+    @Test func collectionLiftOpensAndCancelsChannelsPerElement() async {
+        let opens = LockProtected([Int]())
+        let cancels = LockProtected([Int]())
+        let itemBehavior = Behavior<ItemAction, Item, Void>.supervise { item in
+            Keep { _ in
+                guard item.connected else { return [] }
+                return [
+                    Channel(id: "socket") { _ in
+                        opens.mutate { $0.append(item.id) }
+                        return .cancelOnly { cancels.mutate { $0.append(item.id) } }
+                    }
+                ]
+            }
+        }
+        let lifted = itemBehavior.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let store = Store(
+            initial: AppState(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)]),
+            behavior: .combine(globalReducer, lifted)
+        )
+
+        await poll { opens.value.count == 2 }
+        #expect(opens.value.sorted() == [1, 2])      // both elements opened, each under its own stamped id
+        #expect(cancels.value.isEmpty)
+
+        store.dispatch(.setConnected(id: 1, false))   // only element 1 leaves the desired set
+        await poll { cancels.value.contains(1) }
+        #expect(cancels.value == [1])                 // exactly element 1 cancelled — element 2 untouched
+        #expect(opens.value.sorted() == [1, 2])       // and element 2 was never reopened
+
+        store.dispatch(.addItem(Item(id: 3, connected: true)))   // a new element opens its own channel
+        await poll { opens.value.contains(3) }
+        #expect(opens.value.sorted() == [1, 2, 3])
+
+        store.dispatch(.removeItem(id: 2))            // dropping an element entirely cancels its channel
+        await poll { cancels.value.contains(2) }
+        #expect(cancels.value.sorted() == [1, 2])     // element 3 still alive
+    }
 }

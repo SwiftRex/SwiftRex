@@ -126,6 +126,18 @@ extension Channel {
             component: Effect(components: [component]).map(f).components[0]
         )
     }
+
+    /// Scopes this channel's key under `element` — `ElementScopedID(element:, inner: id)` — so the
+    /// same channel id in two different collection elements stays independent (element A's `"socket"`
+    /// ≠ element B's `"socket"`). Used by the collection lifts' per-element id stamping.
+    package func scopedToElement(_ element: AnyHashableSendable) -> Channel {
+        Channel(
+            id: AnyHashableSendable(ElementScopedID(element: element, inner: id)),
+            resetIdentity: resetIdentity,
+            broadcastIdentity: broadcastIdentity,
+            component: Effect(components: [component]).scopedToElement(element).components[0]
+        )
+    }
 }
 
 // MARK: - Knobs

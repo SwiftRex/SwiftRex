@@ -7,10 +7,12 @@ import DataStructure
 // where `liftCollection` routes a global action to ONE element (selected by id), `liftEach`
 // runs the per-element behavior on EVERY element at once and folds the results.
 //
-// It has ONE job — fan-out. Each element's mutation is applied to that element; each element's
-// effect is scoped to that element's id (so element A's `.debounce(id: .fetch)` is independent
-// of element B's) and its output is re-wrapped by `embed`. To handle the addressed actions those
-// effects emit, compose this with ``Behavior/liftCollection`` on the same container.
+// Its job is fan-out, across all three axes. Each element's mutation is applied to that element;
+// each element's effect is scoped to that element's id (so element A's `.debounce(id: .fetch)` is
+// independent of element B's) and its output is re-wrapped by `embed`; and each element's
+// `supervise` keeps its own channels, likewise re-embedded and per-element stamped. To handle the
+// addressed actions those effects emit, compose this with ``Behavior/liftCollection`` on the same
+// container — a `supervise` declared on both lifts is deduped by the reconciler (identical ids).
 //
 //     Behavior.combine(
 //         perElement.liftEach(action: …tickAll…, embed: …ElementAction…, stateCollection: \.items),
@@ -35,22 +37,38 @@ extension Behavior {
         element: @escaping @Sendable (ID) -> AffineTraversal<Container, State>,
         stateContainer: Lens<GS, Container>
     ) -> Behavior<GA, GS, Environment> {
-        Behavior<GA, GS, Environment> { globalAction, context in
-            guard let local = action(globalAction), let global = context.stateBefore
-            else { return .doNothing }
-            let consequences: [Consequence<GS, Environment, GA>] = ids(stateContainer.get(global)).map { id in
-                let traversal = stateContainer.compose(element(id))
-                let scope = AnyHashableSendable(id)
-                let c = self.handle(local, context.compactMap(traversal.preview))
-                return Consequence(
-                    mutation: c.mutation.map { traversal.lift($0) },
-                    effect: c.effect
-                        .map { (eff: Effect<Action>) in eff.map { embed($0, id) }.scopedToElement(scope) }
-                        .contramapEnvironment { $0.compactMap(traversal.preview) }
-                )
+        Behavior<GA, GS, Environment>(
+            handle: { globalAction, context in
+                guard let local = action(globalAction), let global = context.stateBefore
+                else { return .doNothing }
+                let consequences: [Consequence<GS, Environment, GA>] = ids(stateContainer.get(global)).map { id in
+                    let traversal = stateContainer.compose(element(id))
+                    let scope = AnyHashableSendable(id)
+                    let c = self.handle(local, context.compactMap(traversal.preview))
+                    return Consequence(
+                        mutation: c.mutation.map { traversal.lift($0) },
+                        effect: c.effect
+                            .map { (eff: Effect<Action>) in eff.map { embed($0, id) }.scopedToElement(scope) }
+                            .contramapEnvironment { $0.compactMap(traversal.preview) }
+                    )
+                }
+                return consequences.reduce(.doNothing, Consequence.combine)
+            },
+            // Fan-out the supervise axis the same way the action axis fans out: every present
+            // element keeps its own channels, re-embedded and stamped per-element. The reconciler
+            // dedups against a `liftCollection` on the same container (identical element-scoped ids).
+            supervisor: { @MainActor gs in
+                let container = stateContainer.get(gs)
+                let perElement = ids(container).compactMap { id -> (element: AnyHashableSendable, id: ID, keep: Keep<Action, Environment>)? in
+                    element(id).preview(container).map { (element: AnyHashableSendable(id), id: id, keep: self.supervisor($0)) }
+                }
+                return Reader { env in
+                    perElement.flatMap { p in
+                        p.keep.runReader(env).map { $0.mapAction { embed($0, p.id) }.scopedToElement(p.element) }
+                    }
+                }
             }
-            return consequences.reduce(.doNothing, Consequence.combine)
-        }
+        )
     }
 
     /// Primitive — broadcast across an enumerated, addressable container, with a `WritableKeyPath`.
