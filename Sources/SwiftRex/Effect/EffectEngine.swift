@@ -161,9 +161,11 @@ package final class EffectEngine<Action: Sendable> {
             runningEffects[key] = token
             channelSinks[key] = sink
             channelDelivery[key] = channel.delivery
-            // The open's first value (if any) is delivered immediately by `start`; start the throttle
-            // window from here so a value arriving right after the open is paced against it.
-            if case .throttle(let interval) = channel.delivery {
+            // Only when the open actually delivered a value (a CurrentValueSubject-style initial read)
+            // does it count toward the throttle window — so a change right after is paced against it. A
+            // PassthroughSubject-style channel (`.nothing`) delivers nothing on open, so its first
+            // broadcast goes straight through.
+            if channel.deliversOnOpen, case .throttle(let interval) = channel.delivery {
                 throttleStamps[key] = (last: clock.now, interval: interval)
             }
             return

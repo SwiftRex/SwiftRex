@@ -102,7 +102,8 @@ public struct Channel<Action: Sendable>: Sendable {
                 }
                 return (SubscriptionToken(handler.cancel), sink)
             },
-            delivery: delivery
+            delivery: delivery,
+            deliversOnOpen: deliversOnOpen
         )
         self.component = Effect<Action>.Component(
             subscribe: { _, complete in complete(); return .empty },

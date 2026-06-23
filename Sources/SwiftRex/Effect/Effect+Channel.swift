@@ -120,7 +120,8 @@ extension Effect {
                         }
                         return (SubscriptionToken(handler.cancel), sink)
                     },
-                    delivery: ChannelDelivery(coalesce: scheduling.coalesce)
+                    delivery: ChannelDelivery(coalesce: scheduling.coalesce),
+                    deliversOnOpen: true
                 ),
                 scheduling: scheduling
             )

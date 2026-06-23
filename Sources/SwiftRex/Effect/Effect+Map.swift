@@ -44,7 +44,12 @@ private func mapComponent<A, B>(
         } else {
             mappedStart = nil
         }
-        return Effect<B>.Component.Channel(value: channel.value, start: mappedStart, delivery: channel.delivery)
+        return Effect<B>.Component.Channel(
+            value: channel.value,
+            start: mappedStart,
+            delivery: channel.delivery,
+            deliversOnOpen: channel.deliversOnOpen
+        )
     }
     return Effect<B>.Component(
         subscribe: { send, complete in component.subscribe({ send($0.map(f)) }, complete) },
