@@ -1,20 +1,23 @@
 # ``SwiftRex/Behavior``
 
-The primary composition unit — a ``Reducer`` and a ``Middleware`` fused into one liftable, composable value.
+The primary composition unit — a ``Reducer``, a ``Middleware``, and a state-driven supervisor fused into one liftable, composable value.
 
 ## Overview
 
-A `Behavior<Action, State, Environment>` maps an action and a pre-mutation ``PreReducerContext`` to a ``Consequence`` — the pair of *what state change to apply* and *what effect to run afterward*. It is how you usually build a feature: rather than wiring a ``Reducer`` and a ``Middleware`` separately, you express both in one value.
+A `Behavior<Action, State, Environment>` folds three independent concerns of a feature, each a fluent builder that composes by `<>`:
+
+- ``reduce(_:)`` — the **state change**: a pure `(Action, inout State) -> Void`.
+- ``react(_:)`` — the **action-driven effect**: an action causes a ``Reaction`` (Elm's `Cmd`).
+- ``supervise(_:)`` — the **state-driven effect**: the *state* keeps a ``Keep`` of ``Channel``s alive (Elm's `Sub`). See <doc:StateDrivenEffects>.
 
 ```swift
-let form = Behavior<AppAction, AppState, API> { action, _ in
-    guard case .submit(let data) = action else { return .doNothing }
-    return .reduce { $0.isLoading = true }
-        .react { ctx in ctx.environment.api.submit(data).asEffect(AppAction.submitted) }
-}
+let room = Behavior<RoomAction, RoomState, RoomEnv>
+    .reduce { action, state in … }                 // what changes
+    .react { action, ctx in … }                    // what to do because of an action
+    .supervise { state in … }                      // what to keep alive while the state holds
 ```
 
-Create one from a closure (``handle(_:)``), or from the two halves with `Behavior(reducer:middleware:)`; ``Reducer/asBehavior()`` and ``Middleware/asBehavior`` lift each half on its own.
+Each builder exists as a **static** factory (`Behavior.reduce { … }`) and as an **instance** method (`someBehavior.react { … }`), so a fluent chain is exactly an `<>` fold — the chain above is three single-concern behaviors combined. You can also build from a closure (``handle(_:)``) returning a whole ``Consequence``, or pair the first two axes with `Behavior(reducer:middleware:)`; ``Reducer/asBehavior()`` and ``Middleware/asBehavior`` lift each half on its own (a `Middleware`'s own `supervise` axis carries through).
 
 ### The algebra — a flat fold of units
 
@@ -26,12 +29,15 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 
 ### Scaling a feature up
 
-``lift(action:state:environment:)`` and the per-axis ``liftAction(_:)`` / ``liftState(_:)`` / ``liftEnvironment(_:)`` raise a feature from its local types to the app's global types; ``liftCollection(action:embed:stateContainer:)`` and ``liftEach(action:embed:each:stateContainer:)`` run a per-element behavior across a collection. ``on(_:reduce:)`` and friends route by action case.
+``lift(action:state:environment:)`` and the per-axis ``liftAction(_:)`` / ``liftState(_:)`` / ``liftEnvironment(_:)`` raise a feature from its local types to the app's global types; ``liftCollection(action:embed:stateContainer:elements:)`` and ``liftEach(action:embed:each:stateContainer:)`` run a per-element behavior across a collection. ``on(_:reduce:)`` and friends route by action case. Every lift carries **all three** axes — including `supervise`: a lifted feature's channels are re-embedded and (for collections) per-element stamped, so state-driven nav and per-row sockets just work. See <doc:Lifting>.
 
 ## Topics
 
-### Creating a Behavior
+### Building a Behavior
 
+- ``reduce(_:)``
+- ``react(_:)``
+- ``supervise(_:)``
 - ``handle(_:)``
 
 ### Composing
@@ -46,7 +52,7 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 - ``liftAction(_:)``
 - ``liftState(_:)``
 - ``liftEnvironment(_:)``
-- ``liftCollection(action:embed:stateContainer:)``
+- ``liftCollection(action:embed:stateContainer:elements:)``
 - ``liftEach(action:embed:each:stateContainer:)``
 
 ## See Also
@@ -56,4 +62,5 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 - ``Consequence``
 - ``ReducerOutcome``
 - ``Store``
+- <doc:StateDrivenEffects>
 - <doc:Algebra>

@@ -32,7 +32,7 @@ enum CounterAction: Sendable {
 
 ## Step 3 — Write the behavior
 
-A ``Behavior`` maps each action to a ``Consequence``. Here every action is a pure state change, so each returns ``Consequence/reduce(_:)``. (`Void` is the environment — this feature has no dependencies yet.)
+A ``Behavior`` maps each action to a ``Consequence``. Here every action is a pure state change, so each returns `reduce`. (`Void` is the environment — this feature has no dependencies yet.)
 
 ```swift
 let counterBehavior = Behavior<CounterAction, CounterState, Void>.handle { action, _ in
