@@ -196,15 +196,18 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         self.behavior = behavior
         self.environment = environment
         self.resolvedClock = clock(environment).eraseToAnyClock()
-        // Activate the state-driven channels implied by the initial state (no dispatch needed).
-        reconcileSupervised()
+        // Activate the state-driven channels implied by the initial state (no dispatch needed). A
+        // behavior that never supervises is a true bypass — `reconcileSupervised` is never called.
+        if behavior.supervises { reconcileSupervised() }
     }
 
     /// Reconciles the engine against `behavior.supervisor(state)` — the complete desired channel set
     /// for the current state, with the environment injected. Called at construction and after every
-    /// state-changing dispatch.
+    /// state-changing dispatch, but **only when `behavior.supervises`** — so a non-supervising feature
+    /// never reads state here, no matter how many channels other features keep.
     private func reconcileSupervised() {
-        engine.reconcile(behavior.supervisor(state).runReader(environment).map { $0.reconcileEntry })
+        guard let supervisor = behavior.supervisor else { return }   // nil ⇒ nothing supervises (bypass)
+        engine.reconcile(supervisor(state).runReader(environment).map { $0.reconcileEntry })
     }
 
     /// Creates a `Store` with a ``Reducer`` only (no side effects, `Environment == Void`).
@@ -384,7 +387,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
 
         // Phase 5 — reconcile state-driven effects. Only when state actually changed: an `.unchanged`
         // action cannot alter the desired set, so the reconcile would be a guaranteed no-op.
-        if didMutate { reconcileSupervised() }
+        if didMutate, behavior.supervises { reconcileSupervised() }
     }
 
     // MARK: - Effect scheduling

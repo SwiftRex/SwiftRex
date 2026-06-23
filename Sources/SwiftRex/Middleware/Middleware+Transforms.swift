@@ -28,7 +28,9 @@ extension Middleware {
                 guard let local = prism.preview(action) else { return Reader { _ in .empty } }
                 return self.handle(local, context).map { $0.map(prism.review) }
             },
-            supervisor: { state in self.supervisor(state).map { $0.map { $0.mapAction(prism.review) } } }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: State) in inner(state).map { $0.map { $0.mapAction(prism.review) } } }
+            }
         )
     }
 
@@ -54,7 +56,7 @@ extension Middleware {
     ) -> Middleware<Action, GlobalState, Environment> {
         Middleware<Action, GlobalState, Environment>(
             handle: { action, context in self.handle(action, context.map(f)).contramapEnvironment { $0.map(f) } },
-            supervisor: { state in self.supervisor(f(state)) }
+            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(f(state)) } }
         )
     }
 
@@ -94,7 +96,9 @@ extension Middleware {
             handle: { action, context in
                 self.handle(action, context.compactMap(prism.preview)).contramapEnvironment { $0.compactMap(prism.preview) }
             },
-            supervisor: { state in prism.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: GlobalState) in prism.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+            }
         )
     }
 
@@ -119,7 +123,9 @@ extension Middleware {
             handle: { action, context in
                 self.handle(action, context.compactMap(traversal.preview)).contramapEnvironment { $0.compactMap(traversal.preview) }
             },
-            supervisor: { state in traversal.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+            }
         )
     }
 
@@ -143,7 +149,7 @@ extension Middleware {
     ) -> Middleware<Action, State, GlobalEnvironment> {
         Middleware<Action, State, GlobalEnvironment>(
             handle: { action, context in self.handle(action, context).contramapEnvironment { $0.mapEnvironment(f) } },
-            supervisor: { state in self.supervisor(state).contramapEnvironment(f) }
+            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: State) in inner(state).contramapEnvironment(f) } }
         )
     }
 }

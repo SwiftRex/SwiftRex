@@ -88,22 +88,30 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
         _ context: PreReducerContext<State>
     ) -> Reaction<Action, State, Environment>
 
-    /// The **state** side: given the post-mutation state, the complete set of ``Channel``s that
-    /// should be alive (Elm's `Sub`). Reconciled by the Store after every change. Defaults to the
-    /// empty set; ``combine(_:_:)`` unions it. Build/extend it with ``supervise(_:)``.
-    package let supervisor: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
+    /// The **state** side: given the post-mutation state, the complete set of ``Channel``s that should
+    /// be alive (Elm's `Sub`) — or `nil` when the middleware has **no** `supervise`. Reconciled by the
+    /// Store after every change; ``combine(_:_:)`` unions it. Build it with ``supervise(_:)``.
+    package let supervisor: (@MainActor @Sendable (_ state: State) -> Keep<Action, Environment>)?
 
-    /// Creates a `Middleware` from a `handle` closure (and optional supervisor).
+    /// Whether this middleware has **any** `supervise` (the state-driven axis) — *derived* from the
+    /// presence of a supervisor, never a separate flag that can drift (like `isEmpty` from `count`).
+    /// The ``Store`` reconciles only when this is `true`, so a non-supervising middleware is a true
+    /// bypass (phase 5 reads no state).
+    package var supervises: Bool { supervisor != nil }
+
+    /// Creates a `Middleware` from a `handle` closure and an optional `supervisor`. Providing a
+    /// supervisor means it supervises (the Store reconciles its channels); omitting it (`nil`) means it
+    /// never does — so the flag can't desync from reality.
     ///
     /// - Parameters:
     ///   - handle: Maps `(Action, PreReducerContext)` to a ``Reaction`` (the action side).
-    ///   - supervisor: Maps state to the channels to keep alive (the state side). Defaults to empty.
+    ///   - supervisor: Maps state to the channels to keep alive (the state side), or `nil` for none.
     public init(
         handle: @escaping @MainActor @Sendable (
             _ action: Action,
             _ context: PreReducerContext<State>
         ) -> Reaction<Action, State, Environment>,
-        supervisor: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
+        supervisor: (@MainActor @Sendable (State) -> Keep<Action, Environment>)? = nil
     ) {
         self.handle = handle
         self.supervisor = supervisor
@@ -185,11 +193,21 @@ extension Middleware: Semigroup {
                 let rhsReader = rhs.handle(action, context)
                 return Reader { ctx in .combine(lhsReader.runReader(ctx), rhsReader.runReader(ctx)) }
             },
-            supervisor: { @MainActor state in
-                let l = lhs.supervisor(state), r = rhs.supervisor(state)   // resolve on @MainActor
-                return Reader { env in l.runReader(env) + r.runReader(env) }
-            }
+            supervisor: Middleware.unionSupervise([lhs, rhs])
         )
+    }
+
+    /// Unions the `supervise` axes — `nil` when **none** of `middlewares` supervise (so a fully
+    /// non-supervising composition stays a true bypass); otherwise resolves only the supervising ones.
+    static func unionSupervise(
+        _ middlewares: [Middleware]
+    ) -> (@MainActor @Sendable (State) -> Keep<Action, Environment>)? {
+        let supervisors = middlewares.compactMap(\.supervisor)
+        guard !supervisors.isEmpty else { return nil }
+        return { @MainActor state in
+            let keeps = supervisors.map { $0(state) }
+            return Reader { env in keeps.flatMap { $0.runReader(env) } }
+        }
     }
 }
 

@@ -57,14 +57,16 @@ extension Behavior {
             // Fan-out the supervise axis the same way the action axis fans out: every present
             // element keeps its own channels, re-embedded and stamped per-element. The reconciler
             // dedups against a `liftCollection` on the same container (identical element-scoped ids).
-            supervisor: { @MainActor gs in
-                let container = stateContainer.get(gs)
-                let perElement = ids(container).compactMap { id -> (element: AnyHashableSendable, id: ID, keep: Keep<Action, Environment>)? in
-                    element(id).preview(container).map { (element: AnyHashableSendable(id), id: id, keep: self.supervisor($0)) }
-                }
-                return Reader { env in
-                    perElement.flatMap { p in
-                        p.keep.runReader(env).map { $0.mapAction { embed($0, p.id) }.scopedToElement(p.element) }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (gs: GS) in
+                    let container = stateContainer.get(gs)
+                    let perElement = ids(container).compactMap { id -> (element: AnyHashableSendable, id: ID, keep: Keep<Action, Environment>)? in
+                        element(id).preview(container).map { (element: AnyHashableSendable(id), id: id, keep: inner($0)) }
+                    }
+                    return Reader { env in
+                        perElement.flatMap { p in
+                            p.keep.runReader(env).map { $0.mapAction { embed($0, p.id) }.scopedToElement(p.element) }
+                        }
                     }
                 }
             }
