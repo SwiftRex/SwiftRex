@@ -88,6 +88,8 @@ Use `.onChange` for a *state-derived* value that should track state. Use the act
 Channel(id: "location", delivery: .throttle(.seconds(1))) { dispatch in … }
 ```
 
+Only the cases that need *coordination across emissions* are built in. A per-value **delay** (time-shift each event by a fixed amount) is deliberately left out — it's trivial to do in the channel body with the injected clock, so it's a story you build, not a knob: see <doc:ExampleDelay>.
+
 **Delivery is decoupled from creation.** The channel always **opens immediately** when it enters the desired set — pacing never defers the subscription, only the values. A ``Broadcasting/onChange(_:)`` channel (a CurrentValueSubject) delivers its current value on open and paces the changes after; a ``Broadcasting/nothing`` channel (a PassthroughSubject) opens silently and its **first** broadcast goes straight through, with pacing starting only after. Because delivery state is per-instance, an `ephemeral` recreate also resets the throttle/debounce window. `settle` (creation) and `delivery` (values) are orthogonal — an ephemeral chat socket can `settle` its room-switches *and* `throttle` its inbound messages.
 
 > Already throttling upstream (a publisher's own `.throttle`)? Don't also set `delivery:` — double-pacing behaves exactly like two `.throttle`s in one pipeline. The channel knob is for the non-reactive `.broadcast` path; the `asChannel` bridges leave value pacing to the publisher.
@@ -142,6 +144,7 @@ Because the desired set is recomputed from state every cycle, the same channel i
 - <doc:ExamplePolling>
 - <doc:ExampleChatRoom>
 - <doc:ExampleWebSocket>
+- <doc:ExampleDelay>
 
 ### The Types
 

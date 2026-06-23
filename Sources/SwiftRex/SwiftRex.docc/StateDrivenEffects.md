@@ -81,6 +81,7 @@ A two-way resource uses both: `supervise` keeps the socket open (the *listen* si
 - <doc:ExamplePolling>
 - <doc:ExampleChatRoom>
 - <doc:ExampleWebSocket>
+- <doc:ExampleDelay>
 
 ### The Types
 
