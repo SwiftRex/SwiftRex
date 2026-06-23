@@ -187,6 +187,13 @@ extension Channel {
 /// This gates *delivery only*; the channel always opens immediately the moment it enters the desired set.
 /// Creation pacing is a separate concern — see `Channel.Lifetime.ephemeral`'s `settle`. Applying it twice
 /// (here and on an upstream publisher) double-paces, exactly like two `.throttle`s in one pipeline.
+///
+/// Only `throttle` and `debounce` are offered — the cases that need *stateful coordination* across emissions
+/// (a shared window, a restartable timer) that the engine is best placed to own. A per-value `delay`
+/// (time-shifting every emission by a fixed amount, preserving their spacing) is intentionally **not**
+/// provided: it would need one independent timer per in-flight value plus their teardown, yet it is trivial
+/// to do yourself — sleep on the injected clock before dispatching inside the channel body. The framework
+/// supplies the hard part and leaves the easy part to you. See <doc:ExampleDelay> for the pattern.
 public enum ChannelDelivery: Sendable, Equatable {
     /// Deliver every value as it arrives.
     case immediate
