@@ -55,9 +55,10 @@ jobs:
       - name: Test
         run: swift test --enable-all-traits 2>&1
 
-      # Periphery runs on the default-trait build; the trait-gated bridge targets are
-      # pruned here and therefore skipped (they are all-public API anyway, retained via
-      # retain_public).
+      # Periphery runs its own `swift build --build-tests`. The unconditional reactive
+      # *test* targets pull the trait-gated bridges, which fail to link without their
+      # reactive libraries — so `.periphery.yml` sets `build_arguments: --enable-all-traits`
+      # to build (and analyse) them with the traits on.
       - name: Periphery
         run: mint run periphery scan
 

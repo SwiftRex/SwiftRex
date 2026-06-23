@@ -21,3 +21,8 @@ targets:
   - SwiftRexReactiveSwiftTests
   - SwiftRexReactiveConcurrencyTests
   - SwiftRexArchitectureTests
+
+# Periphery runs its own `swift build --build-tests`; without the traits the gated
+# reactive bridge targets (RxSwift/ReactiveSwift/ReactiveConcurrency) fail to link.
+build_arguments:
+  - --enable-all-traits
