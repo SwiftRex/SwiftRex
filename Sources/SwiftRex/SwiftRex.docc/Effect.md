@@ -22,6 +22,8 @@ The factories above are **recreate-on-dispatch**: each dispatch starts fresh wor
 
 For *long-lived* work that must **not** be torn down — a WebSocket, a location or audio pipeline — use ``channel(value:scheduling:file:function:line:_:)``. The Store opens it once and pipes every subsequent value into the **same** running effect, with `debounce`/`throttle` gating the value delivery rather than the effect's lifetime. See ``ChannelHandler``.
 
+Usually you don't open a channel imperatively from an effect — you **declare** it from state with `supervise` and let the engine open and cancel it as the state changes. The ``Effect`` entry points here (``open(_:)``, ``broadcast(_:channel:file:function:line:)``, ``cancel(id:)``) are the action-driven complements: send into a live channel, or own its lifetime by hand. See <doc:StateDrivenEffects> and <doc:Channels>.
+
 ### Scheduling
 
 Attach an ``EffectScheduling`` policy with ``scheduling(_:)``: run immediately, or under an id so the Store can debounce, throttle, replace, or cancel it in flight. The mutable bookkeeping (timers, in-flight handles) lives in the ``Store``, never in the effect.
@@ -68,4 +70,6 @@ api.search(query).asEffect(AppAction.results)
 - ``Middleware``
 - ``Behavior``
 - ``SubscriptionToken``
+- <doc:StateDrivenEffects>
+- <doc:Channels>
 - <doc:Algebra>

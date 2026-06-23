@@ -9,9 +9,11 @@ A `Consequence<State, Environment, Action>` is what a ``Behavior`` returns: a ``
 ### Building one
 
 - ``reduce(_:)`` — a pure state mutation, no effect.
-- `produce { ctx in … }` — an effect, no mutation.
+- ``react(_:)`` — an effect, no mutation.
 - chain them — `.reduce { … }.react { ctx in … }` — for both.
 - ``doNothing`` — neither (the monoid identity); the ``Store`` fires no notifications for it.
+
+A `Consequence` is the *action-driven* outcome — what one action changes and what it does next. The *state-driven* axis (`supervise`, keeping a ``Channel`` alive while the state holds) is a separate concern carried by ``Behavior`` and ``Middleware``, not bundled into `Consequence`. See <doc:StateDrivenEffects>.
 
 ### The algebra — a product monoid
 
@@ -22,6 +24,7 @@ A `Consequence<State, Environment, Action>` is what a ``Behavior`` returns: a ``
 ### Building a Consequence
 
 - ``reduce(_:)``
+- ``react(_:)``
 - ``doNothing``
 
 ## See Also

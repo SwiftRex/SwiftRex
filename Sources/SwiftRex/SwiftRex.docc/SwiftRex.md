@@ -10,6 +10,8 @@ SwiftRex models your whole app as one loop of pure values:
 - A ``Behavior`` (a ``Reducer`` for the state change, a ``Middleware`` for the effect) maps that action to a ``Consequence`` — *what to change* (a ``ReducerOutcome``) and *what to do next* (an ``Effect``).
 - The ``Store`` is the **only** thing that runs: it applies the mutation, notifies observers exactly once, then executes the effect. Actions the effect produces loop back through the same path.
 
+Effects come in two flavours: *action-driven* — a `react` that runs because something happened (Elm's `Cmd`) — and *state-driven* — a `supervise` that keeps a long-lived resource (a socket, a timer, a poll) alive for exactly as long as the state implies it (Elm's `Sub`). See <doc:StateDrivenEffects>.
+
 Everything except the `Store` is inert and composable. Two `Reducer`s combine into a `Reducer`; two `Behavior`s into a `Behavior`; an `Effect` merges with another `Effect`. That "compose two, get one of the same kind, with a do-nothing identity" shape is a **monoid**, and it's the whole story — see <doc:Algebra>.
 
 > New here? Start with the [README](https://github.com/SwiftRex/SwiftRex#readme) for installation and worked examples, then come back for the type-by-type reference below.
@@ -18,9 +20,9 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 
 `SwiftRex` is the core. These ship as separate products (each its own import); the third-party bridges are opt-in via package traits:
 
-- **`SwiftRex.SwiftConcurrency`** — `async`/`await` effect bridges (`Task`, `AsyncSequence`), `store.stream`.
-- **`SwiftRex.Combine`** — `asEffect()` on `Publisher`, `store.publisher`, `ctx.readLiveState()`.
-- **`SwiftRex.RxSwift`** · **`SwiftRex.ReactiveSwift`** · **`SwiftRex.ReactiveConcurrency`** — the same bridge surface for each reactive runtime *(each behind a trait of the same name)*.
+- **`SwiftRex.SwiftConcurrency`** — `async`/`await` effect bridges (`Task`, `AsyncSequence`), `asChannel` for long-lived subscriptions, `store.stream`.
+- **`SwiftRex.Combine`** — `asEffect()` / `asChannel()` on `Publisher`, `store.publisher`, `ctx.readLiveState()`.
+- **`SwiftRex.RxSwift`** · **`SwiftRex.ReactiveSwift`** · **`SwiftRex.ReactiveConcurrency`** — the same `asEffect` / `asChannel` bridge surface for each reactive runtime *(each behind a trait of the same name)*.
 - **`SwiftRex.SwiftUI`** — `asObservableObject()`, the `@ViewModel` macro, `HasViewModel`.
 - **`SwiftRex.Architecture`** — the opinionated `@Feature` module pattern.
 - **`SwiftRex.Operators`** — symbolic operators (`<>`, `|>`, …) for the types above.
@@ -73,8 +75,14 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 - ``SubscriptionToken``
 - ``AnyHashableSendable``
 
-### State-driven Effects
+### State-Driven Effects
 
+- <doc:StateDrivenEffects>
+- <doc:Channels>
+- <doc:ExampleTimer>
+- <doc:ExamplePolling>
+- <doc:ExampleChatRoom>
+- <doc:ExampleWebSocket>
 - ``Channel``
 - ``Keep``
 - ``Reaction``

@@ -35,9 +35,9 @@ struct LoaderState: Equatable, Sendable {
 }
 ```
 
-## Step 3 — Reduce, then produce
+## Step 3 — Reduce, then react
 
-On `.load`, flip a flag (``Consequence/reduce(_:)``) **and** kick off the effect (`produce`). `Effect.throwingTask` runs an `async throws` closure and maps its `Result` straight onto your action case — `LoaderAction.didLoad` *is* the transform. When the result arrives as `.didLoad`, just reduce.
+On `.load`, flip a flag (`reduce`) **and** kick off the effect (`react`). `Effect.throwingTask` runs an `async throws` closure and maps its `Result` straight onto your action case — `LoaderAction.didLoad` *is* the transform. When the result arrives as `.didLoad`, just reduce.
 
 ```swift
 let loaderBehavior = Behavior<LoaderAction, LoaderState, API>.handle { action, _ in
@@ -76,6 +76,8 @@ func runLoader() {
 
 In a test you'd pass an `API` whose `fetch` returns a fixture, and drive the whole sequence deterministically with `TestStore` from `SwiftRex.Testing`.
 
+> This is an **action-driven** effect: `.load` causes one fetch that finishes. When an effect's lifetime is implied by *state* instead — a socket open while a room is joined, a timer ticking while a screen shows, a poll running while a query is set — reach for the state-driven `supervise` axis instead. See <doc:StateDrivenEffects>.
+
 ## Why this shape
 
 - **Determinism** — the reducer only ever sees values (the action), never performs the call, so it's pure and trivially testable.
@@ -88,5 +90,6 @@ In a test you'd pass an `API` whose `fetch` returns a fixture, and drive the who
 - ``EffectScheduling``
 - ``Behavior``
 - ``Consequence``
+- <doc:StateDrivenEffects>
 - <doc:BuildYourFirstFeature>
 - <doc:Algebra>
