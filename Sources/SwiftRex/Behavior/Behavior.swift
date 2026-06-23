@@ -88,10 +88,18 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
         _ context: PreReducerContext<State>
     ) -> Consequence<State, Environment, Action>
 
-    /// The **state** side: given the post-mutation state, the complete set of ``Channel``s that
-    /// should be alive (Elm's `Sub`). The Store reconciles it after every state change. Defaults to
-    /// the empty set; ``combine(_:_:)`` unions it. Build/extend it with ``supervise(_:)``.
-    package let supervisor: @MainActor @Sendable (_ state: State) -> Keep<Action, Environment>
+    /// The **state** side: given the post-mutation state, the complete set of ``Channel``s that should
+    /// be alive (Elm's `Sub`) — or `nil` when this behavior tree has **no** `supervise` at all. The
+    /// Store reconciles it after every change; ``combine(_:_:)`` unions it; the lifts thread it through.
+    /// Build it with ``supervise(_:)``.
+    package let supervisor: (@MainActor @Sendable (_ state: State) -> Keep<Action, Environment>)?
+
+    /// Whether this behavior tree contains **any** `supervise` (the state-driven axis) — *derived*
+    /// from the presence of a supervisor, never a separate flag that can drift out of sync (exactly
+    /// like `isEmpty` derives from `count`). The ``Store`` reconciles state-driven channels only when
+    /// this is `true`, so a feature that never supervises is a **true bypass** — phase 5 reads no state
+    /// and does no work, no matter how many channels *other* features keep.
+    package var supervises: Bool { supervisor != nil }
 
     /// The per-feature units, in composition order. ``identity`` is the empty list, ``combine(_:_:)``
     /// concatenates, and ``handle`` is a single flat pass over them — no nested closure tree.
@@ -105,7 +113,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
             _ action: Action,
             _ context: PreReducerContext<State>
         ) -> Consequence<State, Environment, Action>],
-        supervisor: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment> = { _ in Reader { _ in [] } }
+        supervisor: (@MainActor @Sendable (State) -> Keep<Action, Environment>)? = nil
     ) {
         self.units = units
         self.supervisor = supervisor
@@ -145,11 +153,11 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
         self.init(units: [handle])
     }
 
-    /// Creates a `Behavior` from a single `handle` closure and a `supervisor` — used by the lifts to
-    /// carry the state-driven axis through a transform.
+    /// Creates a `Behavior` from a single `handle` closure and an optional `supervisor` — used by the
+    /// lifts to carry the state-driven axis through a transform (`nil` when the source never supervises).
     init(
         handle: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Consequence<State, Environment, Action>,
-        supervisor: @escaping @MainActor @Sendable (State) -> Keep<Action, Environment>
+        supervisor: (@MainActor @Sendable (State) -> Keep<Action, Environment>)?
     ) {
         self.init(units: [handle], supervisor: supervisor)
     }
@@ -305,14 +313,17 @@ extension Behavior: Semigroup {
         Behavior(units: rest.reduce(into: first.units) { $0 += $1.units }, supervisor: unionSupervise([first] + rest))
     }
 
-    /// Unions the `supervise` axes of `behaviors`: the desired channel set for a state is the
-    /// concatenation of each behavior's set (the engine reconciles the whole union at once, so an
-    /// `identity`/empty summand contributes nothing). Returns the empty supervisor if none supervise.
+    /// Unions the `supervise` axes of `behaviors` — the desired channel set for a state is the
+    /// concatenation of each *supervising* behavior's set. Returns `nil` when **none** supervise, so a
+    /// fully non-supervising composition stays a true bypass; otherwise only the supervising summands
+    /// are resolved (the empty ones are skipped, not called with an empty result).
     static func unionSupervise(
         _ behaviors: [Behavior]
-    ) -> @MainActor @Sendable (State) -> Keep<Action, Environment> {
-        { @MainActor state in
-            let keeps = behaviors.map { $0.supervisor(state) }   // resolve each supervisor on @MainActor
+    ) -> (@MainActor @Sendable (State) -> Keep<Action, Environment>)? {
+        let supervisors = behaviors.compactMap(\.supervisor)
+        guard !supervisors.isEmpty else { return nil }
+        return { @MainActor state in
+            let keeps = supervisors.map { $0(state) }            // resolve each supervisor on @MainActor
             return Reader { env in keeps.flatMap { $0.runReader(env) } }
         }
     }
@@ -328,8 +339,8 @@ extension Behavior: Monoid {
     }
 
     /// Flattens any (possibly empty) array of behaviors in a single pass — O(total units).
-    /// Identities contribute empty lists and vanish.
+    /// Identities contribute empty lists and vanish; the `supervise` axes are unioned.
     public static func mconcat(_ values: [Behavior]) -> Behavior {
-        Behavior(units: values.flatMap(\.units))
+        Behavior(units: values.flatMap(\.units), supervisor: unionSupervise(values))
     }
 }

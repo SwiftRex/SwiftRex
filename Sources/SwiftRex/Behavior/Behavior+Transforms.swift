@@ -33,7 +33,9 @@ extension Behavior {
                 return Consequence(mutation: c.mutation, effect: c.effect.map { $0.map(prism.review) })
             },
             // Re-embed each supervised channel's actions into the global type.
-            supervisor: { state in self.supervisor(state).map { $0.map { $0.mapAction(prism.review) } } }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: State) in inner(state).map { $0.map { $0.mapAction(prism.review) } } }
+            }
         )
     }
 
@@ -88,7 +90,7 @@ extension Behavior {
                     effect: c.effect.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
                 )
             },
-            supervisor: { state in self.supervisor(state[keyPath: keyPath]) }
+            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(state[keyPath: keyPath]) } }
         )
     }
 
@@ -116,7 +118,7 @@ extension Behavior {
                     effect: c.effect.contramapEnvironment { $0.map(stateLens.get) }
                 )
             },
-            supervisor: { state in self.supervisor(stateLens.get(state)) }
+            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(stateLens.get(state)) } }
         )
     }
 
@@ -147,7 +149,9 @@ extension Behavior {
                 )
             },
             // Sub-state absent → supervise nothing, so the reconciler cancels the feature's channels.
-            supervisor: { state in statePrism.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: GlobalState) in statePrism.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+            }
         )
     }
 
@@ -179,7 +183,9 @@ extension Behavior {
                 )
             },
             // Focus absent → supervise nothing, so the reconciler cancels the feature's channels.
-            supervisor: { state in traversal.preview(state).map { self.supervisor($0) } ?? Reader { _ in [] } }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+            }
         )
     }
 }
@@ -210,7 +216,7 @@ extension Behavior {
                 let c = self.handle(action, context)
                 return Consequence(mutation: c.mutation, effect: c.effect.contramapEnvironment { $0.mapEnvironment(f) })
             },
-            supervisor: { state in self.supervisor(state).contramapEnvironment(f) }
+            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: State) in inner(state).contramapEnvironment(f) } }
         )
     }
 }

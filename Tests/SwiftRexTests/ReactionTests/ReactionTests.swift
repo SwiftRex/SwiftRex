@@ -11,9 +11,16 @@ struct SuperviseTests {
     private struct S: Sendable { var connected = false }
     private enum A: Sendable {}
 
-    /// The channels a behavior supervises for `state` (Void environment).
+    /// The channels a behavior supervises for `state` (Void environment) — `nil` supervisor ⇒ `[]`.
     private func channels(_ behavior: Behavior<A, S, Void>, _ state: S) -> [Channel<A>] {
-        behavior.supervisor(state).runReader(())
+        behavior.supervisor?(state).runReader(()) ?? []
+    }
+
+    /// Generic resolver for the lifted behaviors (varied state/environment types).
+    private func resolve<Act: Sendable, St: Sendable, Env: Sendable>(
+        _ behavior: Behavior<Act, St, Env>, _ state: St, _ env: Env
+    ) -> [Channel<Act>] {
+        behavior.supervisor?(state).runReader(env) ?? []
     }
 
     nonisolated private func channel(_ id: String) -> Channel<A> {
@@ -55,12 +62,36 @@ struct SuperviseTests {
         #expect(channels(behavior, S()).count == 1)
     }
 
+    // MARK: - The `supervises` bypass flag (a non-supervising feature does no phase-5 work)
+
+    @Test func supervisesFlagIsStructuralAndPropagates() {
+        struct Global: Sendable { var sub = S() }
+        typealias B = Behavior<A, S, Void>
+        // Leaves
+        #expect(B.identity.supervises == false)
+        #expect(B.reduce { _, _ in }.supervises == false)
+        #expect(B.react { _, _ in Reaction { _ in .empty } }.supervises == false)
+        #expect(B.supervise { _ in Keep { _ in [] } }.supervises == true)
+        // combine unions the flag
+        #expect(B.combine(.reduce { _, _ in }, .react { _, _ in Reaction { _ in .empty } }).supervises == false)
+        #expect(B.combine(.reduce { _, _ in }, .supervise { _ in Keep { _ in [] } }).supervises == true)
+        // lifts preserve it
+        #expect(B.reduce { _, _ in }.liftState(\Global.sub).supervises == false)
+        #expect(B.supervise { _ in Keep { _ in [] } }.liftState(\Global.sub).supervises == true)
+        // Middleware mirrors it, including through asBehavior
+        #expect(Middleware<A, S, Void>.react { _, _ in Reaction { _ in .empty } }.supervises == false)
+        #expect(Middleware<A, S, Void>.supervise { _ in Keep { _ in [] } }.supervises == true)
+        #expect(Middleware<A, S, Void>.supervise { _ in Keep { _ in [] } }.asBehavior.supervises == true)
+        // Providing a supervisor to the public Middleware init means it supervises (no silent drop)
+        #expect(Middleware<A, S, Void>(handle: { _, _ in Reaction { _ in .empty } }, supervisor: { _ in Keep { _ in [] } }).supervises == true)
+    }
+
     @Test func superviseReadsTheEnvironment() {
         struct Env: Sendable { let ids: [String] }
         let behavior = Behavior<A, S, Env>.supervise { _ in
             Keep { env in env.ids.map { id in Channel(id: id) { _ in .cancelOnly {} } } }
         }
-        #expect(behavior.supervisor(S()).runReader(Env(ids: ["a", "b", "c"])).count == 3)
+        #expect(resolve(behavior, S(), Env(ids: ["a", "b", "c"])).count == 3)
     }
 
     // MARK: - Fluent chaining (instance == self <> static)
@@ -90,8 +121,8 @@ struct SuperviseTests {
             Keep { _ in state.connected ? [channel("socket")] : [] }
         }
         let lifted = feature.liftState(\Global.sub)
-        #expect(lifted.supervisor(Global(sub: S(connected: true))).runReader(()).count == 1)
-        #expect(lifted.supervisor(Global(sub: S(connected: false))).runReader(()).isEmpty)
+        #expect(resolve(lifted, Global(sub: S(connected: true)), ()).count == 1)
+        #expect(resolve(lifted, Global(sub: S(connected: false)), ()).isEmpty)
     }
 
     private enum Nav: Sendable { case loggedOut; case loggedIn(S) }
@@ -104,8 +135,8 @@ struct SuperviseTests {
         )
         let feature = Behavior<A, S, Void>.supervise { _ in Keep { _ in [channel("socket")] } }
         let lifted = feature.liftState(prism)
-        #expect(lifted.supervisor(.loggedIn(S())).runReader(()).count == 1)
-        #expect(lifted.supervisor(.loggedOut).runReader(()).isEmpty)
+        #expect(resolve(lifted, .loggedIn(S()), ()).count == 1)
+        #expect(resolve(lifted, .loggedOut, ()).isEmpty)
     }
 
     @Test func supervisorThreadsThroughCollectionLiftWithPerElementStamping() {
@@ -119,11 +150,11 @@ struct SuperviseTests {
             stateCollection: \Global.items
         )
         // Two connected elements → two channels, with element-scoped (distinct) ids.
-        let both = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)])).runReader(())
+        let both = resolve(lifted, Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)]), ())
         #expect(both.count == 2)
         #expect(Set(both.map(\.id)).count == 2)
         // Dropping an element's implying state cancels only that element's channel.
-        let one = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: false)])).runReader(())
+        let one = resolve(lifted, Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: false)]), ())
         #expect(one.count == 1)
     }
 
@@ -135,10 +166,10 @@ struct SuperviseTests {
         }
         let lifted = feature.liftEach(action: { _ in nil }, embed: { a, _ in a }, stateCollection: \Global.items)
         // Fan-out supervise: every connected element keeps its own element-scoped (distinct) channel.
-        let both = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)])).runReader(())
+        let both = resolve(lifted, Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)]), ())
         #expect(both.count == 2)
         #expect(Set(both.map(\.id)).count == 2)
-        let one = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: false)])).runReader(())
+        let one = resolve(lifted, Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: false)]), ())
         #expect(one.count == 1)
     }
 
@@ -149,6 +180,6 @@ struct SuperviseTests {
             Keep { env in env.ids.map { id in Channel(id: id) { _ in .cancelOnly {} } } }
         }
         let lifted = feature.liftEnvironment { (g: GlobalEnv) in g.inner }
-        #expect(lifted.supervisor(S()).runReader(GlobalEnv(inner: InnerEnv(ids: ["a", "b"]))).count == 2)
+        #expect(resolve(lifted, S(), GlobalEnv(inner: InnerEnv(ids: ["a", "b"]))).count == 2)
     }
 }

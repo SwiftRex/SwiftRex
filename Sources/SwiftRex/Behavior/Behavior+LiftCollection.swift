@@ -70,14 +70,16 @@ extension Behavior {
             },
             // For each element, run its supervisor, re-embed the channel actions, and stamp the
             // channel ids per-element (so element A's `"socket"` ≠ element B's `"socket"`).
-            supervisor: { @MainActor gs in
-                guard let elements else { return Reader { _ in [] } }
-                let perElement = elements(stateContainer.get(gs)).map { pair in
-                    (element: AnyHashableSendable(pair.id), id: pair.id, keep: self.supervisor(pair.state))
-                }
-                return Reader { env in
-                    perElement.flatMap { p in
-                        p.keep.runReader(env).map { $0.mapAction { embed($0, p.id) }.scopedToElement(p.element) }
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (gs: GS) in
+                    guard let elements else { return Reader { _ in [] } }
+                    let perElement = elements(stateContainer.get(gs)).map { pair in
+                        (element: AnyHashableSendable(pair.id), id: pair.id, keep: inner(pair.state))
+                    }
+                    return Reader { env in
+                        perElement.flatMap { p in
+                            p.keep.runReader(env).map { $0.mapAction { embed($0, p.id) }.scopedToElement(p.element) }
+                        }
                     }
                 }
             }
