@@ -235,10 +235,25 @@ package final class EffectEngine<Action: Sendable> {
     /// changed, and pipes keys whose `broadcastIdentity` changed. An unchanged desired set produces
     /// **zero** operations — the engine keeps the registry; the caller (a `Reaction`) keeps nothing.
     package func reconcile(_ desired: [ReconcileEntry]) {
-        var next: [AnyHashableSendable: ReconcileState] = [:]
-        next.reserveCapacity(desired.count)
+        // Collapse duplicate keys (last wins) before diffing. The same element-scoped channel can
+        // be produced by more than one lift — e.g. a `liftEach` and a `liftCollection` on one
+        // container both keep element 1's `"socket"`. Those entries are identical, so they must
+        // register once, not double-open; distinct channels (different inner ids) all survive.
+        var unique: [(key: AnyHashableSendable, entry: ReconcileEntry)] = []
+        var indexByKey: [AnyHashableSendable: Int] = [:]
         for entry in desired {
             guard let key = entry.component.scheduling.id else { continue }
+            if let i = indexByKey[key] {
+                unique[i].entry = entry
+            } else {
+                indexByKey[key] = unique.count
+                unique.append((key, entry))
+            }
+        }
+
+        var next: [AnyHashableSendable: ReconcileState] = [:]
+        next.reserveCapacity(unique.count)
+        for (key, entry) in unique {
             let state = ReconcileState(reset: entry.resetIdentity, broadcast: entry.broadcastIdentity)
             next[key] = state
             if let prev = reconciledStates[key] {

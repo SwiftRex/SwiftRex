@@ -108,6 +108,40 @@ struct SuperviseTests {
         #expect(lifted.supervisor(.loggedOut).runReader(()).isEmpty)
     }
 
+    @Test func supervisorThreadsThroughCollectionLiftWithPerElementStamping() {
+        struct Item: Sendable, Identifiable { let id: Int; var connected: Bool }
+        struct Global: Sendable { var items: [Item] }
+        let feature = Behavior<A, Item, Void>.supervise { item in
+            Keep { _ in item.connected ? [Channel(id: "socket") { _ in .cancelOnly {} }] : [] }
+        }
+        let lifted = feature.liftCollection(
+            action: Prism<ElementAction<Int, A>, ElementAction<Int, A>>(preview: { $0 }, review: { $0 }),
+            stateCollection: \Global.items
+        )
+        // Two connected elements → two channels, with element-scoped (distinct) ids.
+        let both = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)])).runReader(())
+        #expect(both.count == 2)
+        #expect(Set(both.map(\.id)).count == 2)
+        // Dropping an element's implying state cancels only that element's channel.
+        let one = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: false)])).runReader(())
+        #expect(one.count == 1)
+    }
+
+    @Test func supervisorThreadsThroughLiftEachWithPerElementStamping() {
+        struct Item: Sendable, Identifiable { let id: Int; var connected: Bool }
+        struct Global: Sendable { var items: [Item] }
+        let feature = Behavior<A, Item, Void>.supervise { item in
+            Keep { _ in item.connected ? [Channel(id: "socket") { _ in .cancelOnly {} }] : [] }
+        }
+        let lifted = feature.liftEach(action: { _ in nil }, embed: { a, _ in a }, stateCollection: \Global.items)
+        // Fan-out supervise: every connected element keeps its own element-scoped (distinct) channel.
+        let both = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)])).runReader(())
+        #expect(both.count == 2)
+        #expect(Set(both.map(\.id)).count == 2)
+        let one = lifted.supervisor(Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: false)])).runReader(())
+        #expect(one.count == 1)
+    }
+
     @Test func supervisorThreadsThroughEnvironmentLift() {
         struct InnerEnv: Sendable { let ids: [String] }
         struct GlobalEnv: Sendable { let inner: InnerEnv }

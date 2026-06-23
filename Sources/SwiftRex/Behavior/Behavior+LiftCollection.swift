@@ -32,13 +32,17 @@ extension Behavior {
     ///   - embed: Re-wraps an action produced by the element's effect into the global action
     ///     type, addressed at `id`.
     ///   - stateContainer: A `WritableKeyPath` from the global state to the element container.
+    ///   - elements: Optional enumerator of the container's `(id, state)` pairs, used to fan the
+    ///     per-element `supervise` axis across the collection (each element's channels re-embedded
+    ///     and stamped per element). `nil` (the default) supervises nothing.
     /// - Returns: A `Behavior<GA, GS, Environment>` operating on the whole collection.
     public func liftCollection<GA: Sendable, GS: Sendable, Container: Sendable, ID: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> (action: Action, element: AffineTraversal<Container, State>, id: ID)?,
         embed: @escaping @Sendable (Action, ID) -> GA,
-        stateContainer: WritableKeyPath<GS, Container>
+        stateContainer: WritableKeyPath<GS, Container>,
+        elements: (@Sendable (Container) -> [(id: ID, state: State)])? = nil
     ) -> Behavior<GA, GS, Environment> {
-        liftCollection(action: action, embed: embed, stateContainer: lens(stateContainer))
+        liftCollection(action: action, embed: embed, stateContainer: lens(stateContainer), elements: elements)
     }
 
     /// Primitive — closure-driven extraction plus a `Lens` state container (for composed or
@@ -46,22 +50,38 @@ extension Behavior {
     public func liftCollection<GA: Sendable, GS: Sendable, Container: Sendable, ID: Hashable & Sendable>(
         action: @escaping @Sendable (GA) -> (action: Action, element: AffineTraversal<Container, State>, id: ID)?,
         embed: @escaping @Sendable (Action, ID) -> GA,
-        stateContainer: Lens<GS, Container>
+        stateContainer: Lens<GS, Container>,
+        elements: (@Sendable (Container) -> [(id: ID, state: State)])? = nil
     ) -> Behavior<GA, GS, Environment> {
-        Behavior<GA, GS, Environment> { globalAction, context in
-            guard let resolved = action(globalAction) else { return .doNothing }
-            let traversal = stateContainer.compose(resolved.element)
-            let element = AnyHashableSendable(resolved.id)
-            let c = self.handle(resolved.action, context.compactMap(traversal.preview))
-            return Consequence(
-                mutation: c.mutation.map { traversal.lift($0) },
-                effect: c.effect
-                    .map { (eff: Effect<Action>) in
-                        eff.map { embed($0, resolved.id) }.scopedToElement(element)
+        Behavior<GA, GS, Environment>(
+            handle: { globalAction, context in
+                guard let resolved = action(globalAction) else { return .doNothing }
+                let traversal = stateContainer.compose(resolved.element)
+                let element = AnyHashableSendable(resolved.id)
+                let c = self.handle(resolved.action, context.compactMap(traversal.preview))
+                return Consequence(
+                    mutation: c.mutation.map { traversal.lift($0) },
+                    effect: c.effect
+                        .map { (eff: Effect<Action>) in
+                            eff.map { embed($0, resolved.id) }.scopedToElement(element)
+                        }
+                        .contramapEnvironment { $0.compactMap(traversal.preview) }
+                )
+            },
+            // For each element, run its supervisor, re-embed the channel actions, and stamp the
+            // channel ids per-element (so element A's `"socket"` ≠ element B's `"socket"`).
+            supervisor: { @MainActor gs in
+                guard let elements else { return Reader { _ in [] } }
+                let perElement = elements(stateContainer.get(gs)).map { pair in
+                    (element: AnyHashableSendable(pair.id), id: pair.id, keep: self.supervisor(pair.state))
+                }
+                return Reader { env in
+                    perElement.flatMap { p in
+                        p.keep.runReader(env).map { $0.mapAction { embed($0, p.id) }.scopedToElement(p.element) }
                     }
-                    .contramapEnvironment { $0.compactMap(traversal.preview) }
-            )
-        }
+                }
+            }
+        )
     }
 }
 
@@ -78,7 +98,8 @@ extension Behavior where State: Identifiable {
         liftCollection(
             action: { ga in prism.preview(ga).map { (action: $0.action, element: C.ix(id: $0.id), id: $0.id) } },
             embed: { action, id in prism.review(ElementAction(id, action: action)) },
-            stateContainer: stateCollection
+            stateContainer: stateCollection,
+            elements: { container in container.map { (id: $0.id, state: $0) } }
         )
     }
 
@@ -91,7 +112,8 @@ extension Behavior where State: Identifiable {
         liftCollection(
             action: { ga in prism.preview(ga).map { (action: $0.action, element: C.ix(id: $0.id), id: $0.id) } },
             embed: { action, id in prism.review(ElementAction(id, action: action)) },
-            stateContainer: stateCollection
+            stateContainer: stateCollection,
+            elements: { container in container.map { (id: $0.id, state: $0) } }
         )
     }
 }
@@ -109,7 +131,8 @@ extension Behavior {
         liftCollection(
             action: { ga in prism.preview(ga).map { (action: $0.action, element: C.ix(id: $0.id, by: identifier), id: $0.id) } },
             embed: { action, id in prism.review(ElementAction(id, action: action)) },
-            stateContainer: stateCollection
+            stateContainer: stateCollection,
+            elements: { container in container.map { (id: identifier($0), state: $0) } }
         )
     }
 
@@ -123,7 +146,8 @@ extension Behavior {
         liftCollection(
             action: { ga in prism.preview(ga).map { (action: $0.action, element: C.ix(id: $0.id, by: identifier), id: $0.id) } },
             embed: { action, id in prism.review(ElementAction(id, action: action)) },
-            stateContainer: stateCollection
+            stateContainer: stateCollection,
+            elements: { container in container.map { (id: identifier($0), state: $0) } }
         )
     }
 }
@@ -139,7 +163,8 @@ extension Behavior {
         liftCollection(
             action: { ga in prism.preview(ga).map { (action: $0.action, element: [Key: State].ix(key: $0.id), id: $0.id) } },
             embed: { action, id in prism.review(ElementAction(id, action: action)) },
-            stateContainer: stateDictionary
+            stateContainer: stateDictionary,
+            elements: { dict in dict.map { (id: $0.key, state: $0.value) } }
         )
     }
 
@@ -151,7 +176,8 @@ extension Behavior {
         liftCollection(
             action: { ga in prism.preview(ga).map { (action: $0.action, element: [Key: State].ix(key: $0.id), id: $0.id) } },
             embed: { action, id in prism.review(ElementAction(id, action: action)) },
-            stateContainer: stateDictionary
+            stateContainer: stateDictionary,
+            elements: { dict in dict.map { (id: $0.key, state: $0.value) } }
         )
     }
 }
