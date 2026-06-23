@@ -871,8 +871,9 @@ When `joinedRoom` becomes `nil`, the `Keep` returns `[]`, the engine sees the so
 
 After every state mutation the `Store` recomputes the whole desired set (`supervise(state)`) and **reconciles** it against what's running: channels newly present **open**, channels now absent **cancel**, channels still present are **left untouched** — an unchanged desired set produces *zero* operations. Because the desired set is a pure function of state, it survives time-travel and redelivery. Two knobs drive the diff:
 
-- **`Channel.Lifetime`** — `.permanent` (default) keeps it open; `.ephemeral(resetKey:)` **recreates** it (close + reopen) when the key changes — reconnect a socket when the room changes, restart a poll when the query changes.
+- **`Channel.Lifetime`** — `.permanent` (default) keeps it open; `.ephemeral(resetKey:)` **recreates** it (close + reopen) when the key changes — reconnect a socket when the room changes, restart a poll when the query changes. Add `settle:` to **debounce the recreation** (tear down now, reopen once the key is quiet) — search-as-you-type reconnection without thrashing.
 - **`Channel.Broadcasting`** — `.nothing` (default) opens without delivering; `.onChange(value)` auto-publishes a *state-derived* value on open and whenever it changes, deduped.
+- **`ChannelDelivery`** — paces the *values* into a live channel (`.throttle`/`.debounce`), the channel acting as a throttled subject. Creation is decoupled from delivery: the channel always **opens immediately**; only the values are paced (and an `ephemeral` recreate resets the window).
 
 For *discrete, action-driven* sends into a live channel, a `.react` returns `Effect.broadcast(_:channel:)` — it rendezvous with the supervised channel on the shared id (the *send* half of a two-way socket; the chat example below). `Effect.open(_:)` and `Effect.cancel(id:)` let you own a channel's lifetime by hand when it genuinely isn't a function of state.
 
