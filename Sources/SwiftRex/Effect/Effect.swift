@@ -124,10 +124,14 @@ public struct Effect<Action: Sendable>: Sendable {
             /// such a component never opens anything — if no channel is live under its key the value
             /// is dropped.
             package let start: Start?
+            /// How the engine paces *value delivery* into the live channel (never its creation). Registered
+            /// when the channel opens; subsequent deliveries — from `.onChange` or `.broadcast` — honour it.
+            package let delivery: ChannelDelivery
 
-            package init(value: any Sendable, start: Start?) {
+            package init(value: any Sendable, start: Start?, delivery: ChannelDelivery = .immediate) {
                 self.value = value
                 self.start = start
+                self.delivery = delivery
             }
         }
     }

@@ -38,6 +38,6 @@ extension Channel {
     /// The engine reconcile entry for this channel — a single keyed component plus its two diff
     /// identities (`resetIdentity` for recreate, `broadcastIdentity` for pipe).
     package var reconcileEntry: EffectEngine<Action>.ReconcileEntry {
-        .init(component: component, resetIdentity: resetIdentity, broadcastIdentity: broadcastIdentity)
+        .init(component: component, resetIdentity: resetIdentity, broadcastIdentity: broadcastIdentity, settle: settle)
     }
 }

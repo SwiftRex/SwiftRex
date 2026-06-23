@@ -37,6 +37,10 @@ public struct Channel<Action: Sendable>: Sendable {
     package let resetIdentity: AnyHashableSendable?
     /// Identity for the broadcast diff: the `onChange` value, or `nil` when broadcasting `nothing`.
     package let broadcastIdentity: AnyHashableSendable?
+    /// Debounce window for **creation**: when set (an `ephemeral` `settle`), a change to `resetIdentity`
+    /// tears the live instance down immediately and defers the *recreation* until the key is quiet this
+    /// long. `nil` recreates immediately. Never affects value delivery — only the open.
+    package let settle: Duration?
     /// The single engine component (a keyed channel) this resource opens.
     package let component: Effect<Action>.Component
 
@@ -44,8 +48,10 @@ public struct Channel<Action: Sendable>: Sendable {
     ///
     /// - Parameters:
     ///   - id: The channel key. The same id an action pipes into via `Effect.broadcast(_:channel:)`.
-    ///   - lifetime: ``Lifetime/permanent`` (default) or `Lifetime.ephemeral(resetKey:)`.
+    ///   - lifetime: ``Lifetime/permanent`` (default) or `Lifetime.ephemeral(resetKey:settle:)`.
     ///   - broadcasting: ``Broadcasting/nothing`` (default) or ``Broadcasting/onChange(_:)``.
+    ///   - delivery: How to pace values flowing *into* the channel — ``ChannelDelivery/immediate``
+    ///     (default), or throttle/debounce. Gates delivery only; the channel still opens immediately.
     ///   - file/function/line: Captured automatically for the actions `dispatch` produces.
     ///   - body: Opens the resource on first use; `dispatch` sends inbound events out as actions.
     ///     Returns a ``ChannelHandler`` (receive + cancel), or ``ChannelHandler/cancelOnly(_:)``.
@@ -53,6 +59,7 @@ public struct Channel<Action: Sendable>: Sendable {
         id: some Hashable & Sendable,
         lifetime: Lifetime = .permanent,
         broadcasting: Broadcasting<Value> = .nothing,
+        delivery: ChannelDelivery = .immediate,
         file: String = #file,
         function: String = #function,
         line: UInt = #line,
@@ -61,8 +68,12 @@ public struct Channel<Action: Sendable>: Sendable {
         let key = AnyHashableSendable(id)
         self.id = key
         switch lifetime {
-        case .permanent: self.resetIdentity = nil
-        case .ephemeral(let resetKey): self.resetIdentity = resetKey
+        case .permanent:
+            self.resetIdentity = nil
+            self.settle = nil
+        case let .ephemeral(resetKey, settle):
+            self.resetIdentity = resetKey
+            self.settle = settle
         }
 
         // `value` is delivered on open/pipe only when broadcasting; `.nothing` opens value-less.
@@ -90,7 +101,8 @@ public struct Channel<Action: Sendable>: Sendable {
                     if let next = erased as? Value { handler.receive(next) }
                 }
                 return (SubscriptionToken(handler.cancel), sink)
-            }
+            },
+            delivery: delivery
         )
         self.component = Effect<Action>.Component(
             subscribe: { _, complete in complete(); return .empty },
@@ -108,21 +120,24 @@ extension Channel {
         id: AnyHashableSendable,
         resetIdentity: AnyHashableSendable?,
         broadcastIdentity: AnyHashableSendable?,
+        settle: Duration?,
         component: Effect<Action>.Component
     ) {
         self.id = id
         self.resetIdentity = resetIdentity
         self.broadcastIdentity = broadcastIdentity
+        self.settle = settle
         self.component = component
     }
 
-    /// Re-types the dispatched actions via `f`, keeping the id, diff identities, and broadcast value.
+    /// Re-types the dispatched actions via `f`, keeping the id, diff identities, settle, and delivery.
     /// Used by the action-axis lifts to re-embed a feature's channel actions into the global type.
     package func mapAction<B: Sendable>(_ f: @escaping @Sendable (Action) -> B) -> Channel<B> {
         Channel<B>(
             id: id,
             resetIdentity: resetIdentity,
             broadcastIdentity: broadcastIdentity,
+            settle: settle,
             component: Effect(components: [component]).map(f).components[0]
         )
     }
@@ -135,6 +150,7 @@ extension Channel {
             id: AnyHashableSendable(ElementScopedID(element: element, inner: id)),
             resetIdentity: resetIdentity,
             broadcastIdentity: broadcastIdentity,
+            settle: settle,
             component: Effect(components: [component]).scopedToElement(element).components[0]
         )
     }
@@ -148,12 +164,47 @@ extension Channel {
         /// Open once and keep it open across state changes; cancelled only when it leaves the desired set.
         case permanent
         /// Recreate the channel (close + reopen) whenever `resetKey` changes between reconcile cycles.
-        case ephemeral(resetKey: AnyHashableSendable)
+        ///
+        /// `settle` debounces the *recreation*: a key change tears the live instance down immediately and
+        /// waits for the key to be quiet for `settle` before opening the new one — search-as-you-type
+        /// reconnection without thrashing. `nil` recreates immediately. It paces creation only; values
+        /// flowing through a live instance are paced by ``ChannelDelivery`` instead.
+        case ephemeral(resetKey: AnyHashableSendable, settle: Duration?)
 
-        /// Recreate whenever `resetKey` changes (accepts any `Hashable & Sendable` key).
+        /// Recreate whenever `resetKey` changes (accepts any `Hashable & Sendable` key); `settle`
+        /// optionally debounces the recreation.
         @_disfavoredOverload
-        public static func ephemeral(resetKey: some Hashable & Sendable) -> Lifetime {
-            .ephemeral(resetKey: AnyHashableSendable(resetKey))
+        public static func ephemeral(resetKey: some Hashable & Sendable, settle: Duration? = nil) -> Lifetime {
+            .ephemeral(resetKey: AnyHashableSendable(resetKey), settle: settle)
+        }
+    }
+}
+
+/// How the engine paces values delivered *into* a live ``Channel`` (from ``Broadcasting/onChange(_:)``
+/// or ``Effect/broadcast(_:channel:file:function:line:)``) — the channel acting as a throttled subject.
+///
+/// This gates *delivery only*; the channel always opens immediately the moment it enters the desired set.
+/// Creation pacing is a separate concern — see `Channel.Lifetime.ephemeral`'s `settle`. Applying it twice
+/// (here and on an upstream publisher) double-paces, exactly like two `.throttle`s in one pipeline.
+public enum ChannelDelivery: Sendable, Equatable {
+    /// Deliver every value as it arrives.
+    case immediate
+    /// Deliver at most once per `interval`; values arriving inside the window are dropped.
+    case throttle(Duration)
+    /// Deliver only after the values go quiet for `interval`; each new value restarts the wait, so only
+    /// the latest survives a burst.
+    case debounce(Duration)
+}
+
+extension ChannelDelivery {
+    /// Maps an ``EffectScheduling``'s coalesce policy onto channel delivery pacing — the bridge for the
+    /// action-driven ``Effect/channel(value:scheduling:file:function:line:_:)`` factory, whose
+    /// `scheduling` now paces *delivery* (the channel always opens immediately).
+    package init(coalesce: EffectScheduling.Coalesce?) {
+        switch coalesce {
+        case .throttle(let interval): self = .throttle(interval)
+        case .debounce(let window): self = .debounce(window)
+        case nil: self = .immediate
         }
     }
 }
