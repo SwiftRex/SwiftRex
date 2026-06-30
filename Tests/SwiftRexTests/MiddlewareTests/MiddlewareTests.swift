@@ -52,7 +52,7 @@ struct MiddlewareConstructorTests {
     }
 
     @Test func handleWithProduceShorthand() {
-        let sut = Middleware<Int, Int, Void>.handle { action, _ in .react { _ in .just(action + 1) } }
+        let sut = Middleware<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action + 1) } }
         #expect(actions(sut, action: 3, state: 0, env: ()) == [4])
     }
 }

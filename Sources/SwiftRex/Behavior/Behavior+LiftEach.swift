@@ -41,18 +41,18 @@ extension Behavior {
             handle: { globalAction, context in
                 guard let local = action(globalAction), let global = context.stateBefore
                 else { return .doNothing }
-                let consequences: [Consequence<GS, Environment, GA>] = ids(stateContainer.get(global)).map { id in
+                let reactions: [Reaction<GS, Environment, GA>] = ids(stateContainer.get(global)).map { id in
                     let traversal = stateContainer.compose(element(id))
                     let scope = AnyHashableSendable(id)
                     let c = self.handle(local, context.compactMap(traversal.preview))
-                    return Consequence(
+                    return Reaction(
                         mutation: c.mutation.map { traversal.lift($0) },
-                        effect: c.effect
+                        produce: c.produce
                             .map { (eff: Effect<Action>) in eff.map { embed($0, id) }.scopedToElement(scope) }
                             .contramapEnvironment { $0.compactMap(traversal.preview) }
                     )
                 }
-                return consequences.reduce(.doNothing, Consequence.combine)
+                return reactions.reduce(.doNothing, Reaction.combine)
             },
             // Fan-out the supervise axis the same way the action axis fans out: every present
             // element keeps its own channels, re-embedded and stamped per-element. The reconciler
@@ -60,7 +60,7 @@ extension Behavior {
             supervisor: self.supervisor.map { inner in
                 { @MainActor @Sendable (gs: GS) in
                     let container = stateContainer.get(gs)
-                    let perElement = ids(container).compactMap { id -> (element: AnyHashableSendable, id: ID, keep: Keep<Action, Environment>)? in
+                    let perElement = ids(container).compactMap { id in
                         element(id).preview(container).map { (element: AnyHashableSendable(id), id: id, keep: inner($0)) }
                     }
                     return Reader { env in

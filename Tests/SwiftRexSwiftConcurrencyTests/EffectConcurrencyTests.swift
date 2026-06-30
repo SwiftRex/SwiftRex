@@ -142,7 +142,7 @@ struct EffectAutoCancelTests {
                 let store = Store(
                     initial: 0,
                     behavior: Behavior<Int, Int, Void>.handle { _, _ in
-                        .react { _ in
+                        .produce { _ in
                             Effect<Int>.task {
                                 try? await Task.sleep(nanoseconds: 500_000_000)
                                 if !Task.isCancelled { ranToEnd.set(true) }
@@ -169,7 +169,7 @@ struct EffectAutoCancelTests {
             Store(
                 initial: 0,
                 behavior: Behavior<Int, Int, Void>.handle { action, _ in
-                    .react { _ in
+                    .produce { _ in
                         Effect<Int>.task {
                             try? await Task.sleep(nanoseconds: 1_000_000_000)
                             if !Task.isCancelled { completedActions.mutate { $0.append(action) } }

@@ -37,14 +37,14 @@ struct LoaderState: Equatable, Sendable {
 
 ## Step 3 — Reduce, then react
 
-On `.load`, flip a flag (`reduce`) **and** kick off the effect (`react`). `Effect.throwingTask` runs an `async throws` closure and maps its `Result` straight onto your action case — `LoaderAction.didLoad` *is* the transform. When the result arrives as `.didLoad`, just reduce.
+On `.load`, flip a flag (`reduce`) **and** kick off the effect (`produce`). `Effect.throwingTask` runs an `async throws` closure and maps its `Result` straight onto your action case — `LoaderAction.didLoad` *is* the transform. When the result arrives as `.didLoad`, just reduce.
 
 ```swift
 let loaderBehavior = Behavior<LoaderAction, LoaderState, API>.handle { action, _ in
     switch action {
     case .load(let id):
         .reduce { $0.isLoading = true }
-            .react { ctx in
+            .produce { ctx in
                 Effect.throwingTask(LoaderAction.didLoad) {
                     try await ctx.environment.fetch(id)
                 }

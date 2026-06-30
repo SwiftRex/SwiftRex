@@ -1,17 +1,17 @@
 import CoreFP
 import DataStructure
 
-/// The complete outcome of a ``Behavior`` handling one action: an optional state mutation
-/// and an optional side effect.
+/// The **action-clock** branch of a ``Consequence`` — the complete outcome of *reacting to one
+/// action*: an optional state mutation and an optional side effect.
 ///
-/// `Consequence` is the return value of every ``Behavior/handle`` call. It pairs a
-/// ``ReducerOutcome`` (the state mutation to apply in phase 2, or ``ReducerOutcome/unchanged``)
-/// with a `Reader<PostReducerContext<State, Environment>, Effect<Action>>`
-/// (the effect to schedule in phase 3). Either half can be absent — use the static factories
-/// to express intent clearly:
+/// `Reaction` pairs a ``ReducerOutcome`` (the mutation to apply in phase 2, or
+/// ``ReducerOutcome/unchanged``) with a `Reader<PostReducerContext<State, Environment>, Effect<Action>>`
+/// (the effect to schedule in phase 3). Either half can be absent — its two monoidal generators are
+/// `reduce` (describe a mutation) and `produce` (describe an effect); the ``Store`` is what *mutates*
+/// and *performs* them. Use the static factories to express intent clearly:
 ///
 /// ```swift
-/// Behavior<AppAction, AppState, AppEnvironment> { action, _ in
+/// Behavior<AppAction, AppState, AppEnvironment>.react { action, _ in
 ///     switch action {
 ///     case .increment:
 ///         // Pure mutation — no effect
@@ -19,12 +19,12 @@ import DataStructure
 ///
 ///     case .fetch(let query):
 ///         // Pure effect — no mutation
-///         return .react { ctx in ctx.environment.api.search(query).asEffect() }
+///         return .produce { ctx in ctx.environment.api.search(query).asEffect() }
 ///
 ///     case .fetchAndShow(let query):
 ///         // Both: set loading flag, then fire the network request
 ///         return .reduce { $0.isLoading = true }
-///                .react { ctx in ctx.environment.api.search(query).asEffect() }
+///                .produce { ctx in ctx.environment.api.search(query).asEffect() }
 ///
 ///     case .noop:
 ///         return .doNothing
@@ -34,35 +34,32 @@ import DataStructure
 ///
 /// ## Three-phase dispatch timing
 ///
-/// The ``Store`` processes a `Consequence` in three phases:
+/// The ``Store`` processes a `Reaction` in three phases:
 ///
-/// 1. **Phase 1** — ``Behavior/handle`` is called with a ``PreReducerContext`` giving access
-///    to pre-mutation state. The `Consequence` is produced but nothing has changed yet.
-/// 2. **Phase 2** — `mutation.runEndoMut(&state)` is called. All state changes happen here,
-///    atomically, on `@MainActor`.
-/// 3. **Phase 3** — `effect.runReader(postCtx)` is called. ``PostReducerContext/liveState``
-///    read here returns this cycle's post-mutation state — via `await MainActor.run { ctx.liveState }`
-///    or the Combine / RxSwift / ReactiveSwift `readLiveState()` helpers. (Read later, from an
-///    async effect, it reflects the Store's state at that moment instead.)
+/// 1. **Phase 1** — the reaction is produced from the action and a ``PreReducerContext`` (pre-mutation
+///    state). Nothing has changed yet.
+/// 2. **Phase 2** — `mutation.runEndoMut(&state)` runs. All state changes happen here, on `@MainActor`.
+/// 3. **Phase 3** — `produce.runReader(postCtx)` runs. ``PostReducerContext/liveState`` read here
+///    returns this cycle's post-mutation state.
 ///
-/// ## Semigroup: sequential mutations, parallel effects
+/// ## Monoid: sequential mutations, parallel effects
 ///
-/// ``combine(_:_:)`` runs `lhs.mutation` then `rhs.mutation` on the same `inout State`, so
-/// later mutations see earlier ones. Their effects are merged via ``Effect/combine(_:_:)``
-/// and run concurrently by the Store.
-public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendable>: Sendable {
+/// `Reaction` is a `Monoid` whose identity is ``doNothing``. ``combine(_:_:)`` runs `lhs.mutation`
+/// then `rhs.mutation` on the same `inout State` (later mutations see earlier ones); their effects
+/// are merged via ``Effect/combine(_:_:)`` and run concurrently.
+public struct Reaction<State: Sendable, Environment: Sendable, Action: Sendable>: Sendable {
     package let mutation: ReducerOutcome<State>
-    package let effect: Reader<PostReducerContext<State, Environment>, Effect<Action>>
+    package let produce: Reader<PostReducerContext<State, Environment>, Effect<Action>>
 
     package init(
         mutation: ReducerOutcome<State>,
-        effect: Reader<PostReducerContext<State, Environment>, Effect<Action>>
+        produce: Reader<PostReducerContext<State, Environment>, Effect<Action>>
     ) {
         self.mutation = mutation
-        self.effect = effect
+        self.produce = produce
     }
 
-    /// A consequence that neither mutates state nor produces any effect.
+    /// A reaction that neither mutates state nor produces any effect.
     ///
     /// Use this as the explicit "do nothing" branch in a switch statement — it communicates
     /// intent more clearly than returning `.reduce { _ in }`:
@@ -72,14 +69,13 @@ public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendab
     ///     return .doNothing
     /// ```
     public static var doNothing: Self {
-        Self(mutation: .unchanged, effect: Reader { _ in .empty })
+        Self(mutation: .unchanged, produce: Reader { _ in .empty })
     }
 
-    /// A consequence that mutates state in-place without producing any effect.
+    /// A reaction that mutates state in-place without producing any effect.
     ///
     /// The closure receives the state by `inout` reference, avoiding copies of large value
-    /// trees. Prefer this over the Endo or returning a new state when the mutation is
-    /// expressed naturally as in-place changes:
+    /// trees. The ``Store`` applies it in phase 2.
     ///
     /// ```swift
     /// case .setUsername(let name):
@@ -89,92 +85,106 @@ public struct Consequence<State: Sendable, Environment: Sendable, Action: Sendab
     ///     return .reduce { $0.flags.showBanner.toggle() }
     /// ```
     ///
-    /// - Parameter f: A closure that mutates the state in place.
-    /// - Returns: A `Consequence` with `f` as its mutation and an empty effect.
+    /// - Parameter f: A closure that describes the in-place mutation.
+    /// - Returns: A `Reaction` with `f` as its mutation and an empty effect.
     public static func reduce(_ f: @escaping @Sendable (inout State) -> Void) -> Self {
-        Self(mutation: .mutation(EndoMut(f)), effect: Reader { _ in .empty })
+        Self(mutation: .mutation(EndoMut(f)), produce: Reader { _ in .empty })
     }
 
-    /// A consequence that produces a side effect without mutating state.
+    /// A reaction that produces a side effect without mutating state.
     ///
     /// The ``PostReducerContext`` is injected by the Store when phase 3 runs. It gives access
-    /// to `ctx.environment` (synchronously, from any context) and `ctx.liveState` (on
-    /// `@MainActor`). The closure must be synchronous — async work is expressed as an ``Effect``
-    /// value returned from `f`:
+    /// to `ctx.environment` (synchronously) and `ctx.liveState` (on `@MainActor`). The closure must
+    /// be synchronous — async work is expressed as an ``Effect`` value returned from `f`:
     ///
     /// ```swift
     /// case .load(let id):
-    ///     return .react { ctx in ctx.environment.api.fetch(id: id).asEffect() }
+    ///     return .produce { ctx in ctx.environment.api.fetch(id: id).asEffect() }
     ///
     /// case .trackEvent(let name):
-    ///     return .react { ctx in ctx.environment.analytics.track(name).asEffect() }
+    ///     return .produce { ctx in ctx.environment.analytics.track(name).asEffect() }
     /// ```
     ///
     /// - Parameter f: A `@Sendable` closure that receives a ``PostReducerContext`` and returns
-    ///   an ``Effect``.
-    /// - Returns: A `Consequence` with identity mutation and `f` as the effect.
-    public static func react(
+    ///   an ``Effect`` for the Store to perform.
+    /// - Returns: A `Reaction` with identity mutation and `f` as the effect.
+    public static func produce(
         _ f: @escaping @Sendable (PostReducerContext<State, Environment>) -> Effect<Action>
     ) -> Self {
-        Self(mutation: .unchanged, effect: Reader(f))
+        Self(mutation: .unchanged, produce: Reader(f))
     }
 
-    /// Chains an additional effect onto an existing `Consequence`, merging it with any
-    /// prior effect.
+    /// Chains an additional effect onto an existing `Reaction`, merging it with any prior effect.
     ///
     /// This is the fluent builder for expressing "mutation AND effect" in a single expression.
-    /// The new effect is combined in parallel with any existing effect via
-    /// ``Effect/combine(_:_:)`` — both run concurrently:
+    /// The new effect is combined in parallel with any existing effect via ``Effect/combine(_:_:)``:
     ///
     /// ```swift
     /// case .submit(let form):
     ///     return .reduce { $0.isLoading = true }
-    ///            .react { ctx in ctx.environment.api.submit(form).asEffect() }
+    ///            .produce { ctx in ctx.environment.api.submit(form).asEffect() }
     ///
     /// // Multiple effects run concurrently
     /// case .signIn(let credentials):
     ///     return .reduce { $0.isLoading = true }
-    ///            .react { ctx in ctx.environment.auth.signIn(credentials).asEffect() }
-    ///            .react { ctx in ctx.environment.analytics.track(.signInAttempt).asEffect() }
+    ///            .produce { ctx in ctx.environment.auth.signIn(credentials).asEffect() }
+    ///            .produce { ctx in ctx.environment.analytics.track(.signInAttempt).asEffect() }
     /// ```
     ///
     /// - Parameter f: A `@Sendable` closure that receives a ``PostReducerContext`` and returns
     ///   an ``Effect`` to combine with any existing effect.
-    /// - Returns: A `Consequence` with the same mutation and a merged effect.
-    public func react(
+    /// - Returns: A `Reaction` with the same mutation and a merged effect.
+    public func produce(
         _ f: @escaping @Sendable (PostReducerContext<State, Environment>) -> Effect<Action>
     ) -> Self {
-        Self(mutation: mutation, effect: Reader { ctx in .combine(self.effect.runReader(ctx), f(ctx)) })
+        Self(mutation: mutation, produce: Reader { ctx in .combine(self.produce.runReader(ctx), f(ctx)) })
     }
 }
 
 // MARK: - Semigroup
 
-extension Consequence: Semigroup {
-    /// Combines two consequences: mutations run sequentially (lhs then rhs), effects run in parallel.
+extension Reaction: Semigroup {
+    /// Combines two reactions: mutations run sequentially (lhs then rhs), effects run in parallel.
     ///
     /// `rhs.mutation` sees any changes made by `lhs.mutation` because they share the same
-    /// `inout State`. Effects from both consequences are merged via ``Effect/combine(_:_:)``
-    /// and scheduled concurrently.
-    ///
-    /// This is the composition used by ``Behavior/combine(_:_:)`` when two behaviors handle
-    /// the same action.
+    /// `inout State`. Effects from both reactions are merged via ``Effect/combine(_:_:)``.
     ///
     /// - Parameters:
-    ///   - lhs: The first consequence; its mutation runs first.
-    ///   - rhs: The second consequence; its mutation sees lhs's changes.
-    /// - Returns: A combined consequence with sequential mutations and parallel effects.
+    ///   - lhs: The first reaction; its mutation runs first.
+    ///   - rhs: The second reaction; its mutation sees lhs's changes.
+    /// - Returns: A combined reaction with sequential mutations and parallel effects.
     public static func combine(_ lhs: Self, _ rhs: Self) -> Self {
         Self(
             mutation: .combine(lhs.mutation, rhs.mutation),
-            effect: Reader { ctx in .combine(lhs.effect.runReader(ctx), rhs.effect.runReader(ctx)) }
+            produce: Reader { ctx in .combine(lhs.produce.runReader(ctx), rhs.produce.runReader(ctx)) }
         )
     }
 }
 
-extension Consequence: Monoid {
-    /// The identity consequence — equivalent to ``doNothing``.
-    ///
-    /// Composing with `identity` leaves any other `Consequence` unchanged.
+extension Reaction: Monoid {
+    /// The identity reaction — equivalent to ``doNothing``.
     public static var identity: Self { .doNothing }
+}
+
+// MARK: - Consequence (the umbrella)
+
+/// A single thing a ``Behavior`` does — *either* a **reaction** to an action *or* a **supervision**
+/// of state. A behavior is a `Monoid` of these: `Behavior` is `[Consequence]`, with `[]` the
+/// identity and `+` the composition.
+///
+/// The two cases are the two **clocks**:
+///
+/// - ``reaction(_:)`` runs on the **action clock**: given an action and pre-mutation context it
+///   produces a ``Reaction`` (a `reduce` and/or `produce`), scheduled once per action.
+/// - ``supervision(_:)`` runs on the **state clock**: given the post-mutation state it produces a
+///   ``Supervision`` (the channels to *keep*), reconciled by diff after every change — independent of
+///   whether any action reached this behavior (so it survives time-travel).
+///
+/// You rarely build a `Consequence` directly; the `Behavior`/`Middleware` builders
+/// (`react` / `reduce` / `produce` / `supervise`) construct the right case for you.
+public enum Consequence<State: Sendable, Environment: Sendable, Action: Sendable>: Sendable {
+    /// An **action-clock** consequence: react to an action with a ``Reaction``.
+    case reaction(@MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<State, Environment, Action>)
+    /// A **state-clock** consequence: supervise the channels a state should keep alive.
+    case supervision(@MainActor @Sendable (State) -> Supervision<Environment, Action>)
 }

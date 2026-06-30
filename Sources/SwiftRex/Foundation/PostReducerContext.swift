@@ -25,7 +25,7 @@
 /// Behavior<AppAction, AppState, API> { action, _ in
 ///     guard case .submit(let form) = action else { return .doNothing }
 ///     return .reduce { $0.isLoading = true }
-///            .react { ctx in
+///            .produce { ctx in
 ///                ctx.environment.api.submit(form).asEffect()
 ///            }
 /// }
@@ -48,7 +48,7 @@
 /// From an `async` context, hop to the main actor:
 ///
 /// ```swift
-/// return .react { ctx in
+/// return .produce { ctx in
 ///     Effect.task {
 ///         let count = await ctx.liveState?.count  // main-actor hop happens here
 ///         return .log(count: count)

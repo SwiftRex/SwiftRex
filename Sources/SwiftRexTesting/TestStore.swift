@@ -472,7 +472,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
             environment: environment,
             getter: { [weak self] in self?.state }
         )
-        let effect = consequence.effect(postCtx)
+        let effect = consequence.produce(postCtx)
         if !effect.components.isEmpty {
             pendingEffects.append(effect)
         }

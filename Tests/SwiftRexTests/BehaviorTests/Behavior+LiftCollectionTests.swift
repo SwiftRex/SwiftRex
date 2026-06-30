@@ -48,7 +48,7 @@ struct BehaviorLiftCollectionTests {
         switch action {
         case .bump:
             .reduce { $0.value += 1 }
-                .react { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
+                .produce { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
         case .done:
             .doNothing
         }
@@ -65,7 +65,7 @@ struct BehaviorLiftCollectionTests {
         _ sut: Behavior<AppAction, AppState, Void>,
         action: AppAction,
         state: AppState
-    ) -> Consequence<AppState, Void, AppAction> {
+    ) -> Reaction<AppState, Void, AppAction> {
         sut.handle(action, PreReducerContext(source: Self.anySource, getter: { state }))
     }
 
@@ -86,7 +86,7 @@ struct BehaviorLiftCollectionTests {
         let c = consequence(sut, action: .unrelated, state: state)
         c.mutation.runEndoMut(&state)
         #expect(state.items[0].value == 5)
-        #expect(c.effect(PostReducerContext(environment: (), getter: { state })).components.isEmpty)
+        #expect(c.produce(PostReducerContext(environment: (), getter: { state })).components.isEmpty)
     }
 
     // MARK: - Output action re-embedding
@@ -95,7 +95,7 @@ struct BehaviorLiftCollectionTests {
         let sut = elementBehavior.liftCollection(action: itemPrism, stateCollection: \AppState.items)
         let state = AppState(items: [Item(id: id1, value: 0)])
         let c = consequence(sut, action: .item(ElementAction(id1, action: .bump)), state: state)
-        let effect = c.effect(PostReducerContext(environment: (), getter: { state }))
+        let effect = c.produce(PostReducerContext(environment: (), getter: { state }))
         let received = LockProtected([AppAction]())
         subscribeAll(effect) { d in received.mutate { $0.append(d.action) } }
         guard case .item(let ea) = received.value.first else {
@@ -113,9 +113,9 @@ struct BehaviorLiftCollectionTests {
         let state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 0)])
 
         let effA = consequence(sut, action: .item(ElementAction(id1, action: .bump)), state: state)
-            .effect(PostReducerContext(environment: (), getter: { state }))
+            .produce(PostReducerContext(environment: (), getter: { state }))
         let effB = consequence(sut, action: .item(ElementAction(id2, action: .bump)), state: state)
-            .effect(PostReducerContext(environment: (), getter: { state }))
+            .produce(PostReducerContext(environment: (), getter: { state }))
 
         let expectedA = AnyHashableSendable(
             ElementScopedID(element: AnyHashableSendable(id1), inner: AnyHashableSendable("fetch"))
@@ -138,7 +138,7 @@ struct BehaviorLiftCollectionTests {
             switch action {
             case .bump:
                 .reduce { $0.value += 1 }
-                    .react { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
+                    .produce { _ in .just(.done, scheduling: .replacing(id: "fetch")) }
             case .done:
                 .doNothing
             }
@@ -158,7 +158,7 @@ struct BehaviorLiftCollectionTests {
         #expect(state.named[0].value == 0)
         #expect(state.named[1].value == 6)
 
-        let eff = c.effect(PostReducerContext(environment: (), getter: { state }))
+        let eff = c.produce(PostReducerContext(environment: (), getter: { state }))
         let expected = AnyHashableSendable(
             ElementScopedID(element: AnyHashableSendable("b"), inner: AnyHashableSendable("fetch"))
         )
@@ -178,7 +178,7 @@ struct BehaviorLiftCollectionTests {
         c.mutation.runEndoMut(&state)
         #expect(state.lookup["x"]?.value == 2)
 
-        let eff = c.effect(PostReducerContext(environment: (), getter: { state }))
+        let eff = c.produce(PostReducerContext(environment: (), getter: { state }))
         let expected = AnyHashableSendable(
             ElementScopedID(element: AnyHashableSendable("x"), inner: AnyHashableSendable("fetch"))
         )

@@ -47,7 +47,7 @@ extension Middleware {
             supervisor: self.supervisor.map { inner in
                 { @MainActor @Sendable (gs: GS) in
                     let container = stateContainer.get(gs)
-                    let perElement = ids(container).compactMap { id -> (element: AnyHashableSendable, id: ID, keep: Keep<Action, Environment>)? in
+                    let perElement = ids(container).compactMap { id in
                         element(id).preview(container).map { (element: AnyHashableSendable(id), id: id, keep: inner($0)) }
                     }
                     return Reader { env in

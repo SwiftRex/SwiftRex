@@ -144,7 +144,7 @@ let fetchMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
 - `publisher.asEffect(AppAction.didFetch)` on a failing `Publisher<_, Failure>` — delivers `Result<Output, Failure>`
 - `Effect.fireAndForget(publisher)` — run a pipeline for its side effects only
 - `store.publisher` — a cold `Publisher<State, Never>` emitting state after every mutation
-- `ctx.readLiveState()` — a single-element `Publisher<State, Never>` for reading post-mutation state inside a `react` closure
+- `ctx.readLiveState()` — a single-element `Publisher<State, Never>` for reading post-mutation state inside a `produce` closure
 
 ```swift
 let searchMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
@@ -487,7 +487,7 @@ An [Action](#action) is a lightweight structure, typically an enum, that is disp
 
 The store enqueues a new action that arrives and submits it to a pipeline of middlewares. A `Middleware` is a struct that handles actions, and has the power to dispatch more actions, either immediately or after callback of async tasks. The middleware can also simply ignore the action, or it can execute side-effects in response, such as logging into file or over the network, or execute http requests. In case of those async tasks, when they complete the middleware can dispatch new actions containing a payload with the response. Other middlewares will handle that, or maybe even the same middleware in the future, or perhaps some `Reducer` will use this action to change the state, because the `Middleware` itself can never change the state, only read it.
 
-The `handle` function will be called before the Reducer, so if you read the state at that point it's still going to be the unchanged version. While implementing this function, it's expected that you return a `Reaction` — a `Reader<PostReducerContext<State, Environment>, Effect<Action>>` — a description of the side-effects to run once the post-mutation context (including the environment) is available. Inside this Reader closure, the state will have the new values after the reducers handled the current action, so in case you made a copy of the old state, you can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches.
+The `handle` function will be called before the Reducer, so if you read the state at that point it's still going to be the unchanged version. While implementing this function, it.s expected that you return the effect `Reader<PostReducerContext<State, Environment>, Effect<Action>>` — a description of the side-effects to run once the post-mutation context (including the environment) is available. Inside this Reader closure, the state will have the new values after the reducers handled the current action, so in case you made a copy of the old state, you can compare them, log, audit, perform analytics tracking, telemetry or state sync with external devices, such as Apple Watches.
 
 Every action dispatched also comes with its action source, which is the primary dispatcher of that action. Middlewares can access the file name, line of code, function name and additional information about the entity responsible for creating and dispatching that action, which is a very powerful debugging information that can help developers to trace how the information flows through the app.
 
@@ -577,28 +577,28 @@ It returns `Reader<PostReducerContext<State, Environment>, Effect<Action>>`. The
 
 ```swift
 // Combine (AnyPublisher)
-return .react { ctx in
+return .produce { ctx in
     ctx.readLiveState()                                     // AnyPublisher<State, Never>
         .flatMap { state in ctx.environment.api.save(state.draft) }
         .asEffect()
 }
 
 // RxSwift (Observable)
-return .react { ctx in
+return .produce { ctx in
     ctx.readLiveState()                                     // Observable<State>
         .flatMap { state in ctx.environment.api.save(state.draft) }
         .asEffect()
 }
 
 // ReactiveSwift (SignalProducer)
-return .react { ctx in
+return .produce { ctx in
     ctx.readLiveState()                                     // SignalProducer<State, Never>
         .flatMap(.latest) { state in ctx.environment.api.save(state.draft) }
         .asEffect()
 }
 
 // ReactiveConcurrency (Publisher)
-return .react { ctx in
+return .produce { ctx in
     ctx.readLiveState()                                     // Publisher<State, Never>
         .flatMap { state in ctx.environment.api.save(state.draft) }
         .asEffect()
@@ -609,19 +609,19 @@ The state is read lazily — only when a subscriber attaches — so it always re
 
 #### Returning Reader and performing side-effects
 
-SwiftRex defines two conveniences on `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that mirror the fluent API available in `Consequence`:
+SwiftRex defines two conveniences on `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that mirror the fluent API available in `Reaction`:
 
 ```swift
 // No effect — skip early
 guard case .myAction = action else { return .doNothing }
 
 // Produce an effect with environment access
-return .react { ctx in
+return .produce { ctx in
     Effect.task { .result(await ctx.environment.api.fetch()) }
 }
 ```
 
-`.doNothing` is equivalent to `Reader { _ in .empty }`. `.react` is equivalent to `Reader { ctx in … }`. Either form is acceptable; the named versions communicate intent more clearly at the call site.
+`.doNothing` is equivalent to `Reader { _ in .empty }`. `.produce` is equivalent to `Reader { ctx in … }`. Either form is acceptable; the named versions communicate intent more clearly at the call site.
 
 #### Dependency Injection
 
@@ -629,7 +629,7 @@ Testability is one of the most important aspects to account for when developing 
 
 To improve testability, the middleware should use as few external dependencies as possible. If it starts to use too many, consider splitting in smaller middlewares, this will also protect you against race conditions and other problems, will help with tests and make the middleware more reusable.
 
-All external dependencies are injected through the `Reaction` (`Reader<PostReducerContext<State, Environment>, Effect<Action>>`) return type, reachable as `ctx.environment`. This means during tests you provide a mock `Environment` and the middleware never stores dependencies as properties — they are provided fresh every time an action is handled. If your middleware uses only one call from a very complex object, consider injecting a closure or a focused protocol instead of the full concrete type.
+All external dependencies are injected through the produce `Reader<PostReducerContext<State, Environment>, Effect<Action>>` return type, reachable as `ctx.environment`. This means during tests you provide a mock `Environment` and the middleware never stores dependencies as properties — they are provided fresh every time an action is handled. If your middleware uses only one call from a very complex object, consider injecting a closure or a focused protocol instead of the full concrete type.
 
 #### Middleware Examples
 
@@ -652,7 +652,7 @@ let favoritesMiddleware = Middleware<FavoritesAction, FavoritesModel, API>.handl
     guard case let .toggleFavorite(movieId) = action else { return .doNothing }
     let currentList = context.stateBefore          // capture before any mutation
     let makeFavorite = !(currentList?.contains(where: { $0.id == movieId }) ?? false)
-    return .react { ctx in
+    return .produce { ctx in
         Effect.task {
             let result = await ctx.environment.changeFavorite(id: movieId, makeFavorite: makeFavorite)
             return .changedFavorite(movieId, isFavorite: result)
@@ -693,12 +693,12 @@ All `when:` variants read state only after the action filter passes; unmatched a
 
 #### State-driven effects — `supervise`
 
-`.react` is the *action-driven* half of a middleware (`Cmd`). A middleware also carries a *state-driven* half (`Sub`): `.supervise` maps the **state** to a `Keep` of long-lived `Channel`s the engine keeps alive while that state holds — a socket, a timer, a poll, a `CoreLocation`/`HealthKit` delegate, a database observer. Several of the "suggested middlewares" above (Timers, database subscriptions, WebSockets, location) are state-driven and belong here rather than in a `.react`:
+`.produce` is the *action-driven* half of a middleware (`Cmd`). A middleware also carries a *state-driven* half (`Sub`): `.supervise` maps the **state** to a `Supervision` — the long-lived `Channel`s to `keep` alive while that state holds — a socket, a timer, a poll, a `CoreLocation`/`HealthKit` delegate, a database observer. Several of the "suggested middlewares" above (Timers, database subscriptions, WebSockets, location) are state-driven and belong here rather than in a `.produce`:
 
 ```swift
 let location = Middleware<AppAction, AppState, World>
     .supervise { state in
-        Keep { env in
+        Supervision { env in
             guard state.isTrackingLocation else { return [] }   // stop tracking → stream cancelled
             return [Channel(id: "location") { dispatch in
                 let mgr = env.startLocationUpdates(); mgr.onUpdate { dispatch(.located($0)) }
@@ -716,32 +716,32 @@ let location = Middleware<AppAction, AppState, World>
 
 `Behavior` is the primary composition unit in SwiftRex. It fuses a `Reducer`, a `Middleware`, and a state-driven supervisor into a single, liftable, composable value. When building your app module, you typically create a `Behavior` rather than wiring those parts separately.
 
-A feature has up to **three independent concerns**, and `Behavior` gives each its own fluent builder. Each exists as a static factory (`Behavior.reduce { … }`) *and* as an instance method (`someBehavior.react { … }`), so a chain is exactly a `<>` fold of single-concern behaviors:
+A feature has up to **three independent concerns**, and `Behavior` gives each its own fluent builder. Each exists as a static factory (`Behavior.reduce { … }`) *and* as an instance method (`someBehavior.produce { … }`), so a chain is exactly a `<>` fold of single-concern behaviors:
 
 ```swift
 let room = Behavior<RoomAction, RoomState, RoomEnv>
-    .reduce    { action, state in … }    // what changes — a pure (Action, inout State) -> Void
-    .react     { action, ctx in … }      // do because of an action — a Reaction (Elm's Cmd)
-    .supervise { state in … }            // keep alive while the state holds — a Keep of Channels (Elm's Sub)
+    .reduce { action, state in … }    // what changes — a pure (Action, inout State) -> Void
+    .produce { action, ctx in … }     // do because of an action — an Effect (Elm's Cmd)
+    .supervise { state in … }         // keep alive while the state holds — Channels to keep (Elm's Sub)
 ```
 
-| Axis | Builder | Cause | Returns |
-|---|---|---|---|
-| State change | `.reduce` | an action | an `inout` mutation |
-| Action-driven effect | `.react` | an action | a `Reaction` → `Effect` |
-| State-driven effect | `.supervise` | the **state** | a `Keep` → `[Channel]` |
+| Axis | Builder | Cause | Returns | Store does |
+|---|---|---|---|---|
+| State change | `.reduce` | an action | an `inout` mutation | mutates |
+| Action-driven effect | `.produce` | an action | an `Effect` | performs |
+| State-driven effect | `.supervise` | the **state** | a `Supervision` → `Keep` (`[Channel]`) | keeps |
 
 The first two are the *action-driven* side (something happened, so change state / run an effect). `.supervise` is the *state-driven* side: a long-lived resource — a socket, a timer, a poll — that exists for as long as the state implies it, with *leaving that state* as the teardown. See **[State-Driven Effects](#state-driven-effects-subscriptions)** below.
 
 There are also three lower-level creation paths:
 
 ```swift
-// 1. Direct — a whole Consequence in one shot (no separate Reducer or Middleware needed)
-let counterBehavior = Behavior<CounterAction, CounterState, Void>.handle { action, _ in
+// 1. Direct — a whole Reaction in one shot (no separate Reducer or Middleware needed)
+let counterBehavior = Behavior<CounterAction, CounterState, Void>.react { action, _ in
     switch action {
     case .increment: return .reduce { $0.count += 1 }
     case .decrement: return .reduce { $0.count -= 1 }
-    case .fetch(let query): return .react { _ in apiEffect(query) }
+    case .fetch(let query): return .produce { _ in apiEffect(query) }
     }
 }
 
@@ -752,13 +752,13 @@ let reducerBehavior: Behavior<CounterAction, CounterState, Void> = counterReduce
 let fullBehavior = Behavior(reducer: counterReducer, middleware: loggingMiddleware)
 ```
 
-`Behavior.handle` takes the same two arguments as `Middleware.handle` (`action` and a pre-mutation `PreReducerContext<State>`) and returns a `Consequence` — the action-driven outcome:
+The grouped `.react` builder (alias `.handle`) takes the same two arguments as `Middleware.handle` (`action` and a pre-mutation `PreReducerContext<State>`) and returns a `Reaction` — the action-driven outcome:
 
 ```swift
 .doNothing                                  // no mutation, no effect
 .reduce { $0.x += 1 }                      // mutation only
-.react { ctx in ... }                       // effect only (ctx: PostReducerContext<State, Environment>)
-.reduce { $0.x += 1 }.react { ctx in ... }  // both mutation and effect
+.produce { ctx in ... }                       // effect only (ctx: PostReducerContext<State, Environment>)
+.reduce { $0.x += 1 }.produce { ctx in ... }  // both mutation and effect
 ```
 
 Behaviors compose with `<>`:
@@ -839,9 +839,9 @@ All `when:` variants read state only after the action filter passes; unmatched a
 
 ### State-Driven Effects (Subscriptions)
 
-Most side-effects are **action-driven**: *this happened, so do that.* A `.search` fires a request; the request finishes. That's `.react`, returning a `Reaction` — Elm's `Cmd`.
+Most side-effects are **action-driven**: *this happened, so do that.* A `.search` fires a request; the request finishes. That's `.produce`, returning an `Effect` — Elm's `Cmd`.
 
-But some effects shouldn't be started by an action at all — they should exist *for as long as the state says so*. A socket stays open **while a room is joined**; a timer ticks **while a screen is visible**; a poll runs **while a query is set**. No single action starts or stops them — the *state* implies them, and **leaving that state is the teardown**. That's `.supervise`, returning a `Keep` of `Channel`s — Elm's `Sub`.
+But some effects shouldn't be started by an action at all — they should exist *for as long as the state says so*. A socket stays open **while a room is joined**; a timer ticks **while a screen is visible**; a poll runs **while a query is set**. No single action starts or stops them — the *state* implies them, and **leaving that state is the teardown**. That's `.supervise`, returning a `Supervision` of `Channel`s to keep — Elm's `Sub`.
 
 ```swift
 let room = Behavior<RoomAction, RoomState, RoomEnv>
@@ -853,7 +853,7 @@ let room = Behavior<RoomAction, RoomState, RoomEnv>
         }
     }
     .supervise { state in
-        Keep { env in
+        Supervision { env in
             guard let id = state.joinedRoom else { return [] }   // no room → no socket
             return [Channel(id: id) { dispatch in
                 let socket = env.connect(id)
@@ -865,7 +865,7 @@ let room = Behavior<RoomAction, RoomState, RoomEnv>
     }
 ```
 
-When `joinedRoom` becomes `nil`, the `Keep` returns `[]`, the engine sees the socket is no longer desired, and closes it. You never wired `socket.close()` to `.leave` — *leaving the state that implied the socket cancels it.*
+When `joinedRoom` becomes `nil`, the supervision returns `[]`, the engine sees the socket is no longer desired, and closes it. You never wired `socket.close()` to `.leave` — *leaving the state that implied the socket cancels it.*
 
 #### How it runs
 
@@ -875,7 +875,7 @@ After every state mutation the `Store` recomputes the whole desired set (`superv
 - **`Channel.Broadcasting`** — `.nothing` (default) opens without delivering; `.onChange(value)` auto-publishes a *state-derived* value on open and whenever it changes, deduped.
 - **`ChannelDelivery`** — paces the *values* into a live channel (`.throttle`/`.debounce`), the channel acting as a throttled subject. Creation is decoupled from delivery: the channel always **opens immediately**; only the values are paced (and an `ephemeral` recreate resets the window).
 
-For *discrete, action-driven* sends into a live channel, a `.react` returns `Effect.broadcast(_:channel:)` — it rendezvous with the supervised channel on the shared id (the *send* half of a two-way socket; the chat example below). `Effect.open(_:)` and `Effect.cancel(id:)` let you own a channel's lifetime by hand when it genuinely isn't a function of state.
+For *discrete, action-driven* sends into a live channel, a `.produce` returns `Effect.broadcast(_:channel:)` — it rendezvous with the supervised channel on the shared id (the *send* half of a two-way socket; the chat example below). `Effect.open(_:)` and `Effect.cancel(id:)` let you own a channel's lifetime by hand when it genuinely isn't a function of state.
 
 `Middleware` carries the same `.supervise` axis, and **every lift threads it through** — `liftState` focuses channels onto a sub-state (state-driven nav: sub-state gone ⇒ its channels cancel), `liftCollection`/`liftEach` fan a per-element feature's channels across a collection with per-element id stamping. Duplicate identical channels (e.g. a `liftEach` and a `liftCollection` on one collection) are **deduped** by the reconciler, so it never double-opens.
 
@@ -888,8 +888,8 @@ Full, compiling walkthroughs live in the DocC catalog and are deep-linked here:
 | Example | Demonstrates |
 |---|---|
 | [**Timer**](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/exampletimer) | `supervise` + `.ephemeral(resetKey:)` (recreate on interval change) + `.cancelOnly` |
-| [**Polling**](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplepolling) | `Keep` reading the environment, restart-on-query via `resetKey`, results as actions |
-| [**Chat room**](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplechatroom) | the two-way rendezvous — `supervise` keeps the socket, `.react` + `Effect.broadcast` sends |
+| [**Polling**](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplepolling) | `Supervision` reading the environment, restart-on-query via `resetKey`, results as actions |
+| [**Chat room**](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplechatroom) | the two-way rendezvous — `supervise` keeps the socket, `.produce` + `Effect.broadcast` sends |
 | [**WebSocket**](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplewebsocket) | reconnect on token change (`Lifetime`) vs. push presence (`Broadcasting.onChange`) |
 
 Concepts: **[State-Driven Effects](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/statedriveneffects)** · **[Channels](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/channels)** (the `Channel` / `ChannelHandler` / `Keep` API).
@@ -1565,13 +1565,13 @@ enum MoviesFeature {
             switch action {
             case .fetchMovies:
                 .reduce { $0.isLoading = true }
-                .react { ctx in .task { .moviesResponse(await ctx.environment.fetchMovies()) } }
+                .produce { ctx in .task { .moviesResponse(await ctx.environment.fetchMovies()) } }
             case .moviesResponse(.success(let movies)):
                 .reduce { $0.movies = movies; $0.isLoading = false }
             case .moviesResponse(.failure(let err)):
                 .reduce { $0.error = err; $0.isLoading = false }
             case .toggleFavorite(let id):
-                .react { ctx in .task { .favoriteResponse(await ctx.environment.toggleFavorite(id)) } }
+                .produce { ctx in .task { .favoriteResponse(await ctx.environment.toggleFavorite(id)) } }
             case .favoriteResponse(.success(let movie)):
                 .reduce { $0.movies = [Domain.Movie].ix(id: movie.id).set($0.movies, movie) }
             case .favoriteResponse(.failure):
@@ -1969,17 +1969,18 @@ Each type is a monoid; composing two values of a type gives a third of the same 
 | `Reducer<Action, State>` | **sequential** — run `lhs` then `rhs` on the same `inout State` (order matters; `rhs` sees `lhs`'s mutation) | no-op reducer |
 | `Effect<Action>` | **parallel** — both subscribe closures run; the Store interprets them concurrently | `.empty` |
 | `ReducerOutcome<State>` | absorb `.unchanged`; otherwise compose the `EndoMut` mutations | `.unchanged` |
-| `Consequence<State, Env, Action>` | **product monoid** — componentwise: `ReducerOutcome` (sequential) × effect `Reader` (parallel) | `.doNothing` |
-| `Behavior<Action, State, Env>` | the primary composition unit (Reducer + Middleware); a flat fold over its units | `.identity` |
-| `Middleware<Action, State, Env>` | the effect-only half; effects merged | `.identity` |
+| `Reaction<State, Env, Action>` | **product monoid** — componentwise: `ReducerOutcome` (sequential) × effect `Reader` (parallel) | `.doNothing` |
+| `Supervision<Env, Action>` | the `Channel`s to `Keep` for a state; sets **union** | a reader to `[]` |
+| `Behavior<Action, State, Env>` | the **free monoid** `[Consequence]` — concatenation (each consequence is a `reaction` or a `supervision`) | `.identity` (`[]`) |
+| `Middleware<Action, State, Env>` | the effect-only `Behavior` (`produce` + `supervise`) | `.identity` |
 
-A `Behavior`'s `handle` maps an action to a `Consequence` — the pair of *what state change to apply* (`ReducerOutcome`) and *what effect to run afterward* (`Reader<PostReducerContext, Effect>`). `Consequence` being a product monoid is what lets you compose whole features by composing their `Behavior`s: the state mutations fold sequentially, the effects merge in parallel, all in one value.
+A `Behavior` is `[Consequence]`. Its `handle` folds the action-clock `reaction`s into one `Reaction` — the pair of *what state change to apply* (`ReducerOutcome`) and *what effect to perform afterward* (`Reader<PostReducerContext, Effect>`). `Reaction` being a product monoid (and `Behavior` the free monoid over consequences) is what lets you compose whole features by composing their `Behavior`s: the state mutations fold sequentially, the effects merge in parallel, the supervisions union — all in one value. And each builder only *describes*; the `Store` is the boundary that **mutates** (`reduce`), **performs** (`produce`), and **keeps** (`supervise`).
 
 ## The Store is the only interpreter (an IO runtime)
 
 `Reducer`, `Effect`, `Middleware`, and `Behavior` are inert descriptions — constructing them runs nothing. The `Store` is the sole place effects execute and state mutates. It dispatches each action, on `@MainActor`, in phases:
 
-1. **Phase 1 — pre-mutation.** `behavior.handle(action, preReducerContext)` returns a `Consequence`. The context exposes the *pre-mutation* state.
+1. **Phase 1 — pre-mutation.** `behavior.handle(action, preReducerContext)` folds the action-clock reactions into one `Reaction`. The context exposes the *pre-mutation* state.
 2. **Phase 2 — mutation (zero-copy).** If the outcome is `.unchanged`, nothing happens — **no observer is notified**. Otherwise: `willChange` → the `EndoMut` mutates `state` in place (no copy) → `didChange`.
 3. **Phase 3 — effects.** A `PostReducerContext` (now exposing *post-mutation* state and the `Environment`) resolves the effect `Reader`; each resulting component is scheduled per its `EffectScheduling` (`.immediately`, `.replacing(id:)`, `.debounce(id:delay:)`, `.throttle(id:interval:)`, `.cancelInFlight(id:)`). Actions produced by effects loop back to Phase 1.
 

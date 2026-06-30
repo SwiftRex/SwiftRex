@@ -7,10 +7,10 @@ Unidirectional dataflow as a small, lawful algebra — pure values you compose, 
 SwiftRex models your whole app as one loop of pure values:
 
 - An **action** describes something that happened.
-- A ``Behavior`` (a ``Reducer`` for the state change, a ``Middleware`` for the effect) maps that action to a ``Consequence`` — *what to change* (a ``ReducerOutcome``) and *what to do next* (an ``Effect``).
-- The ``Store`` is the **only** thing that runs: it applies the mutation, notifies observers exactly once, then executes the effect. Actions the effect produces loop back through the same path.
+- A ``Behavior`` is a monoid of ``Consequence``s — each a **reaction** to an action (a ``Reaction``: `reduce` the state and/or `produce` an effect) or a **supervision** of state (a ``Supervision``: the channels to `keep` alive).
+- The ``Store`` is the **only** thing that runs: a behavior only *describes* — `reduce`/`produce`/`supervise` — and the Store **mutates**, **performs**, and **keeps**. It notifies observers exactly once per change; actions an effect produces loop back through the same path.
 
-Effects come in two flavours: *action-driven* — a `react` that runs because something happened (Elm's `Cmd`) — and *state-driven* — a `supervise` that keeps a long-lived resource (a socket, a timer, a poll) alive for exactly as long as the state implies it (Elm's `Sub`). See <doc:StateDrivenEffects>.
+Effects come in two flavours: *action-driven* — a `produce` that runs because something happened (Elm's `Cmd`) — and *state-driven* — a `supervise` that keeps a long-lived resource (a socket, a timer, a poll) alive for exactly as long as the state implies it (Elm's `Sub`). See <doc:StateDrivenEffects>.
 
 Everything except the `Store` is inert and composable. Two `Reducer`s combine into a `Reducer`; two `Behavior`s into a `Behavior`; an `Effect` merges with another `Effect`. That "compose two, get one of the same kind, with a do-nothing identity" shape is a **monoid**, and it's the whole story — see <doc:Algebra>.
 
@@ -49,6 +49,7 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 - ``Middleware``
 - ``Behavior``
 - ``Consequence``
+- ``Reaction``
 - ``ReducerOutcome``
 
 ### Running It — the Store
@@ -86,8 +87,8 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 - <doc:ExampleDelay>
 - ``Channel``
 - ``ChannelDelivery``
+- ``Supervision``
 - ``Keep``
-- ``Reaction``
 
 ### Composition
 

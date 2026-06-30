@@ -15,54 +15,54 @@ struct ConsequenceTests {
 
     @Test func doNothingLeavesStateUnchanged() {
         var state = 42
-        Consequence<Int, Void, Int>.doNothing.mutation.runEndoMut(&state)
+        Reaction<Int, Void, Int>.doNothing.mutation.runEndoMut(&state)
         #expect(state == 42)
     }
 
     @Test func doNothingProducesNoEffect() {
-        #expect(Consequence<Int, Void, Int>.doNothing.effect(voidCtx()).components.isEmpty)
+        #expect(Reaction<Int, Void, Int>.doNothing.produce(voidCtx()).components.isEmpty)
     }
 
     @Test func identityIsDoNothing() {
         var state = 7
-        Consequence<Int, Void, Int>.identity.mutation.runEndoMut(&state)
+        Reaction<Int, Void, Int>.identity.mutation.runEndoMut(&state)
         #expect(state == 7)
-        #expect(Consequence<Int, Void, Int>.identity.effect(voidCtx()).components.isEmpty)
+        #expect(Reaction<Int, Void, Int>.identity.produce(voidCtx()).components.isEmpty)
     }
 
     // MARK: - reduce
 
     @Test func reduceMutatesState() {
         var state = 0
-        Consequence<Int, Void, Never>.reduce { $0 += 10 }.mutation.runEndoMut(&state)
+        Reaction<Int, Void, Never>.reduce { $0 += 10 }.mutation.runEndoMut(&state)
         #expect(state == 10)
     }
 
     @Test func reduceProducesNoEffect() {
-        #expect(Consequence<Int, Void, Never>.reduce { $0 += 1 }.effect(voidCtx()).components.isEmpty)
+        #expect(Reaction<Int, Void, Never>.reduce { $0 += 1 }.produce(voidCtx()).components.isEmpty)
     }
 
     // MARK: - produce
 
     @Test func produceLeavesStateUnchanged() {
         var state = 5
-        Consequence<Int, Void, Int>.react { _ in .just(99) }.mutation.runEndoMut(&state)
+        Reaction<Int, Void, Int>.produce { _ in .just(99) }.mutation.runEndoMut(&state)
         #expect(state == 5)
     }
 
     @Test func produceDispatchesAction() {
-        let c = Consequence<Int, Void, Int>.react { _ in .just(42) }
+        let c = Reaction<Int, Void, Int>.produce { _ in .just(42) }
         let received = LockProtected([Int]())
-        subscribeAll(c.effect(voidCtx())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.produce(voidCtx())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [42])
     }
 
     @Test func produceReceivesEnvironment() {
         struct Env: Sendable { let value: Int }
-        let c = Consequence<Int, Env, Int>.react { ctx in .just(ctx.environment.value) }
+        let c = Reaction<Int, Env, Int>.produce { ctx in .just(ctx.environment.value) }
         let received = LockProtected([Int]())
         subscribeAll(
-            c.effect(PostReducerContext<Int, Env>(environment: Env(value: 7), getter: { nil }))
+            c.produce(PostReducerContext<Int, Env>(environment: Env(value: 7), getter: { nil }))
         ) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [7])
     }
@@ -71,20 +71,20 @@ struct ConsequenceTests {
 
     @Test func chainReduceProduceMutatesAndEmitsEffect() {
         var state = 0
-        let c = Consequence<Int, Void, Int>.reduce { $0 += 5 }.react { _ in .just(99) }
+        let c = Reaction<Int, Void, Int>.reduce { $0 += 5 }.produce { _ in .just(99) }
         c.mutation.runEndoMut(&state)
         #expect(state == 5)
         let received = LockProtected([Int]())
-        subscribeAll(c.effect(voidCtx())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.produce(voidCtx())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [99])
     }
 
     @Test func chainProduceProduceCombinesEffects() {
-        let c = Consequence<Int, Void, Int>
-            .react { _ in .just(1) }
-            .react { _ in .just(2) }
+        let c = Reaction<Int, Void, Int>
+            .produce { _ in .just(1) }
+            .produce { _ in .just(2) }
         let received = LockProtected([Int]())
-        subscribeAll(c.effect(voidCtx())) { d in received.mutate { $0.append(d.action) } }
+        subscribeAll(c.produce(voidCtx())) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value.sorted() == [1, 2])
     }
 
@@ -92,17 +92,17 @@ struct ConsequenceTests {
 
     @Test func combineMutationsAreSequential() {
         var state = 0
-        let lhs = Consequence<Int, Void, Never>.reduce { $0 += 1 }
-        let rhs = Consequence<Int, Void, Never>.reduce { $0 *= 3 }
-        Consequence.combine(lhs, rhs).mutation.runEndoMut(&state)
+        let lhs = Reaction<Int, Void, Never>.reduce { $0 += 1 }
+        let rhs = Reaction<Int, Void, Never>.reduce { $0 *= 3 }
+        Reaction.combine(lhs, rhs).mutation.runEndoMut(&state)
         #expect(state == 3) // (0+1)*3
     }
 
     @Test func combineEffectsAreMerged() {
-        let lhs = Consequence<Int, Void, Int>.react { _ in .just(10) }
-        let rhs = Consequence<Int, Void, Int>.react { _ in .just(20) }
+        let lhs = Reaction<Int, Void, Int>.produce { _ in .just(10) }
+        let rhs = Reaction<Int, Void, Int>.produce { _ in .just(20) }
         let received = LockProtected([Int]())
-        subscribeAll(Consequence.combine(lhs, rhs).effect(voidCtx())) { d in
+        subscribeAll(Reaction.combine(lhs, rhs).produce(voidCtx())) { d in
             received.mutate { $0.append(d.action) }
         }
         #expect(received.value.sorted() == [10, 20])
@@ -110,15 +110,15 @@ struct ConsequenceTests {
 
     @Test func leftIdentityLaw() {
         var state = 5
-        let c = Consequence<Int, Void, Never>.reduce { $0 += 1 }
-        Consequence.combine(.identity, c).mutation.runEndoMut(&state)
+        let c = Reaction<Int, Void, Never>.reduce { $0 += 1 }
+        Reaction.combine(.identity, c).mutation.runEndoMut(&state)
         #expect(state == 6)
     }
 
     @Test func rightIdentityLaw() {
         var state = 5
-        let c = Consequence<Int, Void, Never>.reduce { $0 += 1 }
-        Consequence.combine(c, .identity).mutation.runEndoMut(&state)
+        let c = Reaction<Int, Void, Never>.reduce { $0 += 1 }
+        Reaction.combine(c, .identity).mutation.runEndoMut(&state)
         #expect(state == 6)
     }
 }

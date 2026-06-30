@@ -41,7 +41,7 @@ struct StoreReactionTests {
         let opens = LockProtected(0)
         let cancels = LockProtected(0)
         let supervisor = Behavior<A, S, Void>.supervise { state in
-            Keep { _ in
+            Supervision { _ in
                 guard state.connected else { return [] }
                 return [
                     Channel(id: "socket", broadcasting: .onChange(state.outbox)) { dispatch in
@@ -76,7 +76,7 @@ struct StoreReactionTests {
 
     @Test func initialStateActivatesSuperviseWithoutADispatch() async {
         let supervisor = Behavior<A, S, Void>.supervise { state in
-            Keep { _ in
+            Supervision { _ in
                 state.connected ? [Channel(id: "ping") { dispatch in dispatch(.received(99)); return .cancelOnly {} }] : []
             }
         }
@@ -89,7 +89,7 @@ struct StoreReactionTests {
     @Test func unchangedDesiredSetReopensNothing() async {
         let opens = LockProtected(0)
         let supervisor = Behavior<A, S, Void>.supervise { state in
-            Keep { _ in
+            Supervision { _ in
                 state.connected
                     ? [
                         Channel(id: "s", broadcasting: .onChange(state.outbox)) { _ in
@@ -158,7 +158,7 @@ struct StoreReactionTests {
         let opens = LockProtected([Int]())
         let cancels = LockProtected([Int]())
         let itemBehavior = Behavior<ItemAction, Item, Void>.supervise { item in
-            Keep { _ in
+            Supervision { _ in
                 guard item.connected else { return [] }
                 return [
                     Channel(id: "socket") { _ in

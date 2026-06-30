@@ -48,7 +48,7 @@ struct ChannelCombineTests {
     @Test func synchronousEmissionIsDeliveredOnceAfterSetup() async {
         let feed = Feed(1)
         let supervisor = Behavior<A, S, Feed>.supervise { state in
-            Keep { env in state.subscribed ? [env.subject.asChannel(id: "feed", A.got)] : [] }
+            Supervision { env in state.subscribed ? [env.subject.asChannel(id: "feed", A.got)] : [] }
         }
         let store = Store(initial: S(), behavior: .combine(reducer, supervisor), environment: feed)
 
@@ -68,7 +68,7 @@ struct ChannelCombineTests {
     @Test func cancellingTheChannelTearsDownTheSubscription() async {
         let feed = Feed(0)
         let supervisor = Behavior<A, S, Feed>.supervise { state in
-            Keep { env in state.subscribed ? [env.subject.asChannel(id: "feed", A.got)] : [] }
+            Supervision { env in state.subscribed ? [env.subject.asChannel(id: "feed", A.got)] : [] }
         }
         let store = Store(initial: S(), behavior: .combine(reducer, supervisor), environment: feed)
 

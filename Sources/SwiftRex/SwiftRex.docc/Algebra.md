@@ -15,11 +15,16 @@ A **monoid** is a type with a `combine` that takes two values and returns one of
 | ``Reducer`` | **sequential** — run `lhs` then `rhs` on the same `inout State`; order matters, `rhs` sees `lhs`'s change | a reducer that mutates nothing |
 | ``Effect`` | **parallel** — both run; the ``Store`` interprets them concurrently | `.empty` |
 | ``ReducerOutcome`` | absorb ``ReducerOutcome/unchanged``; otherwise compose the underlying `EndoMut` mutations | `.unchanged` |
-| ``Consequence`` | **product** — componentwise: the ``ReducerOutcome`` (sequential) × the effect `Reader` (parallel) | `.doNothing` |
-| ``Behavior`` | the primary unit (``Reducer`` + ``Middleware``); a flat fold over its parts | `.identity` |
-| ``Middleware`` | the effect-only half; effects merged | `.identity` |
+| ``Reaction`` | **product** — componentwise: the ``ReducerOutcome`` (sequential) × the effect `Reader` (parallel) | `.doNothing` |
+| ``Supervision`` | the channels to ``Keep`` for a state; sets **union** | a reader to `[]` |
+| ``Behavior`` | the **free monoid** `[Consequence]`; concatenation | `.identity` (`[]`) |
+| ``Middleware`` | the effect-only ``Behavior`` (`produce` + `supervise`) | `.identity` |
 
-The keystone is ``Consequence`` — a **product monoid**. A ``Behavior``'s `handle` maps an action to a `Consequence`: the pair of *what state change to apply* (a ``ReducerOutcome``) and *what effect to run afterward* (a `Reader<PostReducerContext, Effect>`). Because a pair of monoids is itself a monoid, composing whole features is just composing their `Behavior`s — the state mutations fold **sequentially**, the effects merge in **parallel**, and you still hold a single value.
+Two keystones. ``Reaction`` is a **product monoid** — the action-clock half of a ``Consequence``: the pair of *what state change to apply* (a ``ReducerOutcome``) and *what effect to perform afterward* (a `Reader<PostReducerContext, Effect>`). ``Behavior`` is the **free monoid** `[Consequence]`: each consequence is a ``reaction`` (action clock) or a ``supervision`` (state clock), and combining features just concatenates their lists. Reactions fold (mutations **sequential**, effects **parallel**), supervisions **union** — and you still hold a single value.
+
+### Describe, don't do
+
+The left of each pair is a pure description; the ``Store`` is the only thing that acts. `reduce` describes a mutation → the Store **mutates**; `produce` describes an effect → the Store **performs**; `supervise` describes channels → the Store **keeps** them. Building a ``Behavior`` runs nothing.
 
 ```swift
 // Two independent features, composed with the monoid:
@@ -33,7 +38,7 @@ A ``Reducer``, an ``Effect``, a ``Behavior`` are *descriptions*. Building one ex
 
 For each action, on the main actor, the Store runs three phases:
 
-1. **Pre-mutation.** `behavior.handle(action, preContext)` returns a ``Consequence``. The ``PreReducerContext`` exposes the *current* state.
+1. **Pre-mutation.** `behavior.handle(action, preContext)` folds the action-clock reactions into one ``Reaction``. The ``PreReducerContext`` exposes the *current* state.
 2. **Mutation (zero-copy).** If the outcome is ``ReducerOutcome/unchanged``, nothing happens and **no observer is notified**. Otherwise: `willChange` → the `EndoMut` mutates `state` in place → `didChange`.
 3. **Effects.** A ``PostReducerContext`` (now exposing *post-mutation* state and the `Environment`) resolves the effect `Reader`; each ``Effect`` component is scheduled by its ``EffectScheduling`` (``EffectScheduling/immediately``, `.replacing`, `.debounce`, `.throttle`, `.cancelInFlight`). Actions produced by effects loop back to phase 1.
 
@@ -57,6 +62,7 @@ The ``Store`` never deduplicates — it always notifies, copies nothing. Narrowi
 
 - ``Behavior``
 - ``Consequence``
+- ``Reaction``
 - ``Store``
 - ``Reducer``
 - ``Effect``

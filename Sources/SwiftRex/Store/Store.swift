@@ -18,7 +18,7 @@ import Hourglass
 /// 2. stateObservers.willChange fired         — ObservableObject fires objectWillChange here
 ///    consequence.mutation.runEndoMut(&state)  — zero-copy inout; refcount stays at 1
 ///    stateObservers.didChange fired           — @Observable / push-based observers
-/// 3. consequence.effect.runReader(env)        — Reader runs; stateAccess = post-mutation state
+/// 3. consequence.produce.runReader(env)        — Reader runs; stateAccess = post-mutation state
 /// 4. engine.schedule(component) per component — action-driven effects (produce / Cmd)
 /// 5. engine.reconcile(behavior.supervisor(state)) — state-driven channels (Sub); only if state changed
 /// ```
@@ -382,7 +382,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
             environment: environment,
             getter: { [weak self] in self?.state }
         )
-        let effect = consequence.effect(postCtx)
+        let effect = consequence.produce(postCtx)
         effect.components.forEach { engine.schedule($0) }
 
         // Phase 5 — reconcile state-driven effects. Only when state actually changed: an `.unchanged`

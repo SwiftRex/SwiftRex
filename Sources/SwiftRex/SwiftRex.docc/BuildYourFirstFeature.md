@@ -98,7 +98,7 @@ struct CounterView: View {
 
 ## Where to go next
 
-- **Side effects** — return an ``Effect`` from the behavior (`.reduce { … }.react { ctx in … }`) to call a network or a clock, feeding the result back as another action. Inject what the effect needs through the `Environment` instead of `Void`.
+- **Side effects** — return an ``Effect`` from the behavior (`.reduce { … }.produce { ctx in … }`) to call a network or a clock, feeding the result back as another action. Inject what the effect needs through the `Environment` instead of `Void`.
 - **Scaling up** — once you have more than one feature, lift each into the app and compose them: <doc:Lifting> and <doc:Modularisation>.
 - **The model behind it** — <doc:Algebra> explains why all of this composes.
 

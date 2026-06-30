@@ -12,7 +12,7 @@
 /// ```swift
 /// // Throttle outgoing socket writes to 16 ms without ever closing the socket.
 /// case .send(let byte):
-///     .react { env in
+///     .produce { env in
 ///         .channel(value: byte, scheduling: .throttle(id: "socket", interval: .milliseconds(16))) { send, complete in
 ///             let socket = env.openSocket()
 ///             socket.onMessage { send(.received($0)) }
@@ -149,7 +149,7 @@ extension Effect {
     ///
     /// // An action sends a message into that same socket — no body, no reopening:
     /// case .send(let text):
-    ///     .react { _ in .broadcast(text, channel: "socket") }
+    ///     .produce { _ in .broadcast(text, channel: "socket") }
     /// ```
     ///
     /// A broadcast **never opens** a channel: if nothing is live under `channel` the value is dropped.
@@ -189,9 +189,9 @@ extension Effect {
     /// world receives `.broadcast`s from the other.
     ///
     /// ```swift
-    /// case .connect:    .react { _ in .open(socketChannel) }
-    /// case .send(let t): .react { _ in .broadcast(t, channel: "socket") }
-    /// case .disconnect:  .react { _ in .cancel(id: "socket") }
+    /// case .connect:    .produce { _ in .open(socketChannel) }
+    /// case .send(let t): .produce { _ in .broadcast(t, channel: "socket") }
+    /// case .disconnect:  .produce { _ in .cancel(id: "socket") }
     /// ```
     ///
     /// - Parameter channel: The channel to open. Its `lifetime`/`broadcasting` are honoured.
@@ -215,7 +215,7 @@ extension Effect {
     /// ```swift
     /// // Debounce a live search over a single long-lived stream — the consumer stays alive.
     /// case .queryChanged(let text):
-    ///     .react { env in
+    ///     .produce { env in
     ///         .channel(value: text, scheduling: .debounce(id: "search", delay: .milliseconds(300))) { queries, send, _ in
     ///             for await query in queries {
     ///                 let results = await env.api.search(query)

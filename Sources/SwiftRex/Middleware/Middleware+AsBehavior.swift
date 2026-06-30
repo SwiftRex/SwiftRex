@@ -3,17 +3,9 @@ import CoreFP
 extension Middleware {
     /// Wraps this middleware as a `Behavior` with an identity reducer (no state mutation).
     ///
-    /// The middleware's `handle` closure is called during phase 1 on `@MainActor`, producing a
-    /// `Reader<PostReducerContext<State, Environment>, Effect<Action>>` that the Store runs in
-    /// phase 3 after all mutations complete.
+    /// A `Middleware` *is* a `Behavior` with no mutations — it shares the same ``Consequence`` model,
+    /// so this just rewraps the consequence list (effect-producing reactions plus supervisions).
     public var asBehavior: Behavior<Action, State, Environment> {
-        Behavior(
-            units: [
-                { action, context in
-                    Consequence(mutation: .unchanged, effect: self.handle(action, context))
-                }
-            ],
-            supervisor: self.supervisor
-        )
+        Behavior(consequences: consequences)
     }
 }

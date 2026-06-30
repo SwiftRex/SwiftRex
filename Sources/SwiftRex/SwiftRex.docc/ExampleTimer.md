@@ -31,7 +31,7 @@ let timer = Behavior<TimerAction, TimerState, Void>
         }
     }
     .supervise { state in
-        Keep { _ in
+        Supervision { _ in
             guard state.isRunning else { return [] }            // stopped → the ticker is cancelled
             return [Channel(id: "ticker", lifetime: .ephemeral(resetKey: state.interval)) { dispatch in
                 let task = Task {
@@ -48,7 +48,7 @@ let timer = Behavior<TimerAction, TimerState, Void>
 
 ### What each piece does
 
-- **`.start` / `.stop` flip a flag** — they don't touch the timer directly. `supervise` reads `isRunning` and the engine opens or closes the channel to match. Dispatch `.stop` and the `Keep` returns `[]`; the engine cancels the channel and `task.cancel()` runs. You never wired teardown to `.stop`.
+- **`.start` / `.stop` flip a flag** — they don't touch the timer directly. `supervise` reads `isRunning` and the engine opens or closes the channel to match. Dispatch `.stop` and the supervision returns `[]`; the engine cancels the channel and `task.cancel()` runs. You never wired teardown to `.stop`.
 - **`.ephemeral(resetKey: state.interval)`** — while running, changing the interval *recreates* the channel: the old `Task` is cancelled and the body re-runs with the new period. A ``Channel/Lifetime/permanent`` ticker would keep the stale interval; the reset key is what makes "change the speed" work without a manual stop/start.
 - **`.cancelOnly`** — the ticker only emits (`dispatch(.tick)`); nothing is ever piped *in*, so its ``ChannelHandler`` is `cancelOnly`. The body's `Task` is the side-effecting boundary; `cancel` tears it down exactly once.
 
@@ -71,7 +71,7 @@ return [Channel(id: "ticker", lifetime: .ephemeral(resetKey: state.interval)) { 
 }]
 ```
 
-Now `Keep { env in … }` reads `env.clock`; pass an `ImmediateClock` or `TestClock` in tests and a `ContinuousClock` in production. The `Store` already runs the effect engine on an injected clock — see ``Store``.
+Now `Supervision { env in … }` reads `env.clock`; pass an `ImmediateClock` or `TestClock` in tests and a `ContinuousClock` in production. The `Store` already runs the effect engine on an injected clock — see ``Store``.
 
 ## See Also
 

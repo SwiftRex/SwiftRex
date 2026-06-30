@@ -15,7 +15,7 @@ Channel(id: "socket") { dispatch in
 }
 ```
 
-The `id` is the registry key. It lives in a **global, type-aware namespace** shared with action-driven effects, so a `react` can ``Effect/broadcast(_:channel:file:function:line:)`` into a channel a `supervise` owns, purely by matching the id. Cross-feature id collisions are yours to prevent (use distinct id enums) — exactly as for keyed effects.
+The `id` is the registry key. It lives in a **global, type-aware namespace** shared with action-driven effects, so a `produce` can ``Effect/broadcast(_:channel:file:function:line:)`` into a channel a `supervise` owns, purely by matching the id. Cross-feature id collisions are yours to prevent (use distinct id enums) — exactly as for keyed effects.
 
 ### Opening: the body and the handler
 
@@ -105,7 +105,7 @@ A `broadcast` into an id with nothing live is simply dropped — keep the channe
 
 ### Action-driven lifetime (the imperative escape hatch)
 
-Most channels are declared in a `supervise` and reconciled from state. When you instead want *you* to own the lifetime — open on `.connect`, close on `.disconnect` — drive it from `react`:
+Most channels are declared in a `supervise` and reconciled from state. When you instead want *you* to own the lifetime — open on `.connect`, close on `.disconnect` — drive it from `produce`:
 
 - ``Effect/open(_:)`` — open a ``Channel`` now.
 - ``Effect/cancel(id:)`` — cancel whatever runs under `id` (a channel or any keyed effect).
@@ -123,7 +123,7 @@ You rarely hand-write a channel body for a stream you already have as a publishe
 
 ```swift
 .supervise { state in
-    Keep { env in
+    Supervision { env in
         guard state.isTracking else { return [] }
         return [env.locationUpdates.asChannel(id: "location", AppAction.located)]
     }

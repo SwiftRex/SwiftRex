@@ -31,7 +31,7 @@ struct StoreChannelTests {
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
                 case .write(let n):
-                    .react { _ in
+                    .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { _, _ in
                             starts.mutate { $0 += 1 }
                             return ChannelHandler(receive: { v in received.mutate { $0.append(v) } }, cancel: {})
@@ -57,7 +57,7 @@ struct StoreChannelTests {
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
                 case .write(let n):
-                    .react { _ in
+                    .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { send, _ in
                             ChannelHandler(receive: { v in send(.received(v)) }, cancel: {})
                         }
@@ -86,7 +86,7 @@ struct StoreChannelTests {
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
                 case .write(let n):
-                    .react { _ in
+                    .produce { _ in
                         .channel(value: n, scheduling: .throttle(id: "socket", interval: .seconds(1))) { _, _ in
                             starts.mutate { $0 += 1 }
                             return ChannelHandler(receive: { v in received.mutate { $0.append(v) } }, cancel: {})
@@ -120,7 +120,7 @@ struct StoreChannelTests {
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
                 case .write(let n):
-                    .react { _ in
+                    .produce { _ in
                         .channel(value: n, scheduling: .debounce(id: "socket", delay: .seconds(1))) { _, _ in
                             starts.mutate { $0 += 1 }
                             return ChannelHandler(receive: { v in received.mutate { $0.append(v) } }, cancel: {})
@@ -154,7 +154,7 @@ struct StoreChannelTests {
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
                 case .write(let n):
-                    .react { _ in
+                    .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { _, _ in
                             ChannelHandler(
                                 receive: { v in received.mutate { $0.append(v) } },
@@ -163,7 +163,7 @@ struct StoreChannelTests {
                         }
                     }
                 case .close:
-                    .react { _ in .cancel(id: "socket") }
+                    .produce { _ in .cancel(id: "socket") }
                 case .received:
                     .doNothing
                 }
@@ -183,7 +183,7 @@ struct StoreChannelTests {
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
                 case .write(let n):
-                    .react { _ in
+                    .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { values, send, _ in
                             for await v in values { send(.received(v)) }
                         }

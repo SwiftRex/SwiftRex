@@ -38,7 +38,7 @@ let feed = Behavior<FeedAction, FeedState, FeedEnv>
         }
     }
     .supervise { state in
-        Keep { env in
+        Supervision { env in
             guard state.listening else { return [] }
             return [
                 Channel(id: "feed") { dispatch in

@@ -1,4 +1,5 @@
 import CoreFP
+import DataStructure
 import Hourglass
 @testable import SwiftRex
 import Testing
@@ -44,7 +45,7 @@ struct ChannelDeliveryTimingTests {
 
     private func feedStore(_ delivery: ChannelDelivery, clock: TestClock, opens: LockProtected<Int>) -> Store<FeedAction, Feed, Void> {
         let supervisor = Behavior<FeedAction, Feed, Void>.supervise { state in
-            Keep { _ in
+            Supervision { _ in
                 guard state.connected else { return [] }
                 return [
                     Channel(id: "feed", broadcasting: .onChange(state.tick), delivery: delivery) { dispatch in
@@ -109,7 +110,7 @@ struct ChannelDeliveryTimingTests {
             }
         }
         let supervisor = Behavior<SearchAction, Search, Void>.supervise { state in
-            Keep { _ in
+            Supervision { _ in
                 guard !state.query.isEmpty else { return [] }
                 let query = state.query
                 return [
@@ -158,12 +159,12 @@ struct ChannelDeliveryTimingTests {
                 case .send: break
                 }
             }
-            .react { action, _ in
-                guard case .send(let v) = action else { return Reaction { _ in .empty } }
-                return Reaction { _ in .broadcast(v, channel: "socket") }
+            .produce { action, _ in
+                guard case .send(let v) = action else { return Reader { _ in .empty } }
+                return Reader { _ in .broadcast(v, channel: "socket") }
             }
             .supervise { state in
-                Keep { _ in
+                Supervision { _ in
                     guard state.connected else { return [] }
                     return [
                         Channel(id: "socket", delivery: .throttle(.seconds(1))) { dispatch in
