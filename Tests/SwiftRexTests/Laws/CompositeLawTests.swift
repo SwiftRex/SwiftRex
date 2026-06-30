@@ -16,24 +16,24 @@ let behaviorGen: Gen<Behavior<Int, Int, Void>> = Gen.zip(reducerGen, effectGen).
     let (reducer, effect) = pair
     return Behavior<Int, Int, Void>.handle { action, _ in
         .reduce { state in reducer.reduce(action)(&state) }
-            .react { _ in effect }
+            .produce { _ in effect }
     }
 }
 
-let consequenceGen: Gen<Consequence<Int, Void, Int>> = Gen.zip(reducerOutcomeGen, effectGen).map { pair in
+let consequenceGen: Gen<Reaction<Int, Void, Int>> = Gen.zip(reducerOutcomeGen, effectGen).map { pair in
     let (outcome, effect) = pair
-    return Consequence<Int, Void, Int>(mutation: outcome, effect: Reader { _ in effect })
+    return Reaction<Int, Void, Int>(mutation: outcome, produce: Reader { _ in effect })
 }
 
 let middlewareGen: Gen<Middleware<Int, Int, Void>> = effectGen.map { effect in
     Middleware<Int, Int, Void>.handle { _, _ in Reader { _ in effect } }
 }
 
-private func observe(consequence: Consequence<Int, Void, Int>, from state: Int) -> (Int, [Int]) {
+private func observe(consequence: Reaction<Int, Void, Int>, from state: Int) -> (Int, [Int]) {
     var state = state
     consequence.mutation.runEndoMut(&state)
     let post = PostReducerContext<Int, Void>(environment: (), getter: { state })
-    return (state, emitted(consequence.effect.runReader(post)))
+    return (state, emitted(consequence.produce.runReader(post)))
 }
 
 @Suite("Consequence — Monoid laws")
@@ -67,7 +67,7 @@ struct BehaviorLawTests {
         var state = state
         consequence.mutation.runEndoMut(&state)
         let post = PostReducerContext<Int, Void>(environment: (), getter: { state })
-        return (state, emitted(consequence.effect.runReader(post)))
+        return (state, emitted(consequence.produce.runReader(post)))
     }
 
     @Test func associativity() {

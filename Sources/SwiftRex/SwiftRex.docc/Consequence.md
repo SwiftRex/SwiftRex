@@ -1,36 +1,53 @@
 # ``SwiftRex/Consequence``
 
-The outcome of handling an action — a state change paired with a deferred effect.
+A single thing a ``Behavior`` does — a **reaction** to an action, or a **supervision** of state.
 
 ## Overview
 
-A `Consequence<State, Environment, Action>` is what a ``Behavior`` returns: a ``ReducerOutcome`` (the state mutation to apply, or ``ReducerOutcome/unchanged``) paired with a `Reader<PostReducerContext, Effect>` (the effect to run afterward). The ``Store`` applies the mutation in phase 2 and resolves the effect, against post-mutation state, in phase 3.
+A ``Behavior`` *is* a monoid of consequences: `Behavior` is `[Consequence]`, with `[]` the identity and `+` the composition. Each `Consequence<State, Environment, Action>` is one of two **clocks**:
 
-### Building one
+- ``reaction(_:)`` — the **action clock**. Given an action and the pre-mutation ``PreReducerContext``, it produces a ``Reaction`` (a `reduce` and/or a `produce`), scheduled once per action.
+- ``supervision(_:)`` — the **state clock**. Given the post-mutation state, it produces a ``Supervision`` (the channels to *keep*), reconciled by diff after every change — independent of whether any action reached this behavior, which is what makes it survive time-travel.
 
-- ``reduce(_:)`` — a pure state mutation, no effect.
-- ``react(_:)`` — an effect, no mutation.
-- chain them — `.reduce { … }.react { ctx in … }` — for both.
-- ``doNothing`` — neither (the monoid identity); the ``Store`` fires no notifications for it.
+You rarely build a `Consequence` by hand. The ``Behavior`` and ``Middleware`` builders construct the right case for you:
 
-A `Consequence` is the *action-driven* outcome — what one action changes and what it does next. The *state-driven* axis (`supervise`, keeping a ``Channel`` alive while the state holds) is a separate concern carried by ``Behavior`` and ``Middleware``, not bundled into `Consequence`. See <doc:StateDrivenEffects>.
+```swift
+Behavior<AppAction, AppState, AppEnvironment>
+    .reduce    { action, state in /* … */ }   // → .reaction (mutation)
+    .produce   { action, ctx   in /* … */ }   // → .reaction (effect)
+    .supervise { state         in /* … */ }   // → .supervision
+```
 
-### The algebra — a product monoid
+### Describe, don't do
 
-`Consequence` is a `Monoid`: ``combine(_:_:)`` composes componentwise — the ``ReducerOutcome`` mutations fold **sequentially**, the effect `Reader`s merge in **parallel** — with ``doNothing`` as the identity. This product structure is exactly why composing ``Behavior``s composes *both* their state changes and their effects in a single value. See <doc:Algebra>.
+Both cases are pure *descriptions*. `reduce` describes a mutation, `produce` describes an effect, `supervise` describes the channels to keep — the ``Store`` is the boundary that **mutates**, **performs**, and **keeps**. Nothing in a consequence runs on its own.
+
+### The two branches
+
+| case | branch type | clock | the Store… |
+|---|---|---|---|
+| ``reaction(_:)`` | ``Reaction`` (`reduce` \| `produce`) | action | mutates · performs |
+| ``supervision(_:)`` | ``Supervision`` (a ``Keep`` of channels) | state | keeps |
+
+Because `Behavior` is the free monoid `[Consequence]`, composing whole features is just concatenating their consequence lists — reactions fold (mutations sequential, effects parallel) and supervisions union. See <doc:Algebra>.
 
 ## Topics
 
-### Building a Consequence
+### The two clocks
 
-- ``reduce(_:)``
-- ``react(_:)``
-- ``doNothing``
+- ``reaction(_:)``
+- ``supervision(_:)``
+
+### The branch types
+
+- ``Reaction``
+- ``Supervision``
+- ``Keep``
 
 ## See Also
 
 - ``Behavior``
-- ``ReducerOutcome``
-- ``Effect``
-- ``PostReducerContext``
+- ``Reaction``
+- ``Supervision``
+- <doc:StateDrivenEffects>
 - <doc:Algebra>

@@ -15,7 +15,7 @@ private func consequence(
     _ behavior: Behavior<Int, Int, Void>,
     action: Int,
     state: Int
-) -> Consequence<Int, Void, Int> {
+) -> Reaction<Int, Void, Int> {
     behavior.handle(action, PreReducerContext(source: anySource, getter: { state }))
 }
 
@@ -28,7 +28,7 @@ private func receivedActions(
     let c = consequence(behavior, action: action, state: state)
     let received = LockProtected([Int]())
     let postCtx = PostReducerContext<Int, Void>(environment: (), getter: { state })
-    subscribeAll(c.effect(postCtx)) { d in received.mutate { $0.append(d.action) } }
+    subscribeAll(c.produce(postCtx)) { d in received.mutate { $0.append(d.action) } }
     return received.value
 }
 
@@ -129,8 +129,8 @@ struct BehaviorMonoidTests {
     }
 
     @Test func combineEffectsAreMerged() {
-        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .react { _ in .just(action) } }
-        let rhs = Behavior<Int, Int, Void>.handle { action, _ in .react { _ in .just(action * 10) } }
+        let lhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action) } }
+        let rhs = Behavior<Int, Int, Void>.handle { action, _ in .produce { _ in .just(action * 10) } }
         #expect(receivedActions(Behavior.combine(lhs, rhs), action: 2, state: 0).sorted() == [2, 20])
     }
 
@@ -170,7 +170,7 @@ struct BehaviorMonoidTests {
 struct BehaviorLiftActionTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let doubler = Behavior<Int, Int, Void>.handle { action, _ in
-        .reduce { $0 += action }.react { _ in .just(action * 2) }
+        .reduce { $0 += action }.produce { _ in .just(action * 2) }
     }
 
     @Test func matchingActionReachesHandler() {
@@ -187,7 +187,7 @@ struct BehaviorLiftActionTests {
         var state = 42
         c.mutation.runEndoMut(&state)
         #expect(state == 42)
-        #expect(c.effect(PostReducerContext<Int, Void>(environment: (), getter: { nil })).components.isEmpty)
+        #expect(c.produce(PostReducerContext<Int, Void>(environment: (), getter: { nil })).components.isEmpty)
     }
 
     @Test func outputActionIsWrappedViaReview() {
@@ -195,7 +195,7 @@ struct BehaviorLiftActionTests {
         let c = sut.handle(GA(local: 4, other: nil), PreReducerContext(source: anySource, getter: { 0 }))
         let received = LockProtected([GA]())
         subscribeAll(
-            c.effect(PostReducerContext<Int, Void>(environment: (), getter: { nil }))
+            c.produce(PostReducerContext<Int, Void>(environment: (), getter: { nil }))
         ) { d in received.mutate { $0.append(d.action) } }
         // review(4*2) → GA(local: 8)
         #expect(received.value.first?.local == 8)
@@ -299,12 +299,12 @@ struct BehaviorLiftStateTests {
 struct BehaviorLiftEnvironmentTests {
     @Test func liftEnvironmentProjectsEnv() {
         struct GE: Sendable { var sub: Int }
-        let sut = Behavior<Int, Int, Int>.handle { _, _ in .react { ctx in .just(ctx.environment) } }
+        let sut = Behavior<Int, Int, Int>.handle { _, _ in .produce { ctx in .just(ctx.environment) } }
             .liftEnvironment { (ge: GE) in ge.sub }
         let c = sut.handle(0, PreReducerContext(source: anySource, getter: { 0 }))
         let received = LockProtected([Int]())
         subscribeAll(
-            c.effect(PostReducerContext(environment: GE(sub: 42), getter: { 0 }))
+            c.produce(PostReducerContext(environment: GE(sub: 42), getter: { 0 }))
         ) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value == [42])
     }
@@ -317,7 +317,7 @@ struct BehaviorLiftEnvironmentTests {
 struct BehaviorCombinedLiftTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let base = Behavior<Int, Int, Int>.handle { action, _ in
-        .reduce { $0 += action }.react { ctx in .just(ctx.environment) }
+        .reduce { $0 += action }.produce { ctx in .just(ctx.environment) }
     }
 
     @Test func liftAllThreeAxesWKP() {
@@ -331,7 +331,7 @@ struct BehaviorCombinedLiftTests {
         // Effect produces env value (7) wrapped via prism.review → GA(local: 7)
         let received = LockProtected([GA]())
         subscribeAll(
-            c.effect(PostReducerContext(environment: GE(sub: 7), getter: { initial }))
+            c.produce(PostReducerContext(environment: GE(sub: 7), getter: { initial }))
         ) { d in received.mutate { $0.append(d.action) } }
         #expect(received.value.first?.local == 7)
     }
@@ -355,6 +355,6 @@ struct BehaviorCombinedLiftTests {
         let c = sut.handle(GA(local: nil, other: "x"), PreReducerContext(source: anySource, getter: { initial }))
         c.mutation.runEndoMut(&state)
         #expect(state.local == 0)
-        #expect(c.effect(PostReducerContext(environment: GE(sub: 0), getter: { initial })).components.isEmpty)
+        #expect(c.produce(PostReducerContext(environment: GE(sub: 0), getter: { initial })).components.isEmpty)
     }
 }

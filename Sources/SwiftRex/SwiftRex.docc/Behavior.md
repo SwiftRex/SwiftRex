@@ -1,27 +1,37 @@
 # ``SwiftRex/Behavior``
 
-The primary composition unit — a ``Reducer``, a ``Middleware``, and a state-driven supervisor fused into one liftable, composable value.
+The primary composition unit — a monoid of ``Consequence``s fusing a ``Reducer``, a ``Middleware``, and state-driven supervision into one liftable, composable value.
 
 ## Overview
 
-A `Behavior<Action, State, Environment>` folds three independent concerns of a feature, each a fluent builder that composes by `<>`:
+A `Behavior<Action, State, Environment>` *is* `[Consequence]`. Three fluent builders describe a feature's concerns, each composing by `<>`:
 
-- ``reduce(_:)`` — the **state change**: a pure `(Action, inout State) -> Void`.
-- ``react(_:)`` — the **action-driven effect**: an action causes a ``Reaction`` (Elm's `Cmd`).
-- ``supervise(_:)`` — the **state-driven effect**: the *state* keeps a ``Keep`` of ``Channel``s alive (Elm's `Sub`). See <doc:StateDrivenEffects>.
+- ``reduce(_:)`` — the **state change**: a pure `(Action, inout State) -> Void`. The ``Store`` *mutates*.
+- ``produce(_:)`` — the **action-driven effect**: an action produces an ``Effect`` (Elm's `Cmd`). The ``Store`` *performs*.
+- ``supervise(_:)`` — the **state-driven effect**: the *state* keeps a ``Supervision`` of ``Channel``s alive (Elm's `Sub`). The ``Store`` *keeps*. See <doc:StateDrivenEffects>.
 
 ```swift
 let room = Behavior<RoomAction, RoomState, RoomEnv>
     .reduce { action, state in … }                 // what changes
-    .react { action, ctx in … }                    // what to do because of an action
+    .produce { action, ctx in … }                    // what to do because of an action
     .supervise { state in … }                      // what to keep alive while the state holds
 ```
 
-Each builder exists as a **static** factory (`Behavior.reduce { … }`) and as an **instance** method (`someBehavior.react { … }`), so a fluent chain is exactly an `<>` fold — the chain above is three single-concern behaviors combined. You can also build from a closure (``handle(_:)``) returning a whole ``Consequence``, or pair the first two axes with `Behavior(reducer:middleware:)`; ``Reducer/asBehavior()`` and ``Middleware/asBehavior`` lift each half on its own (a `Middleware`'s own `supervise` axis carries through).
+Each builder exists as a **static** factory (`Behavior.reduce { … }`) and as an **instance** method (`someBehavior.produce { … }`), so a fluent chain is exactly an `<>` fold. To share pre-work between a mutation and its effect, use the grouped ``react(_:)`` builder — it hands you the action and returns a whole ``Reaction``:
 
-### The algebra — a flat fold of units
+```swift
+Behavior.react { action, _ in
+    guard case .load(let id) = action else { return .doNothing }
+    return .reduce  { $0.isLoading = true }
+           .produce { ctx in ctx.environment.api.fetch(id).asEffect() }
+}
+```
 
-`Behavior` is a `Monoid`. ``combine(_:_:)`` runs both behaviors on the same action, folding their state mutations **sequentially** and merging their effects in **parallel** (its ``Consequence`` is a product monoid); ``identity`` does nothing and — crucially — composes away to a no-op that the ``Store`` skips entirely. Composition is a single flat pass over the underlying units, not a nested closure tree. See <doc:Algebra>.
+You can also pair the reducer and middleware axes with `Behavior(reducer:middleware:)`; ``Reducer/asBehavior()`` and ``Middleware/asBehavior`` lift each half on its own (a `Middleware`'s own `supervise` axis carries through).
+
+### The algebra — the free monoid `[Consequence]`
+
+`Behavior` is a `Monoid` — literally the free monoid over its consequences: ``combine(_:_:)`` **concatenates** the lists, ``identity`` is `[]`. Composing runs both behaviors' reactions on the same pre-mutation state (mutations fold **sequentially**, effects merge in **parallel** — each ``Reaction`` is a product monoid) and **unions** their supervisions. It is a single flat pass, not a nested closure tree, and an all-no-op fold stays ``ReducerOutcome/unchanged`` so the ``Store`` skips the notification entirely. See <doc:Algebra>.
 
 ```swift
 let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifted <> profile.lifted
@@ -36,8 +46,9 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 ### Building a Behavior
 
 - ``reduce(_:)``
-- ``react(_:)``
+- ``produce(_:)``
 - ``supervise(_:)``
+- ``react(_:)``
 - ``handle(_:)``
 
 ### Composing
@@ -60,6 +71,8 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 - ``Reducer``
 - ``Middleware``
 - ``Consequence``
+- ``Reaction``
+- ``Supervision``
 - ``ReducerOutcome``
 - ``Store``
 - <doc:StateDrivenEffects>

@@ -59,9 +59,9 @@ extension Behavior {
                 let traversal = stateContainer.compose(resolved.element)
                 let element = AnyHashableSendable(resolved.id)
                 let c = self.handle(resolved.action, context.compactMap(traversal.preview))
-                return Consequence(
+                return Reaction(
                     mutation: c.mutation.map { traversal.lift($0) },
-                    effect: c.effect
+                    produce: c.produce
                         .map { (eff: Effect<Action>) in
                             eff.map { embed($0, resolved.id) }.scopedToElement(element)
                         }

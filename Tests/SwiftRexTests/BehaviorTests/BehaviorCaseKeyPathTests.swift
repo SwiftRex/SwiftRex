@@ -45,7 +45,7 @@ struct BehaviorCaseKeyPathLiftTests {
         // A behavior whose effect produces a local action; lifting must re-embed it via review.
         let producing = Behavior<Int, Int, Void>.handle { action, _ in
             action == 0
-                ? .react { _ in .just(7) }   // produce local action 7
+                ? .produce { _ in .just(7) }   // produce local action 7
                 : .reduce { $0 += action }
         }
         let lifted: Behavior<AppAction, Int, Void> = producing.liftAction(\.counter)

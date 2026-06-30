@@ -30,7 +30,7 @@ extension Behavior {
             handle: { action, context in
                 guard let local = prism.preview(action) else { return .doNothing }
                 let c = self.handle(local, context)
-                return Consequence(mutation: c.mutation, effect: c.effect.map { $0.map(prism.review) })
+                return Reaction(mutation: c.mutation, produce: c.produce.map { $0.map(prism.review) })
             },
             // Re-embed each supervised channel's actions into the global type.
             supervisor: self.supervisor.map { inner in
@@ -85,9 +85,9 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment>(
             handle: { action, context in
                 let c = self.handle(action, context.map { $0[keyPath: keyPath] })
-                return Consequence(
+                return Reaction(
                     mutation: c.mutation.map { lens(keyPath).lift($0) },
-                    effect: c.effect.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
+                    produce: c.produce.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
                 )
             },
             supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(state[keyPath: keyPath]) } }
@@ -113,9 +113,9 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment>(
             handle: { action, context in
                 let c = self.handle(action, context.map(stateLens.get))
-                return Consequence(
+                return Reaction(
                     mutation: c.mutation.map { stateLens.lift($0) },
-                    effect: c.effect.contramapEnvironment { $0.map(stateLens.get) }
+                    produce: c.produce.contramapEnvironment { $0.map(stateLens.get) }
                 )
             },
             supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(stateLens.get(state)) } }
@@ -143,9 +143,9 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment>(
             handle: { action, context in
                 let c = self.handle(action, context.compactMap(statePrism.preview))
-                return Consequence(
+                return Reaction(
                     mutation: c.mutation.map { statePrism.lift($0) },
-                    effect: c.effect.contramapEnvironment { $0.compactMap(statePrism.preview) }
+                    produce: c.produce.contramapEnvironment { $0.compactMap(statePrism.preview) }
                 )
             },
             // Sub-state absent → supervise nothing, so the reconciler cancels the feature's channels.
@@ -177,9 +177,9 @@ extension Behavior {
         Behavior<Action, GlobalState, Environment>(
             handle: { action, context in
                 let c = self.handle(action, context.compactMap(traversal.preview))
-                return Consequence(
+                return Reaction(
                     mutation: c.mutation.map { traversal.lift($0) },
-                    effect: c.effect.contramapEnvironment { $0.compactMap(traversal.preview) }
+                    produce: c.produce.contramapEnvironment { $0.compactMap(traversal.preview) }
                 )
             },
             // Focus absent → supervise nothing, so the reconciler cancels the feature's channels.
@@ -214,7 +214,7 @@ extension Behavior {
         Behavior<Action, State, GlobalEnvironment>(
             handle: { action, context in
                 let c = self.handle(action, context)
-                return Consequence(mutation: c.mutation, effect: c.effect.contramapEnvironment { $0.mapEnvironment(f) })
+                return Reaction(mutation: c.mutation, produce: c.produce.contramapEnvironment { $0.mapEnvironment(f) })
             },
             supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: State) in inner(state).contramapEnvironment(f) } }
         )

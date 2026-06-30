@@ -59,7 +59,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = prism.preview(action) else { return .doNothing }
-            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
+            return Reaction(mutation: .unchanged, produce: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -79,7 +79,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard let value = prism.preview(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
+            return Reaction(mutation: .unchanged, produce: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -100,9 +100,9 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = prism.preview(action) else { return .doNothing }
-            return Consequence(
+            return Reaction(
                 mutation: .mutation(EndoMut { state in reduce(value, &state) }),
-                effect: Reader { _ in Effect.just(out(value)) }
+                produce: Reader { _ in Effect.just(out(value)) }
             )
         })
     }
@@ -119,9 +119,9 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard let value = prism.preview(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(
+            return Reaction(
                 mutation: .mutation(EndoMut { s in reduce(value, &s) }),
-                effect: Reader { _ in Effect.just(out(value)) }
+                produce: Reader { _ in Effect.just(out(value)) }
             )
         })
     }
@@ -255,7 +255,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = action[keyPath: extract] else { return .doNothing }
-            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
+            return Reaction(mutation: .unchanged, produce: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -275,7 +275,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard let value = action[keyPath: extract] else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out(value)) })
+            return Reaction(mutation: .unchanged, produce: Reader { _ in Effect.just(out(value)) })
         })
     }
 
@@ -295,9 +295,9 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard let value = action[keyPath: extract] else { return .doNothing }
-            return Consequence(
+            return Reaction(
                 mutation: .mutation(EndoMut { state in reduce(value, &state) }),
-                effect: Reader { _ in Effect.just(out(value)) }
+                produce: Reader { _ in Effect.just(out(value)) }
             )
         })
     }
@@ -314,9 +314,9 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard let value = action[keyPath: extract] else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(
+            return Reaction(
                 mutation: .mutation(EndoMut { s in reduce(value, &s) }),
-                effect: Reader { _ in Effect.just(out(value)) }
+                produce: Reader { _ in Effect.just(out(value)) }
             )
         })
     }
@@ -386,7 +386,7 @@ extension Behavior {
     //   – no state copy at all when `reduce:` and `when:` are both absent (variants 21, 27–28)
     //
     // Dispatch is always a fixed `Action`; for cases where dispatch depends on state after
-    // mutation, use `.react { ctx in }` directly on the returned `Consequence`.
+    // mutation, use `.produce { ctx in }` directly on the returned `Reaction`.
 
     // MARK: 21. Bool predicate — pure routing, no state
 
@@ -404,7 +404,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard predicate(action) else { return .doNothing }
-            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out) })
+            return Reaction(mutation: .unchanged, produce: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -426,7 +426,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard predicate(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .unchanged, effect: Reader { _ in Effect.just(out) })
+            return Reaction(mutation: .unchanged, produce: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -448,7 +448,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard predicate(action) else { return .doNothing }
-            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in .empty })
+            return Reaction(mutation: .mutation(EndoMut(reduce)), produce: Reader { _ in .empty })
         })
     }
 
@@ -469,7 +469,7 @@ extension Behavior {
     ) -> Self {
         .combine(self, Behavior { action, _ in
             guard predicate(action) else { return .doNothing }
-            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in Effect.just(out) })
+            return Reaction(mutation: .mutation(EndoMut(reduce)), produce: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -491,7 +491,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard predicate(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in .empty })
+            return Reaction(mutation: .mutation(EndoMut(reduce)), produce: Reader { _ in .empty })
         })
     }
 
@@ -515,7 +515,7 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard predicate(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(mutation: .mutation(EndoMut(reduce)), effect: Reader { _ in Effect.just(out) })
+            return Reaction(mutation: .mutation(EndoMut(reduce)), produce: Reader { _ in Effect.just(out) })
         })
     }
 
@@ -536,9 +536,9 @@ extension Behavior {
         _ fn: @escaping @Sendable (Action) -> Action?
     ) -> Self {
         .combine(self, Behavior { action, _ in
-            Consequence(
+            Reaction(
                 mutation: .unchanged,
-                effect: Reader { _ in fn(action).map { Effect.just($0) } ?? .empty }
+                produce: Reader { _ in fn(action).map { Effect.just($0) } ?? .empty }
             )
         })
     }
@@ -553,9 +553,9 @@ extension Behavior {
         .combine(self, Behavior { action, context in
             guard let out = fn(action) else { return .doNothing }
             guard let state = context.stateBefore, condition(state) else { return .doNothing }
-            return Consequence(
+            return Reaction(
                 mutation: .unchanged,
-                effect: Reader { _ in Effect.just(out) }
+                produce: Reader { _ in Effect.just(out) }
             )
         })
     }

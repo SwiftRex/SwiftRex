@@ -42,7 +42,7 @@ let feed = Behavior<FeedAction, FeedState, FeedEnv>
         }
     }
     .supervise { state in
-        Keep { env in
+        Supervision { env in
             [Channel(
                 id: "feed",
                 lifetime: .ephemeral(resetKey: state.token),        // reconnect when the token rotates

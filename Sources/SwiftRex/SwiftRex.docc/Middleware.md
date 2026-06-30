@@ -1,26 +1,26 @@
 # ``SwiftRex/Middleware``
 
-The effect-only layer of a feature — it reads state and the environment and runs side-effects, but never mutates state. It carries both effect axes: action-driven ``react(_:)`` and state-driven ``supervise(_:)``.
+The effect-only layer of a feature — a simplified ``Behavior`` that reads state and the environment and runs side-effects, but never mutates state. It carries both effect axes: action-driven ``produce(_:)`` and state-driven ``supervise(_:)``.
 
 ## Overview
 
 A `Middleware<Action, State, Environment>` owns the two effect concerns a feature can have, and *only* those — state mutation is ``Reducer``'s job:
 
-- ``react(_:)`` — maps an action (and a pre-mutation ``PreReducerContext``) to a ``Reaction``, a `Reader<PostReducerContext, Effect>` the ``Store`` resolves in phase 3 (post-mutation), with access to the `Environment` and committed `liveState`. This is the *action-driven* effect (Elm's `Cmd`).
-- ``supervise(_:)`` — maps the *state* to a ``Keep`` of ``Channel``s the engine keeps alive while that state holds. This is the *state-driven* effect (Elm's `Sub`). See <doc:StateDrivenEffects>.
+- ``produce(_:)`` — maps an action (and a pre-mutation ``PreReducerContext``) to a `Reader<PostReducerContext, Effect>` the ``Store`` *performs* in phase 3 (post-mutation), with access to the `Environment` and committed `liveState`. This is the *action-driven* effect (Elm's `Cmd`).
+- ``supervise(_:)`` — maps the *state* to a ``Supervision`` — the channels to ``Keep`` alive while that state holds. The ``Store`` *keeps* them. This is the *state-driven* effect (Elm's `Sub`). See <doc:StateDrivenEffects>.
 
 ```swift
 let search = Middleware<AppAction, AppState, API>
-    .react { action, _ in
-        guard case .search(let query) = action else { return Reaction { _ in .empty } }
-        return Reaction { ctx in ctx.environment.search(query).asEffect(AppAction.results) }
+    .produce { action, _ in
+        guard case .search(let query) = action else { return Reader { _ in .empty } }
+        return Reader { ctx in ctx.environment.search(query).asEffect(AppAction.results) }
     }
     .supervise { state in
-        Keep { env in state.isConnected ? [env.makeFeedChannel()] : [] }
+        Supervision { env in state.isConnected ? [env.makeFeedChannel()] : [] }
     }
 ```
 
-Both builders exist as **static** factories and **instance** methods, so a `.react { … }.supervise { … }` chain is an `<>` fold of single-concern middlewares. Combine a `Reducer` with a `Middleware` to get a ``Behavior``.
+Both builders exist as **static** factories and **instance** methods, so a `.produce { … }.supervise { … }` chain is an `<>` fold of single-concern middlewares. Combine a `Reducer` with a `Middleware` to get a ``Behavior``.
 
 ### The algebra — a parallel monoid
 
@@ -44,7 +44,7 @@ Every lift carries **both** effect axes — including `supervise`: a lifted midd
 
 ### Creating a Middleware
 
-- ``react(_:)``
+- ``produce(_:)``
 - ``supervise(_:)``
 - ``handle(_:)``
 

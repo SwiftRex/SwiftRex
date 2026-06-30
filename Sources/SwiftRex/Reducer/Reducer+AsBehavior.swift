@@ -11,7 +11,7 @@ extension Reducer {
     /// ```
     public func asBehavior<Environment: Sendable>() -> Behavior<ActionType, StateType, Environment> {
         Behavior { action, _ in
-            Consequence(mutation: .mutation(self.reduce(action)), effect: Reader { _ in .empty })
+            Reaction(mutation: .mutation(self.reduce(action)), produce: Reader { _ in .empty })
         }
     }
 }

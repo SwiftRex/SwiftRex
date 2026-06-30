@@ -30,7 +30,7 @@ extension Reader {
     /// Creates a `Reader<PostReducerContext<State, Environment>, Effect<Action>>` from a
     /// closure that receives the post-reducer context and returns an `Effect`.
     ///
-    /// Mirrors `Consequence.react(_:)` so `Middleware` and `Behavior` handlers share the
+    /// Mirrors `Reaction.produce(_:)` so `Middleware` and `Behavior` handlers share the
     /// same vocabulary. The two forms below are equivalent:
     ///
     /// ```swift
@@ -39,8 +39,8 @@ extension Reader {
     ///     ctx.environment.api.fetch(id: id).asEffect()
     /// }
     ///
-    /// // Shorthand — reads like Consequence.react at the call site
-    /// return .react { ctx in
+    /// // Shorthand — reads like Reaction.produce at the call site
+    /// return .produce { ctx in
     ///     ctx.environment.api.fetch(id: id).asEffect()
     /// }
     /// ```
@@ -50,12 +50,12 @@ extension Reader {
     /// ```swift
     /// let favMiddleware = Middleware<AppAction, AppState, API>.handle { action, _ in
     ///     guard case .toggleFavorite(let id) = action else { return .doNothing }
-    ///     return .react { ctx in
+    ///     return .produce { ctx in
     ///         Effect.task { .favResult(await ctx.environment.api.toggle(id: id)) }
     ///     }
     /// }
     /// ```
-    public static func react<Action: Sendable>(
+    public static func produce<Action: Sendable>(
         _ f: @escaping @Sendable (Environment) -> Effect<Action>
     ) -> Self where Output == Effect<Action> {
         Reader(f)

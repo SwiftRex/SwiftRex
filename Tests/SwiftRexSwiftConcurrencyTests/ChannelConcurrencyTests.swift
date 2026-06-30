@@ -46,7 +46,7 @@ struct ChannelConcurrencyTests {
     @Test func iteratesInOrderWhileDesiredThenCancelsOnTeardown() async {
         let feed = Feed()
         let supervisor = Behavior<A, S, Feed>.supervise { state in
-            Keep { env in state.listening ? [env.stream.asChannel(id: "events", A.got)] : [] }
+            Supervision { env in state.listening ? [env.stream.asChannel(id: "events", A.got)] : [] }
         }
         let store = Store(initial: S(), behavior: .combine(reducer, supervisor), environment: feed)
 
