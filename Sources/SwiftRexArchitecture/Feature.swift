@@ -71,7 +71,7 @@ import SwiftUI
 ///         }
 ///     }
 ///
-///     static func initialState() -> State { .init() }
+///     // `initialState(with:)` defaults to `State.init()` when `Input` is `Void`.
 ///
 ///     static func behavior() -> Behavior<Action, State, Environment> {
 ///         .handle { action, _ in
@@ -130,6 +130,14 @@ public protocol Feature: Sendable {
     /// Live dependencies injected at build time (network, persistence, clocks…).
     associatedtype Environment: Sendable
 
+    /// Construction-time seed for the initial state — a caller-supplied context (a selected id,
+    /// a deep-link payload…) fed to ``initialState(with:)`` when the feature is opened.
+    ///
+    /// Defaults to `Void` for features that need no seed; declare a nested `Input` type (or
+    /// `typealias Input = …`) to require one. This is a *seed*, distinct from any runtime
+    /// message port — it only participates in building the initial state.
+    associatedtype Input = Void
+
     // MARK: - ViewModel
 
     /// The `@ViewModel`-annotated class that owns `ViewState` and `ViewAction` and drives the view.
@@ -154,11 +162,12 @@ public protocol Feature: Sendable {
 
     // MARK: - Lifecycle
 
-    /// Returns the feature's initial state.
+    /// Returns the feature's initial state, seeded with the caller-supplied ``Input``.
     ///
     /// Called by parent stores when seeding their initial `AppState` slice, and in tests
-    /// when constructing a standalone store for this feature.
-    static func initialState() -> State
+    /// when constructing a standalone store for this feature. When ``Input`` is `Void`, the
+    /// no-argument ``initialState()`` convenience is available.
+    static func initialState(with input: Input) -> State
 
     /// Returns the feature's `Behavior` — the reducer combined with any side-effect middleware.
     ///
@@ -188,6 +197,17 @@ extension Feature where State == ViewModel.ViewState {
 extension Feature where Action == ViewModel.ViewAction {
     /// Identity translation — no declaration needed when `Action` is typealiased to `ViewModel.ViewAction`.
     public static var mapAction: @Sendable (ViewModel.ViewAction) -> Action { { $0 } }
+}
+
+// MARK: - Void-Input convenience
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+extension Feature where Input == Void {
+    /// Builds the initial state without a seed — available when ``Input`` is `Void`.
+    ///
+    /// Forwards to ``initialState(with:)`` with `()`, so existing call sites that don't pass a
+    /// seed keep working unchanged.
+    public static func initialState() -> State { initialState(with: ()) }
 }
 
 // MARK: - Module factory

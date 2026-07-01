@@ -16,7 +16,8 @@
 /// - Applies `@Prisms` to the nested `Action` enum (for ``TestStore`` `receive` assertions)
 /// - Applies `@Lenses` to the nested `State` struct (for `liftState` ergonomics)
 /// - Applies `@ViewModel` to the nested `ViewModel` class (no manual annotation needed)
-/// - Synthesizes `static func initialState() -> State { .init() }` when you don't write one
+/// - Synthesizes `static func initialState(with _: Void) -> State { .init() }` when you don't
+///   write one (skipped if you declare a custom `Input` seed)
 ///
 /// ```swift
 /// @Feature
@@ -31,8 +32,8 @@
 ///
 ///     static let mapState = ...
 ///     static let mapAction = ...
-///     // `initialState()` is synthesized as `State.init()` — declare your own only when
-///     // `State` lacks an empty initializer (a property without a default value).
+///     // `initialState(with:)` is synthesized as `State.init()` (Void seed) — declare your own
+///     // only when `State` lacks an empty initializer or you need a non-`Void` `Input` seed.
 ///     static func behavior() -> Behavior<Action, State, Environment> { ... }
 ///
 ///     typealias Content = MovieListView      // still required — links feature to its view

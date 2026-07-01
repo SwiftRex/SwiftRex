@@ -18,15 +18,17 @@ public struct FeatureMacro: ExtensionMacro, MemberAttributeMacro, MemberMacro {
         conformingTo protocols: [TypeSyntax],
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        // `initialState()` defaults to `State.init()` — the common case where every
-        // `State` property has a default. Only synthesize when the feature has a nested
-        // `State` type and hasn't supplied its own `initialState()`; a `State` without an
-        // empty initializer must declare `initialState()` explicitly.
+        // `initialState(with:)` defaults to `State.init()` for the common `Void`-seed case where
+        // every `State` property has a default. Only synthesize when the feature has a nested
+        // `State`, has NOT declared a custom `Input` seed (which would need a bespoke builder),
+        // and hasn't supplied its own `initialState`. A `State` without an empty initializer, or a
+        // feature with a non-`Void` `Input`, must declare `initialState(with:)` explicitly.
         guard declaration.is(EnumDeclSyntax.self),
               hasNestedType("State", in: declaration),
+              !hasNestedType("Input", in: declaration),
               !hasInitialState(in: declaration)
         else { return [] }
-        return ["static func initialState() -> State { .init() }"]
+        return ["static func initialState(with _: Void) -> State { .init() }"]
     }
 
     // MARK: - ExtensionMacro
