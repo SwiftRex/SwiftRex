@@ -70,7 +70,7 @@ private enum HeroDetailsFeature: Feature {
         }
     }
 
-    static func initialState() -> State { .init() }
+    static func initialState(with _: Void) -> State { .init() }
 
     static func behavior() -> Behavior<Action, State, Environment> {
         Reducer.reduce { (action: Action, state: inout State) in
@@ -292,13 +292,61 @@ private enum OverrideFeature {
     static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { .init(count: $0.count) }
     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
 
-    static func initialState() -> State { .init(count: 99) }
+    static func initialState(with _: Void) -> State { .init(count: 99) }
 
     static func behavior() -> Behavior<Action, State, Environment> {
         Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
     }
 
     typealias Content = OverrideView
+}
+
+// A feature with a non-`Void` `Input` seed — `@Feature` must NOT synthesize `initialState`
+// (it can't know how to build `State` from a custom seed), so the feature writes its own
+// `initialState(with:)` that threads the seed into the initial state.
+
+private struct SeededView: View, HasViewModel {
+    typealias VM = SeededFeature.ViewModel
+    let viewModel: SeededFeature.ViewModel
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature
+private enum SeededFeature {
+    struct Input: Sendable {
+        var startingCount: Int
+    }
+
+    struct State: Sendable {
+        var count: Int = 0
+    }
+
+    enum Action: Sendable, Equatable {
+        case noop
+    }
+
+    struct Environment: Sendable {}
+
+    // swiftlint:disable:next convenience_type
+    final class ViewModel {
+        struct ViewState: Sendable, Equatable {
+            var count: Int
+        }
+        enum ViewAction: Sendable {
+            case tapped
+        }
+    }
+
+    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { .init(count: $0.count) }
+    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
+
+    static func initialState(with input: Input) -> State { .init(count: input.startingCount) }
+
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
+    }
+
+    typealias Content = SeededView
 }
 
 @Suite("@Feature — initialState synthesis")
@@ -320,6 +368,11 @@ struct FeatureInitialStateTests {
         // Compiles only because `@Feature` skipped synthesis (no redeclaration), and returns
         // the user's value rather than `State.init()` defaults.
         #expect(OverrideFeature.initialState().count == 99)
+    }
+
+    @Test func customInputSeedsInitialState() {
+        // A non-`Void` `Input` threads a construction-time seed into the initial state.
+        #expect(SeededFeature.initialState(with: .init(startingCount: 42)).count == 42)
     }
 }
 #endif

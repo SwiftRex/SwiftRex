@@ -123,13 +123,27 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
 
     /// Creates a `TestFeature` using the feature's default initial state.
     ///
+    /// Available when the feature's ``Feature/Input`` is `Void`. For a feature with a custom
+    /// seed, use ``init(input:environment:exhaustive:)``.
+    ///
     /// - Parameters:
     ///   - environment: The environment injected into effects.
     ///   - exhaustive: When `true` (default), each ``FeatureStep`` fails if effects or received
     ///     actions are left unprocessed when the step goes out of scope.
-    public init(environment: F.Environment, exhaustive: Bool = true) {
+    public convenience init(environment: F.Environment, exhaustive: Bool = true) where F.Input == Void {
+        self.init(input: (), environment: environment, exhaustive: exhaustive)
+    }
+
+    /// Creates a `TestFeature` seeding the initial state with the feature's ``Feature/Input``.
+    ///
+    /// - Parameters:
+    ///   - input: The construction-time seed threaded into ``Feature/initialState(with:)``.
+    ///   - environment: The environment injected into effects.
+    ///   - exhaustive: When `true` (default), each ``FeatureStep`` fails if effects or received
+    ///     actions are left unprocessed when the step goes out of scope.
+    public init(input: F.Input, environment: F.Environment, exhaustive: Bool = true) {
         let store = TestStore(
-            initial: F.initialState(),
+            initial: F.initialState(with: input),
             behavior: F.behavior(),
             environment: environment,
             exhaustive: exhaustive
@@ -298,7 +312,9 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 extension TestFeature where F.Environment == Void {
     /// Creates a `TestFeature` with a `Void` environment using the feature's default initial state.
-    public convenience init(exhaustive: Bool = true) {
+    ///
+    /// Available when the feature's ``Feature/Input`` is also `Void`.
+    public convenience init(exhaustive: Bool = true) where F.Input == Void {
         self.init(environment: (), exhaustive: exhaustive)
     }
 
