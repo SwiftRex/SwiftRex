@@ -1,4 +1,5 @@
 #if canImport(Observation) && canImport(SwiftUI)
+import DataStructure
 import Observation
 @testable import SwiftRex
 @testable import SwiftRexArchitecture
@@ -50,13 +51,15 @@ private enum HeroDetailsFeature: Feature {
         }
     }
 
-    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { s in
-        .init(
-            displayName: s.aliases.first ?? s.codename,
-            powersText: s.powers.joined(separator: ", "),
-            threatIndex: s.threatIndex,
-            isRetired: s.isRetired
-        )
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
+        { s in
+            .init(
+                displayName: s.aliases.first ?? s.codename,
+                powersText: s.powers.joined(separator: ", "),
+                threatIndex: s.threatIndex,
+                isRetired: s.isRetired
+            )
+        }
     }
 
     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { va in
@@ -96,7 +99,7 @@ private func makeViewModel() -> HeroDetailsFeature.ViewModel {
     )
     return HeroDetailsFeature.ViewModel(store: store.projection(
         action: HeroDetailsFeature.mapAction,
-        state: HeroDetailsFeature.mapState
+        state: HeroDetailsFeature.mapState(.init())
     ))
 }
 
@@ -105,36 +108,34 @@ private func makeViewModel() -> HeroDetailsFeature.ViewModel {
 @Suite("HeroDetailsFeature.mapState")
 @MainActor
 struct MapStateTests {
+    // `mapState` is curried over Environment; this feature's view ignores it (empty Environment).
+    private func project(_ state: HeroDetailsFeature.State) -> HeroDetailsFeature.ViewModel.ViewState {
+        HeroDetailsFeature.mapState(.init())(state)
+    }
+
     @Test func usesFirstAliasAsDisplayName() {
-        let vs = HeroDetailsFeature.mapState(.init())
-        #expect(vs.displayName == "Superman")
+        #expect(project(.init()).displayName == "Superman")
     }
 
     @Test func fallsBackToCodenameWhenNoAliases() {
-        let vs = HeroDetailsFeature.mapState(
-            .init(codename: "Unknown", aliases: [], powers: [], threatIndex: 0, isRetired: false)
-        )
+        let vs = project(.init(codename: "Unknown", aliases: [], powers: [], threatIndex: 0, isRetired: false))
         #expect(vs.displayName == "Unknown")
     }
 
     @Test func joinsPowersWithComma() {
-        let vs = HeroDetailsFeature.mapState(.init())
-        #expect(vs.powersText == "flight, heat vision")
+        #expect(project(.init()).powersText == "flight, heat vision")
     }
 
     @Test func passesThroughThreatIndexAndRetired() {
-        let state = HeroDetailsFeature.State(
-            codename: "X", aliases: [], powers: [], threatIndex: 3, isRetired: true
-        )
-        let vs = HeroDetailsFeature.mapState(state)
+        let vs = project(.init(codename: "X", aliases: [], powers: [], threatIndex: 3, isRetired: true))
         #expect(vs.threatIndex == 3)
         #expect(vs.isRetired == true)
     }
 
     @Test func equatableDeduplication() {
-        let a = HeroDetailsFeature.mapState(.init())
-        let b = HeroDetailsFeature.mapState(.init())
-        let c = HeroDetailsFeature.mapState(.init(
+        let a = project(.init())
+        let b = project(.init())
+        let c = project(.init(
             codename: "Kryptonian",
             aliases: ["Superman", "Man of Steel"],
             powers: ["flight"],
@@ -242,7 +243,9 @@ private enum CounterFeature {
         }
     }
 
-    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { .init(count: $0.count) }
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
+        { .init(count: $0.count) }
+    }
     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .increment }
 
     // No `initialState()` here — synthesized by `@Feature`.
@@ -289,7 +292,9 @@ private enum OverrideFeature {
         }
     }
 
-    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { .init(count: $0.count) }
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
+        { .init(count: $0.count) }
+    }
     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
 
     static func initialState(with _: Void) -> State { .init(count: 99) }
@@ -337,7 +342,9 @@ private enum SeededFeature {
         }
     }
 
-    static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { .init(count: $0.count) }
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
+        { .init(count: $0.count) }
+    }
     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
 
     static func initialState(with input: Input) -> State { .init(count: input.startingCount) }
@@ -373,6 +380,70 @@ struct FeatureInitialStateTests {
     @Test func customInputSeedsInitialState() {
         // A non-`Void` `Input` threads a construction-time seed into the initial state.
         #expect(SeededFeature.initialState(with: .init(startingCount: 42)).count == 42)
+    }
+}
+
+// MARK: - mapState environment injection
+//
+// A feature whose view formats via an injected dependency — proves `mapState` is curried over
+// `Environment` and the value reaches the projection at view-build time, without pushing
+// formatting into `Behavior`/`State`.
+
+private struct FormattingView: View, HasViewModel {
+    typealias VM = FormattingFeature.ViewModel
+    let viewModel: FormattingFeature.ViewModel
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature
+private enum FormattingFeature {
+    struct State: Sendable, Equatable {
+        var amount: Int = 5
+    }
+
+    enum Action: Sendable, Equatable {
+        case noop
+    }
+
+    struct Environment: Sendable {
+        var formatMoney: @Sendable (Int) -> String
+    }
+
+    // swiftlint:disable:next convenience_type
+    final class ViewModel {
+        struct ViewState: Sendable, Equatable {
+            var display: String
+        }
+        enum ViewAction: Sendable {
+            case tapped
+        }
+    }
+
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { env in
+        { state in .init(display: env.formatMoney(state.amount)) }
+    }
+    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
+
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
+    }
+
+    typealias Content = FormattingView
+}
+
+@Suite("mapState — environment injection")
+@MainActor
+struct MapStateEnvironmentTests {
+    @Test func mapStateUsesInjectedEnvironment() {
+        let env = FormattingFeature.Environment(formatMoney: { "$\($0).00" })
+        #expect(FormattingFeature.mapState(env)(.init(amount: 7)).display == "$7.00")
+    }
+
+    @Test func differentEnvironmentsFormatDifferently() {
+        let dollars = FormattingFeature.Environment(formatMoney: { "$\($0)" })
+        let euros = FormattingFeature.Environment(formatMoney: { "€\($0)" })
+        #expect(FormattingFeature.mapState(dollars)(.init(amount: 3)).display == "$3")
+        #expect(FormattingFeature.mapState(euros)(.init(amount: 3)).display == "€3")
     }
 }
 #endif

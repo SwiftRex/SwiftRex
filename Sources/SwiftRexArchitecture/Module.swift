@@ -1,4 +1,5 @@
 #if canImport(Observation) && canImport(SwiftUI)
+import DataStructure
 import SwiftRex
 import SwiftRexSwiftUI
 import SwiftUI
@@ -27,8 +28,8 @@ import SwiftUI
 ///     state:       AppState.lens.home,
 ///     environment: \.xmlDecoder >>> HomeFeature.Environment.init
 /// )
-/// lifted.behavior        // Behavior<AppAction, AppState, World>
-/// lifted.view(for: store) // HomeView  — fully typed, no AnyView
+/// lifted.behavior                       // Behavior<AppAction, AppState, World>
+/// lifted.view(for: store, environment: world) // HomeView  — fully typed, no AnyView
 /// ```
 ///
 /// ## Routing boundary
@@ -53,7 +54,11 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
     public let behavior: Behavior<Action, State, Environment>
 
     /// Type-erased view factory — closed over the Feature's `ViewModel` and `Content` types.
-    private let _makeView: @MainActor @Sendable (any StoreType<Action, State>) -> Content
+    ///
+    /// Takes the feature's `Environment` alongside the store: the environment is applied to
+    /// `mapState` at view-build time so the projection can format/render with live dependencies.
+    /// Effects are unaffected — they still receive their environment from the `Store` at runtime.
+    private let _makeView: @MainActor @Sendable (any StoreType<Action, State>, Environment) -> Content
 
     // MARK: - Init from Feature type
 
@@ -67,10 +72,10 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
     public init<F: Feature>(_ feature: F.Type)
     where F.Action == Action, F.State == State, F.Environment == Environment, F.Content == Content {
         behavior = F.behavior()
-        _makeView = { @MainActor store in
+        _makeView = { @MainActor store, environment in
             let vm = F.ViewModel(store: store.projection(
                 action: F.mapAction,
-                state: F.mapState
+                state: F.mapState(environment)
             ))
             return F.Content(viewModel: vm)
         }
@@ -86,7 +91,7 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
     /// ```swift
     /// Module(
     ///     behavior: InternalFeature.behavior(),
-    ///     view: { store in
+    ///     view: { store, environment in
     ///         let vm = InternalFeature.ViewModel(store: store.projection(...))
     ///         return PublicContent(InternalFeature.Content(viewModel: vm))
     ///     }
@@ -94,7 +99,7 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
     /// ```
     public init(
         behavior: Behavior<Action, State, Environment>,
-        view: @escaping @MainActor @Sendable (any StoreType<Action, State>) -> Content
+        view: @escaping @MainActor @Sendable (any StoreType<Action, State>, Environment) -> Content
     ) {
         self.behavior = behavior
         _makeView = view
@@ -102,16 +107,21 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
 
     // MARK: - View production
 
-    /// Returns the feature's view wired to the given store.
+    /// Returns the feature's view wired to the given store and environment.
     ///
     /// Pass any `StoreType` whose `Action` and `State` match this module's type parameters —
-    /// typically a projection of a parent store scoped to the feature's slice.
+    /// typically a projection of a parent store scoped to the feature's slice — and the
+    /// `Environment` (the composition root's `World` for a lifted module). The environment is
+    /// applied to `mapState` so the view can format/render with live dependencies; it does not
+    /// touch effects (those get their environment from the `Store` at runtime).
     ///
-    /// - Parameter store: A store (or projection) whose `Action` and `State` match this module.
+    /// - Parameters:
+    ///   - store: A store (or projection) whose `Action` and `State` match this module.
+    ///   - environment: The environment supplied to the view projection.
     /// - Returns: The concrete `Content` view — no `AnyView` wrapping.
     @MainActor
-    public func view(for store: some StoreType<Action, State>) -> Content {
-        _makeView(store)
+    public func view(for store: some StoreType<Action, State>, environment: Environment) -> Content {
+        _makeView(store, environment)
     }
 
     // MARK: - Lifting
@@ -126,8 +136,8 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
     ///     state:       AppState.lens.calculator,
     ///     environment: \.solver >>> CalculatorFeature.Environment.init
     /// )
-    /// store.install(lifted.behavior)  // Behavior<AppAction, AppState, World>
-    /// lifted.view(for: appStore)      // CalculatorView — still typed
+    /// store.install(lifted.behavior)               // Behavior<AppAction, AppState, World>
+    /// lifted.view(for: appStore, environment: world) // CalculatorView — still typed
     /// ```
     ///
     /// - Parameters:
@@ -143,8 +153,11 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
         let makeView = _makeView
         return Module<GA, GS, GE, Content>(
             behavior: behavior.lift(action: action, state: state, environment: environment),
-            view: { @MainActor @Sendable store in
-                makeView(store.projection(action: action.review, state: state.get))
+            view: { @MainActor @Sendable store, globalEnvironment in
+                makeView(
+                    store.projection(action: action.review, state: state.get),
+                    environment(globalEnvironment)
+                )
             }
         )
     }
@@ -165,8 +178,21 @@ public struct Module<Action: Sendable, State: Sendable, Environment: Sendable, C
         let makeView = _makeView
         return Module<Action, State, Environment, AnyView>(
             behavior: behavior,
-            view: { @MainActor @Sendable store in AnyView(makeView(store)) }
+            view: { @MainActor @Sendable store, environment in AnyView(makeView(store, environment)) }
         )
+    }
+}
+
+// MARK: - Void-environment view convenience
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+extension Module where Environment == Void {
+    /// Returns the feature's view without supplying an environment — available when `Environment`
+    /// is `Void` (a standalone feature, or a test host). Forwards to
+    /// ``view(for:environment:)`` with `()`.
+    @MainActor
+    public func view(for store: some StoreType<Action, State>) -> Content {
+        view(for: store, environment: ())
     }
 }
 
@@ -181,10 +207,10 @@ extension Module where Content == AnyView {
     public init<F: Feature>(_ feature: F.Type)
     where F.Action == Action, F.State == State, F.Environment == Environment {
         behavior = F.behavior()
-        _makeView = { @MainActor store in
+        _makeView = { @MainActor store, environment in
             let vm = F.ViewModel(store: store.projection(
                 action: F.mapAction,
-                state: F.mapState
+                state: F.mapState(environment)
             ))
             return AnyView(F.Content(viewModel: vm))
         }
