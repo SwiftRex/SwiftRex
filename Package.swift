@@ -151,6 +151,7 @@ let package = Package(
                 "SwiftRex",
                 "SwiftRexSwiftUI",
                 "SwiftRexMacros",
+                .product(name: "DataStructure", package: "FP"),
                 .product(name: "FPMacros", package: "FP")
             ],
             path: "Sources/SwiftRexArchitecture"
@@ -166,7 +167,8 @@ let package = Package(
             dependencies: [
                 "SwiftRex",
                 "SwiftRexSwiftUI",
-                "SwiftRexArchitecture"
+                "SwiftRexArchitecture",
+                .product(name: "DataStructure", package: "FP")
             ],
             path: "Sources/SwiftRexTesting"
         ),
@@ -211,7 +213,12 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftRexArchitectureTests",
-            dependencies: ["SwiftRexArchitecture", "SwiftRex", "SwiftRexTesting"],
+            dependencies: [
+                "SwiftRexArchitecture",
+                "SwiftRex",
+                "SwiftRexTesting",
+                .product(name: "DataStructure", package: "FP")
+            ],
             path: "Tests/SwiftRexArchitectureTests"
         )
     ],

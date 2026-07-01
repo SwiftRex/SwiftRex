@@ -2,6 +2,7 @@
 // A single `import SwiftRexArchitecture` covers everything:
 // @Prisms/@Lenses (FPMacros), @ViewModel/@BoundTo (SwiftRexSwiftUI),
 // and @ObservationIgnored/ObservationRegistrar (Observation) used in @ViewModel expansions.
+@_exported import DataStructure
 @_exported import FPMacros
 @_exported import Observation
 @_exported import SwiftRexSwiftUI

@@ -1,4 +1,5 @@
 #if canImport(Observation) && canImport(SwiftUI)
+import DataStructure
 import Observation
 import SwiftRex
 import SwiftRexSwiftUI
@@ -51,17 +52,20 @@ import SwiftUI
 ///         }
 ///     }
 ///
-///     static let mapState: @MainActor @Sendable (State) -> ViewModel.ViewState = { state in
-///         .init(
-///             rows: state.movies.map { m in
-///                 .init(id: m.id,
-///                       title: "\(m.title) (\(m.year))",
-///                       subtitle: m.characters.map { "\($0.name) by \($0.actor.name)" }.joined(separator: ", "),
-///                       starred: m.isFavorite)
-///             },
-///             isLoading: state.isLoading,
-///             error: state.error.map { $0.localizedDescription }
-///         )
+///     // A Reader over Environment; this view formats via `env.formatMoney`, so it uses it.
+///     static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { env in
+///         { state in
+///             .init(
+///                 rows: state.movies.map { m in
+///                     .init(id: m.id,
+///                           title: "\(m.title) (\(m.year))",
+///                           subtitle: m.characters.map { "\($0.name) by \($0.actor.name)" }.joined(separator: ", "),
+///                           starred: m.isFavorite)
+///                 },
+///                 isLoading: state.isLoading,
+///                 error: state.error.map { $0.localizedDescription }
+///             )
+///         }
 ///     }
 ///
 ///     static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { viewAction in
@@ -149,11 +153,23 @@ public protocol Feature: Sendable {
 
     // MARK: - Mappings
 
-    /// Projects the full internal `State` to the view-facing `ViewModel.ViewState`.
+    /// Projects the full internal `State` to the view-facing `ViewModel.ViewState`, given the
+    /// feature's `Environment`.
     ///
-    /// Must be `@MainActor @Sendable` — state is read on the main actor and the closure is
-    /// captured inside a `StoreProjection`. Declare as a `static let` so it is computed once.
-    static var mapState: @MainActor @Sendable (State) -> ViewModel.ViewState { get }
+    /// Curried over `Environment` so the view layer can perform environment-dependent
+    /// presentation — number/date/money formatting, calendar/locale-aware rendering — without
+    /// pushing those concerns into `Behavior` (which would force pre-formatted strings into
+    /// `State`). The `Environment` is supplied at view-build time by the composition root (see
+    /// ``Module/view(for:environment:)``); effects still receive their environment from the
+    /// `Store` at runtime — this is the *view* half only.
+    ///
+    /// Features whose view needs no environment ignore it: `{ _ in { state in … } }`.
+    ///
+    /// A `Reader` over `Environment` — the same shape `produce`/`supervise` use — so environment
+    /// narrowing composes via `contramapEnvironment`. The inner closure must be `@MainActor
+    /// @Sendable`: state is read on the main actor and it is captured inside a `StoreProjection`.
+    /// Declare as a `static let` so it is computed once.
+    static var mapState: Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { get }
 
     /// Translates a `ViewModel.ViewAction` dispatched by the view into the internal `Action`.
     ///
@@ -190,7 +206,10 @@ public protocol Feature: Sendable {
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 extension Feature where State == ViewModel.ViewState {
     /// Identity projection — no declaration needed when `State` is typealiased to `ViewModel.ViewState`.
-    public static var mapState: @MainActor @Sendable (State) -> ViewModel.ViewState { { $0 } }
+    /// Ignores the environment.
+    public static var mapState: Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> {
+        Reader { _ in { $0 } }
+    }
 }
 
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)

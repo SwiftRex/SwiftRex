@@ -1,4 +1,5 @@
 #if canImport(Observation) && canImport(SwiftUI)
+import DataStructure
 import Observation
 import SwiftRex
 import SwiftRexArchitecture
@@ -94,8 +95,8 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
     /// The current domain state, after all dispatched and received actions have been processed.
     public var state: F.State { _store.state }
 
-    /// The current view state derived from `state` via `F.mapState`.
-    public var viewState: F.ViewModel.ViewState { F.mapState(_store.state) }
+    /// The current view state derived from `state` via `F.mapState`, applying the current environment.
+    public var viewState: F.ViewModel.ViewState { F.mapState(_store.environment)(_store.state) }
 
     /// Calls ``flush()`` then runs `body` while the underlying ``TestStore`` is frozen:
     /// any ``TestStore/dispatch(_:source:)`` from the view layer is a no-op for the
@@ -148,7 +149,7 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
             environment: environment,
             exhaustive: exhaustive
         )
-        let vm = F.ViewModel(store: store.projection(action: F.mapAction, state: F.mapState))
+        let vm = F.ViewModel(store: store.projection(action: F.mapAction, state: F.mapState(environment)))
         _store = store
         _viewModel = vm
         view = F.Content(viewModel: vm)
@@ -167,7 +168,7 @@ public final class TestFeature<F: Feature> where F.State: Equatable {
             environment: environment,
             exhaustive: exhaustive
         )
-        let vm = F.ViewModel(store: store.projection(action: F.mapAction, state: F.mapState))
+        let vm = F.ViewModel(store: store.projection(action: F.mapAction, state: F.mapState(environment)))
         _store = store
         _viewModel = vm
         view = F.Content(viewModel: vm)
