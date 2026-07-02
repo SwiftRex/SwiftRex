@@ -188,6 +188,42 @@ extension Behavior {
             }
         )
     }
+
+    /// Lifts this behavior over an **optional** sub-state — the 0-or-1 sibling of ``liftCollection``
+    /// and ``liftEach`` (which are 0-or-n).
+    ///
+    /// While the optional is `nil`, the behavior is a complete no-op — no mutation, no effects — and
+    /// its supervised channels are torn down by the reconciler. While it is `.some`, the behavior
+    /// runs focused on the unwrapped value. This is exactly the shape presentation uses: a child
+    /// module whose state exists only while it is shown.
+    ///
+    /// ```swift
+    /// // Runs only while AppState.currentDay is non-nil:
+    /// let lifted = dayBehavior.liftOptional(\AppState.currentDay)   // currentDay: DayDetail.State?
+    /// ```
+    ///
+    /// - Parameter optional: A `WritableKeyPath<GlobalState, State?>` to the optional sub-state.
+    /// - Returns: A `Behavior<Action, GlobalState, Environment>` that no-ops while the focus is absent.
+    public func liftOptional<GlobalState: Sendable>(
+        _ optional: WritableKeyPath<GlobalState, State?>
+    ) -> Behavior<Action, GlobalState, Environment> {
+        let traversal = affineTraversal(optional)
+        return Behavior<Action, GlobalState, Environment>(
+            // While the sub-state is `nil` the inner behavior is skipped entirely — it is never even
+            // asked to `handle`, so it neither mutates nor produces effects.
+            handle: { action, context in
+                guard context.stateBefore?[keyPath: optional] != nil else { return .doNothing }
+                let c = self.handle(action, context.compactMap(traversal.preview))
+                return Reaction(
+                    mutation: c.mutation.map { traversal.lift($0) },
+                    produce: c.produce.contramapEnvironment { $0.compactMap(traversal.preview) }
+                )
+            },
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+            }
+        )
+    }
 }
 
 // MARK: - Environment axis
@@ -349,6 +385,27 @@ extension Behavior {
     ) -> Behavior<GA, GS, GE> {
         liftAction(prism).liftState(traversal).liftEnvironment(g)
     }
+
+    /// Lifts all three axes over an **optional** sub-state — `Prism` action, optional
+    /// `WritableKeyPath` state, closure environment. The 0-or-1 counterpart of ``liftCollection``.
+    ///
+    /// The behavior is a complete no-op while the optional sub-state is `nil`, and runs focused on
+    /// the unwrapped value while it is `.some`.
+    ///
+    /// ```swift
+    /// let appBehavior = dayBehavior.liftOptional(
+    ///     action:      AppAction.prism.day,
+    ///     state:       \AppState.currentDay,     // currentDay: DayDetail.State?
+    ///     environment: { $0.day }
+    /// )
+    /// ```
+    public func liftOptional<GA: Sendable, GS: Sendable, GE: Sendable>(
+        action prism: Prism<GA, Action>,
+        state optional: WritableKeyPath<GS, State?>,
+        environment g: @escaping @Sendable (GE) -> Environment
+    ) -> Behavior<GA, GS, GE> {
+        liftAction(prism).liftOptional(optional).liftEnvironment(g)
+    }
 }
 
 // MARK: - Combined lift with a `\.case` action key path
@@ -392,5 +449,15 @@ extension Behavior {
         environment g: @escaping @Sendable (GE) -> Environment
     ) -> Behavior<GA, GS, GE> {
         lift(action: Prism(path), state: traversal, environment: g)
+    }
+
+    /// Lifts all three axes over an **optional** sub-state — `\.case` action, optional
+    /// `WritableKeyPath` state, closure environment.
+    public func liftOptional<GA: Prismatic & Sendable, GS: Sendable, GE: Sendable>(
+        action path: PrismKeyPath<GA, Action>,
+        state optional: WritableKeyPath<GS, State?>,
+        environment g: @escaping @Sendable (GE) -> Environment
+    ) -> Behavior<GA, GS, GE> {
+        liftAction(Prism(path)).liftOptional(optional).liftEnvironment(g)
     }
 }
