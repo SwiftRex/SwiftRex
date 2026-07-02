@@ -29,7 +29,7 @@ import SwiftRex
 /// `@Observable`-tracked computed properties on the class, plus an
 /// `init(store: some StoreType<ViewAction, ViewState>)` that seeds them and subscribes.
 ///
-/// When used with ``Feature``, declare the class nested inside the feature:
+/// When used with ``, declare the class nested inside the feature:
 ///
 /// ```swift
 /// enum CounterFeature: Feature {
@@ -87,8 +87,8 @@ public protocol ViewModel: AnyObject {
 
     /// Initialises the view model, subscribing to `store` and seeding all tracked fields.
     ///
-    /// Synthesised by the `@ViewModel` macro. Declared here so ``Feature`` and
-    /// ``FeatureHost`` can call it generically without knowing the concrete class.
+    /// Synthesised by the `@ViewModel` macro. Declared here so `` and
+    /// the module entry point can call it generically without knowing the concrete class.
     init(store: some StoreType<ViewAction, ViewState>)
 
     /// Dispatches a view action, capturing the call site for middleware provenance.
