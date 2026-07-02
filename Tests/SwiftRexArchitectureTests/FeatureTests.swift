@@ -18,7 +18,8 @@ private struct HeroDetailsView: View, HasViewModel {
     var body: Never { fatalError("test stub") }
 }
 
-private enum HeroDetailsFeature: Feature {
+@Feature(.internalScreen)
+private enum HeroDetailsFeature {
     struct State: Sendable {
         var codename: String = "Kryptonian"
         var aliases: [String] = ["Superman", "Man of Steel"]
@@ -93,7 +94,7 @@ private enum HeroDetailsFeature: Feature {
 @MainActor
 private func makeViewModel() -> HeroDetailsFeature.ViewModel {
     let store = Store(
-        initial: HeroDetailsFeature.initialState(),
+        initial: HeroDetailsFeature.initialState(with: ()),
         behavior: HeroDetailsFeature.behavior(),
         environment: HeroDetailsFeature.Environment()
     )
@@ -209,6 +210,24 @@ struct ViewModelTests {
     }
 }
 
+// MARK: - generated view()
+
+@Suite("@Feature — generated view()")
+@MainActor
+struct GeneratedViewTests {
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func viewBuildsFromStoreAndEnvironment() {
+        // The macro-generated `view(store:environment:)` wires the ViewModel from an
+        // environment-applied projection and returns the Content — constructs without touching body.
+        let store = Store(
+            initial: HeroDetailsFeature.initialState(with: ()),
+            behavior: HeroDetailsFeature.behavior(),
+            environment: HeroDetailsFeature.Environment()
+        )
+        _ = HeroDetailsFeature.view(store: store, environment: .init())
+    }
+}
+
 // MARK: - @Feature macro — initialState synthesis
 //
 // Exercises the `@Feature` macro end-to-end (extension + memberAttribute + member roles).
@@ -220,7 +239,7 @@ private struct CounterView: View, HasViewModel {
     var body: Never { fatalError("test stub") }
 }
 
-@Feature
+@Feature(.internalScreen)
 private enum CounterFeature {
     struct State: Sendable {
         var count: Int = 7
@@ -270,7 +289,7 @@ private struct OverrideView: View, HasViewModel {
     var body: Never { fatalError("test stub") }
 }
 
-@Feature
+@Feature(.internalScreen)
 private enum OverrideFeature {
     struct State: Sendable {
         var count: Int = 0
@@ -316,7 +335,7 @@ private struct SeededView: View, HasViewModel {
     var body: Never { fatalError("test stub") }
 }
 
-@Feature
+@Feature(.internalScreen)
 private enum SeededFeature {
     struct Input: Sendable {
         var startingCount: Int
@@ -359,7 +378,7 @@ private enum SeededFeature {
 @Suite("@Feature — initialState synthesis")
 struct FeatureInitialStateTests {
     @Test func synthesizesInitialStateFromStateDefaults() {
-        let state = CounterFeature.initialState()
+        let state = CounterFeature.initialState(with: ())
         #expect(state.count == 7)
         #expect(state.label == "ready")
     }
@@ -374,7 +393,7 @@ struct FeatureInitialStateTests {
     @Test func userSuppliedInitialStateWins() {
         // Compiles only because `@Feature` skipped synthesis (no redeclaration), and returns
         // the user's value rather than `State.init()` defaults.
-        #expect(OverrideFeature.initialState().count == 99)
+        #expect(OverrideFeature.initialState(with: ()).count == 99)
     }
 
     @Test func customInputSeedsInitialState() {
@@ -395,7 +414,7 @@ private struct FormattingView: View, HasViewModel {
     var body: Never { fatalError("test stub") }
 }
 
-@Feature
+@Feature(.internalScreen)
 private enum FormattingFeature {
     struct State: Sendable, Equatable {
         var amount: Int = 5

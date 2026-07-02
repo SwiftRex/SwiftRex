@@ -8,7 +8,7 @@ import Testing
 ///
 /// `TestStore` is the lower-level primitive. For a higher-level test harness that
 /// assert at the **view-state** layer and gives you access to the rendered view for
-/// snapshot testing, use ``TestFeature`` from the same module.
+/// snapshot testing, use the feature test harness from the same module.
 ///
 /// `TestStore` drives the dispatch pipeline deterministically:
 /// - ``dispatch(_:sourceLocation:assert:)`` applies phases 1 and 2 immediately (handle → mutate),
@@ -79,7 +79,7 @@ import Testing
 /// ## StoreType conformance
 ///
 /// `TestStore` conforms to ``StoreType`` so it can be used as a backing store for
-/// ``StoreProjection``, enabling ``TestFeature`` to wire a live ``ViewModel`` directly
+/// ``StoreProjection``, enabling the feature test harness to wire a live ``ViewModel`` directly
 /// to the test store and capture ``view`` for snapshot testing.
 @MainActor
 public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable>: StoreType, @unchecked Sendable {
@@ -100,7 +100,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
 
     private let behavior: Behavior<Action, State, Environment>
     /// The injected environment. Publicly mutable so test code can swap or tweak it
-    /// between effect runs — see ``FeatureStep/runEffects(before:after:)``.
+    /// between effect runs — see `runEffects(before:after:)`.
     ///
     /// Note: pending effects are reader-provided at dispatch time; mutating `environment`
     /// affects future dispatches and any closure that captures mutable state, but does
@@ -141,10 +141,10 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     )
 
     /// When `true`, ``dispatch(_:source:)`` is a no-op — view-driven dispatches are dropped
-    /// while the store is "frozen". Test-driven dispatch (``TestFeature/dispatch(_:)``) and
+    /// while the store is "frozen". Test-driven dispatch (`dispatch(_:)`) and
     /// ``receive`` keep working.
     ///
-    /// Toggle via ``TestFeature/ignoringActions(_:)``.
+    /// Toggle via `ignoringActions(_:)`.
     public var isIgnoringActions: Bool = false
 
     // MARK: - Init
@@ -228,7 +228,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// Dispatches an action through the behavior without a test assertion.
     ///
     /// This satisfies the ``StoreType`` requirement and is used internally when a
-    /// ``StoreProjection`` (e.g. inside a ``TestFeature`` ViewModel) forwards a dispatch.
+    /// ``StoreProjection`` (e.g. inside a the feature test harness ViewModel) forwards a dispatch.
     /// For test-driven dispatch with state assertions, use ``dispatch(_:sourceLocation:assert:)``.
     public func dispatch(_ action: Action, source: ActionSource) {
         guard !isIgnoringActions else { return }
@@ -240,7 +240,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// Required by ``StoreType``; used by ``StoreProjection`` and ``ViewModel`` to observe
     /// state changes. In `TestStore`, callbacks fire **synchronously** inside each `run(_:)` call,
     /// so ``ViewModel``-tracked properties update immediately when ``dispatch(_:sourceLocation:assert:)``
-    /// or ``receive`` runs — one ``TestFeature/flush()`` is enough for SwiftUI to pick up the change.
+    /// or ``receive`` runs — one `flush()` is enough for SwiftUI to pick up the change.
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,
         didChange: @escaping @MainActor @Sendable () -> Void
@@ -253,11 +253,11 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
-    // MARK: - Enqueue (used by TestFeature)
+    // MARK: - Enqueue (used by view-model test harnesses)
 
     /// Appends `action` directly to ``receivedActions`` without running it through the behavior.
     ///
-    /// Used by ``TestFeature`` so that `dispatch(viewAction:)` makes the mapped domain action
+    /// Used by the feature test harness so that `dispatch(viewAction:)` makes the mapped domain action
     /// visible as the first entry in the received queue — keeping the whole dispatch → receive
     /// cycle symmetric and explicit.
     public func enqueue(_ action: Action) {
@@ -421,7 +421,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
-    // MARK: - Module-internal (used by TestFeature, which asserts on ViewState
+    // MARK: - Module-internal (used by view-model test harnesses, which assert on ViewState
     // and therefore must dispatch the domain action without TestStore second-guessing
     // it at the domain-State layer).
 

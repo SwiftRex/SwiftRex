@@ -51,7 +51,7 @@ Crossing the **environment** boundary is the same idea applied to dependencies: 
 
 ## The opinionated layer: `SwiftRex.Architecture`
 
-`SwiftRex.Architecture` packages this pattern so a feature is a single namespace. The `@Feature` macro synthesizes a feature's `initialState(with:)` and conformance to the `Feature` protocol, and a `Module` co-locates a feature's `Action`/`State`/`Environment` **and** its SwiftUI `Content` view in one value — with a single `lift(...)` that raises the whole module (all three axes) to the app's global types, and `view(for:environment:)` to render it from a store (the environment feeds `mapState`, so the view can format with live dependencies). `FeatureHost` hosts a feature at the app root. It's optional sugar over the same core lifting you saw above — reach for it when you want the whole feature, view included, to travel as one liftable unit.
+`SwiftRex.Architecture` packages this pattern so a feature is a single `enum` namespace. The `@Feature(_:)` macro takes a `FeatureRole` — `.publicEntryPoint` for a module's public entry, `.internalScreen` for a screen composed inside it — and generates `initialState(with:)` plus `view(store:environment:) -> some View`. The generated `view` builds the `@ViewModel` from an environment-applied projection (`mapState` is a `Reader<Environment, …>`, so the view can format with live dependencies) and hands it to the feature's `Content`; the concrete `ViewModel`/`ViewState`/`ViewAction`/`Content` stay `internal` and never cross the module boundary — only `State`/`Action`/`Environment`/`Input` (which you lift with the core `lift(...)`) and the opaque `view` are public. The app composes each feature's `behavior()` with `lift` and renders it with `view(store:environment:)`.
 
 ## See Also
 

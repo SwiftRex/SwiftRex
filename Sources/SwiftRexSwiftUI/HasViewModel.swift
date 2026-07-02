@@ -30,7 +30,7 @@ import SwiftUI
 /// `VM` is a reference-typed `@Observable` class. A plain `let` is sufficient for SwiftUI
 /// to track it — `@Observable`'s registrar handles invalidation through the reference
 /// regardless of `let` vs `var`. Use `@State var` only when the view itself creates and
-/// owns the instance (e.g. at the root of a navigation stack). When ``FeatureHost`` creates
+/// owns the instance (e.g. at the root of a navigation stack). When the module entry point creates
 /// the view model and passes it in via ``init(viewModel:)``, `let` is always correct.
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @MainActor
@@ -41,7 +41,7 @@ public protocol HasViewModel {
     /// The view model instance. Declare as `let` in concrete implementations.
     var viewModel: VM { get }
 
-    /// Initialiser called by ``FeatureHost/view(for:)`` to wire the view to its store.
+    /// Initialiser called by `view(for:)` to wire the view to its store.
     init(viewModel: VM)
 }
 
@@ -49,8 +49,8 @@ public protocol HasViewModel {
 
 /// Eliminates ``HasViewModel`` boilerplate from a SwiftUI view struct.
 ///
-/// Apply to a `struct` that conforms to `View` and pass the ``Feature`` type whose
-/// ``Feature/ViewModel`` this view is driven by. The macro generates:
+/// Apply to a `struct` that conforms to `View` and pass the `` type whose
+/// the feature`s `ViewModel` this view is driven by. The macro generates:
 ///
 /// - `typealias VM = FeatureType.ViewModel`
 /// - `let viewModel: FeatureType.ViewModel`
