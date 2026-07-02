@@ -38,16 +38,17 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
             members.append("\(raw: access)static func initialState(with _: Void) -> State { .init() }")
         }
 
-        // The erased entry: build the reused `@ViewModel` from an environment-applied projection
-        // (`mapState` is a `Reader<Environment, …>`) and wrap it in the internal `Content`. The
-        // opaque `some View` return hides `Content`/`ViewModel` from other packages.
+        // The erased entry: build the reused `@ViewModel` from an environment-aware projection —
+        // both `mapAction` (parse side) and `mapState` (format side) are `Reader<Environment, …>`,
+        // applied by the projection — and wrap it in the internal `Content`. The opaque `some View`
+        // return hides `Content`/`ViewModel` from other packages.
         members.append(
             """
             @MainActor \(raw: access)static func view(
                 store: some StoreType<Action, State>,
                 environment: Environment
             ) -> some View {
-                Content(viewModel: ViewModel(store: store.projection(action: mapAction, state: mapState(environment))))
+                Content(viewModel: ViewModel(store: store.projection(environment: environment, action: mapAction, state: mapState)))
             }
             """
         )

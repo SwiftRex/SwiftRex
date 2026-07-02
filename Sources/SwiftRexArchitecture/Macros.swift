@@ -35,7 +35,7 @@
 ///
 ///     final class ViewModel { ... }                  // @ViewModel applied automatically; internal
 ///     static let mapState  = ...                      // Reader<Environment, (State) -> ViewState>
-///     static let mapAction = ...
+///     static let mapAction = ...                      // Reader<Environment, (ViewAction) -> Action>
 ///     static func behavior() -> Behavior<Action, State, Environment> { ... }
 ///     typealias Content = MoviesView                  // the internal SwiftUI view
 ///     // `initialState(with:)` and `view(store:environment:)` are generated.
