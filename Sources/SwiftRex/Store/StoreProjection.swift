@@ -1,3 +1,5 @@
+import DataStructure
+
 /// A type-erasing, stateless projection of a ``StoreType`` that presents a narrower
 /// action and state interface.
 ///
@@ -82,6 +84,34 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) {
         _state    = { mapState(store.state) }
         _dispatch = { action, source in store.dispatch(mapAction(action), source: source) }
+        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+    }
+
+    /// Creates a projection whose action **and** state maps are `Reader`s over an `Environment`,
+    /// applied with the supplied `environment` at creation.
+    ///
+    /// Use it when the projection depends on live dependencies on either side — locale-aware
+    /// formatting on the state map, resilient/locale-aware parsing on the action map. The plain
+    /// ``init(store:action:state:)`` is the `Environment == Void` case (no `Reader`).
+    ///
+    /// The environment is applied once, here — whoever projects holds it (they built, or hold, the
+    /// underlying store). Both `Reader`s are run and their resulting closures captured.
+    ///
+    /// - Parameters:
+    ///   - store: The underlying ``StoreType`` to project from.
+    ///   - environment: The environment supplied to both maps.
+    ///   - mapAction: A `Reader<Environment, (Action) -> GA>` — the environment-aware action map.
+    ///   - mapState: A `Reader<Environment, (GS) -> State>` — the environment-aware state map.
+    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>, Environment>(
+        store: S,
+        environment: Environment,
+        action mapAction: Reader<Environment, @Sendable (Action) -> GA>,
+        state mapState: Reader<Environment, @MainActor @Sendable (GS) -> State>
+    ) {
+        let action = mapAction(environment)
+        let state = mapState(environment)
+        _state    = { state(store.state) }
+        _dispatch = { a, source in store.dispatch(action(a), source: source) }
         _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
