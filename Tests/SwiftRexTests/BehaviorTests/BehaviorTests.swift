@@ -290,6 +290,56 @@ struct BehaviorLiftStateTests {
         sut.handle(6, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
         #expect(state.nums.isEmpty)
     }
+
+    // MARK: liftOptional (0-or-1 — sibling of liftCollection/liftEach)
+
+    @Test func liftOptionalMutatesWhenPresent() {
+        struct OptGS: Sendable { var current: Int? }
+        let sut = adder.liftOptional(\OptGS.current)
+        let initial = OptGS(current: 10)
+        var state = initial
+        sut.handle(5, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
+        #expect(state.current == 15)
+    }
+
+    @Test func liftOptionalIsNoOpWhenNil() {
+        struct OptGS: Sendable { var current: Int? }
+        let sut = adder.liftOptional(\OptGS.current)
+        let initial = OptGS(current: nil)
+        var state = initial
+        sut.handle(5, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
+        #expect(state.current == nil)
+    }
+
+    @Test func liftOptionalStateAccessSeesUnwrapped() {
+        struct OptGS: Sendable { var current: Int? }
+        let seen = LockProtected([Int]())
+        let observer = Behavior<Int, Int, Void>.handle { _, context in
+            seen.mutate { $0.append(context.stateBefore ?? -1) }
+            return .doNothing
+        }
+        let present = observer.liftOptional(\OptGS.current)
+        _ = present.handle(0, PreReducerContext(source: anySource, getter: { OptGS(current: 42) }))
+        _ = present.handle(0, PreReducerContext(source: anySource, getter: { OptGS(current: nil) }))
+        #expect(seen.value == [42])   // second dispatch is skipped while nil
+    }
+
+    @Test func combinedLiftOptionalMutatesOnlyWhenPresent() {
+        struct GA: Sendable { var day: Int? }
+        struct GS: Sendable { var day: Int? }
+        let dayPrism = Prism<GA, Int>(preview: { $0.day }, review: { GA(day: $0) })
+        let sut = adder.liftOptional(action: dayPrism, state: \GS.day, environment: { (_: Void) in () })
+
+        let present = GS(day: 100)
+        var presentState = present
+        sut.handle(GA(day: 5), PreReducerContext(source: anySource, getter: { present })).mutation.runEndoMut(&presentState)
+        #expect(presentState.day == 105)
+
+        let absent = GS(day: nil)
+        var absentState = absent
+        sut.handle(GA(day: 5), PreReducerContext(source: anySource, getter: { absent })).mutation.runEndoMut(&absentState)
+        #expect(absentState.day == nil)
+    }
 }
 
 // MARK: - liftEnvironment

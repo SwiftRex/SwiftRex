@@ -129,6 +129,36 @@ extension Middleware {
         )
     }
 
+    /// Lifts this middleware over an **optional** sub-state — the 0-or-1 sibling of
+    /// ``liftCollection``/``liftEach`` (0-or-n).
+    ///
+    /// The middleware is skipped entirely while the optional is `nil`, and runs focused on the
+    /// unwrapped value while it is `.some` — the shape presentation uses for a child shown only
+    /// while its state exists.
+    ///
+    /// ```swift
+    /// let lifted = dayMiddleware.liftOptional(\AppState.currentDay)   // currentDay: DayDetail.State?
+    /// ```
+    ///
+    /// - Parameter optional: A `WritableKeyPath<GlobalState, State?>` to the optional sub-state.
+    /// - Returns: A `Middleware<Action, GlobalState, Environment>` skipped entirely while absent.
+    public func liftOptional<GlobalState: Sendable>(
+        _ optional: WritableKeyPath<GlobalState, State?>
+    ) -> Middleware<Action, GlobalState, Environment> {
+        let traversal = affineTraversal(optional)
+        return Middleware<Action, GlobalState, Environment>(
+            // While the sub-state is `nil` the inner middleware is skipped — no effect is produced.
+            handle: { action, context in
+                guard context.stateBefore?[keyPath: optional] != nil else { return Reader { _ in .empty } }
+                return self.handle(action, context.compactMap(traversal.preview))
+                    .contramapEnvironment { $0.compactMap(traversal.preview) }
+            },
+            supervisor: self.supervisor.map { inner in
+                { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+            }
+        )
+    }
+
     /// Lifts the environment axis of this middleware using a projection closure, embedding it
     /// in a wider global environment.
     ///
@@ -261,5 +291,23 @@ extension Middleware {
         environment g: @escaping @Sendable (GE) -> Environment
     ) -> Middleware<GA, GS, GE> {
         liftAction(prism).liftState(traversal).liftEnvironment(g)
+    }
+
+    /// Lifts all three axes over an **optional** sub-state — `Prism` action, optional
+    /// `WritableKeyPath` state, closure environment. A complete no-op while the sub-state is `nil`.
+    ///
+    /// ```swift
+    /// let lifted = dayMiddleware.liftOptional(
+    ///     action:      AppAction.prism.day,
+    ///     state:       \AppState.currentDay,     // currentDay: DayDetail.State?
+    ///     environment: { $0.day }
+    /// )
+    /// ```
+    public func liftOptional<GA: Sendable, GS: Sendable, GE: Sendable>(
+        action prism: Prism<GA, Action>,
+        state optional: WritableKeyPath<GS, State?>,
+        environment g: @escaping @Sendable (GE) -> Environment
+    ) -> Middleware<GA, GS, GE> {
+        liftAction(prism).liftOptional(optional).liftEnvironment(g)
     }
 }

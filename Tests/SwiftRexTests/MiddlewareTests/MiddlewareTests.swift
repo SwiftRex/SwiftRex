@@ -310,3 +310,27 @@ struct MiddlewareContextTimingTests {
         #expect(received.value == [10])
     }
 }
+
+// MARK: - liftOptional (0-or-1 — sibling of liftCollection/liftEach)
+
+@Suite("Middleware liftOptional")
+@MainActor
+struct MiddlewareLiftOptionalTests {
+    // Emits the current (local) sub-state via an effect, so we can observe whether it ran.
+    private let echo = Middleware<Int, Int, Void>.handle { _, context in
+        let seen = context.stateBefore ?? -1
+        return Reader { _ in .just(seen) }
+    }
+
+    @Test func runsWhenPresent() {
+        struct OptGS: Sendable { var current: Int? }
+        let sut = echo.liftOptional(\OptGS.current)
+        #expect(actions(sut, action: 0, state: OptGS(current: 7), env: ()) == [7])
+    }
+
+    @Test func skippedWhenNil() {
+        struct OptGS: Sendable { var current: Int? }
+        let sut = echo.liftOptional(\OptGS.current)
+        #expect(actions(sut, action: 0, state: OptGS(current: nil), env: ()).isEmpty)
+    }
+}
