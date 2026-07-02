@@ -63,14 +63,16 @@ private enum HeroDetailsFeature {
         }
     }
 
-    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { va in
-        switch va {
-        case .editedPowers(let raw):     // String  → [String]  (type change)
-            .savePowers(raw.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) })
-        case .selectedThreat(let index): // Int passthrough, name change
-            .setThreatIndex(index)
-        case .tappedRetirement:          // no value, name change
-            .toggleRetirement
+    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in
+        { va in
+            switch va {
+            case .editedPowers(let raw):     // String  → [String]  (type change)
+                .savePowers(raw.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            case .selectedThreat(let index): // Int passthrough, name change
+                .setThreatIndex(index)
+            case .tappedRetirement:          // no value, name change
+                .toggleRetirement
+            }
         }
     }
 
@@ -99,8 +101,9 @@ private func makeViewModel() -> HeroDetailsFeature.ViewModel {
         environment: HeroDetailsFeature.Environment()
     )
     return HeroDetailsFeature.ViewModel(store: store.projection(
+        environment: .init(),
         action: HeroDetailsFeature.mapAction,
-        state: HeroDetailsFeature.mapState(.init())
+        state: HeroDetailsFeature.mapState
     ))
 }
 
@@ -153,21 +156,21 @@ struct MapStateTests {
 @Suite("HeroDetailsFeature.mapAction")
 struct MapActionTests {
     @Test func parsesCommaSeparatedPowers() {
-        let action = HeroDetailsFeature.mapAction(.editedPowers("flight, strength, speed"))
+        let action = HeroDetailsFeature.mapAction(.init())(.editedPowers("flight, strength, speed"))
         #expect(action == .savePowers(["flight", "strength", "speed"]))
     }
 
     @Test func stripsWhitespaceWhenParsingPowers() {
-        let action = HeroDetailsFeature.mapAction(.editedPowers("  flight ,  heat vision  "))
+        let action = HeroDetailsFeature.mapAction(.init())(.editedPowers("  flight ,  heat vision  "))
         #expect(action == .savePowers(["flight", "heat vision"]))
     }
 
     @Test func mapsThreatIndexWithNameChange() {
-        #expect(HeroDetailsFeature.mapAction(.selectedThreat(2)) == .setThreatIndex(2))
+        #expect(HeroDetailsFeature.mapAction(.init())(.selectedThreat(2)) == .setThreatIndex(2))
     }
 
     @Test func mapsRetirementTapWithNameChange() {
-        #expect(HeroDetailsFeature.mapAction(.tappedRetirement) == .toggleRetirement)
+        #expect(HeroDetailsFeature.mapAction(.init())(.tappedRetirement) == .toggleRetirement)
     }
 }
 
@@ -265,7 +268,7 @@ private enum CounterFeature {
     static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
         { .init(count: $0.count) }
     }
-    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .increment }
+    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .increment } }
 
     // No `initialState()` here — synthesized by `@Feature`.
 
@@ -314,7 +317,7 @@ private enum OverrideFeature {
     static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
         { .init(count: $0.count) }
     }
-    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
+    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .noop } }
 
     static func initialState(with _: Void) -> State { .init(count: 99) }
 
@@ -364,7 +367,7 @@ private enum SeededFeature {
     static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
         { .init(count: $0.count) }
     }
-    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
+    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .noop } }
 
     static func initialState(with input: Input) -> State { .init(count: input.startingCount) }
 
@@ -441,7 +444,7 @@ private enum FormattingFeature {
     static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { env in
         { state in .init(display: env.formatMoney(state.amount)) }
     }
-    static let mapAction: @Sendable (ViewModel.ViewAction) -> Action = { _ in .noop }
+    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .noop } }
 
     static func behavior() -> Behavior<Action, State, Environment> {
         Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
