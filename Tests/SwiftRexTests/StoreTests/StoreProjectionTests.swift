@@ -1,4 +1,5 @@
 import CoreFP
+import DataStructure
 @testable import SwiftRex
 import Testing
 
@@ -246,5 +247,45 @@ struct StoreProjectionDictionaryTests {
         let proj = store.projection(key: "k", actionReview: { $0 }, stateDictionary: \.map)
         proj.dispatch(99)
         #expect(store.state.map["k"] == 99)
+    }
+}
+
+// MARK: - Environment-aware projection
+
+@Suite("StoreProjection environment-aware")
+@MainActor
+struct StoreProjectionEnvironmentTests {
+    private struct Env: Sendable { var scale: Int; var prefix: String }
+
+    @Test func stateMapUsesEnvironment() {
+        let store = appStore(count: 3)
+        let proj = store.projection(
+            environment: Env(scale: 10, prefix: "n"),
+            action: Reader { _ in { (a: Int) in AppAction(counter: a, other: nil) } },
+            state: Reader { env in { (s: AppState) in "\(env.prefix)\(s.count * env.scale)" } }
+        )
+        #expect(proj.state == "n30")   // 3 * 10, prefixed by "n"
+    }
+
+    @Test func actionMapUsesEnvironment() {
+        let store = appStore(count: 0)
+        let proj = store.projection(
+            environment: Env(scale: 4, prefix: ""),
+            action: Reader { env in { (a: Int) in AppAction(counter: a * env.scale, other: nil) } },
+            state: Reader { _ in { (s: AppState) in s.count } }
+        )
+        proj.dispatch(2)               // 2 * scale(4) forwarded to the underlying store
+        #expect(store.state.count == 8)
+    }
+
+    @Test func stateReflectsLiveStoreChanges() {
+        let store = appStore(count: 0)
+        let proj = store.projection(
+            environment: Env(scale: 2, prefix: ""),
+            action: Reader { _ in { (a: Int) in AppAction(counter: a, other: nil) } },
+            state: Reader { env in { (s: AppState) in s.count * env.scale } }
+        )
+        store.dispatch(AppAction(counter: 5, other: nil))
+        #expect(proj.state == 10)      // env applied to the freshly-read store state
     }
 }
