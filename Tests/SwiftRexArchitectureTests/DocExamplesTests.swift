@@ -22,10 +22,7 @@ enum Library {
         var shelfID: String
         var isLoading = false
         var books: [Book] = []
-        // Explicit `= nil`: @Lenses (applied by @Feature) generates the memberwise init and only
-        // defaults params whose property has an explicit default.
-        // swiftlint:disable:next implicit_optional_initialization
-        var selected: Book? = nil
+        var selected: Book?   // @Lenses (FP 1.13+) defaults optionals to nil in the generated init
     }
 
     enum Action: Sendable {
@@ -112,7 +109,7 @@ enum Editor {
 @BoundTo(Editor.self, strategy: .observationSimple)
 struct EditorView: View {
     var body: some View {
-        TextField("Powers", text: viewStore.binding(\.powersText, set: { .editedPowers($0) }))
+        TextField("Powers", text: viewStore.binding(\.powersText, set: Editor.ViewAction.editedPowers))
     }
 }
 
@@ -127,8 +124,7 @@ enum AppAction: Sendable {
 @Lenses
 struct AppState: Sendable {
     var library = Library.State(shelfID: "sci-fi")
-    // swiftlint:disable:next implicit_optional_initialization
-    var editor: Editor.State? = nil
+    var editor: Editor.State?
 }
 
 struct AppEnv: Sendable {
