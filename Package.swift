@@ -216,6 +216,7 @@ let package = Package(
             dependencies: [
                 "SwiftRexArchitecture",
                 "SwiftRex",
+                "SwiftRexSwiftConcurrency",
                 "SwiftRexTesting",
                 .product(name: "DataStructure", package: "FP")
             ],

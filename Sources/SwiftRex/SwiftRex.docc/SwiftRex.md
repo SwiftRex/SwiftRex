@@ -34,6 +34,7 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 
 - <doc:BuildYourFirstFeature>
 - <doc:AddingEffects>
+- <doc:Features>
 
 ### Concepts
 
