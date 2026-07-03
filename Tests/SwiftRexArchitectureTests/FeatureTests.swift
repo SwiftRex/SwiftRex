@@ -163,6 +163,55 @@ private enum WidgetFeature {
     typealias Content = WidgetView
 }
 
+// MARK: - Direct fixtures (no ViewState/ViewAction — view sees State/Action)
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@BoundTo(DirectFeature.self, strategy: .observationSimple)
+private struct DirectView: View {
+    // @BoundTo injects: let viewStore: ViewStore<DirectFeature.ViewState, DirectFeature.ViewAction>,
+    // and ViewState/ViewAction are macro-generated typealiases to State/Action.
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature(type: .internalOnly, strategy: .observationSimple)
+private enum DirectFeature {
+    struct State: Sendable, Equatable { var count = 0 }
+    enum Action: Sendable { case inc }
+    struct Environment: Sendable {}
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (a: Action, s: inout State) in
+            switch a {
+            case .inc: s.count += 1
+            }
+        }.asBehavior()
+    }
+    typealias Content = DirectView
+    // No ViewState/ViewAction/mapState/mapAction — view() wraps the store directly.
+}
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@BoundTo(DirectGranularFeature.self, strategy: .observationGranular)
+private struct DirectGranularView: View {
+    // @BoundTo injects: let viewStore: TrackedViewStore<…ViewState, …ViewAction> == TrackedViewStore<State, Action>
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature(type: .internalOnly, strategy: .observationGranular)
+private enum DirectGranularFeature {
+    // Explicit field types — @Tracked is attached to State directly (no distinct ViewState).
+    struct State: Sendable, Equatable { var name: String = "a"; var count: Int = 0 }
+    enum Action: Sendable { case bump }
+    struct Environment: Sendable {}
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (a: Action, s: inout State) in
+            switch a {
+            case .bump: s.count += 1
+            }
+        }.asBehavior()
+    }
+    typealias Content = DirectGranularView
+}
+
 // MARK: - Helpers
 
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
@@ -294,6 +343,22 @@ struct GeneratedViewTests {
             environment: .init()
         )
         _ = WidgetFeature.view(store: store, environment: .init())
+    }
+
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func directFeatureWrapsStoreWithoutProjection() {
+        // DirectView holds ViewStore<State, Action> (via aliases); compiles only if view() wrapped
+        // the store directly, no projection.
+        let store = Store(initial: DirectFeature.initialState(with: ()), behavior: DirectFeature.behavior(), environment: .init())
+        _ = DirectFeature.view(store: store, environment: .init())
+    }
+
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func directGranularTracksStateItself() {
+        // Granular with no ViewState ⇒ @Tracked lands on State; DirectGranularView holds
+        // TrackedViewStore<State, Action>.
+        let store = Store(initial: DirectGranularFeature.initialState(with: ()), behavior: DirectGranularFeature.behavior(), environment: .init())
+        _ = DirectGranularFeature.view(store: store, environment: .init())
     }
 }
 
