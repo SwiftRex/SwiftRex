@@ -1445,7 +1445,7 @@ viewStore.dispatch(.<action>)    // send
 `ViewStore` and `TrackedViewStore` both conform to `StoreType`, so the store-backed SwiftUI helpers work on the `viewStore` directly:
 
 ```swift
-viewStore.binding(\.field, set: { .someAction($0) })     // two-way TextField/Toggle/…
+viewStore.binding(\.field, set: Action.someAction)       // two-way TextField/Toggle/…
 viewStore.presence(\.optional, dismiss: .close)          // .sheet(isPresented:)
 viewStore.item(\.selected, dismiss: .deselect)           // .sheet(item:)
 ```
@@ -1590,7 +1590,8 @@ struct HeroDetailsView: View {
     var body: some View {
         Form {
             Text(viewStore.state.displayName).font(.headline)
-            TextField("Powers", text: viewStore.binding(\.powersText, set: { .editedPowers($0) }))
+            // `set:` is `(Value) -> ViewAction`, so pass the case constructor directly:
+            TextField("Powers", text: viewStore.binding(\.powersText, set: HeroDetails.ViewAction.editedPowers))
             Toggle("Retired", isOn: viewStore.binding(\.isRetired, set: { _ in .tappedRetirement }))
         }
     }
@@ -1644,7 +1645,7 @@ public enum Library {
         var shelfID: String
         var isLoading = false
         var books: [Book] = []
-        var selected: Book? = nil  // non-nil ⇒ present the detail sheet (explicit = nil for @Lenses init)
+        var selected: Book?        // non-nil ⇒ present the detail sheet
     }
 
     public enum Action: Sendable {
