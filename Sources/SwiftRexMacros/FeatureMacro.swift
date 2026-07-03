@@ -39,32 +39,65 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
             members.append("\(raw: access)static func initialState(with _: Void) -> State { .init() }")
         }
 
-        // The erased entry — generated only when the feature has a `Content` view. Both `mapAction`
-        // (parse) and `mapState` (format) are `Reader<Environment, …>`, applied by the projection.
-        // `strategy:` picks the store; the two Observation stores are iOS-17-gated, the Combine one
-        // is not. The opaque `some View` return hides `Content`/`ViewState`/`ViewAction`.
+        // The view projection layer is optional. When the author omits `ViewState`/`ViewAction`, we
+        // alias them to `State`/`Action` so the view (and `@BoundTo`) see the domain types directly —
+        // no distinct view state, no map boilerplate, no projection indirection. Declare a `ViewState`
+        // struct only when the UI needs a different shape (e.g. an Int formatted as a String).
+        if !hasNestedType("ViewState", in: declaration) {
+            members.append("\(raw: access)typealias ViewState = State")
+        }
+        if !hasNestedType("ViewAction", in: declaration) {
+            members.append("\(raw: access)typealias ViewAction = Action")
+        }
+
+        // The erased entry — generated only when the feature has a `Content` view.
         if hasNestedType("Content", in: declaration) {
-            let store: String
-            let gated: Bool
-            switch strategyName(node) {
-            case "observationGranular": (store, gated) = ("TrackedViewStore", true)
-            case "combineObservable":   (store, gated) = ("ObservableObjectStore", false)
-            default:                    (store, gated) = ("ViewStore", true)
-            }
-            let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
-            members.append(
-                """
-                \(raw: availability)@MainActor \(raw: access)static func view(
-                    store: some StoreType<Action, State>,
-                    environment: Environment
-                ) -> some View {
-                    Content(viewStore: \(raw: store)(store.projection(environment: environment, action: mapAction, state: mapState)))
-                }
-                """
-            )
+            members.append(viewMember(access: access, node: node, declaration: declaration))
         }
 
         return members
+    }
+
+    /// Builds `view(store:environment:)`. `strategy:` picks the store (the two Observation stores are
+    /// iOS-17-gated, Combine is not). When a `ViewState` struct / `ViewAction` enum exists we project
+    /// through the (env-aware) maps; otherwise the store is wrapped as-is, with an unmapped axis in a
+    /// mixed feature falling back to identity.
+    private static func viewMember(
+        access: String,
+        node: AttributeSyntax,
+        declaration: some DeclGroupSyntax
+    ) -> DeclSyntax {
+        let storeType: String
+        let gated: Bool
+        switch strategyName(node) {
+        case "observationGranular": (storeType, gated) = ("TrackedViewStore", true)
+        case "combineObservable":   (storeType, gated) = ("ObservableObjectStore", false)
+        default:                    (storeType, gated) = ("ViewStore", true)
+        }
+        let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
+
+        let projectsState = hasNestedStruct("ViewState", in: declaration)
+        let projectsAction = hasNestedEnum("ViewAction", in: declaration)
+        let source: String
+        if projectsState || projectsAction {
+            let stateMap = projectsState
+                ? "mapState"
+                : "Reader<Environment, @MainActor @Sendable (State) -> ViewState> { _ in { $0 } }"
+            let actionMap = projectsAction
+                ? "mapAction"
+                : "Reader<Environment, @Sendable (ViewAction) -> Action> { _ in { $0 } }"
+            source = "store.projection(environment: environment, action: \(actionMap), state: \(stateMap))"
+        } else {
+            source = "store"   // no view layer — wrap the store directly (ViewState == State)
+        }
+        return """
+            \(raw: availability)@MainActor \(raw: access)static func view(
+                store: some StoreType<Action, State>,
+                environment: Environment
+            ) -> some View {
+                Content(viewStore: \(raw: storeType)(\(raw: source)))
+            }
+            """
     }
 
     // MARK: - MemberAttributeMacro
@@ -80,14 +113,21 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
             guard !hasAttribute("Prisms", on: enumDecl.attributes) else { return [] }
             return ["@Prisms"]
         }
+        let granular = strategyName(node) == "observationGranular"
         if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "State" {
-            guard !hasAttribute("Lenses", on: structDecl.attributes) else { return [] }
-            return ["@Lenses"]
+            var attributes: [AttributeSyntax] = []
+            if !hasAttribute("Lenses", on: structDecl.attributes) { attributes.append("@Lenses") }
+            // Granular with no distinct `ViewState` struct ⇒ track the domain `State` directly.
+            if granular,
+               !hasNestedStruct("ViewState", in: declaration),
+               !hasAttribute("Tracked", on: structDecl.attributes) {
+                attributes.append("@Tracked")
+            }
+            return attributes
         }
-        // `.observationGranular` attaches `@Tracked` to the ViewState automatically.
+        // Granular with an explicit `ViewState` struct ⇒ track that.
         if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "ViewState" {
-            guard strategyName(node) == "observationGranular",
-                  !hasAttribute("Tracked", on: structDecl.attributes) else { return [] }
+            guard granular, !hasAttribute("Tracked", on: structDecl.attributes) else { return [] }
             return ["@Tracked"]
         }
         return []
@@ -132,6 +172,14 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
                 || decl.as(ActorDeclSyntax.self)?.name.text == name
                 || decl.as(TypeAliasDeclSyntax.self)?.name.text == name
         }
+    }
+
+    private static func hasNestedStruct(_ name: String, in declaration: some DeclGroupSyntax) -> Bool {
+        declaration.memberBlock.members.contains { $0.decl.as(StructDeclSyntax.self)?.name.text == name }
+    }
+
+    private static func hasNestedEnum(_ name: String, in declaration: some DeclGroupSyntax) -> Bool {
+        declaration.memberBlock.members.contains { $0.decl.as(EnumDeclSyntax.self)?.name.text == name }
     }
 
     private static func hasInitialState(in declaration: some DeclGroupSyntax) -> Bool {
