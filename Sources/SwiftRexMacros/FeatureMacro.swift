@@ -2,14 +2,14 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-/// Implements `@Feature(_ role:)` — the single macro for a module entry point or an internal screen.
+/// Implements `@Feature(type:strategy:)` — the module-entry/internal-screen macro.
 ///
-/// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action` and `ViewAction`, and `@Lenses` to
-///   nested `State`.
+/// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action`/`ViewAction`, `@Lenses` to nested
+///   `State`, and (for `strategy: .observationGranular`) `@Tracked` to nested `ViewState`.
 /// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
 ///   generates `view(store:environment:) -> some View` (when a `Content` view exists) building the
-///   view store from an environment-aware projection: a coarse `ViewStore`, or a field-level
-///   `TrackedViewStore` when the nested `ViewState` is `@Tracked`.
+///   store named by `strategy:` (`ViewStore` / `TrackedViewStore` / `ObservableObjectStore`) from an
+///   environment-aware projection. The two Observation stores are iOS-17-gated; Combine is not.
 ///
 /// It generates **no** protocol conformance: `State`/`Action`/`Environment`/`Input` stay whatever
 /// access the author declares (public for an entry point), while `ViewState`/`ViewAction`/`Content`
@@ -41,15 +41,20 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
 
         // The erased entry — generated only when the feature has a `Content` view. Both `mapAction`
         // (parse) and `mapState` (format) are `Reader<Environment, …>`, applied by the projection.
-        // The view store is picked by observation strategy: `@Tracked` on the nested `ViewState`
-        // ⇒ field-level `TrackedViewStore`, otherwise the coarse `ViewStore`. The opaque `some View`
-        // return hides `Content`/`ViewState`/`ViewAction` from other packages.
+        // `strategy:` picks the store; the two Observation stores are iOS-17-gated, the Combine one
+        // is not. The opaque `some View` return hides `Content`/`ViewState`/`ViewAction`.
         if hasNestedType("Content", in: declaration) {
-            let store = hasTrackedViewState(in: declaration) ? "TrackedViewStore" : "ViewStore"
+            let store: String
+            let gated: Bool
+            switch strategyName(node) {
+            case "observationGranular": (store, gated) = ("TrackedViewStore", true)
+            case "combineObservable":   (store, gated) = ("ObservableObjectStore", false)
+            default:                    (store, gated) = ("ViewStore", true)
+            }
+            let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
             members.append(
                 """
-                @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-                @MainActor \(raw: access)static func view(
+                \(raw: availability)@MainActor \(raw: access)static func view(
                     store: some StoreType<Action, State>,
                     environment: Environment
                 ) -> some View {
@@ -79,18 +84,34 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
             guard !hasAttribute("Lenses", on: structDecl.attributes) else { return [] }
             return ["@Lenses"]
         }
+        // `.observationGranular` attaches `@Tracked` to the ViewState automatically.
+        if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "ViewState" {
+            guard strategyName(node) == "observationGranular",
+                  !hasAttribute("Tracked", on: structDecl.attributes) else { return [] }
+            return ["@Tracked"]
+        }
         return []
     }
 
     // MARK: - Private
 
-    /// Whether `@Feature(.publicEntryPoint)` was requested. Defaults to `true` (public) when the
-    /// role argument is absent or unrecognised.
+    /// The member-access case name of a labeled argument, e.g. `type: .moduleEntryPoint` → `"moduleEntryPoint"`.
+    private static func argumentCase(_ label: String, in node: AttributeSyntax) -> String? {
+        guard let args = node.arguments?.as(LabeledExprListSyntax.self) else { return nil }
+        for arg in args where arg.label?.text == label {
+            return arg.expression.as(MemberAccessExprSyntax.self)?.declName.baseName.text
+        }
+        return nil
+    }
+
+    /// Whether `type: .moduleEntryPoint`. Defaults to `true` (public) when absent/unrecognised.
     private static func isPublicEntryPoint(_ node: AttributeSyntax) -> Bool {
-        guard let args = node.arguments?.as(LabeledExprListSyntax.self),
-              let member = args.first?.expression.as(MemberAccessExprSyntax.self)
-        else { return true }
-        return member.declName.baseName.text != "internalScreen"
+        argumentCase("type", in: node) != "internalOnly"
+    }
+
+    /// The `strategy:` case name; defaults to `"observationSimple"` (coarse `ViewStore`).
+    private static func strategyName(_ node: AttributeSyntax) -> String {
+        argumentCase("strategy", in: node) ?? "observationSimple"
     }
 
     private static func hasAttribute(_ name: String, on attributes: AttributeListSyntax) -> Bool {
@@ -110,16 +131,6 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
                 || decl.as(ClassDeclSyntax.self)?.name.text == name
                 || decl.as(ActorDeclSyntax.self)?.name.text == name
                 || decl.as(TypeAliasDeclSyntax.self)?.name.text == name
-        }
-    }
-
-    /// Whether the nested `ViewState` struct is annotated `@Tracked` — the syntactic signal that
-    /// the generated `view()` should build a field-level `TrackedViewStore` rather than `ViewStore`.
-    private static func hasTrackedViewState(in declaration: some DeclGroupSyntax) -> Bool {
-        declaration.memberBlock.members.contains { member in
-            guard let structDecl = member.decl.as(StructDeclSyntax.self),
-                  structDecl.name.text == "ViewState" else { return false }
-            return hasAttribute("Tracked", on: structDecl.attributes)
         }
     }
 

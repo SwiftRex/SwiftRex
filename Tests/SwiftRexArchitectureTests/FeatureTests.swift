@@ -12,12 +12,13 @@ import Testing
 // `viewStore`; @Feature generates `view()` building a coarse `ViewStore`.
 
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@BoundTo(HeroDetailsFeature.self, strategy: .observationSimple)
 private struct HeroDetailsView: View {
-    let viewStore: ViewStore<HeroDetailsFeature.ViewState, HeroDetailsFeature.ViewAction>
+    // @BoundTo injects: let viewStore: ViewStore<HeroDetailsFeature.ViewState, HeroDetailsFeature.ViewAction>
     var body: Never { fatalError("test stub") }
 }
 
-@Feature(.internalScreen)
+@Feature(type: .internalOnly, strategy: .observationSimple)
 private enum HeroDetailsFeature {
     struct State: Sendable {
         var codename: String = "Kryptonian"
@@ -93,18 +94,19 @@ private enum HeroDetailsFeature {
 // property type asserts that: it only compiles if `view()` produced a TrackedViewStore.
 
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@BoundTo(GadgetFeature.self, strategy: .observationGranular)
 private struct GadgetView: View {
-    let viewStore: TrackedViewStore<GadgetFeature.ViewState, GadgetFeature.ViewAction>
+    // @BoundTo injects: let viewStore: TrackedViewStore<GadgetFeature.ViewState, GadgetFeature.ViewAction>
     var body: Never { fatalError("test stub") }
 }
 
-@Feature(.internalScreen)
+@Feature(type: .internalOnly, strategy: .observationGranular)
 private enum GadgetFeature {
     struct State: Sendable, Equatable { var name = "phone"; var battery = 100 }
     enum Action: Sendable { case rename(String) }
     struct Environment: Sendable {}
 
-    @Tracked
+    // No @Tracked here — .observationGranular attaches it automatically.
     struct ViewState: Sendable, Equatable { var title: String; var charge: Int }
     enum ViewAction: Sendable { case tapped }
 
@@ -123,6 +125,42 @@ private enum GadgetFeature {
     }
 
     typealias Content = GadgetView
+}
+
+// MARK: - Combine fixture (ObservableObjectStore)
+//
+// No @available(iOS 17) anywhere — .combineObservable is the pre-Observation path. The view holds
+// an @ObservedObject store (injected by @BoundTo); view() is generated ungated.
+
+@BoundTo(WidgetFeature.self, strategy: .combineObservable)
+private struct WidgetView: View {
+    // @BoundTo injects: @ObservedObject var viewStore: ObservableObjectStore<WidgetFeature.ViewAction, WidgetFeature.ViewState>
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature(type: .internalOnly, strategy: .combineObservable)
+private enum WidgetFeature {
+    struct State: Sendable, Equatable { var count = 0 }
+    enum Action: Sendable { case bump }
+    struct Environment: Sendable {}
+    struct ViewState: Sendable, Equatable { var label: String }
+    enum ViewAction: Sendable { case tapped }
+
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewState> { _ in
+        { s in .init(label: "\(s.count)") }
+    }
+    static let mapAction = Reader<Environment, @Sendable (ViewAction) -> Action> { _ in
+        { _ in .bump }
+    }
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (action: Action, state: inout State) in
+            switch action {
+            case .bump: state.count += 1
+            }
+        }.asBehavior()
+    }
+
+    typealias Content = WidgetView
 }
 
 // MARK: - Helpers
@@ -246,11 +284,22 @@ struct GeneratedViewTests {
         )
         _ = GadgetFeature.view(store: store, environment: .init())
     }
+
+    // No @available — the combine path's view() is generated ungated, so this compiles and runs
+    // without an iOS 17 requirement.
+    @Test func combineFeatureBuildsObservableObjectStoreWithoutIOS17() {
+        let store = Store(
+            initial: WidgetFeature.initialState(with: ()),
+            behavior: WidgetFeature.behavior(),
+            environment: .init()
+        )
+        _ = WidgetFeature.view(store: store, environment: .init())
+    }
 }
 
 // MARK: - initialState synthesis (logic-only fixtures, no view layer)
 
-@Feature(.internalScreen)
+@Feature(type: .internalOnly, strategy: .observationSimple)
 private enum CounterFeature {
     struct State: Sendable, Equatable { var count = 0 }
     enum Action: Sendable { case increment }
@@ -265,7 +314,7 @@ private enum CounterFeature {
     // no `initialState` — synthesized as State.init(); no Content — no view() generated
 }
 
-@Feature(.internalScreen)
+@Feature(type: .internalOnly, strategy: .observationSimple)
 private enum OverrideFeature {
     struct State: Sendable, Equatable { var count: Int }
     enum Action: Sendable { case noop }
@@ -276,7 +325,7 @@ private enum OverrideFeature {
 
 private struct StartCount: Sendable { var startingCount: Int }
 
-@Feature(.internalScreen)
+@Feature(type: .internalOnly, strategy: .observationSimple)
 private enum SeededFeature {
     typealias Input = StartCount
     struct State: Sendable, Equatable { var count: Int }
