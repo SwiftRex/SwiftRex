@@ -6,6 +6,7 @@ struct SwiftRexMacrosPlugin: CompilerPlugin {
     let providingMacros: [any Macro.Type] = [
         ViewModelMacro.self,
         FeatureMacro.self,
-        BoundToMacro.self
+        BoundToMacro.self,
+        TrackedMacro.self
     ]
 }
