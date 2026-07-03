@@ -29,7 +29,9 @@
 /// and the macro aliases `ViewState = State`, `ViewAction = Action`, and `view()` wraps the store
 /// directly (no projection). The view then reads the domain `State`/`Action`. Declare a `ViewState`
 /// struct only when the UI needs a different shape (e.g. an `Int` shown as a `String`); under
-/// `.observationGranular`, a missing `ViewState` puts `@Tracked` on `State` itself.
+/// `.observationGranular`, a missing `ViewState` puts `@Tracked` on `State` itself. **`Environment`
+/// is optional too** — omit it and the macro aliases it to `Void`. So the leanest feature is just
+/// `State`/`Action`/`behavior()`/`Content`.
 ///
 /// The macro itself is **not** availability-gated, so `.combineObservable` features can target iOS 16.
 /// It generates **no** protocol conformance. Declare `State`/`Action`/`Environment`/`Input` `public`
@@ -51,7 +53,7 @@
 ///     // `initialState(with:)` and `view(store:environment:)` are generated.
 /// }
 /// ```
-@attached(member, names: named(initialState), named(view), named(ViewState), named(ViewAction))
+@attached(member, names: named(initialState), named(view), named(ViewState), named(ViewAction), named(Environment))
 @attached(memberAttribute)
 public macro Feature(type: FeatureRole, strategy: ViewStrategy) = #externalMacro(module: "SwiftRexMacros", type: "FeatureMacro")
 #endif
