@@ -112,7 +112,7 @@ SwiftRex supports multiple concurrency styles. The core package is self-containe
 
 Pick the module(s) that match your project's reactive strategy. For a pure Swift Concurrency setup with no third-party dependencies, `SwiftRex` + `SwiftRex.SwiftConcurrency` is sufficient.
 
-> **Opt-in bridges via package traits.** The three third-party reactive bridges — `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` — are each gated behind a [Swift Package Manager **trait**](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0450-swiftpm-package-traits.md) of the same name. **All traits are off by default**, so a consumer who picks one bridge never downloads — nor sees in their acknowledgements — the other two third-party packages. `SwiftRex.Combine` (system framework) and `SwiftRex.SwiftConcurrency` (no third-party dependency) need no trait. Requires a Swift 6.1+ toolchain. See [Installation](#installation) for how to enable a trait.
+> **Opt-in bridges via package traits.** The three third-party reactive bridges — `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` — are each gated behind a [Swift Package Manager **trait**](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0450-swiftpm-package-traits.md) of the same name. **All traits are off by default**, so a consumer who picks one bridge never downloads — nor sees in their acknowledgements — the other two third-party packages. `SwiftRex.Combine` (system framework) and `SwiftRex.SwiftConcurrency` (no third-party dependency) need no trait. Requires a Swift 6.3+ toolchain. See [Installation](#installation) for how to enable a trait.
 
 ## Swift Concurrency
 
@@ -2004,7 +2004,7 @@ This yields the framework's guarantees:
 SwiftRex is distributed exclusively via Swift Package Manager. Add it to your `Package.swift`:
 
 ```swift
-// swift-tools-version:6.1   // traits require Swift 6.1+
+// swift-tools-version:6.3   // @Feature macro requires Swift 6.3+
 
 import PackageDescription
 
@@ -2048,7 +2048,7 @@ let package = Package(
 )
 ```
 
-Supported platforms: macOS 13+, iOS 16+, tvOS 16+, watchOS 9+, visionOS 1+, Linux (Swift 6.1+).
+Supported platforms: macOS 13+, iOS 16+, tvOS 16+, watchOS 9+, visionOS 1+, Linux (Swift 6.3+).
 
 `SwiftRex`, `SwiftRex.SwiftConcurrency`, and `SwiftRex.Testing` are fully cross-platform including Linux. `SwiftRex.Combine` and `SwiftRex.SwiftUI` require Apple platforms. `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` require their respective traits enabled (above), and the first two require Apple platforms unless those frameworks add Linux support.
 
