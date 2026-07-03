@@ -21,12 +21,16 @@ import SwiftRex
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @MainActor
 @Observable
-public final class ViewStore<ViewState: Sendable, ViewAction: Sendable> {
+public final class ViewStore<ViewState: Sendable, ViewAction: Sendable>: StoreType {
     /// The current projected view state. Re-read from the underlying store on every mutation and
     /// tracked by `@Observable`, so SwiftUI re-evaluates the observing `body` when it changes.
     public private(set) var state: ViewState
 
     @ObservationIgnored private let _dispatch: @MainActor @Sendable (ViewAction, ActionSource) -> Void
+    @ObservationIgnored private let _observe: @MainActor @Sendable (
+        @escaping @MainActor @Sendable () -> Void,
+        @escaping @MainActor @Sendable () -> Void
+    ) -> SubscriptionToken
     @ObservationIgnored private var _token: SubscriptionToken?
 
     /// Seeds `state` from the store and subscribes to it. The subscription is retained for the
@@ -34,17 +38,25 @@ public final class ViewStore<ViewState: Sendable, ViewAction: Sendable> {
     public init(_ store: some StoreType<ViewAction, ViewState>) {
         state = store.state
         _dispatch = { action, source in store.dispatch(action, source: source) }
+        _observe = { willChange, didChange in store.observe(willChange: willChange, didChange: didChange) }
         _token = store.observe(didChange: { [weak self] in self?.state = store.state })
     }
 
-    /// Dispatches a view action, capturing the call site for middleware provenance.
-    public func dispatch(
-        _ action: ViewAction,
-        file: String = #fileID,
-        function: String = #function,
-        line: UInt = #line
-    ) {
-        _dispatch(action, ActionSource(file: file, function: function, line: line))
+    // MARK: - StoreType
+    //
+    // Conforming makes every store-backed helper (bindings, navigation, re-projection) available on
+    // the view store. `dispatch(_:source:)` and `observe` forward to the underlying store; the
+    // `dispatch(_:file:function:line:)` / `observe(didChange:)` conveniences come from StoreType.
+
+    public func dispatch(_ action: ViewAction, source: ActionSource) {
+        _dispatch(action, source)
+    }
+
+    public func observe(
+        willChange: @escaping @MainActor @Sendable () -> Void,
+        didChange: @escaping @MainActor @Sendable () -> Void
+    ) -> SubscriptionToken {
+        _observe(willChange, didChange)
     }
 }
 #endif

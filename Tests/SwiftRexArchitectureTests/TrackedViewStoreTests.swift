@@ -3,6 +3,7 @@ import Foundation
 import Observation
 import SwiftRex
 @testable import SwiftRexArchitecture
+import SwiftUI
 import Testing
 
 /// Thread-safe flag for capturing mutable state in the `@Sendable` `onChange` closure.
@@ -69,6 +70,18 @@ struct TrackedViewStoreTests {
         vs.dispatch(.increment)
         await Task.yield()
         #expect(store.state.count == 1)
+    }
+
+    // TrackedViewStore: StoreType (State == the mirror) ⇒ binding reads a tracked field, dispatches on set.
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func bindingOnTrackedMirror() async {
+        let store = makeStore()
+        let vs = TrackedViewStore(store)
+        let binding: Binding<String> = vs.binding(\.title, set: { .setTitle($0) })
+        #expect(binding.wrappedValue == "a")
+        binding.wrappedValue = "z"
+        await Task.yield()
+        #expect(vs.state.title == "z")
     }
 
     // Proves field-level granularity: observing only `title` does not fire when `count` changes,
