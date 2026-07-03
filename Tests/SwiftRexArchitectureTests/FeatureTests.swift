@@ -212,6 +212,29 @@ private enum DirectGranularFeature {
     typealias Content = DirectGranularView
 }
 
+// MARK: - L0 fixture (no Environment, no ViewState/ViewAction — the leanest feature)
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@BoundTo(MinimalFeature.self, strategy: .observationSimple)
+private struct MinimalView: View {
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature(type: .internalOnly, strategy: .observationSimple)
+private enum MinimalFeature {
+    struct State: Sendable, Equatable { var count = 0 }
+    enum Action: Sendable { case tick }
+    // No Environment (macro aliases it to Void), no ViewState/ViewAction (aliased to State/Action).
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (a: Action, s: inout State) in
+            switch a {
+            case .tick: s.count += 1
+            }
+        }.asBehavior()
+    }
+    typealias Content = MinimalView
+}
+
 // MARK: - Helpers
 
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
@@ -359,6 +382,13 @@ struct GeneratedViewTests {
         // TrackedViewStore<State, Action>.
         let store = Store(initial: DirectGranularFeature.initialState(with: ()), behavior: DirectGranularFeature.behavior(), environment: .init())
         _ = DirectGranularFeature.view(store: store, environment: .init())
+    }
+
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func minimalFeatureHasVoidEnvironmentAndDirectStore() {
+        // No Environment (Void) and no view layer — the leanest feature still generates view().
+        let store = Store(initial: MinimalFeature.initialState(with: ()), behavior: MinimalFeature.behavior(), environment: ())
+        _ = MinimalFeature.view(store: store, environment: ())
     }
 }
 

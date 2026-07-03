@@ -1,5 +1,5 @@
 {
-  "originHash" : "1eaac09fd8b596c9cfa714a0b95ba86ff7bcc55b86d625a219c6aa63fd64592f",
+  "originHash" : "c3d76935a6b3b368dec230419cbed0c11ae2817779658229f767877dc3b08ced",
   "pins" : [
     {
       "identity" : "fp",
@@ -17,6 +17,33 @@
       "state" : {
         "revision" : "ec2ff5aac99e59d2ea208e4d391fe54da8961608",
         "version" : "0.6.2"
+      }
+    },
+    {
+      "identity" : "reactiveconcurrency",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/luizmb/ReactiveConcurrency.git",
+      "state" : {
+        "revision" : "e7c8f6dcf6ffa3d2a148f92081f7fbcc935077a1",
+        "version" : "0.1.0"
+      }
+    },
+    {
+      "identity" : "reactiveswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveCocoa/ReactiveSwift.git",
+      "state" : {
+        "revision" : "a44317ce38b5bcce173b03f5d36cfdc939e1768b",
+        "version" : "7.2.1"
+      }
+    },
+    {
+      "identity" : "rxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveX/RxSwift.git",
+      "state" : {
+        "revision" : "132aea4f236ccadc51590b38af0357a331d51fa2",
+        "version" : "6.10.2"
       }
     },
     {

@@ -49,6 +49,10 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
         if !hasNestedType("ViewAction", in: declaration) {
             members.append("\(raw: access)typealias ViewAction = Action")
         }
+        // `Environment` is optional too: a feature with no dependencies can omit it and gets `Void`.
+        if !hasNestedType("Environment", in: declaration) {
+            members.append("\(raw: access)typealias Environment = Void")
+        }
 
         // The erased entry — generated only when the feature has a `Content` view.
         if hasNestedType("Content", in: declaration) {
