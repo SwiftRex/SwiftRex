@@ -9,8 +9,11 @@ import SwiftRex
 ///
 /// You never write a conformance by hand — `@Tracked` on a `ViewState` struct generates the
 /// nested `Tracked` class that conforms to this.
+///
+/// `Sendable` (so a `TrackedViewStore` can expose it as its `StoreType.State`); the generated mirror
+/// is `@unchecked Sendable` because it is only ever mutated on the main actor via `TrackedViewStore`.
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-public protocol TrackedMirror: AnyObject {
+public protocol TrackedMirror: AnyObject, Sendable {
     /// The value type this mirror reflects (the `@Tracked` `ViewState`).
     associatedtype Source
 
@@ -47,11 +50,16 @@ public protocol TrackedState: Sendable {
 /// ```
 @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @MainActor
-public final class TrackedViewStore<ViewState: TrackedState, ViewAction: Sendable> {
-    /// The persistent, field-observed mirror. A `let` — updated in place, never reassigned.
+public final class TrackedViewStore<ViewState: TrackedState, ViewAction: Sendable>: StoreType {
+    /// The persistent, field-observed mirror. A `let` — updated in place, never reassigned. This is
+    /// the store's `StoreType.State`, so `viewStore.state.field` reads a tracked field.
     public let state: ViewState.Tracked
 
     private let _dispatch: @MainActor @Sendable (ViewAction, ActionSource) -> Void
+    private let _observe: @MainActor @Sendable (
+        @escaping @MainActor @Sendable () -> Void,
+        @escaping @MainActor @Sendable () -> Void
+    ) -> SubscriptionToken
     private var _token: SubscriptionToken?
 
     /// Seeds the mirror from the store and subscribes; on each change the mirror is updated in
@@ -59,17 +67,26 @@ public final class TrackedViewStore<ViewState: TrackedState, ViewAction: Sendabl
     public init(_ store: some StoreType<ViewAction, ViewState>) {
         state = ViewState.Tracked(store.state)
         _dispatch = { action, source in store.dispatch(action, source: source) }
+        _observe = { willChange, didChange in store.observe(willChange: willChange, didChange: didChange) }
         _token = store.observe(didChange: { [weak self] in self?.state.update(from: store.state) })
     }
 
-    /// Dispatches a view action, capturing the call site for middleware provenance.
-    public func dispatch(
-        _ action: ViewAction,
-        file: String = #fileID,
-        function: String = #function,
-        line: UInt = #line
-    ) {
-        _dispatch(action, ActionSource(file: file, function: function, line: line))
+    // MARK: - StoreType
+    //
+    // `StoreType.State` is the `@Observable` mirror, so store-backed helpers (bindings, navigation)
+    // read/write tracked fields. `dispatch`/`observe` forward to the underlying store; the call-site
+    // and `didChange` conveniences come from StoreType. Note: `.buffer()` needs `State: Equatable`,
+    // so it does not apply to the (reference-type) mirror.
+
+    public func dispatch(_ action: ViewAction, source: ActionSource) {
+        _dispatch(action, source)
+    }
+
+    public func observe(
+        willChange: @escaping @MainActor @Sendable () -> Void,
+        didChange: @escaping @MainActor @Sendable () -> Void
+    ) -> SubscriptionToken {
+        _observe(willChange, didChange)
     }
 }
 

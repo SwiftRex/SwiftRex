@@ -1,6 +1,7 @@
 #if canImport(Observation) && canImport(SwiftUI)
 import SwiftRex
 @testable import SwiftRexArchitecture
+import SwiftUI
 import Testing
 
 // Exercises the generic ViewStore — seeds from the store, re-reads on any change (dispatched
@@ -58,6 +59,18 @@ struct ViewStoreTests {
         vs.dispatch(.setLabel("done"))
         await Task.yield()
         #expect(store.state.label == "done")
+    }
+
+    // ViewStore: StoreType ⇒ the store-backed binding helper works directly on it.
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func bindingReadsStateAndDispatchesOnSet() async {
+        let store = makeStore()
+        let vs = ViewStore(store)
+        let binding: Binding<String> = vs.binding(\.label, set: { .setLabel($0) })
+        #expect(binding.wrappedValue == "a")
+        binding.wrappedValue = "z"
+        await Task.yield()
+        #expect(vs.state.label == "z")
     }
 }
 #endif

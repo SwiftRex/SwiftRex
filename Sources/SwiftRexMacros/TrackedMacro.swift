@@ -77,7 +77,8 @@ public struct TrackedMacro: MemberMacro, ExtensionMacro {
             .joined(separator: "\n")
 
         return """
-            \(raw: access)final class Tracked: Observation.Observable, TrackedMirror {
+            // @unchecked Sendable: mutated only on the main actor via TrackedViewStore.
+            \(raw: access)final class Tracked: Observation.Observable, TrackedMirror, @unchecked Sendable {
                 @ObservationIgnored private let _$observationRegistrar = ObservationRegistrar()
 
                 \(raw: access)nonisolated func access<_Member>(keyPath: KeyPath<Tracked, _Member>) {
