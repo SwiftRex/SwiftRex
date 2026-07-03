@@ -8,7 +8,7 @@ import SwiftUI
 /// public entry point from the screens composed inside it.
 ///
 /// A module is a `@Feature` marked ``publicEntryPoint`` — the only thing the outside world sees.
-/// The screens it composes are `@Feature`s marked ``internalScreen`` — their `View`, `ViewModel`,
+/// The screens it composes are `@Feature`s marked ``internalScreen`` — their `Content` view,
 /// `ViewState`, and `ViewAction` never cross the module boundary. The role controls only the
 /// access level of the members the macro synthesises (`view`, `initialState`); everything erased
 /// (the view layer) stays `internal`/`private` regardless.

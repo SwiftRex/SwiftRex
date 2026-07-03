@@ -6,9 +6,9 @@ import SwiftSyntaxMacros
 /// `ViewState` struct, plus a `TrackedState` conformance.
 ///
 /// The mirror carries the same stored properties as `@Observable`-tracked computed pairs, an
-/// `init(_:)` seed, and an in-place `update(from:)` that touches only changed fields. It's the
-/// `@ViewModel` observation codegen, minus the store/dispatch wiring (that lives in
-/// `TrackedViewStore`), homed on a nested class instead of the feature's view model.
+/// `init(_:)` seed, and an in-place `update(from:)` that touches only changed fields — the
+/// field-level observation codegen (`ObservationRegistrar` + per-field computed pairs), minus any
+/// store/dispatch wiring (that lives in `TrackedViewStore`), homed on a nested class.
 public struct TrackedMacro: MemberMacro, ExtensionMacro {
     // MARK: - MemberMacro
 

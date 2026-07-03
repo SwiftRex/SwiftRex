@@ -23,7 +23,7 @@ Everything except the `Store` is inert and composable. Two `Reducer`s combine in
 - **`SwiftRex.SwiftConcurrency`** — `async`/`await` effect bridges (`Task`, `AsyncSequence`), `asChannel` for long-lived subscriptions, `store.stream`.
 - **`SwiftRex.Combine`** — `asEffect()` / `asChannel()` on `Publisher`, `store.publisher`, `ctx.readLiveState()`.
 - **`SwiftRex.RxSwift`** · **`SwiftRex.ReactiveSwift`** · **`SwiftRex.ReactiveConcurrency`** — the same `asEffect` / `asChannel` bridge surface for each reactive runtime *(each behind a trait of the same name)*.
-- **`SwiftRex.SwiftUI`** — `asObservableObject()`, the `@ViewModel` macro, `HasViewModel`.
+- **`SwiftRex.SwiftUI`** — `ViewStore` (coarse) and `TrackedViewStore` (field-level, via `@Tracked`) for `@Observable`; `asObservableObject()` for the Combine `ObservableObject` path.
 - **`SwiftRex.Architecture`** — the opinionated `@Feature` module pattern.
 - **`SwiftRex.Operators`** — symbolic operators (`<>`, `|>`, …) for the types above.
 - **`SwiftRex.Testing`** — `TestStore` for deterministic, exhaustive unit tests.
