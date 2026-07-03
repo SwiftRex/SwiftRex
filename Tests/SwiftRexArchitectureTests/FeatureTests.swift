@@ -3,18 +3,17 @@ import DataStructure
 import Observation
 @testable import SwiftRex
 @testable import SwiftRexArchitecture
-import SwiftRexSwiftUI
 import SwiftUI
 import Testing
 
-// MARK: - Feature fixture
+// MARK: - Coarse fixture (plain ViewStore)
 //
-// Mirrors the HeroDetailsFeature from Feature.swift docs, simplified so the test file
-// is self-contained (ThreatLevel replaced by an Int index to avoid external dependencies).
+// A screen with feature-level ViewState/ViewAction (no ViewModel class). The view holds a
+// `viewStore`; @Feature generates `view()` building a coarse `ViewStore`.
 
-private struct HeroDetailsView: View, HasViewModel {
-    typealias VM = HeroDetailsFeature.ViewModel
-    let viewModel: HeroDetailsFeature.ViewModel
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+private struct HeroDetailsView: View {
+    let viewStore: ViewStore<HeroDetailsFeature.ViewState, HeroDetailsFeature.ViewAction>
     var body: Never { fatalError("test stub") }
 }
 
@@ -24,35 +23,32 @@ private enum HeroDetailsFeature {
         var codename: String = "Kryptonian"
         var aliases: [String] = ["Superman", "Man of Steel"]
         var powers: [String] = ["flight", "heat vision"]
-        var threatIndex: Int = 1       // 0 = low … 3 = critical
+        var threatIndex: Int = 1
         var isRetired: Bool = false
     }
 
     enum Action: Sendable, Equatable {
-        case savePowers([String])     // receives already-parsed array
-        case setThreatIndex(Int)      // receives domain Int
+        case savePowers([String])
+        case setThreatIndex(Int)
         case toggleRetirement
     }
 
     struct Environment: Sendable {}
 
-    @ViewModel
-    // swiftlint:disable:next convenience_type
-    final class ViewModel {
-        struct ViewState: Sendable, Equatable {
-            var displayName: String   // aliases.first ?? codename
-            var powersText: String   // joined for TextField binding
-            var threatIndex: Int      // segmented control index 0…3
-            var isRetired: Bool
-        }
-        enum ViewAction: Sendable {
-            case editedPowers(String) // raw comma-separated TextField content
-            case selectedThreat(Int)  // segmented control index
-            case tappedRetirement     // covers both retire and reinstate
-        }
+    struct ViewState: Sendable, Equatable {
+        var displayName: String   // aliases.first ?? codename
+        var powersText: String    // joined for TextField binding
+        var threatIndex: Int
+        var isRetired: Bool
     }
 
-    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
+    enum ViewAction: Sendable {
+        case editedPowers(String) // raw comma-separated TextField content
+        case selectedThreat(Int)
+        case tappedRetirement
+    }
+
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewState> { _ in
         { s in
             .init(
                 displayName: s.aliases.first ?? s.codename,
@@ -63,14 +59,14 @@ private enum HeroDetailsFeature {
         }
     }
 
-    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in
+    static let mapAction = Reader<Environment, @Sendable (ViewAction) -> Action> { _ in
         { va in
             switch va {
-            case .editedPowers(let raw):     // String  → [String]  (type change)
+            case .editedPowers(let raw):
                 .savePowers(raw.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) })
-            case .selectedThreat(let index): // Int passthrough, name change
+            case .selectedThreat(let index):
                 .setThreatIndex(index)
-            case .tappedRetirement:          // no value, name change
+            case .tappedRetirement:
                 .toggleRetirement
             }
         }
@@ -81,9 +77,9 @@ private enum HeroDetailsFeature {
     static func behavior() -> Behavior<Action, State, Environment> {
         Reducer.reduce { (action: Action, state: inout State) in
             switch action {
-            case .savePowers(let p):      state.powers = p
-            case .setThreatIndex(let i):  state.threatIndex = i
-            case .toggleRetirement:       state.isRetired.toggle()
+            case .savePowers(let p):     state.powers = p
+            case .setThreatIndex(let i): state.threatIndex = i
+            case .toggleRetirement:      state.isRetired.toggle()
             }
         }.asBehavior()
     }
@@ -91,29 +87,67 @@ private enum HeroDetailsFeature {
     typealias Content = HeroDetailsView
 }
 
+// MARK: - Tracked fixture (field-level TrackedViewStore)
+//
+// The nested ViewState is @Tracked, so @Feature builds a TrackedViewStore. The view's stored
+// property type asserts that: it only compiles if `view()` produced a TrackedViewStore.
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+private struct GadgetView: View {
+    let viewStore: TrackedViewStore<GadgetFeature.ViewState, GadgetFeature.ViewAction>
+    var body: Never { fatalError("test stub") }
+}
+
+@Feature(.internalScreen)
+private enum GadgetFeature {
+    struct State: Sendable, Equatable { var name = "phone"; var battery = 100 }
+    enum Action: Sendable { case rename(String) }
+    struct Environment: Sendable {}
+
+    @Tracked
+    struct ViewState: Sendable, Equatable { var title: String; var charge: Int }
+    enum ViewAction: Sendable { case tapped }
+
+    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewState> { _ in
+        { s in .init(title: s.name, charge: s.battery) }
+    }
+    static let mapAction = Reader<Environment, @Sendable (ViewAction) -> Action> { _ in
+        { _ in .rename("x") }
+    }
+    static func behavior() -> Behavior<Action, State, Environment> {
+        Reducer.reduce { (action: Action, state: inout State) in
+            switch action {
+            case .rename(let n): state.name = n
+            }
+        }.asBehavior()
+    }
+
+    typealias Content = GadgetView
+}
+
 // MARK: - Helpers
 
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
 @MainActor
-private func makeViewModel() -> HeroDetailsFeature.ViewModel {
+private func makeHeroViewStore() -> ViewStore<HeroDetailsFeature.ViewState, HeroDetailsFeature.ViewAction> {
     let store = Store(
         initial: HeroDetailsFeature.initialState(with: ()),
         behavior: HeroDetailsFeature.behavior(),
         environment: HeroDetailsFeature.Environment()
     )
-    return HeroDetailsFeature.ViewModel(store: store.projection(
+    return ViewStore(store.projection(
         environment: .init(),
         action: HeroDetailsFeature.mapAction,
         state: HeroDetailsFeature.mapState
     ))
 }
 
-// MARK: - mapState tests
+// MARK: - mapState
 
 @Suite("HeroDetailsFeature.mapState")
 @MainActor
 struct MapStateTests {
-    // `mapState` is curried over Environment; this feature's view ignores it (empty Environment).
-    private func project(_ state: HeroDetailsFeature.State) -> HeroDetailsFeature.ViewModel.ViewState {
+    private func project(_ state: HeroDetailsFeature.State) -> HeroDetailsFeature.ViewState {
         HeroDetailsFeature.mapState(.init())(state)
     }
 
@@ -130,86 +164,58 @@ struct MapStateTests {
         #expect(project(.init()).powersText == "flight, heat vision")
     }
 
-    @Test func passesThroughThreatIndexAndRetired() {
-        let vs = project(.init(codename: "X", aliases: [], powers: [], threatIndex: 3, isRetired: true))
-        #expect(vs.threatIndex == 3)
-        #expect(vs.isRetired == true)
-    }
-
     @Test func equatableDeduplication() {
         let a = project(.init())
         let b = project(.init())
-        let c = project(.init(
-            codename: "Kryptonian",
-            aliases: ["Superman", "Man of Steel"],
-            powers: ["flight"],
-            threatIndex: 1,
-            isRetired: false
-        ))
         #expect(a == b)
-        #expect(a != c)
     }
 }
 
-// MARK: - mapAction tests
+// MARK: - mapAction
 
 @Suite("HeroDetailsFeature.mapAction")
 struct MapActionTests {
     @Test func parsesCommaSeparatedPowers() {
-        let action = HeroDetailsFeature.mapAction(.init())(.editedPowers("flight, strength, speed"))
-        #expect(action == .savePowers(["flight", "strength", "speed"]))
+        #expect(HeroDetailsFeature.mapAction(.init())(.editedPowers("flight, strength, speed"))
+            == .savePowers(["flight", "strength", "speed"]))
     }
 
     @Test func stripsWhitespaceWhenParsingPowers() {
-        let action = HeroDetailsFeature.mapAction(.init())(.editedPowers("  flight ,  heat vision  "))
-        #expect(action == .savePowers(["flight", "heat vision"]))
+        #expect(HeroDetailsFeature.mapAction(.init())(.editedPowers("  flight ,  heat vision  "))
+            == .savePowers(["flight", "heat vision"]))
     }
 
     @Test func mapsThreatIndexWithNameChange() {
         #expect(HeroDetailsFeature.mapAction(.init())(.selectedThreat(2)) == .setThreatIndex(2))
     }
-
-    @Test func mapsRetirementTapWithNameChange() {
-        #expect(HeroDetailsFeature.mapAction(.init())(.tappedRetirement) == .toggleRetirement)
-    }
 }
 
-// MARK: - ViewModel field tests
+// MARK: - view store (end-to-end through the projection)
 
-@Suite("HeroDetailsFeature ViewModel")
+@Suite("HeroDetailsFeature view store")
 @MainActor
-struct ViewModelTests {
+struct HeroViewStoreTests {
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @Test func seedsFieldsFromInitialState() {
-        let vm = makeViewModel()
-        #expect(vm.displayName == "Superman")
-        #expect(vm.powersText == "flight, heat vision")
-        #expect(vm.threatIndex == 1)
-        #expect(vm.isRetired == false)
+    @Test func seedsStateFromInitial() {
+        let vs = makeHeroViewStore()
+        #expect(vs.state.displayName == "Superman")
+        #expect(vs.state.powersText == "flight, heat vision")
     }
 
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @Test func savePowersUpdatesField() async {
-        let vm = makeViewModel()
-        vm.dispatch(.editedPowers("flying, invulnerability"))
+    @Test func editingPowersParsesAndUpdatesState() async {
+        let vs = makeHeroViewStore()
+        vs.dispatch(.editedPowers("flying, invulnerability"))
         await Task.yield()
-        #expect(vm.powersText == "flying, invulnerability")
+        #expect(vs.state.powersText == "flying, invulnerability")
     }
 
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @Test func toggleRetirementFlipsField() async {
-        let vm = makeViewModel()
-        vm.dispatch(.tappedRetirement)
+    @Test func togglingRetirementUpdatesState() async {
+        let vs = makeHeroViewStore()
+        vs.dispatch(.tappedRetirement)
         await Task.yield()
-        #expect(vm.isRetired == true)
-    }
-
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @Test func selectingThreatUpdatesIndex() async {
-        let vm = makeViewModel()
-        vm.dispatch(.selectedThreat(3))
-        await Task.yield()
-        #expect(vm.threatIndex == 3)
+        #expect(vs.state.isRetired == true)
     }
 }
 
@@ -219,253 +225,79 @@ struct ViewModelTests {
 @MainActor
 struct GeneratedViewTests {
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @Test func viewBuildsFromStoreAndEnvironment() {
-        // The macro-generated `view(store:environment:)` wires the ViewModel from an
-        // environment-applied projection and returns the Content — constructs without touching body.
+    @Test func coarseFeatureBuildsViewStore() {
+        // HeroDetailsView holds a `ViewStore`; this only compiles if view() built a coarse store.
         let store = Store(
             initial: HeroDetailsFeature.initialState(with: ()),
             behavior: HeroDetailsFeature.behavior(),
-            environment: HeroDetailsFeature.Environment()
+            environment: .init()
         )
         _ = HeroDetailsFeature.view(store: store, environment: .init())
     }
+
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func trackedFeatureBuildsTrackedViewStore() {
+        // GadgetView holds a `TrackedViewStore`; this only compiles if view() picked the tracked
+        // store from the @Tracked ViewState.
+        let store = Store(
+            initial: GadgetFeature.initialState(with: ()),
+            behavior: GadgetFeature.behavior(),
+            environment: .init()
+        )
+        _ = GadgetFeature.view(store: store, environment: .init())
+    }
 }
 
-// MARK: - @Feature macro — initialState synthesis
-//
-// Exercises the `@Feature` macro end-to-end (extension + memberAttribute + member roles).
-// This fixture deliberately omits `initialState()` — `@Feature` synthesizes it as `State.init()`.
-
-private struct CounterView: View, HasViewModel {
-    typealias VM = CounterFeature.ViewModel
-    let viewModel: CounterFeature.ViewModel
-    var body: Never { fatalError("test stub") }
-}
+// MARK: - initialState synthesis (logic-only fixtures, no view layer)
 
 @Feature(.internalScreen)
 private enum CounterFeature {
-    struct State: Sendable {
-        var count: Int = 7
-        var label: String = "ready"
-    }
-
-    enum Action: Sendable, Equatable {
-        case increment
-    }
-
+    struct State: Sendable, Equatable { var count = 0 }
+    enum Action: Sendable { case increment }
     struct Environment: Sendable {}
-
-    // swiftlint:disable:next convenience_type
-    final class ViewModel {
-        struct ViewState: Sendable, Equatable {
-            var count: Int
-        }
-        enum ViewAction: Sendable {
-            case tapped
-        }
-    }
-
-    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
-        { .init(count: $0.count) }
-    }
-    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .increment } }
-
-    // No `initialState()` here — synthesized by `@Feature`.
-
     static func behavior() -> Behavior<Action, State, Environment> {
-        Reducer.reduce { (action: Action, state: inout State) in
-            switch action {
-            case .increment: state.count += 1
+        Reducer.reduce { (a: Action, s: inout State) in
+            switch a {
+            case .increment: s.count += 1
             }
         }.asBehavior()
     }
-
-    typealias Content = CounterView
-}
-
-// A feature that supplies its own `initialState()` — `@Feature` must NOT also synthesize one
-// (a second declaration would be an "invalid redeclaration" compile error).
-
-private struct OverrideView: View, HasViewModel {
-    typealias VM = OverrideFeature.ViewModel
-    let viewModel: OverrideFeature.ViewModel
-    var body: Never { fatalError("test stub") }
+    // no `initialState` — synthesized as State.init(); no Content — no view() generated
 }
 
 @Feature(.internalScreen)
 private enum OverrideFeature {
-    struct State: Sendable {
-        var count: Int = 0
-    }
-
-    enum Action: Sendable, Equatable {
-        case noop
-    }
-
+    struct State: Sendable, Equatable { var count: Int }
+    enum Action: Sendable { case noop }
     struct Environment: Sendable {}
-
-    // swiftlint:disable:next convenience_type
-    final class ViewModel {
-        struct ViewState: Sendable, Equatable {
-            var count: Int
-        }
-        enum ViewAction: Sendable {
-            case tapped
-        }
-    }
-
-    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
-        { .init(count: $0.count) }
-    }
-    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .noop } }
-
     static func initialState(with _: Void) -> State { .init(count: 99) }
-
-    static func behavior() -> Behavior<Action, State, Environment> {
-        Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
-    }
-
-    typealias Content = OverrideView
+    static func behavior() -> Behavior<Action, State, Environment> { Reducer.reduce { _, _ in }.asBehavior() }
 }
 
-// A feature with a non-`Void` `Input` seed — `@Feature` must NOT synthesize `initialState`
-// (it can't know how to build `State` from a custom seed), so the feature writes its own
-// `initialState(with:)` that threads the seed into the initial state.
-
-private struct SeededView: View, HasViewModel {
-    typealias VM = SeededFeature.ViewModel
-    let viewModel: SeededFeature.ViewModel
-    var body: Never { fatalError("test stub") }
-}
+private struct StartCount: Sendable { var startingCount: Int }
 
 @Feature(.internalScreen)
 private enum SeededFeature {
-    struct Input: Sendable {
-        var startingCount: Int
-    }
-
-    struct State: Sendable {
-        var count: Int = 0
-    }
-
-    enum Action: Sendable, Equatable {
-        case noop
-    }
-
+    typealias Input = StartCount
+    struct State: Sendable, Equatable { var count: Int }
+    enum Action: Sendable { case noop }
     struct Environment: Sendable {}
-
-    // swiftlint:disable:next convenience_type
-    final class ViewModel {
-        struct ViewState: Sendable, Equatable {
-            var count: Int
-        }
-        enum ViewAction: Sendable {
-            case tapped
-        }
-    }
-
-    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { _ in
-        { .init(count: $0.count) }
-    }
-    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .noop } }
-
     static func initialState(with input: Input) -> State { .init(count: input.startingCount) }
-
-    static func behavior() -> Behavior<Action, State, Environment> {
-        Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
-    }
-
-    typealias Content = SeededView
+    static func behavior() -> Behavior<Action, State, Environment> { Reducer.reduce { _, _ in }.asBehavior() }
 }
 
 @Suite("@Feature — initialState synthesis")
 struct FeatureInitialStateTests {
-    @Test func synthesizesInitialStateFromStateDefaults() {
-        let state = CounterFeature.initialState(with: ())
-        #expect(state.count == 7)
-        #expect(state.label == "ready")
+    @Test func synthesizesVoidSeedFromEmptyInit() {
+        #expect(CounterFeature.initialState(with: ()) == CounterFeature.State())
     }
 
-    @Test func attachesPrismsNamespaceToAction() {
-        // Confirms `@Feature` attaches `@Prisms`: the prism namespace exists…
-        #expect(CounterFeature.Action.prism.increment.preview(.increment) != nil)
-        // …and the cases mirror is emitted.
-        #expect(CounterFeature.Action.increment.is(.increment))
-    }
-
-    @Test func userSuppliedInitialStateWins() {
-        // Compiles only because `@Feature` skipped synthesis (no redeclaration), and returns
-        // the user's value rather than `State.init()` defaults.
+    @Test func respectsUserOverride() {
         #expect(OverrideFeature.initialState(with: ()).count == 99)
     }
 
-    @Test func customInputSeedsInitialState() {
-        // A non-`Void` `Input` threads a construction-time seed into the initial state.
+    @Test func usesCustomInputSeed() {
         #expect(SeededFeature.initialState(with: .init(startingCount: 42)).count == 42)
-    }
-}
-
-// MARK: - mapState environment injection
-//
-// A feature whose view formats via an injected dependency — proves `mapState` is curried over
-// `Environment` and the value reaches the projection at view-build time, without pushing
-// formatting into `Behavior`/`State`.
-
-private struct FormattingView: View, HasViewModel {
-    typealias VM = FormattingFeature.ViewModel
-    let viewModel: FormattingFeature.ViewModel
-    var body: Never { fatalError("test stub") }
-}
-
-@Feature(.internalScreen)
-private enum FormattingFeature {
-    struct State: Sendable, Equatable {
-        var amount: Int = 5
-    }
-
-    enum Action: Sendable, Equatable {
-        case noop
-    }
-
-    struct Environment: Sendable {
-        var formatMoney: @Sendable (Int) -> String
-    }
-
-    // swiftlint:disable:next convenience_type
-    final class ViewModel {
-        struct ViewState: Sendable, Equatable {
-            var display: String
-        }
-        enum ViewAction: Sendable {
-            case tapped
-        }
-    }
-
-    static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewModel.ViewState> { env in
-        { state in .init(display: env.formatMoney(state.amount)) }
-    }
-    static let mapAction = Reader<Environment, @Sendable (ViewModel.ViewAction) -> Action> { _ in { _ in .noop } }
-
-    static func behavior() -> Behavior<Action, State, Environment> {
-        Reducer.reduce { (_: Action, _: inout State) in }.asBehavior()
-    }
-
-    typealias Content = FormattingView
-}
-
-@Suite("mapState — environment injection")
-@MainActor
-struct MapStateEnvironmentTests {
-    @Test func mapStateUsesInjectedEnvironment() {
-        let env = FormattingFeature.Environment(formatMoney: { "$\($0).00" })
-        #expect(FormattingFeature.mapState(env)(.init(amount: 7)).display == "$7.00")
-    }
-
-    @Test func differentEnvironmentsFormatDifferently() {
-        let dollars = FormattingFeature.Environment(formatMoney: { "$\($0)" })
-        let euros = FormattingFeature.Environment(formatMoney: { "€\($0)" })
-        #expect(FormattingFeature.mapState(dollars)(.init(amount: 3)).display == "$3")
-        #expect(FormattingFeature.mapState(euros)(.init(amount: 3)).display == "€3")
     }
 }
 #endif

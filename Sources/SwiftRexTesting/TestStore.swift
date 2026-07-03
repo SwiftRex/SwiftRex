@@ -79,7 +79,7 @@ import Testing
 /// ## StoreType conformance
 ///
 /// `TestStore` conforms to ``StoreType`` so it can be used as a backing store for
-/// ``StoreProjection``, enabling the feature test harness to wire a live ``ViewModel`` directly
+/// ``StoreProjection``, enabling the feature test harness to wire a live ``ViewStore`` directly
 /// to the test store and capture ``view`` for snapshot testing.
 @MainActor
 public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable>: StoreType, @unchecked Sendable {
@@ -237,9 +237,9 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
 
     /// Registers callbacks for both sides of each state mutation.
     ///
-    /// Required by ``StoreType``; used by ``StoreProjection`` and ``ViewModel`` to observe
+    /// Required by ``StoreType``; used by ``StoreProjection`` and ``ViewStore`` to observe
     /// state changes. In `TestStore`, callbacks fire **synchronously** inside each `run(_:)` call,
-    /// so ``ViewModel``-tracked properties update immediately when ``dispatch(_:sourceLocation:assert:)``
+    /// so ``ViewStore``-tracked properties update immediately when ``dispatch(_:sourceLocation:assert:)``
     /// or ``receive`` runs — one `flush()` is enough for SwiftUI to pick up the change.
     public func observe(
         willChange: @escaping @MainActor @Sendable () -> Void,

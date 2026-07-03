@@ -37,9 +37,9 @@ import SwiftRex
 /// | iOS | Recommended wrapper | Property wrapper |
 /// | --- | --- | --- |
 /// | 15+ | ``ObservableObjectStore`` | `@StateObject` / `@ObservedObject` |
-/// | 17+ | ``ObservableStore`` | `@State` |
+/// | 17+ | ``ViewStore`` | `@State` |
 ///
-/// On iOS 17+ prefer ``ObservableStore`` — the `@Observable` macro tracks individual field
+/// On iOS 17+ prefer ``ViewStore`` — the `@Observable` macro tracks individual field
 /// access, so only views that read a changed field re-render.
 @MainActor
 public final class ObservableObjectStore<Action: Sendable, State: Sendable>
@@ -85,7 +85,7 @@ extension StoreType {
     ///     .asObservableObject()
     /// ```
     ///
-    /// On iOS 17+ prefer ``@ViewModel`` for field-level `@Observable` tracking.
+    /// On iOS 17+ prefer ``TrackedViewStore`` for field-level `@Observable` tracking.
     ///
     /// - Returns: An ``ObservableObjectStore`` wrapping `self`.
     public func asObservableObject() -> ObservableObjectStore<Action, State> {

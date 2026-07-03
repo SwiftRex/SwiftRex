@@ -4,15 +4,16 @@ import SwiftSyntaxMacros
 
 /// Implements `@Feature(_ role:)` — the single macro for a module entry point or an internal screen.
 ///
-/// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action`, `@Lenses` to nested `State`, and
-///   `@ViewModel` to nested `ViewModel`.
+/// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action` and `ViewAction`, and `@Lenses` to
+///   nested `State`.
 /// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
-///   always generates `view(store:environment:) -> some View`, which builds the (reused)
-///   `@ViewModel` from an environment-applied projection and hands it to the internal `Content`.
+///   generates `view(store:environment:) -> some View` (when a `Content` view exists) building the
+///   view store from an environment-aware projection: a coarse `ViewStore`, or a field-level
+///   `TrackedViewStore` when the nested `ViewState` is `@Tracked`.
 ///
 /// It generates **no** protocol conformance: `State`/`Action`/`Environment`/`Input` stay whatever
-/// access the author declares (public for an entry point), while `ViewModel`/`ViewState`/
-/// `ViewAction`/`Content` stay internal and are hidden behind `view()`'s opaque return.
+/// access the author declares (public for an entry point), while `ViewState`/`ViewAction`/`Content`
+/// stay internal and are hidden behind `view()`'s opaque return.
 public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
     // MARK: - MemberMacro
 
@@ -38,20 +39,25 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
             members.append("\(raw: access)static func initialState(with _: Void) -> State { .init() }")
         }
 
-        // The erased entry: build the reused `@ViewModel` from an environment-aware projection —
-        // both `mapAction` (parse side) and `mapState` (format side) are `Reader<Environment, …>`,
-        // applied by the projection — and wrap it in the internal `Content`. The opaque `some View`
-        // return hides `Content`/`ViewModel` from other packages.
-        members.append(
-            """
-            @MainActor \(raw: access)static func view(
-                store: some StoreType<Action, State>,
-                environment: Environment
-            ) -> some View {
-                Content(viewModel: ViewModel(store: store.projection(environment: environment, action: mapAction, state: mapState)))
-            }
-            """
-        )
+        // The erased entry — generated only when the feature has a `Content` view. Both `mapAction`
+        // (parse) and `mapState` (format) are `Reader<Environment, …>`, applied by the projection.
+        // The view store is picked by observation strategy: `@Tracked` on the nested `ViewState`
+        // ⇒ field-level `TrackedViewStore`, otherwise the coarse `ViewStore`. The opaque `some View`
+        // return hides `Content`/`ViewState`/`ViewAction` from other packages.
+        if hasNestedType("Content", in: declaration) {
+            let store = hasTrackedViewState(in: declaration) ? "TrackedViewStore" : "ViewStore"
+            members.append(
+                """
+                @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+                @MainActor \(raw: access)static func view(
+                    store: some StoreType<Action, State>,
+                    environment: Environment
+                ) -> some View {
+                    Content(viewStore: \(raw: store)(store.projection(environment: environment, action: mapAction, state: mapState)))
+                }
+                """
+            )
+        }
 
         return members
     }
@@ -64,17 +70,14 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
         providingAttributesFor member: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
-        if let enumDecl = member.as(EnumDeclSyntax.self), enumDecl.name.text == "Action" {
+        if let enumDecl = member.as(EnumDeclSyntax.self),
+           enumDecl.name.text == "Action" || enumDecl.name.text == "ViewAction" {
             guard !hasAttribute("Prisms", on: enumDecl.attributes) else { return [] }
             return ["@Prisms"]
         }
         if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "State" {
             guard !hasAttribute("Lenses", on: structDecl.attributes) else { return [] }
             return ["@Lenses"]
-        }
-        if let classDecl = member.as(ClassDeclSyntax.self), classDecl.name.text == "ViewModel" {
-            guard !hasAttribute("ViewModel", on: classDecl.attributes) else { return [] }
-            return ["@ViewModel"]
         }
         return []
     }
@@ -107,6 +110,16 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
                 || decl.as(ClassDeclSyntax.self)?.name.text == name
                 || decl.as(ActorDeclSyntax.self)?.name.text == name
                 || decl.as(TypeAliasDeclSyntax.self)?.name.text == name
+        }
+    }
+
+    /// Whether the nested `ViewState` struct is annotated `@Tracked` — the syntactic signal that
+    /// the generated `view()` should build a field-level `TrackedViewStore` rather than `ViewStore`.
+    private static func hasTrackedViewState(in declaration: some DeclGroupSyntax) -> Bool {
+        declaration.memberBlock.members.contains { member in
+            guard let structDecl = member.decl.as(StructDeclSyntax.self),
+                  structDecl.name.text == "ViewState" else { return false }
+            return hasAttribute("Tracked", on: structDecl.attributes)
         }
     }
 

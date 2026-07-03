@@ -5,13 +5,12 @@ import SwiftRex
 /// A generic, `@Observable` view store — one class over any ``StoreType``, holding the whole
 /// projected `ViewState` in a single observed property and forwarding dispatch.
 ///
-/// It is the coarse alternative to a per-feature `@ViewModel` class: instead of a macro-generated
-/// property-by-property mirror (one `_field` + computed pair each, for field-level invalidation),
-/// `ViewStore` observes `ViewState` as a whole. That means the observing `body` re-evaluates on any
-/// `ViewState` change — but SwiftUI's own structural diffing skips redrawing subviews whose inputs
-/// didn't change, so the difference from field-level tracking is *body re-evaluation* only, which is
-/// cheap. Reach for `@ViewModel` when you have a genuinely hot, wide screen and measured a win;
-/// otherwise `ViewStore` removes the duplication.
+/// It is the coarse alternative to ``TrackedViewStore``: instead of a `@Tracked` field-by-field
+/// mirror (field-level invalidation), `ViewStore` observes `ViewState` as a whole. That means the
+/// observing `body` re-evaluates on any `ViewState` change — but SwiftUI's own structural diffing
+/// skips redrawing subviews whose inputs didn't change, so the difference from field-level tracking
+/// is *body re-evaluation* only, which is cheap. Reach for `@Tracked` / ``TrackedViewStore`` when you
+/// have a genuinely hot, wide screen and measured a win; otherwise `ViewStore` keeps it simple.
 ///
 /// Build one from an environment-aware projection so the view formats/parses with live dependencies:
 ///
