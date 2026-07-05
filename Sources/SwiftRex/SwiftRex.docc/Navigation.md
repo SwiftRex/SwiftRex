@@ -4,114 +4,174 @@ Model navigation as a function of state: routes live in state, SwiftUI bindings 
 
 ## Overview
 
-Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one store for the whole app; a view holds only a projection. Behavior mutates the navigation *state* (a route, an optional, a path, a selection); it never touches the view or the router. Standard SwiftUI containers (`sheet`, `NavigationStack`, `TabView`, windows) are pluggable renderings of a few state *shapes*.
+Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one store for the whole app; a view holds only a projection. Behavior mutates the navigation *state* (a route, an optional, a path, a selection); it never touches the view or the router. Every SwiftUI navigation container — sheet, cover, popover, alert, dialog, inspector, `NavigationStack`, `NavigationSplitView`, `TabView`, pages, windows — is just a pluggable *rendering* of one of four state **shapes**:
 
-Four shapes cover it:
-
-| Shape | State | Lift | SwiftUI binding | Container |
+| Shape | State | Lift | Binding | Reducer |
 | --- | --- | --- | --- | --- |
-| Optional / modal | `Item?` (or `Bool`) | `liftOptional` | `item(_:dismiss:)` / `presence(_:dismiss:)` | sheet, cover, popover |
-| Stack | `[Route]` | `liftCollection` | `path(_:set:)` | `NavigationStack(path:)` |
-| Selection (1-of-N) | `Sel` | plain `lift` ×N | `selection(_:set:)` | `TabView`, split view |
-| Scene set | keyed sub-states | element projection | `WindowGroup(for:)` | windows |
+| **Optional / modal** — 0-or-1, child created on present | `Item?` (or `Bool`) | `liftOptional` | ``StoreType/item(_:dismiss:)`` / ``StoreType/presence(_:dismiss:)`` | ``Behavior/navigationItem(_:action:allow:)`` |
+| **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | ``StoreType/path(_:set:)`` | ``Behavior/navigationStack(_:action:allow:)`` |
+| **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | ``StoreType/selection(_:set:)`` | ``Behavior/navigationSelection(_:action:allow:)`` |
+| **Scene set** — 0-to-N windows | keyed sub-states | element/dictionary projection | ``StoreType/hasScene(_:in:)`` + `WindowGroup(for:)` | ordinary open/close actions |
 
-## Scope — declare the wiring once
+The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers.
 
-A ``Scope`` captures how a child feature embeds into the app store — action prism, state key path, environment narrowing — and derives its `lifted` behavior. Constructing one is a **compile-time proof** the feature is wired; a missing state slot, action case, or env mapping is a compile error at the literal.
+## Every container, by shape
 
-```swift
-let detailScope = Scope(
-    behavior:    Detail.behavior(),
-    action:      \.detail,      // PrismKeyPath<AppAction, Detail.Action>
-    state:       \.detail,      // WritableKeyPath<AppState, Detail.State>
-    environment: \.detailEnv    // KeyPath<World, Detail.Environment>
-)
-```
+### Optional / modal — `Item?` or `Bool`
 
-Register every scope in one place with ``Scopes`` so you can't forget to compose a behavior:
+Presentation and child lifetime are one fact: set the optional and the child exists and shows; clear it and it tears down. Use ``StoreType/item(_:dismiss:)`` when the presented content needs state (an `Identifiable` value), ``StoreType/presence(_:dismiss:)`` when a `Bool` suffices. Both only ever dispatch the *dismiss* action — presentation is driven by state, never by the binding.
 
 ```swift
-let features = Scopes(homeScope, detailScope, settingsScope)
-let appBehavior = Behavior.combine([features.behavior, navigationReducer])
-let store = Store(initial: .init(), behavior: appBehavior, environment: world)
-```
+// Sheet, full-screen cover, popover — item- or isPresented-driven, interchangeably:
+.sheet(item: store.item(\.editing, dismiss: .dismissEditor)) { item in router.view(for: .editor(item.id)) }
+.fullScreenCover(isPresented: store.presence(\.onboarding, dismiss: .finishOnboarding)) { router.view(for: .onboarding) }
+.popover(item: store.item(\.tip, dismiss: .dismissTip)) { tip in TipView(tip) }
 
-## Bindings — the WHEN
+// Bottom sheet — a sheet whose content carries detents:
+.sheet(isPresented: store.presence(\.filters, dismiss: .closeFilters)) {
+    router.view(for: .filters).presentationDetents([.medium, .large])
+}
 
-Store-backed bindings drive native SwiftUI containers; a write dispatches an action, so presentation stays a function of state.
+// Inspector (iOS 17+) — Bool-driven:
+.inspector(isPresented: store.presence(\.inspector, dismiss: .hideInspector)) { router.view(for: .inspector) }
 
-```swift
-.sheet(item: store.item(\.selected, dismiss: .deselect)) { item in … }
-NavigationStack(path: store.path(\.path, set: NavAction.setPath)) { root }
-TabView(selection: store.selection(\.tab, set: AppAction.selectTab)) { … }
-```
+// Single push via NavigationStack, without a path:
+.navigationDestination(isPresented: store.presence(\.detail, dismiss: .popDetail)) { router.view(for: .detail) }
 
-## Navigation reducers — apply, or veto
-
-Fold a navigation reducer into the app behavior to handle the standard operations. Default applies every op; pass `allow` to veto or gate one (return `false` to block) — a vetoed op leaves state unchanged and the binding re-presents.
-
-```swift
-Behavior.navigationStack(\.path, action: \.nav)                         // push/pop/setPath
-Behavior.navigationItem(\.sheet, action: \.modal) { op, s in !s.isDirty } // block dismiss while dirty
-Behavior.navigationSelection(\.tab, action: \.select)
-```
-
-## Router — the WHAT (and the environment crux)
-
-`Feature.view(store:environment:)` needs an environment, but a navigation destination runs inside the *environment-free* view body. A **router** — a value holding the store and the world — resolves that: its `@ViewBuilder view(for:)` switch builds each child, supplying the child's environment there. `some View` throughout — no `AnyView`.
-
-```swift
-@MainActor struct AppRouter {
-    let store: MainStore
-    let world: World
-
-    @ViewBuilder func view(for route: AppRoute) -> some View {
-        switch route {
-        case .detail:
-            Detail.view(
-                store: store.projection(action: \.detail, state: \.detail),
-                environment: world.detailEnv                 // env supplied here
-            )
-        }
-    }
+// Alert / confirmation dialog — present with `presence`/`item`; the BUTTONS dispatch their own actions:
+.alert("Delete?", isPresented: store.presence(\.deleteConfirm, dismiss: .cancelDelete), presenting: store.state.deleteConfirm) { item in
+    Button("Delete", role: .destructive) { store.dispatch(.confirmDelete(item.id)) }
+    Button("Cancel", role: .cancel) { store.dispatch(.cancelDelete) }
+}
+.confirmationDialog("Sort", isPresented: store.presence(\.sortDialog, dismiss: .closeSort)) {
+    Button("Newest") { store.dispatch(.sort(.newest)) }
+    Button("Oldest") { store.dispatch(.sort(.oldest)) }
 }
 ```
 
-A navigating view conforms to ``Routable`` and holds its router as a `let`, handed in at construction. Because the router builds every view, it re-hands itself at each construction — deterministic across the sheet/modal boundaries where SwiftUI's `@Environment` propagation is unreliable. The view's body stays environment-free:
+Behavior side: `liftOptional` (the child runs only while `.some`) or ``Behavior/navigationItem(_:action:allow:)`` for standard present/dismiss with an optional veto.
+
+### Stack — `[Route]`
+
+`NavigationStack(path:)` reflects the whole path; SwiftUI hands the binding the new path on any change, so one `setPath` action covers push, back-swipe, and pop-to-root. Destinations resolve through the router.
 
 ```swift
-struct HomeView: View, Routable {
-    let viewStore: ViewStore<Home.State, Home.Action>
-    let router: AppRouter                                     // trapped at construction
-
-    var body: some View {
-        List { … }
-            .sheet(isPresented: viewStore.presence(\.route, dismiss: .dismiss)) {
-                router.view(for: .detail)                     // router supplies env — crux resolved
-            }
-    }
+NavigationStack(path: store.path(\.path, set: NavAction.setPath)) {
+    RootView(...)
+        .navigationDestination(for: AppRoute.self) { route in router.view(for: route) }
 }
 ```
 
-The view never names `Detail` — the router does. A route may resolve to a completely separate module (its own store slice / dependencies) without the presenting feature importing it.
+Behavior side: `liftCollection` per element, plus ``Behavior/navigationStack(_:action:allow:)`` for `push`/`pop`/`popToRoot`/`setPath` (veto e.g. a pop while a form is dirty).
 
-## Multi-scene is single-store
+### Selection — 1-of-N, all children alive
 
-Multiple windows are still one store. Model open scenes as state (a dictionary of per-scene sub-states); each window projects its slice by id; open/close are ordinary actions.
+Tabs, split view, and paged/carousel views keep every child mounted; only the selection changes. All children are lifted **unconditionally** (siblings in state). Unlike modal dismiss, selecting is a normal state change, so ``StoreType/selection(_:set:)`` dispatches on every change.
+
+```swift
+// Tabs:
+TabView(selection: store.selection(\.tab, set: AppAction.selectTab)) {
+    router.view(for: .home).tag(Tab.home)
+    router.view(for: .search).tag(Tab.search)
+}
+
+// Paged / carousel — same selection, page style:
+TabView(selection: store.selection(\.page, set: AppAction.selectPage)) { … }
+    .tabViewStyle(.page)
+
+// Split view — selection + column visibility (the latter is just a plain `binding`):
+NavigationSplitView(columnVisibility: store.binding(\.columns, set: AppAction.setColumns)) {
+    Sidebar(selection: store.selection(\.selectedItem, set: AppAction.select))   // optional selection
+} detail: {
+    router.view(for: .detail)
+}
+```
+
+> A background/unselected child keeps running by default (that's the point of tabs). To pause one, add a supervisor keyed on the selection — it's your policy, not a framework default.
+
+### Scene set — windows, one store
+
+Multiple windows are still one store. Model open scenes as state (a dictionary of per-scene sub-states); each window projects its slice by id; open/close are ordinary actions; ``StoreType/hasScene(_:in:)`` tells a window body whether to render or dismiss.
 
 ```swift
 var body: some Scene {
     WindowGroup { RootView(store: store, router: router) }
     WindowGroup(for: DocID.self) { $id in
         if let id, store.hasScene(id, in: \.documents) {
-            Document.view(store: store.projection(key: id, actionReview: AppAction.document, stateDictionary: \.documents), environment: world.docEnv)
+            Document.view(
+                store: store.projection(key: id, actionReview: AppAction.document, stateDictionary: \.documents),
+                environment: world.docEnv
+            )
+        }
+    }
+    // `Settings`, `MenuBarExtra`, `Window` follow the same single-store pattern.
+}
+```
+
+`openWindow(value: DocID(…))` / `dismissWindow` are triggered by dispatching actions that add or remove a scene's sub-state — the window set is a function of state.
+
+## Scope — declare the wiring once, drive both sides
+
+A ``Scope`` captures how a child ``Feature`` embeds into the app store — action prism, state key path, environment narrowing — and derives **both** its lifted ``Scope/behavior`` and its ``Scope/view(from:world:)``. Constructing one is a **compile-time proof** the feature is wired; a missing state slot, action case, or env mapping is a compile error at the literal.
+
+```swift
+let detailScope = Scope(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)
+detailScope.behavior                          // Behavior<AppAction, AppState, World> — register it
+detailScope.view(from: store, world: world)   // Detail's view, env supplied — call from the router
+```
+
+Register every scope's behavior in one place with ``Scopes`` so you can't forget to compose one:
+
+```swift
+let appBehavior = Scopes(
+    homeScope.behavior,
+    detailScope.behavior,
+    Behavior.navigationStack(\.path, action: \.nav)   // + navigation reducers, logging, …
+).behavior
+let store = Store(initial: .init(), behavior: appBehavior, environment: world)
+```
+
+A child feature conforms with one line — `extension Detail: Feature {}` — where Swift infers the associated types from the members `@Feature` generates.
+
+## Router — the WHAT (and the environment crux)
+
+`Feature.view(store:environment:)` needs an environment, but a navigation destination runs inside the *environment-free* view body. A **router** — a value holding the store and the world — resolves that: its `@ViewBuilder view(for:)` switch builds each child (via ``Scope/view(from:world:)`` or directly), supplying the child's environment there. `some View` throughout — no `AnyView`.
+
+```swift
+@MainActor struct AppRouter {
+    let store: MainStore
+    let world: World
+    let detailScope = Scope(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)
+
+    @ViewBuilder func view(for route: AppRoute) -> some View {
+        switch route {
+        case .detail: detailScope.view(from: store, world: world)   // env supplied here — crux resolved
         }
     }
 }
 ```
 
+A navigating view conforms to ``Routable`` and holds its router as a `let`, handed in at construction. Because the router builds every view, it re-hands itself at each construction — deterministic across the sheet/modal boundaries where SwiftUI's `@Environment` propagation is unreliable. The view body stays environment-free, and never names the child — the router does, so a route may resolve to a completely separate module (its own store slice and dependencies) without the presenting feature importing it.
+
+```swift
+struct HomeView: View, Routable {
+    let viewStore: ViewStore<Home.State, Home.Action>
+    let router: AppRouter
+    var body: some View {
+        List { … }.sheet(isPresented: viewStore.presence(\.route, dismiss: .dismiss)) {
+            router.view(for: .detail)   // router supplies env — crux resolved
+        }
+    }
+}
+```
+
+## Communication between features
+
+A presented child talks back through the core ``Behavior/on(_:dispatch:reduce:)`` bridge: the child emits an action, a bridge routes it to the presenter (clearing the route, seeding state). It works identically for same-store and separate-store children — no direct coupling.
+
 ## Topics
 
 - ``Scope``
 - ``Scopes``
+- ``Feature``
 - ``Routable``

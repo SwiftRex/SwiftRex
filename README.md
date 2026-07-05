@@ -1737,6 +1737,19 @@ Library.view(
 
 On a `.moduleEntryPoint`, only `State`/`Action`/`Environment`/`Input` and the opaque `view()` cross the module boundary; the whole view layer stays `internal`.
 
+## Navigation
+
+Navigation is a **function of state** — one store, routes in state, native SwiftUI containers driven by store-backed bindings that *dispatch* on change. Every container maps to one of four shapes:
+
+| Shape | State | Binding | Reducer | Containers |
+|---|---|---|---|---|
+| **Optional / modal** | `Item?` / `Bool` | `item(_:dismiss:)` / `presence(_:dismiss:)` | `navigationItem` | sheet, cover, popover, bottom sheet (detents), alert, confirmationDialog, inspector, `navigationDestination(isPresented:)` |
+| **Stack** | `[Route]` | `path(_:set:)` | `navigationStack` | `NavigationStack(path:)` |
+| **Selection** (1-of-N, all alive) | `Sel` | `selection(_:set:)` | `navigationSelection` | `TabView`, `.page`/carousel, `NavigationSplitView` |
+| **Scene set** | keyed sub-states | `hasScene(_:in:)` + projection | open/close actions | `WindowGroup(for:)`, multi-window (one store) |
+
+A **`Scope`** declares a child feature's wiring once and drives **both** its `behavior` and its `view` (`Scope(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)`). A hand-written **router** (`@ViewBuilder view(for:)`, no `AnyView`) resolves a route to the child view, supplying the environment the env-free view body can't — the navigation crux. Effect lifecycle is state-driven: a supervisor reacting to route state cancels a screen's effects when it leaves. Full walkthrough: the **State-Driven Navigation** DocC article.
+
 # Testing
 
 The **`SwiftRex.Testing`** product ships `TestStore` — a deterministic, exhaustive harness for a feature's `behavior()`. Add it to your **test** target only, so production targets that depend on `SwiftRex` never link it:
