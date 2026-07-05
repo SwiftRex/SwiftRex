@@ -114,5 +114,21 @@ struct ScopeTests {
         store.dispatch(.counter(.inc))
         #expect(store.state.counter.count == 1)
     }
+
+    @Test func scopesRegistryFoldsAllBehaviors() {
+        let sheetScope = Scope<SCAction, SCState, SCWorld>(
+            behavior: SCCounter.behavior(),
+            action: \.sheet,
+            state: \.sheet,
+            environment: { _ in .init(step: 0) }
+        )
+        let registry = Scopes(counterScope(), sheetScope)
+        var initial = SCState(); initial.sheet = SCCounter.State()
+        let store = Store(initial: initial, behavior: registry.behavior, environment: SCWorld())
+        store.dispatch(.counter(.inc))
+        store.dispatch(.sheet(.inc))
+        #expect(store.state.counter.count == 1)   // both registered behaviors run
+        #expect(store.state.sheet?.count == 1)
+    }
 }
 #endif
