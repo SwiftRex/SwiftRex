@@ -1748,7 +1748,9 @@ Navigation is a **function of state** — one store, routes in state, native Swi
 | **Selection** (1-of-N, all alive) | `Sel` | `selection(_:set:)` | `navigationSelection` | `TabView`, `.page`/carousel, `NavigationSplitView` |
 | **Scene set** | keyed sub-states | `hasScene(_:in:)` + projection | open/close actions | `WindowGroup(for:)`, multi-window (one store) |
 
-A **`Scope`** declares a child feature's wiring once and drives **both** its `behavior` and its `view` (`Scope(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)`). A hand-written **router** (`@ViewBuilder view(for:)`, no `AnyView`) resolves a route to the child view, supplying the environment the env-free view body can't — the navigation crux. Effect lifecycle is state-driven: a supervisor reacting to route state cancels a screen's effects when it leaves. Full walkthrough: the **State-Driven Navigation** DocC article.
+A **`Scope`** declares a child feature's wiring once and drives **both** its `behavior` and its `view` (`Scope(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)`). A hand-written **router** (`@ViewBuilder view(for:)`, no `AnyView`) resolves a route to the child view, supplying the environment the env-free view body can't — the navigation crux. Effect lifecycle is state-driven: a supervisor reacting to route state cancels a screen's effects when it leaves.
+
+System UI and UIKit screens — share sheet, photo/document pickers, web views, `SFSafariViewController` — are the **optional/modal** shape with a `UIViewControllerRepresentable` as the presented content (its `Coordinator` dispatches results back as actions). URLs sit at the boundary, not in a shape: an **incoming** deep link is an action source (`.onOpenURL { dispatch }`), while **opening an external** URL is a fire-and-forget effect over an injected `openURL` dependency. Full walkthrough: the **State-Driven Navigation** DocC article.
 
 # Testing
 
