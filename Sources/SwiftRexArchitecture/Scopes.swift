@@ -3,36 +3,31 @@ import SwiftRex
 
 /// A single registration point for an app's scoped feature behaviors.
 ///
-/// List every feature's ``Scope`` once; ``behavior`` folds their `lifted` behaviors into one. This
-/// is the app-composition companion to ``Scope`` — declaring a scope registers its behavior, so you
-/// can't wire a feature into state/action without also composing its behavior:
+/// Each ``Scope`` is generic over its child feature, so scopes are heterogeneous and can't share one
+/// array — but their ``Scope/behavior`` is homogeneous (`Behavior<GlobalAction, GlobalState,
+/// GlobalEnvironment>`). List those; ``behavior`` folds them into one. Declaring a scope and passing
+/// its `.behavior` here is the single place a feature's behavior is registered:
 ///
 /// ```swift
-/// let features = Scopes(homeScope, detailScope, settingsScope)
-/// let appBehavior = Behavior.combine([features.behavior, navigationReducer, loggingBehavior])
+/// let appBehavior = Scopes(homeScope.behavior, detailScope.behavior, navigationReducer).behavior
 /// let store = Store(initial: .init(), behavior: appBehavior, environment: world)
 /// ```
 ///
-/// The same scope values feed a hand-written router's `@ViewBuilder view(for:)` switch, so behavior
-/// registration and navigation share one source of truth. (A future collecting macro could derive
-/// this list from the route enum; today it is one explicit array — the single place to add a
-/// feature.)
+/// The same scope values feed a hand-written router's `@ViewBuilder view(for:)` switch (via
+/// ``Scope/view(from:world:)``), so behavior registration and navigation share one source of truth.
 public struct Scopes<GlobalAction: Sendable, GlobalState: Sendable, GlobalEnvironment: Sendable>: Sendable {
-    private let scopes: [Scope<GlobalAction, GlobalState, GlobalEnvironment>]
+    /// The combined behavior of every registered scope (plus any extra behaviors passed in) — fold
+    /// this into the store.
+    public let behavior: Behavior<GlobalAction, GlobalState, GlobalEnvironment>
 
-    /// Registers a list of feature scopes.
-    public init(_ scopes: Scope<GlobalAction, GlobalState, GlobalEnvironment>...) {
-        self.scopes = scopes
+    /// Registers scope behaviors (and any extra behaviors, e.g. a navigation reducer or logging).
+    public init(_ behaviors: Behavior<GlobalAction, GlobalState, GlobalEnvironment>...) {
+        self.behavior = .combine(behaviors)
     }
 
-    /// Registers a list of feature scopes (array form).
-    public init(_ scopes: [Scope<GlobalAction, GlobalState, GlobalEnvironment>]) {
-        self.scopes = scopes
-    }
-
-    /// The combined behavior of every registered scope — fold this into the app behavior.
-    public var behavior: Behavior<GlobalAction, GlobalState, GlobalEnvironment> {
-        .combine(scopes.map(\.lifted))
+    /// Registers scope behaviors (array form).
+    public init(_ behaviors: [Behavior<GlobalAction, GlobalState, GlobalEnvironment>]) {
+        self.behavior = .combine(behaviors)
     }
 }
 #endif

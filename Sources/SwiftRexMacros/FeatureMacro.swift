@@ -94,9 +94,13 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
         } else {
             source = "store"   // no view layer — wrap the store directly (ViewState == State)
         }
+        // The store parameter is `any StoreType<Action, State>` (an existential — a CONCRETE type),
+        // not `some StoreType<…>` (a generic parameter). A generic method returning `some View`
+        // cannot bind the `ViewFactory.Body` associated type, so the feature couldn't conform to
+        // `Feature`; the existential can. Callers are unaffected — a `Store` boxes into it.
         return """
             \(raw: availability)@MainActor \(raw: access)static func view(
-                store: some StoreType<Action, State>,
+                store: any StoreType<Action, State>,
                 environment: Environment
             ) -> some View {
                 Content(viewStore: \(raw: storeType)(\(raw: source)))

@@ -2,11 +2,13 @@
 import CoreFP
 @testable import SwiftRex
 @testable import SwiftRexArchitecture
+import SwiftUI
 import Testing
 
-// A child feature reduced to the essentials Scope needs: a behavior + (Action, State, Environment).
-// No @Feature required — Scope takes the behavior + optics as values.
-private enum SCCounter {
+// A child feature (a real @Feature so it conforms to `Feature`: behavior + view). Scope derives both
+// its lifted behavior and its view from it.
+@Feature(type: .internalOnly, strategy: .observationSimple)
+enum SCCounter {
     struct State: Sendable, Equatable { var count = 0 }
     enum Action: Sendable, Equatable { case inc, pull, add(Int) }
     struct Environment: Sendable { var step: Int }
@@ -15,14 +17,22 @@ private enum SCCounter {
         .handle { action, _ in
             switch action {
             case .inc:        .reduce { $0.count += 1 }
-            case .pull:       .produce { ctx in Effect.just(.add(ctx.environment.step)) } // reads env
+            case .pull:       .produce { ctx in Effect.just(.add(ctx.environment.step)) }  // reads env
             case .add(let n): .reduce { $0.count += n }
             }
         }
     }
+    typealias Content = SCCounterView
 }
 
-// @Prisms/@Lenses require >= fileprivate (they reject `private`).
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+@BoundTo(SCCounter.self, strategy: .observationSimple)
+struct SCCounterView: View { var body: some View { Text("\(viewStore.state.count)") } }
+
+@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+extension SCCounter: Feature {}   // one-line conformance
+
+// @Prisms/@Lenses require >= fileprivate.
 // swiftlint:disable private_over_fileprivate
 @Prisms
 fileprivate enum SCAction: Sendable, Equatable {
@@ -45,90 +55,63 @@ private struct SCWorld: Sendable {
 @Suite("Scope")
 @MainActor
 struct ScopeTests {
-    // The Scope literal itself is a compile-time proof of wiring: it would not compile if the
-    // action case, state slot, or env-narrowing didn't line up with SCCounter's own types.
-    private func counterScope() -> Scope<SCAction, SCState, SCWorld> {
-        Scope(behavior: SCCounter.behavior(), action: \.counter, state: \.counter, environment: { _ in .init(step: 0) })
+    // The Scope literal is a compile-time proof of wiring — it wouldn't compile if the action case,
+    // state slot, or env-narrowing didn't line up with SCCounter's own types.
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    private func counterScope() -> Scope<SCAction, SCState, SCWorld, SCCounter> {
+        Scope<SCAction, SCState, SCWorld, SCCounter>(SCCounter.self, action: \.counter, state: \.counter, environment: { _ in .init(step: 0) })
     }
 
-    @Test func presentScopeLiftsActionAndState() {
-        let store = Store(initial: SCState(), behavior: counterScope().lifted, environment: SCWorld())
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func behaviorLiftsActionAndState() {
+        let store = Store(initial: SCState(), behavior: counterScope().behavior, environment: SCWorld())
         store.dispatch(.counter(.inc))
-        #expect(store.state.counter.count == 1) // action prism + state key path both applied
+        #expect(store.state.counter.count == 1)   // action prism + state key path both applied
     }
 
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @Test func envIsNarrowedFromWorld() async {
-        let scope = Scope<SCAction, SCState, SCWorld>(
-            behavior: SCCounter.behavior(),
+        let scope = Scope<SCAction, SCState, SCWorld, SCCounter>(
+            SCCounter.self,
             action: \.counter,
-            state: \.counter,
-            environment: { SCCounter.Environment(step: $0.step) } // narrow SCWorld.step
+            state: \SCState.counter,
+            environment: { (w: SCWorld) in SCCounter.Environment(step: w.step) }
         )
-        let store = Store(initial: SCState(), behavior: scope.lifted, environment: SCWorld(step: 7))
-        store.dispatch(.counter(.pull)) // effect reads env.step=7 → .add(7)
+        let store = Store(initial: SCState(), behavior: scope.behavior, environment: SCWorld(step: 7))
+        store.dispatch(.counter(.pull))            // effect reads env.step=7 → .add(7)
         await Task.yield()
         #expect(store.state.counter.count == 7)
     }
 
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @Test func envAsKeyPathConvenience() async {
-        let scope = Scope<SCAction, SCState, SCWorld>(
-            behavior: SCCounter.behavior(),
+        let scope = Scope<SCAction, SCState, SCWorld, SCCounter>(
+            SCCounter.self,
             action: \.counter,
-            state: \.counter,
-            environment: \.counterEnv // KeyPath<SCWorld, SCCounter.Environment>
+            state: \SCState.counter,
+            environment: \SCWorld.counterEnv
         )
-        let store = Store(initial: SCState(), behavior: scope.lifted, environment: SCWorld(step: 3))
+        let store = Store(initial: SCState(), behavior: scope.behavior, environment: SCWorld(step: 3))
         store.dispatch(.counter(.pull))
         await Task.yield()
-        #expect(store.state.counter.count == 3) // env-narrow via key path reached the effect
+        #expect(store.state.counter.count == 3)   // env-narrow via key path reached the effect
     }
 
-    @Test func optionalScopeRunsWhenSome() {
-        let scope = Scope<SCAction, SCState, SCWorld>(
-            behavior: SCCounter.behavior(),
-            action: \.sheet,
-            state: \.sheet, // WritableKeyPath<SCState, SCCounter.State?>
-            environment: { _ in .init(step: 0) }
-        )
-        var initial = SCState(); initial.sheet = SCCounter.State(count: 5)
-        let store = Store(initial: initial, behavior: scope.lifted, environment: SCWorld())
-        store.dispatch(.sheet(.inc))
-        #expect(store.state.sheet?.count == 6)
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func scopeBuildsTheChildView() {
+        // Scope drives BOTH: .behavior (above) and .view here — env supplied from the world.
+        let store = Store(initial: SCState(), behavior: counterScope().behavior, environment: SCWorld())
+        _ = counterScope().view(from: store, world: SCWorld())
     }
 
-    @Test func optionalScopeSkipsWhenNil() {
-        let scope = Scope<SCAction, SCState, SCWorld>(
-            behavior: SCCounter.behavior(),
-            action: \.sheet,
-            state: \.sheet,
-            environment: { _ in .init(step: 0) }
-        )
-        let store = Store(initial: SCState(), behavior: scope.lifted, environment: SCWorld()) // sheet nil
-        store.dispatch(.sheet(.inc))
-        #expect(store.state.sheet == nil) // child behavior never runs while slice is nil
-    }
-
-    @Test func scopesFoldIntoOneAppBehavior() {
-        let app = Behavior.combine([counterScope().lifted])
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func scopesRegistryFoldsBehaviors() {
+        let app = Scopes(counterScope().behavior).behavior
         let store = Store(initial: SCState(), behavior: app, environment: SCWorld())
         store.dispatch(.counter(.inc))
         #expect(store.state.counter.count == 1)
     }
-
-    @Test func scopesRegistryFoldsAllBehaviors() {
-        let sheetScope = Scope<SCAction, SCState, SCWorld>(
-            behavior: SCCounter.behavior(),
-            action: \.sheet,
-            state: \.sheet,
-            environment: { _ in .init(step: 0) }
-        )
-        let registry = Scopes(counterScope(), sheetScope)
-        var initial = SCState(); initial.sheet = SCCounter.State()
-        let store = Store(initial: initial, behavior: registry.behavior, environment: SCWorld())
-        store.dispatch(.counter(.inc))
-        store.dispatch(.sheet(.inc))
-        #expect(store.state.counter.count == 1)   // both registered behaviors run
-        #expect(store.state.sheet?.count == 1)
-    }
+    // (Optional/modal children register their behavior via `liftOptional` — covered in the behavior
+    // tests; `Scope` here is present-state and drives both behavior and view.)
 }
 #endif

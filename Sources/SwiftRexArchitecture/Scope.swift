@@ -2,91 +2,76 @@
 import CoreFP
 import SwiftRex
 
-/// The wiring that scopes a child feature into a parent (app) store — declared **once** and reused
-/// by both behavior composition and (in a later stage) navigation.
+/// The wiring that scopes a child ``Feature`` into a parent (app) store — declared **once** and used
+/// for both behavior composition **and** navigation.
 ///
-/// A `Scope` captures how a child feature's `(Action, State, Environment)` embeds into the parent's
-/// `(GlobalAction, GlobalState, GlobalEnvironment)`: the action prism, the state key path, and the
-/// environment-narrowing closure. From those it derives the child's **lifted behavior**
-/// (``lifted``), typed at the global types so a whole app's behaviors are homogeneous and fold with
-/// the ``Behavior`` monoid.
+/// A `Scope` captures how a child embeds into the parent's `(GlobalAction, GlobalState,
+/// GlobalEnvironment)`: the action prism, the state key path, and the environment-narrowing. From the
+/// child feature it derives:
+/// - ``behavior`` — the child's behavior lifted to the global types (register it in the app behavior);
+/// - ``view(from:world:)`` — the child's view, built with the scoped store and narrowed environment.
+///   This resolves the navigation crux: an environment-free view body never builds a child itself; a
+///   router calls this.
 ///
 /// ## Compile-time proof of wiring
 ///
-/// Constructing a `Scope` *is* the proof the feature is wired: the initializer will not type-check
-/// unless the global state slot, global action case (prism), environment-narrowing, and the child's
-/// own `(Action, State, Environment)` all exist and line up. Forget the slot, the case, or the
-/// env-narrowing and you get a **compile error at the `Scope` literal** — not a silent missing
-/// screen at runtime.
+/// Constructing a `Scope` is the proof the feature is wired: it won't type-check unless the global
+/// state slot, action case, and env-narrowing line up with the child feature's own `(Action, State,
+/// Environment)`. Forget one and you get a compile error at the literal.
 ///
 /// ```swift
-/// let homeScope = Scope(
-///     behavior:    HomeFeature.behavior(),
-///     action:      \.home,          // PrismKeyPath<AppAction, HomeFeature.Action>
-///     state:       \.home,          // WritableKeyPath<AppState, HomeFeature.State>
-///     environment: \.homeEnv        // KeyPath<World, HomeFeature.Environment>
-/// )
-/// // homeScope.lifted : Behavior<AppAction, AppState, World>
+/// let detailScope = Scope(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)
+/// detailScope.behavior                          // Behavior<AppAction, AppState, World>
+/// detailScope.view(from: store, world: world)   // Detail's view, env supplied — for a router switch
 /// ```
 ///
-/// Register every scope's ``lifted`` behavior in one homogeneous list so you can't forget to
-/// compose one:
-///
-/// ```swift
-/// let appBehavior = Behavior.combine([homeScope.lifted, detailScope.lifted, navigationReducer])
-/// ```
-///
-/// A scope over an **optional** child state (`ChildState?`) lifts with `liftOptional`, so the child
-/// behavior runs only while its slice is `.some` — the shape a presented/pushed screen uses.
-public struct Scope<GlobalAction: Sendable, GlobalState: Sendable, GlobalEnvironment: Sendable>: Sendable {
+/// This `Scope` is for **present-state** children (a sibling slice always in state — the shape a tab,
+/// split pane, or a route whose state lives alongside uses). An **optional/modal** child (`State?`)
+/// registers its behavior with `liftOptional` (see the navigation reducers) and has its view
+/// hand-wired in the router via a store `item` projection.
+public struct Scope<
+    GlobalAction: Sendable & Prismatic,
+    GlobalState: Sendable,
+    GlobalEnvironment: Sendable,
+    F: Feature
+>: Sendable {
     /// The child behavior lifted to the global `(Action, State, Environment)` — homogeneous across
     /// every scope, so a whole app's behaviors fold with ``Behavior/combine(_:)-(Array)``.
-    public let lifted: Behavior<GlobalAction, GlobalState, GlobalEnvironment>
+    public let behavior: Behavior<GlobalAction, GlobalState, GlobalEnvironment>
 
-    // MARK: - Always-present child state (env as closure)
+    private let action: PrismKeyPath<GlobalAction, F.Action>
+    private let state: KeyPath<GlobalState, F.State>
+    private let narrowEnvironment: @Sendable (GlobalEnvironment) -> F.Environment
 
-    /// Scopes a child whose state is always present in the parent (a sibling slice — the shape used
-    /// for tabs/split children that all stay alive).
-    public init<ChildAction: Sendable, ChildState: Sendable, ChildEnvironment: Sendable>(
-        behavior: Behavior<ChildAction, ChildState, ChildEnvironment>,
-        action: PrismKeyPath<GlobalAction, ChildAction>,
-        state: WritableKeyPath<GlobalState, ChildState>,
-        environment: @escaping @Sendable (GlobalEnvironment) -> ChildEnvironment
-    ) where GlobalAction: Prismatic {
-        lifted = behavior.lift(action: action, state: state, environment: environment)
+    /// Scopes a child feature whose state is a present sibling slice.
+    public init(
+        _ feature: F.Type,
+        action: PrismKeyPath<GlobalAction, F.Action>,
+        state: WritableKeyPath<GlobalState, F.State>,
+        environment: @escaping @Sendable (GlobalEnvironment) -> F.Environment
+    ) {
+        self.action = action
+        self.state = state
+        self.narrowEnvironment = environment
+        self.behavior = F.behavior().lift(action: action, state: state, environment: environment)
     }
 
-    /// Env-as-key-path convenience for an always-present child.
-    public init<ChildAction: Sendable, ChildState: Sendable, ChildEnvironment: Sendable>(
-        behavior: Behavior<ChildAction, ChildState, ChildEnvironment>,
-        action: PrismKeyPath<GlobalAction, ChildAction>,
-        state: WritableKeyPath<GlobalState, ChildState>,
-        environment: KeyPath<GlobalEnvironment, ChildEnvironment> & Sendable
-    ) where GlobalAction: Prismatic {
-        self.init(behavior: behavior, action: action, state: state, environment: { $0[keyPath: environment] })
+    /// Env-as-key-path convenience.
+    public init(
+        _ feature: F.Type,
+        action: PrismKeyPath<GlobalAction, F.Action>,
+        state: WritableKeyPath<GlobalState, F.State>,
+        environment: KeyPath<GlobalEnvironment, F.Environment> & Sendable
+    ) {
+        self.init(feature, action: action, state: state, environment: { $0[keyPath: environment] })
     }
 
-    // MARK: - Optional child state (present-while-.some)
-
-    /// Scopes a child whose state is **optional** — the child behavior runs only while the slice is
-    /// `.some` (the shape a presented sheet / pushed screen uses). Lifts with `liftOptional`.
-    public init<ChildAction: Sendable, ChildState: Sendable, ChildEnvironment: Sendable>(
-        behavior: Behavior<ChildAction, ChildState, ChildEnvironment>,
-        action: PrismKeyPath<GlobalAction, ChildAction>,
-        state: WritableKeyPath<GlobalState, ChildState?>,
-        environment: @escaping @Sendable (GlobalEnvironment) -> ChildEnvironment
-    ) where GlobalAction: Prismatic {
-        lifted = behavior.liftOptional(action: action, state: state, environment: environment)
-    }
-
-    /// Env-as-key-path convenience for an optional child.
-    public init<ChildAction: Sendable, ChildState: Sendable, ChildEnvironment: Sendable>(
-        behavior: Behavior<ChildAction, ChildState, ChildEnvironment>,
-        action: PrismKeyPath<GlobalAction, ChildAction>,
-        state: WritableKeyPath<GlobalState, ChildState?>,
-        environment: KeyPath<GlobalEnvironment, ChildEnvironment> & Sendable
-    ) where GlobalAction: Prismatic {
-        self.init(behavior: behavior, action: action, state: state, environment: { $0[keyPath: environment] })
+    /// Builds the child feature's view from the scoped store and narrowed environment — the WHAT of
+    /// navigation. Call it from a router's `@ViewBuilder view(for:)` switch; the environment comes
+    /// from the world the router holds, never from the (environment-free) presenting view body.
+    @MainActor
+    public func view(from store: any StoreType<GlobalAction, GlobalState>, world: GlobalEnvironment) -> F.Body {
+        F.view(store: store.projection(action: action, state: state), environment: narrowEnvironment(world))
     }
 }
 #endif
