@@ -39,7 +39,7 @@ let package = Package(
         .package(url: "https://github.com/luizmb/Hourglass.git", from: "0.6.2"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),
-        .package(url: "https://github.com/luizmb/ReactiveConcurrency.git", from: "0.2.0"),
+        .package(url: "https://github.com/luizmb/ReactiveConcurrency.git", from: "0.3.0"),
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "603.0.1"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0")
     ],
