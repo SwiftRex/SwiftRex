@@ -29,11 +29,11 @@ struct StoreBindingsTests {
             initial: S(),
             behavior: Reducer.reduce { (action: A, state: inout S) in
                 switch action {
-                case .setName(let n):       state.name = n
+                case .setName(let n): state.name = n
                 case .presentEditor(let v): state.editor = v
-                case .dismissEditor:        state.editor = nil
-                case .select(let item):     state.selected = item
-                case .deselect:             state.selected = nil
+                case .dismissEditor: state.editor = nil
+                case .select(let item): state.selected = item
+                case .deselect: state.selected = nil
                 }
             }.asBehavior(),
             environment: ()
@@ -93,6 +93,78 @@ struct StoreBindingsTests {
         item.wrappedValue = nil // SwiftUI clearing the sheet
         await Task.yield()
         #expect(store.state.selected == nil)
+    }
+}
+
+// MARK: - Stack (path) + selection bindings
+
+@Suite("StoreType navigation bindings — path & selection")
+@MainActor
+struct StoreNavBindingsTests {
+    private enum Route: Hashable, Sendable { case a, b, c }
+    private enum Tab: Hashable, Sendable { case home, search, profile }
+
+    private struct S: Sendable, Equatable {
+        var path: [Route] = []
+        var tab: Tab = .home
+        var sidebar: Route?
+    }
+    private enum A: Sendable, Equatable {
+        case setPath([Route])
+        case selectTab(Tab)
+        case selectSidebar(Route?)
+    }
+
+    private func makeStore() -> Store<A, S, Void> {
+        Store(
+            initial: S(),
+            behavior: Reducer.reduce { (action: A, state: inout S) in
+                switch action {
+                case .setPath(let p): state.path = p
+                case .selectTab(let t): state.tab = t
+                case .selectSidebar(let r): state.sidebar = r
+                }
+            }.asBehavior(),
+            environment: ()
+        )
+    }
+
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func pathReadsAndDispatchesWholeNewPath() async {
+        let store = makeStore()
+        store.dispatch(.setPath([.a]))
+        await Task.yield()
+        let path = store.path(\.path, set: A.setPath)
+        #expect(path.wrappedValue == [.a])
+        path.wrappedValue = [.a, .b] // SwiftUI push
+        await Task.yield()
+        #expect(store.state.path == [.a, .b])
+        path.wrappedValue = [.a] // SwiftUI pop / back-swipe
+        await Task.yield()
+        #expect(store.state.path == [.a])
+    }
+
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func selectionDispatchesOnEveryChange() async {
+        let store = makeStore()
+        let tab = store.selection(\.tab, set: A.selectTab)
+        #expect(tab.wrappedValue == .home)
+        tab.wrappedValue = .search // selecting a tab is a real state change (not dismiss-only)
+        await Task.yield()
+        #expect(store.state.tab == .search)
+    }
+
+    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+    @Test func optionalSelectionHandlesNilAndValue() async {
+        let store = makeStore()
+        let sidebar = store.selection(\.sidebar, set: A.selectSidebar)
+        #expect(sidebar.wrappedValue == nil)
+        sidebar.wrappedValue = .c
+        await Task.yield()
+        #expect(store.state.sidebar == .c)
+        sidebar.wrappedValue = nil // clearing the sidebar selection
+        await Task.yield()
+        #expect(store.state.sidebar == nil)
     }
 }
 #endif

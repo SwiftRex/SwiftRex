@@ -75,5 +75,61 @@ extension StoreType {
             }
         )
     }
+
+    /// A `Binding<[Element]>` for `NavigationStack(path:)` — the **stack** navigation shape.
+    ///
+    /// SwiftUI hands the binding the *whole* new path on every structural change, so a single
+    /// `set` action carries push (append), pop / back-swipe (truncate), and pop-to-root (empty)
+    /// uniformly. The stack is a function of state; the reducer decides what a new path means
+    /// (see the navigation reducer for standard `push`/`pop`/`setPath` handling).
+    ///
+    /// ```swift
+    /// NavigationStack(path: store.path(\.path, set: NavAction.setPath)) { root }
+    ///     .navigationDestination(for: Route.self) { route in router.view(for: route) }
+    /// ```
+    @MainActor
+    public func path<Element>(
+        _ keyPath: KeyPath<State, [Element]>,
+        set: @escaping @Sendable ([Element]) -> Action,
+        file: String = #fileID,
+        function: String = #function,
+        line: UInt = #line
+    ) -> Binding<[Element]> {
+        binding(keyPath, set: set, file: file, function: function, line: line)
+    }
+
+    /// A `Binding<Value>` for `TabView(selection:)` / `TabView(.page)` / carousels — the **selection**
+    /// shape (exactly one of N, all children alive).
+    ///
+    /// Unlike ``presence(_:dismiss:)`` / ``item(_:dismiss:)`` (which only dispatch on *dismiss*),
+    /// selection dispatches on **every** change — picking a tab is a real state transition the
+    /// reducer honors (and may veto/redirect).
+    ///
+    /// ```swift
+    /// TabView(selection: store.selection(\.tab, set: AppAction.selectTab)) { … }
+    /// ```
+    @MainActor
+    public func selection<Value>(
+        _ keyPath: KeyPath<State, Value>,
+        set: @escaping @Sendable (Value) -> Action,
+        file: String = #fileID,
+        function: String = #function,
+        line: UInt = #line
+    ) -> Binding<Value> {
+        binding(keyPath, set: set, file: file, function: function, line: line)
+    }
+
+    /// A `Binding<Value?>` for `NavigationSplitView`-style **optional** selection (nothing selected
+    /// yet, or a cleared sidebar). Dispatches on every change, including selecting `nil`.
+    @MainActor
+    public func selection<Value>(
+        _ keyPath: KeyPath<State, Value?>,
+        set: @escaping @Sendable (Value?) -> Action,
+        file: String = #fileID,
+        function: String = #function,
+        line: UInt = #line
+    ) -> Binding<Value?> {
+        binding(keyPath, set: set, file: file, function: function, line: line)
+    }
 }
 #endif
