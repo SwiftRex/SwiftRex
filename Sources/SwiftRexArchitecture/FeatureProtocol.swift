@@ -2,20 +2,26 @@
 import SwiftRex
 import SwiftUI
 
-/// A feature: it produces a ``Behavior`` and builds its SwiftUI view. One protocol so a ``Scope`` can
-/// abstract over a feature — driving **both** its behavior and its view — without naming it.
+/// A feature that produces a ``Behavior`` — the composable, liftable capability. A logic-only
+/// feature (no view) can conform to just this.
+public protocol HasBehavior {
+    /// The feature's action type.
+    associatedtype Action: Sendable
+    /// The feature's state type.
+    associatedtype State: Sendable
+    /// The feature's environment (dependencies) type.
+    associatedtype Environment: Sendable
+
+    /// The feature's behavior — its reducer/effects/supervisor, composed once.
+    static func behavior() -> Behavior<Action, State, Environment>
+}
+
+/// A feature that builds its SwiftUI view — the view capability.
 ///
-/// It exposes only the liftable/viewable surface (`Action`/`State`/`Environment` + `behavior`/`view`),
-/// never `ViewState`/`ViewAction` — the reason the earlier view-model-exposing protocol was retired.
-///
-/// `view` takes `any StoreType<Action, State>` (a concrete existential) rather than a generic
-/// `some StoreType`, so its `some View` result can bind ``Body``; a generic method could not. A
-/// `Store` or a `StoreProjection` boxes into the existential, so callers are unaffected.
-///
-/// Conformance is one line — `extension MyFeature: Feature {}` — where Swift infers the associated
-/// types from the members `@Feature` already generates. (The macro can't add it automatically: an
-/// extension macro can't infer `Body` from a member-macro-generated `some View` method.)
-public protocol Feature {
+/// `view` takes `any StoreType<Action, State>` (a concrete existential), **not** a generic
+/// `some StoreType`: a generic method returning `some View` cannot bind the ``Body`` associated
+/// type; the existential can. A `Store` or `StoreProjection` boxes into it, so callers are unaffected.
+public protocol ViewFactory {
     /// The feature's action type.
     associatedtype Action: Sendable
     /// The feature's state type.
@@ -25,11 +31,19 @@ public protocol Feature {
     /// The concrete view type produced — inferred from `view`'s `some View` result.
     associatedtype Body: View
 
-    /// The feature's behavior — its reducer/effects/supervisor, composed once.
-    static func behavior() -> Behavior<Action, State, Environment>
-
     /// Builds the feature's view from the (already scoped) store and environment — the caller
     /// supplies both, resolving the navigation crux (an environment-free view body never builds this).
+    @MainActor static func view(store: any StoreType<Action, State>, environment: Environment) -> Body
+}
+
+/// A full feature: it both produces a ``Behavior`` and builds a view — what a ``Scope`` needs to
+/// drive **both** behavior composition and navigation from one declaration.
+///
+/// It **re-declares** both requirements (rather than only inheriting them). That is what lets a
+/// conformer's associated types infer through the combined protocol — inheriting alone does not.
+/// It exposes only the liftable/viewable surface, never `ViewState`/`ViewAction`.
+public protocol Feature: HasBehavior, ViewFactory {
+    static func behavior() -> Behavior<Action, State, Environment>
     @MainActor static func view(store: any StoreType<Action, State>, environment: Environment) -> Body
 }
 #endif

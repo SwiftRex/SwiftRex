@@ -51,9 +51,10 @@ struct FeatureProtocolTests {
         _ = drive(FPLeaf.self, store: store, environment: FPLeaf.Environment(step: 1))
     }
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @Test func behaviorRunsThroughTheProtocol() {
-        func featureBehavior<F: Feature>(_ f: F.Type) -> Behavior<F.Action, F.State, F.Environment> { F.behavior() }
+    @Test func behaviorRunsThroughHasBehavior() {
+        // The behavior half alone (HasBehavior) abstracts a feature's behavior — reusable for
+        // logic-only features that have no view.
+        func featureBehavior<F: HasBehavior>(_ f: F.Type) -> Behavior<F.Action, F.State, F.Environment> { F.behavior() }
         let store = Store(initial: FPLeaf.State(), behavior: featureBehavior(FPLeaf.self), environment: FPLeaf.Environment(step: 1))
         store.dispatch(.bump)
         #expect(store.state.n == 1)
