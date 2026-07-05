@@ -110,6 +110,39 @@ var body: some Scene {
 
 `openWindow(value: DocID(…))` / `dismissWindow` are triggered by dispatching actions that add or remove a scene's sub-state — the window set is a function of state.
 
+### System & UIKit content — share sheet, pickers, web, Safari
+
+Interruptive system UI and UIKit screens aren't a new shape — they're the **optional/modal** shape with a `UIViewControllerRepresentable`/`UIViewRepresentable` as the presented *content*. State drives *whether* it shows (`item`/`presence`, dismiss-only as always); the representable's `Coordinator` dispatches actions back for its results, so an outcome flows in as an ordinary action.
+
+```swift
+.sheet(item: store.item(\.sharing, dismiss: .doneSharing)) { payload in
+    ActivityView(items: payload.items)              // UIViewControllerRepresentable(UIActivityViewController)
+}
+.sheet(isPresented: store.presence(\.picker, dismiss: .cancelPicker)) {
+    PhotoPicker { images in store.dispatch(.picked(images)) }   // Coordinator dispatches the result
+}
+.fullScreenCover(item: store.item(\.browsing, dismiss: .closeBrowser)) { page in
+    WebView(url: page.url)                          // WKWebView / SwiftUI WebView, or SFSafariViewController
+}
+```
+
+The rule is unchanged: presentation is a function of state (the binding only *dismisses*); UIKit *results* come back as actions via the representable's `Coordinator` → `store.dispatch`. A web view's own in-page back/forward is the web view's business — if you want it in state, that's just the web feature's `State`. `ShareLink` (a tap-to-share view with no presented state) needs none of this — use it directly.
+
+## URLs — deep links in, external opens out
+
+A URL is never a navigation *shape* by itself; it sits at one of two boundaries:
+
+- **Incoming** (deep link / universal link) — an *action source*. Turn the URL into an action; the reducer sets navigation state; the app navigates like any other transition:
+  ```swift
+  RootView(store: store, router: router).onOpenURL { url in store.dispatch(.openedURL(url)) }
+  // reducer: case .openedURL(let u): state.path = route(for: u)
+  ```
+- **Outgoing** (open an external URL — Safari, Mail, Maps) — a *side effect*, not navigation: your app backgrounds, nothing is presented. Inject an `openURL` dependency in `World` and produce a fire-and-forget effect (pure and testable), or call SwiftUI's `@Environment(\.openURL)` from a button for a trivial case:
+  ```swift
+  // World: let openURL: @Sendable (URL) -> Void
+  case .tappedSupport: .produce { ctx in Effect.fireAndForget { ctx.environment.openURL(supportURL) } }
+  ```
+
 ## Scope — declare the wiring once, drive both sides
 
 A ``Scope`` captures how a child ``Feature`` embeds into the app store — action prism, state key path, environment narrowing — and derives **both** its lifted ``Scope/behavior`` and its ``Scope/view(from:world:)``. Constructing one is a **compile-time proof** the feature is wired; a missing state slot, action case, or env mapping is a compile error at the literal.
