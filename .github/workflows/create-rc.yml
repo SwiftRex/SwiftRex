@@ -37,6 +37,21 @@ jobs:
             exit 1
           fi
 
+      # Keep README SPM install version in sync with the release, on main, before branching the RC.
+      - name: Bump README install version to ${{ inputs.version }}
+        run: |
+          REPO="${{ github.event.repository.name }}"
+          sed -i -E "s#(${REPO}\.git\", from: \")[0-9]+\.[0-9]+\.[0-9]+#\1${{ inputs.version }}#g" README.md
+          if git diff --quiet README.md; then
+            echo "::notice::README already at ${{ inputs.version }}"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "docs: bump README install version to ${{ inputs.version }}"
+            git push origin main
+            echo "::notice::README install version bumped"
+          fi
+
       - name: Create and push release branch
         run: |
           BRANCH="release/${{ inputs.version }}"
