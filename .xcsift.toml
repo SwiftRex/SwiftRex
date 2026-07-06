@@ -1,0 +1,36 @@
+# xcsift Configuration File
+# https://github.com/ldomaradzki/xcsift
+#
+# CLI flags override values in this file.
+# All options are optional - omit to use defaults.
+
+# Output format: "json" (default), "toon", or "github-actions"
+format = "json"
+
+# Warning options
+warnings = true           # Print detailed warnings list (-w)
+# werror = false          # Treat warnings as errors (-W)
+
+# Output control
+# quiet = false           # Suppress output on success (-q)
+
+# Test analysis
+# slow_threshold = 1.0    # Threshold in seconds for slow test detection
+
+# Coverage options
+# coverage = false        # Enable coverage output (-c)
+# coverage_details = false # Include per-file coverage breakdown
+# coverage_path = ""      # Custom path to coverage data (empty = auto-detect)
+
+# Build info
+# build_info = false      # Include per-target build phases and timing
+# executable = false      # Include executable targets (-e)
+
+# Exit behavior
+# exit_on_failure = false # Exit with failure code if build does not succeed (-E)
+
+# TOON format configuration
+# [toon]
+# delimiter = "comma"     # "comma", "tab", or "pipe"
+# key_folding = "disabled" # "disabled" or "safe"
+# flatten_depth = 0       # 0 = unlimited, or positive integer

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Foundation
 import Hourglass
@@ -108,7 +110,7 @@ package final class EffectEngine<Action: Sendable> {
         }
 
         // Throttle gate: drop entirely if a run happened within the interval.
-        if case .throttle(let interval) = scheduling.coalesce {
+        if case let .throttle(interval) = scheduling.coalesce {
             let now = clock.now
             throttleStamps = throttleStamps.filter { $0.value.last.duration(to: now) < $0.value.interval }
             if let entry = throttleStamps[key], entry.last.duration(to: now) < interval { return }
@@ -116,8 +118,7 @@ package final class EffectEngine<Action: Sendable> {
         }
 
         // Any id-scoped policy (replace / debounce / throttle) supersedes the prior run under `key`.
-        let debounceDelay: Duration?
-        if case .debounce(let delay) = scheduling.coalesce { debounceDelay = delay } else { debounceDelay = nil }
+        let debounceDelay: Duration? = if case let .debounce(delay) = scheduling.coalesce { delay } else { nil }
         if scheduling.exclusive || scheduling.coalesce != nil {
             runningEffects[key]?.cancel()
         }
@@ -131,7 +132,7 @@ package final class EffectEngine<Action: Sendable> {
             let task = Task { @MainActor [weak self] in
                 try await clock.sleep(for: preWait)
                 guard !Task.isCancelled, let self else { return }
-                self.runningEffects[key] = component.subscribe(send) { [weak self] in
+                runningEffects[key] = component.subscribe(send) { [weak self] in
                     Task { @MainActor [weak self] in self?.runningEffects.removeValue(forKey: key) }
                 }
             }
@@ -165,7 +166,7 @@ package final class EffectEngine<Action: Sendable> {
             // does it count toward the throttle window — so a change right after is paced against it. A
             // PassthroughSubject-style channel (`.nothing`) delivers nothing on open, so its first
             // broadcast goes straight through.
-            if channel.deliversOnOpen, case .throttle(let interval) = channel.delivery {
+            if channel.deliversOnOpen, case let .throttle(interval) = channel.delivery {
                 throttleStamps[key] = (last: clock.now, interval: interval)
             }
             return
@@ -181,20 +182,20 @@ package final class EffectEngine<Action: Sendable> {
         switch channelDelivery[key] ?? .immediate {
         case .immediate:
             channelSinks[key]?(value)
-        case .throttle(let interval):
+        case let .throttle(interval):
             let now = clock.now
             throttleStamps = throttleStamps.filter { $0.value.last.duration(to: now) < $0.value.interval }
             if let entry = throttleStamps[key], entry.last.duration(to: now) < interval { return } // drop
             throttleStamps[key] = (last: now, interval: interval)
             channelSinks[key]?(value)
-        case .debounce(let window):
+        case let .debounce(window):
             pendingDeliver[key]?.cancel() // restart the quiet window; the live channel keeps running
             let clock = clock
             let task = Task { @MainActor [weak self] in
                 try await clock.sleep(for: window)
                 guard !Task.isCancelled, let self else { return }
-                self.pendingDeliver.removeValue(forKey: key)
-                self.channelSinks[key]?(value)
+                pendingDeliver.removeValue(forKey: key)
+                channelSinks[key]?(value)
             }
             pendingDeliver[key] = SubscriptionToken { task.cancel() }
         }
@@ -292,21 +293,23 @@ package final class EffectEngine<Action: Sendable> {
             next[key] = state
             if let prev = reconciledStates[key] {
                 if prev.reset != state.reset {
-                    cancel(key: key)                       // recreate: tear the stale instance down now…
-                    openChannel(key: key, entry: entry)    // …then reopen, immediately or after `settle`
+                    cancel(key: key) // recreate: tear the stale instance down now…
+                    openChannel(key: key, entry: entry) // …then reopen, immediately or after `settle`
                 } else if prev.broadcast != state.broadcast {
                     if pendingCreate[key] != nil {
                         pendingCreateComponent[key] = entry.component // still settling → open with the latest value
                     } else {
-                        schedule(entry.component)          // live → deliver the new value (paced by its policy)
+                        schedule(entry.component) // live → deliver the new value (paced by its policy)
                     }
                 }
                 // else: both unchanged → nothing
             } else {
-                openChannel(key: key, entry: entry)        // newly present → open, immediately or after `settle`
+                openChannel(key: key, entry: entry) // newly present → open, immediately or after `settle`
             }
         }
-        for key in reconciledStates.keys where next[key] == nil { cancel(key: key) }
+        for key in reconciledStates.keys where next[key] == nil {
+            cancel(key: key)
+        }
         reconciledStates = next
     }
 
@@ -317,15 +320,15 @@ package final class EffectEngine<Action: Sendable> {
             schedule(entry.component)
             return
         }
-        pendingCreate[key]?.cancel()                       // restart the settle window
+        pendingCreate[key]?.cancel() // restart the settle window
         pendingCreateComponent[key] = entry.component
         let clock = clock
         let task = Task { @MainActor [weak self] in
             try await clock.sleep(for: settle)
             guard !Task.isCancelled, let self else { return }
-            self.pendingCreate.removeValue(forKey: key)
-            if let component = self.pendingCreateComponent.removeValue(forKey: key) {
-                self.schedule(component)
+            pendingCreate.removeValue(forKey: key)
+            if let component = pendingCreateComponent.removeValue(forKey: key) {
+                schedule(component)
             }
         }
         pendingCreate[key] = SubscriptionToken { task.cancel() }

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// A read-only, `@MainActor`-only context passed to ``Behavior/handle`` and
 /// ``Middleware/handle`` during phase 1 of dispatch (pre-mutation).
 ///

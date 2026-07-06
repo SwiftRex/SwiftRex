@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 @testable import SwiftRex
 import Testing
@@ -10,22 +12,23 @@ private enum AppAction: Equatable, Sendable {
 extension AppAction: Prismatic {
     struct Prisms: Sendable {
         let counter = Prism<AppAction, Int>(
-            preview: { if case .counter(let value) = $0 { value } else { nil } },
+            preview: { if case let .counter(value) = $0 { value } else { nil } },
             review: AppAction.counter
         )
         let other = Prism<AppAction, String>(
-            preview: { if case .other(let value) = $0 { value } else { nil } },
+            preview: { if case let .other(value) = $0 { value } else { nil } },
             review: AppAction.other
         )
     }
+
     static let prism = Prisms()
 }
 
 // Optional case properties (the `@Prisms` `.properties` shape) so `\.counter` resolves as
 // `KeyPath<AppAction, Int?>` — the key-path spelling the `on` family uses.
 extension AppAction {
-    var counter: Int? { if case .counter(let value) = self { value } else { nil } }
-    var other: String? { if case .other(let value) = self { value } else { nil } }
+    var counter: Int? { if case let .counter(value) = self { value } else { nil } }
+    var other: String? { if case let .other(value) = self { value } else { nil } }
 }
 
 private struct AppState: Equatable, Sendable {

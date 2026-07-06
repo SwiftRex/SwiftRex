@@ -1,4 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+
 // MARK: - Collection element projections
+
 //
 // Convenience factories on StoreType — each delegates to the corresponding
 // StoreProjection.init where the mapping logic lives.

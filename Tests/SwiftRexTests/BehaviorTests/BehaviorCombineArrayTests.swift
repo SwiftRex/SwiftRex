@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 @testable import SwiftRex
 import Testing
 
@@ -14,12 +16,12 @@ struct BehaviorCombineArrayTests {
         store.dispatch(.go)
         #expect(store.state.a == 1)
         #expect(store.state.b == 1)
-        #expect(store.state.log == "12")   // left-to-right order preserved
+        #expect(store.state.log == "12") // left-to-right order preserved
     }
 
     @Test func emptyIsIdentity() {
         let store = Store(initial: S(), behavior: Behavior<A, S, Void>.combine([]), environment: ())
         store.dispatch(.go)
-        #expect(store.state == S())        // no-op
+        #expect(store.state == S()) // no-op
     }
 }

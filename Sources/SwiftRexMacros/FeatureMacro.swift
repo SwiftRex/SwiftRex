@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -75,8 +77,8 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
         let gated: Bool
         switch strategyName(node) {
         case "observationGranular": (storeType, gated) = ("TrackedViewStore", true)
-        case "combineObservable":   (storeType, gated) = ("ObservableObjectStore", false)
-        default:                    (storeType, gated) = ("ViewStore", true)
+        case "combineObservable": (storeType, gated) = ("ObservableObjectStore", false)
+        default: (storeType, gated) = ("ViewStore", true)
         }
         let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
 
@@ -92,20 +94,20 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
                 : "Reader<Environment, @Sendable (ViewAction) -> Action> { _ in { $0 } }"
             source = "store.projection(environment: environment, action: \(actionMap), state: \(stateMap))"
         } else {
-            source = "store"   // no view layer — wrap the store directly (ViewState == State)
+            source = "store" // no view layer — wrap the store directly (ViewState == State)
         }
         // The store parameter is `any StoreType<Action, State>` (an existential — a CONCRETE type),
         // not `some StoreType<…>` (a generic parameter). A generic method returning `some View`
         // cannot bind the `ViewFactory.Body` associated type, so the feature couldn't conform to
         // `Feature`; the existential can. Callers are unaffected — a `Store` boxes into it.
         return """
-            \(raw: availability)@MainActor \(raw: access)static func view(
-                store: any StoreType<Action, State>,
-                environment: Environment
-            ) -> some View {
-                Content(viewStore: \(raw: storeType)(\(raw: source)))
-            }
-            """
+        \(raw: availability)@MainActor \(raw: access)static func view(
+            store: any StoreType<Action, State>,
+            environment: Environment
+        ) -> some View {
+            Content(viewStore: \(raw: storeType)(\(raw: source)))
+        }
+        """
     }
 
     // MARK: - MemberAttributeMacro

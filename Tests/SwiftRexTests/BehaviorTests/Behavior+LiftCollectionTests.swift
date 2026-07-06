@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 import Foundation
@@ -55,7 +57,7 @@ struct BehaviorLiftCollectionTests {
     }
 
     private let itemPrism = Prism<AppAction, ElementAction<UUID, LocalAction>>(
-        preview: { if case .item(let ea) = $0 { ea } else { nil } },
+        preview: { if case let .item(ea) = $0 { ea } else { nil } },
         review: { .item($0) }
     )
 
@@ -98,7 +100,7 @@ struct BehaviorLiftCollectionTests {
         let effect = c.produce(PostReducerContext(environment: (), getter: { state }))
         let received = LockProtected([AppAction]())
         subscribeAll(effect) { d in received.mutate { $0.append(d.action) } }
-        guard case .item(let ea) = received.value.first else {
+        guard case let .item(ea) = received.value.first else {
             Issue.record("Expected a re-embedded .item action")
             return
         }
@@ -128,7 +130,7 @@ struct BehaviorLiftCollectionTests {
         let idB = effB.components.first?.scheduling.id
         #expect(idA == expectedA)
         #expect(idB == expectedB)
-        #expect(idA != idB)   // same inner "fetch", different element → independent
+        #expect(idA != idB) // same inner "fetch", different element → independent
     }
 
     // MARK: - Custom Hashable identifier
@@ -144,7 +146,7 @@ struct BehaviorLiftCollectionTests {
             }
         }
         let prism = Prism<AppAction, ElementAction<String, LocalAction>>(
-            preview: { if case .named(let ea) = $0 { ea } else { nil } },
+            preview: { if case let .named(ea) = $0 { ea } else { nil } },
             review: { .named($0) }
         )
         let sut = namedBehavior.liftCollection(
@@ -169,7 +171,7 @@ struct BehaviorLiftCollectionTests {
 
     @Test func dictionaryMutatesAndScopes() {
         let prism = Prism<AppAction, ElementAction<String, LocalAction>>(
-            preview: { if case .keyed(let ea) = $0 { ea } else { nil } },
+            preview: { if case let .keyed(ea) = $0 { ea } else { nil } },
             review: { .keyed($0) }
         )
         let sut = elementBehavior.liftCollection(action: prism, stateDictionary: \AppState.lookup)

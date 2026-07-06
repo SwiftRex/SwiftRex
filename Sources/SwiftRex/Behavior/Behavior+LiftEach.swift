@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
 // MARK: - liftEach (broadcast — fan-out only)
+
 //
 // `liftEach` is the 0..n sibling of ``Behavior/liftCollection(action:embed:stateContainer:)-``:
 // where `liftCollection` routes a global action to ONE element (selected by id), `liftEach`
@@ -57,7 +60,7 @@ extension Behavior {
             // Fan-out the supervise axis the same way the action axis fans out: every present
             // element keeps its own channels, re-embedded and stamped per-element. The reconciler
             // dedups against a `liftCollection` on the same container (identical element-scoped ids).
-            supervisor: self.supervisor.map { inner in
+            supervisor: supervisor.map { inner in
                 { @MainActor @Sendable (gs: GS) in
                     let container = stateContainer.get(gs)
                     let perElement = ids(container).compactMap { id in

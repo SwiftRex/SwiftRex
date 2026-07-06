@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftRex
 
 // MARK: - Store observation as a lazy AsyncStream factory

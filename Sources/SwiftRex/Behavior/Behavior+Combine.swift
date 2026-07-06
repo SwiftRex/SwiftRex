@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 extension Behavior {
     /// Folds an array of behaviors into one, in order, using the ``Behavior`` monoid
     /// (``identity`` as the empty element, ``combine(_:_:)`` as the binary operation).

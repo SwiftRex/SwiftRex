@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 
 /// A pure function that calculates how state should change in response to an action.
@@ -85,11 +87,13 @@ public struct Reducer<ActionType: Sendable, StateType: Sendable>: Sendable {
     init(units: [@Sendable (ActionType, inout StateType) -> Void]) {
         self.units = units
         if units.isEmpty {
-            self.reduce = { _ in .identity }
+            reduce = { _ in .identity }
         } else {
-            self.reduce = { @Sendable action in
+            reduce = { @Sendable action in
                 EndoMut { state in
-                    for unit in units { unit(action, &state) }
+                    for unit in units {
+                        unit(action, &state)
+                    }
                 }
             }
         }

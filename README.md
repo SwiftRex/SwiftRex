@@ -1871,7 +1871,7 @@ let package = Package(
         // then RxSwift/ReactiveSwift/ReactiveConcurrency are never even downloaded.
         .package(
             url: "https://github.com/SwiftRex/SwiftRex.git",
-            from: "1.0.0",
+            from: "0.8.8",
             traits: ["RxSwift"]   // e.g. ["RxSwift", "ReactiveConcurrency"]
         )
     ],

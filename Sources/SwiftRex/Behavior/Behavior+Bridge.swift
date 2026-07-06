@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
 // MARK: - Bridge / routing helpers with optional mutation
+
 //
 // These overloads add action-to-action routing (and optional state mutation) on top of any
 // existing `Behavior` value. They mirror `Middleware+Bridge.swift` but with an extra optional
@@ -379,6 +382,7 @@ extension Behavior {
     }
 
     // MARK: 21–26. Bool predicate variants (lazy state access)
+
     //
     // Unlike the Prism/KeyPath variants above, these separate the action filter from state
     // access so the compiler (and the implementation) can guarantee:

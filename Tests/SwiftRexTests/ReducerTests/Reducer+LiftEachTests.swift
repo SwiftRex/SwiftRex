@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 @testable import SwiftRex
 import Testing
@@ -17,7 +19,7 @@ struct ReducerLiftEachTests {
     private let bump = Reducer<Int, Int>.reduce { delta, n in n += delta }
 
     private func delta(_ action: AppAction) -> Int? {
-        guard case .bumpAll(let d) = action else { return nil }
+        guard case let .bumpAll(d) = action else { return nil }
         return d
     }
 

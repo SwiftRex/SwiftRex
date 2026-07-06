@@ -80,7 +80,7 @@ func liftBenchmarks() {
     // optic overhead vs the un-lifted `Reducer.reduce — single` baseline.
     let lifted = tickReducer.lift(
         actionGetter: { (g: GlobalAction) -> BenchAction? in
-            if case .local(let a) = g { a } else { nil }
+            if case let .local(a) = g { a } else { nil }
         },
         stateGetter: { (g: GlobalState) in g.local },
         stateSetter: { (g: inout GlobalState, s: BenchState) in g.local = s }
@@ -111,7 +111,7 @@ func liftBenchmarks() {
     // Target ONE element by id in a 1,000-element collection — O(n) lookup per dispatch.
     let liftedColl = itemReducer.liftCollection(
         action: { (a: ListAction) -> ElementAction<Int, ItemAction>? in
-            if case .item(let ea) = a { ea } else { nil }
+            if case let .item(ea) = a { ea } else { nil }
         },
         stateCollection: \ListState.items,
         identifier: { (item: Item) in item.id }

@@ -1,9 +1,12 @@
+// SPDX-License-Identifier: Apache-2.0
+
 @preconcurrency import RxSwift
 import SwiftRex
 
 private struct Unchecked<T>: @unchecked Sendable { let value: T }
 
 // MARK: - Observable/Infallible → Channel (state-driven, long-lived subscriptions)
+
 //
 // The `asChannel` counterpart of `asEffect`: where `asEffect` makes a one-shot effect, `asChannel`
 // makes a long-lived ``Channel`` a `supervise` keeps alive. The Store subscribes once while the channel

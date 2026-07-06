@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import DataStructure
 
 /// A type-erasing, stateless projection of a ``StoreType`` that presents a narrower
@@ -82,9 +84,9 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         action mapAction: @escaping @Sendable (Action) -> GA,
         state mapState: @escaping @MainActor @Sendable (GS) -> State
     ) {
-        _state    = { mapState(store.state) }
+        _state = { mapState(store.state) }
         _dispatch = { action, source in store.dispatch(mapAction(action), source: source) }
-        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection whose action **and** state maps are `Reader`s over an `Environment`,
@@ -110,9 +112,9 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) {
         let action = mapAction(environment)
         let state = mapState(environment)
-        _state    = { state(store.state) }
+        _state = { state(store.state) }
         _dispatch = { a, source in store.dispatch(action(a), source: source) }
-        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection focused on a single `Identifiable` element in a collection.
@@ -142,9 +144,9 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
         // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
         // StoreType.projection(element:actionReview:stateCollection:) for the Array/dictionary trade-off.
-        _state    = { store.state[keyPath: stateCollection].first { $0.id == id } }
+        _state = { store.state[keyPath: stateCollection].first { $0.id == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
-        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection focused on the first element whose custom `identifier` field matches `id`.
@@ -176,9 +178,9 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) where C.Element: Sendable, State == C.Element? {
         // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
         // StoreType.projection(element:actionReview:stateCollection:identifier:) for the trade-off.
-        _state    = { store.state[keyPath: stateCollection].first { identifier($0) == id } }
+        _state = { store.state[keyPath: stateCollection].first { identifier($0) == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
-        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection focused on a value in a `[Key: Value]` dictionary by key.
@@ -204,9 +206,9 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         actionReview: @escaping @Sendable (ElementAction<Key, Action>) -> GA,
         stateDictionary: KeyPath<GS, [Key: Value]>
     ) where State == Value? {
-        _state    = { store.state[keyPath: stateDictionary][key] }
+        _state = { store.state[keyPath: stateDictionary][key] }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(key, action: action)), source: source) }
-        _observe  = { wc, dc in store.observe(willChange: wc, didChange: dc) }
+        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// The current projected state.

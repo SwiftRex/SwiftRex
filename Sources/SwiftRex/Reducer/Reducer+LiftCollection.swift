@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
 // MARK: - liftCollection (primitive — AffineTraversal)
+
 //
 // The primitive overload: provide a closure that returns the local action and an
 // `AffineTraversal` selecting the exact element within its container.

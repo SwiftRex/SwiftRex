@@ -1,25 +1,27 @@
+// SPDX-License-Identifier: Apache-2.0
+
 #if canImport(Observation) && canImport(SwiftUI)
-import Observation
-import SwiftRex
-import SwiftRexSwiftUI
-import SwiftUI
+    import Observation
+    import SwiftRex
+    import SwiftRexSwiftUI
+    import SwiftUI
 
-/// Whether a `@Feature` is a module's public entry point or a screen internal to it — the axis that
-/// distinguishes what crosses the module boundary.
-///
-/// A module is a `@Feature` marked ``moduleEntryPoint`` — the only thing the outside world sees. The
-/// screens it composes are `@Feature`s marked ``internalOnly`` — their `Content` view, `ViewState`,
-/// and `ViewAction` never cross the module boundary. The value controls only the access level of the
-/// members the macro synthesises (`view`, `initialState`); everything erased (the view layer) stays
-/// `internal`/`private` regardless.
-public enum FeatureRole: Sendable {
-    /// The module's public entry point — `view(store:environment:)` and `initialState(with:)` are
-    /// generated `public`, so the composing app can render and seed the module. `State`/`Action`/
-    /// `Environment`/`Input` are declared `public` by the author (they must be liftable).
-    case moduleEntryPoint
+    /// Whether a `@Feature` is a module's public entry point or a screen internal to it — the axis that
+    /// distinguishes what crosses the module boundary.
+    ///
+    /// A module is a `@Feature` marked ``moduleEntryPoint`` — the only thing the outside world sees. The
+    /// screens it composes are `@Feature`s marked ``internalOnly`` — their `Content` view, `ViewState`,
+    /// and `ViewAction` never cross the module boundary. The value controls only the access level of the
+    /// members the macro synthesises (`view`, `initialState`); everything erased (the view layer) stays
+    /// `internal`/`private` regardless.
+    public enum FeatureRole: Sendable {
+        /// The module's public entry point — `view(store:environment:)` and `initialState(with:)` are
+        /// generated `public`, so the composing app can render and seed the module. `State`/`Action`/
+        /// `Environment`/`Input` are declared `public` by the author (they must be liftable).
+        case moduleEntryPoint
 
-    /// A screen internal to a module — the generated members are `internal`. Only the module's own
-    /// root composes it, so nothing needs to cross the package boundary.
-    case internalOnly
-}
+        /// A screen internal to a module — the generated members are `internal`. Only the module's own
+        /// root composes it, so nothing needs to cross the package boundary.
+        case internalOnly
+    }
 #endif

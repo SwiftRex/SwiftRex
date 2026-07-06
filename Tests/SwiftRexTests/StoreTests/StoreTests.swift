@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 import Hourglass
@@ -249,10 +251,10 @@ struct StoreClockInjectionTests {
             clock: { _ in clock }
         )
         store.dispatch(0)
-        await clock.waitForSleepers()          // the debounce task is parked on clock.sleep
-        #expect(store.state == 0)              // nothing fired before the delay elapses
+        await clock.waitForSleepers() // the debounce task is parked on clock.sleep
+        #expect(store.state == 0) // nothing fired before the delay elapses
         await clock.advance(by: .seconds(1))
-        await poll { store.state == 5 }        // delay elapsed → effect fires, loops 5 back
+        await poll { store.state == 5 } // delay elapsed → effect fires, loops 5 back
         #expect(store.state == 5)
     }
 
@@ -272,11 +274,11 @@ struct StoreClockInjectionTests {
         )
         store.dispatch(.trigger)
         await clock.waitForSleepers()
-        store.dispatch(.trigger)               // resets the timer: cancels the first pending task
+        store.dispatch(.trigger) // resets the timer: cancels the first pending task
         await clock.waitForSleepers()
         await clock.advance(by: .seconds(1))
         await poll { store.state == 1 }
-        #expect(store.state == 1)              // collapsed to a single fire
+        #expect(store.state == 1) // collapsed to a single fire
     }
 
     @Test func throttleDropsWithinIntervalThenFiresAfterAdvance() async {
@@ -294,13 +296,15 @@ struct StoreClockInjectionTests {
             clock: { _ in clock }
         )
         store.dispatch(.ping)
-        await poll { store.state == 1 }        // first one fires immediately
-        store.dispatch(.ping)                  // still within the interval → dropped
-        for _ in 0..<20 { await Task.yield() }
+        await poll { store.state == 1 } // first one fires immediately
+        store.dispatch(.ping) // still within the interval → dropped
+        for _ in 0..<20 {
+            await Task.yield()
+        }
         #expect(store.state == 1)
-        await clock.advance(by: .seconds(1))   // interval elapses on the injected clock
+        await clock.advance(by: .seconds(1)) // interval elapses on the injected clock
         store.dispatch(.ping)
-        await poll { store.state == 2 }        // now fires again
+        await poll { store.state == 2 } // now fires again
         #expect(store.state == 2)
     }
 }

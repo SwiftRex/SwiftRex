@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
@@ -137,7 +139,7 @@ public struct Reaction<State: Sendable, Environment: Sendable, Action: Sendable>
     public func produce(
         _ f: @escaping @Sendable (PostReducerContext<State, Environment>) -> Effect<Action>
     ) -> Self {
-        Self(mutation: mutation, produce: Reader { ctx in .combine(self.produce.runReader(ctx), f(ctx)) })
+        Self(mutation: mutation, produce: Reader { ctx in .combine(produce.runReader(ctx), f(ctx)) })
     }
 }
 

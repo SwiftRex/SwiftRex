@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// An action paired with the call-site that dispatched it.
 ///
 /// Every action that enters the ``Store``'s dispatch pipeline is wrapped in a

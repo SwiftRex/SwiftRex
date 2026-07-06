@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftDiagnostics
 
 enum FeatureDiagnostic: DiagnosticMessage {
@@ -41,7 +43,7 @@ enum TrackedDiagnostic: DiagnosticMessage {
             "@Tracked can only be applied to a struct"
         case .emptyState:
             "the @Tracked struct must have at least one stored property (with an explicit type) " +
-            "for the mirror to generate tracked fields"
+                "for the mirror to generate tracked fields"
         }
     }
 

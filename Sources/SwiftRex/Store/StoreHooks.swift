@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// Diagnostic passed to ``StoreHooks/onReentranceDetected`` when a single dispatch cycle drains
 /// more than ``StoreHooks/reentranceThreshold`` actions — the signature of a runaway re-dispatch
 /// loop (e.g. a `willChange`/`didChange` observer that dispatches on every change).
@@ -31,11 +33,11 @@ public enum StoreHooks {
     /// runaway queue afterwards so the app can't hang. Replace it to log, record telemetry, etc.
     @MainActor public static var onReentranceDetected: @MainActor (StoreReentranceInfo) -> Void = { info in
         #if DEBUG
-        assertionFailure(
-            "SwiftRex: dispatch reentrance — drained \(info.drainedCount) actions in one cycle "
-                + "(threshold \(info.threshold)). Likely an observer re-dispatching in a loop. "
-                + "Next action: \(info.actionDescription ?? "?") from \(info.source.map(String.init(describing:)) ?? "?")."
-        )
+            assertionFailure(
+                "SwiftRex: dispatch reentrance — drained \(info.drainedCount) actions in one cycle "
+                    + "(threshold \(info.threshold)). Likely an observer re-dispatching in a loop. "
+                    + "Next action: \(info.actionDescription ?? "?") from \(info.source.map(String.init(describing:)) ?? "?")."
+            )
         #endif
     }
 }

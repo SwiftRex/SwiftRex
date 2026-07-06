@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// A reference-type store wrapper that caches state and gates observer notifications
 /// through a `hasChanged` predicate.
 ///
@@ -54,8 +56,8 @@
 ///   `observers`, etc.) are only accessed on `@MainActor`, but Swift cannot statically prove
 ///   this for a `final class`.
 @MainActor
-public final class StoreBuffer<Action: Sendable, State: Sendable>
-    : StoreType, @unchecked Sendable {
+public final class StoreBuffer<Action: Sendable, State: Sendable>:
+StoreType, @unchecked Sendable {
     /// The cached state snapshot.
     ///
     /// Updated only when `hasChanged(old, new)` returns `true`. Between updates, this value
@@ -89,18 +91,18 @@ public final class StoreBuffer<Action: Sendable, State: Sendable>
         _ store: some StoreType<Action, State>,
         hasChanged: @escaping @Sendable (State, State) -> Bool
     ) {
-        self.underlying = store
-        self.state = store.state
+        underlying = store
+        state = store.state
         self.hasChanged = hasChanged
-        token = self.underlying.observe(
+        token = underlying.observe(
             willChange: {},
             didChange: { [weak self] in
                 guard let self else { return }
-                let new = self.underlying.state
-                guard self.hasChanged(self.state, new) else { return }
-                self.observers.values.forEach { $0.willChange() }
-                self.state = new
-                self.observers.values.forEach { $0.didChange() }
+                let new = underlying.state
+                guard self.hasChanged(state, new) else { return }
+                observers.values.forEach { $0.willChange() }
+                state = new
+                observers.values.forEach { $0.didChange() }
             }
         )
     }

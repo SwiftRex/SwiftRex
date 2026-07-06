@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 extension StoreType {
     /// Wraps this store in a ``StoreBuffer`` that caches state and only notifies observers
     /// when `hasChanged(oldState, newState)` returns `true`.

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftRex
 
 // MARK: - AsyncSequence → Effect
@@ -235,7 +237,7 @@ extension Effect {
             Component(subscribe: { _, complete in
                 let t = Task {
                     guard !Task.isCancelled else { return }
-                    _ = try? await { for try await _ in sequence { } }()
+                    _ = try? await { for try await _ in sequence {} }()
                     guard !Task.isCancelled else { return }
                     complete()
                 }

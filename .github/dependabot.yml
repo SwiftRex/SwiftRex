@@ -1,0 +1,16 @@
+# .github/dependabot.yml — canonical config for every library.
+# Requires the repo toggle ON: Settings → Code security → Dependabot version updates.
+# DO NOT add an `allow:` block. It is a whitelist that suppresses every other dependency,
+# and for the `swift` ecosystem `dependency-name` matches the package IDENTITY (e.g. "FP"),
+# never the git URL — a URL matches nothing and silences all Swift PRs.
+version: 2
+updates:
+  - package-ecosystem: "swift"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"

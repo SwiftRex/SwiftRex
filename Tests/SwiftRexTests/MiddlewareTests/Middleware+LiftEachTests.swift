@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 @testable import SwiftRex
@@ -24,7 +26,7 @@ private enum AppAction: Sendable {
 
 private let timerPrism = CoreFP.prism(
     preview: { (a: AppAction) -> ElementAction<Int, TimerAction>? in
-        guard case .timer(let ea) = a else { return nil }
+        guard case let .timer(ea) = a else { return nil }
         return ea
     },
     review: { AppAction.timer($0) }
@@ -34,7 +36,9 @@ private let timerPrism = CoreFP.prism(
 @MainActor
 struct MiddlewareLiftEachTests {
     private func poll(until condition: @MainActor () -> Bool) async {
-        for _ in 0..<1_000 where !condition() { await Task.yield() }
+        for _ in 0..<1_000 where !condition() {
+            await Task.yield()
+        }
     }
 
     // Middleware fans out the trigger as effects; each element's effect loops back an addressed
@@ -52,7 +56,7 @@ struct MiddlewareLiftEachTests {
         let behavior = Behavior(
             reducer: recorder.liftCollection(action: { timerPrism.preview($0) }, stateCollection: \AppState.timers),
             middleware: perElement.liftEach(
-                action: { if case .tickAll = $0 { return TimerAction.tick } else { return nil } },
+                action: { if case .tickAll = $0 { TimerAction.tick } else { nil } },
                 embed: { local, id in AppAction.timer(ElementAction(id, action: local)) },
                 stateCollection: \AppState.timers
             )

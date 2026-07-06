@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 @testable import SwiftRex
@@ -264,7 +266,7 @@ struct StoreProjectionEnvironmentTests {
             action: Reader { _ in { (a: Int) in AppAction(counter: a, other: nil) } },
             state: Reader { env in { (s: AppState) in "\(env.prefix)\(s.count * env.scale)" } }
         )
-        #expect(proj.state == "n30")   // 3 * 10, prefixed by "n"
+        #expect(proj.state == "n30") // 3 * 10, prefixed by "n"
     }
 
     @Test func actionMapUsesEnvironment() {
@@ -274,7 +276,7 @@ struct StoreProjectionEnvironmentTests {
             action: Reader { env in { (a: Int) in AppAction(counter: a * env.scale, other: nil) } },
             state: Reader { _ in { (s: AppState) in s.count } }
         )
-        proj.dispatch(2)               // 2 * scale(4) forwarded to the underlying store
+        proj.dispatch(2) // 2 * scale(4) forwarded to the underlying store
         #expect(store.state.count == 8)
     }
 
@@ -286,6 +288,6 @@ struct StoreProjectionEnvironmentTests {
             state: Reader { env in { (s: AppState) in s.count * env.scale } }
         )
         store.dispatch(AppAction(counter: 5, other: nil))
-        #expect(proj.state == 10)      // env applied to the freshly-read store state
+        #expect(proj.state == 10) // env applied to the freshly-read store state
     }
 }

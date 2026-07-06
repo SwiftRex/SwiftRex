@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 @testable import SwiftRex
 import Testing
@@ -142,19 +144,19 @@ struct ReducerLiftTests {
     @Test func liftStatePrismRunsWhenMatched() {
         enum LS { case active(Int); case inactive }
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = addAction.lift(state: statePrism)
         var state = LS.active(0)
         sut.reduce(5)(&state)
-        if case .active(let v) = state { #expect(v == 5) } else { Issue.record("Expected .active") }
+        if case let .active(v) = state { #expect(v == 5) } else { Issue.record("Expected .active") }
     }
 
     @Test func liftStatePrismSkipsWhenNotMatched() {
         enum LS { case active(Int); case inactive }
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = addAction.lift(state: statePrism)
@@ -169,26 +171,26 @@ struct ReducerLiftTests {
         enum LS { case active(Int); case inactive }
         let actionPrism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0) })
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = addAction.lift(action: actionPrism, state: statePrism)
         var state = LS.active(0)
         sut.reduce(GA(local: 3))(&state)
-        if case .active(let v) = state { #expect(v == 3) } else { Issue.record("Unexpected state") }
+        if case let .active(v) = state { #expect(v == 3) } else { Issue.record("Unexpected state") }
     }
 
     @Test func liftActionPrismStatePrismSkipsWhenActionNil() {
         enum LS { case active(Int); case inactive }
         let actionPrism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0) })
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = addAction.lift(action: actionPrism, state: statePrism)
         var state = LS.active(0)
         sut.reduce(GA(local: nil))(&state)
-        if case .active(let v) = state { #expect(v == 0) } else { Issue.record("Unexpected state") }
+        if case let .active(v) = state { #expect(v == 0) } else { Issue.record("Unexpected state") }
     }
 
     // MARK: - AffineTraversal (state)
@@ -276,7 +278,7 @@ struct ReducerLiftTests {
         enum LS { case active(Int); case inactive }
         let actionPrism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0) })
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = addAction.lift(action: actionPrism, state: statePrism)
@@ -354,13 +356,13 @@ struct ReducerLiftTests {
         enum LS { case active(Int); case inactive }
         let at = AffineTraversal<GA, Int>(preview: { $0.local }, set: { ga, v in GA(local: v, other: ga.other) })
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = addAction.lift(action: at, state: statePrism)
         var state = LS.active(0)
         sut.reduce(GA(local: 5))(&state)
-        if case .active(let v) = state { #expect(v == 5) } else { Issue.record("Unexpected state") }
+        if case let .active(v) = state { #expect(v == 5) } else { Issue.record("Unexpected state") }
     }
 
     // MARK: - AffineTraversal (action) + AffineTraversal (state)

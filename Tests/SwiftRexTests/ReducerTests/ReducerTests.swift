@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 @testable import SwiftRex
 import Testing
@@ -160,7 +162,7 @@ struct ReducerTests {
     }
 
     @Test func composeDSLEmptyProducesIdentity() {
-        let sut = Reducer<String, Int>.compose { }
+        let sut = Reducer<String, Int>.compose {}
         var state = 7
         sut.reduce("x")(&state)
         #expect(state == 7)

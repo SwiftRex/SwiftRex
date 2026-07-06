@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Hourglass
 import SwiftRex
@@ -31,7 +33,7 @@ extension CounterAction {
             review: { (_: Void) in CounterAction.decrement }
         )
         let set: CoreFP.Prism<CounterAction, Int> = CoreFP.prism(
-            preview: { (_ s: CounterAction) in guard case .set(let v) = s else { return nil }; return v },
+            preview: { (_ s: CounterAction) in guard case let .set(v) = s else { return nil }; return v },
             review: CounterAction.set
         )
         let load: CoreFP.Prism<CounterAction, Void> = CoreFP.prism(
@@ -39,7 +41,7 @@ extension CounterAction {
             review: { (_: Void) in CounterAction.load }
         )
         let loaded: CoreFP.Prism<CounterAction, Int> = CoreFP.prism(
-            preview: { (_ s: CounterAction) in guard case .loaded(let v) = s else { return nil }; return v },
+            preview: { (_ s: CounterAction) in guard case let .loaded(v) = s else { return nil }; return v },
             review: CounterAction.loaded
         )
     }
@@ -79,11 +81,11 @@ private struct CounterState: Equatable, Sendable {
 
 private let counterReducer = Reducer<CounterAction, CounterState>.reduce { action, state in
     switch action {
-    case .increment:     state.count += 1
-    case .decrement:     state.count -= 1
-    case .set(let v):    state.count = v
-    case .load:          state.isLoading = true
-    case .loaded(let v): state.isLoading = false; state.count = v
+    case .increment: state.count += 1
+    case .decrement: state.count -= 1
+    case let .set(v): state.count = v
+    case .load: state.isLoading = true
+    case let .loaded(v): state.isLoading = false; state.count = v
     }
 }
 
@@ -91,10 +93,10 @@ private let counterReducer = Reducer<CounterAction, CounterState>.reduce { actio
 private let counterBehavior = Behavior<CounterAction, CounterState, Void> { action, _ in
     switch action {
     case .load:
-        return .reduce { $0.isLoading = true }
-               .produce { _ in Effect.just(.loaded(99)) }
+        .reduce { $0.isLoading = true }
+            .produce { _ in Effect.just(.loaded(99)) }
     default:
-        return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
+        .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
     }
 }
 
@@ -137,7 +139,7 @@ struct TestStoreReducerTests {
     @Test func stateMismatchRecordsFailure() {
         let store = TestStore(initial: CounterState(), reducer: counterReducer, exhaustive: false)
         withKnownIssue("wrong expected value should record a mismatch failure") {
-            store.dispatch(.increment) { $0.count = 99 }  // wrong — actual becomes 1
+            store.dispatch(.increment) { $0.count = 99 } // wrong — actual becomes 1
         }
         #expect(store.state.count == 1)
     }
@@ -196,7 +198,7 @@ struct TestStoreRunEffectsTests {
         #expect(store.pendingEffects.isEmpty)
         store.receive(CounterAction.prism.loaded) { value, state in
             state.isLoading = false
-            state.count = value  // value == 99, extracted from .loaded(99)
+            state.count = value // value == 99, extracted from .loaded(99)
         }
     }
 
@@ -212,7 +214,7 @@ struct TestStoreRunEffectsTests {
         #expect(store.state.count == 99)
         #expect(!store.state.isLoading)
         // Returned action is the dequeued one (for inspection if needed)
-        if case .loaded(let v) = action { #expect(v == 99) }
+        if case let .loaded(v) = action { #expect(v == 99) }
     }
 
     @Test func receiveWhenEmptyRecordsFailure() {
@@ -247,9 +249,9 @@ struct TestStoreRunEffectsTests {
         let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
             switch action {
             case .load:
-                return .produce { _ in Effect.just(.increment) }
+                .produce { _ in Effect.just(.increment) }
             default:
-                return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
+                .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
         }
         let store = TestStore(initial: CounterState(), behavior: behavior, environment: ())
@@ -273,15 +275,15 @@ struct TestStoreRunEffectsTests {
         let chainedBehavior = Behavior<CounterAction, CounterState, Void> { action, _ in
             switch action {
             case .load:
-                return .reduce { $0.isLoading = true }
-                       .produce { _ in Effect.just(.loaded(5)) }
-            case .loaded(let v):
-                return .reduce { state in
+                .reduce { $0.isLoading = true }
+                    .produce { _ in Effect.just(.loaded(5)) }
+            case let .loaded(v):
+                .reduce { state in
                     state.isLoading = false
                     state.count = v
                 }.produce { _ in Effect.just(.set(100)) }
             default:
-                return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
+                .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
         }
         let store = TestStore(initial: CounterState(), behavior: chainedBehavior, environment: ())
@@ -309,8 +311,8 @@ struct TestStoreRunEffectsTests {
         )
         let behavior = Behavior<CounterAction, CounterState, Void> { action, _ in
             switch action {
-            case .load:   return .produce { _ in combined }
-            default:      return .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
+            case .load: .produce { _ in combined }
+            default: .reduce { state in counterReducer.reduce(action).runEndoMut(&state) }
             }
         }
         let store = TestStore(initial: CounterState(), behavior: behavior, environment: ())
@@ -398,7 +400,7 @@ struct CounterActionPrismShapeTests {
         // `Action.prism.case.review` is the named-case constructor — useful for
         // typed dispatch of cases with associated values.
         let action = CounterAction.prism.loaded.review(7)
-        if case .loaded(let v) = action { #expect(v == 7) } else { Issue.record() }
+        if case let .loaded(v) = action { #expect(v == 7) } else { Issue.record() }
     }
 }
 
@@ -413,7 +415,7 @@ private enum SocketAction: Sendable, Equatable {
 }
 
 private let socketReceivedPrism = CoreFP.Prism<SocketAction, Int>(
-    preview: { if case .received(let v) = $0 { v } else { nil } },
+    preview: { if case let .received(v) = $0 { v } else { nil } },
     review: SocketAction.received
 )
 
@@ -425,13 +427,13 @@ private let socketTickPrism = CoreFP.Prism<SocketAction, Void>(
 // A long-lived channel keyed "socket" that echoes each piped value back as `.received`.
 private let socketBehavior = Behavior<SocketAction, Int, Void> { action, _ in
     switch action {
-    case .connect(let n):
+    case let .connect(n):
         .produce { _ in
             .channel(value: n, scheduling: .keyed(id: "socket")) { send, _ in
                 ChannelHandler(receive: { send(.received($0)) }, cancel: {})
             }
         }
-    case .received(let v):
+    case let .received(v):
         .reduce { $0 = v }
     case .disconnect:
         .produce { _ in .cancel(id: "socket") }
@@ -445,17 +447,17 @@ private let socketBehavior = Behavior<SocketAction, Int, Void> { action, _ in
 struct TestStoreSchedulingTests {
     @Test func channelOpensPipesAndClosesCleanly() async {
         let store = TestStore(initial: 0, behavior: socketBehavior, environment: ())
-        store.dispatch(.connect(1)) { _ in }       // opens the channel, pipes 1 → send(.received(1))
+        store.dispatch(.connect(1)) { _ in } // opens the channel, pipes 1 → send(.received(1))
         await store.runEffects()
         store.receive(socketReceivedPrism) { v, s in s = v }
         #expect(store.state == 1)
 
-        store.dispatch(.connect(2)) { _ in }        // pipes 2 into the SAME live channel
+        store.dispatch(.connect(2)) { _ in } // pipes 2 into the SAME live channel
         await store.runEffects()
         store.receive(socketReceivedPrism) { v, s in s = v }
         #expect(store.state == 2)
 
-        store.dispatch(.disconnect) { _ in }        // cancelInFlight(id: "socket") → closes it
+        store.dispatch(.disconnect) { _ in } // cancelInFlight(id: "socket") → closes it
         await store.runEffects()
         // clean end: channel closed, nothing pending — no exhaustive failure
     }
@@ -486,12 +488,12 @@ struct TestStoreSchedulingTests {
         )
         store.dispatch(.ping) { _ in }
         await store.runEffects()
-        store.receive(socketTickPrism) { $0 += 1 }     // first fires
+        store.receive(socketTickPrism) { $0 += 1 } // first fires
         #expect(store.state == 1)
 
-        store.dispatch(.ping) { _ in }                  // within the (frozen) interval → dropped
+        store.dispatch(.ping) { _ in } // within the (frozen) interval → dropped
         await store.runEffects()
-        #expect(store.receivedActions.isEmpty)          // no spurious second .tick to receive
+        #expect(store.receivedActions.isEmpty) // no spurious second .tick to receive
         #expect(store.state == 1)
     }
 
@@ -514,10 +516,10 @@ struct TestStoreSchedulingTests {
         store.receive(socketTickPrism) { $0 += 1 }
         #expect(store.state == 1)
 
-        await clock.advance(by: .seconds(1))            // interval elapses on the injected clock
+        await clock.advance(by: .seconds(1)) // interval elapses on the injected clock
         store.dispatch(.ping) { _ in }
         await store.runEffects()
-        store.receive(socketTickPrism) { $0 += 1 }      // now fires again
+        store.receive(socketTickPrism) { $0 += 1 } // now fires again
         #expect(store.state == 2)
     }
 }

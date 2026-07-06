@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 @testable import SwiftRex
 import Testing
 

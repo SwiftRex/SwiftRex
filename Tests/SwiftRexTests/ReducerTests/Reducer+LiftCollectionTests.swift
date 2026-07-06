@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Foundation
 @testable import SwiftRex
@@ -273,7 +275,7 @@ struct ReducerLiftCollectionTests {
         let sut = inc.liftCollection(
             action: { (ea: ElementAction<String, Int>?) in ea },
             stateCollection: \NamedState.entries,
-            identifier: { $0.tag }          // genuine closure, not a KeyPath
+            identifier: { $0.tag } // genuine closure, not a KeyPath
         )
         var state = NamedState(entries: [Named(tag: "a", count: 0), Named(tag: "b", count: 5)])
         sut.reduce(ElementAction("b", action: 2))(&state)

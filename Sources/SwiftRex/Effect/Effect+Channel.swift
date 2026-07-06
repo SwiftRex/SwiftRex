@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 // MARK: - Channel handler (author-facing, fully typed)
 
 /// The body of an ``Effect/channel(value:scheduling:file:function:line:_:)`` returns this handler: a per-value

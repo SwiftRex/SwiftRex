@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 
 /// A long-lived, keyed resource a `Reaction` keeps alive while the state implies it — a socket, a
@@ -69,10 +71,10 @@ public struct Channel<Action: Sendable>: Sendable {
         self.id = key
         switch lifetime {
         case .permanent:
-            self.resetIdentity = nil
-            self.settle = nil
+            resetIdentity = nil
+            settle = nil
         case let .ephemeral(resetKey, settle):
-            self.resetIdentity = resetKey
+            resetIdentity = resetKey
             self.settle = settle
         }
 
@@ -81,11 +83,11 @@ public struct Channel<Action: Sendable>: Sendable {
         let deliversOnOpen: Bool
         switch broadcasting {
         case .nothing:
-            self.broadcastIdentity = nil
+            broadcastIdentity = nil
             value = ChannelLifetimeMarker()
             deliversOnOpen = false
-        case .onChange(let broadcastValue):
-            self.broadcastIdentity = AnyHashableSendable(broadcastValue)
+        case let .onChange(broadcastValue):
+            broadcastIdentity = AnyHashableSendable(broadcastValue)
             value = broadcastValue
             deliversOnOpen = true
         }
@@ -105,7 +107,7 @@ public struct Channel<Action: Sendable>: Sendable {
             delivery: delivery,
             deliversOnOpen: deliversOnOpen
         )
-        self.component = Effect<Action>.Component(
+        component = Effect<Action>.Component(
             subscribe: { _, complete in complete(); return .empty },
             channel: channel,
             scheduling: .keyed(id: key)
@@ -210,8 +212,8 @@ extension ChannelDelivery {
     /// `scheduling` now paces *delivery* (the channel always opens immediately).
     package init(coalesce: EffectScheduling.Coalesce?) {
         switch coalesce {
-        case .throttle(let interval): self = .throttle(interval)
-        case .debounce(let window): self = .debounce(window)
+        case let .throttle(interval): self = .throttle(interval)
+        case let .debounce(window): self = .debounce(window)
         case nil: self = .immediate
         }
     }

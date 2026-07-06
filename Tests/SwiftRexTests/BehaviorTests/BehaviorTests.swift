@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 @testable import SwiftRex
@@ -166,7 +168,7 @@ struct BehaviorMonoidTests {
 // MARK: - liftAction
 
 @Suite("Behavior liftAction")
-@MainActor  // effect calls are @MainActor
+@MainActor // effect calls are @MainActor
 struct BehaviorLiftActionTests {
     private let prism = Prism<GA, Int>(preview: { $0.local }, review: { GA(local: $0, other: nil) })
     private let doubler = Behavior<Int, Int, Void>.handle { action, _ in
@@ -242,20 +244,20 @@ struct BehaviorLiftStateTests {
     @Test func liftStatePrismMutatesWhenCaseActive() {
         enum LS: Sendable { case active(Int); case inactive }
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = adder.liftState(statePrism)
         let initial = LS.active(0)
         var state = initial
         sut.handle(4, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
-        if case .active(let v) = state { #expect(v == 4) } else { Issue.record("Expected .active") }
+        if case let .active(v) = state { #expect(v == 4) } else { Issue.record("Expected .active") }
     }
 
     @Test func liftStatePrismIsNoOpWhenCaseInactive() {
         enum LS: Sendable { case active(Int); case inactive }
         let statePrism = Prism<LS, Int>(
-            preview: { if case .active(let v) = $0 { return v } else { return nil } },
+            preview: { if case let .active(v) = $0 { v } else { nil } },
             review: { .active($0) }
         )
         let sut = adder.liftState(statePrism)
@@ -321,7 +323,7 @@ struct BehaviorLiftStateTests {
         let present = observer.liftOptional(\OptGS.current)
         _ = present.handle(0, PreReducerContext(source: anySource, getter: { OptGS(current: 42) }))
         _ = present.handle(0, PreReducerContext(source: anySource, getter: { OptGS(current: nil) }))
-        #expect(seen.value == [42])   // second dispatch is skipped while nil
+        #expect(seen.value == [42]) // second dispatch is skipped while nil
     }
 
     @Test func combinedLiftOptionalMutatesOnlyWhenPresent() {

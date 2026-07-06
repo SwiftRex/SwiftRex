@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
 // MARK: - liftEach (broadcast — Traversal)
+
 //
 // `liftEach` is the 0..n sibling of ``Reducer/liftCollection(action:stateContainer:)-``: where
 // `liftCollection` routes a global action to ONE element (selected by id), `liftEach` applies the

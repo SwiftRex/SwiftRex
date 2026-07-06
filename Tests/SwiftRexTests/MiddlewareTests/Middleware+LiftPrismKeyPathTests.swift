@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 @testable import SwiftRex
@@ -11,14 +13,15 @@ private enum AppAction: Equatable, Sendable {
 extension AppAction: Prismatic {
     struct Prisms: Sendable {
         let counter = Prism<AppAction, Int>(
-            preview: { if case .counter(let value) = $0 { value } else { nil } },
+            preview: { if case let .counter(value) = $0 { value } else { nil } },
             review: AppAction.counter
         )
         let other = Prism<AppAction, String>(
-            preview: { if case .other(let value) = $0 { value } else { nil } },
+            preview: { if case let .other(value) = $0 { value } else { nil } },
             review: AppAction.other
         )
     }
+
     static let prism = Prisms()
 }
 
@@ -38,7 +41,9 @@ struct MiddlewarePrismKeyPathLiftTests {
         let store = Store(initial: 0, behavior: behavior, environment: ())
 
         store.dispatch(.counter(0)) // reducer adds 0; effect produces .counter(7), loops back, adds 7
-        for _ in 0..<50 where store.state != 7 { await Task.yield() }
+        for _ in 0..<50 where store.state != 7 {
+            await Task.yield()
+        }
         #expect(store.state == 7)
     }
 }

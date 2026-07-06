@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
@@ -50,18 +52,18 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
     package init(consequences: [Consequence<State, Environment, Action>]) {
         self.consequences = consequences
         let reactions: [ReactionUnit] = consequences.compactMap {
-            if case .reaction(let f) = $0 { f } else { nil }
+            if case let .reaction(f) = $0 { f } else { nil }
         }
         let supervisions: [SupervisionUnit] = consequences.compactMap {
-            if case .supervision(let f) = $0 { f } else { nil }
+            if case let .supervision(f) = $0 { f } else { nil }
         }
         if reactions.isEmpty {
-            self.handle = { _, _ in Reader { _ in .empty } }
+            handle = { _, _ in Reader { _ in .empty } }
         } else if reactions.count == 1 {
             let only = reactions[0]
-            self.handle = { action, context in only(action, context).produce }
+            handle = { action, context in only(action, context).produce }
         } else {
-            self.handle = { @MainActor action, context in
+            handle = { @MainActor action, context in
                 // Capture each reaction's produce reader on @MainActor (phase 1); the combined
                 // Reader merges them lazily in phase 3 — no eager effect evaluation.
                 let readers = reactions.map { $0(action, context).produce }
@@ -69,9 +71,9 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
             }
         }
         if supervisions.isEmpty {
-            self.supervisor = nil
+            supervisor = nil
         } else {
-            self.supervisor = { @MainActor state in
+            supervisor = { @MainActor state in
                 let keeps = supervisions.map { $0(state) }
                 return Reader { env in keeps.flatMap { $0.runReader(env) } }
             }

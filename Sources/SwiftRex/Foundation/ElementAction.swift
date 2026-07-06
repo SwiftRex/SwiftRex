@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// Pairs an element identifier with a sub-action, enabling ``StoreProjection`` to focus on
 /// a single element inside a collection without the view knowing where that collection lives.
 ///

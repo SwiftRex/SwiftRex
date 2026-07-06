@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -43,14 +45,13 @@ public struct BoundToMacro: MemberMacro {
 
         let access = accessModifier(from: structDecl.modifiers)
 
-        let property: DeclSyntax
-        switch strategy {
+        let property: DeclSyntax = switch strategy {
         case "observationGranular":
-            property = "\(raw: access)let viewStore: TrackedViewStore<\(raw: feature).ViewState, \(raw: feature).ViewAction>"
+            "\(raw: access)let viewStore: TrackedViewStore<\(raw: feature).ViewState, \(raw: feature).ViewAction>"
         case "combineObservable":
-            property = "\(raw: access)@ObservedObject var viewStore: ObservableObjectStore<\(raw: feature).ViewAction, \(raw: feature).ViewState>"
+            "\(raw: access)@ObservedObject var viewStore: ObservableObjectStore<\(raw: feature).ViewAction, \(raw: feature).ViewState>"
         default:
-            property = "\(raw: access)let viewStore: ViewStore<\(raw: feature).ViewState, \(raw: feature).ViewAction>"
+            "\(raw: access)let viewStore: ViewStore<\(raw: feature).ViewState, \(raw: feature).ViewAction>"
         }
         return [property]
     }
@@ -59,8 +60,11 @@ public struct BoundToMacro: MemberMacro {
         modifiers
             .first(where: {
                 switch $0.name.tokenKind {
-                case .keyword(.public), .keyword(.package), .keyword(.internal),
-                     .keyword(.fileprivate), .keyword(.open):
+                case .keyword(.public),
+                     .keyword(.package),
+                     .keyword(.internal),
+                     .keyword(.fileprivate),
+                     .keyword(.open):
                     true
                 default:
                     false

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 @testable import SwiftRex
 import Testing
@@ -12,14 +14,15 @@ private enum AppAction: Equatable, Sendable {
 extension AppAction: Prismatic {
     struct Prisms: Sendable {
         let counter = Prism<AppAction, Int>(
-            preview: { if case .counter(let value) = $0 { value } else { nil } },
+            preview: { if case let .counter(value) = $0 { value } else { nil } },
             review: AppAction.counter
         )
         let other = Prism<AppAction, String>(
-            preview: { if case .other(let value) = $0 { value } else { nil } },
+            preview: { if case let .other(value) = $0 { value } else { nil } },
             review: AppAction.other
         )
     }
+
     static let prism = Prisms()
 }
 
@@ -45,7 +48,7 @@ struct BehaviorCaseKeyPathLiftTests {
         // A behavior whose effect produces a local action; lifting must re-embed it via review.
         let producing = Behavior<Int, Int, Void>.handle { action, _ in
             action == 0
-                ? .produce { _ in .just(7) }   // produce local action 7
+                ? .produce { _ in .just(7) } // produce local action 7
                 : .reduce { $0 += action }
         }
         let lifted: Behavior<AppAction, Int, Void> = producing.liftAction(\.counter)
