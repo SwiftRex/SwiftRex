@@ -29,14 +29,14 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_26.5.app
 
       - name: Cache Mint packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.mint
           key: ${{ runner.os }}-mint-${{ hashFiles('Mintfile') }}
           restore-keys: ${{ runner.os }}-mint-
 
       - name: Cache Homebrew downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/Homebrew
           key: ${{ runner.os }}-homebrew-${{ hashFiles('.github/workflows/release.yml') }}
