@@ -1,5 +1,5 @@
 {
-  "originHash" : "64b6fc95a66df84bb94778642e6127320b6e814c9f2b67407bf2b57d5066718a",
+  "originHash" : "928c5a50768c460aa07b8de614e635e4a5201925228320cf60e83781293faf44",
   "pins" : [
     {
       "identity" : "fp",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/luizmb/ReactiveConcurrency.git",
       "state" : {
-        "revision" : "4b712d4d311177182a109c7e3fb5f802fe80a648",
-        "version" : "0.3.0"
+        "revision" : "ede44828e09819eb4cb5c13d65e06f212c830bed",
+        "version" : "0.5.0"
       }
     },
     {
