@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import Foundation
 
 // GenerateLifts — offline codegen for the SwiftRex lift / on matrix.
@@ -46,7 +48,9 @@ enum ActionAxis {
     /// `guard`-extract line binding `localAction`, for non-delegating action-transforming overloads.
     var extractLine: String? {
         switch self {
-        case .none, .prismKeyPath, .affineKeyPath: nil
+        case .none,
+             .prismKeyPath,
+             .affineKeyPath: nil
         case .closure: "guard let localAction = actionGetter(globalAction) else { return .identity }"
         case .prism: "guard let localAction = actionPrism.preview(globalAction) else { return .identity }"
         case .affine: "guard let localAction = actionTraversal.preview(globalAction) else { return .identity }"
@@ -62,10 +66,14 @@ enum StateAxis {
     var params: [String] {
         switch self {
         case .none: []
+        // SwiftFormat and SwiftLint disagree on this inline switch-case literal's closing bracket
+        // indent (codegen script); scope the exception rather than weaken either config.
+        // swiftlint:disable literal_expression_end_indentation
         case .closure: [
-            "stateGetter: @escaping @Sendable (GlobalState) -> StateType",
-            "stateSetter: @escaping @Sendable (inout GlobalState, StateType) -> Void"
-        ]
+                "stateGetter: @escaping @Sendable (GlobalState) -> StateType",
+                "stateSetter: @escaping @Sendable (inout GlobalState, StateType) -> Void"
+            ]
+        // swiftlint:enable literal_expression_end_indentation
         case .writableKeyPath: ["state keyPath: WritableKeyPath<GlobalState, StateType>"]
         case .lens: ["state lens: Lens<GlobalState, StateType>"]
         case .prism: ["state statePrism: Prism<GlobalState, StateType>"]
@@ -184,6 +192,7 @@ func generateReducerLift() -> String {
 }
 
 // MARK: - Middleware PrismKeyPath action twins (the gap — Behavior already has these)
+
 //
 // Additive: `PrismKeyPath` action spellings of the Middleware lift overloads whose Prism-action
 // versions live in Middleware+Transforms. Each recovers the prism via `Prism(path)` and delegates.
@@ -236,6 +245,7 @@ func generateMiddlewarePrismKeyPath() -> String {
 }
 
 // MARK: - Behavior `on` — match + reduce, NO dispatch (the item-6 gap)
+
 //
 // Every existing `on(…, reduce:)` overload also dispatches. These match an action case (by Prism
 // or PrismKeyPath, payload or Void) and run a state mutation WITHOUT dispatching — co-locating a

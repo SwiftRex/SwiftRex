@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 // MARK: - Functor
 
 extension Effect {
@@ -38,11 +40,10 @@ private func mapComponent<A, B>(
     _ f: @escaping @Sendable (A) -> B
 ) -> Effect<B>.Component {
     let mappedChannel = component.channel.map { channel -> Effect<B>.Component.Channel in
-        let mappedStart: Effect<B>.Component.Channel.Start?
-        if let start = channel.start {
-            mappedStart = { firstValue, send, complete in start(firstValue, { send($0.map(f)) }, complete) }
+        let mappedStart: Effect<B>.Component.Channel.Start? = if let start = channel.start {
+            { firstValue, send, complete in start(firstValue, { send($0.map(f)) }, complete) }
         } else {
-            mappedStart = nil
+            nil
         }
         return Effect<B>.Component.Channel(
             value: channel.value,

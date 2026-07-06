@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftRex
 @testable import SwiftRexSwiftConcurrency
 import Testing
@@ -71,7 +73,7 @@ struct EffectTaskTests {
     @Test func taskNilProducesNoAction() async {
         let received = LockProtected([Int]())
         let token = Effect<Int>.task { nil }.components[0].subscribe(
-            { dispatched in received.mutate { $0.append(dispatched.action) } }, { }
+            { dispatched in received.mutate { $0.append(dispatched.action) } }, {}
         )
         try? await Task.sleep(nanoseconds: 100_000_000)
         token.cancel()
@@ -101,14 +103,14 @@ struct EffectFireAndForgetTests {
 
     @Test func fireAndForgetCallsComplete() async {
         let completed = LockProtected(false)
-        subscribeAll(Effect<Int>.fireAndForget { }, send: { _ in }, onComplete: { completed.set(true) })
+        subscribeAll(Effect<Int>.fireAndForget {}, send: { _ in }, onComplete: { completed.set(true) })
         try? await Task.sleep(nanoseconds: 100_000_000)
         #expect(completed.value)
     }
 
     @Test func fireAndForgetDispatchesNoActions() async {
         let received = LockProtected([Int]())
-        subscribeAll(Effect<Int>.fireAndForget { }, send: { dispatched in received.mutate { $0.append(dispatched.action) } })
+        subscribeAll(Effect<Int>.fireAndForget {}, send: { dispatched in received.mutate { $0.append(dispatched.action) } })
         try? await Task.sleep(nanoseconds: 50_000_000)
         #expect(received.value.isEmpty)
     }
@@ -180,9 +182,9 @@ struct EffectAutoCancelTests {
                 environment: ()
             )
         }
-        await MainActor.run { _ = store.dispatch(1) }     // starts job for action 1 (registered synchronously)
+        await MainActor.run { _ = store.dispatch(1) } // starts job for action 1 (registered synchronously)
         try? await Task.sleep(nanoseconds: 50_000_000)
-        await MainActor.run { _ = store.dispatch(2) }     // replaces under "job" → cancels job 1
+        await MainActor.run { _ = store.dispatch(2) } // replaces under "job" → cancels job 1
         // Poll for job 2 rather than asserting after a fixed wait. Job 1 lives 1s, so the 50ms gap can
         // stretch far under full-suite parallel load and still cancel job 1 before it appends —
         // guarded by `!Task.isCancelled`, so `[2]` is the only valid outcome.
@@ -190,7 +192,7 @@ struct EffectAutoCancelTests {
             if completedActions.value == [2] { break }
             try? await Task.sleep(nanoseconds: 10_000_000)
         }
-        #expect(completedActions.value == [2])   // job 1 cancelled, only job 2 completed
+        #expect(completedActions.value == [2]) // job 1 cancelled, only job 2 completed
         _ = store
     }
 }

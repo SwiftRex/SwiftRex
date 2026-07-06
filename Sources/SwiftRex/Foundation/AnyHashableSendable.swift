@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// A type-erased effect identifier that is both `Hashable` and `Sendable`, with
 /// platform-uniform, type-identity-aware equality.
 ///

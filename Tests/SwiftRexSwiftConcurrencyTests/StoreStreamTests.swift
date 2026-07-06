@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftRex
 @testable import SwiftRexSwiftConcurrency
 import Testing
@@ -33,8 +35,16 @@ struct StoreStreamTests {
         let first = LockProtected(false)
         let second = LockProtected(false)
 
-        let t1 = Task { for await state in store.stream() where state == 3 { first.set(true); break } }
-        let t2 = Task { for await state in store.stream() where state == 3 { second.set(true); break } }
+        let t1 = Task {
+            for await state in store.stream() where state == 3 {
+                first.set(true); break
+            }
+        }
+        let t2 = Task {
+            for await state in store.stream() where state == 3 {
+                second.set(true); break
+            }
+        }
 
         try? await Task.sleep(nanoseconds: 50_000_000)
         _ = store.dispatch(3)

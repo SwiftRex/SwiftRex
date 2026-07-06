@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import DataStructure
 @testable import SwiftRex
 import Testing
@@ -72,22 +74,22 @@ struct BehaviorLawTests {
 
     @Test func associativity() {
         forAll(behaviorGen, behaviorGen, behaviorGen, smallInt, smallInt) { a, b, c, action, state in
-            self.observe(.combine(.combine(a, b), c), action: action, from: state)
-                == self.observe(.combine(a, .combine(b, c)), action: action, from: state)
+            observe(.combine(.combine(a, b), c), action: action, from: state)
+                == observe(.combine(a, .combine(b, c)), action: action, from: state)
         }
     }
 
     @Test func leftIdentity() {
         forAll(behaviorGen, smallInt, smallInt) { behavior, action, state in
-            self.observe(.combine(.identity, behavior), action: action, from: state)
-                == self.observe(behavior, action: action, from: state)
+            observe(.combine(.identity, behavior), action: action, from: state)
+                == observe(behavior, action: action, from: state)
         }
     }
 
     @Test func rightIdentity() {
         forAll(behaviorGen, smallInt, smallInt) { behavior, action, state in
-            self.observe(.combine(behavior, .identity), action: action, from: state)
-                == self.observe(behavior, action: action, from: state)
+            observe(.combine(behavior, .identity), action: action, from: state)
+                == observe(behavior, action: action, from: state)
         }
     }
 }
@@ -104,22 +106,22 @@ struct MiddlewareLawTests {
 
     @Test func associativity() {
         forAll(middlewareGen, middlewareGen, middlewareGen, smallInt, smallInt) { a, b, c, action, state in
-            self.observe(.combine(.combine(a, b), c), action: action, from: state)
-                == self.observe(.combine(a, .combine(b, c)), action: action, from: state)
+            observe(.combine(.combine(a, b), c), action: action, from: state)
+                == observe(.combine(a, .combine(b, c)), action: action, from: state)
         }
     }
 
     @Test func leftIdentity() {
         forAll(middlewareGen, smallInt, smallInt) { middleware, action, state in
-            self.observe(.combine(.identity, middleware), action: action, from: state)
-                == self.observe(middleware, action: action, from: state)
+            observe(.combine(.identity, middleware), action: action, from: state)
+                == observe(middleware, action: action, from: state)
         }
     }
 
     @Test func rightIdentity() {
         forAll(middlewareGen, smallInt, smallInt) { middleware, action, state in
-            self.observe(.combine(middleware, .identity), action: action, from: state)
-                == self.observe(middleware, action: action, from: state)
+            observe(.combine(middleware, .identity), action: action, from: state)
+                == observe(middleware, action: action, from: state)
         }
     }
 }

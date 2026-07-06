@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 @testable import SwiftRex
@@ -294,7 +296,7 @@ struct MiddlewareContextTimingTests {
     @Test func handleCapturesPreStateReaderSeesPostState() {
         let stateBox = LockProtected(0)
         let sut = Middleware<Int, Int, Void>.handle { _, context in
-            let pre = context.stateBefore ?? 0   // phase 1 — @MainActor, reads pre-mutation state
+            let pre = context.stateBefore ?? 0 // phase 1 — @MainActor, reads pre-mutation state
             return Reader { ctx in
                 let post = MainActor.assumeIsolated { ctx.liveState } ?? 0
                 return .just(pre + post)
@@ -302,7 +304,7 @@ struct MiddlewareContextTimingTests {
         }
         let preCtx = PreReducerContext<Int>(source: anySource, getter: { stateBox.value })
         let reader = sut.handle(0, preCtx)
-        stateBox.set(10)   // mutate after handle captures pre-state
+        stateBox.set(10) // mutate after handle captures pre-state
         let received = LockProtected([Int]())
         let postCtx = PostReducerContext<Int, Void>(environment: (), getter: { stateBox.value })
         subscribeAll(reader.runReader(postCtx)) { d in received.mutate { $0.append(d.action) } }

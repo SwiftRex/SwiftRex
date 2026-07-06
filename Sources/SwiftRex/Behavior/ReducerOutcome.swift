@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 
 /// The state-mutation half of a ``Consequence`` — either a concrete in-place mutation or a
@@ -30,7 +32,7 @@ public enum ReducerOutcome<State: Sendable>: Sendable {
     /// Lets call sites that don't care about the notification-skipping distinction (tests, the
     /// `TestStore`) treat a `ReducerOutcome` exactly like a plain `EndoMut`.
     package func runEndoMut(_ state: inout State) {
-        if case .mutation(let endoMut) = self { endoMut.runEndoMut(&state) }
+        if case let .mutation(endoMut) = self { endoMut.runEndoMut(&state) }
     }
 
     /// Transforms the underlying `EndoMut` while preserving ``unchanged``.
@@ -43,7 +45,7 @@ public enum ReducerOutcome<State: Sendable>: Sendable {
     ) -> ReducerOutcome<NewState> {
         switch self {
         case .unchanged: .unchanged
-        case .mutation(let endoMut): .mutation(f(endoMut))
+        case let .mutation(endoMut): .mutation(f(endoMut))
         }
     }
 }
@@ -59,7 +61,8 @@ extension ReducerOutcome: Semigroup {
     public static func combine(_ lhs: ReducerOutcome, _ rhs: ReducerOutcome) -> ReducerOutcome {
         switch (lhs, rhs) {
         case (.unchanged, .unchanged): .unchanged
-        case (.mutation(let endoMut), .unchanged), (.unchanged, .mutation(let endoMut)): .mutation(endoMut)
+        case let (.mutation(endoMut), .unchanged),
+             let (.unchanged, .mutation(endoMut)): .mutation(endoMut)
         case let (.mutation(lhs), .mutation(rhs)): .mutation(.combine(lhs, rhs))
         }
     }

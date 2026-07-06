@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Foundation
 import Hourglass
@@ -30,7 +32,7 @@ struct StoreChannelTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .write(let n):
+                case let .write(n):
                     .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { _, _ in
                             starts.mutate { $0 += 1 }
@@ -47,8 +49,8 @@ struct StoreChannelTests {
         store.dispatch(.write(2))
         store.dispatch(.write(3))
         await poll { received.value.count == 3 }
-        #expect(starts.value == 1)              // opened exactly once — not recreated
-        #expect(received.value == [1, 2, 3])    // every value piped into the same live channel
+        #expect(starts.value == 1) // opened exactly once — not recreated
+        #expect(received.value == [1, 2, 3]) // every value piped into the same live channel
     }
 
     @Test func channelEmitsActionsBackThroughSend() async {
@@ -56,13 +58,13 @@ struct StoreChannelTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .write(let n):
+                case let .write(n):
                     .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { send, _ in
                             ChannelHandler(receive: { v in send(.received(v)) }, cancel: {})
                         }
                     }
-                case .received(let v):
+                case let .received(v):
                     .reduce { $0 += v }
                 case .close:
                     .doNothing
@@ -72,7 +74,7 @@ struct StoreChannelTests {
         )
         store.dispatch(.write(10))
         await poll { store.state == 10 }
-        store.dispatch(.write(5))               // piped into the same channel → send(.received(5))
+        store.dispatch(.write(5)) // piped into the same channel → send(.received(5))
         await poll { store.state == 15 }
         #expect(store.state == 15)
     }
@@ -85,7 +87,7 @@ struct StoreChannelTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .write(let n):
+                case let .write(n):
                     .produce { _ in
                         .channel(value: n, scheduling: .throttle(id: "socket", interval: .seconds(1))) { _, _ in
                             starts.mutate { $0 += 1 }
@@ -99,16 +101,18 @@ struct StoreChannelTests {
             environment: (),
             clock: { _ in clock }
         )
-        store.dispatch(.write(1))               // opens + delivers 1
+        store.dispatch(.write(1)) // opens + delivers 1
         await poll { received.value == [1] }
-        store.dispatch(.write(2))               // within interval → value dropped, channel stays open
-        for _ in 0..<20 { await Task.yield() }
+        store.dispatch(.write(2)) // within interval → value dropped, channel stays open
+        for _ in 0..<20 {
+            await Task.yield()
+        }
         #expect(received.value == [1])
         #expect(starts.value == 1)
-        await clock.advance(by: .seconds(1))    // interval elapses
-        store.dispatch(.write(3))               // delivered into the SAME live channel
+        await clock.advance(by: .seconds(1)) // interval elapses
+        store.dispatch(.write(3)) // delivered into the SAME live channel
         await poll { received.value == [1, 3] }
-        #expect(starts.value == 1)              // never recreated across the throttle
+        #expect(starts.value == 1) // never recreated across the throttle
     }
 
     @Test func debounceDeliversLatestValueIntoTheLiveChannel() async {
@@ -119,7 +123,7 @@ struct StoreChannelTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .write(let n):
+                case let .write(n):
                     .produce { _ in
                         .channel(value: n, scheduling: .debounce(id: "socket", delay: .seconds(1))) { _, _ in
                             starts.mutate { $0 += 1 }
@@ -135,15 +139,15 @@ struct StoreChannelTests {
         )
         // Creation is decoupled from delivery pacing: the channel opens *immediately* on the first
         // write (delivering 1), and only the values that follow are debounced.
-        store.dispatch(.write(1))               // opens now + delivers 1
+        store.dispatch(.write(1)) // opens now + delivers 1
         await poll { received.value == [1] }
-        store.dispatch(.write(2))               // debounced…
-        store.dispatch(.write(3))               // …window restarts, only the latest survives
+        store.dispatch(.write(2)) // debounced…
+        store.dispatch(.write(3)) // …window restarts, only the latest survives
         await clock.waitForSleepers()
         await clock.advance(by: .seconds(1))
         await poll { received.value == [1, 3] }
         #expect(received.value == [1, 3])
-        #expect(starts.value == 1)              // opened once; never recreated by the debounce
+        #expect(starts.value == 1) // opened once; never recreated by the debounce
     }
 
     @Test func cancelInFlightTearsDownTheChannel() async {
@@ -153,7 +157,7 @@ struct StoreChannelTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .write(let n):
+                case let .write(n):
                     .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { _, _ in
                             ChannelHandler(
@@ -172,7 +176,7 @@ struct StoreChannelTests {
         )
         store.dispatch(.write(1))
         await poll { received.value == [1] }
-        store.dispatch(.close)                  // cancelInFlight(id: "socket")
+        store.dispatch(.close) // cancelInFlight(id: "socket")
         await poll { cancelled.value }
         #expect(cancelled.value)
     }
@@ -182,13 +186,15 @@ struct StoreChannelTests {
             initial: 0,
             behavior: Behavior<A, Int, Void>.handle { action, _ in
                 switch action {
-                case .write(let n):
+                case let .write(n):
                     .produce { _ in
                         .channel(value: n, scheduling: .keyed(id: "socket")) { values, send, _ in
-                            for await v in values { send(.received(v)) }
+                            for await v in values {
+                                send(.received(v))
+                            }
                         }
                     }
-                case .received(let v):
+                case let .received(v):
                     .reduce { $0 += v }
                 case .close:
                     .doNothing
@@ -200,7 +206,7 @@ struct StoreChannelTests {
         await poll { store.state == 1 }
         store.dispatch(.write(2))
         store.dispatch(.write(3))
-        await poll { store.state == 6 }     // 1 + 2 + 3, all through a single live for-await consumer
+        await poll { store.state == 6 } // 1 + 2 + 3, all through a single live for-await consumer
         #expect(store.state == 6)
     }
 

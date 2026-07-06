@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// A cancellation handle returned by an effect subscription or a state observation registration.
 ///
 /// When the ``Store`` starts an ``Effect`` component or when ``StoreType/observe(willChange:didChange:)``
@@ -94,5 +96,5 @@ public final class SubscriptionToken: Sendable {
     ///     return .empty   // no cancellation needed
     /// }
     /// ```
-    public static let empty = SubscriptionToken { }
+    public static let empty = SubscriptionToken {}
 }

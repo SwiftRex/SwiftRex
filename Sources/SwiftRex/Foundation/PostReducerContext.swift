@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// A `Sendable` context injected into ``Behavior`` and ``Middleware`` effect closures during
 /// phase 3 of dispatch (post-mutation).
 ///

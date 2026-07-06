@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 @testable import SwiftRex
 import Testing
 
@@ -95,7 +97,7 @@ struct StoreBufferTests {
         let buffer = StoreBuffer(store) { old, new in abs(new - old) >= 10 }
         let count = LockProtected(0)
         _ = buffer.observe(willChange: {}, didChange: { count.mutate { $0 += 1 } })
-        store.dispatch(5)  // change of 5 — below threshold
+        store.dispatch(5) // change of 5 — below threshold
         store.dispatch(10) // change of 10 from buffer.state=0 — at threshold
         #expect(count.value == 1) // only the second dispatch fired
     }

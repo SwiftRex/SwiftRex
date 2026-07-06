@@ -1,0 +1,88 @@
+# Indentation
+--indent 4
+--tabwidth 4
+
+# Line length (matching SwiftLint)
+--maxwidth 150
+
+# Imports — keep alpha order, no testable separation
+--importgrouping alpha
+
+# Braces / else placement
+--elseposition same-line
+
+# Switch/case: case at same column, contents indented one level
+--indentcase false
+
+# Wrap switch case bodies to a new line (required by switch_case_on_newline SwiftLint rule)
+--enable wrapSwitchCases
+
+# Unused closure args: unnamed-only (leave named args alone)
+--stripunusedargs unnamed-only
+
+# Void return type representation
+--voidtype void
+
+# Explicit self: remove
+--self remove
+
+# Preserve argument/collection wrapping as-is. Changing it moves `{` to a new
+# line after multiline `where` clauses → violates SwiftLint `opening_brace`.
+--wraparguments preserve
+--wrapcollections preserve
+
+# Use Xcode-style indentation for multi-line conditions (one extra indent level
+# rather than alignment). Without this, `if a,\n b` gets alignment-based
+# indentation (e.g., 3 or 6 spaces) which violates SwiftLint `indentation_width`.
+--xcodeindentation enabled
+
+# Rules disabled because they produce compile errors or violate SwiftLint in
+# this codebase (document each so it is not blindly re-enabled later).
+
+# `<T>(_: T)` → `(_: some T)` breaks parameter-pack syntax:
+# `_: repeat each X` becomes `_: repeat some Any X`.
+--disable opaqueGenericParameters
+
+# Inserts spaces around `<`/`>`, turning `Reader<String, X>` into
+# `Reader < String, X >`, which the compiler rejects as comparison operators.
+--disable spaceAroundOperators
+
+# Hoists `try` out of call arguments but mangles Swift Testing macros:
+# `#expect(try expr)` → `#expecttry (expr)` (no such macro).
+--disable hoistTry
+
+# Hoists 'await' out of call arguments but mangles Swift Testing macros:
+# #expect(await expr) -> #expectawait (expr) (no such macro).
+--disable hoistAwait
+
+# `fileprivate` → `private` is NOT equivalent when @Witness / @Prisms macros
+# generate types that must be accessible across lexical scopes in the same file.
+--disable redundantFileprivate
+
+# Strips initializer-call parens from nested generic types:
+# `Reader<A, B>>(arg)` → `Reader<A, B>>arg` (parse error after `>>`).
+--disable redundantParens
+
+# Converts `{ $0.property }` → `\.property`; breaks `allSatisfy(\.isLetter)`
+# which the compiler rejects in a `rethrows` context on some Swift versions.
+--disable preferKeyPath
+
+# Adds trailing commas to the last element of multi-line collection literals;
+# SwiftLint's `trailing_comma` rule forbids them.
+--disable trailingCommas
+
+# Reformats numeric literals (removes underscores e.g. `8_080` → `8080`);
+# SwiftLint's `number_separator` rule requires them.
+--disable numberFormatting
+
+# Puts `{` on a new line after a wrapped `where` clause:
+# `where A: Sendable\n{` → violates SwiftLint's `opening_brace` rule.
+--disable wrapMultilineStatementBraces
+
+# SwiftRex enforces no_extension_access_modifier (member-level ACL). SwiftFormat's
+# extensionAccessControl mishandles the `package` ACL (hoists it to the extension), so
+# disable it entirely and let SwiftLint own this decision.
+--disable extensionAccessControl
+
+# SwiftLint owns modifier order (incl. nonisolated); avoid SwiftFormat fighting it.
+--disable modifierOrder

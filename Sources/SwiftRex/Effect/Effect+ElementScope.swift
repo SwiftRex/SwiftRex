@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// The scheduling id of a collection-lifted element's effect: the element's id paired with the
 /// user's own effect id.
 ///

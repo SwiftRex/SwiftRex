@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
 // MARK: - SwiftRex bridge: .doNothing for Effect pipelines
+
 //
 // `Reader: Semigroup/Monoid where Output: Semigroup/Monoid` is provided natively
 // by FP 1.6.6+ (luizmb/FP#40). `.doNothing` is SwiftRex vocabulary layered on top —

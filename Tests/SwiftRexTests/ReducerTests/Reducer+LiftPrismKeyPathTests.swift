@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 @testable import SwiftRex
 import Testing
@@ -12,14 +14,15 @@ private enum AppAction: Equatable, Sendable {
 extension AppAction: Prismatic {
     struct Prisms: Sendable {
         let counter = Prism<AppAction, Int>(
-            preview: { if case .counter(let value) = $0 { value } else { nil } },
+            preview: { if case let .counter(value) = $0 { value } else { nil } },
             review: AppAction.counter
         )
         let other = Prism<AppAction, String>(
-            preview: { if case .other(let value) = $0 { value } else { nil } },
+            preview: { if case let .other(value) = $0 { value } else { nil } },
             review: AppAction.other
         )
     }
+
     static let prism = Prisms()
 }
 

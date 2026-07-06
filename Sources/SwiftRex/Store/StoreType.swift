@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// The common interface shared by ``Store``, ``StoreProjection``, ``StoreBuffer``, and any mock.
 ///
 /// Views, coordinators, and tests accept `any StoreType<Action, State>`, letting the real

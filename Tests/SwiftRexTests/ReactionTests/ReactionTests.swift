@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 import Hourglass
@@ -104,9 +106,9 @@ struct SuperviseTests {
             .produce { _, _ in Reader { _ in .empty } }
             .supervise { _ in Supervision { _ in [channel("a")] } }
         let reactionCount = chained.consequences.filter { if case .reaction = $0 { true } else { false } }.count
-        #expect(reactionCount == 2)                  // reduce + produce on the action axis
-        #expect(chained.consequences.count == 3)     // + the one supervision
-        #expect(channels(chained, S()).count == 1)   // supervise carried through the chain
+        #expect(reactionCount == 2) // reduce + produce on the action axis
+        #expect(chained.consequences.count == 3) // + the one supervision
+        #expect(channels(chained, S()).count == 1) // supervise carried through the chain
     }
 
     @Test func fluentMiddlewareSuperviseAndReactChain() {
@@ -133,7 +135,7 @@ struct SuperviseTests {
     @Test func supervisorIsCancelledWhenPrismStateFocusIsAbsent() {
         // The state-driven-nav payoff: sub-state gone → no channels → reconciler cancels them.
         let prism = Prism<Nav, S>(
-            preview: { if case .loggedIn(let s) = $0 { s } else { nil } },
+            preview: { if case let .loggedIn(s) = $0 { s } else { nil } },
             review: Nav.loggedIn
         )
         let feature = Behavior<A, S, Void>.supervise { _ in Supervision { _ in [channel("socket")] } }

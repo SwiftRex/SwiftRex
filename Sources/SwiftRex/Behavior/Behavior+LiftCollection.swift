@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
 // MARK: - liftCollection (primitive — AffineTraversal)
+
 //
 // Lifts a per-element `Behavior` into one that operates on a whole collection living inside a
 // global state. Unlike ``Reducer/liftCollection(action:stateContainer:)-``, a `Behavior` also
@@ -70,7 +73,7 @@ extension Behavior {
             },
             // For each element, run its supervisor, re-embed the channel actions, and stamp the
             // channel ids per-element (so element A's `"socket"` ≠ element B's `"socket"`).
-            supervisor: self.supervisor.map { inner in
+            supervisor: supervisor.map { inner in
                 { @MainActor @Sendable (gs: GS) in
                     guard let elements else { return Reader { _ in [] } }
                     let perElement = elements(stateContainer.get(gs)).map { pair in

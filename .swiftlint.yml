@@ -16,6 +16,8 @@ identifier_name:
     warning: 100
     error: 100
   excluded:
+  - BenchmarkSuite
+  - Package.swift
     - id
     - fn
     - v1
@@ -25,6 +27,8 @@ type_name:
   min_length: 1
   max_length: 60
   excluded:
+  - BenchmarkSuite
+  - Package.swift
     - Id
     - V1
     - V2
@@ -40,6 +44,8 @@ disabled_rules:
   - multiple_closures_with_trailing_closure
   - file_length
 excluded:
+  - BenchmarkSuite
+  - Package.swift
   - Sources/SwiftRex/CodeGeneration
   - Sources/SwiftRex/__Generated__
   - Pods
@@ -48,7 +54,8 @@ excluded:
   - DerivedData
   - "Tests/*/XCTestManifests.swift"
   - .claude
-opt_in_rules: # some rules are only opt-in
+opt_in_rules:
+  - file_header # some rules are only opt-in
   - array_init
   - closure_end_indentation
   - closure_spacing
@@ -122,3 +129,6 @@ custom_rules:
     regex: '[ a-zA-Z0-9]*(?:let|var) [ a-zA-Z0-9]*: ([a-zA-Z0-9]*)[ ]*= \1'
     message: "Type Definition Not Needed"
     severity: error
+
+file_header:
+  required_string: "// SPDX-License-Identifier: Apache-2.0"

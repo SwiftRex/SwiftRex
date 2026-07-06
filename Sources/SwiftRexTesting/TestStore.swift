@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Hourglass
 import SwiftRex
@@ -134,8 +136,8 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         send: { [weak self] dispatched in
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                self.receivedActions.append(dispatched.action)
-                self._receivedCount = self.receivedActions.count
+                receivedActions.append(dispatched.action)
+                _receivedCount = receivedActions.count
             }
         }
     )
@@ -192,11 +194,11 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         exhaustive: Bool = true,
         clock: @escaping @Sendable (Environment) -> C
     ) where C: Sendable, C.Duration == Swift.Duration {
-        self.state = initial
+        state = initial
         self.behavior = behavior
         self.environment = environment
-        self._exhaustive = exhaustive
-        self.resolvedClock = clock(environment).eraseToAnyClock()
+        _exhaustive = exhaustive
+        resolvedClock = clock(environment).eraseToAnyClock()
     }
 
     // MARK: - Deinit check
@@ -287,7 +289,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         sourceLocation: SourceLocation = #_sourceLocation,
         assert expectedStateChange: (inout State) -> Void
     ) -> Self {
-        if _exhaustive && _receivedCount > 0 {
+        if _exhaustive, _receivedCount > 0 {
             Issue.record(
                 """
                 dispatch(\(action)) called with \(_receivedCount) unprocessed received action(s). \
@@ -422,6 +424,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     }
 
     // MARK: - Module-internal (used by view-model test harnesses, which assert on ViewState
+
     // and therefore must dispatch the domain action without TestStore second-guessing
     // it at the domain-State layer).
 
@@ -463,7 +466,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         switch consequence.mutation {
         case .unchanged:
             break
-        case .mutation(let mutation):
+        case let .mutation(mutation):
             stateObservers.values.forEach { $0.willChange() }
             mutation.runEndoMut(&state)
             stateObservers.values.forEach { $0.didChange() }
@@ -507,7 +510,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         for _ in 0..<10_000 {
             let before = receivedActions.count
             await Task.yield()
-            if engine.isQuiescent && receivedActions.count == before {
+            if engine.isQuiescent, receivedActions.count == before {
                 stable += 1
                 if stable >= 3 { return }
             } else {

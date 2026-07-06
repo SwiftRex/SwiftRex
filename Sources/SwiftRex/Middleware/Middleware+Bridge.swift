@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
 // MARK: - Bridge / routing helpers
+
 //
 // These overloads add action-to-action routing on top of any existing `Middleware` value.
 // Start from `Middleware.identity` and chain `.on(...)` calls to build pure routing pipelines
@@ -187,6 +190,7 @@ extension Middleware {
     }
 
     // MARK: 11–12. Bool predicate variants (lazy state access)
+
     //
     // These complement the unlabeled closure variants above with a Bool predicate
     // and fixed dispatch, guaranteeing:

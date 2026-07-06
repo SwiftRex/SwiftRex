@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import Foundation
 import SwiftRex
 
@@ -19,7 +21,7 @@ private let _effectSubscriptionSink = LockProtected<[SubscriptionToken]>([])
 func subscribeAll<A: Sendable>(
     _ effect: Effect<A>,
     send: @escaping @Sendable (DispatchedAction<A>) -> Void,
-    onComplete: @escaping @Sendable () -> Void = { }
+    onComplete: @escaping @Sendable () -> Void = {}
 ) -> [SubscriptionToken] {
     let tokens = effect.components.map { $0.subscribe(send, onComplete) }
     _effectSubscriptionSink.mutate { $0.append(contentsOf: tokens) }

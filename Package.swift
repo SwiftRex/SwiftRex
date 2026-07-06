@@ -35,8 +35,8 @@ let package = Package(
         .default(enabledTraits: [])
     ],
     dependencies: [
-        .package(url: "https://github.com/luizmb/FP.git", from: "1.13.0"),
-        .package(url: "https://github.com/luizmb/Hourglass.git", from: "0.6.2"),
+        .package(url: "https://github.com/luizmb/FP.git", from: "1.14.0"),
+        .package(url: "https://github.com/luizmb/Hourglass.git", from: "0.7.0"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.10.0"),
         .package(url: "https://github.com/ReactiveCocoa/ReactiveSwift.git", from: "7.2.0"),
         .package(url: "https://github.com/luizmb/ReactiveConcurrency.git", from: "0.3.0"),
@@ -158,6 +158,7 @@ let package = Package(
         ),
 
         // MARK: - Testing helpers
+
         // TestStore + TestFeature: opt-in product that brings in `Testing`. Kept
         // out of every other target so apps linking SwiftRex don't drag
         // `Testing.framework` into their dyld closure at runtime.

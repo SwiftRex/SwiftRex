@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 // MARK: - Convenience factories (raw Action — call site captured automatically)
 
 extension Effect {
@@ -74,7 +76,9 @@ extension Effect {
         let source = ActionSource(file: file, function: function, line: line)
         return Effect(components: [
             .init(subscribe: { send, complete in
-                for action in actions { send(DispatchedAction(action, dispatcher: source)) }
+                for action in actions {
+                    send(DispatchedAction(action, dispatcher: source))
+                }
                 complete()
                 return .empty
             }, scheduling: scheduling)
@@ -130,7 +134,9 @@ extension Effect {
     ) -> Self {
         Effect(components: [
             .init(subscribe: { send, complete in
-                for d in dispatched { send(d) }
+                for d in dispatched {
+                    send(d)
+                }
                 complete()
                 return .empty
             }, scheduling: scheduling)

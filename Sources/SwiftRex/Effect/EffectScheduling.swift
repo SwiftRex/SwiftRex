@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// Declares how the ``Store`` should schedule and manage the lifecycle of an ``Effect`` component.
 ///
 /// Every `Effect` component carries an `EffectScheduling` value. The Store reads it and decides
@@ -76,7 +78,7 @@ public struct EffectScheduling: Sendable, Equatable {
         self.delay = delay
         self.coalesce = coalesce
         self.exclusive = exclusive
-        self.cancelsOnly = false
+        cancelsOnly = false
     }
 }
 

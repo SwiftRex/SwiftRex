@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
@@ -99,17 +101,17 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     package init(consequences: [Consequence<State, Environment, Action>]) {
         self.consequences = consequences
         let reactions: [ReactionUnit] = consequences.compactMap {
-            if case .reaction(let f) = $0 { f } else { nil }
+            if case let .reaction(f) = $0 { f } else { nil }
         }
         let supervisions: [SupervisionUnit] = consequences.compactMap {
-            if case .supervision(let f) = $0 { f } else { nil }
+            if case let .supervision(f) = $0 { f } else { nil }
         }
         if reactions.isEmpty {
-            self.handle = { _, _ in .doNothing }
+            handle = { _, _ in .doNothing }
         } else if reactions.count == 1 {
-            self.handle = reactions[0]
+            handle = reactions[0]
         } else {
-            self.handle = { @MainActor action, context in
+            handle = { @MainActor action, context in
                 // Each reaction sees the same pre-mutation `context`; fold left so mutations
                 // sequence lhs→rhs and effects merge. `.combine` absorbs `.unchanged`, so an
                 // all-no-op fold stays `.unchanged` and the Store skips notifications.
@@ -117,10 +119,10 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
             }
         }
         if supervisions.isEmpty {
-            self.supervisor = nil
+            supervisor = nil
         } else {
-            self.supervisor = { @MainActor state in
-                let keeps = supervisions.map { $0(state) }            // resolve each on @MainActor
+            supervisor = { @MainActor state in
+                let keeps = supervisions.map { $0(state) } // resolve each on @MainActor
                 return Reader { env in keeps.flatMap { $0.runReader(env) } }
             }
         }

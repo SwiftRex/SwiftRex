@@ -1,8 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFPOperators
 import DataStructureOperators
 import SwiftRex
 
 // MARK: - Semigroup / Monoid
+
 //
 // `<>` is provided generically by `CoreFPOperators`:
 //

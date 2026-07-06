@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Hourglass
 @testable import SwiftRex
@@ -37,7 +39,7 @@ struct ChannelRendezvousTests {
         let engine = makeEngine(LockProtected([A]()))
 
         reconcile(engine, [socket(written: written, closed: closed)])
-        #expect(written.value.isEmpty)         // value-less open: no spurious initial send
+        #expect(written.value.isEmpty) // value-less open: no spurious initial send
         #expect(closed.value == 0)
     }
 
@@ -51,10 +53,10 @@ struct ChannelRendezvousTests {
 
         // send: action-driven broadcasts route into the SAME "socket" — no reopening
         engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])
-        engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])  // same value twice → both sent
+        engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0]) // same value twice → both sent
         engine.schedule(Effect<A>.broadcast("bye", channel: "socket").components[0])
-        #expect(written.value == ["hi", "hi", "bye"])   // no dedup; rendezvous on the shared id
-        #expect(closed.value == 0)                       // never reopened or torn down
+        #expect(written.value == ["hi", "hi", "bye"]) // no dedup; rendezvous on the shared id
+        #expect(closed.value == 0) // never reopened or torn down
 
         // leaving the desired set closes it
         reconcile(engine, [])
@@ -65,7 +67,7 @@ struct ChannelRendezvousTests {
         let engine = makeEngine(LockProtected([A]()))
         // Nothing open under "socket" → broadcast never opens anything; the value is dropped.
         engine.schedule(Effect<A>.broadcast("hi", channel: "socket").components[0])
-        #expect(Bool(true))   // reaching here without a crash is the assertion
+        #expect(Bool(true)) // reaching here without a crash is the assertion
     }
 
     @Test func differentIdTypesDoNotCollide() {

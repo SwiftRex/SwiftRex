@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -77,31 +79,31 @@ public struct TrackedMacro: MemberMacro, ExtensionMacro {
             .joined(separator: "\n")
 
         return """
-            // @unchecked Sendable: mutated only on the main actor via TrackedViewStore.
-            \(raw: access)final class Tracked: Observation.Observable, TrackedMirror, @unchecked Sendable {
-                @ObservationIgnored private let _$observationRegistrar = ObservationRegistrar()
+        // @unchecked Sendable: mutated only on the main actor via TrackedViewStore.
+        \(raw: access)final class Tracked: Observation.Observable, TrackedMirror, @unchecked Sendable {
+            @ObservationIgnored private let _$observationRegistrar = ObservationRegistrar()
 
-                \(raw: access)nonisolated func access<_Member>(keyPath: KeyPath<Tracked, _Member>) {
-                    _$observationRegistrar.access(self, keyPath: keyPath)
-                }
-                \(raw: access)nonisolated func withMutation<_Member, _Result>(
-                    keyPath: KeyPath<Tracked, _Member>,
-                    _ mutation: () throws -> _Result
-                ) rethrows -> _Result {
-                    try _$observationRegistrar.withMutation(of: self, keyPath: keyPath, mutation)
-                }
-
-            \(raw: fieldMembers)
-
-                @MainActor \(raw: access)init(_ source: \(raw: source)) {
-            \(raw: seeds)
-                }
-
-                @MainActor \(raw: access)func update(from source: \(raw: source)) {
-            \(raw: updates)
-                }
+            \(raw: access)nonisolated func access<_Member>(keyPath: KeyPath<Tracked, _Member>) {
+                _$observationRegistrar.access(self, keyPath: keyPath)
             }
-            """
+            \(raw: access)nonisolated func withMutation<_Member, _Result>(
+                keyPath: KeyPath<Tracked, _Member>,
+                _ mutation: () throws -> _Result
+            ) rethrows -> _Result {
+                try _$observationRegistrar.withMutation(of: self, keyPath: keyPath, mutation)
+            }
+
+        \(raw: fieldMembers)
+
+            @MainActor \(raw: access)init(_ source: \(raw: source)) {
+        \(raw: seeds)
+            }
+
+            @MainActor \(raw: access)func update(from source: \(raw: source)) {
+        \(raw: updates)
+            }
+        }
+        """
     }
 
     // MARK: - Private helpers
@@ -123,8 +125,11 @@ public struct TrackedMacro: MemberMacro, ExtensionMacro {
         modifiers
             .first(where: {
                 switch $0.name.tokenKind {
-                case .keyword(.public), .keyword(.package), .keyword(.internal),
-                     .keyword(.fileprivate), .keyword(.open):
+                case .keyword(.public),
+                     .keyword(.package),
+                     .keyword(.internal),
+                     .keyword(.fileprivate),
+                     .keyword(.open):
                     true
                 default:
                     false

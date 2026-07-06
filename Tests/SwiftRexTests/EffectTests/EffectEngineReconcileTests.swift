@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Hourglass
 @testable import SwiftRex
@@ -40,11 +42,11 @@ struct EffectEngineReconcileTests {
         let engine = makeEngine(LockProtected([Int]()))
 
         engine.reconcile(entries([broadcaster(id: "socket", value: 1, log: log, cancels: cancels)]))
-        #expect(log.value == [1])              // opened → delivered 1 on connect
+        #expect(log.value == [1]) // opened → delivered 1 on connect
         #expect(cancels.value.isEmpty)
 
         engine.reconcile(entries([]))
-        #expect(cancels.value == ["socket"])   // no longer desired → cancelled
+        #expect(cancels.value == ["socket"]) // no longer desired → cancelled
     }
 
     @Test func unchangedBroadcastValueDeliversOnce() {
@@ -54,7 +56,7 @@ struct EffectEngineReconcileTests {
         for _ in 0..<3 {
             engine.reconcile(entries([broadcaster(id: "s", value: 1, log: log, cancels: cancels)]))
         }
-        #expect(log.value == [1])              // delivered once — value never changed
+        #expect(log.value == [1]) // delivered once — value never changed
         #expect(cancels.value.isEmpty)
     }
 
@@ -65,8 +67,8 @@ struct EffectEngineReconcileTests {
         engine.reconcile(entries([broadcaster(id: "s", value: 1, log: log, cancels: cancels)]))
         engine.reconcile(entries([broadcaster(id: "s", value: 2, log: log, cancels: cancels)]))
         engine.reconcile(entries([broadcaster(id: "s", value: 3, log: log, cancels: cancels)]))
-        #expect(log.value == [1, 2, 3])        // piped each change into the same channel
-        #expect(cancels.value.isEmpty)         // never torn down
+        #expect(log.value == [1, 2, 3]) // piped each change into the same channel
+        #expect(cancels.value.isEmpty) // never torn down
     }
 
     @Test func duplicateKeysInOneCycleRegisterOnce() {
@@ -78,10 +80,10 @@ struct EffectEngineReconcileTests {
         let engine = makeEngine(LockProtected([Int]()))
         let socket = broadcaster(id: "socket", value: 1, log: log, cancels: cancels)
         engine.reconcile(entries([socket, socket]))
-        #expect(log.value == [1])              // deduped → opened once, delivered once
+        #expect(log.value == [1]) // deduped → opened once, delivered once
         #expect(cancels.value.isEmpty)
         engine.reconcile(entries([]))
-        #expect(cancels.value == ["socket"])   // and the single channel tears down exactly once
+        #expect(cancels.value == ["socket"]) // and the single channel tears down exactly once
     }
 
     @Test func presenceOnlyChannelOpensOnce() {
@@ -89,7 +91,9 @@ struct EffectEngineReconcileTests {
         let engine = makeEngine(received)
         // .nothing broadcasting → opens once, body dispatches a single action; no re-open.
         let channel = Channel<Int>(id: "s") { dispatch in dispatch(42); return .cancelOnly {} }
-        for _ in 0..<3 { engine.reconcile(entries([channel])) }
+        for _ in 0..<3 {
+            engine.reconcile(entries([channel]))
+        }
         #expect(received.value == [42])
     }
 
@@ -103,11 +107,11 @@ struct EffectEngineReconcileTests {
                 return .cancelOnly { cancels.mutate { $0 += 1 } }
             }
         }
-        engine.reconcile(entries([fetch("a")]))   // open
-        engine.reconcile(entries([fetch("a")]))   // same resetKey → no-op
+        engine.reconcile(entries([fetch("a")])) // open
+        engine.reconcile(entries([fetch("a")])) // same resetKey → no-op
         #expect(opens.value == 1)
         #expect(cancels.value == 0)
-        engine.reconcile(entries([fetch("b")]))   // resetKey changed → recreate (cancel + reopen)
+        engine.reconcile(entries([fetch("b")])) // resetKey changed → recreate (cancel + reopen)
         #expect(opens.value == 2)
         #expect(cancels.value == 1)
     }
@@ -121,7 +125,7 @@ struct EffectEngineReconcileTests {
             broadcaster(id: "b", value: 10, log: log, cancels: cancels)
         ]))
         engine.reconcile(entries([broadcaster(id: "b", value: 10, log: log, cancels: cancels)]))
-        #expect(cancels.value == ["a"])        // only a dropped out
+        #expect(cancels.value == ["a"]) // only a dropped out
         engine.reconcile(entries([]))
         #expect(cancels.value == ["a", "b"])
     }

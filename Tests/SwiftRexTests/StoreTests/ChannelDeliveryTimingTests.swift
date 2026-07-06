@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 import Hourglass
@@ -5,6 +7,7 @@ import Hourglass
 import Testing
 
 // MARK: - The prototype: creation is decoupled from delivery pacing, and `settle` debounces creation.
+
 //
 // Two orthogonal knobs:
 //   • `ChannelDelivery` (.throttle/.debounce) paces the *values* flowing into a live channel — the
@@ -39,7 +42,7 @@ struct ChannelDeliveryTimingTests {
         switch action {
         case .connect: .reduce { $0.connected = true }
         case .bump: .reduce { $0.tick += 1 }
-        case .got(let v): .reduce { $0.received.append(v) }
+        case let .got(v): .reduce { $0.received.append(v) }
         }
     }
 
@@ -63,19 +66,21 @@ struct ChannelDeliveryTimingTests {
         let opens = LockProtected(0)
         let store = feedStore(.throttle(.seconds(1)), clock: clock, opens: opens)
 
-        store.dispatch(.connect)                 // opens NOW — the throttle never defers creation
+        store.dispatch(.connect) // opens NOW — the throttle never defers creation
         await poll { opens.value == 1 && store.state.received == [0] }
         #expect(opens.value == 1)
-        #expect(store.state.received == [0])     // the open's current value delivered immediately
+        #expect(store.state.received == [0]) // the open's current value delivered immediately
 
-        store.dispatch(.bump)                    // tick 1, inside the throttle window → dropped
-        for _ in 0..<20 { await Task.yield() }
+        store.dispatch(.bump) // tick 1, inside the throttle window → dropped
+        for _ in 0..<20 {
+            await Task.yield()
+        }
         #expect(store.state.received == [0])
 
-        await clock.advance(by: .seconds(1))     // window elapses
-        store.dispatch(.bump)                    // tick 2 → delivered into the SAME live channel
+        await clock.advance(by: .seconds(1)) // window elapses
+        store.dispatch(.bump) // tick 2 → delivered into the SAME live channel
         await poll { store.state.received == [0, 2] }
-        #expect(opens.value == 1)                // never reopened across the throttle
+        #expect(opens.value == 1) // never reopened across the throttle
     }
 
     @Test func debounceDeliveryCollapsesValuesButKeepsTheChannel() async {
@@ -83,11 +88,11 @@ struct ChannelDeliveryTimingTests {
         let opens = LockProtected(0)
         let store = feedStore(.debounce(.seconds(1)), clock: clock, opens: opens)
 
-        store.dispatch(.connect)                 // opens + delivers the current value immediately
+        store.dispatch(.connect) // opens + delivers the current value immediately
         await poll { store.state.received == [0] }
 
-        store.dispatch(.bump)                    // tick 1, debounced…
-        store.dispatch(.bump)                    // tick 2, restarts the window → only the latest survives
+        store.dispatch(.bump) // tick 1, debounced…
+        store.dispatch(.bump) // tick 2, restarts the window → only the latest survives
         await clock.waitForSleepers()
         await clock.advance(by: .seconds(1))
         await poll { store.state.received == [0, 2] }
@@ -106,7 +111,7 @@ struct ChannelDeliveryTimingTests {
         let cancels = LockProtected(0)
         let reducer = Behavior<SearchAction, Search, Void>.handle { action, _ in
             switch action {
-            case .setQuery(let q): .reduce { $0.query = q }
+            case let .setQuery(q): .reduce { $0.query = q }
             }
         }
         let supervisor = Behavior<SearchAction, Search, Void>.supervise { state in
@@ -123,25 +128,27 @@ struct ChannelDeliveryTimingTests {
         }
         let store = Store(initial: Search(), behavior: .combine(reducer, supervisor), environment: (), clock: { _ in clock })
 
-        store.dispatch(.setQuery("h"))           // appears → settling, not yet open
-        store.dispatch(.setQuery("he"))          // key changes → settle restarts
+        store.dispatch(.setQuery("h")) // appears → settling, not yet open
+        store.dispatch(.setQuery("he")) // key changes → settle restarts
         store.dispatch(.setQuery("hel"))
-        for _ in 0..<20 { await Task.yield() }
-        #expect(opens.value.isEmpty)             // creation deferred while the query keeps changing
+        for _ in 0..<20 {
+            await Task.yield()
+        }
+        #expect(opens.value.isEmpty) // creation deferred while the query keeps changing
 
         await clock.waitForSleepers()
-        await clock.advance(by: .seconds(1))     // query quiet for `settle` → opens once, with the settled value
+        await clock.advance(by: .seconds(1)) // query quiet for `settle` → opens once, with the settled value
         await poll { opens.value == ["hel"] }
         #expect(opens.value == ["hel"])
         #expect(cancels.value == 0)
 
-        store.dispatch(.setQuery("hell"))        // a further change kills the live instance NOW…
+        store.dispatch(.setQuery("hell")) // a further change kills the live instance NOW…
         await poll { cancels.value == 1 }
-        #expect(opens.value == ["hel"])          // …and defers the reopen
+        #expect(opens.value == ["hel"]) // …and defers the reopen
         await clock.waitForSleepers()
         await clock.advance(by: .seconds(1))
         await poll { opens.value == ["hel", "hell"] }
-        #expect(opens.value == ["hel", "hell"])  // reopened with the new settled key
+        #expect(opens.value == ["hel", "hell"]) // reopened with the new settled key
     }
 
     // MARK: - A `.nothing` channel is a PassthroughSubject: its FIRST broadcast goes straight through
@@ -155,12 +162,12 @@ struct ChannelDeliveryTimingTests {
             .reduce { action, state in
                 switch action {
                 case .connect: state.connected = true
-                case .got(let v): state.received.append(v)
+                case let .got(v): state.received.append(v)
                 case .send: break
                 }
             }
             .produce { action, _ in
-                guard case .send(let v) = action else { return Reader { _ in .empty } }
+                guard case let .send(v) = action else { return Reader { _ in .empty } }
                 return Reader { _ in .broadcast(v, channel: "socket") }
             }
             .supervise { state in
@@ -175,17 +182,19 @@ struct ChannelDeliveryTimingTests {
             }
         let store = Store(initial: Socket(), behavior: behavior, environment: (), clock: { _ in clock })
 
-        store.dispatch(.connect)                 // opens the channel — delivers nothing (no initial value)
-        store.dispatch(.send(1))                 // first broadcast → straight through; the open set no window
+        store.dispatch(.connect) // opens the channel — delivers nothing (no initial value)
+        store.dispatch(.send(1)) // first broadcast → straight through; the open set no window
         await poll { store.state.received == [1] }
         #expect(store.state.received == [1])
 
-        store.dispatch(.send(2))                 // inside the window → throttled
-        for _ in 0..<20 { await Task.yield() }
+        store.dispatch(.send(2)) // inside the window → throttled
+        for _ in 0..<20 {
+            await Task.yield()
+        }
         #expect(store.state.received == [1])
 
         await clock.advance(by: .seconds(1))
-        store.dispatch(.send(3))                 // window elapsed → delivered into the same live channel
+        store.dispatch(.send(3)) // window elapsed → delivered into the same live channel
         await poll { store.state.received == [1, 3] }
         #expect(store.state.received == [1, 3])
     }

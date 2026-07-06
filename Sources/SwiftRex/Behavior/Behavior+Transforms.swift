@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 
@@ -33,7 +35,7 @@ extension Behavior {
                 return Reaction(mutation: c.mutation, produce: c.produce.map { $0.map(prism.review) })
             },
             // Re-embed each supervised channel's actions into the global type.
-            supervisor: self.supervisor.map { inner in
+            supervisor: supervisor.map { inner in
                 { @MainActor @Sendable (state: State) in inner(state).map { $0.map { $0.mapAction(prism.review) } } }
             }
         )
@@ -90,7 +92,7 @@ extension Behavior {
                     produce: c.produce.contramapEnvironment { $0.map { $0[keyPath: keyPath] } }
                 )
             },
-            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(state[keyPath: keyPath]) } }
+            supervisor: supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(state[keyPath: keyPath]) } }
         )
     }
 
@@ -118,7 +120,7 @@ extension Behavior {
                     produce: c.produce.contramapEnvironment { $0.map(stateLens.get) }
                 )
             },
-            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(stateLens.get(state)) } }
+            supervisor: supervisor.map { inner in { @MainActor @Sendable (state: GlobalState) in inner(stateLens.get(state)) } }
         )
     }
 
@@ -149,7 +151,7 @@ extension Behavior {
                 )
             },
             // Sub-state absent → supervise nothing, so the reconciler cancels the feature's channels.
-            supervisor: self.supervisor.map { inner in
+            supervisor: supervisor.map { inner in
                 { @MainActor @Sendable (state: GlobalState) in statePrism.preview(state).map { inner($0) } ?? Reader { _ in [] } }
             }
         )
@@ -183,7 +185,7 @@ extension Behavior {
                 )
             },
             // Focus absent → supervise nothing, so the reconciler cancels the feature's channels.
-            supervisor: self.supervisor.map { inner in
+            supervisor: supervisor.map { inner in
                 { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
             }
         )
@@ -219,7 +221,7 @@ extension Behavior {
                     produce: c.produce.contramapEnvironment { $0.compactMap(traversal.preview) }
                 )
             },
-            supervisor: self.supervisor.map { inner in
+            supervisor: supervisor.map { inner in
                 { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
             }
         )
@@ -252,7 +254,7 @@ extension Behavior {
                 let c = self.handle(action, context)
                 return Reaction(mutation: c.mutation, produce: c.produce.contramapEnvironment { $0.mapEnvironment(f) })
             },
-            supervisor: self.supervisor.map { inner in { @MainActor @Sendable (state: State) in inner(state).contramapEnvironment(f) } }
+            supervisor: supervisor.map { inner in { @MainActor @Sendable (state: State) in inner(state).contramapEnvironment(f) } }
         )
     }
 }

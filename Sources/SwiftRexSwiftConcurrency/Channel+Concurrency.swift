@@ -1,6 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import SwiftRex
 
 // MARK: - AsyncSequence → Channel (state-driven, long-lived subscriptions)
+
 //
 // Where `Effect.asyncSequence` turns a sequence into a one-shot effect, `asChannel` turns it into a
 // long-lived ``Channel`` — the unit a `supervise` keeps alive. Declare it from state and the Store

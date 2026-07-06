@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import Hourglass
 @testable import SwiftRex
@@ -25,8 +27,8 @@ struct StoreReactionTests {
         switch action {
         case .connect: .reduce { $0.connected = true }
         case .disconnect: .reduce { $0.connected = false }
-        case .setOutbox(let v): .reduce { $0.outbox = v }
-        case .received(let v): .reduce { $0.lastReceived = v }
+        case let .setOutbox(v): .reduce { $0.outbox = v }
+        case let .received(v): .reduce { $0.lastReceived = v }
         }
     }
 
@@ -56,20 +58,20 @@ struct StoreReactionTests {
         }
         let store = Store(initial: S(), behavior: .combine(reducerBehavior, supervisor))
 
-        #expect(opens.value == 0)                      // initial state: not connected → no channel
+        #expect(opens.value == 0) // initial state: not connected → no channel
 
-        store.dispatch(.connect)                       // condition becomes true → channel opens
+        store.dispatch(.connect) // condition becomes true → channel opens
         await poll { opens.value == 1 }
         #expect(opens.value == 1)
         #expect(cancels.value == 0)
 
-        store.dispatch(.setOutbox(7))                  // value changes → pipes 7 into the SAME channel
+        store.dispatch(.setOutbox(7)) // value changes → pipes 7 into the SAME channel
         await poll { store.state.lastReceived == 7 }
         #expect(store.state.lastReceived == 7)
-        #expect(opens.value == 1)                      // not reopened
+        #expect(opens.value == 1) // not reopened
         #expect(cancels.value == 0)
 
-        store.dispatch(.disconnect)                    // condition false → reconciler cancels it
+        store.dispatch(.disconnect) // condition false → reconciler cancels it
         await poll { cancels.value == 1 }
         #expect(cancels.value == 1)
     }
@@ -106,7 +108,9 @@ struct StoreReactionTests {
         // `setOutbox(0)` mutates (so reconcile runs), but outbox stays 0 → unchanged identities
         // → the engine diff produces zero ops, so the channel is never reopened.
         store.dispatch(.setOutbox(0))
-        for _ in 0..<10 { await Task.yield() }
+        for _ in 0..<10 {
+            await Task.yield()
+        }
         #expect(opens.value == 1)
     }
 
@@ -134,7 +138,7 @@ struct StoreReactionTests {
 
     private var itemPrism: Prism<AppAction, ElementAction<Int, ItemAction>> {
         Prism(
-            preview: { if case .item(let e) = $0 { e } else { nil } },
+            preview: { if case let .item(e) = $0 { e } else { nil } },
             review: AppAction.item
         )
     }
@@ -142,8 +146,8 @@ struct StoreReactionTests {
     private var globalReducer: Behavior<AppAction, AppState, Void> {
         .reduce { action, state in
             switch action {
-            case .addItem(let item): state.items.append(item)
-            case .removeItem(let id): state.items.removeAll { $0.id == id }
+            case let .addItem(item): state.items.append(item)
+            case let .removeItem(id): state.items.removeAll { $0.id == id }
             case let .setConnected(id, value):
                 if let i = state.items.firstIndex(where: { $0.id == id }) { state.items[i].connected = value }
             case .item: break
@@ -175,20 +179,20 @@ struct StoreReactionTests {
         )
 
         await poll { opens.value.count == 2 }
-        #expect(opens.value.sorted() == [1, 2])      // both elements opened, each under its own stamped id
+        #expect(opens.value.sorted() == [1, 2]) // both elements opened, each under its own stamped id
         #expect(cancels.value.isEmpty)
 
-        store.dispatch(.setConnected(id: 1, false))   // only element 1 leaves the desired set
+        store.dispatch(.setConnected(id: 1, false)) // only element 1 leaves the desired set
         await poll { cancels.value.contains(1) }
-        #expect(cancels.value == [1])                 // exactly element 1 cancelled — element 2 untouched
-        #expect(opens.value.sorted() == [1, 2])       // and element 2 was never reopened
+        #expect(cancels.value == [1]) // exactly element 1 cancelled — element 2 untouched
+        #expect(opens.value.sorted() == [1, 2]) // and element 2 was never reopened
 
-        store.dispatch(.addItem(Item(id: 3, connected: true)))   // a new element opens its own channel
+        store.dispatch(.addItem(Item(id: 3, connected: true))) // a new element opens its own channel
         await poll { opens.value.contains(3) }
         #expect(opens.value.sorted() == [1, 2, 3])
 
-        store.dispatch(.removeItem(id: 2))            // dropping an element entirely cancels its channel
+        store.dispatch(.removeItem(id: 2)) // dropping an element entirely cancels its channel
         await poll { cancels.value.contains(2) }
-        #expect(cancels.value.sorted() == [1, 2])     // element 3 still alive
+        #expect(cancels.value.sorted() == [1, 2]) // element 3 still alive
     }
 }

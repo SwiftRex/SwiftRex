@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 
 /// A lazy, push-based description of side-effectful work that produces zero or more actions.

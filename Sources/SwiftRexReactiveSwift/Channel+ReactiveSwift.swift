@@ -1,9 +1,12 @@
+// SPDX-License-Identifier: Apache-2.0
+
 @preconcurrency import ReactiveSwift
 import SwiftRex
 
 private struct Unchecked<T>: @unchecked Sendable { let value: T }
 
 // MARK: - SignalProducer → Channel (state-driven, long-lived subscriptions)
+
 //
 // The `asChannel` counterpart of `asEffect`: a `supervise` keeps the ``Channel`` alive, which `start`s
 // the producer once (scoped to a `Lifetime`), dispatches each value as an action, and disposes the

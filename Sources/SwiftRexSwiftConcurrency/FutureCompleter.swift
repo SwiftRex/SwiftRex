@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// A single-use token passed to ``Effect/future(_:scheduling:file:function:line:)`` that
 /// completes the future with exactly one action.
 ///
@@ -34,7 +36,7 @@
 public struct FutureCompleter<Action: Sendable>: ~Copyable, @unchecked Sendable {
     private let box: FutureContinuationBox<Action>
 
-    internal init(_ box: FutureContinuationBox<Action>) {
+    init(_ box: FutureContinuationBox<Action>) {
         self.box = box
     }
 

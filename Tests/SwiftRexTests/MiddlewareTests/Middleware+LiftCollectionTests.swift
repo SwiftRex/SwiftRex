@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 import Foundation
@@ -46,7 +48,7 @@ struct MiddlewareLiftCollectionTests {
     }
 
     private let itemPrism = Prism<AppAction, ElementAction<UUID, LocalAction>>(
-        preview: { if case .item(let ea) = $0 { ea } else { nil } },
+        preview: { if case let .item(ea) = $0 { ea } else { nil } },
         review: { .item($0) }
     )
 
@@ -70,7 +72,7 @@ struct MiddlewareLiftCollectionTests {
         subscribeAll(effect(sut, action: .item(ElementAction(id1, action: .bump)), state: state)) { d in
             received.mutate { $0.append(d.action) }
         }
-        guard case .item(let ea) = received.value.first else {
+        guard case let .item(ea) = received.value.first else {
             Issue.record("Expected a re-embedded .item action")
             return
         }
@@ -111,7 +113,7 @@ struct MiddlewareLiftCollectionTests {
 
     @Test func dictionaryScopesScheduling() {
         let prism = Prism<AppAction, ElementAction<String, LocalAction>>(
-            preview: { if case .keyed(let ea) = $0 { ea } else { nil } },
+            preview: { if case let .keyed(ea) = $0 { ea } else { nil } },
             review: { .keyed($0) }
         )
         let sut = elementMiddleware.liftCollection(action: prism, stateDictionary: \AppState.lookup)

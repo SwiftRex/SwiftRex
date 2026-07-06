@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import CoreFP
 import DataStructure
 import Foundation
@@ -119,6 +121,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     private var nextObserverKey: UInt64 = 0
 
     // MARK: - Dispatch serialization
+
     //
     // `queue` + `isProcessing` serialize the three-phase pipeline so it never runs nested.
     // Both are MainActor-isolated (no lock needed): the only off-actor caller is an effect's
@@ -195,7 +198,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         self.state = state
         self.behavior = behavior
         self.environment = environment
-        self.resolvedClock = clock(environment).eraseToAnyClock()
+        resolvedClock = clock(environment).eraseToAnyClock()
         // Activate the state-driven channels implied by the initial state (no dispatch needed). A
         // behavior that never supervises is a true bypass — `reconcileSupervised` is never called.
         if behavior.supervises { reconcileSupervised() }
@@ -206,7 +209,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// state-changing dispatch, but **only when `behavior.supervises`** — so a non-supervising feature
     /// never reads state here, no matter how many channels other features keep.
     private func reconcileSupervised() {
-        guard let supervisor = behavior.supervisor else { return }   // nil ⇒ nothing supervises (bypass)
+        guard let supervisor = behavior.supervisor else { return } // nil ⇒ nothing supervises (bypass)
         engine.reconcile(supervisor(state).runReader(environment).map { $0.reconcileEntry })
     }
 
@@ -345,7 +348,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
                     source: next?.dispatcher,
                     actionDescription: next.map { String(describing: $0.action) }
                 ))
-                queue.removeAll()   // drop the runaway so the app can't hang
+                queue.removeAll() // drop the runaway so the app can't hang
                 break
             }
             runPhases(queue.removeFirst())
@@ -370,7 +373,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         switch consequence.mutation {
         case .unchanged:
             didMutate = false
-        case .mutation(let mutation):
+        case let .mutation(mutation):
             stateObservers.values.forEach { $0.willChange() }
             mutation.runEndoMut(&state)
             stateObservers.values.forEach { $0.didChange() }

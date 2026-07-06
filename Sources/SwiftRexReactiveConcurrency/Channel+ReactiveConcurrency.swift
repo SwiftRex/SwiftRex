@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import ReactiveConcurrency
 import SwiftRex
 
 // MARK: - Publisher → Channel (state-driven, long-lived subscriptions)
+
 //
 // The `asChannel` counterpart of `asEffect` for the ReactiveConcurrency `Publisher` (Combine's surface
 // over `AsyncSequence`): a `supervise` keeps the ``Channel`` alive, which `sink`s the publisher once,
@@ -51,7 +54,7 @@ extension Publisher where Failure: Error {
     ) -> Channel<Action> {
         Channel(id: id, lifetime: lifetime) { dispatch in
             let c = self.sink(
-                receiveCompletion: { if case .failure(let error) = $0 { dispatch(transform(.failure(error))) } },
+                receiveCompletion: { if case let .failure(error) = $0 { dispatch(transform(.failure(error))) } },
                 receiveValue: { dispatch(transform(.success($0))) }
             )
             return .cancelOnly { c.cancel() }

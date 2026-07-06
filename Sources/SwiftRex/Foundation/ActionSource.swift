@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// The call-site origin of a dispatched action, captured automatically at every public API boundary.
 ///
 /// `ActionSource` records the `#file`, `#function`, and `#line` where an action was

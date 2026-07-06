@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /// How a feature's view observes its store — the storage/observation strategy `@Feature` builds and
 /// `@BoundTo` binds to.
 ///
