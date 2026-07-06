@@ -61,7 +61,7 @@ jobs:
           EOF
 
       - name: Configure Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
