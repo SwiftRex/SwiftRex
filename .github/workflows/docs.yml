@@ -3,6 +3,9 @@ name: Documentation
 on:
   push:
     tags: ['v*']
+  # Manual clean re-deploy (single artifact) without a new tag — for transient Pages
+  # \"Deployment failed, try again later\". Never use `gh run rerun --failed` on a docs run.
+  workflow_dispatch:
 
 permissions:
   contents: read
