@@ -11,18 +11,18 @@ SwiftRex models your whole app as one loop:
 
 ```swift
 let feature = Behavior<Action, State, Environment>
-    .reduce { action, state in … }      // the state change — pure (Action, inout State) -> Void
-    .produce { action, ctx in … }       // the action-driven Effect (Elm's Cmd)
-    .supervise { state in … }           // the state-driven Channels to keep alive (Elm's Sub)
+    .reduce { action, state in … }      // the Reducer — reduces actions into state
+    .produce { action, ctx in … }       // the Effect Producer — produces effects from actions
+    .supervise { state in … }           // the Effect Supervisor — supervises effects for a given state
 ```
 
-- The ``Store`` is the **only** thing that runs: a behavior only *describes* — the Store **mutates** (`reduce`), **performs** (`produce`), and **keeps** (`supervise`). It notifies observers exactly once per change; actions an effect produces loop back through the same path.
+- The ``Store`` is the **only** thing that runs: a behavior only *describes* — the Store **maintains** state (via `reduce`), **performs** the effects a `produce` yields, and **supervises** the channels a `supervise` keeps. It notifies observers exactly once per change; actions an effect dispatches loop back through the same path.
 
-Effects come in two flavours: *action-driven* — a `produce` that runs because something happened — and *state-driven* — a `supervise` that keeps a long-lived resource (a socket, a timer, a poll) alive for exactly as long as the state implies it. See <doc:StateDrivenEffects>.
+Effects come in two flavours: *action-driven* — an **Effect Producer** (`produce`) that runs because something happened — and *state-driven* — an **Effect Supervisor** (`supervise`) that keeps a long-lived resource (a socket, a timer, a poll) alive for exactly as long as the state implies it. See <doc:StateDrivenEffects>.
 
 Everything except the `Store` is inert and composable. Two `Behavior`s combine into one with `<>`; features written against their own local types **lift** to the app's global types before composing (<doc:Lifting>); the ``SwiftRex/Behavior`` page shows the fluent surface in full. That "compose two, get one of the same kind, with a do-nothing identity" shape is a **monoid** — when you want the lawful underpinnings behind the whole design, see <doc:Algebra>.
 
-> New here? Start with the [README](https://github.com/SwiftRex/SwiftRex#readme) for the pragmatic tour — a feature in one screen, installation, Command-vs-Subscription effects, modularity — then <doc:BuildYourFirstFeature>, and come back for the type-by-type reference below.
+> New here? Start with the [README](https://github.com/SwiftRex/SwiftRex#readme) for the pragmatic tour — a feature in one screen, installation, producer-vs-supervisor effects, modularity — then <doc:BuildYourFirstFeature>, and come back for the type-by-type reference below.
 
 ## Companion Products
 

@@ -212,7 +212,7 @@ let recorder = Behavior<Action, State, Environment>
         case .located(let coordinate): .reduce { $0.route.append(coordinate) }
         case .saveTapped:
             .reduce { $0.isSaving = true }
-                .produce { ctx in ctx.environment.save(Trip(ctx.liveState?.route ?? [])).asEffect(Action.saved) }
+            .produce { ctx in ctx.environment.save(Trip(ctx.liveState?.route ?? [])).asEffect(Action.saved) }
         case .saved: .reduce { $0.isSaving = false }
         }
     }

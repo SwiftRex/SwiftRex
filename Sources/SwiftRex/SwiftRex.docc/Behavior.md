@@ -6,9 +6,9 @@ The primary composition unit — a monoid of ``Consequence``s fusing a ``Reducer
 
 A `Behavior<Action, State, Environment>` *is* `[Consequence]`. Three fluent builders describe a feature's concerns, each composing by `<>`:
 
-- ``reduce(_:)`` — the **state change**: a pure `(Action, inout State) -> Void`. The ``Store`` *mutates*.
-- ``produce(_:)`` — the **action-driven effect**: an action produces an ``Effect`` (Elm's `Cmd`). The ``Store`` *performs*.
-- ``supervise(_:)`` — the **state-driven effect**: the *state* keeps a ``Supervision`` of ``Channel``s alive (Elm's `Sub`). The ``Store`` *keeps*. See <doc:StateDrivenEffects>.
+- ``reduce(_:)`` — the **Reducer**: a pure `(Action, inout State) -> Void`. The ``Store`` *maintains* the state.
+- ``produce(_:)`` — the **Effect Producer**: an action produces an ``Effect``. The ``Store`` *performs* it.
+- ``supervise(_:)`` — the **Effect Supervisor**: the *state* keeps a ``Supervision`` of ``Channel``s alive. The ``Store`` *supervises* them. See <doc:StateDrivenEffects>.
 
 ```swift
 let room = Behavior<RoomAction, RoomState, RoomEnv>
