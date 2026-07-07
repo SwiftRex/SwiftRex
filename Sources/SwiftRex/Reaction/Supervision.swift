@@ -29,6 +29,22 @@ public typealias Keep<Action: Sendable> = [Channel<Action>]
 public typealias Supervision<Environment: Sendable, Action: Sendable> =
     Reader<Environment, Keep<Action>>
 
+/// The return of a ``Middleware``/``Behavior``'s **action** side (`produce`): a deferred
+/// `(PostReducerContext) -> Effect` giving the ``Effect`` to perform once the post-mutation
+/// context — the committed `State` plus the `Environment` — is available.
+///
+/// The action is the input to `produce`; the context arrives through this `Reader`, mirroring how
+/// ``Supervision`` receives its environment. Because `Reader` is a `Monoid` when its `Output` is
+/// (``Effect`` is), `Producer` composes for free.
+///
+/// ```swift
+/// .produce { action, _ in
+///     Producer { ctx in ctx.environment.fetch().asEffect(Action.fetched) }
+/// }
+/// ```
+public typealias Producer<State: Sendable, Environment: Sendable, Action: Sendable> =
+    Reader<PostReducerContext<State, Environment>, Effect<Action>>
+
 // MARK: - Engine bridge
 
 extension Channel {
