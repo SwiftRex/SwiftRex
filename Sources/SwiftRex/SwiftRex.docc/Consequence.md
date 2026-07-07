@@ -4,7 +4,7 @@ A single thing a ``Behavior`` does — a **reaction** to an action, or a **super
 
 ## Overview
 
-A ``Behavior`` *is* a monoid of consequences: `Behavior` is `[Consequence]`, with `[]` the identity and `+` the composition. Each `Consequence<State, Environment, Action>` is one of two **clocks**:
+A ``Behavior`` *is* a monoid of consequences: `Behavior` is `[Consequence]`, with `[]` the identity and `+` the composition. Each `Consequence<Action, State, Environment>` is one of two **clocks**:
 
 - ``reaction(_:)`` — the **action clock**. Given an action and the pre-mutation ``PreReducerContext``, it produces a ``Reaction`` (a `reduce` and/or a `produce`), scheduled once per action.
 - ``supervision(_:)`` — the **state clock**. Given the post-mutation state, it produces a ``Supervision`` (the channels to *keep*), reconciled by diff after every change — independent of whether any action reached this behavior, which is what makes it survive time-travel.

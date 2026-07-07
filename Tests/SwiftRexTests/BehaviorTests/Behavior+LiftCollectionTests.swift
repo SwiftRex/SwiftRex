@@ -67,7 +67,7 @@ struct BehaviorLiftCollectionTests {
         _ sut: Behavior<AppAction, AppState, Void>,
         action: AppAction,
         state: AppState
-    ) -> Reaction<AppState, Void, AppAction> {
+    ) -> Reaction<AppAction, AppState, Void> {
         sut.handle(action, PreReducerContext(source: Self.anySource, getter: { state }))
     }
 

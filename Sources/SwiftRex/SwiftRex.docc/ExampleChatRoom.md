@@ -44,7 +44,7 @@ let chat = Behavior<ChatAction, ChatState, ChatEnv>
         }
     }
     .produce { action, _ in
-        guard case .send(let text) = action else { return Producer { _ in .empty } }
+        guard case .send(let text) = action else { return .doNothing }
         return Producer { _ in .broadcast(text, channel: "chat-socket") }    // → into the live socket
     }
     .supervise { state in

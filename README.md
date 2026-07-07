@@ -170,7 +170,7 @@ Modelling tips for actions and state live in [State and Actions](https://swiftre
 
 The **Store** performs the effects, maintains the state, and handles the actions — the builders only *describe*. (An Effect Producer and an Effect Supervisor together make a **Middleware**, the effect half of a behavior; the Reducer is the state half.)
 
-Here's a location recorder — one feature that genuinely needs all three: it **reduces** each action into state, **produces** a one-shot save, and while `isRecording` holds, a **supervisor** keeps live location updates flowing in:
+Here's a location recorder — one feature that genuinely needs all three: it **reduces** each action into state, **produces** a reverse-geocode for every new location fix, and while `isRecording` holds, a **supervisor** keeps the live location stream flowing in:
 
 ```swift
 let recorder = Behavior<Action, State, Environment>
@@ -180,18 +180,15 @@ let recorder = Behavior<Action, State, Environment>
         case .startTapped: state.isRecording = true
         case .stopTapped: state.isRecording = false
         case .located(let coordinate): state.route.append(coordinate)
-        case .saveTapped: state.isSaving = true
-        case .saved: state.isSaving = false
+        case .resolved(let place): state.place = place
         }
     }
-    // Effect Producer — a one-shot effect, here only for .saveTapped
+    // Effect Producer — reverse-geocode each new fix, using the action's own payload
     .produce { action, _ in
-        guard case .saveTapped = action else { return Producer { _ in .empty } }
-        return Producer { ctx in
-            ctx.environment.save(Trip(ctx.liveState?.route ?? [])).asEffect(Action.saved)
-        }
+        guard case .located(let coordinate) = action else { return .doNothing }
+        return Producer { ctx in ctx.environment.geocode(coordinate).asEffect(Action.resolved) }
     }
-    // Effect Supervisor — live location updates, kept alive while recording
+    // Effect Supervisor — the live location stream, kept alive while recording
     .supervise { state in
         Supervision { env in
             state.isRecording
@@ -201,7 +198,7 @@ let recorder = Behavior<Action, State, Environment>
     }
 ```
 
-`.handle { action, ctx in … }` groups the Reducer and Effect Producer per action — switch once, and each case returns `.reduce`, `.produce`, or a chain of both. The Effect Supervisor stays separate, because it's keyed on *state*, not an action. Here's the same recorder with the save's mutation and effect co-located instead of split across two passes:
+`.handle { action, ctx in … }` groups the Reducer and Effect Producer per action — switch once, and each case returns `.reduce`, `.produce`, or a chain of both. The Effect Supervisor stays separate, because it's keyed on *state*, not an action. Here `.located` is the action that carries both concerns — appending to the route **and** kicking off the geocode — co-located instead of split across two passes:
 
 ```swift
 let recorder = Behavior<Action, State, Environment>
@@ -209,11 +206,10 @@ let recorder = Behavior<Action, State, Environment>
         switch action {
         case .startTapped: .reduce { $0.isRecording = true }
         case .stopTapped: .reduce { $0.isRecording = false }
-        case .located(let coordinate): .reduce { $0.route.append(coordinate) }
-        case .saveTapped:
-            .reduce { $0.isSaving = true }
-            .produce { ctx in ctx.environment.save(Trip(ctx.liveState?.route ?? [])).asEffect(Action.saved) }
-        case .saved: .reduce { $0.isSaving = false }
+        case .located(let coordinate):
+            .reduce { $0.route.append(coordinate) }
+            .produce { ctx in ctx.environment.geocode(coordinate).asEffect(Action.resolved) }
+        case .resolved(let place): .reduce { $0.place = place }
         }
     }
     .supervise { state in

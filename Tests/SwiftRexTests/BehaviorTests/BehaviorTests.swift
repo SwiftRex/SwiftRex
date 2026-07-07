@@ -17,7 +17,7 @@ private func consequence(
     _ behavior: Behavior<Int, Int, Void>,
     action: Int,
     state: Int
-) -> Reaction<Int, Void, Int> {
+) -> Reaction<Int, Int, Void> {
     behavior.handle(action, PreReducerContext(source: anySource, getter: { state }))
 }
 

@@ -49,7 +49,7 @@ import DataStructure
 /// `Reaction` is a `Monoid` whose identity is ``doNothing``. ``combine(_:_:)`` runs `lhs.mutation`
 /// then `rhs.mutation` on the same `inout State` (later mutations see earlier ones); their effects
 /// are merged via ``Effect/combine(_:_:)`` and run concurrently.
-public struct Reaction<State: Sendable, Environment: Sendable, Action: Sendable>: Sendable {
+public struct Reaction<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
     package let mutation: ReducerOutcome<State>
     package let produce: Reader<PostReducerContext<State, Environment>, Effect<Action>>
 
@@ -184,9 +184,9 @@ extension Reaction: Monoid {
 ///
 /// You rarely build a `Consequence` directly; the `Behavior`/`Middleware` builders
 /// (`react` / `reduce` / `produce` / `supervise`) construct the right case for you.
-public enum Consequence<State: Sendable, Environment: Sendable, Action: Sendable>: Sendable {
+public enum Consequence<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
     /// An **action-clock** consequence: react to an action with a ``Reaction``.
-    case reaction(@MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<State, Environment, Action>)
+    case reaction(@MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>)
     /// A **state-clock** consequence: supervise the channels a state should keep alive.
     case supervision(@MainActor @Sendable (State) -> Supervision<Environment, Action>)
 }

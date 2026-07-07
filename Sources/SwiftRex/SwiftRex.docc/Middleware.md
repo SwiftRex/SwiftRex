@@ -12,7 +12,7 @@ A `Middleware<Action, State, Environment>` owns the two effect concerns a featur
 ```swift
 let search = Middleware<AppAction, AppState, API>
     .produce { action, _ in
-        guard case .search(let query) = action else { return Producer { _ in .empty } }
+        guard case .search(let query) = action else { return .doNothing }
         return Producer { ctx in ctx.environment.search(query).asEffect(AppAction.results) }
     }
     .supervise { state in
@@ -30,7 +30,7 @@ Both builders exist as **static** factories and **instance** methods, so a `.pro
 let logger = Middleware<AppAction, AppState, Logger>.handle { action, context in
     let before = context.stateBefore                    // phase 1 — pre-mutation
     return Producer { ctx in
-        ctx.environment.log(action, before: before, after: ctx.liveState)  // phase 3
+        ctx.environment.log(action, before: before)     // phase 3 — runs with the environment
         return .empty
     }
 }
