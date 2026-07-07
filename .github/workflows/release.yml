@@ -262,9 +262,11 @@ jobs:
           ReactiveConcurrency bridges are available via SPM only."
           fi
 
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo "$BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Write to a file and consume it via `gh release create --notes-file`.
+          # Never interpolate the body into a shell string: it contains fenced code
+          # blocks, and backticks inside a double-quoted bash argument trigger command
+          # substitution (this is what broke the v1.0.0 promotion).
+          printf '%s\n' "$BODY" > "$GITHUB_WORKSPACE/RELEASE_NOTES.md"
 
       - name: List Artifacts
         run: |
@@ -275,7 +277,7 @@ jobs:
         run: |
           gh release create "${{ github.ref_name }}" \
             --title "Release ${{ github.ref_name }}" \
-            --notes "${{ steps.notes.outputs.body }}" \
+            --notes-file "$GITHUB_WORKSPACE/RELEASE_NOTES.md" \
             artifacts/*/*.zip
         env:
           GH_TOKEN: ${{ github.token }}
