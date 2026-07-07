@@ -13,6 +13,8 @@ Co-locate a whole feature — state, actions, behavior, and its SwiftUI screen �
 
 The paired SwiftUI view carries `@BoundTo(Feature.self, strategy:)`, which injects a `viewStore` stored property with the wrapper matching the strategy. The view body is the same across all three strategies — `viewStore.state.<field>` to read, `viewStore.dispatch(.<action>)` to send.
 
+This article is the full L0→L4 progression; the [README](https://github.com/SwiftRex/SwiftRex#readme) shows the condensed form — one feature in one screen.
+
 > `@Feature` requires a **Swift 6.3+** toolchain. The macro is not availability-gated, so a `.combineObservable` feature builds to the package floor (iOS 16, macOS 13, tvOS 16, watchOS 9); on Linux/Windows/Android the whole SwiftUI/Observation layer compiles out.
 
 ## What the macro needs

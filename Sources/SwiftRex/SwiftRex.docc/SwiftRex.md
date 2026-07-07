@@ -1,20 +1,28 @@
 # ``SwiftRex``
 
-Unidirectional dataflow as a small, lawful algebra — pure values you compose, run by a single interpreter.
+Unidirectional dataflow for Swift — one `Store` runs your app; everything else is a pure value you compose.
 
 ## Overview
 
-SwiftRex models your whole app as one loop of pure values:
+SwiftRex models your whole app as one loop:
 
-- An **action** describes something that happened.
-- A ``Behavior`` is a monoid of ``Consequence``s — each a **reaction** to an action (a ``Reaction``: `reduce` the state and/or `produce` an effect) or a **supervision** of state (a ``Supervision``: the channels to `keep` alive).
-- The ``Store`` is the **only** thing that runs: a behavior only *describes* — `reduce`/`produce`/`supervise` — and the Store **mutates**, **performs**, and **keeps**. It notifies observers exactly once per change; actions an effect produces loop back through the same path.
+- An **action** — a plain value — describes something that happened: a tap, a response, a tick.
+- A ``Behavior`` describes how a feature responds, one fluent builder per concern:
 
-Effects come in two flavours: *action-driven* — a `produce` that runs because something happened (Elm's `Cmd`) — and *state-driven* — a `supervise` that keeps a long-lived resource (a socket, a timer, a poll) alive for exactly as long as the state implies it (Elm's `Sub`). See <doc:StateDrivenEffects>.
+```swift
+let feature = Behavior<Action, State, Environment>
+    .reduce { action, state in … }      // the state change — pure (Action, inout State) -> Void
+    .produce { action, ctx in … }       // the action-driven Effect (Elm's Cmd)
+    .supervise { state in … }           // the state-driven Channels to keep alive (Elm's Sub)
+```
 
-Everything except the `Store` is inert and composable. Two `Reducer`s combine into a `Reducer`; two `Behavior`s into a `Behavior`; an `Effect` merges with another `Effect`. That "compose two, get one of the same kind, with a do-nothing identity" shape is a **monoid**, and it's the whole story — see <doc:Algebra>.
+- The ``Store`` is the **only** thing that runs: a behavior only *describes* — the Store **mutates** (`reduce`), **performs** (`produce`), and **keeps** (`supervise`). It notifies observers exactly once per change; actions an effect produces loop back through the same path.
 
-> New here? Start with the [README](https://github.com/SwiftRex/SwiftRex#readme) for installation and worked examples, then come back for the type-by-type reference below.
+Effects come in two flavours: *action-driven* — a `produce` that runs because something happened — and *state-driven* — a `supervise` that keeps a long-lived resource (a socket, a timer, a poll) alive for exactly as long as the state implies it. See <doc:StateDrivenEffects>.
+
+Everything except the `Store` is inert and composable. Two `Behavior`s combine into one with `<>`; features written against their own local types **lift** to the app's global types before composing (<doc:Lifting>); the ``SwiftRex/Behavior`` page shows the fluent surface in full. That "compose two, get one of the same kind, with a do-nothing identity" shape is a **monoid** — when you want the lawful underpinnings behind the whole design, see <doc:Algebra>.
+
+> New here? Start with the [README](https://github.com/SwiftRex/SwiftRex#readme) for the pragmatic tour — a feature in one screen, installation, Command-vs-Subscription effects, modularity — then <doc:BuildYourFirstFeature>, and come back for the type-by-type reference below.
 
 ## Companion Products
 
