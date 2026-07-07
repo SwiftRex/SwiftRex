@@ -32,8 +32,8 @@ jobs:
       - name: Generate Documentation
         run: |
           swift package \
-            --allow-writing-to-directory .docs \
             --enable-all-traits \
+            --allow-writing-to-directory .docs \
             generate-documentation \
             --target SwiftRex \
             --target SwiftRexOperators \
@@ -46,18 +46,23 @@ jobs:
             --target SwiftRexArchitecture \
             --enable-experimental-combined-documentation \
             --enable-experimental-overloaded-symbol-presentation \
+            --experimental-transform-for-static-hosting-with-content \
             --output-path .docs \
-            --transform-for-static-hosting \
-            --hosting-base-path SwiftRex
+            --transform-for-static-hosting
+            # No --hosting-base-path: this deploys to the dedicated subdomain
+            # https://swiftrex.ios.lu (site root), not a sub-path.
 
-      - name: Redirect site root to /documentation/
+      - name: Custom domain (CNAME)
+        run: echo swiftrex.ios.lu > .docs/CNAME
+
+      - name: Redirect site root to the SwiftRex landing page
         run: |
           cat > .docs/index.html <<'EOF'
           <!doctype html>
-          <meta http-equiv="refresh" content="0; url=./documentation/">
-          <link rel="canonical" href="./documentation/">
+          <meta http-equiv="refresh" content="0; url=./documentation/swiftrex/">
+          <link rel="canonical" href="./documentation/swiftrex/">
           <title>SwiftRex — Documentation</title>
-          <a href="./documentation/">Redirecting to documentation…</a>
+          <a href="./documentation/swiftrex/">Redirecting to documentation…</a>
           EOF
 
       - name: Configure Pages
