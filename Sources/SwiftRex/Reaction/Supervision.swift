@@ -26,7 +26,7 @@ public typealias Keep<Action: Sendable> = [Channel<Action>]
 ///     Supervision { env in state.connected ? [Channel(id: "socket") { dispatch in … }] : [] }
 /// }
 /// ```
-public typealias Supervision<Environment: Sendable, Action: Sendable> =
+public typealias Supervision<Action: Sendable, Environment: Sendable> =
     Reader<Environment, Keep<Action>>
 
 /// The return of a ``Middleware``/``Behavior``'s **action** side (`produce`): a deferred

@@ -26,7 +26,7 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
     /// The action-clock unit a `.reaction` consequence carries.
     typealias ReactionUnit = @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
     /// The state-clock unit a `.supervision` consequence carries.
-    typealias SupervisionUnit = @MainActor @Sendable (State) -> Supervision<Environment, Action>
+    typealias SupervisionUnit = @MainActor @Sendable (State) -> Supervision<Action, Environment>
 
     /// The consequences — effect-producing reactions and supervisions; never a mutation.
     package let consequences: [Consequence<Action, State, Environment>]
@@ -42,7 +42,7 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
 
     /// The **state** side: unions every supervision into the complete ``Supervision`` for a state, or
     /// `nil` when the middleware never supervises (the phase-5 bypass). Derived, never a drifting flag.
-    package let supervisor: (@MainActor @Sendable (_ state: State) -> Supervision<Environment, Action>)?
+    package let supervisor: (@MainActor @Sendable (_ state: State) -> Supervision<Action, Environment>)?
 
     /// Whether this middleware supervises any channels — `true` iff `supervisor != nil`.
     package var supervises: Bool { supervisor != nil }
@@ -92,7 +92,7 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
             _ action: Action,
             _ context: PreReducerContext<State>
         ) -> Reader<PostReducerContext<State, Environment>, Effect<Action>>,
-        supervisor: (@MainActor @Sendable (State) -> Supervision<Environment, Action>)? = nil
+        supervisor: (@MainActor @Sendable (State) -> Supervision<Action, Environment>)? = nil
     ) {
         self.init(
             consequences: [.reaction { action, context in Reaction(mutation: .unchanged, produce: handle(action, context)) }]
@@ -116,7 +116,7 @@ extension Middleware {
     /// }
     /// ```
     public static func supervise(
-        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Environment, Action>
+        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Action, Environment>
     ) -> Self {
         Middleware(consequences: [.supervision(keep)])
     }
@@ -128,7 +128,7 @@ extension Middleware {
 
     /// Adds a state-driven concern, combining it with `self` — `m.supervise { … }` ≡ `m <> .supervise { … }`.
     public func supervise(
-        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Environment, Action>
+        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Action, Environment>
     ) -> Self { .combine(self, .supervise(keep)) }
 }
 
