@@ -1,5 +1,5 @@
 <p align="center">
-	<a href="https://github.com/SwiftRex/SwiftRex/"><img src="https://swiftrex.github.io/SwiftRex/markdown/img/SwiftRexBanner.png" alt="SwiftRex" /></a><br /><br />
+	<a href="https://github.com/SwiftRex/SwiftRex/"><img src="https://raw.githubusercontent.com/SwiftRex/SwiftRex/main/.github/SwiftRexBanner.png" alt="SwiftRex" /></a><br /><br />
 	Unidirectional Dataflow for Swift<br /><br />
 </p>
 
