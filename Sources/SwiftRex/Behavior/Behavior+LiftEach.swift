@@ -44,7 +44,7 @@ extension Behavior {
             handle: { globalAction, context in
                 guard let local = action(globalAction), let global = context.stateBefore
                 else { return .doNothing }
-                let reactions: [Reaction<GS, Environment, GA>] = ids(stateContainer.get(global)).map { id in
+                let reactions: [Reaction<GA, GS, Environment>] = ids(stateContainer.get(global)).map { id in
                     let traversal = stateContainer.compose(element(id))
                     let scope = AnyHashableSendable(id)
                     let c = self.handle(local, context.compactMap(traversal.preview))

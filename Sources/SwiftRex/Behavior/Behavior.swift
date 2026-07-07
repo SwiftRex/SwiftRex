@@ -67,13 +67,13 @@ import DataStructure
 ///   `context.stateBefore` is safe to call directly inside the closure.
 public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
     /// The action-clock unit a `.reaction` consequence carries.
-    typealias ReactionUnit = @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<State, Environment, Action>
+    typealias ReactionUnit = @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
     /// The state-clock unit a `.supervision` consequence carries.
     typealias SupervisionUnit = @MainActor @Sendable (State) -> Supervision<Environment, Action>
 
     /// The per-feature consequences, in composition order — the free monoid. ``identity`` is the
     /// empty list and ``combine(_:_:)`` concatenates; `handle`/`supervisor` are folded views over it.
-    package let consequences: [Consequence<State, Environment, Action>]
+    package let consequences: [Consequence<Action, State, Environment>]
 
     /// The **action** side: folds every `.reaction` consequence into one ``Reaction`` (all see the
     /// same pre-mutation `context`). Precomputed at construction so the Store hot path never rescans.
@@ -83,7 +83,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     public let handle: @MainActor @Sendable (
         _ action: Action,
         _ context: PreReducerContext<State>
-    ) -> Reaction<State, Environment, Action>
+    ) -> Reaction<Action, State, Environment>
 
     /// The **state** side: unions every `.supervision` consequence into the complete ``Supervision``
     /// for a state (Elm's `Sub`) — or `nil` when this behavior has **no** supervision at all. The
@@ -98,7 +98,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
 
     /// The primitive initialiser: a `Behavior` *is* its consequence list. `handle` and `supervisor`
     /// are folded once, here, from the list.
-    package init(consequences: [Consequence<State, Environment, Action>]) {
+    package init(consequences: [Consequence<Action, State, Environment>]) {
         self.consequences = consequences
         let reactions: [ReactionUnit] = consequences.compactMap {
             if case let .reaction(f) = $0 { f } else { nil }
@@ -134,7 +134,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
         handle: @escaping @MainActor @Sendable (
             _ action: Action,
             _ context: PreReducerContext<State>
-        ) -> Reaction<State, Environment, Action>
+        ) -> Reaction<Action, State, Environment>
     ) {
         self.init(consequences: [.reaction(handle)])
     }
@@ -142,7 +142,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     /// Creates a `Behavior` from a single grouped action handler and an optional supervisor — used by
     /// the lifts to carry the state-driven axis through a transform (`nil` when nothing supervises).
     init(
-        handle: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<State, Environment, Action>,
+        handle: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>,
         supervisor: (@MainActor @Sendable (State) -> Supervision<Environment, Action>)?
     ) {
         self.init(consequences: [.reaction(handle)] + (supervisor.map { [.supervision($0)] } ?? []))
@@ -166,7 +166,7 @@ extension Behavior {
         _ fn: @escaping @MainActor @Sendable (
             _ action: Action,
             _ context: PreReducerContext<State>
-        ) -> Reaction<State, Environment, Action>
+        ) -> Reaction<Action, State, Environment>
     ) -> Self { Behavior(consequences: [.reaction(fn)]) }
 
     /// Alias for ``react(_:)`` — `Behavior(handle:)` spelled as a named constructor.
@@ -174,7 +174,7 @@ extension Behavior {
         _ fn: @escaping @MainActor @Sendable (
             _ action: Action,
             _ context: PreReducerContext<State>
-        ) -> Reaction<State, Environment, Action>
+        ) -> Reaction<Action, State, Environment>
     ) -> Self { Behavior(consequences: [.reaction(fn)]) }
 
     /// A **mutation-only** behavior — reduces state per action, no effects.
@@ -214,7 +214,7 @@ extension Behavior {
 extension Behavior {
     /// Adds a grouped action concern, combining it with `self` — `b.react { … }` ≡ `b <> .react { … }`.
     public func react(
-        _ fn: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<State, Environment, Action>
+        _ fn: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
     ) -> Self { .combine(self, .react(fn)) }
 
     /// Adds a mutation concern, combining it with `self` — `b.reduce { … }` ≡ `b <> .reduce { … }`.

@@ -22,16 +22,16 @@ let behaviorGen: Gen<Behavior<Int, Int, Void>> = Gen.zip(reducerGen, effectGen).
     }
 }
 
-let consequenceGen: Gen<Reaction<Int, Void, Int>> = Gen.zip(reducerOutcomeGen, effectGen).map { pair in
+let consequenceGen: Gen<Reaction<Int, Int, Void>> = Gen.zip(reducerOutcomeGen, effectGen).map { pair in
     let (outcome, effect) = pair
-    return Reaction<Int, Void, Int>(mutation: outcome, produce: Reader { _ in effect })
+    return Reaction<Int, Int, Void>(mutation: outcome, produce: Reader { _ in effect })
 }
 
 let middlewareGen: Gen<Middleware<Int, Int, Void>> = effectGen.map { effect in
     Middleware<Int, Int, Void>.handle { _, _ in Reader { _ in effect } }
 }
 
-private func observe(consequence: Reaction<Int, Void, Int>, from state: Int) -> (Int, [Int]) {
+private func observe(consequence: Reaction<Int, Int, Void>, from state: Int) -> (Int, [Int]) {
     var state = state
     consequence.mutation.runEndoMut(&state)
     let post = PostReducerContext<Int, Void>(environment: (), getter: { state })

@@ -24,12 +24,12 @@ import DataStructure
 /// ``liftState(_:)`` / ``liftEnvironment(_:)`` to embed a feature middleware in the app's types.
 public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendable>: Sendable {
     /// The action-clock unit a `.reaction` consequence carries.
-    typealias ReactionUnit = @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<State, Environment, Action>
+    typealias ReactionUnit = @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
     /// The state-clock unit a `.supervision` consequence carries.
     typealias SupervisionUnit = @MainActor @Sendable (State) -> Supervision<Environment, Action>
 
     /// The consequences — effect-producing reactions and supervisions; never a mutation.
-    package let consequences: [Consequence<State, Environment, Action>]
+    package let consequences: [Consequence<Action, State, Environment>]
 
     /// The **action** side: folds every effect-producing reaction into one deferred
     /// `Reader<PostReducerContext, Effect>` the Store runs in phase 3. Precomputed at construction.
@@ -49,7 +49,7 @@ public struct Middleware<Action: Sendable, State: Sendable, Environment: Sendabl
 
     /// The primitive initialiser: a `Middleware` *is* its consequence list. `handle`/`supervisor`
     /// are folded once, here.
-    package init(consequences: [Consequence<State, Environment, Action>]) {
+    package init(consequences: [Consequence<Action, State, Environment>]) {
         self.consequences = consequences
         let reactions: [ReactionUnit] = consequences.compactMap {
             if case let .reaction(f) = $0 { f } else { nil }

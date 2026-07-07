@@ -4,7 +4,7 @@ The action-clock branch of a ``Consequence`` — what reacting to one action cha
 
 ## Overview
 
-A `Reaction<State, Environment, Action>` pairs a ``ReducerOutcome`` (the state mutation to apply in phase 2, or ``ReducerOutcome/unchanged``) with a `Reader<PostReducerContext, Effect>` (the effect to schedule in phase 3). Its two monoidal generators are `reduce` and `produce`; the ``Store`` is what *mutates* and *performs* them.
+A `Reaction<Action, State, Environment>` pairs a ``ReducerOutcome`` (the state mutation to apply in phase 2, or ``ReducerOutcome/unchanged``) with a `Reader<PostReducerContext, Effect>` (the effect to schedule in phase 3). Its two monoidal generators are `reduce` and `produce`; the ``Store`` is what *mutates* and *performs* them.
 
 ### Building one
 
