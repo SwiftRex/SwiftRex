@@ -12,8 +12,8 @@ A `Middleware<Action, State, Environment>` owns the two effect concerns a featur
 ```swift
 let search = Middleware<AppAction, AppState, API>
     .produce { action, _ in
-        guard case .search(let query) = action else { return Reader { _ in .empty } }
-        return Reader { ctx in ctx.environment.search(query).asEffect(AppAction.results) }
+        guard case .search(let query) = action else { return Producer { _ in .empty } }
+        return Producer { ctx in ctx.environment.search(query).asEffect(AppAction.results) }
     }
     .supervise { state in
         Supervision { env in state.isConnected ? [env.makeFeedChannel()] : [] }
@@ -29,7 +29,7 @@ Both builders exist as **static** factories and **instance** methods, so a `.pro
 ```swift
 let logger = Middleware<AppAction, AppState, Logger>.handle { action, context in
     let before = context.stateBefore                    // phase 1 — pre-mutation
-    return Reader { ctx in
+    return Producer { ctx in
         ctx.environment.log(action, before: before, after: ctx.liveState)  // phase 3
         return .empty
     }
