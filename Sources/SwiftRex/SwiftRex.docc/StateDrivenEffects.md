@@ -6,9 +6,9 @@ Some side-effects shouldn't be started by an action — they should exist *for a
 
 There are two kinds of side-effects, and SwiftRex gives each its own axis.
 
-**Action-driven (`produce`)** — *"this happened, so do that."* A `.tapSearch` fires a request; a `.save` writes to disk. The action is the cause; the effect is a one-shot reaction that runs, dispatches a result action, and finishes. This is Elm's **`Cmd`**. You write it with `produce` (on a ``Behavior`` or ``Middleware``); the ``Store`` *performs* the ``Effect`` it describes, resolved by a `Reader` from the post-mutation context.
+**Action-driven (`produce`)** — *"this happened, so do that."* A `.tapSearch` fires a request; a `.save` writes to disk. The action is the cause; the effect is a one-shot reaction that runs, dispatches a result action, and finishes. This is the **Effect Producer** (Elm calls it a **`Cmd`**). You write it with `produce` (on a ``Behavior`` or ``Middleware``); the ``Store`` *performs* the ``Effect`` it describes, resolved by a `Reader` from the post-mutation context.
 
-**State-driven (`supervise`)** — *"while the state looks like this, keep this resource alive."* A timer that ticks while a screen is visible; a socket that stays open while a room is joined; a poll that runs while a query is set. No single action starts or stops it — *the state implies it*, and leaving that state **is** the teardown. This is Elm's **`Sub`**. You write it with `supervise`, returning a ``Supervision`` — a `Reader` from the environment to the ``Channel``s to ``Keep`` alive.
+**State-driven (`supervise`)** — *"while the state looks like this, keep this resource alive."* A timer that ticks while a screen is visible; a socket that stays open while a room is joined; a poll that runs while a query is set. No single action starts or stops it — *the state implies it*, and leaving that state **is** the teardown. This is the **Effect Supervisor** (Elm calls it a **`Sub`**). You write it with `supervise`, returning a ``Supervision`` — a `Reader` from the environment to the ``Channel``s to ``Keep`` alive.
 
 ```swift
 let room = Behavior<RoomAction, RoomState, RoomEnv>
@@ -37,11 +37,11 @@ When `joinedRoom` is `nil` the supervision returns `[]`, the engine sees the soc
 
 A ``Behavior`` folds three independent concerns, each a fluent builder that composes by `<>`:
 
-| Axis | Builder | Cause | Returns | Elm |
+| Role | Builder | Cause | Returns | Elm |
 |---|---|---|---|---|
-| State change | `reduce` | an action | an `inout` mutation (Store *mutates*) | *(update)* |
-| Action-driven effect | `produce` | an action | an ``Effect`` (Store *performs*) | `Cmd` |
-| State-driven effect | `supervise` | the *state* | a ``Supervision`` → a ``Keep`` of ``Channel``s (Store *keeps*) | `Sub` |
+| **Reducer** | `reduce` | an action | an `inout` mutation (Store *maintains* state) | *(update)* |
+| **Effect Producer** | `produce` | an action | an ``Effect`` (Store *performs*) | `Cmd` |
+| **Effect Supervisor** | `supervise` | the *state* | a ``Supervision`` → a ``Keep`` of ``Channel``s (Store *supervises*) | `Sub` |
 
 ```swift
 Behavior

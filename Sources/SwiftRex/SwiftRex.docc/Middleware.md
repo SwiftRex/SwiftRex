@@ -6,8 +6,8 @@ The effect-only layer of a feature — a simplified ``Behavior`` that reads stat
 
 A `Middleware<Action, State, Environment>` owns the two effect concerns a feature can have, and *only* those — state mutation is ``Reducer``'s job:
 
-- ``produce(_:)`` — maps an action (and a pre-mutation ``PreReducerContext``) to a `Reader<PostReducerContext, Effect>` the ``Store`` *performs* in phase 3 (post-mutation), with access to the `Environment` and committed `liveState`. This is the *action-driven* effect (Elm's `Cmd`).
-- ``supervise(_:)`` — maps the *state* to a ``Supervision`` — the channels to ``Keep`` alive while that state holds. The ``Store`` *keeps* them. This is the *state-driven* effect (Elm's `Sub`). See <doc:StateDrivenEffects>.
+- ``produce(_:)`` — the **Effect Producer**: maps an action (and a pre-mutation ``PreReducerContext``) to a `Reader<PostReducerContext, Effect>` the ``Store`` *performs* in phase 3 (post-mutation), with access to the `Environment` and committed `liveState`. This is the *action-driven* effect.
+- ``supervise(_:)`` — the **Effect Supervisor**: maps the *state* to a ``Supervision`` — the channels to ``Keep`` alive while that state holds. The ``Store`` *supervises* them. This is the *state-driven* effect. See <doc:StateDrivenEffects>.
 
 ```swift
 let search = Middleware<AppAction, AppState, API>
