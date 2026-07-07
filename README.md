@@ -89,7 +89,7 @@ Swift Package Manager, Swift 6.3+ toolchain (the `@Feature` macro requires it). 
 dependencies: [
     .package(
         url: "https://github.com/SwiftRex/SwiftRex.git",
-        from: "0.8.8",
+        from: "1.0.0",
         traits: ["ReactiveConcurrency"]   // only if you use a trait-gated bridge; omit otherwise
     )
 ],

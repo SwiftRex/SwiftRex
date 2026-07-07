@@ -19,7 +19,7 @@ Add SwiftRex to your `Package.swift`, enabling the trait(s) for the bridge(s) yo
 dependencies: [
     .package(
         url: "https://github.com/SwiftRex/SwiftRex.git",
-        from: "0.8.8",
+        from: "1.0.0",
         // e.g. ["RxSwift", "ReactiveConcurrency"]; omit entirely for core / Combine / SwiftConcurrency only
         traits: ["ReactiveConcurrency"]
     )
