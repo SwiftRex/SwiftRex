@@ -164,9 +164,9 @@ Modelling tips for actions and state live in [State and Actions](https://swiftre
 
 | Builder | Role | What it does |
 |---|---|---|
-| `.reduce { action, state in … }` | **Reducer** | reduces actions into state |
-| `.produce { action, ctx in … }` | **Effect Producer** | produces effects from actions |
-| `.supervise { state in … }` | **Effect Supervisor** | supervises effects for a given state |
+| `.reduce { action, state in state.something = 1 }` | **Reducer** | reduces actions into state |
+| `.produce { action, preCtx in Producer { ctx in ctx.environment.fetch().asEffect(Action.fetchResponse) } }` | **Effect Producer** | produces effects from actions |
+| `.supervise { state in Supervision { env in state.timerRunning ? [env.timer()] : [] } }` | **Effect Supervisor** | supervises effects for a given state |
 
 The **Store** performs the effects, maintains the state, and handles the actions — the builders only *describe*. (An Effect Producer and an Effect Supervisor together make a **Middleware**, the effect half of a behavior; the Reducer is the state half.)
 
@@ -186,8 +186,8 @@ let recorder = Behavior<Action, State, Environment>
     }
     // Effect Producer — a one-shot effect, here only for .saveTapped
     .produce { action, _ in
-        guard case .saveTapped = action else { return Reader { _ in .empty } }
-        return Reader { ctx in
+        guard case .saveTapped = action else { return Producer { _ in .empty } }
+        return Producer { ctx in
             ctx.environment.save(Trip(ctx.liveState?.route ?? [])).asEffect(Action.saved)
         }
     }
