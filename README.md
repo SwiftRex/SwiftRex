@@ -9,7 +9,7 @@
 [![Platform support](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20visionOS%20%7C%20Linux-252532.svg)](https://github.com/SwiftRex/SwiftRex)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/SwiftRex/SwiftRex/blob/main/LICENSE)
 
-SwiftRex is a [Redux](https://redux.js.org/basics/data-flow)-style unidirectional-dataflow framework for Swift. One `Store` owns your whole app state; views dispatch **actions**, pure **behaviors** describe what changes and what runs, and the Store — the only thing that executes anything — mutates state and performs effects. It works with the reactive runtime you already use: Swift Concurrency, Combine, [RxSwift](https://github.com/ReactiveX/RxSwift), [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift), or [ReactiveConcurrency](https://github.com/luizmb/ReactiveConcurrency).
+SwiftRex is a [Redux](https://redux.js.org/basics/data-flow)-style unidirectional-dataflow framework for Swift. One `Store` owns your whole app state; views dispatch **actions**, pure **behaviors** describe what changes and what runs, and the Store — the only thing that executes anything — handles actions, maintains state, and performs effects. It works with the reactive runtime you already use: Swift Concurrency, Combine, [RxSwift](https://github.com/ReactiveX/RxSwift), [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift), or [ReactiveConcurrency](https://github.com/luizmb/ReactiveConcurrency).
 
 - **Single source of truth** — one state tree, one store; views observe projections of it.
 - **Compiler-enforced layers** — everything but the Store is an inert, composable value; there is nowhere to hide a side-effect.
@@ -17,7 +17,7 @@ SwiftRex is a [Redux](https://redux.js.org/basics/data-flow)-style unidirectiona
 - **Testable without mocks** — environments are plain closures, logic is pure functions.
 - **Modular** — features are written against their own small types and *lifted* into the app; reuse them across apps and platforms, including Linux.
 
-[Full documentation lives in the DocC catalog](https://swiftrex.github.io/SwiftRex/documentation/swiftrex) — this README is the pragmatic tour; the articles go deeper (and, where you want it, [into the algebra](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/algebra)).
+[Full documentation lives in the DocC catalog](https://swiftrex.ios.lu/documentation/swiftrex) — this README is the pragmatic tour; the articles go deeper (and, where you want it, [into the algebra](https://swiftrex.ios.lu/documentation/swiftrex/algebra)).
 
 # A feature in one screen
 
@@ -79,7 +79,7 @@ Everything above is a pure value. To run it, create the one object in the whole 
 )
 ```
 
-The [Build Your First Feature](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/buildyourfirstfeature) article walks through this step by step.
+The [Build Your First Feature](https://swiftrex.ios.lu/documentation/swiftrex/buildyourfirstfeature) article walks through this step by step.
 
 # Installation
 
@@ -126,48 +126,104 @@ The three third-party bridges are each gated behind a [package trait](https://gi
 
 ![Enabling the ReactiveConcurrency trait for SwiftRex in Xcode's Package Dependencies (Traits column showing "default, ReactiveConcurrency")](Sources/SwiftRex/SwiftRex.docc/Resources/xcode-package-traits.png)
 
-Xcode project caveats (trait propagation in `project.pbxproj`, XcodeGen) and pre-built XCFrameworks are covered in the [Installation article](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/installation).
+Xcode project caveats (trait propagation in `project.pbxproj`, XcodeGen) and pre-built XCFrameworks are covered in the [Installation article](https://swiftrex.ios.lu/documentation/swiftrex/installation).
 
 # The core loop
 
 ```
-        ┌────────── dispatch(action) ──────────┐
-        │                                      ▼
-   ┌─────────┐                            ┌─────────┐   reduce    ┌───────────┐
-   │  View   │                            │  Store  │────────────▶│   State   │
-   └─────────┘                            │ (runs)  │             └───────────┘
-        ▲                                 └─────────┘                   │
-        │                                      │ produce / supervise    │
-        │                                 ┌─────────┐                   │
-        └───────── observes state ────────│ Effects │── new actions ────┘
-                                          └─────────┘      loop back
+                                     ┌───────────────┐
+                                     │     State     │   private to the Store
+                                     └───────────────┘
+                                             ▲
+                                             │ maintains (mutates & reads)
+   ┌──────────┐    dispatch(action)    ┌───────────────┐
+   │          │ ──────────────────────▶│               │
+   │   View   │                        │     Store     │
+   │          │ ◀──────────────────────│               │
+   └──────────┘     notifies change    └───────────────┘
+                                             │   ▲
+                         produce / supervise │   │ dispatch(action)
+                                             ▼   │
+                                     ┌───────────────┐
+                                     │    Effects    │   side-effects, external I/O
+                                     └───────────────┘
 ```
 
 - An **Action** is a plain value describing something that happened — a tap, a response, a tick. Model them as enums, grouped per feature.
-- **State** is a plain value holding everything your app knows right now — one tree, structs and enums.
-- A **Behavior** is a pure value describing how the feature responds: what to *reduce* (mutate), what to *produce* (run once), what to *supervise* (keep alive).
-- The **Store** is the only executor. It receives every action, applies the mutation (one notification per change), performs the effects, and loops effect results back in as new actions.
+- **State** is a plain value holding everything your app knows right now — one tree, structs and enums. The Store owns it; nothing else touches it directly.
+- A **Behavior** is a pure value describing how the feature responds — its **Reducer** reduces actions into state, its **Effect Producer** produces effects from actions, its **Effect Supervisor** supervises effects for a given state.
+- The **Store** is the only executor. It handles actions, maintains state (one notification per change), performs effects, and loops the actions those effects dispatch back through the same path.
+- A **View** observes state and dispatches actions — from the user, or any UI event.
+- An **Effect** runs the side-effect and dispatches actions back to the Store, carrying in whatever the outside world (network, sensors, sockets) had to say.
 
-Modelling tips for actions and state live in [State and Actions](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/stateandactions).
+Modelling tips for actions and state live in [State and Actions](https://swiftrex.ios.lu/documentation/swiftrex/stateandactions).
 
 # Behavior — the fluent interface
 
 `Behavior<Action, State, Environment>` is the recommended unit of logic. It fuses the three concerns a feature can have, one fluent builder per axis:
 
-| Builder | Concern | The Store… |
+| Builder | Role | What it does |
 |---|---|---|
-| `.reduce { action, state in … }` | state change — pure `(Action, inout State) -> Void` | **mutates** |
-| `.produce { action, ctx in … }` | action-driven effect — an action triggers an `Effect` | **performs** |
-| `.supervise { state in … }` | state-driven effect — the state implies live `Channel`s | **keeps** |
+| `.reduce { action, state in … }` | **Reducer** | reduces actions into state |
+| `.produce { action, ctx in … }` | **Effect Producer** | produces effects from actions |
+| `.supervise { state in … }` | **Effect Supervisor** | supervises effects for a given state |
+
+The **Store** performs the effects, maintains the state, and handles the actions — the builders only *describe*. (An Effect Producer and an Effect Supervisor together make a **Middleware**, the effect half of a behavior; the Reducer is the state half.)
+
+Here's a location recorder — one feature that genuinely needs all three: it **reduces** each action into state, **produces** a one-shot save, and while `isRecording` holds, a **supervisor** keeps live location updates flowing in:
 
 ```swift
-let feature = Behavior<Action, State, Environment>
-    .reduce { action, state in … }      // what changes
-    .produce { action, ctx in … }       // what to run because something happened
-    .supervise { state in … }           // what to keep alive while the state holds
+let recorder = Behavior<Action, State, Environment>
+    // Reducer — folds each action into the state
+    .reduce { action, state in
+        switch action {
+        case .startTapped: state.isRecording = true
+        case .stopTapped: state.isRecording = false
+        case .located(let coordinate): state.route.append(coordinate)
+        case .saveTapped: state.isSaving = true
+        case .saved: state.isSaving = false
+        }
+    }
+    // Effect Producer — a one-shot effect, here only for .saveTapped
+    .produce { action, _ in
+        guard case .saveTapped = action else { return Reader { _ in .empty } }
+        return Reader { ctx in
+            ctx.environment.save(Trip(ctx.liveState?.route ?? [])).asEffect(Action.saved)
+        }
+    }
+    // Effect Supervisor — live location updates, kept alive while recording
+    .supervise { state in
+        Supervision { env in
+            state.isRecording
+                ? [env.locationUpdates().asChannel(id: "location", Action.located)]
+                : []
+        }
+    }
 ```
 
-`.handle { action, ctx in … }` groups the first two per action — you saw it in the hero example: switch once, return `.reduce`, `.produce`, or a chain of both.
+`.handle { action, ctx in … }` groups the Reducer and Effect Producer per action — switch once, and each case returns `.reduce`, `.produce`, or a chain of both. The Effect Supervisor stays separate, because it's keyed on *state*, not an action. Here's the same recorder with the save's mutation and effect co-located instead of split across two passes:
+
+```swift
+let recorder = Behavior<Action, State, Environment>
+    .handle { action, _ in
+        switch action {
+        case .startTapped: .reduce { $0.isRecording = true }
+        case .stopTapped: .reduce { $0.isRecording = false }
+        case .located(let coordinate): .reduce { $0.route.append(coordinate) }
+        case .saveTapped:
+            .reduce { $0.isSaving = true }
+                .produce { ctx in ctx.environment.save(Trip(ctx.liveState?.route ?? [])).asEffect(Action.saved) }
+        case .saved: .reduce { $0.isSaving = false }
+        }
+    }
+    .supervise { state in
+        Supervision { env in
+            state.isRecording
+                ? [env.locationUpdates().asChannel(id: "location", Action.located)]
+                : []
+        }
+    }
+```
 
 Behaviors compose with `<>` (or `Behavior.combine`): mutations fold in order, effects merge in parallel, supervisions union. And `.on(...)` chains declarative action-routing onto any behavior:
 
@@ -177,21 +233,20 @@ let routed = Behavior<AppAction, AppState, World>.identity
     .on(\.didLoad, dispatch: AppAction.renderItems, when: { !$0.isLoading })
 ```
 
-The full `.on` catalog (Prism, KeyPath, predicate, and pure-routing families) is on the [Behavior reference page](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/behavior).
+The full `.on` catalog (Prism, KeyPath, predicate, and pure-routing families) is on the [Behavior reference page](https://swiftrex.ios.lu/documentation/swiftrex/behavior).
 
-# Effects: Command or Subscription?
+# Effects: producer or supervisor?
 
-The one design decision you'll make over and over: is this effect **action-driven** or **state-driven**?
+The one design decision you'll make over and over: is this effect **produced from an action** or **supervised by state**?
 
-| | Command — `.produce` | Subscription — `.supervise` |
+| | Effect Producer — `.produce` | Effect Supervisor — `.supervise` |
 |---|---|---|
 | Shape | one-shot: fire → complete | long-lived: emits over time |
-| Trigger | *this action happened, so do that* | *the state implies it should exist* |
+| Trigger | *this action happened, so produce an effect* | *the state implies the effect should exist* |
 | Examples | HTTP fetch, save/delete a document, request a permission | socket, GPS stream, timer, DB observer, push listener |
 | Teardown | completes by itself | leaving the state **is** the teardown |
-| Elm analogy | `Cmd` | `Sub` |
 
-A CRUD or document app is usually **all Commands** — discrete IO, nothing long-lived. The hero example's fetch is one. A monitor-style feature — location, live prices, chat — is the genuine **Subscription** case:
+A CRUD or document app is usually **all producers** — discrete IO, nothing long-lived. The hero example's fetch is one. A monitor-style feature — location, live prices, chat — is the genuine **supervisor** case:
 
 ```swift
 let room = Behavior<RoomAction, RoomState, RoomEnv>
@@ -217,13 +272,13 @@ let room = Behavior<RoomAction, RoomState, RoomEnv>
 
 After every mutation the Store recomputes the desired channel set and **reconciles**: newly-present channels open, now-absent channels cancel, unchanged ones are left untouched. When `joinedRoom` becomes `nil` the socket closes — you never wire `socket.close()` to a `.leave` action, and you never write manual `replacing(id:)` cancellation bookkeeping. Because the desired set is a pure function of state, it can't leak and can't double-open.
 
-Prefer a **Command** when the work is discrete and owns its own completion. Prefer a **Supervisor** when the resource must live exactly as long as some state holds — if you find yourself dispatching "start X" and "stop X" action pairs and cancelling by id, that's a Subscription wanting to happen. The two also meet in the middle: a `.produce` can send *into* a live supervised channel via `Effect.broadcast(_:channel:)` (the send half of a two-way socket).
+Prefer a **producer** when the work is discrete and owns its own completion. Prefer a **supervisor** when the resource must live exactly as long as some state holds — if you find yourself dispatching "start X" and "stop X" action pairs and cancelling by id, that's a supervisor wanting to happen. The two also meet in the middle: a producer can send *into* a live supervised channel via `Effect.broadcast(_:channel:)` (the send half of a two-way socket).
 
-Deep dives: [State-Driven Effects](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/statedriveneffects) · [Channels](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/channels) · worked examples for a [timer](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/exampletimer), [polling](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplepolling), a [chat room](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplechatroom), a [WebSocket](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplewebsocket), and [per-value delay](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/exampledelay).
+Deep dives: [State-Driven Effects](https://swiftrex.ios.lu/documentation/swiftrex/statedriveneffects) · [Channels](https://swiftrex.ios.lu/documentation/swiftrex/channels) · worked examples for a [timer](https://swiftrex.ios.lu/documentation/swiftrex/exampletimer), [polling](https://swiftrex.ios.lu/documentation/swiftrex/examplepolling), a [chat room](https://swiftrex.ios.lu/documentation/swiftrex/examplechatroom), a [WebSocket](https://swiftrex.ios.lu/documentation/swiftrex/examplewebsocket), and [per-value delay](https://swiftrex.ios.lu/documentation/swiftrex/exampledelay).
 
 # Pick your reactive framework
 
-The core `Effect` is deliberately runtime-agnostic; each companion product bridges your streams into effects and channels with the same two verbs — `asEffect` for Commands, `asChannel` for Subscriptions.
+The core `Effect` is deliberately runtime-agnostic; each companion product bridges your streams into effects and channels with the same two verbs — `asEffect` to produce a one-shot effect, `asChannel` to supervise a long-lived one.
 
 **Swift Concurrency** (`SwiftRex.SwiftConcurrency`, no third-party dependency):
 
@@ -274,7 +329,7 @@ Combine (`store.publisher`, `asEffect`/`asChannel` on any `Publisher`), RxSwift 
 
 `Behavior` is a fusion of two smaller values that still exist and compose on their own — reach for them when a unit genuinely has only one concern, or when reusing pre-Behavior code:
 
-- **`Reducer<Action, State>`** — only the mutation axis, a named pure function:
+- **`Reducer<Action, State>`** — the **Reducer** on its own (the state half), a named pure function:
 
 ```swift
 let counterReducer = Reducer<CounterAction, Int>.reduce { action, count in
@@ -285,7 +340,7 @@ let counterReducer = Reducer<CounterAction, Int>.reduce { action, count in
 }
 ```
 
-- **`Middleware<Action, State, Environment>`** — only the effect axes (`produce` + `supervise`); it can read state before and after mutation but never write it:
+- **`Middleware<Action, State, Environment>`** — the effect half (**Effect Producer** + **Effect Supervisor**); it can read state before and after mutation but never write it:
 
 ```swift
 let favorites = Middleware<FavoritesAction, FavoritesState, API>.handle { action, context in
@@ -297,7 +352,7 @@ let favorites = Middleware<FavoritesAction, FavoritesState, API>.handle { action
 }
 ```
 
-Pair them back up with `Behavior(reducer:middleware:)`, or lift either half alone via `reducer.asBehavior()` / `middleware.asBehavior` and compose with `<>`. Reference: [Reducer](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/reducer) · [Middleware](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/middleware).
+Pair them back up with `Behavior(reducer:middleware:)`, or lift either half alone via `reducer.asBehavior()` / `middleware.asBehavior` and compose with `<>`. Reference: [Reducer](https://swiftrex.ios.lu/documentation/swiftrex/reducer) · [Middleware](https://swiftrex.ios.lu/documentation/swiftrex/middleware).
 
 # The `@Feature` macro
 
@@ -329,7 +384,7 @@ public enum HeroDetails {
 extension HeroDetails: Feature {}   // one line; the members already exist
 ```
 
-The whole L0→L4 progression — leanest feature to full module — is in the [Features article](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/features).
+The whole L0→L4 progression — leanest feature to full module — is in the [Features article](https://swiftrex.ios.lu/documentation/swiftrex/features).
 
 # Modularity — lifting, Scope, and bridges
 
@@ -392,7 +447,7 @@ behavior: LiftedScope<Movies>.movies.behavior
        <> bridge
 ```
 
-Deep dives: [Lifting](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/lifting) · [Modularisation](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/modularisation).
+Deep dives: [Lifting](https://swiftrex.ios.lu/documentation/swiftrex/lifting) · [Modularisation](https://swiftrex.ios.lu/documentation/swiftrex/modularisation).
 
 # Navigation
 
@@ -414,7 +469,7 @@ NavigationStack(path: store.path(\.nav.path, set: { .nav(.setPath($0)) })) {
 }
 ```
 
-Dismissal is popping state, deep links are just setting state, and a route's supervised effects cancel when its state leaves the tree. The [Navigation article](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/navigation) covers all four shapes, `Scope`-based routers, and deep linking.
+Dismissal is popping state, deep links are just setting state, and a route's supervised effects cancel when its state leaves the tree. The [Navigation article](https://swiftrex.ios.lu/documentation/swiftrex/navigation) covers all four shapes, `Scope`-based routers, and deep linking.
 
 # Testing
 
@@ -444,29 +499,29 @@ Dismissal is popping state, deep links are just setting state, and a route's sup
 # Documentation
 
 Start here:
-[Installation](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/installation) ·
-[Build Your First Feature](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/buildyourfirstfeature) ·
-[Adding Effects](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/addingeffects) ·
-[Features](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/features) ·
-[Navigation](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/navigation)
+[Installation](https://swiftrex.ios.lu/documentation/swiftrex/installation) ·
+[Build Your First Feature](https://swiftrex.ios.lu/documentation/swiftrex/buildyourfirstfeature) ·
+[Adding Effects](https://swiftrex.ios.lu/documentation/swiftrex/addingeffects) ·
+[Features](https://swiftrex.ios.lu/documentation/swiftrex/features) ·
+[Navigation](https://swiftrex.ios.lu/documentation/swiftrex/navigation)
 
 Concepts:
-[State and Actions](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/stateandactions) ·
-[Lifting](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/lifting) ·
-[Modularisation](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/modularisation) ·
-[The Algebra](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/algebra)
+[State and Actions](https://swiftrex.ios.lu/documentation/swiftrex/stateandactions) ·
+[Lifting](https://swiftrex.ios.lu/documentation/swiftrex/lifting) ·
+[Modularisation](https://swiftrex.ios.lu/documentation/swiftrex/modularisation) ·
+[The Algebra](https://swiftrex.ios.lu/documentation/swiftrex/algebra)
 
 State-driven effects:
-[State-Driven Effects](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/statedriveneffects) ·
-[Channels](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/channels) ·
-examples: [Timer](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/exampletimer), [Polling](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplepolling), [Chat Room](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplechatroom), [WebSocket](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/examplewebsocket), [Delay](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/exampledelay)
+[State-Driven Effects](https://swiftrex.ios.lu/documentation/swiftrex/statedriveneffects) ·
+[Channels](https://swiftrex.ios.lu/documentation/swiftrex/channels) ·
+examples: [Timer](https://swiftrex.ios.lu/documentation/swiftrex/exampletimer), [Polling](https://swiftrex.ios.lu/documentation/swiftrex/examplepolling), [Chat Room](https://swiftrex.ios.lu/documentation/swiftrex/examplechatroom), [WebSocket](https://swiftrex.ios.lu/documentation/swiftrex/examplewebsocket), [Delay](https://swiftrex.ios.lu/documentation/swiftrex/exampledelay)
 
 Reference:
-[Behavior](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/behavior) ·
-[Reducer](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/reducer) ·
-[Middleware](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/middleware) ·
-[Effect](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/effect) ·
-[Store](https://swiftrex.github.io/SwiftRex/documentation/swiftrex/store)
+[Behavior](https://swiftrex.ios.lu/documentation/swiftrex/behavior) ·
+[Reducer](https://swiftrex.ios.lu/documentation/swiftrex/reducer) ·
+[Middleware](https://swiftrex.ios.lu/documentation/swiftrex/middleware) ·
+[Effect](https://swiftrex.ios.lu/documentation/swiftrex/effect) ·
+[Store](https://swiftrex.ios.lu/documentation/swiftrex/store)
 
 Tooling: [LoggerMiddleware](https://github.com/SwiftRex/LoggerMiddleware) · [InstrumentationMiddleware](https://github.com/SwiftRex/InstrumentationMiddleware)
 
