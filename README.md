@@ -1903,7 +1903,15 @@ Supported platforms: macOS 13+, iOS 16+, tvOS 16+, watchOS 9+, visionOS 1+, Linu
 
 `SwiftRex`, `SwiftRex.SwiftConcurrency`, and `SwiftRex.Testing` are fully cross-platform including Linux. `SwiftRex.Combine` and `SwiftRex.SwiftUI` require Apple platforms. `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` require their respective traits enabled (above), and the first two require Apple platforms unless those frameworks add Linux support.
 
-You can also add SwiftRex directly in Xcode via **File > Add Package Dependencies** and entering the repository URL `https://github.com/SwiftRex/SwiftRex.git`.
+## Xcode
+
+To add SwiftRex through Xcode: **File ▸ Add Package Dependencies…**, enter `https://github.com/SwiftRex/SwiftRex.git`, choose a version (or a branch), and add the product(s) you need to your target.
+
+**Enabling a trait.** The third-party reactive bridges — `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, `SwiftRex.ReactiveConcurrency` — are each behind a package trait of the same name, **off by default**. In the package list (**Project ▸ Package Dependencies**) the SwiftRex row has a **Traits** column: click it and tick the trait(s) you want, keeping `default` checked so SwiftRex's default traits aren't dropped.
+
+![Enabling the ReactiveConcurrency trait for SwiftRex in Xcode's Package Dependencies (Traits column showing "default, ReactiveConcurrency")](Sources/SwiftRex/SwiftRex.docc/Resources/xcode-package-traits.png)
+
+> **`.xcodeproj` note.** `xcodebuild` **ignores** a trait declared by a *consumed* package, so a project that pulls SwiftRex transitively (e.g. through a local package) must enable the trait at the **project** level. Ticking it in the Traits column writes a `traits = ( ReactiveConcurrency, default, );` block onto the SwiftRex `XCRemoteSwiftPackageReference` in `project.pbxproj`; a bare package reference carrying `traits` propagates the enabled trait across the whole resolution graph, so a transitively-used SwiftRex gets it too — no target link required. Keep the `traits:` in `Package.swift` as well (that's what the `swift` CLI uses). Note that XcodeGen does not emit package traits, so an XcodeGen project must re-apply this block after each `xcodegen generate`.
 
 ## XCFrameworks
 
