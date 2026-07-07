@@ -22,6 +22,32 @@ let search = Middleware<AppAction, AppState, API>
 
 Both builders exist as **static** factories and **instance** methods, so a `.produce { … }.supervise { … }` chain is an `<>` fold of single-concern middlewares. Combine a `Reducer` with a `Middleware` to get a ``Behavior``.
 
+### The two-phase context
+
+`handle` receives the action plus a ``PreReducerContext`` — a `@MainActor`, deliberately **non-`Sendable`** snapshot of the pre-mutation world (`stateBefore`, `source`) — and returns a `Reader<PostReducerContext, Effect>` that the ``Store`` runs in phase 3, *after* the reducers. The compiler stops you from capturing the pre-context into the `@Sendable` phase-3 closure; copy `context.stateBefore` into a local `let` when you need a before/after comparison:
+
+```swift
+let logger = Middleware<AppAction, AppState, Logger>.handle { action, context in
+    let before = context.stateBefore                    // phase 1 — pre-mutation
+    return Reader { ctx in
+        ctx.environment.log(action, before: before, after: ctx.liveState)  // phase 3
+        return .empty
+    }
+}
+```
+
+``PostReducerContext`` carries `environment` and the committed `liveState` (a `@MainActor` read; from a non-isolated context use `await MainActor.run { ctx.liveState }`). The reactive companion products — `SwiftRex.Combine`, `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, `SwiftRex.ReactiveConcurrency` — each add a `readLiveState()` extension on `PostReducerContext` returning a one-element stream that hops to `@MainActor` automatically, so post-mutation state can feed a pipeline:
+
+```swift
+return .produce { ctx in
+    ctx.readLiveState()                                 // e.g. Publisher<State, Never>
+        .flatMap { state in ctx.environment.api.save(state.draft) }
+        .asEffect()
+}
+```
+
+The state is read lazily — only when a subscriber attaches — so it always reflects the post-mutation value of the current dispatch cycle.
+
 ### The algebra — a parallel monoid
 
 `Middleware` is a `Monoid`: ``combine(_:_:)`` runs both middlewares on the same action and **merges their effects**, and **unions their supervisors** (the desired channel sets combine); ``identity`` produces no effect and keeps nothing. See <doc:Algebra>.
@@ -34,7 +60,7 @@ A middleware written at *local* types is lifted to your app's *global* types bef
 - ``liftAction(_:)`` / ``liftState(_:)`` / ``liftEnvironment(_:)`` — one axis at a time (`Prism`/`KeyPath`/`Lens`/`AffineTraversal`/projection closure).
 - ``liftCollection(action:embed:stateContainer:elements:)`` / ``liftEach(action:embed:each:stateContainer:)`` — run a per-element middleware across a keyed collection, or broadcast to all elements.
 
-Every lift carries **both** effect axes — including `supervise`: a lifted middleware's channels are re-embedded and (for collections) per-element stamped. Use the `on(…)` family to route by action case without a manual `guard case`.
+Every lift carries **both** effect axes — including `supervise`: a lifted middleware's channels are re-embedded and (for collections) per-element stamped. Use the `on(…)` family to route by action case without a manual `guard case` — the same Prism / KeyPath / predicate families documented on ``Behavior``, minus the `reduce:` parameter (a middleware never mutates).
 
 ### Becoming a Behavior
 
