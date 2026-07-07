@@ -188,5 +188,5 @@ public enum Consequence<Action: Sendable, State: Sendable, Environment: Sendable
     /// An **action-clock** consequence: react to an action with a ``Reaction``.
     case reaction(@MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>)
     /// A **state-clock** consequence: supervise the channels a state should keep alive.
-    case supervision(@MainActor @Sendable (State) -> Supervision<Environment, Action>)
+    case supervision(@MainActor @Sendable (State) -> Supervision<Action, Environment>)
 }

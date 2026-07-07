@@ -69,7 +69,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     /// The action-clock unit a `.reaction` consequence carries.
     typealias ReactionUnit = @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>
     /// The state-clock unit a `.supervision` consequence carries.
-    typealias SupervisionUnit = @MainActor @Sendable (State) -> Supervision<Environment, Action>
+    typealias SupervisionUnit = @MainActor @Sendable (State) -> Supervision<Action, Environment>
 
     /// The per-feature consequences, in composition order — the free monoid. ``identity`` is the
     /// empty list and ``combine(_:_:)`` concatenates; `handle`/`supervisor` are folded views over it.
@@ -89,7 +89,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     /// for a state (Elm's `Sub`) — or `nil` when this behavior has **no** supervision at all. The
     /// Store reconciles it after every change. *Derived* from the presence of supervisions, never a
     /// flag that can drift.
-    package let supervisor: (@MainActor @Sendable (_ state: State) -> Supervision<Environment, Action>)?
+    package let supervisor: (@MainActor @Sendable (_ state: State) -> Supervision<Action, Environment>)?
 
     /// Whether this behavior has **any** `.supervision` — `true` iff `supervisor != nil`. The
     /// ``Store`` reconciles state-driven channels only when this holds, so a behavior that never
@@ -143,7 +143,7 @@ public struct Behavior<Action: Sendable, State: Sendable, Environment: Sendable>
     /// the lifts to carry the state-driven axis through a transform (`nil` when nothing supervises).
     init(
         handle: @escaping @MainActor @Sendable (Action, PreReducerContext<State>) -> Reaction<Action, State, Environment>,
-        supervisor: (@MainActor @Sendable (State) -> Supervision<Environment, Action>)?
+        supervisor: (@MainActor @Sendable (State) -> Supervision<Action, Environment>)?
     ) {
         self.init(consequences: [.reaction(handle)] + (supervisor.map { [.supervision($0)] } ?? []))
     }
@@ -203,7 +203,7 @@ extension Behavior {
     /// })
     /// ```
     public static func supervise(
-        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Environment, Action>
+        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Action, Environment>
     ) -> Self {
         Behavior(consequences: [.supervision(keep)])
     }
@@ -229,7 +229,7 @@ extension Behavior {
 
     /// Adds a state-driven concern, combining it with `self` — `b.supervise { … }` ≡ `b <> .supervise { … }`.
     public func supervise(
-        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Environment, Action>
+        _ keep: @escaping @MainActor @Sendable (State) -> Supervision<Action, Environment>
     ) -> Self { .combine(self, .supervise(keep)) }
 }
 
