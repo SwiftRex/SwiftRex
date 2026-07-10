@@ -1,13 +1,13 @@
 {
-  "originHash" : "bdb49ea7182167f999da5d34f72209d898484d0ad532aeaea6a7ec3552ed35f2",
+  "originHash" : "ae260180a64d1c3e0ee3d901740ff6ccf08a3b968b6009717d93726a72b50fa6",
   "pins" : [
     {
       "identity" : "fp",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/luizmb/FP.git",
       "state" : {
-        "revision" : "1b93d54ee5d35a9696c038b323563d2f22f60a2c",
-        "version" : "1.12.0"
+        "revision" : "cec6a5dfc9348797cb346b8faed22e4adb353fa5",
+        "version" : "2.0.1"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/luizmb/Hourglass.git",
       "state" : {
-        "revision" : "ec2ff5aac99e59d2ea208e4d391fe54da8961608",
-        "version" : "0.6.2"
+        "revision" : "c122a98281bdd61a1c231c111fe643e49a6eaa9c",
+        "version" : "1.0.1"
       }
     },
     {
@@ -44,24 +44,6 @@
       "state" : {
         "revision" : "e8a5db026963f5bfeac842d9d3f2cc8cde323b49",
         "version" : "1.0.0"
-      }
-    },
-    {
-      "identity" : "reactiveswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ReactiveCocoa/ReactiveSwift.git",
-      "state" : {
-        "revision" : "a44317ce38b5bcce173b03f5d36cfdc939e1768b",
-        "version" : "7.2.1"
-      }
-    },
-    {
-      "identity" : "rxswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ReactiveX/RxSwift.git",
-      "state" : {
-        "revision" : "132aea4f236ccadc51590b38af0357a331d51fa2",
-        "version" : "6.10.2"
       }
     },
     {
