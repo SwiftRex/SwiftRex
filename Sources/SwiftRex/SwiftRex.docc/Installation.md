@@ -56,23 +56,6 @@ traits aren't dropped.
 > `project.pbxproj`. Keep `traits:` in `Package.swift` too (that's what the `swift` CLI uses).
 > XcodeGen does not emit package traits, so re-apply the block after each `xcodegen generate`.
 
-## XCFrameworks
-
-Pre-built XCFrameworks for the dependency-free products are attached to each
-[GitHub release](https://github.com/SwiftRex/SwiftRex/releases):
-
-| Framework | Contents |
-|---|---|
-| `SwiftRex.xcframework.zip` | Core store, reducers, behaviors, effects |
-| `SwiftRex.Operators.xcframework.zip` | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
-| `SwiftRex.SwiftConcurrency.xcframework.zip` | async/await Effect bridges |
-| `SwiftRex.Combine.xcframework.zip` | Combine publisher bridge |
-| `SwiftRex.SwiftUI.xcframework.zip` | SwiftUI integration (`ViewStore`, `TrackedViewStore`, `ObservableObjectStore`, `asObservableObject`) |
-
-The third-party reactive bridges are trait-gated and depend on third-party frameworks — use SPM for
-those products. To integrate an XCFramework manually: download the `.zip` from the release, unzip it,
-and drag the `.xcframework` bundle into your target's **Frameworks, Libraries, and Embedded Content**.
-
 ## Topics
 
 ### Next

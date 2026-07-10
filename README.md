@@ -126,7 +126,7 @@ The three third-party bridges are each gated behind a [package trait](https://gi
 
 ![Enabling the ReactiveConcurrency trait for SwiftRex in Xcode's Package Dependencies (Traits column showing "default, ReactiveConcurrency")](Sources/SwiftRex/SwiftRex.docc/Resources/xcode-package-traits.png)
 
-Xcode project caveats (trait propagation in `project.pbxproj`, XcodeGen) and pre-built XCFrameworks are covered in the [Installation article](https://swiftrex.ios.lu/documentation/swiftrex/installation).
+Xcode project caveats (trait propagation in `project.pbxproj`, XcodeGen) are covered in the [Installation article](https://swiftrex.ios.lu/documentation/swiftrex/installation).
 
 # The core loop
 
