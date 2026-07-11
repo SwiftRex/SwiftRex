@@ -352,7 +352,7 @@ Pair them back up with `Behavior(reducer:middleware:)`, or lift either half alon
 
 # The `@Feature` macro
 
-`SwiftRex.Architecture` packages the recommended app structure. `@Feature(type:strategy:)` turns a namespace enum into a full feature: it applies `@Prisms` to `Action`, `@Lenses` to `State`, and generates `initialState(with:)` and the SwiftUI `view(store:environment:)` factory. `@BoundTo` injects the matching `viewStore` into the view — the body never changes when you swap observation strategies.
+`SwiftRex.Architecture` packages the recommended app structure. `@Feature(type:strategy:)` turns a namespace enum into a full feature: it applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type (recursive `@Lenses`/`@Prisms` down the whole tree), and generates `initialState(with:)` and the SwiftUI `view(store:environment:)` factory. `@BoundTo` injects the matching `viewStore` into the view — the body never changes when you swap observation strategies.
 
 You saw the minimal shape in the hero example. Features scale up by *adding* declarations, never rewriting: an `Environment` for dependencies, a distinct `ViewState`/`ViewAction` pair with `mapState`/`mapAction` as `Reader<Environment, …>` when the view's shape diverges from the domain's, an `Input` seed for parameterised features, `.observationGranular` for field-level view invalidation, and `type: .moduleEntryPoint` when the feature becomes its own SPM module:
 
