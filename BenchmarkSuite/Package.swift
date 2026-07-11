@@ -9,7 +9,7 @@ let package = Package(
     platforms: [.macOS(.v13), .iOS(.v16), .tvOS(.v16), .watchOS(.v9)],
     dependencies: [
         .package(path: ".."),
-        .package(url: "https://github.com/luizmb/FP.git", from: "2.0.1"),
+        .package(url: "https://github.com/luizmb/FP.git", from: "2.1.0"),
         .package(url: "https://github.com/ordo-one/package-benchmark", from: "1.4.0")
     ],
     targets: [

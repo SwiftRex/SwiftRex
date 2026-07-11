@@ -6,8 +6,13 @@ import SwiftSyntaxMacros
 
 /// Implements `@Feature(type:strategy:)` — the module-entry/internal-screen macro.
 ///
-/// - `MemberAttributeMacro` — adds `@Prisms` to nested `Action`/`ViewAction`, `@Lenses` to nested
-///   `State`, and (for `strategy: .observationGranular`) `@Tracked` to nested `ViewState`.
+/// - `MemberAttributeMacro` — adds `@ApplyOptics(recursively: true)` to **every** nested domain-state
+///   struct/enum (`State`, `Action`, `ViewAction`, and any other nested type — a `Route`, a sub-state —
+///   recursively down its own tree), skipping the non-state members `Environment`/`Content`/`Input` and
+///   the `ViewState` view projection; and (for `strategy: .observationGranular`) `@Tracked` to the
+///   tracked `State`/`ViewState`. A user attribute (`@ApplyOptics`/`@Lenses`/`@Prisms`/`@NoOptics`) on a
+///   nested type wins. State declared in an *extension* of the feature isn't visible to the macro —
+///   annotate that extension with `@ApplyOptics(recursively: true)` directly.
 /// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
 ///   generates `view(store:environment:) -> some View` (when a `Content` view exists) building the
 ///   store named by `strategy:` (`ViewStore` / `TrackedViewStore` / `ObservableObjectStore`) from an
@@ -118,29 +123,51 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
         providingAttributesFor member: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
-        if let enumDecl = member.as(EnumDeclSyntax.self),
-           enumDecl.name.text == "Action" || enumDecl.name.text == "ViewAction" {
-            guard !hasAttribute("Prisms", on: enumDecl.attributes) else { return [] }
-            return ["@Prisms"]
-        }
         let granular = strategyName(node) == "observationGranular"
-        if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "State" {
-            var attributes: [AttributeSyntax] = []
-            if !hasAttribute("Lenses", on: structDecl.attributes) { attributes.append("@Lenses") }
-            // Granular with no distinct `ViewState` struct ⇒ track the domain `State` directly.
-            if granular,
-               !hasNestedStruct("ViewState", in: declaration),
-               !hasAttribute("Tracked", on: structDecl.attributes) {
-                attributes.append("@Tracked")
-            }
-            return attributes
-        }
-        // Granular with an explicit `ViewState` struct ⇒ track that.
+
+        // `ViewState` is the view projection, not domain state: `@Tracked` for granular; never optics.
         if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "ViewState" {
             guard granular, !hasAttribute("Tracked", on: structDecl.attributes) else { return [] }
             return ["@Tracked"]
         }
-        return []
+
+        // Every other nested struct/enum is treated as domain state and gets recursive optics
+        // (`@ApplyOptics(recursively: true)` — `@Lenses` for structs, `@Prisms` for enums, all the way
+        // down its own nested tree) — not just `State`/`Action`. A nested `Route`, a sub-state struct,
+        // an inner enum: all covered from the one `@Feature` annotation. State the user adds in an
+        // *extension* of the feature isn't visible here — annotate that extension with
+        // `@ApplyOptics(recursively: true)` yourself.
+        let name: String
+        let attributes: AttributeListSyntax
+        if let structDecl = member.as(StructDeclSyntax.self) {
+            name = structDecl.name.text
+            attributes = structDecl.attributes
+        } else if let enumDecl = member.as(EnumDeclSyntax.self) {
+            name = enumDecl.name.text
+            attributes = enumDecl.attributes
+        } else {
+            return []
+        }
+
+        // Non-state framework members: dependencies, the view, and the seed carry no optics.
+        guard !["Environment", "Content", "Input"].contains(name) else { return [] }
+
+        var result: [AttributeSyntax] = []
+        // Respect a user-written optics choice — `@ApplyOptics`/`@Lenses`/`@Prisms` (custom options) or
+        // `@NoOptics` (opt this type out).
+        let userChoseOptics = ["ApplyOptics", "Lenses", "Prisms", "NoOptics"]
+            .contains { hasAttribute($0, on: attributes) }
+        if !userChoseOptics {
+            result.append("@ApplyOptics(recursively: true)")
+        }
+        // Granular with no distinct `ViewState` struct ⇒ track the domain `State` directly.
+        if name == "State",
+           granular,
+           !hasNestedStruct("ViewState", in: declaration),
+           !hasAttribute("Tracked", on: attributes) {
+            result.append("@Tracked")
+        }
+        return result
     }
 
     // MARK: - Private
