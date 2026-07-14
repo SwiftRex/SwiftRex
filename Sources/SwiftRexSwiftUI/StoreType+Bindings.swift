@@ -79,6 +79,60 @@
             )
         }
 
+        /// A `Binding<Bool>` for a ``Presentation`` slot — `true` only while `.presented`.
+        ///
+        /// Setting `false` (SwiftUI beginning the dismiss — swipe / tap-out) dispatches `dismiss`, moving
+        /// `presented → dismissing`; the slot keeps rendering `dismissing(last:)` so content stays put as
+        /// the sheet animates out. Pair it with an `onDismiss:` that dispatches the **same** `dismiss`
+        /// (moving `dismissing → dismissed`) — or use ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:content:)``,
+        /// which wires both edges so the state can't get stuck mid-dismiss. Being a `Bool`, it never
+        /// churns SwiftUI's identity the way an `item:` binding over the mutable child state would.
+        @MainActor
+        public func presentation<Wrapped>(
+            _ keyPath: KeyPath<State, Presentation<Wrapped>>,
+            dismiss: Action,
+            file: String = #fileID,
+            function: String = #function,
+            line: UInt = #line
+        ) -> Binding<Bool> {
+            Binding(
+                get: { self.state[keyPath: keyPath].isPresented },
+                set: { isPresented in
+                    guard !isPresented else { return }
+                    self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
+                }
+            )
+        }
+
+        /// A `Binding<Wrapped?>` for a ``Presentation`` slot whose value is `Identifiable` — for
+        /// `.sheet(item:)` / `.navigationDestination(item:)` / `.popover(item:)`.
+        ///
+        /// `.some` only while `.presented` (so entering `dismissing` flips it to `nil` and SwiftUI starts
+        /// the out-animation); setting `nil` dispatches `dismiss`. **Requiring `Identifiable` is the
+        /// steer**: SwiftUI keys the sheet on `id`, so it stays put as the child state changes instead of
+        /// churning/re-presenting the way an `item:` binding over the whole mutable value would — give it
+        /// a **stable** id. Pair with an `onDismiss:` dispatching the same `dismiss`, or use the
+        /// ``SwiftUICore/View/presentingItem(_:_:dismiss:onDismiss:file:function:line:content:)`` modifier.
+        @MainActor
+        public func presentationItem<Wrapped: Identifiable>(
+            _ keyPath: KeyPath<State, Presentation<Wrapped>>,
+            dismiss: Action,
+            file: String = #fileID,
+            function: String = #function,
+            line: UInt = #line
+        ) -> Binding<Wrapped?> {
+            Binding(
+                get: {
+                    let presentation = self.state[keyPath: keyPath]
+                    return presentation.isPresented ? presentation.wrapped : nil
+                },
+                set: { newValue in
+                    guard newValue == nil else { return }
+                    self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
+                }
+            )
+        }
+
         /// A `Binding<[Element]>` for `NavigationStack(path:)` — the **stack** navigation shape.
         ///
         /// SwiftUI hands the binding the *whole* new path on every structural change, so a single
