@@ -15,6 +15,8 @@ Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one
 
 The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers.
 
+> This page is the **reference** — each shape and container in isolation. For one app that wires all four shapes across every layer (domain → features → the global feature → behavior fold → scopes → router → views → `@main`), with the full stack shown, follow <doc:NavigationEndToEnd>.
+
 ## Every container, by shape
 
 ### Optional / modal — `Item?` or `Bool`
@@ -50,6 +52,23 @@ Presentation and child lifetime are one fact: set the optional and the child exi
 ```
 
 Behavior side: `liftOptional` (the child runs only while `.some`) or ``Behavior/navigationItem(_:action:allow:)`` for standard present/dismiss with an optional veto.
+
+#### `Presentation` — model the dismissal frame instead of hacking it
+
+`Item?` is *two* states (shown / gone), but a dismiss is *three*: shown, **animating-out-still-showing-the-last-value**, gone. Squeezing that middle state out is what forces the ugly `?? .placeholder` (content blanks as it slides away) or a view-layer latch. ``Presentation`` names it — `presented(x)` / `dismissing(last: x)` / `dismissed` — exactly as ``Loading`` names `reloading(previous:)`. It's a **pure** state type (core, no SwiftUI): the store stays the single source of truth, no latch, no timer.
+
+```swift
+struct State { var editor: Presentation<Editor.State> = .dismissed }          // slot
+enum Action  { case editor(PresentationAction<Editor.Action>) }                // dismiss / child (present is a reducer)
+
+// behavior — one lift folds present, the stage machine, and the child:
+Editor.behavior().liftPresentation(action: \.editor, state: \.editor, environment: { $0.editorEnv })
+
+// view — the modifier wires BOTH dismiss edges so the state can't get stuck mid-dismiss:
+content.presenting(store, \.editor, dismiss: .editor(.dismiss)) { _ in router.view(for: .editor) }
+```
+
+The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the binding's `set(false)` steps `presented → dismissing`, and `onDismiss` (a real SwiftUI completion, not a timer) steps `dismissing → dismissed`. Content renders the value carried by *both* live stages, so it stays put through the animation. Use ``StoreType/presentation(_:dismiss:)`` for the `Bool` binding (never churns identity — the safe default) or ``StoreType/presentationItem(_:dismiss:)`` for an `Identifiable` value with a **stable id** (`.sheet(item:)`); prefer the ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)`` / `presentingItem` modifiers, which wire `onDismiss` for you. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
 
 ### Stack — `[Route]`
 
@@ -208,3 +227,5 @@ A presented child talks back through the core ``Behavior/on(_:dispatch:reduce:)`
 - ``Scope``
 - ``Feature``
 - ``Routable``
+- ``Presentation``
+- ``PresentationAction``

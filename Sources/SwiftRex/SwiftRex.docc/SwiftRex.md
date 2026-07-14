@@ -45,6 +45,7 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 - <doc:AddingEffects>
 - <doc:Features>
 - <doc:Navigation>
+- <doc:NavigationEndToEnd>
 
 ### Concepts
 
