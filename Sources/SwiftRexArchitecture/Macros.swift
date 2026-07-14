@@ -12,11 +12,9 @@
 
     // MARK: - @Feature macro
 
-    /// Turns a feature `enum` into a module entry point or an internal screen — the single macro for
-    /// both, distinguished only by its ``FeatureRole``.
+    /// Turns a feature `enum` into a full feature (behavior + view) or a logic-only one (behavior).
     ///
-    /// Apply to an `enum` namespace with a ``FeatureRole`` (`type:`) and a ``ViewStrategy``
-    /// (`strategy:`). The macro:
+    /// Apply to an `enum` namespace with a ``ViewStrategy`` (`strategy:`). The macro:
     /// - Applies `@Prisms` to the nested `Action` and `ViewAction`, and `@Lenses` to the nested `State`.
     ///   For `strategy: .observationGranular` it also attaches `@Tracked` to the nested `ViewState`.
     /// - Synthesises `static func initialState(with _: Void) -> State { .init() }` when you don't
@@ -35,13 +33,20 @@
     /// is optional too** — omit it and the macro aliases it to `Void`. So the leanest feature is just
     /// `State`/`Action`/`behavior()`/`Content`.
     ///
-    /// The macro itself is **not** availability-gated, so `.combineObservable` features can target iOS 16.
-    /// It generates **no** protocol conformance. Declare `State`/`Action`/`Environment`/`Input` `public`
-    /// on a `.moduleEntryPoint` (they must be liftable); keep the view layer `internal`.
+    /// **Access follows the `enum`'s own access** — a `public enum` gets `public` members (a module
+    /// entry point, whose `State`/`Action`/`Environment`/`Input` you also declare `public` so they can
+    /// be lifted); a plain `enum` keeps its members `internal` (a screen composed inside a module). No
+    /// `type:` argument — the declaration says it, exactly like `@BoundTo`/`@Tracked`.
+    ///
+    /// **The `Feature` conformance is generated:** a feature that has a view (a `Content`, or a
+    /// hand-written `view(store:environment:)`) conforms to ``Feature``; a view-less feature is a
+    /// behavior only and gets no `Feature` conformance. The `Feature` conformance is `@available(iOS 17)`
+    /// for the two Observation strategies, ungated for `.combineObservable`. You no longer write
+    /// `extension X: Feature {}` by hand.
     ///
     /// ```swift
-    /// @Feature(type: .moduleEntryPoint, strategy: .observationSimple)
-    /// public enum Movies {
+    /// @Feature(strategy: .observationSimple)
+    /// public enum Movies {                               // `public` ⇒ public members + `Feature`
     ///     public struct State: Sendable { ... }          // @Lenses applied automatically
     ///     public enum Action: Sendable { ... }           // @Prisms applied automatically
     ///     public struct Environment: Sendable { ... }
@@ -52,10 +57,11 @@
     ///     static let mapAction = ...                      // Reader<Environment, (ViewAction) -> Action>
     ///     static func behavior() -> Behavior<Action, State, Environment> { ... }
     ///     typealias Content = MoviesView                  // internal view; use @BoundTo(Movies.self, strategy:)
-    ///     // `initialState(with:)` and `view(store:environment:)` are generated.
+    ///     // `initialState(with:)`, `view(store:environment:)`, and `: Feature` are generated.
     /// }
     /// ```
     @attached(member, names: named(initialState), named(view), named(ViewState), named(ViewAction), named(Environment))
     @attached(memberAttribute)
-    public macro Feature(type: FeatureRole, strategy: ViewStrategy) = #externalMacro(module: "SwiftRexMacros", type: "FeatureMacro")
+    @attached(extension, conformances: Feature)
+    public macro Feature(strategy: ViewStrategy) = #externalMacro(module: "SwiftRexMacros", type: "FeatureMacro")
 #endif

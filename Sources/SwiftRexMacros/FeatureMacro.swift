@@ -4,7 +4,7 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-/// Implements `@Feature(type:strategy:)` — the module-entry/internal-screen macro.
+/// Implements `@Feature(strategy:)` — the feature macro.
 ///
 /// - `MemberAttributeMacro` — adds `@ApplyOptics(recursively: true)` to **every** nested domain-state
 ///   struct/enum (`State`, `Action`, `ViewAction`, and any other nested type — a `Route`, a sub-state —
@@ -17,11 +17,15 @@ import SwiftSyntaxMacros
 ///   generates `view(store:environment:) -> some View` (when a `Content` view exists) building the
 ///   store named by `strategy:` (`ViewStore` / `TrackedViewStore` / `ObservableObjectStore`) from an
 ///   environment-aware projection. The two Observation stores are iOS-17-gated; Combine is not.
+/// - `ExtensionMacro`       — generates the `Feature` conformance when the type has a view (a `Content`,
+///   or a hand-written `view`); a view-less feature is a behavior only and gets no `Feature`
+///   conformance. The `Feature` conformance is iOS-17-gated for the Observation strategies, ungated for
+///   Combine (matching the generated `view()`).
 ///
-/// It generates **no** protocol conformance: `State`/`Action`/`Environment`/`Input` stay whatever
-/// access the author declares (public for an entry point), while `ViewState`/`ViewAction`/`Content`
-/// stay internal and are hidden behind `view()`'s opaque return.
-public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
+/// **Access follows the `enum`'s own modifier** — a `public enum` gets `public` members; a plain `enum`
+/// keeps them `internal` — read from the declaration, exactly like `@BoundTo`/`@Tracked`. `ViewState`/
+/// `ViewAction`/`Content` stay whatever the author wrote and are hidden behind `view()`'s opaque return.
+public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
     // MARK: - MemberMacro
 
     public static func expansion(
@@ -35,7 +39,7 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
             return []
         }
 
-        let access = isPublicEntryPoint(node) ? "public " : ""
+        let access = accessModifier(from: declaration.modifiers)
         var members: [DeclSyntax] = []
 
         // `initialState(with:)` defaults to `State.init()` for the common Void-seed case. Only
@@ -115,6 +119,39 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
         """
     }
 
+    // MARK: - ExtensionMacro
+
+    /// Generates the protocol conformance. A feature that builds a view — it has a `Content` (the macro
+    /// generates `view()`) or a hand-written `view` — conforms to `Feature`; a view-less feature is a
+    /// behavior only and conforms to `HasBehavior`. The `Feature` conformance carries the same iOS-17
+    /// gate as the generated `view()` for the Observation strategies (ungated for Combine); a witness
+    /// gated more narrowly than its requirement wouldn't satisfy it.
+    public static func expansion(
+        of node: AttributeSyntax,
+        attachedTo declaration: some DeclGroupSyntax,
+        providingExtensionsOf type: some TypeSyntaxProtocol,
+        conformingTo protocols: [TypeSyntax],
+        in context: some MacroExpansionContext
+    ) throws -> [ExtensionDeclSyntax] {
+        guard declaration.is(EnumDeclSyntax.self) else { return [] }
+
+        // Only a view-bearing feature (a `Content`, or a hand-written `view`) conforms — to `Feature`. A
+        // view-less feature is a behavior only and is NOT auto-conformed: `Feature` refines
+        // `HasBehavior`, and a single extension role cannot both list `Feature` (needed here) and emit a
+        // bare `HasBehavior` (the compiler rejects both co-listing the refinement pair AND emitting an
+        // unlisted super protocol). A view-less feature already has `behavior()`, so it can declare
+        // `: HasBehavior` itself in one line when it needs to be used generically.
+        guard hasNestedType("Content", in: declaration) || hasFunction("view", in: declaration) else {
+            return []
+        }
+        // Gated for the Observation strategies (their `view()` is iOS-17), ungated for Combine —
+        // matching the generated `view()`'s own availability.
+        let gated = strategyName(node) != "combineObservable"
+        let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
+        let conformance: DeclSyntax = "\(raw: availability)extension \(raw: type.trimmedDescription): Feature {}"
+        return conformance.as(ExtensionDeclSyntax.self).map { [$0] } ?? []
+    }
+
     // MARK: - MemberAttributeMacro
 
     public static func expansion(
@@ -172,7 +209,7 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
 
     // MARK: - Private
 
-    /// The member-access case name of a labeled argument, e.g. `type: .moduleEntryPoint` → `"moduleEntryPoint"`.
+    /// The member-access case name of a labeled argument, e.g. `strategy: .observationSimple` → `"observationSimple"`.
     private static func argumentCase(_ label: String, in node: AttributeSyntax) -> String? {
         guard let args = node.arguments?.as(LabeledExprListSyntax.self) else { return nil }
         for arg in args where arg.label?.text == label {
@@ -181,9 +218,24 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
         return nil
     }
 
-    /// Whether `type: .moduleEntryPoint`. Defaults to `true` (public) when absent/unrecognised.
-    private static func isPublicEntryPoint(_ node: AttributeSyntax) -> Bool {
-        argumentCase("type", in: node) != "internalOnly"
+    /// The access modifier the members should carry, read from the attached `enum` — `"public "`,
+    /// `"package "`, `""` (internal), etc. Matches `@BoundTo`/`@Tracked`: the declaration's own access
+    /// drives the generated members, so there is no `type:` argument.
+    private static func accessModifier(from modifiers: DeclModifierListSyntax) -> String {
+        modifiers
+            .first(where: {
+                switch $0.name.tokenKind {
+                case .keyword(.public),
+                     .keyword(.package),
+                     .keyword(.internal),
+                     .keyword(.fileprivate),
+                     .keyword(.open):
+                    true
+                default:
+                    false
+                }
+            })
+            .map { "\($0.name.text) " } ?? ""
     }
 
     /// The `strategy:` case name; defaults to `"observationSimple"` (coarse `ViewStore`).
@@ -220,8 +272,12 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro {
     }
 
     private static func hasInitialState(in declaration: some DeclGroupSyntax) -> Bool {
+        hasFunction("initialState", in: declaration)
+    }
+
+    private static func hasFunction(_ name: String, in declaration: some DeclGroupSyntax) -> Bool {
         declaration.memberBlock.members.contains {
-            $0.decl.as(FunctionDeclSyntax.self)?.name.text == "initialState"
+            $0.decl.as(FunctionDeclSyntax.self)?.name.text == name
         }
     }
 }
