@@ -21,7 +21,7 @@
         var body: Never { fatalError("test stub") }
     }
 
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     private enum HeroDetailsFeature {
         struct State: Sendable {
             var codename: String = "Kryptonian"
@@ -104,7 +104,7 @@
         var body: Never { fatalError("test stub") }
     }
 
-    @Feature(type: .internalOnly, strategy: .observationGranular)
+    @Feature(strategy: .observationGranular)
     private enum GadgetFeature {
         struct State: Sendable, Equatable { var name = "phone"; var battery = 100 }
         enum Action: Sendable { case rename(String) }
@@ -145,7 +145,7 @@
         var body: Never { fatalError("test stub") }
     }
 
-    @Feature(type: .internalOnly, strategy: .combineObservable)
+    @Feature(strategy: .combineObservable)
     private enum WidgetFeature {
         struct State: Sendable, Equatable { var count = 0 }
         enum Action: Sendable { case bump }
@@ -182,7 +182,7 @@
         var body: Never { fatalError("test stub") }
     }
 
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     private enum DirectFeature {
         struct State: Sendable, Equatable { var count = 0 }
         enum Action: Sendable { case inc }
@@ -206,7 +206,7 @@
         var body: Never { fatalError("test stub") }
     }
 
-    @Feature(type: .internalOnly, strategy: .observationGranular)
+    @Feature(strategy: .observationGranular)
     private enum DirectGranularFeature {
         // Explicit field types — @Tracked is attached to State directly (no distinct ViewState).
         struct State: Sendable, Equatable { var name: String = "a"; var count: Int = 0 }
@@ -231,7 +231,7 @@
         var body: Never { fatalError("test stub") }
     }
 
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     private enum MinimalFeature {
         struct State: Sendable, Equatable { var count = 0 }
         enum Action: Sendable { case tick }
@@ -406,7 +406,7 @@
 
     // MARK: - initialState synthesis (logic-only fixtures, no view layer)
 
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     private enum CounterFeature {
         struct State: Sendable, Equatable { var count = 0 }
         enum Action: Sendable { case increment }
@@ -421,7 +421,7 @@
         // no `initialState` — synthesized as State.init(); no Content — no view() generated
     }
 
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     private enum OverrideFeature {
         struct State: Sendable, Equatable { var count: Int }
         enum Action: Sendable { case noop }
@@ -432,7 +432,7 @@
 
     private struct StartCount: Sendable { var startingCount: Int }
 
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     private enum SeededFeature {
         typealias Input = StartCount
         struct State: Sendable, Equatable { var count: Int }

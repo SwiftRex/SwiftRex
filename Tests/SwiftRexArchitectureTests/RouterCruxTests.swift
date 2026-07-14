@@ -12,7 +12,7 @@
     // cross-feature decoupling (the parent never names the child) and no AnyView (@ViewBuilder switch).
 
     // A leaf "module" with a NON-Void environment — so building its view demonstrably needs env.
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     enum RDetail {
         struct State: Sendable, Equatable { var text = "detail" }
         enum Action: Sendable, Equatable { case tap }

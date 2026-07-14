@@ -16,7 +16,7 @@
 
     // MARK: - L4 — a full module (Input seed, effect, state-driven navigation)
 
-    @Feature(type: .moduleEntryPoint, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     enum Library {
         struct Input: Sendable { var shelfID: String }
 
@@ -80,7 +80,7 @@
 
     // MARK: - L2 — a distinct view shape with a two-way binding
 
-    @Feature(type: .internalOnly, strategy: .observationSimple)
+    @Feature(strategy: .observationSimple)
     enum Editor {
         struct State: Sendable, Equatable { var powers = ["flight"] }
         enum Action: Sendable, Equatable { case savePowers([String]) }
