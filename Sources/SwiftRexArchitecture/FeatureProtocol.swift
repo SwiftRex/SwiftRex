@@ -4,21 +4,12 @@
     import SwiftRex
     import SwiftUI
 
-    /// The domain triad every feature shares — its `Action`, `State`, and `Environment` — with no
-    /// capability attached. Both ``HasBehavior`` and ``ViewFactory`` refine it, so the liftable wiring
-    /// (``Scope``) can be expressed over the triad alone: a `Scope` lifts whatever the child provides —
-    /// a behavior, a view, or both — because all three only need the triad to embed into a parent.
-    ///
-    /// It is the type-level *recipe* (`Environment` not yet applied), the dual of ``StoreType`` — the
-    /// runtime surface where `Environment` has been applied and erased, leaving only `(Action, State)`.
-    public protocol FeatureDomain {
-        /// The feature's action type.
-        associatedtype Action: Sendable
-        /// The feature's state type.
-        associatedtype State: Sendable
-        /// The feature's environment (dependencies) type.
-        associatedtype Environment: Sendable
-    }
+    /// The domain triad every feature shares — its `Action`, `State`, and `Environment`. It is the
+    /// `SwiftRex.Architecture` spelling of the core ``SwiftRex/Rig`` (a ``SwiftRex/Transceiver`` that also
+    /// reaches the world): both ``HasBehavior`` and ``ViewFactory`` refine it, so the liftable wiring
+    /// (``Scope``) can be expressed over the triad alone — a `Scope` lifts whatever the child provides,
+    /// a behavior, a view, or both.
+    public typealias FeatureDomain = Rig
 
     /// A feature that produces a ``Behavior`` — the composable, liftable behavior capability. A
     /// logic-only feature (no view) can conform to just this.
