@@ -13,7 +13,7 @@
         ///
         /// `content` receives the currently-`wrapped` value (present through `presented` **and**
         /// `dismissing`), so the sheet renders the last value unchanged as it animates out. Read the
-        /// store inside `content` to build a *live* child (e.g. `Scope.view(from:world:)`); the passed
+        /// store inside `content` to build a *live* child (e.g. `Gateway.view(from:world:)`); the passed
         /// value is the same slice for simple, value-only content.
         ///
         /// The binding is a `Bool`, so SwiftUI's identity never churns on child-state changes — the safe

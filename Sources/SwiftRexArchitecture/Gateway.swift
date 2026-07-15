@@ -4,14 +4,17 @@
     import CoreFP
     import SwiftRex
 
-    /// The wiring that scopes a child feature into a parent (app) store — declared **once** and used for
-    /// both behavior composition **and** navigation.
+    /// The env-aware, full-duplex link that embeds a child ``Rig`` into a parent (app) one — declared
+    /// **once** and used for both behavior composition **and** navigation. It is the ``Relay``'s
+    /// counterpart that also carries the world: where a `Relay` re-indexes a `(Action, State)`
+    /// ``Transceiver`` with one movement per lane, a `Gateway` runs **both ways on both lanes** plus an
+    /// environment narrow — the feature *lift*.
     ///
-    /// A `Scope` is the morphism `Local ↪ Global` between two ``FeatureDomain``s — how the child embeds
-    /// into the parent. Its three pieces are the three axes' variances: a **prism** on action (extract
-    /// inbound, embed outbound), a **lens** on state (get + set), and a contravariant **function** on
-    /// environment (narrow `Global.Environment → Local.Environment`). Given that morphism it **lifts
-    /// whatever the child provides**:
+    /// A `Gateway` is the morphism `Local ↪ Global` between two ``Rig``s — how the child embeds into the
+    /// parent. Its three pieces are the three axes' variances: a **prism** on action (extract inbound,
+    /// embed outbound), a **lens** on state (get + set), and a contravariant **function** on environment
+    /// (narrow `Global.Environment → Local.Environment`). Given that morphism it **lifts whatever the
+    /// child provides**:
     /// - ``behavior`` — available when the child is ``HasBehavior``: its behavior lifted to the global
     ///   types (register it in the app behavior);
     /// - ``view(from:world:)`` — available when the child is ``ViewFactory``: its view built with the
@@ -24,27 +27,27 @@
     ///
     /// ## Compile-time proof of wiring
     ///
-    /// Constructing a `Scope` is the proof the feature is wired: it won't type-check unless the global
+    /// Constructing a `Gateway` is the proof the feature is wired: it won't type-check unless the global
     /// state slot, action case, and env-narrowing line up with the child's own `(Action, State,
     /// Environment)`. Forget one and you get a compile error at the literal.
     ///
     /// ```swift
-    /// // Global is the parent's FeatureDomain (AppFeature, or a module for a nested router).
-    /// let detailScope = Scope<AppFeature, Detail>(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)
-    /// detailScope.behavior                          // Behavior<AppFeature.Action, .State, .Environment> (Detail: HasBehavior)
-    /// detailScope.view(from: store, world: world)   // Detail's view, env supplied (Detail: ViewFactory)
+    /// // Global is the parent's Rig (AppFeature, or a module for a nested router).
+    /// let detail = Gateway<AppFeature, Detail>(Detail.self, action: \.detail, state: \.detail, environment: \.detailEnv)
+    /// detail.behavior                          // Behavior<AppFeature.Action, .State, .Environment> (Detail: HasBehavior)
+    /// detail.view(from: store, world: world)   // Detail's view, env supplied (Detail: ViewFactory)
     /// ```
     ///
-    /// This `Scope` is for **present-state** children (a sibling slice always in state — the shape a tab,
-    /// split pane, or a route whose state lives alongside uses). An **optional/modal** child (`State?`)
-    /// registers its behavior with `liftOptional` (see the navigation reducers) and has its view
-    /// hand-wired in the router via a store `item` projection.
-    public struct Scope<Global: FeatureDomain, Local: FeatureDomain>: Sendable where Global.Action: Prismatic {
+    /// This `Gateway` is for **present-state** children (a sibling slice always in state — the shape a
+    /// tab, split pane, or a route whose state lives alongside uses). An **optional/modal** child
+    /// (`State?`) registers its behavior with `liftOptional` (see the navigation reducers) and has its
+    /// view hand-wired in the router via a store `item` projection.
+    public struct Gateway<Global: Rig, Local: Rig>: Sendable where Global.Action: Prismatic {
         fileprivate let action: PrismKeyPath<Global.Action, Local.Action>
         fileprivate let state: WritableKeyPath<Global.State, Local.State>
         fileprivate let narrowEnvironment: @Sendable (Global.Environment) -> Local.Environment
 
-        /// Scopes a child feature whose state is a present sibling slice of the parent.
+        /// Embeds a child feature whose state is a present sibling slice of the parent.
         public init(
             _ local: Local.Type,
             action: PrismKeyPath<Global.Action, Local.Action>,
@@ -68,9 +71,9 @@
     }
 
     // The behavior capability — present only when the child supplies one.
-    extension Scope where Local: HasBehavior {
+    extension Gateway where Local: HasBehavior {
         /// The child behavior lifted to the parent's `(Action, State, Environment)` — homogeneous across
-        /// every scope of the same `Global`, so a whole app's behaviors fold with
+        /// every gateway of the same `Global`, so a whole app's behaviors fold with
         /// ``Behavior/combine(_:)-(Array)``.
         public var behavior: Behavior<Global.Action, Global.State, Global.Environment> {
             Local.behavior().lift(action: action, state: state, environment: narrowEnvironment)
@@ -78,7 +81,7 @@
     }
 
     // The view capability — present only when the child supplies one.
-    extension Scope where Local: ViewFactory {
+    extension Gateway where Local: ViewFactory {
         /// Builds the child feature's view from the scoped store and narrowed environment — the WHAT of
         /// navigation. Call it from a router's `@ViewBuilder view(for:)` switch; the environment comes
         /// from the world the router holds, never from the (environment-free) presenting view body.
