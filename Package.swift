@@ -125,13 +125,6 @@ let package = Package(
             path: "Sources/SwiftRexMacros"
         ),
 
-        // MARK: - Codegen tool (dev-only; emits committed lift/on source)
-
-        .executableTarget(
-            name: "GenerateLifts",
-            path: "Sources/GenerateLifts"
-        ),
-
         // MARK: - SwiftUI wrappers
 
         .target(

@@ -42,11 +42,6 @@ jobs:
       - name: Lint
         run: mint run swiftlint lint --strict
 
-      - name: Codegen freshness
-        run: |
-          swift run GenerateLifts Sources/SwiftRex
-          git diff --exit-code Sources/SwiftRex/__Generated__
-
       # --enable-all-traits builds every reactive bridge (RxSwift, ReactiveSwift,
       # ReactiveConcurrency). Without it only the core + always-on bridges compile.
       - name: Build

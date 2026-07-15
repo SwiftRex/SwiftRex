@@ -62,7 +62,7 @@ struct BehaviorCaseKeyPathLiftTests {
 
     @Test func combinedLiftViaCaseKeyPath() {
         let lifted: Behavior<AppAction, Int, Void> = counterBehavior()
-            .lift(action: \.counter, state: \.self, environment: { (_: Void) in () })
+            .lift(.action(\.counter).state(\.self).environment { (_: Void) in () })
         let store = Store(initial: 0, behavior: lifted, environment: ())
 
         store.dispatch(.counter(3))
