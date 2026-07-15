@@ -76,7 +76,7 @@
         /// every gateway of the same `Global`, so a whole app's behaviors fold with
         /// ``Behavior/combine(_:)-(Array)``.
         public var behavior: Behavior<Global.Action, Global.State, Global.Environment> {
-            Local.behavior().lift(action: action, state: state, environment: narrowEnvironment)
+            Local.behavior().lift(Relay.Empty.action(action).state(state).environment(narrowEnvironment))
         }
     }
 

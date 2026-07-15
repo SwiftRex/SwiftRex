@@ -65,11 +65,39 @@ extension Relay.Scope {
         .init(action: .init(), state: .init(keyPath), environment: .init())
     }
 
+    /// Start a scope from a read-only state getter (action/env `Absent`) — serves projection/middleware.
+    public static func state<GS, LS>(
+        _ get: @escaping @Sendable (GS) -> LS
+    ) -> Relay.Scope<Relay.ActionAxis.Absent, Relay.StateAxis.Reads<GS, LS>, Relay.EnvironmentAxis.Absent> {
+        .init(action: .init(), state: .init(get), environment: .init())
+    }
+
+    /// Replace the state axis with a read-only getter.
+    public func state<GS, LS>(
+        _ get: @escaping @Sendable (GS) -> LS
+    ) -> Relay.Scope<Action, Relay.StateAxis.Reads<GS, LS>, Environment> {
+        .init(action: action, state: .init(get), environment: environment)
+    }
+
+    /// Start a scope from a total state `Lens` (action/env `Absent`).
+    public static func state<GS, LS>(
+        _ lens: Lens<GS, LS>
+    ) -> Relay.Scope<Relay.ActionAxis.Absent, Relay.StateAxis.ReadsWrites<GS, LS>, Relay.EnvironmentAxis.Absent> {
+        .init(action: .init(), state: .init(lens), environment: .init())
+    }
+
     /// Replace the state axis with a total state key path.
     public func state<GS, LS>(
         _ keyPath: WritableKeyPath<GS, LS> & Sendable
     ) -> Relay.Scope<Action, Relay.StateAxis.ReadsWrites<GS, LS>, Environment> {
         .init(action: action, state: .init(keyPath), environment: environment)
+    }
+
+    /// Replace the state axis with a total state `Lens`.
+    public func state<GS, LS>(
+        _ lens: Lens<GS, LS>
+    ) -> Relay.Scope<Action, Relay.StateAxis.ReadsWrites<GS, LS>, Environment> {
+        .init(action: action, state: .init(lens), environment: environment)
     }
 
     /// Replace the state axis with an optional (affine) state key path.

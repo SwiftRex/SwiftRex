@@ -330,7 +330,7 @@ struct BehaviorLiftStateTests {
         struct GA: Sendable { var day: Int? }
         struct GS: Sendable { var day: Int? }
         let dayPrism = Prism<GA, Int>(preview: { $0.day }, review: { GA(day: $0) })
-        let sut = adder.liftOptional(action: dayPrism, state: \GS.day, environment: { (_: Void) in () })
+        let sut = adder.lift(.action(dayPrism).state(\GS.day).environment { (_: Void) in () })
 
         let present = GS(day: 100)
         var presentState = present
@@ -374,7 +374,7 @@ struct BehaviorCombinedLiftTests {
 
     @Test func liftAllThreeAxesWKP() {
         struct GE: Sendable { var sub: Int }
-        let sut = base.lift(action: prism, state: \GS.local, environment: { (ge: GE) in ge.sub })
+        let sut = base.lift(.action(prism).state(\GS.local).environment { (ge: GE) in ge.sub })
         let initial = GS()
         var state = initial
         let c = sut.handle(GA(local: 3, other: nil), PreReducerContext(source: anySource, getter: { initial }))
@@ -391,7 +391,7 @@ struct BehaviorCombinedLiftTests {
     @Test func liftAllThreeAxesLens() {
         struct GE: Sendable { var sub: Int }
         let stateLens = Lens<GS, Int>(get: { $0.local }, set: { GS(local: $1, other: $0.other) })
-        let sut = base.lift(action: prism, state: stateLens, environment: { (ge: GE) in ge.sub })
+        let sut = base.lift(.action(prism).state(stateLens).environment { (ge: GE) in ge.sub })
         let initial = GS()
         var state = initial
         let c = sut.handle(GA(local: 5, other: nil), PreReducerContext(source: anySource, getter: { initial }))
@@ -401,7 +401,7 @@ struct BehaviorCombinedLiftTests {
 
     @Test func liftSkipsWhenActionNotMatched() {
         struct GE: Sendable { var sub: Int }
-        let sut = base.lift(action: prism, state: \GS.local, environment: { (ge: GE) in ge.sub })
+        let sut = base.lift(.action(prism).state(\GS.local).environment { (ge: GE) in ge.sub })
         let initial = GS()
         var state = initial
         let c = sut.handle(GA(local: nil, other: "x"), PreReducerContext(source: anySource, getter: { initial }))

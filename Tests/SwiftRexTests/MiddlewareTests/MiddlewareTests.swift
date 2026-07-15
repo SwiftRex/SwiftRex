@@ -252,9 +252,9 @@ struct MiddlewareCombinedLiftTests {
 
     @Test func liftAllThreeAxesClosure() {
         let sut = base.lift(
-            action: prism,
-            state: { (gs: GS) in gs.local },
-            environment: { (ge: GE) in ge.sub }
+            .action(prism)
+                .state { (gs: GS) in gs.local }
+                .environment { (ge: GE) in ge.sub }
         )
         let received = LockProtected([GA]())
         subscribeAll(
@@ -267,7 +267,7 @@ struct MiddlewareCombinedLiftTests {
 
     @Test func liftAllThreeAxesLens() {
         let stateLens = Lens<GS, Int>(get: { $0.local }, set: { GS(local: $1, other: $0.other) })
-        let sut = base.lift(action: prism, state: stateLens, environment: { (ge: GE) in ge.sub })
+        let sut = base.lift(.action(prism).state(stateLens).environment { (ge: GE) in ge.sub })
         let received = LockProtected([GA]())
         subscribeAll(
             sut.handle(GA(local: 1, other: nil), PreReducerContext(source: anySource, getter: { GS() }))
@@ -278,9 +278,9 @@ struct MiddlewareCombinedLiftTests {
 
     @Test func liftSkipsWhenActionNotMatched() {
         let sut = base.lift(
-            action: prism,
-            state: { (gs: GS) in gs.local },
-            environment: { (ge: GE) in ge.sub }
+            .action(prism)
+                .state { (gs: GS) in gs.local }
+                .environment { (ge: GE) in ge.sub }
         )
         let effect = sut.handle(GA(local: nil, other: "x"), PreReducerContext(source: anySource, getter: { GS() }))
             .runReader(PostReducerContext(environment: GE(sub: 0, other: ""), getter: { GS() }))
