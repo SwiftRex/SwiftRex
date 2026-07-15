@@ -55,8 +55,8 @@ import CoreFP
 ///
 /// ```swift
 /// let appReducer: Reducer<AppAction, AppState> = Reducer.compose {
-///     authReducer.lift(action: \.auth, state: \.authState)
-///     profileReducer.lift(action: \.profile, state: \.profileState)
+///     authReducer.lift(.action(AppAction.prism.auth).state(\.authState))
+///     profileReducer.lift(.action(AppAction.prism.profile).state(\.profileState))
 /// }
 /// ```
 ///
@@ -247,7 +247,7 @@ extension Reducer: Monoid {
 ///     var reducer: Reducer<ProfileAction, ProfileState> {
 ///         avatarReducer
 ///         bioReducer
-///         settingsReducer.lift(action: \.settings, state: \.settings)
+///         settingsReducer.lift(.action(AppAction.prism.settings).state(\.settings))
 ///     }
 /// }
 ///
@@ -290,10 +290,10 @@ extension Reducer {
     /// ```swift
     /// let appReducer: Reducer<AppAction, AppState> = Reducer.compose {
     ///     authReducer
-    ///         .lift(action: \.auth, state: \.authState)
+    ///         .lift(.action(AppAction.prism.auth).state(\.authState))
     ///
     ///     profileReducer
-    ///         .lift(action: \.profile, state: \.profileState)
+    ///         .lift(.action(AppAction.prism.profile).state(\.profileState))
     ///
     ///     Reducer.reduce { action, state in
     ///         if case .resetAll = action { state = .initial }
@@ -314,8 +314,8 @@ extension Reducer {
     ///
     /// ```swift
     /// let appReducer = Reducer.compose(
-    ///     authReducer.lift(action: \.auth, state: \.authState),
-    ///     profileReducer.lift(action: \.profile, state: \.profileState)
+    ///     authReducer.lift(.action(AppAction.prism.auth).state(\.authState)),
+    ///     profileReducer.lift(.action(AppAction.prism.profile).state(\.profileState))
     /// )
     /// ```
     ///

@@ -60,7 +60,7 @@ import DataStructure
 /// `Behavior` is a **Semigroup** and **Monoid**: ``combine(_:_:)`` concatenates the consequence
 /// lists, so both behaviors' reactions run in phase 1 (same pre-mutation state), their mutations
 /// sequence (lhs then rhs), their effects run concurrently, and their supervisions union. Use the
-/// lift family (``liftAction(_:)``, ``liftState(_:)``, ``liftEnvironment(_:)``, ``lift(action:state:environment:)``)
+/// lift family (``liftAction(_:)``, ``liftState(_:)``, ``liftEnvironment(_:)``, ``lift(_:)``)
 /// to embed feature behaviors in the app's global types.
 ///
 /// - Note: `handle` is `@MainActor`. The ``Store`` calls it on the main actor, so

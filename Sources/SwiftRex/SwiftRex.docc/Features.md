@@ -275,19 +275,21 @@ struct LibraryView: View {
 
 ## Composing modules into the app
 
-The app lifts each feature's `behavior()` into the parent store and renders it through the erased `view()`. A whole child module lifts through `lift(action:state:environment:)`; an *optional* child screen through `liftOptional` (it runs only while the sub-state is `.some`); a collection of children through `liftCollection` — see <doc:Lifting> and <doc:Modularisation>.
+The app lifts each feature's `behavior()` into the parent store and renders it through the erased `view()`. A whole child module lifts through a ``Relay/Scope`` (`.action(…).state(…).environment(…)`); an *optional* child screen uses an optional state key path (an **affine** state lane — it runs only while the sub-state is `.some`); a collection of children through `liftCollection` — see <doc:Lifting> and <doc:Modularisation>.
 
 ```swift
 let appBehavior = Behavior.combine(
     Library.behavior().lift(
-        action:      AppAction.prism.library,        // a Prism<AppAction, Library.Action>
-        state:       \AppState.library,              // a WritableKeyPath (explicit root)
-        environment: { $0.library }
+        Relay.Empty
+            .action(AppAction.prism.library)         // a Prism<AppAction, Library.Action>
+            .state(\AppState.library)                // total WritableKeyPath → ReadsWrites lane
+            .environment { $0.library }
     ),
-    HeroDetails.behavior().liftOptional(              // active only while heroDetail != nil
-        action:      AppAction.prism.heroDetail,
-        state:       \AppState.heroDetail,
-        environment: { $0.heroDetail }
+    HeroDetails.behavior().lift(                      // active only while heroDetail != nil
+        Relay.Empty
+            .action(AppAction.prism.heroDetail)
+            .state(\AppState.heroDetail)             // optional key path → affine Writes lane
+            .environment { $0.heroDetail }
     )
 )
 

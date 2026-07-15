@@ -40,8 +40,8 @@ The app owns the global `AppAction` / `AppState` / `AppEnvironment` and assemble
 
 ```swift
 let appBehavior = Behavior.combine(
-    counterBehavior.lift(action: \.counter, state: \.counter, environment: \.counterEnv),
-    searchBehavior.lift(action: \.search,  state: \.search,  environment: \.searchEnv),
+    counterBehavior.lift(Relay.Empty.action(AppAction.prism.counter).state(\.counter).environment(\.counterEnv)),
+    searchBehavior.lift(Relay.Empty.action(AppAction.prism.search).state(\.search).environment(\.searchEnv)),
     todoBehavior.liftCollection(action: \.todo, stateContainer: \.todos)
 )
 let store = Store(initial: .init(), behavior: appBehavior, environment: appEnv)
