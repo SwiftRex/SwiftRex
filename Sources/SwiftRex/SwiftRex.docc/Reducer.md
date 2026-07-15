@@ -66,7 +66,7 @@ See <doc:Algebra> for why lifting composes cleanly, and ``ElementAction`` for ho
 
 ### Lifting to a Larger Scope
 
-- ``lift(action:state:)``
+- ``lift(_:)``
 - ``liftCollection(action:stateContainer:)``
 - ``liftEach(action:each:stateContainer:)``
 

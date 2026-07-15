@@ -33,7 +33,7 @@ let lifted = searchBehavior.lift(
 )
 ```
 
-Lift one axis at a time — `lift(action:)` / `lift(state:)` on ``Reducer``; `liftAction`, `liftState`, and `liftEnvironment` on ``Behavior`` and ``Middleware`` — or all of them together with `lift(action:state:…)`.
+Lift one axis at a time with the single-axis primitives — `liftAction`, `liftState`, and `liftEnvironment` on ``Behavior`` and ``Middleware`` — or **all three together through a ``Relay/Scope``**, the one carrier every host's `lift`/`projection` accepts. Build a scope with the fluent builder (`.action(…).state(…).environment(…)`); each host constrains on only the capabilities it needs.
 
 ## Choosing the right optic per axis
 
@@ -62,7 +62,7 @@ Lifting is type-directed; the arrows explain why each axis wants the optic it do
 - **Incoming actions are optional** — `GlobalAction → LocalAction?`. A unit may ignore actions that aren't for it; `nil` means *skipped*. That's a `Prism`'s `preview`.
 - **Outgoing actions are total** — `LocalAction → GlobalAction`. An action a feature dispatches *must* embed into the app's action — you can't ignore what a feature has to say. That's the `Prism`'s `review` (the case constructor). One `Prism` (or `\.case` path) covers both directions of the action axis at once, which is why action lifting is always a prism, never a plain key path.
 - **Reducer state is read–write** — `GlobalState ←→ LocalState`: read the slice, run, write it back. That's `WritableKeyPath`/`Lens`.
-- **Middleware/Behavior effect state is read-only**, but every lift also threads the `supervise` axis through the same focus (channels re-embed, sub-state gone ⇒ its channels cancel), so the combined `lift(action:state:environment:)` uses the writable form too.
+- **Middleware/Behavior effect state is read-only**, but every lift also threads the `supervise` axis through the same focus (channels re-embed, sub-state gone ⇒ its channels cancel), so a ``Behavior`` scope uses a writable state lane (``Relay/StateAxis/ReadsWrites`` / ``Relay/StateAxis/Writes``) while a ``Middleware`` scope needs only a readable one (``Relay/StateAxis/Reads``).
 
 ### Closures — the escape hatch
 
@@ -113,12 +113,18 @@ Lifting is what lets independently-built feature modules meet at the Store:
 
 ```swift
 let app = Behavior.combine(
-    authBehavior.lift(action: \.auth,     state: \.auth,     environment: \.auth),
-    searchBehavior.lift(action: \.search, state: \.search,   environment: \.searchAPI),
+    authBehavior.lift(.action(AppAction.prism.auth).state(\.auth).environment(\.auth)),
+    searchBehavior.lift(.action(AppAction.prism.search).state(\.search).environment(\.searchAPI)),
     todoReducer.liftCollection(action: \.todo, stateCollection: \.todos).asBehavior()
 )
 let store = Store(initial: .init(), behavior: app, environment: appEnv)
 ```
+
+> A ``Relay/Scope`` builds up axis by axis (`.action(…).state(…).environment(…)`), each step returning
+> a scope with the other axes `Absent`. Start a *declared* scope from ``Relay/Empty``
+> (`Relay.Empty.action(…)…`); the leading-dot form works inline where the host pins the types. Use an
+> action **prism** (`AppAction.prism.auth`) rather than a bare `\.case` key path — the case key path
+> can't infer its root through the builder chain.
 
 ## See Also
 

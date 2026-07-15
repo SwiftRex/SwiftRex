@@ -8,7 +8,8 @@ import SwiftRex
 
 extension Behavior {
     /// Lifts a child behavior into a parent that drives it through a ``Presentation`` slot and a
-    /// ``PresentationAction`` — the modal / sheet / destination counterpart of ``liftOptional(action:state:environment:)``,
+    /// ``PresentationAction`` — the modal / sheet / destination counterpart of an optional-state
+    /// (affine) ``Relay/Scope`` lift,
     /// but over the three-stage presentation lifecycle instead of a bare `Optional`.
     ///
     /// It folds three things into one behavior:

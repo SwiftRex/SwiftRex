@@ -56,7 +56,7 @@ The state is read lazily — only when a subscriber attaches — so it always re
 
 A middleware written at *local* types is lifted to your app's *global* types before composing:
 
-- ``lift(action:state:environment:)`` — all three axes at once.
+- ``lift(_:)`` — all three axes at once.
 - ``liftAction(_:)`` / ``liftState(_:)`` / ``liftEnvironment(_:)`` — one axis at a time (`Prism`/`KeyPath`/`Lens`/`AffineTraversal`/projection closure).
 - ``liftCollection(action:embed:stateContainer:elements:)`` / ``liftEach(action:embed:each:stateContainer:)`` — run a per-element middleware across a keyed collection, or broadcast to all elements.
 
@@ -80,7 +80,7 @@ Every lift carries **both** effect axes — including `supervise`: a lifted midd
 
 ### Lifting to a Larger Scope
 
-- ``lift(action:state:environment:)``
+- ``lift(_:)``
 - ``liftAction(_:)``
 - ``liftState(_:)``
 - ``liftEnvironment(_:)``
