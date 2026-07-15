@@ -24,11 +24,5 @@ public protocol Rig<Action, State, Environment>: Transceiver {
     associatedtype Environment: Sendable
 }
 
-// A `Behavior` reduces, produces effects, and supervises over its `(Action, State, Environment)` — a `Rig`.
-extension Behavior: Rig {}
-
-// A `Reducer` folds actions into state over its `(Action, State)` — a `Transceiver`.
-extension Reducer: Transceiver {
-    public typealias Action = ActionType
-    public typealias State = StateType
-}
+// Conformances live with their types: `StoreType: Transceiver` (StoreType.swift), `Behavior: Rig`
+// (Behavior.swift), `Reducer: Transceiver` (Reducer.swift).
