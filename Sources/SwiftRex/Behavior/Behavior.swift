@@ -289,3 +289,8 @@ extension Behavior: Monoid {
         Behavior(consequences: values.flatMap(\.consequences))
     }
 }
+
+// MARK: - Rig conformance
+
+/// A `Behavior` reduces, produces effects, and supervises over its `(Action, State, Environment)` — a ``Rig``.
+extension Behavior: Rig {}

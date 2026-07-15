@@ -327,3 +327,11 @@ extension Reducer {
         sconcat(first, others)
     }
 }
+
+// MARK: - Transceiver conformance
+
+/// A `Reducer` folds actions into state over its `(Action, State)` — a ``Transceiver``.
+extension Reducer: Transceiver {
+    public typealias Action = ActionType
+    public typealias State = StateType
+}
