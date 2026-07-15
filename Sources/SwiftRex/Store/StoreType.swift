@@ -58,7 +58,7 @@
 /// - Note: `StoreType` does not require `AnyObject`, so struct conformers (``StoreProjection``)
 ///   are allowed.
 @MainActor
-public protocol StoreType<Action, State>: Sendable {
+public protocol StoreType<Action, State>: Sendable, Transceiver {
     /// The action type this store accepts.
     associatedtype Action: Sendable
     /// The state type this store manages.
