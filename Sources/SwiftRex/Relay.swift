@@ -91,8 +91,12 @@ public enum Relay {
             var get: @Sendable (G) -> L { get }
         }
 
-        /// A state lane that can **write back** (`modify`, skipping when absent) — a reducer/behavior lift.
+        /// A state lane that can **write back** — a reducer/behavior lift. Carries both the optional
+        /// `preview` (locating the focus, for a behavior's pre-mutation read) and `modify` (the
+        /// read-modify-write, skipping when absent). Total and affine witnesses both conform; a behavior
+        /// lift reconstructs an `AffineTraversal` from the two, which covers both.
         public protocol WritesProtocol: Transformation {
+            var preview: @Sendable (G) -> L? { get }
             var modify: @Sendable (inout G, (inout L) -> Void) -> Void { get }
         }
 
@@ -106,10 +110,12 @@ public enum Relay {
 
         /// Affine write-with-skip witness (the `liftOptional` / enum-case case). Serves reducer/behavior.
         public struct Writes<G: Sendable, L: Sendable>: WritesProtocol {
+            public let preview: @Sendable (G) -> L?
             public let modify: @Sendable (inout G, (inout L) -> Void) -> Void
-            public init(_ affine: AffineTraversal<G, L>) { modify = affine.tryModifyMut }
-            public init(_ prism: CoreFP.Prism<G, L>) { modify = prism.tryModifyMut }
+            public init(_ affine: AffineTraversal<G, L>) { preview = affine.preview; modify = affine.tryModifyMut }
+            public init(_ prism: CoreFP.Prism<G, L>) { preview = prism.preview; modify = prism.tryModifyMut }
             public init(_ keyPath: WritableKeyPath<G, L?> & Sendable) {
+                preview = { $0[keyPath: keyPath] }
                 modify = { whole, transform in
                     guard var part = whole[keyPath: keyPath] else { return }
                     transform(&part)
@@ -121,10 +127,12 @@ public enum Relay {
         /// Total-lens witness — reads **and** writes. Serves a projection *and* a reducer/behavior.
         public struct ReadsWrites<G: Sendable, L: Sendable>: ReadsProtocol, WritesProtocol {
             public let get: @Sendable (G) -> L
+            public let preview: @Sendable (G) -> L?
             public let modify: @Sendable (inout G, (inout L) -> Void) -> Void
-            public init(_ lens: Lens<G, L>) { get = lens.get; modify = lens.modifyMut }
+            public init(_ lens: Lens<G, L>) { get = lens.get; preview = { lens.get($0) }; modify = lens.modifyMut }
             public init(_ keyPath: WritableKeyPath<G, L> & Sendable) {
                 get = { $0[keyPath: keyPath] }
+                preview = { $0[keyPath: keyPath] }
                 modify = { whole, transform in transform(&whole[keyPath: keyPath]) }
             }
         }
