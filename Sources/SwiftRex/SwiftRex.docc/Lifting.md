@@ -87,25 +87,46 @@ Three degenerate lifts cover the axes a unit doesn't use:
 
 `Void` and `Never` are dual: everything maps *into* `Void` (the terminal object — exactly one value), and `Never` maps into *everything* (the initial object — no values). `absurd` can promise any return type because nobody can ever hand it a `Never` to make good on the promise.
 
-## Lifting into collections
+## Optionals and collections — same builder, dedicated hosts
 
-A per-element feature runs across a whole collection of state, addressed by identity rather than position:
+Beyond the total re-index, three hosts run a unit across *variable* state. They take the **same
+leading-dot ``Relay/Scope``** — the element/optional addressing rides in the lanes, so the spelling stays
+naked. Each host is constrained on its own decorator capabilities, so the compiler only offers a host the
+lanes it can honour, and the unit always sees the **unwrapped** focus (never `Element?`).
 
-- **``Reducer/liftCollection(action:stateContainer:)``** and its overloads — for an `Identifiable` collection, a custom-keyed collection, or a `[Key: Value]` dictionary. Each element's action is wrapped in an ``ElementAction`` carrying the element's id.
-- **``Reducer/liftEach(action:each:stateContainer:)``** — the broadcast form: apply the unit to *every* element.
+- **`liftOptional`** (0-or-1) — an `Absent` action + `Absent` environment + affine **state** scope. Runs
+  only while the focus is `.some`; a complete no-op (no mutation, no effect, no supervise) while `nil`:
 
-```swift
-// One TodoReducer drives every row; actions are addressed by todo id.
-let todos = todoReducer.liftCollection(
-    action: \AppAction.todo,            // KeyPath<AppAction, ElementAction<Todo.ID, TodoAction>?>
-    stateCollection: \AppState.todos
-)
+  ```swift
+  dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
+  ```
 
-// At the call site:
-store.dispatch(.todo(ElementAction(todo.id, action: .toggleDone)))
-```
+- **`liftCollection`** (0-or-n, route one) — the action lane carries the element id (an ``ElementAction``
+  prism), the state lane is a *keyed* container. Locate by `Identifiable` id, a custom key path, position,
+  or a dictionary key:
 
-Per-element effect scheduling is tagged per element, so one row's `.debounce(id:)` never collides with another's. See ``ElementAction``.
+  ```swift
+  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(\AppState.todos).environment(\.todoEnv))
+  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(\AppState.todos, id: \.slug)…)   // custom id
+  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(indexed: \AppState.todos)…)       // by position
+  todoBehavior.liftCollection(.action(AppAction.prism.cfg).state(dictionary: \AppState.configs)…)   // dictionary
+  // dispatch:  store.dispatch(.todo(ElementAction(todo.id, action: .toggleDone)))
+  ```
+
+- **`liftEach`** (0-or-n, broadcast) — one action drives *every* element. Its action lane bridges a plain
+  inbound case and the id-addressed outbound case:
+
+  ```swift
+  todoBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.todo).state(\AppState.todos)…)
+  ```
+
+The same lanes drive `Reducer` and `Middleware` lifts, and a per-element
+``StoreType/projection(_:element:)`` (whose projected state is `Element?` — the view unwraps). Per-element
+effect scheduling is tagged per element, so one row's `.debounce(id:)` never collides with another's.
+
+> For the full picture — the input zoo (prism / key path / macro-free closures), all four locators, the
+> view-side projections, ``StoreType/transpose()``, `Presentation`, and two-way bindings — see
+> <doc:OptionalsAndCollections>.
 
 ## Putting it together
 
@@ -115,7 +136,7 @@ Lifting is what lets independently-built feature modules meet at the Store:
 let app = Behavior.combine(
     authBehavior.lift(.action(AppAction.prism.auth).state(\.auth).environment(\.auth)),
     searchBehavior.lift(.action(AppAction.prism.search).state(\.search).environment(\.searchAPI)),
-    todoReducer.liftCollection(action: \.todo, stateCollection: \.todos).asBehavior()
+    todoReducer.liftCollection(.action(AppAction.prism.todo).state(\.todos)).asBehavior()
 )
 let store = Store(initial: .init(), behavior: app, environment: appEnv)
 ```

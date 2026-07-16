@@ -163,6 +163,13 @@ struct HeroDetailsView: View {
 }
 ```
 
+`binding` comes in two spellings. The **key-path** form above — `binding(\.powersText, set: ViewAction.editedPowers)` — reads a slice and dispatches a set action. The **``Relay/Scope``** form is the vocabulary-consistent sibling: an action lane that *embeds* and a state lane that *reads* the **same** value type couple into a `Binding` of that value.
+
+```swift
+// Equivalent to the key-path binding above — state reads the `String`, action embeds the `String`:
+TextField("Powers", text: viewStore.binding(.action(HeroDetails.ViewAction.prism.editedPowers).state(\.powersText)))
+```
+
 ## L3 — pick your observation
 
 The strategy is the only thing that changes between the three variants — the view **body is identical**. `.observationGranular` builds a ``TrackedViewStore`` and applies `@Tracked` to the `ViewState` for you, giving field-level invalidation: SwiftUI registers per-field dependencies during `body`, so only views reading a changed field re-render. `.combineObservable` is the pre-Observation path — a Combine `ObservableObjectStore` bound as `@ObservedObject`, available back to iOS 13, coarse-grained.
@@ -300,6 +307,14 @@ Library.view(
     store: store.projection(action: AppAction.library, state: { $0.library }),   // plain closures
     environment: appEnv.library
 )
+```
+
+That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), project it and ``StoreType/transpose()`` — inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?` — so the child view exists only while the state is `.some`, with no placeholder:
+
+```swift
+if let heroStore = store.projection(action: AppAction.heroDetail, state: { $0.heroDetail }).transpose() {
+    HeroDetails.view(store: heroStore, environment: appEnv.heroDetail)
+}
 ```
 
 Only `State`/`Action`/`Environment`/`Input` and the opaque `view()` cross the module boundary; the entire view layer (`ViewState`, `ViewAction`, `Content`) stays `internal`.

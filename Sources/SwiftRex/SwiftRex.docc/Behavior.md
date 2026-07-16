@@ -39,7 +39,37 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 
 ### Scaling a feature up
 
-``lift(_:)`` and the per-axis ``liftAction(_:)`` / ``liftState(_:)`` / ``liftEnvironment(_:)`` raise a feature from its local types to the app's global types; ``liftCollection(action:embed:stateContainer:elements:)`` and ``liftEach(action:embed:each:stateContainer:)`` run a per-element behavior across a collection. Every lift carries **all three** axes — including `supervise`: a lifted feature's channels are re-embedded and (for collections) per-element stamped, so state-driven nav and per-row sockets just work. See <doc:Lifting>.
+``lift(_:)`` raises a feature from its local types to the app's global types in one shot: a ``Relay/Scope`` names all three axes through a leading-dot builder — `.action` re-indexes the action (a `Prism`/`\.case`), `.state` focuses the slice (a `WritableKeyPath`/`Lens`/`AffineTraversal`), `.environment` narrows the world.
+
+```swift
+let lifted = room.lift(.action(AppAction.prism.room).state(\.room).environment(\.roomEnv))
+```
+
+`liftOptional` is the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with the action and environment axes left absent. While the focus is `nil` the behavior is a **complete no-op** — never asked to mutate, produce, or supervise (stricter than a plain affine state lift); while present it runs on the **unwrapped** value. A key-path spelling is sugar for the same call:
+
+```swift
+dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
+dayBehavior.liftOptional(\AppState.currentDay)           // key-path sugar
+```
+
+``liftCollection(_:)`` routes an addressed global action to **one** element of a collection. The state lane locates it — by `Identifiable` id (`.state(\.rows)`), a custom key (`.state(\.rows, id: \.slug)`), position (`.state(indexed: \.rows)`), or dictionary key (`.state(dictionary: \.configs)`) — while the action lane carries an ``ElementAction``:
+
+```swift
+rowBehavior.liftCollection(
+    .action(AppAction.prism.row).state(\.rows).environment(\.rowEnv)
+)
+```
+
+``liftEach(_:)`` is the broadcast form: one global action reaches **every** present element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``:
+
+```swift
+rowBehavior.liftEach(
+    .action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.row)
+        .state(\.rows).environment(\.rowEnv)
+)
+```
+
+Every lift carries **all three** axes — including `supervise`: a lifted feature's channels are re-embedded and (for collections) per-element stamped, so state-driven nav and per-row sockets just work. In all four the lifted unit sees the **unwrapped** local value, and each element's effect ids and supervision fan out per element automatically. See <doc:Lifting>.
 
 ### Routing actions — the `.on(…)` bridge
 

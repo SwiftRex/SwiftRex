@@ -404,7 +404,33 @@ let moviesBehavior: Behavior<AppAction, AppState, World> =
     )
 ```
 
-Each host's `lift` takes **one `Relay.Scope`** built axis-by-axis with the fluent builder, constrained on only the capabilities that host needs — a `Reducer` writes state, a `Middleware` only reads it, and `supervise` threads through automatically so a lifted feature's channels cancel when its sub-state disappears. Every axis accepts an optic, a key path, or plain closures — pick the minimum: `.action(prism)` / `.action(\.case)` / `.action(preview:review:)` (or `.action(preview:)` / `.action(review:)` when one direction is enough); `.state(\.slice)` / `.state { $0.slice }` / `.state(get:set:)`; an **optional** key path (`.state(\.maybeChild)`) is an affine lane that runs only while `.some`. `liftCollection`/`liftEach` run one behavior per element of a collection.
+Each host's `lift` takes **one `Relay.Scope`** built axis-by-axis with the fluent builder, constrained on only the capabilities that host needs — a `Reducer` writes state, a `Middleware` only reads it, and `supervise` threads through automatically so a lifted feature's channels cancel when its sub-state disappears. Every axis accepts an optic, a key path, or plain closures — pick the minimum: `.action(prism)` / `.action(\.case)` / `.action(preview:review:)` (or `.action(preview:)` / `.action(review:)` when one direction is enough); `.state(\.slice)` / `.state { $0.slice }` / `.state(get:set:)`.
+
+**Optionals and collections are the same builder, different hosts.** `liftOptional` is the 0-or-1 host — an `Absent` action + `Absent` environment + affine state scope (`behavior.liftOptional(.state(\.maybeChild))`, runs only while `.some`; the plain `liftOptional(\.maybeChild)` key-path form is sugar). `liftCollection` (route one addressed element) and `liftEach` (broadcast to all) are the 0-or-n hosts, and take the *same* leading-dot scope — the element-addressing rides in the lanes, so the spelling stays naked:
+
+```swift
+// route one element by Identifiable id — same shape as a single child, only the host name differs:
+rowBehavior.liftCollection(.action(AppAction.prism.row).state(\AppState.rows).environment(\.rowEnv))
+// locate by a custom key path, by position, or by dictionary key:
+rowBehavior.liftCollection(.action(AppAction.prism.row).state(\AppState.rows, id: \.slug)…)
+rowBehavior.liftCollection(.action(AppAction.prism.row).state(indexed: \AppState.rows)…)
+rowBehavior.liftCollection(.action(AppAction.prism.cfg).state(dictionary: \AppState.configs)…)
+// broadcast one action to every element (its action lane bridges the plain-in / id-addressed-out cases):
+rowBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.row).state(\AppState.rows)…)
+```
+
+The lifted behavior sees the **unwrapped** element (never `Element?`), and each element's effects/channels are re-embedded and scoped to its id automatically. The same lanes drive `Reducer`/`Middleware` lifts and a per-element `store.projection(scope, element: id)` (whose state is `Element?` — the view unwraps).
+
+**The view side inverts the store.** A projection over an optional slice is a *store of an optional*; a child screen wants an *optional store of the unwrapped value*. `transpose()` swaps the two — `Store<T?>` → `Store<T>?` — the store analogue of transposing `Optional<[T]>` ⇄ `[Optional<T>]` (it's not `sequence`: a `Store` isn't `Traversable`, only *peekable*). Map it to build an optional child view; a three-stage `Presentation` slot keeps the child live through the dismiss animation (flicker-free). Two-way bindings read state and *dispatch* on write, so the reducer stays the only writer:
+
+```swift
+// a list row → an unwrapped child store → a live child view (nil when the row is gone):
+store.projection(rowScope, element: id).transpose().map { RowFeature.view(store: $0, environment: world.rowEnv) }
+
+// two-way binding — key-path + action case, or the Relay.Scope form (Action.L == State.L):
+TextField("Name", text: store.binding(\.name, set: ViewAction.setName))
+TextField("Name", text: store.binding(.action(ViewAction.prism.setName).state(\.name)))
+```
 
 A **`Relay.Scope`** captures how a child feature embeds into the app — action prism, state slice, environment narrowing — as one declared, compile-checked value used by both the store fold *and* the view router. Given that wiring it lifts whatever the child provides: `.behavior(of:)` when the child is `HasBehavior`, `.view(of:from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:
 
@@ -440,7 +466,7 @@ behavior: AppScopes.movies.behavior(of: Movies.self)
        <> bridge
 ```
 
-Deep dives: [Lifting](https://swiftrex.ios.lu/documentation/swiftrex/lifting) · [Modularisation](https://swiftrex.ios.lu/documentation/swiftrex/modularisation).
+Deep dives: [Lifting](https://swiftrex.ios.lu/documentation/swiftrex/lifting) · [Optionals and Collections](https://swiftrex.ios.lu/documentation/swiftrex/optionalsandcollections) · [Modularisation](https://swiftrex.ios.lu/documentation/swiftrex/modularisation).
 
 # Navigation
 
