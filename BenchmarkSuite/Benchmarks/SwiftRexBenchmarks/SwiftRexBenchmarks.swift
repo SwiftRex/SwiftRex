@@ -79,11 +79,17 @@ func liftBenchmarks() {
     // Single-target lift through getter/setter closures (the Lens path). Measures the per-dispatch
     // optic overhead vs the un-lifted `Reducer.reduce — single` baseline.
     let lifted = tickReducer.lift(
-        actionGetter: { (g: GlobalAction) -> BenchAction? in
+        .action(preview: { (g: GlobalAction) -> BenchAction? in
             if case let .local(a) = g { a } else { nil }
-        },
-        stateGetter: { (g: GlobalState) in g.local },
-        stateSetter: { (g: inout GlobalState, s: BenchState) in g.local = s }
+        })
+        .state(
+            get: { (g: GlobalState) in g.local },
+            set: { (g: GlobalState, s: BenchState) in
+                var copy = g
+                copy.local = s
+                return copy
+            }
+        )
     )
     Benchmark("Reducer.lift — single target") { benchmark in
         var state = GlobalState()
