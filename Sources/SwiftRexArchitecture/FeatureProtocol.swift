@@ -6,9 +6,9 @@
 
     /// The domain triad every feature shares — its `Action`, `State`, and `Environment`. It is the
     /// `SwiftRex.Architecture` spelling of the core ``SwiftRex/Rig`` (a ``SwiftRex/Transceiver`` that also
-    /// reaches the world): both ``HasBehavior`` and ``ViewFactory`` refine it, so the liftable wiring
-    /// (``Gateway``) can be expressed over the triad alone — a `Gateway` lifts whatever the child
-    /// provides, a behavior, a view, or both.
+    /// reaches the world): both ``HasBehavior`` and ``ViewFactory`` refine it, so the liftable wiring (a
+    /// ``Relay/Scope``) can be expressed over the triad alone — one scope lifts whatever the child
+    /// provides via `.behavior(of:)` and/or `.view(of:from:world:)`, a behavior, a view, or both.
     public typealias FeatureDomain = Rig
 
     /// A feature that produces a ``Behavior`` — the composable, liftable behavior capability. A
@@ -32,7 +32,7 @@
         @MainActor static func view(store: any StoreType<Action, State>, environment: Environment) -> Body
     }
 
-    /// A full feature: it both produces a ``Behavior`` and builds a view — what a ``Gateway`` needs to
+    /// A full feature: it both produces a ``Behavior`` and builds a view — what a ``Relay/Scope`` needs to
     /// drive **both** behavior composition and navigation from one declaration.
     ///
     /// It **re-declares** both requirements (rather than only inheriting them). That is what lets a
