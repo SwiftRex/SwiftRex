@@ -144,12 +144,12 @@
         @Test func moduleRendersAndComposes() {
             let appBehavior = Behavior.combine(
                 Library.behavior().lift(
-                    Relay.Empty.action(AppAction.prism.library)
+                    .action(AppAction.prism.library)
                         .state(\AppState.library)
                         .environment { (e: AppEnv) in e.library }
                 ),
                 Editor.behavior().lift(
-                    Relay.Empty.action(AppAction.prism.editor)
+                    .action(AppAction.prism.editor)
                         .state(\AppState.editor)
                         .environment { (e: AppEnv) in e.editor }
                 )
