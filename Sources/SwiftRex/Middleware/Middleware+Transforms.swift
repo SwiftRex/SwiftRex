@@ -147,18 +147,7 @@ extension Middleware {
     public func liftOptional<GlobalState: Sendable>(
         _ optional: WritableKeyPath<GlobalState, State?>
     ) -> Middleware<Action, GlobalState, Environment> {
-        let traversal = affineTraversal(optional)
-        return Middleware<Action, GlobalState, Environment>(
-            // While the sub-state is `nil` the inner middleware is skipped — no effect is produced.
-            handle: { action, context in
-                guard context.stateBefore?[keyPath: optional] != nil else { return Reader { _ in .empty } }
-                return self.handle(action, context.compactMap(traversal.preview))
-                    .contramapEnvironment { $0.compactMap(traversal.preview) }
-            },
-            supervisor: supervisor.map { inner in
-                { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
-            }
-        )
+        liftOptional(Relay.Scope(action: Relay.ActionAxis.Absent(), state: Relay.StateAxis.Writes(optional)))
     }
 
     /// Lifts the environment axis of this middleware using a projection closure, embedding it

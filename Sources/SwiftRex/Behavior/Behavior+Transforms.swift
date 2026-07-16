@@ -209,22 +209,7 @@ extension Behavior {
     public func liftOptional<GlobalState: Sendable>(
         _ optional: WritableKeyPath<GlobalState, State?>
     ) -> Behavior<Action, GlobalState, Environment> {
-        let traversal = affineTraversal(optional)
-        return Behavior<Action, GlobalState, Environment>(
-            // While the sub-state is `nil` the inner behavior is skipped entirely — it is never even
-            // asked to `handle`, so it neither mutates nor produces effects.
-            handle: { action, context in
-                guard context.stateBefore?[keyPath: optional] != nil else { return .doNothing }
-                let c = self.handle(action, context.compactMap(traversal.preview))
-                return Reaction(
-                    mutation: c.mutation.map { traversal.lift($0) },
-                    produce: c.produce.contramapEnvironment { $0.compactMap(traversal.preview) }
-                )
-            },
-            supervisor: supervisor.map { inner in
-                { @MainActor @Sendable (state: GlobalState) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
-            }
-        )
+        liftOptional(Relay.Scope(action: Relay.ActionAxis.Absent(), state: Relay.StateAxis.Writes(optional)))
     }
 }
 
