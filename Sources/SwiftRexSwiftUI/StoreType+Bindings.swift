@@ -17,7 +17,6 @@
 //     // Sheet (isPresented):   .sheet(isPresented: store.presence(\.editor, dismiss: .dismissEditor)) { … }
 //     // Sheet (item):          .sheet(item: store.item(\.selected, dismiss: .deselect)) { item in … }
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     extension StoreType {
         /// A two-way `Binding` that reads `state[keyPath:]` and dispatches `set(newValue)` on write.
         ///

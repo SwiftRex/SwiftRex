@@ -28,7 +28,6 @@
 
     /// A convenience that reads whether a scene id currently has state — for a window body to decide
     /// between rendering its content and dismissing itself (e.g. `if store.hasScene(id, in: \.documents)`).
-    @available(iOS 16.1, macOS 13, tvOS 16.1, watchOS 9.1, *)
     extension StoreType {
         /// `true` while a scene with `id` exists in the keyed sub-state collection — i.e. the window
         /// should still render. Pair with `dismissWindow` when it becomes `false`.
