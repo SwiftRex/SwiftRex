@@ -64,4 +64,34 @@ struct RelayBuilderTests {
         #expect(base.state.child.n == 1)
         #expect(child.state.n == 1)
     }
+
+    @Test func buildsViaSingleClosureSugar() {
+        let base = store(.reduce { action, state in
+            switch action {
+            case .child(.tick): state.child.n += 1
+            }
+        })
+        // Minimum closures: embeds-only action (the enum case ctor) + reads-only state → a projection.
+        let child = base.projection(.action(review: AppAction.child).state { $0.child })
+        child.dispatch(.tick)
+        #expect(base.state.child.n == 1)
+        #expect(child.state.n == 1)
+    }
+
+    @Test func liftsReducerViaExtractsPreviewSugar() {
+        let childReducer = Reducer<ChildAction, ChildState>.reduce { action, state in
+            switch action {
+            case .tick: state.n += 1
+            }
+        }
+        // Extract-only action (single `preview`) + `get:set:` state → a reducer lift.
+        // The result is annotated so the reducer-lift's global types are pinned (leading-dot infers off it).
+        let lifted: Reducer<AppAction, AppState> = childReducer.lift(
+            .action(preview: { (global: AppAction) in if case let .child(action) = global { action } else { nil } })
+                .state(get: { $0.child }, set: { app, value in var copy = app; copy.child = value; return copy })
+        )
+        var state = AppState()
+        lifted.reduce(.child(.tick))(&state)
+        #expect(state.child.n == 1)
+    }
 }
