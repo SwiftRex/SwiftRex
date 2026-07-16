@@ -97,7 +97,7 @@
             Store(
                 initial: RAppState(),
                 behavior: RDetail.behavior().lift(
-                    Relay.Empty.action(RAppAction.prism.detail)
+                    .action(\.detail)
                         .state(\RAppState.detail)
                         .environment { (world: RWorld) in RDetail.Environment(greet: world.greet) }
                 ),

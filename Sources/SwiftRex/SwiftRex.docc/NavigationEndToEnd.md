@@ -160,7 +160,7 @@ public extension AppFeature {
         Behavior.combine([
             // 1. children, lifted to the app types
             LiftedGateway<LibraryFeature>.library.behavior,                                   // present sibling → plain lift
-            BookFeature.behavior().lift(Relay.Empty.action(AppAction.prism.book).state(\.book)
+            BookFeature.behavior().lift(.action(AppAction.prism.book).state(\.book)
                 .environment { _ in .init() }),  // optional \.book → affine state: runs only while on the stack
             EditorFeature.behavior().liftPresentation(action: \.editor, state: \.editor,
                                                       environment: { $0.editorEnv }),  // presentation stage machine + child
