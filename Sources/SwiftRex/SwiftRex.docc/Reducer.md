@@ -38,13 +38,17 @@ let app = Reducer.compose {
 
 ### Scaling a feature up
 
-A reducer written at *local* types is lifted to your app's *global* types before composing:
+A reducer written at *local* types is lifted to your app's *global* types before composing, each lift naming its axes through a ``Relay/Scope`` leading-dot builder. A reducer carries no environment, so only the `.action` and `.state` lanes matter:
 
-- **`lift`** — map the action (a `KeyPath`/`Prism`) and focus the state (a `WritableKeyPath`/`Lens`/`AffineTraversal`), together or one axis at a time.
-- **`liftCollection`** — run a per-element reducer across an `Identifiable`/custom-keyed collection or a dictionary, addressed by id.
-- **`liftEach`** — the broadcast form: apply to *every* element.
+- **``lift(_:)``** — re-index the action (a `Prism`/`\.case`) and focus the state (a `WritableKeyPath`/`Lens`/`AffineTraversal`) in one scope.
+- **``liftCollection(_:)``** — route an addressed global action to **one** element of an `Identifiable`/custom-keyed collection or a dictionary; the state lane locates it (`.state(\.rows)`, `.state(\.rows, id: \.slug)`, `.state(indexed: \.rows)`, `.state(dictionary: \.configs)`).
+- **``liftEach(_:)``** — the broadcast form: apply to *every* element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``.
 
-See <doc:Algebra> for why lifting composes cleanly, and ``ElementAction`` for how element actions are addressed.
+```swift
+let app = itemReducer.liftCollection(.action(AppAction.prism.row).state(\.rows))
+```
+
+In each case the lifted reducer sees the **unwrapped** element. There is no per-element effect stamping or supervision to carry — a reducer is pure — so these are the simplest of the collection hosts. A reducer has no 0-or-1 `liftOptional` host either (that lives on ``Behavior`` and ``Middleware``): an absent focus would be a no-op *mutation*, which is already ``identity`` — reach for ``liftCollection(_:)`` or an `AffineTraversal` state lane on ``lift(_:)`` instead. See <doc:Algebra> for why lifting composes cleanly, and ``ElementAction`` for how element actions are addressed.
 
 ### Becoming a Behavior
 

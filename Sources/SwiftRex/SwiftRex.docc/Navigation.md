@@ -70,6 +70,41 @@ content.presenting(store, \.editor, dismiss: .editor(.dismiss)) { _ in router.vi
 
 The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the binding's `set(false)` steps `presented → dismissing`, and `onDismiss` (a real SwiftUI completion, not a timer) steps `dismissing → dismissed`. Content renders the value carried by *both* live stages, so it stays put through the animation. Use ``StoreType/presentation(_:dismiss:)`` for the `Bool` binding (never churns identity — the safe default) or ``StoreType/presentationItem(_:dismiss:)`` for an `Identifiable` value with a **stable id** (`.sheet(item:)`); prefer the ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)`` / `presentingItem` modifiers, which wire `onDismiss` for you. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
 
+#### Building the child view — `transpose()` + `map`
+
+Every optional-shaped destination hands the view a store of an *optional* (`StoreProjection<A, Child?>`), but `Child.view(store:environment:)` wants a store of the *unwrapped* value. ``StoreType/transpose()`` swaps the nesting — `Store<Child?>` becomes `Store<Child>?` — so the child store exists exactly when its state is present; `map` builds the view from it (see <doc:StoreProjection>):
+
+```swift
+// Optional child slice:
+store.projection(.action(AppAction.prism.child).state(\.child))
+    .transpose()
+    .map { Detail.view(store: $0, environment: world.detailEnv) }   // View?
+
+// One row of a collection, addressed by id (all locators — id / custom / index / dictionary):
+store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
+    .transpose()
+    .map { Row.view(store: $0, environment: world.rowEnv) }
+```
+
+For the ``Presentation`` shape, ``StoreType/transpose()`` reads the live child through **both** `presented` and `dismissing(last:)`, going `nil` only once `dismissed` — the child store (and its view) stay alive and steady while SwiftUI animates the sheet out, so building a destination this way is flicker-free without any view-layer latch:
+
+```swift
+store.projection(.action(AppAction.prism.editor).state(\.editor))   // state: Presentation<Editor.State>
+    .transpose()
+    .map { Editor.view(store: $0, environment: world.editorEnv) }
+```
+
+A list projects the **whole** collection for iteration, then re-projects each row per-element for its own store:
+
+```swift
+let rows = store.projection(.action(AppAction.prism.bulk).state(\.rows))   // StoreProjection<_, [Row]>
+List(rows.state) { row in
+    store.projection(.action(AppAction.prism.row).state(\.rows), element: row.id)
+        .transpose()
+        .map { Row.view(store: $0, environment: world.rowEnv) }
+}
+```
+
 ### Stack — `[Route]`
 
 `NavigationStack(path:)` reflects the whole path; SwiftUI hands the binding the new path on any change, so one `setPath` action covers push, back-swipe, and pop-to-root. Destinations resolve through the router.
@@ -231,3 +266,5 @@ A presented child talks back through the core ``Behavior/on(_:dispatch:reduce:)`
 - ``Routable``
 - ``Presentation``
 - ``PresentationAction``
+- ``StoreType/transpose()``
+- <doc:StoreProjection>

@@ -217,7 +217,7 @@ public enum AppScopes {
 
 `AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — via `store.projection` with a placeholder for the frame where the slot is empty (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by ``StoreType/transpose()``, which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
@@ -235,10 +235,11 @@ The **router** holds the store and the world and resolves a route to `some View`
         }
     }
     @ViewBuilder private func bookView(_ id: Book.ID) -> some View {
-        // build the book from the optional slice, with a placeholder for the dismissal frame
-        BookFeature.view(store: store.projection(action: AppAction.book,
-                                                 state: { $0.book ?? .init(book: .init(id: id, title: "", notes: "")) }),
-                         environment: .init())
+        // The optional `book` slice transposes to `Optional<Store>` — build the child only while it's
+        // present (a real app loads `state.book` when `.book(id)` is pushed); the empty frame renders nothing.
+        if let child = store.projection(.action(AppAction.prism.book).state(\.book)).transpose() {
+            BookFeature.view(store: child, environment: .init())
+        }
     }
 }
 ```
@@ -271,13 +272,15 @@ struct BookView: View, Routable {
         Form { Text(viewStore.state.book.title) }
             .toolbar { Button("Edit") { viewStore.dispatch(.tappedEdit) } }
             // PRESENTATION — the modifier wires both dismiss edges; content is live from the store:
-            .presenting(router.store, \.editor, dismiss: .editor(.dismiss)) { editorState in
-                // presentation child → project the slot; the child's actions ride `.editor(.child(_))`:
-                EditorFeature.view(
-                    store: router.store.projection(action: { AppAction.editor(.child($0)) },
-                                                   state: { $0.editor.wrapped ?? editorState }),
-                    environment: router.world.editorEnv
-                )
+            .presenting(router.store, \.editor, dismiss: .editor(.dismiss)) { _ in
+                // Project the slot's action (`.editor(.child(_))`) + the `Presentation<…>` state, then
+                // `transpose()` inverts `Store<Presentation<Editor>>` into `Store<Editor>?` — live through
+                // both `presented` and `dismissing(last:)`, `nil` only once dismissed, so no flicker:
+                if let editor = router.store
+                    .projection(action: { AppAction.editor(.child($0)) }, state: { $0.editor })
+                    .transpose() {
+                    EditorFeature.view(store: editor, environment: router.world.editorEnv)
+                }
             }
             // OPTIONAL / Bool — a delete confirmation:
             .alert("Delete book?", isPresented: viewStore.presence(\.confirmingDelete, dismiss: .cancelDelete)) {
@@ -337,3 +340,4 @@ Every one is the same recipe: **store the shape in state, dispatch through an ac
 - <doc:Lifting>
 - ``Relay/Scope``
 - ``Presentation``
+- ``StoreType/transpose()``

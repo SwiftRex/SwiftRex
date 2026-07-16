@@ -54,13 +54,27 @@ The state is read lazily — only when a subscriber attaches — so it always re
 
 ### Scaling a feature up
 
-A middleware written at *local* types is lifted to your app's *global* types before composing:
+A middleware written at *local* types is lifted to your app's *global* types before composing, each lift naming its axes through a ``Relay/Scope`` leading-dot builder. A middleware only **reads** state — it never mutates — so the `.state` lane is a plain focus, not a write:
 
-- ``lift(_:)`` — all three axes at once.
-- ``liftAction(_:)`` / ``liftState(_:)`` / ``liftEnvironment(_:)`` — one axis at a time (`Prism`/`KeyPath`/`Lens`/`AffineTraversal`/projection closure).
-- ``liftCollection(action:embed:stateContainer:elements:)`` / ``liftEach(action:embed:each:stateContainer:)`` — run a per-element middleware across a keyed collection, or broadcast to all elements.
+- ``lift(_:)`` — all three axes in one scope: `.action` re-indexes, `.state` reads the slice, `.environment` narrows the world.
+- `liftOptional` — the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with action and environment left absent. While the focus is `nil` the middleware is skipped entirely (no effect produced); while present it reads the **unwrapped** value. A key-path spelling is sugar for the same call:
 
-Every lift carries **both** effect axes — including `supervise`: a lifted middleware's channels are re-embedded and (for collections) per-element stamped. Use the `on(…)` family to route by action case without a manual `guard case` — the same Prism / KeyPath / predicate families documented on ``Behavior``, minus the `reduce:` parameter (a middleware never mutates).
+```swift
+dayMiddleware.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
+dayMiddleware.liftOptional(\AppState.currentDay)           // key-path sugar
+```
+
+- ``liftCollection(action:embed:stateContainer:elements:)`` — route an addressed global action to **one** element the state lane locates (`.state(\.rows)`, `.state(\.rows, id: \.slug)`, `.state(indexed: \.rows)`, `.state(dictionary: \.configs)`), observing that element's **unwrapped** state:
+
+```swift
+rowMiddleware.liftCollection(
+    .action(AppAction.prism.row).state(\.rows).environment(\.rowEnv)
+)
+```
+
+- ``liftEach(action:embed:each:stateContainer:)`` — the broadcast form: observe **every** present element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``.
+
+Every lift carries **both** effect axes — including `supervise`: a lifted middleware's channels are re-embedded and (for collections) per-element stamped, so each element's effect ids and supervision fan out per element automatically. Use the `on(…)` family to route by action case without a manual `guard case` — the same Prism / KeyPath / predicate families documented on ``Behavior``, minus the `reduce:` parameter (a middleware never mutates).
 
 ### Becoming a Behavior
 

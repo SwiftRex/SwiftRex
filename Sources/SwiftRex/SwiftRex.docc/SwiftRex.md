@@ -52,6 +52,7 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 - <doc:StateAndActions>
 - <doc:Algebra>
 - <doc:Lifting>
+- <doc:OptionalsAndCollections>
 - <doc:Modularisation>
 
 ### The Core Loop
