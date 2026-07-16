@@ -97,32 +97,30 @@
         typealias Environment = PingWorld
     }
 
-    @Suite("Gateway")
+    @Suite("Relay.Scope feature lift")
     @MainActor
-    struct GatewayTests {
-        // The Gateway literal is a compile-time proof of wiring — it wouldn't compile if the action case,
-        // state slot, or env-narrowing didn't line up with SCCounter's own types.
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        private func counterGateway() -> Gateway<SCApp, SCCounter> {
-            Gateway<SCApp, SCCounter>(SCCounter.self, action: \.counter, state: \.counter, environment: { _ in .init(step: 0) })
-        }
-
+    struct RelayScopeFeatureTests {
+        // The scope literal is a compile-time proof of wiring — it wouldn't compile if the action case,
+        // state slot, or env-narrowing didn't line up with SCCounter's own types. One declared scope drives
+        // BOTH `.behavior(of:)` (the fold) and `.view(of:from:world:)` (the router).
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func behaviorLiftsActionAndState() {
-            let store = Store(initial: SCState(), behavior: counterGateway().behavior, environment: SCWorld())
+            let scope = Relay.Empty
+                .action(SCAction.prism.counter)
+                .state(\SCState.counter)
+                .environment { (_: SCWorld) in SCCounter.Environment(step: 0) }
+            let store = Store(initial: SCState(), behavior: scope.behavior(of: SCCounter.self), environment: SCWorld())
             store.dispatch(.counter(.inc))
             #expect(store.state.counter.count == 1) // action prism + state key path both applied
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func envIsNarrowedFromWorld() async {
-            let gateway = Gateway<SCApp, SCCounter>(
-                SCCounter.self,
-                action: \.counter,
-                state: \SCState.counter,
-                environment: { (w: SCWorld) in SCCounter.Environment(step: w.step) }
-            )
-            let store = Store(initial: SCState(), behavior: gateway.behavior, environment: SCWorld(step: 7))
+            let scope = Relay.Empty
+                .action(SCAction.prism.counter)
+                .state(\SCState.counter)
+                .environment { (w: SCWorld) in SCCounter.Environment(step: w.step) }
+            let store = Store(initial: SCState(), behavior: scope.behavior(of: SCCounter.self), environment: SCWorld(step: 7))
             store.dispatch(.counter(.pull)) // effect reads env.step=7 → .add(7)
             await Task.yield()
             #expect(store.state.counter.count == 7)
@@ -130,49 +128,51 @@
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func envAsKeyPathConvenience() async {
-            let gateway = Gateway<SCApp, SCCounter>(
-                SCCounter.self,
-                action: \.counter,
-                state: \SCState.counter,
-                environment: \SCWorld.counterEnv
-            )
-            let store = Store(initial: SCState(), behavior: gateway.behavior, environment: SCWorld(step: 3))
+            let scope = Relay.Empty
+                .action(SCAction.prism.counter)
+                .state(\SCState.counter)
+                .environment(\SCWorld.counterEnv)
+            let store = Store(initial: SCState(), behavior: scope.behavior(of: SCCounter.self), environment: SCWorld(step: 3))
             store.dispatch(.counter(.pull))
             await Task.yield()
             #expect(store.state.counter.count == 3) // env-narrow via key path reached the effect
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func gatewayBuildsTheChildView() {
-            // Gateway drives BOTH: .behavior (above) and .view here — env supplied from the world.
-            let store = Store(initial: SCState(), behavior: counterGateway().behavior, environment: SCWorld())
-            _ = counterGateway().view(from: store, world: SCWorld())
+        @Test func scopeBuildsTheChildView() {
+            // One scope drives BOTH: `.behavior(of:)` (into the store) and `.view(of:from:world:)` here.
+            let scope = Relay.Empty
+                .action(SCAction.prism.counter)
+                .state(\SCState.counter)
+                .environment { (_: SCWorld) in SCCounter.Environment(step: 0) }
+            let store = Store(initial: SCState(), behavior: scope.behavior(of: SCCounter.self), environment: SCWorld())
+            _ = scope.view(of: SCCounter.self, from: store, world: SCWorld())
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func combineFoldsGatewayBehaviors() {
+        @Test func combineFoldsScopeBehaviors() {
             // Registration is just the behavior monoid — `Behavior.combine([...])` (or `<>`), no wrapper.
-            let app = Behavior.combine([counterGateway().behavior])
+            let scope = Relay.Empty
+                .action(SCAction.prism.counter)
+                .state(\SCState.counter)
+                .environment { (_: SCWorld) in SCCounter.Environment(step: 0) }
+            let app = Behavior.combine([scope.behavior(of: SCCounter.self)])
             let store = Store(initial: SCState(), behavior: app, environment: SCWorld())
             store.dispatch(.counter(.inc))
             #expect(store.state.counter.count == 1)
         }
-        // (Optional/modal children register their behavior via `liftOptional` — covered in the behavior
-        // tests; `Gateway` here is present-state and drives both behavior and view.)
 
-        // A `Gateway` over a logic-only `HasBehavior` capability (no view) lifts `.behavior` just like a
-        // full feature — the capability-package shape. `gateway.view(...)` would NOT compile here, because
-        // `PingCapability` is `HasBehavior` only and `view` lives on the `where F: ViewFactory` extension.
-        @Test func gatewayLiftsBehaviorOnlyCapability() {
-            let gateway = Gateway<PingApp, PingCapability>(
-                PingCapability.self,
-                action: \.ping,
-                state: \PingGlobalState.ping,
-                environment: { (w: PingWorld) in PingCapability.Environment(by: w.by) }
-            )
-            let store = Store(initial: PingGlobalState(), behavior: gateway.behavior, environment: PingWorld())
+        // A scope over a logic-only `HasBehavior` capability (no view) lifts `.behavior(of:)` just like a
+        // full feature — the capability-package shape. `scope.view(of:…)` would NOT compile here, because
+        // `PingCapability` is `HasBehavior` only and `view` lives on the `where …: ViewFactory` extension.
+        @Test func scopeLiftsBehaviorOnlyCapability() {
+            let scope = Relay.Empty
+                .action(PingGlobalAction.prism.ping)
+                .state(\PingGlobalState.ping)
+                .environment { (w: PingWorld) in PingCapability.Environment(by: w.by) }
+            let store = Store(initial: PingGlobalState(), behavior: scope.behavior(of: PingCapability.self), environment: PingWorld())
             store.dispatch(.ping(.ping))
-            #expect(store.state.ping.pings == 1) // behavior-only capability folded through the same Gateway
+            #expect(store.state.ping.pings == 1) // behavior-only capability folded through the same scope
         }
     }
 #endif
