@@ -4,7 +4,6 @@
     import SwiftRex
     import SwiftUI
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     extension View {
         /// Presents a **sheet** driven by a ``Presentation`` slot, wiring **both** `dismiss` dispatches
         /// so the state can never get stuck mid-dismiss:
