@@ -48,4 +48,20 @@ struct RelayBuilderTests {
         base.dispatch(.child(.tick))
         #expect(base.state.child.n == 1)
     }
+
+    @Test func buildsViaClosurePairSugar() {
+        let base = store(.reduce { action, state in
+            switch action {
+            case .child(.tick): state.child.n += 1
+            }
+        })
+        // `.action(preview:review:)` → Prism, `.state(get:set:)` → ReadsWrites — the closure-pair sugar.
+        let child = base.projection(
+            .action(preview: { if case let .child(action) = $0 { action } else { nil } }, review: AppAction.child)
+                .state(get: { $0.child }, set: { app, value in var copy = app; copy.child = value; return copy })
+        )
+        child.dispatch(.tick)
+        #expect(base.state.child.n == 1)
+        #expect(child.state.n == 1)
+    }
 }

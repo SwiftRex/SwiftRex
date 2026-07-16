@@ -46,6 +46,22 @@ extension Relay.Scope {
     ) -> Relay.Scope<Relay.ActionAxis.Prism<GA, LA>, State, Environment> {
         .init(action: .init(keyPath), state: state, environment: environment)
     }
+
+    /// Start a scope from a `(preview, review)` closure pair — sugar for `Prism(preview:review:)`.
+    public static func action<GA, LA>(
+        preview: @escaping @Sendable (GA) -> LA?,
+        review: @escaping @Sendable (LA) -> GA
+    ) -> Relay.Scope<Relay.ActionAxis.Prism<GA, LA>, Relay.StateAxis.Absent, Relay.EnvironmentAxis.Absent> {
+        .init(action: .init(Prism(preview: preview, review: review)), state: .init(), environment: .init())
+    }
+
+    /// Replace the action axis with a `(preview, review)` closure pair.
+    public func action<GA, LA>(
+        preview: @escaping @Sendable (GA) -> LA?,
+        review: @escaping @Sendable (LA) -> GA
+    ) -> Relay.Scope<Relay.ActionAxis.Prism<GA, LA>, State, Environment> {
+        .init(action: .init(Prism(preview: preview, review: review)), state: state, environment: environment)
+    }
 }
 
 // MARK: - State entry + refiner
@@ -105,6 +121,22 @@ extension Relay.Scope {
         _ keyPath: WritableKeyPath<GS, LS?> & Sendable
     ) -> Relay.Scope<Action, Relay.StateAxis.Writes<GS, LS>, Environment> {
         .init(action: action, state: .init(keyPath), environment: environment)
+    }
+
+    /// Start a scope from a `(get, set)` closure pair — sugar for `Lens(get:set:)`.
+    public static func state<GS, LS>(
+        get: @escaping @Sendable (GS) -> LS,
+        set: @escaping @Sendable (GS, LS) -> GS
+    ) -> Relay.Scope<Relay.ActionAxis.Absent, Relay.StateAxis.ReadsWrites<GS, LS>, Relay.EnvironmentAxis.Absent> {
+        .init(action: .init(), state: .init(Lens(get: get, set: set)), environment: .init())
+    }
+
+    /// Replace the state axis with a `(get, set)` closure pair.
+    public func state<GS, LS>(
+        get: @escaping @Sendable (GS) -> LS,
+        set: @escaping @Sendable (GS, LS) -> GS
+    ) -> Relay.Scope<Action, Relay.StateAxis.ReadsWrites<GS, LS>, Environment> {
+        .init(action: action, state: .init(Lens(get: get, set: set)), environment: environment)
     }
 }
 
