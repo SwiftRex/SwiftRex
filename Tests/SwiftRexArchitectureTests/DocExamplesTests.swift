@@ -142,18 +142,15 @@
     struct DocExamplesTests {
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func moduleRendersAndComposes() {
-            let appBehavior = Behavior.combine(
-                Library.behavior().lift(
-                    .action(AppAction.prism.library)
-                        .state(\AppState.library)
-                        .environment { (e: AppEnv) in e.library }
-                ),
-                Editor.behavior().lift(
-                    .action(AppAction.prism.editor)
-                        .state(\AppState.editor)
-                        .environment { (e: AppEnv) in e.editor }
-                )
+            // Annotating the lifted result pins the global, so bare `\.case` infers its root even
+            // though `Behavior.combine` itself wouldn't.
+            let library: Behavior<AppAction, AppState, AppEnv> = Library.behavior().lift(
+                .action(\.library).state(\AppState.library).environment { (e: AppEnv) in e.library }
             )
+            let editor: Behavior<AppAction, AppState, AppEnv> = Editor.behavior().lift(
+                .action(\.editor).state(\AppState.editor).environment { (e: AppEnv) in e.editor }
+            )
+            let appBehavior = Behavior.combine(library, editor)
             let store = Store(
                 initial: AppState(),
                 behavior: appBehavior,

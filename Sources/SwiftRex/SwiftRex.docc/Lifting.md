@@ -121,12 +121,12 @@ let store = Store(initial: .init(), behavior: app, environment: appEnv)
 ```
 
 > A ``Relay/Scope`` builds up axis by axis (`.action(…).state(…).environment(…)`), each step returning
-> a scope with the other axes `Absent`. The leading-dot form works inline where the host recovers the
-> global types — a bare `\.case` action key path infers its root fine in store init, `projection`, or an
-> annotated result. The one exception is **inside `Behavior.combine(...)`**, whose bidirectional
-> inference doesn't pin the global action for the key path's root — there, pass an action **prism**
-> (`AppAction.prism.auth`). For a *declared* scope with no surrounding host to infer from, start from
-> ``Relay/Empty`` (`Relay.Empty.action(…)…`).
+> a scope with the other axes `Absent`. The leading-dot form works wherever the host's global types are
+> inferable — a bare `\.case` action key path infers its root fine in store init, `projection`, a
+> function return, or a **typed `Behavior<Global,…>` local**. The only spot that can't infer is inlining
+> **directly** into `Behavior.combine(...)` (its bidirectional inference doesn't pin the global): there,
+> either lift into a typed local first and combine the locals, or pass an action **prism**
+> (`AppAction.prism.auth`). For a *declared* scope with no surrounding host, start from ``Relay/Empty``.
 
 ## See Also
 
