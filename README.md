@@ -118,7 +118,7 @@ Pick the products that match your project; the core is self-contained:
 | `SwiftRex.ReactiveSwift` | `ReactiveSwift` | The same bridge surface for `SignalProducer`/`Signal` |
 | `SwiftRex.ReactiveConcurrency` | `ReactiveConcurrency` | The same bridge surface for ReactiveConcurrency's cold, async/await-native `Publisher` |
 | `SwiftRex.SwiftUI` | — | `ViewStore`/`TrackedViewStore` (`@Observable`, iOS 17+), `asObservableObject()` (iOS 13+), store-backed `Binding`s |
-| `SwiftRex.Architecture` | — | The `@Feature` / `@BoundTo` macros and `Scope` (Swift 6.3+) |
+| `SwiftRex.Architecture` | — | The `@Feature` / `@BoundTo` macros and the `Relay.Scope` feature lift — `.behavior(of:)` / `.view(of:from:world:)` (Swift 6.3+) |
 | `SwiftRex.Operators` | — | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
 | `SwiftRex.Testing` | — | `TestStore` — test target only |
 
@@ -381,7 +381,7 @@ public enum HeroDetails {
 
 The whole L0→L4 progression — leanest feature to full module — is in the [Features article](https://swiftrex.ios.lu/documentation/swiftrex/features).
 
-# Modularity — lifting, Gateway, and bridges
+# Modularity — lifting, Relay.Scope, and bridges
 
 Features never know about the app. They're written against local types and **lifted** to the global ones at the composition root. With `@Prisms`/`@Lenses` on the root types, lifting is just key paths:
 
@@ -406,27 +406,25 @@ let moviesBehavior: Behavior<AppAction, AppState, World> =
 
 Each host's `lift` takes **one `Relay.Scope`** built axis-by-axis with the fluent builder, constrained on only the capabilities that host needs — a `Reducer` writes state, a `Middleware` only reads it, and `supervise` threads through automatically so a lifted feature's channels cancel when its sub-state disappears. Every axis accepts an optic, a key path, or plain closures — pick the minimum: `.action(prism)` / `.action(\.case)` / `.action(preview:review:)` (or `.action(preview:)` / `.action(review:)` when one direction is enough); `.state(\.slice)` / `.state { $0.slice }` / `.state(get:set:)`; an **optional** key path (`.state(\.maybeChild)`) is an affine lane that runs only while `.some`. `liftCollection`/`liftEach` run one behavior per element of a collection.
 
-**`Gateway`** is the morphism `Local ↪ Global` between two `FeatureDomain`s — the parent (`AppFeature`, or a module for a nested router) and the child — bundling the action prism, state slice, and environment narrowing into one declared, compile-checked value used by both the store fold *and* the view router. It lifts whatever the child provides: `.behavior` when the child is `HasBehavior`, `.view(from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:
+A **`Relay.Scope`** captures how a child feature embeds into the app — action prism, state slice, environment narrowing — as one declared, compile-checked value used by both the store fold *and* the view router. Given that wiring it lifts whatever the child provides: `.behavior(of:)` when the child is `HasBehavior`, `.view(of:from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:
 
 ```swift
-typealias LiftedGateway<F: FeatureDomain> = Gateway<AppFeature, F>   // AppFeature = the app's own FeatureDomain
-
-extension LiftedGateway<Movies> {
-    static var movies: Self {
-        Gateway(Movies.self, action: \.movies, state: \.movies,
-                environment: { world in .init(fetchMovies: world.api.movies) })
-    }
+enum AppScopes {                                       // one wiring per feature, declared once
+    static let movies = Relay.Empty
+        .action(AppAction.prism.movies)                // action prism — narrows incoming, embeds outgoing
+        .state(\AppState.movies)                       // WritableKeyPath — focus the slice
+        .environment { world in Movies.Environment(fetchMovies: world.api.movies) }
 }
 
 let store = Store(
     initial: AppState(),
-    behavior: LiftedGateway<Movies>.movies.behavior
-           <> LiftedGateway<Player>.player.behavior,
+    behavior: AppScopes.movies.behavior(of: Movies.self)
+           <> AppScopes.player.behavior(of: Player.self),
     environment: world
 )
 
-// …and in the router, the same Gateway builds the screen:
-LiftedGateway<Movies>.movies.view(from: store, world: world)
+// …and in the router, the same scope builds the screen:
+AppScopes.movies.view(of: Movies.self, from: store, world: world)
 ```
 
 **Bridge behaviors** connect modules without coupling them. Prisms compose with `>>>`, so a root-level `.on` can route one feature's output into another feature's input — neither module imports the other:
@@ -437,8 +435,8 @@ let bridge = Behavior<AppAction, AppState, World>.identity
         dispatch: { movieID in .movies(.markWatched(movieID)) })
 
 // compose it into the store fold like any other behavior:
-behavior: LiftedScope<Movies>.movies.behavior
-       <> LiftedScope<Player>.player.behavior
+behavior: AppScopes.movies.behavior(of: Movies.self)
+       <> AppScopes.player.behavior(of: Player.self)
        <> bridge
 ```
 

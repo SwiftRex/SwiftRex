@@ -1,6 +1,6 @@
 # Navigation, End to End
 
-Build one small app — **Bookshelf** — and wire every navigation shape across every layer: domain, features, the global feature, the behavior fold, gateways, the router, the views, and the `@main` assembly.
+Build one small app — **Bookshelf** — and wire every navigation shape across every layer: domain, features, the global feature, the behavior fold, scopes, the router, the views, and the `@main` assembly.
 
 ## Overview
 
@@ -107,10 +107,10 @@ public enum EditorFeature {
 
 ## Layer 3 — The global feature: where every shape is *stored*
 
-The whole app is one ``FeatureDomain`` — the parent that gateways hang off. Its `State`/`Action`/`Environment` is where each navigation shape lives. **This is the "how do I store this" answer:**
+The whole app is one ``FeatureDomain`` — the parent that scopes hang off. Its `State`/`Action`/`Environment` is where each navigation shape lives. **This is the "how do I store this" answer:**
 
 ```swift
-// AppFeature — the parent FeatureDomain. `Gateway<AppFeature, X>` embeds each child here.
+// AppFeature — the parent FeatureDomain. `Relay.Scope` (declared in `AppScopes`) embeds each child here.
 public enum AppFeature: FeatureDomain {
     public typealias Action = AppAction
     public typealias State = AppState
@@ -159,7 +159,7 @@ public extension AppFeature {
     static func behavior(world: World) -> Behavior<AppAction, AppState, World> {
         Behavior.combine([
             // 1. children, lifted to the app types
-            LiftedGateway<LibraryFeature>.library.behavior,                                   // present sibling → plain lift
+            AppScopes.library.behavior(of: LibraryFeature.self),                                   // present sibling → plain lift
             BookFeature.behavior().lift(.action(AppAction.prism.book).state(\.book)
                 .environment { _ in .init() }),  // optional \.book → affine state: runs only while on the stack
             EditorFeature.behavior().liftPresentation(action: \.editor, state: \.editor,
@@ -202,24 +202,22 @@ public extension AppFeature {
 
 > A plain pattern-matching reducer is the clearest way to turn a child *output* into navigation. For a pure route→re-dispatch with no state (e.g. a logout button that fires an auth action), the point-free ``Behavior/on(_:dispatch:)`` bridge does the same in one line. The editor's `dismiss()` here is the **programmatic** first step (`presented → dismissing`); SwiftUI's `onDismiss` supplies the second (Layer 6).
 
-## Layer 5 — Gateways: declare the wiring once
+## Layer 5 — Scopes: declare the wiring once
 
-A ``Gateway`` bundles `(child, action prism, state key path, env narrow)` and derives both the child's lifted `behavior` and its `view`. Alias the parent once, then declare each gateway as a `static var`:
+A ``Relay/Scope`` bundles `(action prism, state key path, env narrow)` and drives both a child's lifted `.behavior(of:)` and its `.view(of:from:world:)`. Declare each scope once — an explicit action prism pins the parent's action type, so the scope's type infers:
 
 ```swift
-public typealias LiftedGateway<F: FeatureDomain> = Gateway<AppFeature, F>   // Global = AppFeature
-
-public extension LiftedGateway<LibraryFeature> {
-    static var library: Self {   // a PRESENT sibling slice (\.library is non-optional) → a clean Gateway
-        Gateway(LibraryFeature.self, action: \.library, state: \.library,
-              environment: { world in LibraryFeature.Environment(loadShelves: world.loadShelves) })
-    }
+public enum AppScopes {
+    public static let library = Relay.Empty
+        .action(AppAction.prism.library)     // a PRESENT sibling slice → a clean total lift
+        .state(\AppState.library)
+        .environment { world in LibraryFeature.Environment(loadShelves: world.loadShelves) }
 }
 ```
 
-`LiftedGateway<LibraryFeature>.library.behavior` folds into Layer 4; `LiftedGateway<LibraryFeature>.library.view(from:world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
+`AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children are `Gateway`s.** `Gateway` needs a non-optional `WritableKeyPath` to the child state — so it fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with `liftOptional` / `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — via `store.projection` with a placeholder for the frame where the slot is empty (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — via `store.projection` with a placeholder for the frame where the slot is empty (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
@@ -232,7 +230,7 @@ The **router** holds the store and the world and resolves a route to `some View`
 
     @ViewBuilder func view(for route: AppRoute) -> some View {
         switch route {
-        case .shelf: LiftedGateway<LibraryFeature>.library.view(from: store, world: world)   // (a real app wires a ShelfFeature)
+        case .shelf: AppScopes.library.view(of: LibraryFeature.self, from: store, world: world)   // (a real app wires a ShelfFeature)
         case let .book(id): bookView(id)
         }
     }
@@ -255,7 +253,7 @@ struct RootView: View {
     var body: some View {
         TabView(selection: store.selection(\.tab, set: { AppAction.tab(.select($0)) })) {   // SELECTION
             NavigationStack(path: store.path(\.path, set: { AppAction.nav(.setPath($0)) })) {   // STACK
-                LiftedGateway<LibraryFeature>.library.view(from: store, world: router.world)
+                AppScopes.library.view(of: LibraryFeature.self, from: store, world: router.world)
                     .navigationDestination(for: AppRoute.self) { router.view(for: $0) }
             }
             .tabItem { Label("Library", systemImage: "books.vertical") }.tag(Tab.library)
@@ -337,5 +335,5 @@ Every one is the same recipe: **store the shape in state, dispatch through an ac
 - <doc:Navigation>
 - <doc:Features>
 - <doc:Lifting>
-- ``Gateway``
+- ``Relay/Scope``
 - ``Presentation``
