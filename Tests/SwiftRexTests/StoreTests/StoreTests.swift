@@ -473,7 +473,7 @@ struct StoreNotificationSkippingTests {
     @Test func pureRoutingOnDoesNotNotify() {
         // `.on(predicate, dispatch:)` routes without mutating; the routed action also does nothing.
         let (store, will, did, token) = countingStore(
-            Behavior<Int, Int, Void>.identity.on({ $0 == 1 }, dispatch: 99)
+            Behavior<Int, Int, Void>.identity.on(.action(preview: { $0 == 1 ? () : nil }), dispatch: .action(review: { _ in 99 }))
         )
         store.dispatch(1)
         #expect(will.value == 0)
@@ -494,7 +494,7 @@ struct StoreNotificationSkippingTests {
 
     @Test func onWithReduceNotifies() {
         let (store, will, did, token) = countingStore(
-            Behavior<Int, Int, Void>.identity.on({ $0 == 1 }, reduce: { $0 = 42 })
+            Behavior<Int, Int, Void>.identity.on(.action(preview: { $0 == 1 ? () : nil }), reduce: { _, s in s = 42 })
         )
         store.dispatch(1)
         #expect(store.state == 42)
