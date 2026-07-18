@@ -73,35 +73,27 @@ Every lift carries **all three** axes — including `supervise`: a lifted featur
 
 ### Routing actions — the `.on(…)` bridge
 
-The ``on(_:reduce:)`` family composes declarative action-routing onto any behavior: *when this action arrives, dispatch that one* — optionally co-locating a state mutation (`reduce:`) or a state guard (`when:`). Every `.on` is sugar for `combine(self, routingBehavior)`. There are 28 overloads across four families:
+`.on` composes declarative action-routing onto any behavior: *when this action arrives, dispatch that one* — optionally co-locating a state mutation (`reduce:`) or a state guard (`when:`). Every `.on` is `combine(self, routingBehavior)`. It speaks the same axis vocabulary as every other host: a **trigger** (`.action(…)` — an `Extracts` that previews the payload) and, to route, a **dispatch** (`.action(…)` embed):
 
 ```swift
 let behavior = Behavior<AppAction, AppState, World>.identity
-    // — Prism family —
-    .on(AppAction.prism.didLoad, dispatch: AppAction.renderItems)
-    .on(AppAction.prism.didTapBuy, dispatch: AppAction.checkout, when: { $0.isLoggedIn })
-    .on(AppAction.prism.didLoad,
-        dispatch: AppAction.renderItems,
+    // route the extracted payload to another action
+    .on(.action(\.didLoad), dispatch: .action(\.renderItems))
+    // + a state guard
+    .on(.action(\.didTapBuy), dispatch: .action(\.checkout), when: { $0.isLoggedIn })
+    // + a co-located mutation
+    .on(.action(\.didLoad), dispatch: .action(\.renderItems),
         reduce: { items, state in state.items = items; state.isLoading = false })
-    .on(AppAction.prism.searchQuery, AppAction.prism.updateSearch)   // prism pair, same payload
-    .on(AppAction.prism.didTapLogout, dispatch: AppAction.auth(.logout))  // Void payload → fixed action
-    // — KeyPath family: the `\.case` spelling of the same patterns —
-    .on(\.didLoad, dispatch: AppAction.renderItems)
-    .on(\.didTapLogout,
-        dispatch: AppAction.auth(.logout),
-        reduce: { state in state.isLoggingOut = true })
-    // — Bool-predicate family —
-    .on({ if case .reset = $0 { true } else { false } }, dispatch: .clearAll)
-    .on({ if case .submit = $0 { true } else { false } },
-        reduce: { $0.isSubmitting = true },
-        dispatch: .doSubmit,
-        when: { !$0.isSubmitting })
-    // — Pure routing: (Action) -> Action? —
-    .on { action in
-        guard case .didSearch(let query) = action else { return nil }
-        return .performSearch(query)
-    }
+    // transform the payload — wrap the closure in .action(review:)
+    .on(.action(\.didSearch), dispatch: .action(review: { AppAction.performSearch($0) }))
+    // react by mutating state only, no dispatch
+    .on(.action(\.reset), reduce: { _, state in state = .init() })
+    // a bool test with no payload → extract Void, then route/mutate
+    .on(.action(preview: { if case .submit = $0 { () } else { nil } }),
+        dispatch: .action(\.doSubmit), when: { !$0.isSubmitting })
 ```
+
+The trigger reads with any `.action(…)` strategy (`\.case` / prism / `preview:`); the dispatch embeds with any (`\.case` / prism / `review:`), so a transform is `.action(review: { … })`. Both `reduce` and `when` are optional.
 
 State is **never copied** unless the action filter passes first. Variants without `reduce:` and without `when:` use `mutation: .identity` — no `inout` reference to state is ever taken, guaranteeing zero copy-on-write interaction. The bridge is also the tool for **decoupled cross-feature communication**: route one module's output action into another module's input without either module importing the other — see <doc:Modularisation>.
 
