@@ -33,21 +33,21 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func boolBindingIsPresentedAndDismisses() {
             let store = makeStore(.presented(Item(id: 1, text: "a")))
-            #expect(store.presentation(\.modal, dismiss: .dismiss).wrappedValue == true)
+            #expect(store.presentation(.state(\.modal), dismiss: .dismiss).wrappedValue == true)
 
-            store.presentation(\.modal, dismiss: .dismiss).wrappedValue = false // set(false) → dismiss
+            store.presentation(.state(\.modal), dismiss: .dismiss).wrappedValue = false // set(false) → dismiss
             #expect(store.state.modal == .dismissing(last: Item(id: 1, text: "a")))
-            #expect(store.presentation(\.modal, dismiss: .dismiss).wrappedValue == false)   // false while dismissing
+            #expect(store.presentation(.state(\.modal), dismiss: .dismiss).wrappedValue == false)   // false while dismissing
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func itemBindingKeysOnPresentedThenDismisses() {
             let store = makeStore(.presented(Item(id: 7, text: "x")))
-            #expect(store.presentationItem(\.modal, dismiss: .dismiss).wrappedValue == Item(id: 7, text: "x"))
+            #expect(store.presentationItem(.state(\.modal), dismiss: .dismiss).wrappedValue == Item(id: 7, text: "x"))
 
-            store.presentationItem(\.modal, dismiss: .dismiss).wrappedValue = nil // set(nil) → dismiss
+            store.presentationItem(.state(\.modal), dismiss: .dismiss).wrappedValue = nil // set(nil) → dismiss
             #expect(store.state.modal == .dismissing(last: Item(id: 7, text: "x")))
-            #expect(store.presentationItem(\.modal, dismiss: .dismiss).wrappedValue == nil)   // nil while dismissing
+            #expect(store.presentationItem(.state(\.modal), dismiss: .dismiss).wrappedValue == nil)   // nil while dismissing
         }
     }
 #endif

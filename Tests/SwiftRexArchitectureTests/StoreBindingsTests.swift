@@ -45,13 +45,13 @@
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func bindingGetReadsState() {
-            #expect(makeStore().binding(\.name, set: A.setName).wrappedValue == "a")
+            #expect(makeStore().binding(.state(\.name), dispatch: .action(review: A.setName)).wrappedValue == "a")
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func bindingSetDispatches() async {
             let store = makeStore()
-            store.binding(\.name, set: A.setName).wrappedValue = "z"
+            store.binding(.state(\.name), dispatch: .action(review: A.setName)).wrappedValue = "z"
             await Task.yield()
             #expect(store.state.name == "z")
         }
@@ -59,7 +59,7 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func presenceIsFalseWhenNilTrueWhenSome() async {
             let store = makeStore()
-            let presence = store.presence(\.editor, dismiss: .dismissEditor)
+            let presence = store.presence(.state(\.editor), dismiss: .dismissEditor)
             #expect(presence.wrappedValue == false)
             store.dispatch(.presentEditor(7))
             await Task.yield()
@@ -71,7 +71,7 @@
             let store = makeStore()
             store.dispatch(.presentEditor(7))
             await Task.yield()
-            let presence = store.presence(\.editor, dismiss: .dismissEditor)
+            let presence = store.presence(.state(\.editor), dismiss: .dismissEditor)
             presence.wrappedValue = false // SwiftUI dismissing
             await Task.yield()
             #expect(store.state.editor == nil)
@@ -80,7 +80,7 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func presenceSetTrueIsIgnored() async {
             let store = makeStore()
-            let presence = store.presence(\.editor, dismiss: .dismissEditor)
+            let presence = store.presence(.state(\.editor), dismiss: .dismissEditor)
             presence.wrappedValue = true // binding never drives presentation
             await Task.yield()
             #expect(store.state.editor == nil)
@@ -91,7 +91,7 @@
             let store = makeStore()
             store.dispatch(.select(.init(id: 3)))
             await Task.yield()
-            let item = store.item(\.selected, dismiss: .deselect)
+            let item = store.item(.state(\.selected), dismiss: .deselect)
             #expect(item.wrappedValue == Item(id: 3))
             item.wrappedValue = nil // SwiftUI clearing the sheet
             await Task.yield()
@@ -138,7 +138,7 @@
             let store = makeStore()
             store.dispatch(.setPath([.a]))
             await Task.yield()
-            let path = store.path(\.path, set: A.setPath)
+            let path = store.path(.state(\.path), dispatch: .action(review: A.setPath))
             #expect(path.wrappedValue == [.a])
             path.wrappedValue = [.a, .b] // SwiftUI push
             await Task.yield()
@@ -151,7 +151,7 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func selectionDispatchesOnEveryChange() async {
             let store = makeStore()
-            let tab = store.selection(\.tab, set: A.selectTab)
+            let tab = store.selection(.state(\.tab), dispatch: .action(review: A.selectTab))
             #expect(tab.wrappedValue == .home)
             tab.wrappedValue = .search // selecting a tab is a real state change (not dismiss-only)
             await Task.yield()
@@ -161,7 +161,7 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func optionalSelectionHandlesNilAndValue() async {
             let store = makeStore()
-            let sidebar = store.selection(\.sidebar, set: A.selectSidebar)
+            let sidebar = store.selection(.state(\.sidebar), dispatch: .action(review: A.selectSidebar))
             #expect(sidebar.wrappedValue == nil)
             sidebar.wrappedValue = .c
             await Task.yield()

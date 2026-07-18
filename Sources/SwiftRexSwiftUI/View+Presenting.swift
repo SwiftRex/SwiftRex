@@ -18,7 +18,7 @@
         /// The binding is a `Bool`, so SwiftUI's identity never churns on child-state changes — the safe
         /// default. Cover / popover are analogous (`presentingCover` / `presentingPopover`).
         @MainActor
-        public func presenting<S: StoreType, Wrapped, Presented: View>(
+        public func presenting<S: StoreType, Wrapped: Sendable, Presented: View>(
             _ store: S,
             _ keyPath: KeyPath<S.State, Presentation<Wrapped>>,
             dismiss: S.Action,
@@ -29,7 +29,7 @@
             @ViewBuilder content: @escaping (Wrapped) -> Presented
         ) -> some View {
             sheet(
-                isPresented: store.presentation(keyPath, dismiss: dismiss, file: file, function: function, line: line),
+                isPresented: store.presentation(.state(keyPath), dismiss: dismiss, file: file, function: function, line: line),
                 onDismiss: {
                     store.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
                     onDismiss?()
@@ -47,7 +47,7 @@
         /// as the sheet animates out (it ignores the dismissal frame). Reach for the ``Presentation``
         /// overload when that flicker matters; use this when it doesn't.
         @MainActor
-        public func presenting<S: StoreType, Wrapped, Presented: View>(
+        public func presenting<S: StoreType, Wrapped: Sendable, Presented: View>(
             _ store: S,
             _ keyPath: KeyPath<S.State, Wrapped?>,
             dismiss: S.Action,
@@ -58,7 +58,7 @@
             @ViewBuilder content: @escaping (Wrapped) -> Presented
         ) -> some View {
             sheet(
-                isPresented: store.presence(keyPath, dismiss: dismiss, file: file, function: function, line: line),
+                isPresented: store.presence(.state(keyPath), dismiss: dismiss, file: file, function: function, line: line),
                 onDismiss: onDismiss,
                 content: {
                     if let wrapped = store.state[keyPath: keyPath] {
@@ -73,7 +73,7 @@
         /// `id` (via ``StoreType/presentationItem(_:dismiss:file:function:line:)``) so a mutating child
         /// never churns SwiftUI's identity. `content` receives the item.
         @MainActor
-        public func presentingItem<S: StoreType, Wrapped: Identifiable, Presented: View>(
+        public func presentingItem<S: StoreType, Wrapped: Identifiable & Sendable, Presented: View>(
             _ store: S,
             _ keyPath: KeyPath<S.State, Presentation<Wrapped>>,
             dismiss: S.Action,
@@ -84,7 +84,7 @@
             @ViewBuilder content: @escaping (Wrapped) -> Presented
         ) -> some View {
             sheet(
-                item: store.presentationItem(keyPath, dismiss: dismiss, file: file, function: function, line: line),
+                item: store.presentationItem(.state(keyPath), dismiss: dismiss, file: file, function: function, line: line),
                 onDismiss: {
                     store.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
                     onDismiss?()

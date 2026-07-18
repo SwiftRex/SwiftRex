@@ -73,7 +73,7 @@ struct RelayScopeBindingTests {
             if case let .setName(v) = action { state.name = v }
         }
         let store = Store<SeqChildAction, SeqChild, Void>(initial: SeqChild(name: "old"), behavior: reducer, environment: ())
-        let binding = store.binding(.action(SeqChildAction.prism.setName).state(\SeqChild.name))
+        let binding = store.binding(.state(\SeqChild.name), dispatch: .action(SeqChildAction.prism.setName))
         #expect(binding.wrappedValue == "old")   // get reads state
         binding.wrappedValue = "new"             // set dispatches .setName → reducer writes
         #expect(store.state.name == "new")
@@ -91,7 +91,7 @@ struct RelayScopeBindingTests {
             environment: ())
         // project element 2 → transpose to an unwrapped Store<SeqRowAction, SeqRow> → bind its \.name field
         if let rowStore = store.projection(.action(ListAppAction.prism.row).state(\ListApp.rows), element: 2).transpose() {
-            let binding = rowStore.binding(\.name, set: SeqRowAction.setName)
+            let binding = rowStore.binding(.state(\.name), dispatch: .action(review: SeqRowAction.setName))
             #expect(binding.wrappedValue == "B")
             binding.wrappedValue = "B2"
             #expect(store.state.rows.first(where: { $0.id == 2 })?.name == "B2")

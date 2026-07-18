@@ -72,7 +72,7 @@
                 Button(book.title) { viewStore.dispatch(.tapped(book)) }
             }
             .onAppear { viewStore.dispatch(.onAppear) }
-            .sheet(item: viewStore.item(\.selected, dismiss: .dismissedDetail)) { book in
+            .sheet(item: viewStore.item(.state(\.selected), dismiss: .dismissedDetail)) { book in
                 Text(book.title)
             }
         }
@@ -114,7 +114,7 @@
     @BoundTo(Editor.self, strategy: .observationSimple)
     struct EditorView: View {
         var body: some View {
-            TextField("Powers", text: viewStore.binding(\.powersText, set: Editor.ViewAction.editedPowers))
+            TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(review: Editor.ViewAction.editedPowers)))
         }
     }
 

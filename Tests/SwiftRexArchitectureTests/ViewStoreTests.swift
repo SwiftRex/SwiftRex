@@ -68,7 +68,7 @@
         @Test func bindingReadsStateAndDispatchesOnSet() async {
             let store = makeStore()
             let vs = ViewStore(store)
-            let binding: Binding<String> = vs.binding(\.label, set: { .setLabel($0) })
+            let binding: Binding<String> = vs.binding(.state(\.label), dispatch: .action(review: { .setLabel($0) }))
             #expect(binding.wrappedValue == "a")
             binding.wrappedValue = "z"
             await Task.yield()

@@ -79,7 +79,7 @@
         @Test func bindingOnTrackedMirror() async {
             let store = makeStore()
             let vs = TrackedViewStore(store)
-            let binding: Binding<String> = vs.binding(\.title, set: { .setTitle($0) })
+            let binding: Binding<String> = vs.binding(.state(\.title), dispatch: .action(review: { .setTitle($0) }))
             #expect(binding.wrappedValue == "a")
             binding.wrappedValue = "z"
             await Task.yield()
