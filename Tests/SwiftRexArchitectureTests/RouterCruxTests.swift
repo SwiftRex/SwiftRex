@@ -81,7 +81,7 @@
 
         var body: some View {
             Text("home")
-                .sheet(isPresented: viewStore.presence(\.route, dismiss: .dismiss)) {
+                .sheet(isPresented: viewStore.presence(.state(\.route), dismiss: .dismiss)) {
                     router.view(for: .detail) // env-free body; the router supplied env — crux resolved
                 }
         }
