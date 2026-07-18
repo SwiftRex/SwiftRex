@@ -148,19 +148,20 @@ animates it out, with no flicker:
 
 ## Two-way bindings
 
-A store-backed `Binding` reads state and *dispatches* on write (the reducer stays the only writer). Three
-spellings, all cross-platform SwiftUI (no iOS-17 gate):
+A store-backed `Binding` reads state and *dispatches* on write (the reducer stays the only writer). It takes
+the same axis pair as every host — a `.state(…)` read and a `.action(…)` embed of the same value type —
+so the slots can't be crossed and each offers only its own strategies (`\.case` / prism / `review:` /
+`preview:` for actions, key path / closure / lens for state):
 
 ```swift
-// key-path + action case
-TextField("Name", text: store.binding(\.name, set: ViewAction.setName))
+// action case:
+TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setName)))
+// or a transform, wrapping the closure in .action(review:):
+TextField("Name", text: store.binding(.state(\.name), dispatch: .action(review: { ViewAction.setName($0) })))
 
-// Relay.Scope form — action and state share a value type T (Action.L == State.L)
-TextField("Name", text: store.binding(.action(ViewAction.prism.setName).state(\.name)))
-
-// a field of a collection element — free, via transpose()
+// a field of a collection element — free, via transpose():
 if let rowStore = store.projection(scope, element: id).transpose() {
-    TextField("Name", text: rowStore.binding(\.name, set: RowAction.setName))
+    TextField("Name", text: rowStore.binding(.state(\.name), dispatch: .action(\.setName)))
 }
 ```
 

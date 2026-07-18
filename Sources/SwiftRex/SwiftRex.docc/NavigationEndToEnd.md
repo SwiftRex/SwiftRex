@@ -252,8 +252,8 @@ struct RootView: View {
     let router: AppRouter
 
     var body: some View {
-        TabView(selection: store.selection(\.tab, set: { AppAction.tab(.select($0)) })) {   // SELECTION
-            NavigationStack(path: store.path(\.path, set: { AppAction.nav(.setPath($0)) })) {   // STACK
+        TabView(selection: store.selection(.state(\.tab), dispatch: .action(review: { AppAction.tab(.select($0)) }))) {   // SELECTION
+            NavigationStack(path: store.path(.state(\.path), dispatch: .action(review: { AppAction.nav(.setPath($0)) }))) {   // STACK
                 AppScopes.library.view(of: LibraryFeature.self, from: store, world: router.world)
                     .navigationDestination(for: AppRoute.self) { router.view(for: $0) }
             }
@@ -283,7 +283,7 @@ struct BookView: View, Routable {
                 }
             }
             // OPTIONAL / Bool — a delete confirmation:
-            .alert("Delete book?", isPresented: viewStore.presence(\.confirmingDelete, dismiss: .cancelDelete)) {
+            .alert("Delete book?", isPresented: viewStore.presence(.state(\.confirmingDelete), dismiss: .cancelDelete)) {
                 Button("Delete", role: .destructive) { viewStore.dispatch(.confirmDelete) }
                 Button("Cancel",  role: .cancel)      { viewStore.dispatch(.cancelDelete) }
             }

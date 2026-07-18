@@ -25,27 +25,27 @@ Presentation and child lifetime are one fact: set the optional and the child exi
 
 ```swift
 // Sheet, full-screen cover, popover — item- or isPresented-driven, interchangeably:
-.sheet(item: store.item(\.editing, dismiss: .dismissEditor)) { item in router.view(for: .editor(item.id)) }
-.fullScreenCover(isPresented: store.presence(\.onboarding, dismiss: .finishOnboarding)) { router.view(for: .onboarding) }
-.popover(item: store.item(\.tip, dismiss: .dismissTip)) { tip in TipView(tip) }
+.sheet(item: store.item(.state(\.editing), dismiss: .dismissEditor)) { item in router.view(for: .editor(item.id)) }
+.fullScreenCover(isPresented: store.presence(.state(\.onboarding), dismiss: .finishOnboarding)) { router.view(for: .onboarding) }
+.popover(item: store.item(.state(\.tip), dismiss: .dismissTip)) { tip in TipView(tip) }
 
 // Bottom sheet — a sheet whose content carries detents:
-.sheet(isPresented: store.presence(\.filters, dismiss: .closeFilters)) {
+.sheet(isPresented: store.presence(.state(\.filters), dismiss: .closeFilters)) {
     router.view(for: .filters).presentationDetents([.medium, .large])
 }
 
 // Inspector (iOS 17+) — Bool-driven:
-.inspector(isPresented: store.presence(\.inspector, dismiss: .hideInspector)) { router.view(for: .inspector) }
+.inspector(isPresented: store.presence(.state(\.inspector), dismiss: .hideInspector)) { router.view(for: .inspector) }
 
 // Single push via NavigationStack, without a path:
-.navigationDestination(isPresented: store.presence(\.detail, dismiss: .popDetail)) { router.view(for: .detail) }
+.navigationDestination(isPresented: store.presence(.state(\.detail), dismiss: .popDetail)) { router.view(for: .detail) }
 
 // Alert / confirmation dialog — present with `presence`/`item`; the BUTTONS dispatch their own actions:
-.alert("Delete?", isPresented: store.presence(\.deleteConfirm, dismiss: .cancelDelete), presenting: store.state.deleteConfirm) { item in
+.alert("Delete?", isPresented: store.presence(.state(\.deleteConfirm), dismiss: .cancelDelete), presenting: store.state.deleteConfirm) { item in
     Button("Delete", role: .destructive) { store.dispatch(.confirmDelete(item.id)) }
     Button("Cancel", role: .cancel) { store.dispatch(.cancelDelete) }
 }
-.confirmationDialog("Sort", isPresented: store.presence(\.sortDialog, dismiss: .closeSort)) {
+.confirmationDialog("Sort", isPresented: store.presence(.state(\.sortDialog), dismiss: .closeSort)) {
     Button("Newest") { store.dispatch(.sort(.newest)) }
     Button("Oldest") { store.dispatch(.sort(.oldest)) }
 }
@@ -110,7 +110,7 @@ List(rows.state) { row in
 `NavigationStack(path:)` reflects the whole path; SwiftUI hands the binding the new path on any change, so one `setPath` action covers push, back-swipe, and pop-to-root. Destinations resolve through the router.
 
 ```swift
-NavigationStack(path: store.path(\.path, set: NavAction.setPath)) {
+NavigationStack(path: store.path(.state(\.path), dispatch: .action(review: NavAction.setPath))) {
     RootView(...)
         .navigationDestination(for: AppRoute.self) { route in router.view(for: route) }
 }
@@ -124,18 +124,18 @@ Tabs, split view, and paged/carousel views keep every child mounted; only the se
 
 ```swift
 // Tabs:
-TabView(selection: store.selection(\.tab, set: AppAction.selectTab)) {
+TabView(selection: store.selection(.state(\.tab), dispatch: .action(review: AppAction.selectTab))) {
     router.view(for: .home).tag(Tab.home)
     router.view(for: .search).tag(Tab.search)
 }
 
 // Paged / carousel — same selection, page style:
-TabView(selection: store.selection(\.page, set: AppAction.selectPage)) { … }
+TabView(selection: store.selection(.state(\.page), dispatch: .action(review: AppAction.selectPage))) { … }
     .tabViewStyle(.page)
 
 // Split view — selection + column visibility (the latter is just a plain `binding`):
-NavigationSplitView(columnVisibility: store.binding(\.columns, set: AppAction.setColumns)) {
-    Sidebar(selection: store.selection(\.selectedItem, set: AppAction.select))   // optional selection
+NavigationSplitView(columnVisibility: store.binding(.state(\.columns), dispatch: .action(review: AppAction.setColumns))) {
+    Sidebar(selection: store.selection(.state(\.selectedItem), dispatch: .action(review: AppAction.select)))   // optional selection
 } detail: {
     router.view(for: .detail)
 }
@@ -169,13 +169,13 @@ var body: some Scene {
 Interruptive system UI and UIKit screens aren't a new shape — they're the **optional/modal** shape with a `UIViewControllerRepresentable`/`UIViewRepresentable` as the presented *content*. State drives *whether* it shows (`item`/`presence`, dismiss-only as always); the representable's `Coordinator` dispatches actions back for its results, so an outcome flows in as an ordinary action.
 
 ```swift
-.sheet(item: store.item(\.sharing, dismiss: .doneSharing)) { payload in
+.sheet(item: store.item(.state(\.sharing), dismiss: .doneSharing)) { payload in
     ActivityView(items: payload.items)              // UIViewControllerRepresentable(UIActivityViewController)
 }
-.sheet(isPresented: store.presence(\.picker, dismiss: .cancelPicker)) {
+.sheet(isPresented: store.presence(.state(\.picker), dismiss: .cancelPicker)) {
     PhotoPicker { images in store.dispatch(.picked(images)) }   // Coordinator dispatches the result
 }
-.fullScreenCover(item: store.item(\.browsing, dismiss: .closeBrowser)) { page in
+.fullScreenCover(item: store.item(.state(\.browsing), dismiss: .closeBrowser)) { page in
     WebView(url: page.url)                          // WKWebView / SwiftUI WebView, or SFSafariViewController
 }
 ```
@@ -248,7 +248,7 @@ struct HomeView: View, Routable {
     let viewStore: ViewStore<Home.State, Home.Action>
     let router: AppRouter
     var body: some View {
-        List { … }.sheet(isPresented: viewStore.presence(\.route, dismiss: .dismiss)) {
+        List { … }.sheet(isPresented: viewStore.presence(.state(\.route), dismiss: .dismiss)) {
             router.view(for: .detail)   // router supplies env — crux resolved
         }
     }

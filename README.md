@@ -428,7 +428,7 @@ The lifted behavior sees the **unwrapped** element (never `Element?`), and each 
 store.projection(rowScope, element: id).transpose().map { RowFeature.view(store: $0, environment: world.rowEnv) }
 
 // two-way binding — key-path + action case, or the Relay.Scope form (Action.L == State.L):
-TextField("Name", text: store.binding(\.name, set: ViewAction.setName))
+TextField("Name", text: store.binding(.state(\.name), dispatch: .action(review: ViewAction.setName)))
 TextField("Name", text: store.binding(.action(ViewAction.prism.setName).state(\.name)))
 ```
 
@@ -480,7 +480,7 @@ Navigation is a function of state: routes live in the state tree, behaviors muta
 | collection of scene ids | `store.hasScene(…)` | `WindowGroup(for:)` |
 
 ```swift
-NavigationStack(path: store.path(\.nav.path, set: { .nav(.setPath($0)) })) {
+NavigationStack(path: store.path(.state(\.nav.path), dispatch: .action(review: { .nav(.setPath($0)) }))) {
     HomeView()
         .navigationDestination(for: AppRoute.self) { route in
             route.view(in: store, world: world)   // a switch resolving scopes — no AnyView

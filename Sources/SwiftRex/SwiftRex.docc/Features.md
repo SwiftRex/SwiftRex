@@ -156,18 +156,20 @@ struct HeroDetailsView: View {
         Form {
             Text(viewStore.state.displayName).font(.headline)
             // `set:` is `(Value) -> ViewAction`, so pass the case constructor directly:
-            TextField("Powers", text: viewStore.binding(\.powersText, set: HeroDetails.ViewAction.editedPowers))
-            Toggle("Retired", isOn: viewStore.binding(\.isRetired, set: { _ in .tappedRetirement }))
+            TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(review: HeroDetails.ViewAction.editedPowers)))
+            Toggle("Retired", isOn: viewStore.binding(.state(\.isRetired), dispatch: .action(review: { _ in .tappedRetirement })))
         }
     }
 }
 ```
 
-`binding` comes in two spellings. The **key-path** form above — `binding(\.powersText, set: ViewAction.editedPowers)` — reads a slice and dispatches a set action. The **``Relay/Scope``** form is the vocabulary-consistent sibling: an action lane that *embeds* and a state lane that *reads* the **same** value type couple into a `Binding` of that value.
+`binding` takes an axis pair — a `.state(…)` lane that *reads* the slice and a `.action(…)` lane that
+*embeds* the same value type — coupling into a `Binding` of that value. The slots are typed so they can't
+be crossed, and each offers only its own strategies (`\.case` / prism / `review:` for the action, key
+path / closure for the state):
 
 ```swift
-// Equivalent to the key-path binding above — state reads the `String`, action embeds the `String`:
-TextField("Powers", text: viewStore.binding(.action(HeroDetails.ViewAction.prism.editedPowers).state(\.powersText)))
+TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(\.editedPowers)))
 ```
 
 ## L3 — pick your observation
@@ -273,7 +275,7 @@ struct LibraryView: View {
             Button(book.title) { viewStore.dispatch(.tapped(book)) }
         }
         .onAppear { viewStore.dispatch(.onAppear) }
-        .sheet(item: viewStore.item(\.selected, dismiss: .dismissedDetail)) { book in
+        .sheet(item: viewStore.item(.state(\.selected), dismiss: .dismissedDetail)) { book in
             Text(book.title)
         }
     }
