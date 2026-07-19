@@ -16,7 +16,10 @@ extension Middleware {
     public func on<T: Sendable>(
         _ trigger: Relay.ActionAxis.Extracts<Action, T>,
         when condition: (@Sendable (State) -> Bool)? = nil,
-        dispatch out: Relay.ActionAxis.Embeds<Action, T>
+        dispatch out: Relay.ActionAxis.Embeds<Action, T>,
+        file: String = #fileID,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self {
         .combine(self, Middleware { action, context in
             guard let value = trigger.preview(action) else { return Reader { _ in .empty } }
@@ -25,7 +28,8 @@ extension Middleware {
                 if let condition {
                     guard let state = stateBefore, condition(state) else { return .empty }
                 }
-                return Effect.just(out.review(value))
+                // Emit with the source of *this* `.on` declaration — not the internal bridge line.
+                return Effect.just(out.review(value), file: file, function: function, line: line)
             }
         })
     }
