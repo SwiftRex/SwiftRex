@@ -73,27 +73,27 @@ Every lift carries **all three** axes — including `supervise`: a lifted featur
 
 ### Routing actions — the `.on(…)` bridge
 
-`.on` composes declarative action-routing onto any behavior: *when this action arrives, dispatch that one* — optionally co-locating a state mutation (`reduce:`) or a state guard (`when:`). Every `.on` is `combine(self, routingBehavior)`. It speaks the same axis vocabulary as every other host: a **trigger** (`.action(…)` — an `Extracts` that previews the payload) and, to route, a **dispatch** (`.action(…)` embed):
+`.on` composes declarative action-routing onto any behavior: *when this action arrives, dispatch that one* — optionally co-locating a state mutation (`reduce:`). Every `.on` is `combine(self, routingBehavior)`. It speaks the same axis vocabulary as every other host: a **trigger** (`.action(…)` — an `Extracts` that previews the payload) and, to route, a **dispatch** (`.action(…)` embed). An optional **`when`** guard sits right after the trigger, because it gates the *whole* routing — both the dispatch and the reduce:
 
 ```swift
 let behavior = Behavior<AppAction, AppState, World>.identity
     // route the extracted payload to another action
     .on(.action(\.didLoad), dispatch: .action(\.renderItems))
-    // + a state guard
-    .on(.action(\.didTapBuy), dispatch: .action(\.checkout), when: { $0.isLoggedIn })
+    // + a state guard (right after the trigger — it gates dispatch and reduce)
+    .on(.action(\.didTapBuy), when: { $0.isLoggedIn }, dispatch: .action(\.checkout))
     // + a co-located mutation
     .on(.action(\.didLoad), dispatch: .action(\.renderItems),
         reduce: { items, state in state.items = items; state.isLoading = false })
-    // transform the payload — wrap the closure in .action(review:)
-    .on(.action(\.didSearch), dispatch: .action(review: { AppAction.performSearch($0) }))
+    // transform the payload — a trailing closure is the embed (the `review:` label is implicit)
+    .on(.action(\.didSearch), dispatch: .action { AppAction.performSearch($0) })
     // react by mutating state only, no dispatch
     .on(.action(\.reset), reduce: { _, state in state = .init() })
-    // a bool test with no payload → extract Void, then route/mutate
-    .on(.action(preview: { if case .submit = $0 { () } else { nil } }),
-        dispatch: .action(\.doSubmit), when: { !$0.isSubmitting })
+    // a bool test with no payload → extract Void, guard, then route
+    .on(.action { if case .submit = $0 { () } else { nil } },
+        when: { !$0.isSubmitting }, dispatch: .action(\.doSubmit))
 ```
 
-The trigger reads with any `.action(…)` strategy (`\.case` / prism / `preview:`); the dispatch embeds with any (`\.case` / prism / `review:`), so a transform is `.action(review: { … })`. Both `reduce` and `when` are optional.
+The trigger reads with any `.action(…)` strategy (`\.case` / prism / a `preview` closure); the dispatch embeds with any (`\.case` / prism / a `review` closure) — and a trailing closure drops the `review:`/`preview:` label, so a transform is simply `.action { … }`. Both `reduce` and `when` are optional.
 
 State is **never copied** unless the action filter passes first. Variants without `reduce:` and without `when:` use `mutation: .identity` — no `inout` reference to state is ever taken, guaranteeing zero copy-on-write interaction. The bridge is also the tool for **decoupled cross-feature communication**: route one module's output action into another module's input without either module importing the other — see <doc:Modularisation>.
 
