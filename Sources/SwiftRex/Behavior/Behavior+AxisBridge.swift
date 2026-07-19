@@ -24,7 +24,10 @@ extension Behavior {
         _ trigger: Relay.ActionAxis.Extracts<Action, T>,
         when condition: (@Sendable (State) -> Bool)? = nil,
         dispatch out: Relay.ActionAxis.Embeds<Action, T>,
-        reduce: (@Sendable (T, inout State) -> Void)? = nil
+        reduce: (@Sendable (T, inout State) -> Void)? = nil,
+        file: String = #fileID,
+        function: String = #function,
+        line: UInt = #line
     ) -> Self {
         .combine(self, Behavior { action, context in
             guard let value = trigger.preview(action) else { return .doNothing }
@@ -34,7 +37,11 @@ extension Behavior {
             let mutation: ReducerOutcome<State> = reduce.map { reduce in
                 .mutation(EndoMut { state in reduce(value, &state) })
             } ?? .unchanged
-            return Reaction(mutation: mutation, produce: Reader { _ in Effect.just(out.review(value)) })
+            // Route the emitted action with the source of *this* `.on` declaration — not the internal
+            // bridge line — so tracing points at where the bridge was wired.
+            return Reaction(mutation: mutation, produce: Reader { _ in
+                Effect.just(out.review(value), file: file, function: function, line: line)
+            })
         })
     }
 

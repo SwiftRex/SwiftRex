@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CoreFP
+import DataStructure
 @testable import SwiftRex
 import Testing
+
+private let anySource = ActionSource(file: #file, function: #function, line: #line)
 
 private enum AppAction: Equatable, Sendable {
     case counter(Int)
@@ -68,6 +71,19 @@ struct BehaviorAxisBridgeTests {
         #expect(store.state.count == 3)
         store.dispatch(.counter(-1))         // preview nil (not > 0) → no-op
         #expect(store.state.count == 3)
+    }
+
+    @Test func routedActionReportsDeclarationSiteNotBridgeInternals() {
+        // The `.on` routed action must carry the source of the *declaration* — this line — not the
+        // internal `Effect.just` inside Behavior+AxisBridge. Guards the #fileID forwarding.
+        let declLine = UInt(#line + 1)
+        let behavior = base.on(.action(\.counter), dispatch: .action(\.bumped))
+        let reaction = behavior.handle(.counter(7), PreReducerContext(source: anySource, getter: { AppState() }))
+        let effect = reaction.produce(PostReducerContext(environment: (), getter: { AppState() }))
+        let sources = LockProtected([ActionSource]())
+        subscribeAll(effect) { d in sources.mutate { $0.append(d.dispatcher) } }
+        #expect(sources.value.map(\.line) == [declLine])
+        #expect(sources.value.first?.file.hasSuffix("BehaviorAxisBridgeTests.swift") == true)
     }
 
     @Test func faithfulToPrismForm() {
