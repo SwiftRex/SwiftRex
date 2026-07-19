@@ -474,12 +474,12 @@ Navigation is a function of state: routes live in the state tree, behaviors muta
 | State shape | Binding | Container |
 |---|---|---|
 | `Route?` / `Bool` | `store.item(…)` / `store.presence(…)` | `.sheet`, `.fullScreenCover`, `.popover` |
-| `[Route]` | `store.path(…)` | `NavigationStack(path:)` |
-| selection enum / id | `store.selection(…)` | `TabView`, `NavigationSplitView` |
+| `[Route]` | `store.binding(…)` | `NavigationStack(path:)` |
+| selection enum / id | `store.binding(…)` | `TabView`, `NavigationSplitView` |
 | collection of scene ids | `store.hasScene(…)` | `WindowGroup(for:)` |
 
 ```swift
-NavigationStack(path: store.path(.state(\.nav.path), dispatch: .action(review: { .nav(.setPath($0)) }))) {
+NavigationStack(path: store.binding(.state(\.nav.path), dispatch: .action(review: { .nav(.setPath($0)) }))) {
     HomeView()
         .navigationDestination(for: AppRoute.self) { route in
             route.view(in: store, world: world)   // a switch resolving scopes — no AnyView

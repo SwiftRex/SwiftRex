@@ -29,7 +29,13 @@
             @ViewBuilder content: @escaping (Wrapped) -> Presented
         ) -> some View {
             sheet(
-                isPresented: store.presentation(.state(keyPath), dismiss: dismiss, file: file, function: function, line: line),
+                isPresented: store.presence(
+                    .state(keyPath) as Relay.StateAxis.Reads<S.State, Presentation<Wrapped>>,
+                    dismiss: dismiss,
+                    file: file,
+                    function: function,
+                    line: line
+                ),
                 onDismiss: {
                     store.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
                     onDismiss?()
@@ -58,7 +64,13 @@
             @ViewBuilder content: @escaping (Wrapped) -> Presented
         ) -> some View {
             sheet(
-                isPresented: store.presence(.state(keyPath), dismiss: dismiss, file: file, function: function, line: line),
+                isPresented: store.presence(
+                    .state(keyPath) as Relay.StateAxis.Reads<S.State, Wrapped?>,
+                    dismiss: dismiss,
+                    file: file,
+                    function: function,
+                    line: line
+                ),
                 onDismiss: onDismiss,
                 content: {
                     if let wrapped = store.state[keyPath: keyPath] {
@@ -70,7 +82,7 @@
 
         /// `.sheet(item:)` counterpart of ``presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)``
         /// for an `Identifiable` presented value — wires both `dismiss` edges, and keys the sheet on
-        /// `id` (via ``StoreType/presentationItem(_:dismiss:file:function:line:)``) so a mutating child
+        /// `id` (via ``StoreType/item(_:dismiss:file:function:line:)``) so a mutating child
         /// never churns SwiftUI's identity. `content` receives the item.
         @MainActor
         public func presentingItem<S: StoreType, Wrapped: Identifiable & Sendable, Presented: View>(
@@ -84,7 +96,13 @@
             @ViewBuilder content: @escaping (Wrapped) -> Presented
         ) -> some View {
             sheet(
-                item: store.presentationItem(.state(keyPath), dismiss: dismiss, file: file, function: function, line: line),
+                item: store.item(
+                    .state(keyPath) as Relay.StateAxis.Reads<S.State, Presentation<Wrapped>>,
+                    dismiss: dismiss,
+                    file: file,
+                    function: function,
+                    line: line
+                ),
                 onDismiss: {
                     store.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
                     onDismiss?()
