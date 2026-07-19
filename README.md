@@ -427,9 +427,8 @@ The lifted behavior sees the **unwrapped** element (never `Element?`), and each 
 // a list row → an unwrapped child store → a live child view (nil when the row is gone):
 store.projection(rowScope, element: id).transpose().map { RowFeature.view(store: $0, environment: world.rowEnv) }
 
-// two-way binding — key-path + action case, or the Relay.Scope form (Action.L == State.L):
-TextField("Name", text: store.binding(.state(\.name), dispatch: .action(review: ViewAction.setName)))
-TextField("Name", text: store.binding(.action(ViewAction.prism.setName).state(\.name)))
+// two-way binding — a `.state(…)` read paired with the `.action(…)` case it dispatches on write:
+TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setName)))
 ```
 
 A **`Relay.Scope`** captures how a child feature embeds into the app — action prism, state slice, environment narrowing — as one declared, compile-checked value used by both the store fold *and* the view router. Given that wiring it lifts whatever the child provides: `.behavior(of:)` when the child is `HasBehavior`, `.view(of:from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:
@@ -457,8 +456,8 @@ AppScopes.movies.view(of: Movies.self, from: store, world: world)
 
 ```swift
 let bridge = Behavior<AppAction, AppState, World>.identity
-    .on(AppAction.prism.player >>> Player.Action.prism.finished,
-        dispatch: { movieID in .movies(.markWatched(movieID)) })
+    .on(.action(AppAction.prism.player >>> Player.Action.prism.finished),
+        dispatch: .action { movieID in .movies(.markWatched(movieID)) })
 
 // compose it into the store fold like any other behavior:
 behavior: AppScopes.movies.behavior(of: Movies.self)

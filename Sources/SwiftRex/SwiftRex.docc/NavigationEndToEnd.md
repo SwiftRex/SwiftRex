@@ -326,8 +326,8 @@ The URL never navigates directly — `onOpenURL` turns it into `.openedURL`, and
 
 | Shape | State | Action | Behavior (Layer 4) | Binding (Layer 6) | Container |
 |---|---|---|---|---|---|
-| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | ``StoreType/selection(_:set:)`` | `TabView` / split |
-| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | ``StoreType/path(_:set:)`` | `NavigationStack(path:)` |
+| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | ``StoreType/selection(_:dispatch:)`` | `TabView` / split |
+| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | ``StoreType/path(_:dispatch:)`` | `NavigationStack(path:)` |
 | **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | ``StoreType/presentation(_:dismiss:)`` + `.presenting` | sheet / cover |
 | **Optional** | `confirmingDelete: Bool` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | ``StoreType/presence(_:dismiss:)`` / ``StoreType/item(_:dismiss:)`` | alert / sheet / popover |
 

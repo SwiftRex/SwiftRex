@@ -9,8 +9,8 @@ Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one
 | Shape | State | Lift | Binding | Reducer |
 | --- | --- | --- | --- | --- |
 | **Optional / modal** — 0-or-1, child created on present | `Item?` (or `Bool`) | `liftOptional` | ``StoreType/item(_:dismiss:)`` / ``StoreType/presence(_:dismiss:)`` | ``Behavior/navigationItem(_:action:allow:)`` |
-| **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | ``StoreType/path(_:set:)`` | ``Behavior/navigationStack(_:action:allow:)`` |
-| **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | ``StoreType/selection(_:set:)`` | ``Behavior/navigationSelection(_:action:allow:)`` |
+| **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | ``StoreType/path(_:dispatch:)`` | ``Behavior/navigationStack(_:action:allow:)`` |
+| **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | ``StoreType/selection(_:dispatch:)`` | ``Behavior/navigationSelection(_:action:allow:)`` |
 | **Scene set** — 0-to-N windows | keyed sub-states | element/dictionary projection | ``StoreType/hasScene(_:in:)`` + `WindowGroup(for:)` | ordinary open/close actions |
 
 The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers.
@@ -120,7 +120,7 @@ Behavior side: `liftCollection` per element, plus ``Behavior/navigationStack(_:a
 
 ### Selection — 1-of-N, all children alive
 
-Tabs, split view, and paged/carousel views keep every child mounted; only the selection changes. All children are lifted **unconditionally** (siblings in state). Unlike modal dismiss, selecting is a normal state change, so ``StoreType/selection(_:set:)`` dispatches on every change.
+Tabs, split view, and paged/carousel views keep every child mounted; only the selection changes. All children are lifted **unconditionally** (siblings in state). Unlike modal dismiss, selecting is a normal state change, so ``StoreType/selection(_:dispatch:)`` dispatches on every change.
 
 ```swift
 // Tabs:
