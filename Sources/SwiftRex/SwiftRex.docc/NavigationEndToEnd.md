@@ -252,8 +252,8 @@ struct RootView: View {
     let router: AppRouter
 
     var body: some View {
-        TabView(selection: store.selection(.state(\.tab), dispatch: .action(review: { AppAction.tab(.select($0)) }))) {   // SELECTION
-            NavigationStack(path: store.path(.state(\.path), dispatch: .action(review: { AppAction.nav(.setPath($0)) }))) {   // STACK
+        TabView(selection: store.binding(.state(\.tab), dispatch: .action(review: { AppAction.tab(.select($0)) }))) {   // SELECTION
+            NavigationStack(path: store.binding(.state(\.path), dispatch: .action(review: { AppAction.nav(.setPath($0)) }))) {   // STACK
                 AppScopes.library.view(of: LibraryFeature.self, from: store, world: router.world)
                     .navigationDestination(for: AppRoute.self) { router.view(for: $0) }
             }
@@ -291,7 +291,7 @@ struct BookView: View, Routable {
 }
 ```
 
-Prefer ``StoreType/presentation(_:dismiss:)`` (the `Bool` binding, above) as the default; reach for ``StoreType/presentationItem(_:dismiss:)`` + `.presentingItem` only when a `.sheet(item:)` genuinely needs the `Identifiable` value (`EditorFeature.State` is `Identifiable`, so it qualifies).
+Prefer ``StoreType/presence(_:dismiss:)`` (the `Bool` binding, above) as the default; reach for ``StoreType/item(_:dismiss:)`` + `.presentingItem` only when a `.sheet(item:)` genuinely needs the `Identifiable` value (`EditorFeature.State` is `Identifiable`, so it qualifies).
 
 ## Layer 7 — The `@main` assembly (store, scene, deep link)
 
@@ -326,9 +326,9 @@ The URL never navigates directly — `onOpenURL` turns it into `.openedURL`, and
 
 | Shape | State | Action | Behavior (Layer 4) | Binding (Layer 6) | Container |
 |---|---|---|---|---|---|
-| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | ``StoreType/selection(_:dispatch:)`` | `TabView` / split |
-| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | ``StoreType/path(_:dispatch:)`` | `NavigationStack(path:)` |
-| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | ``StoreType/presentation(_:dismiss:)`` + `.presenting` | sheet / cover |
+| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | ``StoreType/binding(_:dispatch:)`` | `TabView` / split |
+| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | ``StoreType/binding(_:dispatch:)`` | `NavigationStack(path:)` |
+| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | ``StoreType/presence(_:dismiss:)`` + `.presenting` | sheet / cover |
 | **Optional** | `confirmingDelete: Bool` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | ``StoreType/presence(_:dismiss:)`` / ``StoreType/item(_:dismiss:)`` | alert / sheet / popover |
 
 Every one is the same recipe: **store the shape in state, dispatch through an action, fold a reducer/lift for it, bind a native container to it, resolve destinations through the router.** No new dialect — just state, actions, and `some View`.

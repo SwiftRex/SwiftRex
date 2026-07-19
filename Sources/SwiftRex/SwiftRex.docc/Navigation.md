@@ -9,8 +9,8 @@ Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one
 | Shape | State | Lift | Binding | Reducer |
 | --- | --- | --- | --- | --- |
 | **Optional / modal** — 0-or-1, child created on present | `Item?` (or `Bool`) | `liftOptional` | ``StoreType/item(_:dismiss:)`` / ``StoreType/presence(_:dismiss:)`` | ``Behavior/navigationItem(_:action:allow:)`` |
-| **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | ``StoreType/path(_:dispatch:)`` | ``Behavior/navigationStack(_:action:allow:)`` |
-| **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | ``StoreType/selection(_:dispatch:)`` | ``Behavior/navigationSelection(_:action:allow:)`` |
+| **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | ``StoreType/binding(_:dispatch:)`` | ``Behavior/navigationStack(_:action:allow:)`` |
+| **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | ``StoreType/binding(_:dispatch:)`` | ``Behavior/navigationSelection(_:action:allow:)`` |
 | **Scene set** — 0-to-N windows | keyed sub-states | element/dictionary projection | ``StoreType/hasScene(_:in:)`` + `WindowGroup(for:)` | ordinary open/close actions |
 
 The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers.
@@ -68,7 +68,7 @@ Editor.behavior().liftPresentation(action: \.editor, state: \.editor, environmen
 content.presenting(store, \.editor, dismiss: .editor(.dismiss)) { _ in router.view(for: .editor) }
 ```
 
-The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the binding's `set(false)` steps `presented → dismissing`, and `onDismiss` (a real SwiftUI completion, not a timer) steps `dismissing → dismissed`. Content renders the value carried by *both* live stages, so it stays put through the animation. Use ``StoreType/presentation(_:dismiss:)`` for the `Bool` binding (never churns identity — the safe default) or ``StoreType/presentationItem(_:dismiss:)`` for an `Identifiable` value with a **stable id** (`.sheet(item:)`); prefer the ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)`` / `presentingItem` modifiers, which wire `onDismiss` for you. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
+The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the binding's `set(false)` steps `presented → dismissing`, and `onDismiss` (a real SwiftUI completion, not a timer) steps `dismissing → dismissed`. Content renders the value carried by *both* live stages, so it stays put through the animation. Use ``StoreType/presence(_:dismiss:)`` for the `Bool` binding (never churns identity — the safe default) or ``StoreType/item(_:dismiss:)`` for an `Identifiable` value with a **stable id** (`.sheet(item:)`); prefer the ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)`` / `presentingItem` modifiers, which wire `onDismiss` for you. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
 
 #### Building the child view — `transpose()` + `map`
 
@@ -110,7 +110,7 @@ List(rows.state) { row in
 `NavigationStack(path:)` reflects the whole path; SwiftUI hands the binding the new path on any change, so one `setPath` action covers push, back-swipe, and pop-to-root. Destinations resolve through the router.
 
 ```swift
-NavigationStack(path: store.path(.state(\.path), dispatch: .action(review: NavAction.setPath))) {
+NavigationStack(path: store.binding(.state(\.path), dispatch: .action(review: NavAction.setPath))) {
     RootView(...)
         .navigationDestination(for: AppRoute.self) { route in router.view(for: route) }
 }
@@ -120,22 +120,22 @@ Behavior side: `liftCollection` per element, plus ``Behavior/navigationStack(_:a
 
 ### Selection — 1-of-N, all children alive
 
-Tabs, split view, and paged/carousel views keep every child mounted; only the selection changes. All children are lifted **unconditionally** (siblings in state). Unlike modal dismiss, selecting is a normal state change, so ``StoreType/selection(_:dispatch:)`` dispatches on every change.
+Tabs, split view, and paged/carousel views keep every child mounted; only the selection changes. All children are lifted **unconditionally** (siblings in state). Unlike modal dismiss, selecting is a normal state change, so ``StoreType/binding(_:dispatch:)`` dispatches on every change.
 
 ```swift
 // Tabs:
-TabView(selection: store.selection(.state(\.tab), dispatch: .action(review: AppAction.selectTab))) {
+TabView(selection: store.binding(.state(\.tab), dispatch: .action(review: AppAction.selectTab))) {
     router.view(for: .home).tag(Tab.home)
     router.view(for: .search).tag(Tab.search)
 }
 
 // Paged / carousel — same selection, page style:
-TabView(selection: store.selection(.state(\.page), dispatch: .action(review: AppAction.selectPage))) { … }
+TabView(selection: store.binding(.state(\.page), dispatch: .action(review: AppAction.selectPage))) { … }
     .tabViewStyle(.page)
 
 // Split view — selection + column visibility (the latter is just a plain `binding`):
 NavigationSplitView(columnVisibility: store.binding(.state(\.columns), dispatch: .action(review: AppAction.setColumns))) {
-    Sidebar(selection: store.selection(.state(\.selectedItem), dispatch: .action(review: AppAction.select)))   // optional selection
+    Sidebar(selection: store.binding(.state(\.selectedItem), dispatch: .action(review: AppAction.select)))   // optional selection
 } detail: {
     router.view(for: .detail)
 }

@@ -138,7 +138,7 @@
             let store = makeStore()
             store.dispatch(.setPath([.a]))
             await Task.yield()
-            let path = store.path(.state(\.path), dispatch: .action(review: A.setPath))
+            let path = store.binding(.state(\.path), dispatch: .action(review: A.setPath))
             #expect(path.wrappedValue == [.a])
             path.wrappedValue = [.a, .b] // SwiftUI push
             await Task.yield()
@@ -151,7 +151,7 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func selectionDispatchesOnEveryChange() async {
             let store = makeStore()
-            let tab = store.selection(.state(\.tab), dispatch: .action(review: A.selectTab))
+            let tab = store.binding(.state(\.tab), dispatch: .action(review: A.selectTab))
             #expect(tab.wrappedValue == .home)
             tab.wrappedValue = .search // selecting a tab is a real state change (not dismiss-only)
             await Task.yield()
@@ -161,7 +161,7 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func optionalSelectionHandlesNilAndValue() async {
             let store = makeStore()
-            let sidebar = store.selection(.state(\.sidebar), dispatch: .action(review: A.selectSidebar))
+            let sidebar = store.binding(.state(\.sidebar), dispatch: .action(review: A.selectSidebar))
             #expect(sidebar.wrappedValue == nil)
             sidebar.wrappedValue = .c
             await Task.yield()

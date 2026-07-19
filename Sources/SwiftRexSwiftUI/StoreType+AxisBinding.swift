@@ -4,19 +4,28 @@
 import SwiftRex
 import SwiftUI
 
-// The axis-separated store bindings — the single implementation under the whole family. Each slot is typed
-// as the concrete capability witness it needs (a `Reads` for the state slice, an `Embeds` for the emitted
-// action), so the slots can't be crossed and autocomplete offers only the right axis: `.state(…)` carries
-// every read strategy (key path / closure / lens), `.action(…)` every embed strategy (`\.case` / prism /
-// review). Writes round-trip through a dispatched action — the reducer stays the only writer. The terse
-// key-path spellings in `StoreType+Bindings.swift` delegate here.
+// The axis-separated store bindings — three verbs under one vocabulary. Each slot is typed as the concrete
+// capability witness it needs (a `Reads` for the state slice, an `Embeds` for the emitted action), so the
+// slots can't be crossed and autocomplete offers only the right axis: `.state(…)` carries every read strategy
+// (key path / closure / lens), `.action(…)` every embed strategy (`\.case` / prism / review). Writes
+// round-trip through a dispatched action — the reducer stays the only writer.
+//
+//   • `binding`  — two-way, dispatches on EVERY change. Subsumes what were once `path`/`selection`.
+//   • `presence` — dismiss-only → `Binding<Bool>`   for `.sheet(isPresented:)` / alert / cover / popover.
+//   • `item`     — dismiss-only → `Binding<Item?>`  for `.sheet(item:)` / `.popover(item:)`.
+//
+// `presence` and `item` each take EITHER a plain optional slice (1-stage) OR a `Presentation<Wrapped>` slice
+// (3-stage, flicker-free) — the state shape you pass picks the behaviour, not a differently-named method.
 
 extension StoreType {
-    /// A two-way `Binding<T>` built from a **state read** and an **action embed** of the same value type —
-    /// for `TextField`, `Toggle`, sliders, `NavigationStack(path:)`, `TabView(selection:)`, anything.
+    /// A two-way `Binding<T>` from a **state read** and an **action embed** of the same value type — the one
+    /// write-through binding. It dispatches on **every** change, so besides `TextField`/`Toggle`/sliders it
+    /// also drives `NavigationStack(path:)` (`T == [Route]`) and `TabView(selection:)` (`T == Tab` / `Tab?`).
     ///
     /// ```swift
     /// TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setName)))
+    /// NavigationStack(path: store.binding(.state(\.path), dispatch: .action(\.setPath))) { root }
+    /// TabView(selection: store.binding(.state(\.tab), dispatch: .action(\.selectTab))) { … }
     /// ```
     @MainActor
     public func binding<T: Sendable>(
@@ -52,8 +61,29 @@ extension StoreType {
         )
     }
 
+    /// The `Binding<Bool>` for a ``Presentation`` slice — `true` only while `.presented`. Setting `false`
+    /// dispatches `dismiss` (`presented → dismissing`); the slice keeps rendering `dismissing(last:)` while
+    /// SwiftUI animates out (flicker-free). Pair with an `onDismiss:` dispatching the same `dismiss`, or use
+    /// the `presenting` view modifier, which wires both edges for you.
+    @MainActor
+    public func presence<Wrapped: Sendable>(
+        _ state: Relay.StateAxis.Reads<State, Presentation<Wrapped>>,
+        dismiss: Action,
+        file: String = #fileID,
+        function: String = #function,
+        line: UInt = #line
+    ) -> Binding<Bool> {
+        Binding(
+            get: { state.get(self.state).isPresented },
+            set: { isPresented in
+                guard !isPresented else { return }
+                self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
+            }
+        )
+    }
+
     /// A `Binding<Item?>` for `.sheet(item:)` / `.popover(item:)` — present while the optional slice is
-    /// `.some`; dispatch `dismiss` when SwiftUI clears it.
+    /// `.some`; dispatch `dismiss` when SwiftUI clears it. SwiftUI keys the sheet on `Item.id`.
     @MainActor
     public func item<Item: Identifiable & Sendable>(
         _ state: Relay.StateAxis.Reads<State, Item?>,
@@ -71,31 +101,11 @@ extension StoreType {
         )
     }
 
-    /// A `Binding<Bool>` for a ``Presentation`` slice — `true` only while `.presented`. Setting `false`
-    /// dispatches `dismiss` (`presented → dismissing`); the slice keeps rendering `dismissing(last:)` while
-    /// SwiftUI animates out. Pair with an `onDismiss:` dispatching the same `dismiss`, or use `presenting`.
+    /// The `.sheet(item:)` binding for an `Identifiable` ``Presentation`` slice — `.some` only while
+    /// `.presented` (entering `dismissing` flips it to `nil` so SwiftUI starts the out-animation); setting
+    /// `nil` dispatches `dismiss`. The stable `Item.id` keeps the sheet put as the child state changes.
     @MainActor
-    public func presentation<Wrapped: Sendable>(
-        _ state: Relay.StateAxis.Reads<State, Presentation<Wrapped>>,
-        dismiss: Action,
-        file: String = #fileID,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Binding<Bool> {
-        Binding(
-            get: { state.get(self.state).isPresented },
-            set: { isPresented in
-                guard !isPresented else { return }
-                self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
-            }
-        )
-    }
-
-    /// A `Binding<Wrapped?>` for an `Identifiable` ``Presentation`` slice — `.some` only while `.presented`
-    /// (entering `dismissing` flips it to `nil` so SwiftUI starts the out-animation); setting `nil`
-    /// dispatches `dismiss`. Give it a **stable** id so the sheet stays put as the child state changes.
-    @MainActor
-    public func presentationItem<Wrapped: Identifiable & Sendable>(
+    public func item<Wrapped: Identifiable & Sendable>(
         _ state: Relay.StateAxis.Reads<State, Presentation<Wrapped>>,
         dismiss: Action,
         file: String = #fileID,
@@ -112,53 +122,6 @@ extension StoreType {
                 self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
             }
         )
-    }
-
-    /// A `Binding<[Element]>` for `NavigationStack(path:)` — SwiftUI hands the whole new path on every
-    /// structural change (push / pop / pop-to-root), so one dispatched action carries all of them.
-    ///
-    /// ```swift
-    /// NavigationStack(path: store.path(.state(\.path), dispatch: .action(\.setPath))) { root }
-    /// ```
-    @MainActor
-    public func path<Element: Sendable>(
-        _ state: Relay.StateAxis.Reads<State, [Element]>,
-        dispatch action: Relay.ActionAxis.Embeds<Action, [Element]>,
-        file: String = #fileID,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Binding<[Element]> {
-        binding(state, dispatch: action, file: file, function: function, line: line)
-    }
-
-    /// A `Binding<Value>` for `TabView(selection:)` / carousels — the **selection** shape (1-of-N, all
-    /// children alive). Dispatches on **every** change, unlike the dismiss-only presence/item bindings.
-    ///
-    /// ```swift
-    /// TabView(selection: store.selection(.state(\.tab), dispatch: .action(\.selectTab))) { … }
-    /// ```
-    @MainActor
-    public func selection<Value: Sendable>(
-        _ state: Relay.StateAxis.Reads<State, Value>,
-        dispatch action: Relay.ActionAxis.Embeds<Action, Value>,
-        file: String = #fileID,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Binding<Value> {
-        binding(state, dispatch: action, file: file, function: function, line: line)
-    }
-
-    /// A `Binding<Value?>` for `NavigationSplitView`-style **optional** selection. Dispatches on every
-    /// change, including selecting `nil`.
-    @MainActor
-    public func selection<Value: Sendable>(
-        _ state: Relay.StateAxis.Reads<State, Value?>,
-        dispatch action: Relay.ActionAxis.Embeds<Action, Value?>,
-        file: String = #fileID,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Binding<Value?> {
-        binding(state, dispatch: action, file: file, function: function, line: line)
     }
 }
 #endif
