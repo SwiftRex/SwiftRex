@@ -225,11 +225,11 @@ Behaviors compose with `<>` (or `Behavior.combine`): mutations fold in order, ef
 
 ```swift
 let routed = Behavior<AppAction, AppState, World>.identity
-    .on(\.didTapLogout, dispatch: AppAction.auth(.logout))
-    .on(\.didLoad, dispatch: AppAction.renderItems, when: { !$0.isLoading })
+    .on(.action(\.didTapLogout), dispatch: .action { _ in .auth(.logout) })
+    .on(.action(\.didLoad), when: { !$0.isLoading }, dispatch: .action(\.renderItems))
 ```
 
-The full `.on` catalog (Prism, KeyPath, predicate, and pure-routing families) is on the [Behavior reference page](https://swiftrex.ios.lu/documentation/swiftrex/behavior).
+Both slots take the `.action(…)` factory (any strategy — `\.case` / prism / a trailing closure); `when` sits right after the trigger because it gates the whole routing. The full binding and `.on` vocabulary is on the [Behavior reference page](https://swiftrex.ios.lu/documentation/swiftrex/behavior).
 
 # Effects: producer or supervisor?
 

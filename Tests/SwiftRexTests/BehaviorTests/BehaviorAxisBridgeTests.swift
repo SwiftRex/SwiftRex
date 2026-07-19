@@ -39,7 +39,7 @@ struct BehaviorAxisBridgeTests {
     }
 
     @Test func reduceGuardedByWhen() {
-        let behavior = base.on(.action(\.counter), reduce: { v, s in s.count += v }, when: { $0.count < 10 })
+        let behavior = base.on(.action(\.counter), when: { $0.count < 10 }, reduce: { v, s in s.count += v })
         let store = Store(initial: AppState(), behavior: behavior, environment: ())
         store.dispatch(.counter(6))          // 0 < 10 → 6
         #expect(store.state.count == 6)
@@ -77,8 +77,8 @@ struct BehaviorAxisBridgeTests {
             store.dispatch(.counter(5)); store.dispatch(.counter(2))
             return store.state.count
         }
-        let axis = base.on(.action(\.counter), reduce: { v, s in s.count += v }, when: { $0.count < 6 })
-        let prism = base.on(AppAction.prism.counter, reduce: { v, s in s.count += v }, when: { $0.count < 6 })
+        let axis = base.on(.action(\.counter), when: { $0.count < 6 }, reduce: { v, s in s.count += v })
+        let prism = base.on(.action(AppAction.prism.counter), when: { $0.count < 6 }, reduce: { v, s in s.count += v })
         #expect(run(axis) == run(prism))
     }
 }

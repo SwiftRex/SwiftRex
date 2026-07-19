@@ -57,7 +57,7 @@ struct BehaviorOnReduceTests {
     }
 
     @Test func reduceGuardedByPredicate() {
-        let behavior = base.on(.action(AppAction.prism.counter), reduce: { value, state in state.count += value }, when: { $0.count < 10 })
+        let behavior = base.on(.action(AppAction.prism.counter), when: { $0.count < 10 }, reduce: { value, state in state.count += value })
         let store = Store(initial: AppState(), behavior: behavior, environment: ())
         store.dispatch(.counter(6))
         #expect(store.state.count == 6)
