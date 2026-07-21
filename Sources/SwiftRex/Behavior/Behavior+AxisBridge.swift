@@ -20,17 +20,17 @@ extension Behavior {
     /// Route the trigger's payload by **embedding** it into an outbound action (`.action(…)`), optionally
     /// mutating state (`reduce:`). The optional **`when`** guard gates the whole routing — dispatch and
     /// reduce alike — which is why it sits right after the trigger.
-    public func on<T: Sendable>(
-        _ trigger: Relay.ActionAxis.Extracts<Action, T>,
+    public func on<T: Sendable, Trigger: Relay.ActionAxis.ExtractsProtocol, Dispatch: Relay.ActionAxis.EmbedsProtocol>(
+        _ trigger: Relay.Scope<Trigger, Relay.Absurd, Relay.Absurd>,
         when condition: (@Sendable (State) -> Bool)? = nil,
-        dispatch out: Relay.ActionAxis.Embeds<Action, T>,
+        dispatch out: Relay.Scope<Dispatch, Relay.Absurd, Relay.Absurd>,
         reduce: (@Sendable (T, inout State) -> Void)? = nil,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Self {
+    ) -> Self where Trigger.G == Action, Trigger.L == T, Dispatch.G == Action, Dispatch.L == T {
         .combine(self, Behavior { action, context in
-            guard let value = trigger.preview(action) else { return .doNothing }
+            guard let value = trigger.action.preview(action) else { return .doNothing }
             if let condition {
                 guard let state = context.stateBefore, condition(state) else { return .doNothing }
             }
@@ -40,20 +40,20 @@ extension Behavior {
             // Route the emitted action with the source of *this* `.on` declaration — not the internal
             // bridge line — so tracing points at where the bridge was wired.
             return Reaction(mutation: mutation, produce: Reader { _ in
-                Effect.just(out.review(value), file: file, function: function, line: line)
+                Effect.just(out.action.review(value), file: file, function: function, line: line)
             })
         })
     }
 
     /// React to the trigger by **mutating state only** — no action is dispatched — optionally guarded by
     /// `when` (which sits right after the trigger, gating the reaction).
-    public func on<T: Sendable>(
-        _ trigger: Relay.ActionAxis.Extracts<Action, T>,
+    public func on<T: Sendable, Trigger: Relay.ActionAxis.ExtractsProtocol>(
+        _ trigger: Relay.Scope<Trigger, Relay.Absurd, Relay.Absurd>,
         when condition: (@Sendable (State) -> Bool)? = nil,
         reduce: @escaping @Sendable (T, inout State) -> Void
-    ) -> Self {
+    ) -> Self where Trigger.G == Action, Trigger.L == T {
         .combine(self, Behavior { action, context in
-            guard let value = trigger.preview(action) else { return .doNothing }
+            guard let value = trigger.action.preview(action) else { return .doNothing }
             if let condition {
                 guard let state = context.stateBefore, condition(state) else { return .doNothing }
             }

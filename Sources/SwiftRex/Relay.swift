@@ -9,28 +9,50 @@ import CoreFP
 /// constrains on only the *capabilities* it uses, so a richer scope satisfies every host while a minimal
 /// one is compile-locked to just the hosts it fits.
 ///
-/// This collapses the former simplex projection and env-aware lift into a single carrier, and moves the
-/// optic/key-path/closure spellings out of the hosts and into the lane witnesses — declared once each —
-/// so the many `lift`/`projection` overloads reduce to one method per host.
+/// Each axis is a small protocol tower rather than one flat protocol, so the *builder* and *hosts* can
+/// grant methods purely by conformance — no `@available` suppression:
+///
+/// ```
+/// …Axis.Strategy            the slot type — everything an axis can be (Scope binds here)
+/// └─ …Axis.Transformation   a real, present axis (NOT Absurd)
+///    ├─ …Axis.IdentityProtocol   pass-through (local == global) — the fluent INSTANCE refiner
+///    └─ …Axis.LiftingProtocol    carries G/L + capability — the static FACTORY entry
+///       └─ ExtractsProtocol / EmbedsProtocol / ReadsProtocol / WritesProtocol / NarrowsProtocol
+/// ```
+///
+/// Two shared, param-less markers cover the non-lifting cases across every axis: ``Relay/Identity``
+/// (pass-through) and ``Relay/Absurd`` (sealed — the axis does not exist for this host, so it offers
+/// neither factory nor instance builder). Because `Absurd` conforms only to the axis `Strategy` base and
+/// **not** `Transformation`, it structurally has no builder method — nothing to suppress.
 public enum Relay {
     // MARK: - Action axis (sum type / enum → prism-focused)
 
     /// The action axis — actions are sum types, so the optic is a prism: `preview` extracts the local
     /// case, `review` embeds it. Hosts constrain on ``ExtractsProtocol`` / ``EmbedsProtocol``.
     public enum ActionAxis {
-        /// The base action lane — carries the global/local action types.
-        public protocol Transformation: Sendable {
+        /// Everything the action lane can be — the ``Relay/Scope`` action slot binds here, so both the
+        /// ``Relay/Absurd`` seal and any real lane are legal, and a *state* lane is not.
+        public protocol Strategy: Sendable {}
+
+        /// A **present** action lane (identity or lifting) — i.e. not ``Relay/Absurd``.
+        public protocol Transformation: Strategy {}
+
+        /// The pass-through action lane (`local == global`) — grants the fluent **instance** refiner.
+        public protocol IdentityProtocol: Transformation {}
+
+        /// A real action lane — carries the global/local action types and grants the static **factory**.
+        public protocol LiftingProtocol: Transformation {
             associatedtype G: Sendable
             associatedtype L: Sendable
         }
 
         /// An action lane that can **extract** the local action (`preview: G → L?`) — a reducer/behavior lift.
-        public protocol ExtractsProtocol: Transformation {
+        public protocol ExtractsProtocol: LiftingProtocol {
             var preview: @Sendable (G) -> L? { get }
         }
 
         /// An action lane that can **embed** the local action (`review: L → G`) — a store projection / dispatch.
-        public protocol EmbedsProtocol: Transformation {
+        public protocol EmbedsProtocol: LiftingProtocol {
             var review: @Sendable (L) -> G { get }
         }
 
@@ -65,14 +87,6 @@ public enum Relay {
                 self.review = review
             }
         }
-
-        /// The unset marker — the action isn't remapped; the host fills identity. Conforms only the base,
-        /// so a host that needs `Extracts`/`Embeds` rejects it and an absent-overload catches it.
-        public struct Absent: Transformation {
-            public typealias G = Never
-            public typealias L = Never
-            public init() {}
-        }
     }
 
     // MARK: - State axis (product / struct → lens-focused)
@@ -80,14 +94,20 @@ public enum Relay {
     /// The state axis — state is a product, so the optic is a lens (`get` + `modify`), or affine when the
     /// focus may be absent. Hosts constrain on ``ReadsProtocol`` / ``WritesProtocol``.
     public enum StateAxis {
-        /// The base state lane — carries the global/local state types.
-        public protocol Transformation: Sendable {
+        /// Everything the state lane can be — the ``Relay/Scope`` state slot binds here.
+        public protocol Strategy: Sendable {}
+        /// A **present** state lane (identity or lifting).
+        public protocol Transformation: Strategy {}
+        /// The pass-through state lane — grants the fluent **instance** refiner.
+        public protocol IdentityProtocol: Transformation {}
+        /// A real state lane — carries the global/local state types and grants the static **factory**.
+        public protocol LiftingProtocol: Transformation {
             associatedtype G: Sendable
             associatedtype L: Sendable
         }
 
         /// A state lane that can **totally read** the local state (`get: G → L`) — a store projection.
-        public protocol ReadsProtocol: Transformation {
+        public protocol ReadsProtocol: LiftingProtocol {
             var get: @Sendable (G) -> L { get }
         }
 
@@ -95,7 +115,7 @@ public enum Relay {
         /// `preview` (locating the focus, for a behavior's pre-mutation read) and `modify` (the
         /// read-modify-write, skipping when absent). Total and affine witnesses both conform; a behavior
         /// lift reconstructs an `AffineTraversal` from the two, which covers both.
-        public protocol WritesProtocol: Transformation {
+        public protocol WritesProtocol: LiftingProtocol {
             var preview: @Sendable (G) -> L? { get }
             var modify: @Sendable (inout G, (inout L) -> Void) -> Void { get }
         }
@@ -136,28 +156,27 @@ public enum Relay {
                 modify = { whole, transform in transform(&whole[keyPath: keyPath]) }
             }
         }
-
-        /// The unset marker — the state isn't remapped; the host fills identity.
-        public struct Absent: Transformation {
-            public typealias G = Never
-            public typealias L = Never
-            public init() {}
-        }
     }
 
     // MARK: - Environment axis (reader)
 
     /// The environment axis — env only ever narrows (`G → L`), so there is a single capability,
-    /// ``NarrowsProtocol``. ``Absent`` is the env-free case a reducer/projection use.
+    /// ``NarrowsProtocol``. ``Relay/Identity`` / ``Relay/Absurd`` cover the env-free cases.
     public enum EnvironmentAxis {
-        /// The base environment lane.
-        public protocol Transformation: Sendable {
+        /// Everything the environment lane can be — the ``Relay/Scope`` environment slot binds here.
+        public protocol Strategy: Sendable {}
+        /// A **present** environment lane (identity or lifting).
+        public protocol Transformation: Strategy {}
+        /// The pass-through environment lane — grants the fluent **instance** refiner.
+        public protocol IdentityProtocol: Transformation {}
+        /// A real environment lane — carries the global/local env types and grants the static **factory**.
+        public protocol LiftingProtocol: Transformation {
             associatedtype G: Sendable
             associatedtype L: Sendable
         }
 
         /// An environment lane that **narrows** the global environment (`narrow: G → L`) — a behavior lift.
-        public protocol NarrowsProtocol: Transformation {
+        public protocol NarrowsProtocol: LiftingProtocol {
             var narrow: @Sendable (G) -> L { get }
         }
 
@@ -167,22 +186,42 @@ public enum Relay {
             public init(_ narrow: @escaping @Sendable (G) -> L) { self.narrow = narrow }
             public init(_ keyPath: KeyPath<G, L> & Sendable) { narrow = { $0[keyPath: keyPath] } }
         }
+    }
 
-        /// The unset marker — no environment; a reducer/projection ignores env, a behavior lift rejects it.
-        public struct Absent: Transformation {
-            public typealias G = Never
-            public typealias L = Never
-            public init() {}
-        }
+    // MARK: - Shared axis-agnostic markers
+
+    /// A marker an un-set builder axis can be **filled with**, chosen by the host's expected type: a lift
+    /// leaves un-set axes ``Relay/Identity`` (chainable), an action-only `.on` seals them ``Relay/Absurd``.
+    /// Both are default-constructible; a real witness is not, so it can never be an un-set default.
+    public protocol AxisDefault: Sendable {
+        init()
+    }
+
+    /// Pass-through on any axis — `local == global`, `{ $0 }`. Conforms to every axis' `IdentityProtocol`,
+    /// so one value serves all three slots. Grants the fluent **instance** refiner (you may still
+    /// specialise this axis); a host derives the pass-through global from `self`, so it carries nothing.
+    public struct Identity:
+        ActionAxis.IdentityProtocol, StateAxis.IdentityProtocol, EnvironmentAxis.IdentityProtocol, AxisDefault {
+        public init() {}
+    }
+
+    /// The **sealed** marker — this axis does not exist for this host (e.g. the state/env of an action-only
+    /// `.on` bridge). Conforms only to each axis' `Strategy` base (**not** `Transformation`), so it
+    /// structurally has no factory and no instance refiner — no `@available` needed.
+    public struct Absurd:
+        ActionAxis.Strategy, StateAxis.Strategy, EnvironmentAxis.Strategy, AxisDefault {
+        public init() {}
     }
 
     // MARK: - The carrier
 
-    /// The value that bundles one lane per axis — declared once, applied to whatever a host needs.
+    /// The value that bundles one lane per axis — declared once, applied to whatever a host needs. Each
+    /// slot binds to its axis' `Strategy`, so a lane may be a real witness, ``Relay/Identity``
+    /// (pass-through), or ``Relay/Absurd`` (sealed), and lanes can't cross axes.
     public struct Scope<
-        Action: ActionAxis.Transformation,
-        State: StateAxis.Transformation,
-        Environment: EnvironmentAxis.Transformation
+        Action: ActionAxis.Strategy,
+        State: StateAxis.Strategy,
+        Environment: EnvironmentAxis.Strategy
     >: Sendable {
         /// The action lane.
         public let action: Action
@@ -199,9 +238,9 @@ public enum Relay {
     }
 }
 
-extension Relay.Scope where Environment == Relay.EnvironmentAxis.Absent {
+extension Relay.Scope where Environment == Relay.Identity {
     /// Env-free construction — a reducer/projection never reads the environment, so it defaults to
-    /// ``Relay/EnvironmentAxis/Absent``. A behavior lift, which needs a real narrow, won't accept the result.
+    /// pass-through ``Relay/Identity``. A behavior lift, which needs a real narrow, won't accept the result.
     public init(action: Action, state: State) {
         self.init(action: action, state: state, environment: .init())
     }
@@ -214,10 +253,9 @@ extension StoreType {
     @MainActor
     public func projection<
         A: Relay.ActionAxis.EmbedsProtocol,
-        S: Relay.StateAxis.ReadsProtocol,
-        E: Relay.EnvironmentAxis.Transformation
+        S: Relay.StateAxis.ReadsProtocol
     >(
-        _ scope: Relay.Scope<A, S, E>
+        _ scope: Relay.Scope<A, S, Relay.Identity>
     ) -> StoreProjection<A.L, S.L> where A.G == Action, S.G == State {
         projection(action: scope.action.review, state: scope.state.get)
     }

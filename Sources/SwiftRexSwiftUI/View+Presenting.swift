@@ -30,7 +30,7 @@
         ) -> some View {
             sheet(
                 isPresented: store.presence(
-                    .state(keyPath) as Relay.StateAxis.Reads<S.State, Presentation<Wrapped>>,
+                    .state(keyPath),
                     dismiss: dismiss,
                     file: file,
                     function: function,
@@ -65,7 +65,7 @@
         ) -> some View {
             sheet(
                 isPresented: store.presence(
-                    .state(keyPath) as Relay.StateAxis.Reads<S.State, Wrapped?>,
+                    .state(keyPath),
                     dismiss: dismiss,
                     file: file,
                     function: function,
@@ -97,7 +97,7 @@
         ) -> some View {
             sheet(
                 item: store.item(
-                    .state(keyPath) as Relay.StateAxis.Reads<S.State, Presentation<Wrapped>>,
+                    .state(keyPath),
                     dismiss: dismiss,
                     file: file,
                     function: function,

@@ -147,7 +147,7 @@ extension Middleware {
     public func liftOptional<GlobalState: Sendable>(
         _ optional: WritableKeyPath<GlobalState, State?>
     ) -> Middleware<Action, GlobalState, Environment> {
-        liftOptional(Relay.Scope(action: Relay.ActionAxis.Absent(), state: Relay.StateAxis.Writes(optional)))
+        liftOptional(Relay.Scope(action: Relay.Identity(), state: Relay.StateAxis.Writes(optional)))
     }
 
     /// Lifts the environment axis of this middleware using a projection closure, embedding it

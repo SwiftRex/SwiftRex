@@ -94,7 +94,7 @@ leading-dot ``Relay/Scope``** — the element/optional addressing rides in the l
 naked. Each host is constrained on its own decorator capabilities, so the compiler only offers a host the
 lanes it can honour, and the unit always sees the **unwrapped** focus (never `Element?`).
 
-- **`liftOptional`** (0-or-1) — an `Absent` action + `Absent` environment + affine **state** scope. Runs
+- **`liftOptional`** (0-or-1) — a pass-through `Identity` action + `Identity` environment + affine **state** scope. Runs
   only while the focus is `.some`; a complete no-op (no mutation, no effect, no supervise) while `nil`:
 
   ```swift
@@ -141,13 +141,14 @@ let app = Behavior.combine(
 let store = Store(initial: .init(), behavior: app, environment: appEnv)
 ```
 
-> A ``Relay/Scope`` builds up axis by axis (`.action(…).state(…).environment(…)`), each step returning
-> a scope with the other axes `Absent`. The leading-dot form works wherever the host's global types are
+> A ``Relay/Scope`` builds up axis by axis (`.action(…).state(…).environment(…)`), each step refining an
+> un-set (pass-through `Identity`) axis; a host that seals an axis (an action-only `.on`) fills it `Absurd`
+> instead. The leading-dot form works wherever the host's global types are
 > inferable — a bare `\.case` action key path infers its root fine in store init, `projection`, a
 > function return, or a **typed `Behavior<Global,…>` local**. The only spot that can't infer is inlining
 > **directly** into `Behavior.combine(...)` (its bidirectional inference doesn't pin the global): there,
 > either lift into a typed local first and combine the locals, or pass an action **prism**
-> (`AppAction.prism.auth`). For a *declared* scope with no surrounding host, start from ``Relay/Empty``.
+> (`AppAction.prism.auth`). For a *declared* scope with no surrounding host, start from ``Relay/Scope/identity``.
 
 ## See Also
 

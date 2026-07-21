@@ -9,10 +9,9 @@ extension Reducer {
     /// lane is ignored. Reconstructs an `AffineTraversal` from the state lane (covers total and affine).
     public func lift<
         A: Relay.ActionAxis.ExtractsProtocol,
-        S: Relay.StateAxis.WritesProtocol,
-        E: Relay.EnvironmentAxis.Transformation
+        S: Relay.StateAxis.WritesProtocol
     >(
-        _ scope: Relay.Scope<A, S, E>
+        _ scope: Relay.Scope<A, S, Relay.Identity>
     ) -> Reducer<A.G, S.G> where A.L == ActionType, S.L == StateType {
         let traversal = AffineTraversal<S.G, StateType>(
             preview: scope.state.preview,

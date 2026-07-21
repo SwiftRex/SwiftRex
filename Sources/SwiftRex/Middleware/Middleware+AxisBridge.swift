@@ -13,23 +13,23 @@ import DataStructure
 extension Middleware {
     /// Route the trigger's payload by **embedding** it into an outbound action, optionally guarded by
     /// `when` (which sits right after the trigger, gating the routing).
-    public func on<T: Sendable>(
-        _ trigger: Relay.ActionAxis.Extracts<Action, T>,
+    public func on<T: Sendable, Trigger: Relay.ActionAxis.ExtractsProtocol, Dispatch: Relay.ActionAxis.EmbedsProtocol>(
+        _ trigger: Relay.Scope<Trigger, Relay.Absurd, Relay.Absurd>,
         when condition: (@Sendable (State) -> Bool)? = nil,
-        dispatch out: Relay.ActionAxis.Embeds<Action, T>,
+        dispatch out: Relay.Scope<Dispatch, Relay.Absurd, Relay.Absurd>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Self {
+    ) -> Self where Trigger.G == Action, Trigger.L == T, Dispatch.G == Action, Dispatch.L == T {
         .combine(self, Middleware { action, context in
-            guard let value = trigger.preview(action) else { return Reader { _ in .empty } }
+            guard let value = trigger.action.preview(action) else { return Reader { _ in .empty } }
             let stateBefore = context.stateBefore
             return Reader { _ in
                 if let condition {
                     guard let state = stateBefore, condition(state) else { return .empty }
                 }
                 // Emit with the source of *this* `.on` declaration — not the internal bridge line.
-                return Effect.just(out.review(value), file: file, function: function, line: line)
+                return Effect.just(out.action.review(value), file: file, function: function, line: line)
             }
         })
     }
