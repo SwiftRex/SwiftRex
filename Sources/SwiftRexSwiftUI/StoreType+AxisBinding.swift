@@ -28,16 +28,16 @@ extension StoreType {
     /// TabView(selection: store.binding(.state(\.tab), dispatch: .action(\.selectTab))) { … }
     /// ```
     @MainActor
-    public func binding<T: Sendable>(
-        _ state: Relay.StateAxis.Reads<State, T>,
-        dispatch action: Relay.ActionAxis.Embeds<Action, T>,
+    public func binding<S: Relay.StateAxis.ReadsProtocol, A: Relay.ActionAxis.EmbedsProtocol>(
+        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
+        dispatch action: Relay.Scope<A, Relay.Absurd, Relay.Absurd>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<T> {
+    ) -> Binding<S.L> where S.G == State, A.G == Action, A.L == S.L {
         Binding(
-            get: { state.get(self.state) },
-            set: { self.dispatch(action.review($0), source: ActionSource(file: file, function: function, line: line)) }
+            get: { state.state.get(self.state) },
+            set: { self.dispatch(action.action.review($0), source: ActionSource(file: file, function: function, line: line)) }
         )
     }
 
@@ -45,15 +45,15 @@ extension StoreType {
     /// (SwiftUI dismissing) dispatches `dismiss`. Presentation is driven by state — the binding only
     /// dismisses. For `.sheet(isPresented:)` / `.fullScreenCover(isPresented:)` / alerts.
     @MainActor
-    public func presence<Wrapped: Sendable>(
-        _ state: Relay.StateAxis.Reads<State, Wrapped?>,
+    public func presence<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
+        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Bool> {
+    ) -> Binding<Bool> where S.G == State, S.L == Wrapped? {
         Binding(
-            get: { state.get(self.state) != nil },
+            get: { state.state.get(self.state) != nil },
             set: { isPresented in
                 guard !isPresented else { return }
                 self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
@@ -66,15 +66,15 @@ extension StoreType {
     /// SwiftUI animates out (flicker-free). Pair with an `onDismiss:` dispatching the same `dismiss`, or use
     /// the `presenting` view modifier, which wires both edges for you.
     @MainActor
-    public func presence<Wrapped: Sendable>(
-        _ state: Relay.StateAxis.Reads<State, Presentation<Wrapped>>,
+    public func presence<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
+        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Bool> {
+    ) -> Binding<Bool> where S.G == State, S.L == Presentation<Wrapped> {
         Binding(
-            get: { state.get(self.state).isPresented },
+            get: { state.state.get(self.state).isPresented },
             set: { isPresented in
                 guard !isPresented else { return }
                 self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
@@ -85,15 +85,15 @@ extension StoreType {
     /// A `Binding<Item?>` for `.sheet(item:)` / `.popover(item:)` — present while the optional slice is
     /// `.some`; dispatch `dismiss` when SwiftUI clears it. SwiftUI keys the sheet on `Item.id`.
     @MainActor
-    public func item<Item: Identifiable & Sendable>(
-        _ state: Relay.StateAxis.Reads<State, Item?>,
+    public func item<Item: Identifiable & Sendable, S: Relay.StateAxis.ReadsProtocol>(
+        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Item?> {
+    ) -> Binding<Item?> where S.G == State, S.L == Item? {
         Binding(
-            get: { state.get(self.state) },
+            get: { state.state.get(self.state) },
             set: { newValue in
                 guard newValue == nil else { return }
                 self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
@@ -105,16 +105,16 @@ extension StoreType {
     /// `.presented` (entering `dismissing` flips it to `nil` so SwiftUI starts the out-animation); setting
     /// `nil` dispatches `dismiss`. The stable `Item.id` keeps the sheet put as the child state changes.
     @MainActor
-    public func item<Wrapped: Identifiable & Sendable>(
-        _ state: Relay.StateAxis.Reads<State, Presentation<Wrapped>>,
+    public func item<Wrapped: Identifiable & Sendable, S: Relay.StateAxis.ReadsProtocol>(
+        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Wrapped?> {
+    ) -> Binding<Wrapped?> where S.G == State, S.L == Presentation<Wrapped> {
         Binding(
             get: {
-                let presentation = state.get(self.state)
+                let presentation = state.state.get(self.state)
                 return presentation.isPresented ? presentation.wrapped : nil
             },
             set: { newValue in

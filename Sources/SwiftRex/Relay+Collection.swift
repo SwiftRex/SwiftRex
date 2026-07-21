@@ -14,7 +14,7 @@ extension Relay.ActionAxis {
     /// Route-to-one action lane for ``Behavior/liftCollection(_:)`` — extracts the addressed element's
     /// `id` **and** its local action inbound, and re-embeds an emitted local action addressed at an `id`.
     /// A decorator over a base `Prism<G, ElementAction<ID, L>>` — the id context the single lift lacks.
-    public protocol ElementProtocol: Transformation {
+    public protocol ElementProtocol: LiftingProtocol {
         associatedtype ID: Hashable & Sendable
         var preview: @Sendable (G) -> (id: ID, action: L)? { get }
         var review: @Sendable (ID, L) -> G { get }
@@ -22,7 +22,7 @@ extension Relay.ActionAxis {
 
     /// Broadcast action lane for ``Behavior/liftEach(_:)`` — no id inbound (every present element receives
     /// the action), re-embeds each element's emitted action addressed at its own `id`.
-    public protocol BroadcastProtocol: Transformation {
+    public protocol BroadcastProtocol: LiftingProtocol {
         associatedtype ID: Hashable & Sendable
         var preview: @Sendable (G) -> L? { get }
         var review: @Sendable (ID, L) -> G { get }
@@ -69,7 +69,7 @@ extension Relay.StateAxis {
     /// Keyed-container state lane for the collection hosts — a `Lens` to the container, a per-`id`
     /// `AffineTraversal` into an element (the **unwrapped** focus), and an enumerator of present ids for
     /// the supervise fan-out. For a fixed id it reconstructs a base ``Writes``.
-    public protocol KeyedProtocol: Transformation {
+    public protocol KeyedProtocol: LiftingProtocol {
         associatedtype ID: Hashable & Sendable
         associatedtype Container: Sendable
         var container: Lens<G, Container> { get }
@@ -159,14 +159,14 @@ extension Relay.Scope {
     /// Start a route-to-one scope from a prism into an ``ElementAction`` case.
     public static func action<GA, ID: Hashable & Sendable, LA>(
         _ prism: CoreFP.Prism<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.StateAxis.Absent, Relay.EnvironmentAxis.Absent> {
+    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.Identity, Relay.Identity> {
         .init(action: .init(prism), state: .init(), environment: .init())
     }
 
     /// Start a route-to-one scope from a `\.case` key path into an ``ElementAction``.
     public static func action<GA, ID: Hashable & Sendable, LA>(
         _ keyPath: PrismKeyPath<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.StateAxis.Absent, Relay.EnvironmentAxis.Absent> {
+    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.Identity, Relay.Identity> {
         .init(action: .init(keyPath), state: .init(), environment: .init())
     }
 
@@ -174,7 +174,7 @@ extension Relay.Scope {
     public static func action<GA, ID: Hashable & Sendable, LA>(
         preview: @escaping @Sendable (GA) -> (id: ID, action: LA)?,
         review: @escaping @Sendable (ID, LA) -> GA
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.StateAxis.Absent, Relay.EnvironmentAxis.Absent> {
+    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.Identity, Relay.Identity> {
         .init(action: .init(preview: preview, review: review), state: .init(), environment: .init())
     }
 
@@ -209,7 +209,7 @@ extension Relay.Scope {
     public static func action<GA, ID: Hashable & Sendable, LA>(
         broadcast inbound: CoreFP.Prism<GA, LA>,
         into element: CoreFP.Prism<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, Relay.StateAxis.Absent, Relay.EnvironmentAxis.Absent> {
+    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, Relay.Identity, Relay.Identity> {
         .init(action: .init(inbound: inbound, into: element), state: .init(), environment: .init())
     }
 
@@ -217,7 +217,7 @@ extension Relay.Scope {
     public static func action<GA, ID: Hashable & Sendable, LA>(
         broadcast preview: @escaping @Sendable (GA) -> LA?,
         embed: @escaping @Sendable (ID, LA) -> GA
-    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, Relay.StateAxis.Absent, Relay.EnvironmentAxis.Absent> {
+    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, Relay.Identity, Relay.Identity> {
         .init(action: .init(preview: preview, review: embed), state: .init(), environment: .init())
     }
 

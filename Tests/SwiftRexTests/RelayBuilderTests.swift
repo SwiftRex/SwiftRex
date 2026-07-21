@@ -39,8 +39,8 @@ struct RelayBuilderTests {
             case .tick: state.n += 1
             }
         }
-        // Bare declaration starts from `Relay.Empty`; full chain incl. environment for a behavior lift.
-        let scope = Relay.Empty
+        // Bare declaration starts from `Relay.Scope.identity`; full chain incl. environment for a behavior lift.
+        let scope = Relay.Scope.identity
             .action(childPrism)
             .state(\AppState.child)
             .environment { (_: Void) in () }

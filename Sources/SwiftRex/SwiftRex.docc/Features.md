@@ -289,13 +289,13 @@ The app lifts each feature's `behavior()` into the parent store and renders it t
 ```swift
 let appBehavior = Behavior.combine(
     Library.behavior().lift(
-        Relay.Empty
+        Relay.Scope.identity
             .action(AppAction.prism.library)         // a Prism<AppAction, Library.Action>
             .state(\AppState.library)                // total WritableKeyPath → ReadsWrites lane
             .environment { $0.library }
     ),
     HeroDetails.behavior().lift(                      // active only while heroDetail != nil
-        Relay.Empty
+        Relay.Scope.identity
             .action(AppAction.prism.heroDetail)
             .state(\AppState.heroDetail)             // optional key path → affine Writes lane
             .environment { $0.heroDetail }

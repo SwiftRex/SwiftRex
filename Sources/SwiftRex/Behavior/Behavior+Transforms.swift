@@ -209,7 +209,7 @@ extension Behavior {
     public func liftOptional<GlobalState: Sendable>(
         _ optional: WritableKeyPath<GlobalState, State?>
     ) -> Behavior<Action, GlobalState, Environment> {
-        liftOptional(Relay.Scope(action: Relay.ActionAxis.Absent(), state: Relay.StateAxis.Writes(optional)))
+        liftOptional(Relay.Scope(action: Relay.Identity(), state: Relay.StateAxis.Writes(optional)))
     }
 }
 

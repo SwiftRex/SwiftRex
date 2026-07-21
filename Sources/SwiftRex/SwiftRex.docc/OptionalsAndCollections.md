@@ -46,7 +46,7 @@ This is exactly the shape presentation uses — a child module whose state exist
 ## liftCollection and liftEach — the 0-or-n hosts
 
 ``Behavior/liftCollection(_:)`` routes an addressed action to **one** element; ``Behavior/liftEach(_:)``
-broadcasts to **every** element. Both take the same leading-dot scope — no `Relay.Empty` prefix:
+broadcasts to **every** element. Both take the same leading-dot scope — no `Relay.Scope.identity` prefix:
 
 ```swift
 // route one: the action lane carries the element id via an ElementAction prism

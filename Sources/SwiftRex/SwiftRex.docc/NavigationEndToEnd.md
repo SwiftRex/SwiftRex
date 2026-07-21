@@ -208,7 +208,7 @@ A ``Relay/Scope`` bundles `(action prism, state key path, env narrow)` and drive
 
 ```swift
 public enum AppScopes {
-    public static let library = Relay.Empty
+    public static let library = Relay.Scope.identity
         .action(AppAction.prism.library)     // a PRESENT sibling slice → a clean total lift
         .state(\AppState.library)
         .environment { world in LibraryFeature.Environment(loadShelves: world.loadShelves) }

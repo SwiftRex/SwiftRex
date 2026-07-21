@@ -30,8 +30,8 @@ extension Behavior {
     }
 
     /// Lift this behavior over an **optional** (or otherwise affine) sub-state through a *state-only*
-    /// ``Relay/Scope`` — the dedicated host whose action and environment axes must be ``Relay/ActionAxis/Absent``
-    /// and ``Relay/EnvironmentAxis/Absent`` (they pass through unchanged) and whose state axis **writes**
+    /// ``Relay/Scope`` — the dedicated host whose action and environment axes must be pass-through
+    /// ``Relay/Identity`` (they carry through unchanged) and whose state axis **writes**
     /// (``Relay/StateAxis/Writes``, affine). The compiler enforces the everything-absent-but-state shape.
     /// The 0-or-1 sibling of ``liftCollection(_:)``: while the focus is absent the behavior is a complete
     /// no-op; while present it runs on the **unwrapped** value.
@@ -40,7 +40,7 @@ extension Behavior {
     /// dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
     /// ```
     public func liftOptional<S: Relay.StateAxis.WritesProtocol>(
-        _ scope: Relay.Scope<Relay.ActionAxis.Absent, S, Relay.EnvironmentAxis.Absent>
+        _ scope: Relay.Scope<Relay.Identity, S, Relay.Identity>
     ) -> Behavior<Action, S.G, Environment> where S.L == State {
         let traversal = AffineTraversal<S.G, State>(
             preview: scope.state.preview,

@@ -20,8 +20,8 @@ extension Middleware {
     }
 
     /// Lift this middleware over an **optional** (or otherwise affine) sub-state through a *state-only*
-    /// ``Relay/Scope`` — the dedicated host whose action and environment axes must be ``Relay/ActionAxis/Absent``
-    /// and ``Relay/EnvironmentAxis/Absent`` and whose state axis **writes** (``Relay/StateAxis/Writes``,
+    /// ``Relay/Scope`` — the dedicated host whose action and environment axes must be pass-through
+    /// ``Relay/Identity`` and whose state axis **writes** (``Relay/StateAxis/Writes``,
     /// affine). Middleware only reads through it (via the affine `preview`); while the focus is absent it is
     /// skipped entirely.
     ///
@@ -29,7 +29,7 @@ extension Middleware {
     /// dayMiddleware.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
     /// ```
     public func liftOptional<S: Relay.StateAxis.WritesProtocol>(
-        _ scope: Relay.Scope<Relay.ActionAxis.Absent, S, Relay.EnvironmentAxis.Absent>
+        _ scope: Relay.Scope<Relay.Identity, S, Relay.Identity>
     ) -> Middleware<Action, S.G, Environment> where S.L == State {
         let traversal = AffineTraversal<S.G, State>(
             preview: scope.state.preview,

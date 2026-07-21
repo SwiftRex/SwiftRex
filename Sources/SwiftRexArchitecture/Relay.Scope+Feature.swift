@@ -9,7 +9,7 @@
     // (its lanes' *local* types match the feature's) drives **both** the app behavior and the router view
     // from one declared value:
     //
-    //     let movies = Relay.Empty
+    //     let movies = Relay.Scope.identity
     //         .action(AppAction.prism.movies).state(\AppState.movies).environment(\.moviesEnv)
     //     movies.behavior(of: MoviesFeature.self)                  // fold into the app behavior
     //     movies.view(of: MoviesFeature.self, from: store, world: world)   // build the screen in the router
@@ -42,7 +42,7 @@
             world: Environment.G
         ) -> F.Body
         where F.Action == Action.L, F.State == State.L, F.Environment == Environment.L {
-            F.view(store: store.projection(self), environment: environment.narrow(world))
+            F.view(store: store.projection(action: action.review, state: state.get), environment: environment.narrow(world))
         }
     }
 #endif
