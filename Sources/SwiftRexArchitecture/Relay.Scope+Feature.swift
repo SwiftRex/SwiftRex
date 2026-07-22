@@ -45,4 +45,37 @@
             F.view(store: store.projection(action: action.review, state: state.get), environment: environment.narrow(world))
         }
     }
+
+    // The same capabilities on the ``Relay/ScopeOf`` pivot builder, forwarding to its built ``Relay/Scope`` —
+    // so a declared `ScopeOf<AppFeature>.action(…).state(…).environment(…)` drives `.behavior(of:)` /
+    // `.view(of:)` directly, without an explicit `.scope` at the call site.
+
+    extension Relay.ScopeBuilder where
+        Action: Relay.ActionAxis.ExtractsProtocol & Relay.ActionAxis.EmbedsProtocol,
+        State: Relay.StateAxis.WritesProtocol,
+        Environment: Relay.EnvironmentAxis.NarrowsProtocol {
+        /// Lift `feature`'s behavior through this pivot scope into the parent `(Action, State, Environment)`.
+        public func behavior<F: HasBehavior>(
+            of feature: F.Type
+        ) -> Behavior<Action.G, State.G, Environment.G>
+        where F.Action == Action.L, F.State == State.L, F.Environment == Environment.L {
+            scope.behavior(of: feature)
+        }
+    }
+
+    extension Relay.ScopeBuilder where
+        Action: Relay.ActionAxis.EmbedsProtocol,
+        State: Relay.StateAxis.ReadsProtocol,
+        Environment: Relay.EnvironmentAxis.NarrowsProtocol {
+        /// Build `feature`'s view from this pivot scope — projecting `store` and narrowing `world`.
+        @MainActor
+        public func view<F: ViewFactory>(
+            of feature: F.Type,
+            from store: any StoreType<Action.G, State.G>,
+            world: Environment.G
+        ) -> F.Body
+        where F.Action == Action.L, F.State == State.L, F.Environment == Environment.L {
+            scope.view(of: feature, from: store, world: world)
+        }
+    }
 #endif
