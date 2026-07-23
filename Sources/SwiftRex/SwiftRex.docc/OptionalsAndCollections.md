@@ -41,12 +41,13 @@ dayBehavior.liftOptional(\AppState.currentDay)
 
 This is exactly the shape presentation uses — a child module whose state exists only while it is shown.
 (There is no `Reducer.liftOptional`/projection form: a `Reducer` folds into the optional via
-``Reducer/liftCollection(_:)``-style optics, and a store can never be *absent* — see the view side below.)
+``Reducer/liftCollection(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``-style optics, and a store can never be *absent* — see the view side below.)
 
 ## liftCollection and liftEach — the 0-or-n hosts
 
 ``Behavior/liftCollection(_:)`` routes an addressed action to **one** element; ``Behavior/liftEach(_:)``
-broadcasts to **every** element. Both take the same leading-dot scope — no `Relay.Scope.identity` prefix:
+broadcasts to **every** element. Both take the same naked leading-dot scope inline (no ``ScopeOf`` entry
+needed — the host pins the globals):
 
 ```swift
 // route one: the action lane carries the element id via an ElementAction prism

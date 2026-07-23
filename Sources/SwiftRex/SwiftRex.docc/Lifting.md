@@ -121,7 +121,7 @@ lanes it can honour, and the unit always sees the **unwrapped** focus (never `El
   ```
 
 The same lanes drive `Reducer` and `Middleware` lifts, and a per-element
-``StoreType/projection(_:element:)`` (whose projected state is `Element?` — the view unwraps). Per-element
+``StoreType/projection(_:element:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>,_)`` (whose projected state is `Element?` — the view unwraps). Per-element
 effect scheduling is tagged per element, so one row's `.debounce(id:)` never collides with another's.
 
 > For the full picture — the input zoo (prism / key path / macro-free closures), all four locators, the
