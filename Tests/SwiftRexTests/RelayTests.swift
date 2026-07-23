@@ -26,7 +26,7 @@ struct RelayScopeTests {
 
     @Test func projectsAStoreThroughARichScope() {
         // A duplex Prism + total ReadsWrites subsumes what projection needs — EmbedsProtocol + ReadsProtocol.
-        // The env lane defaults to `.Absent` via the 2-arg init.
+        // The env slot is sealed (`Never` global) via the 2-arg init.
         let scope = Relay.Scope(
             action: Relay.ActionAxis.Prism<GlobalAction, LocalAction>(
                 Prism(preview: { if case let .local(value) = $0 { value } else { nil } }, review: GlobalAction.local)

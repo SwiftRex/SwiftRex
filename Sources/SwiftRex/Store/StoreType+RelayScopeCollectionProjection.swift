@@ -9,6 +9,9 @@ import CoreFP
 // state is `Element?` (the view unwraps with `if let`); the action lane's `review` addresses dispatched
 // sub-actions at `id`. Only `review` (embed) + the element read are used — the same capabilities a single
 // projection needs, in their id-keyed form.
+//
+// Like the single-element `projection`, two forms: env slot pinned sealed (`Never` global) for inline
+// builder chains, and env fully generic for a declared collection scope shared with the lift hosts.
 
 extension StoreType {
     /// Project this store onto the single element addressed by `id`, through a ``Relay/Scope`` whose action
@@ -16,15 +19,42 @@ extension StoreType {
     /// state is `Element?` (`nil` when the element is absent); dispatched sub-actions are re-embedded
     /// addressed at `id`.
     @MainActor
-    public func projection<A, S, E>(
-        _ scope: Relay.Scope<A, S, E>,
+    public func projection<A, S>(
+        _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
         element id: A.ID
-    ) -> StoreProjection<A.L, S.L?>
+    ) -> StoreProjection<A.Local, S.Local?>
     where
         A: Relay.ActionAxis.ElementProtocol,
         S: Relay.StateAxis.KeyedProtocol,
-        E: Relay.EnvironmentAxis.Transformation,
-        A.G == Action, S.G == State, A.ID == S.ID {
+        A.Global == Action, S.Global == State, A.ID == S.ID {
+        elementProjection(scope, id: id)
+    }
+
+    /// Element projection through a **declared** collection scope — the environment axis is generic and
+    /// ignored, so the scope shared with the `liftCollection`/`liftEach` hosts serves cells too.
+    @MainActor
+    public func projection<A, S, GE, E>(
+        _ scope: Relay.Scope<Action, A, State, S, GE, E>,
+        element id: A.ID
+    ) -> StoreProjection<A.Local, S.Local?>
+    where
+        A: Relay.ActionAxis.ElementProtocol,
+        S: Relay.StateAxis.KeyedProtocol,
+        E: Relay.EnvironmentAxis.Strategy,
+        A.Global == Action, S.Global == State, A.ID == S.ID {
+        elementProjection(scope, id: id)
+    }
+
+    @MainActor
+    private func elementProjection<A, S, GE, E>(
+        _ scope: Relay.Scope<Action, A, State, S, GE, E>,
+        id: A.ID
+    ) -> StoreProjection<A.Local, S.Local?>
+    where
+        A: Relay.ActionAxis.ElementProtocol,
+        S: Relay.StateAxis.KeyedProtocol,
+        E: Relay.EnvironmentAxis.Strategy,
+        A.Global == Action, S.Global == State, A.ID == S.ID {
         projection(
             action: { subAction in scope.action.review(id, subAction) },
             state: { global in scope.state.element(id).preview(scope.state.container.get(global)) }

@@ -21,14 +21,14 @@ extension Behavior {
     /// mutating state (`reduce:`). The optional **`when`** guard gates the whole routing — dispatch and
     /// reduce alike — which is why it sits right after the trigger.
     public func on<T: Sendable, Trigger: Relay.ActionAxis.ExtractsProtocol, Dispatch: Relay.ActionAxis.EmbedsProtocol>(
-        _ trigger: Relay.Scope<Trigger, Relay.Absurd, Relay.Absurd>,
+        _ trigger: Relay.Scope<Action, Trigger, State, Relay.Absurd<State>, Environment, Relay.Absurd<Environment>>,
         when condition: (@Sendable (State) -> Bool)? = nil,
-        dispatch out: Relay.Scope<Dispatch, Relay.Absurd, Relay.Absurd>,
+        dispatch out: Relay.Scope<Action, Dispatch, State, Relay.Absurd<State>, Environment, Relay.Absurd<Environment>>,
         reduce: (@Sendable (T, inout State) -> Void)? = nil,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Self where Trigger.G == Action, Trigger.L == T, Dispatch.G == Action, Dispatch.L == T {
+    ) -> Self where Trigger.Global == Action, Trigger.Local == T, Dispatch.Global == Action, Dispatch.Local == T {
         .combine(self, Behavior { action, context in
             guard let value = trigger.action.preview(action) else { return .doNothing }
             if let condition {
@@ -48,10 +48,10 @@ extension Behavior {
     /// React to the trigger by **mutating state only** — no action is dispatched — optionally guarded by
     /// `when` (which sits right after the trigger, gating the reaction).
     public func on<T: Sendable, Trigger: Relay.ActionAxis.ExtractsProtocol>(
-        _ trigger: Relay.Scope<Trigger, Relay.Absurd, Relay.Absurd>,
+        _ trigger: Relay.Scope<Action, Trigger, State, Relay.Absurd<State>, Environment, Relay.Absurd<Environment>>,
         when condition: (@Sendable (State) -> Bool)? = nil,
         reduce: @escaping @Sendable (T, inout State) -> Void
-    ) -> Self where Trigger.G == Action, Trigger.L == T {
+    ) -> Self where Trigger.Global == Action, Trigger.Local == T {
         .combine(self, Behavior { action, context in
             guard let value = trigger.action.preview(action) else { return .doNothing }
             if let condition {

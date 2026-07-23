@@ -29,12 +29,12 @@ extension StoreType {
     /// ```
     @MainActor
     public func binding<S: Relay.StateAxis.ReadsProtocol, A: Relay.ActionAxis.EmbedsProtocol>(
-        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
-        dispatch action: Relay.Scope<A, Relay.Absurd, Relay.Absurd>,
+        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
+        dispatch action: Relay.Scope<Action, A, State, Relay.Absurd<State>, Never, Relay.Absurd<Never>>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<S.L> where S.G == State, A.G == Action, A.L == S.L {
+    ) -> Binding<S.Local> where S.Global == State, A.Global == Action, A.Local == S.Local {
         Binding(
             get: { state.state.get(self.state) },
             set: { self.dispatch(action.action.review($0), source: ActionSource(file: file, function: function, line: line)) }
@@ -46,12 +46,12 @@ extension StoreType {
     /// dismisses. For `.sheet(isPresented:)` / `.fullScreenCover(isPresented:)` / alerts.
     @MainActor
     public func presence<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
+        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Bool> where S.G == State, S.L == Wrapped? {
+    ) -> Binding<Bool> where S.Global == State, S.Local == Wrapped? {
         Binding(
             get: { state.state.get(self.state) != nil },
             set: { isPresented in
@@ -67,12 +67,12 @@ extension StoreType {
     /// the `presenting` view modifier, which wires both edges for you.
     @MainActor
     public func presence<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
+        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Bool> where S.G == State, S.L == Presentation<Wrapped> {
+    ) -> Binding<Bool> where S.Global == State, S.Local == Presentation<Wrapped> {
         Binding(
             get: { state.state.get(self.state).isPresented },
             set: { isPresented in
@@ -86,12 +86,12 @@ extension StoreType {
     /// `.some`; dispatch `dismiss` when SwiftUI clears it. SwiftUI keys the sheet on `Item.id`.
     @MainActor
     public func item<Item: Identifiable & Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
+        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Item?> where S.G == State, S.L == Item? {
+    ) -> Binding<Item?> where S.Global == State, S.Local == Item? {
         Binding(
             get: { state.state.get(self.state) },
             set: { newValue in
@@ -106,12 +106,12 @@ extension StoreType {
     /// `nil` dispatches `dismiss`. The stable `Item.id` keeps the sheet put as the child state changes.
     @MainActor
     public func item<Wrapped: Identifiable & Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Relay.Absurd, S, Relay.Absurd>,
+        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Wrapped?> where S.G == State, S.L == Presentation<Wrapped> {
+    ) -> Binding<Wrapped?> where S.Global == State, S.Local == Presentation<Wrapped> {
         Binding(
             get: {
                 let presentation = state.state.get(self.state)

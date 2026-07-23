@@ -406,7 +406,7 @@ let moviesBehavior: Behavior<AppAction, AppState, World> =
 
 Each host's `lift` takes **one `Relay.Scope`** built axis-by-axis with the fluent builder, constrained on only the capabilities that host needs — a `Reducer` writes state, a `Middleware` only reads it, and `supervise` threads through automatically so a lifted feature's channels cancel when its sub-state disappears. Every axis accepts an optic, a key path, or plain closures — pick the minimum: `.action(prism)` / `.action(\.case)` / `.action(preview:review:)` (or `.action(preview:)` / `.action(review:)` when one direction is enough); `.state(\.slice)` / `.state { $0.slice }` / `.state(get:set:)`.
 
-**Optionals and collections are the same builder, different hosts.** `liftOptional` is the 0-or-1 host — an `Absent` action + `Absent` environment + affine state scope (`behavior.liftOptional(.state(\.maybeChild))`, runs only while `.some`; the plain `liftOptional(\.maybeChild)` key-path form is sugar). `liftCollection` (route one addressed element) and `liftEach` (broadcast to all) are the 0-or-n hosts, and take the *same* leading-dot scope — the element-addressing rides in the lanes, so the spelling stays naked:
+**Optionals and collections are the same builder, different hosts.** `liftOptional` is the 0-or-1 host — a pass-through `Identity` action + `Identity` environment + affine state scope (`behavior.liftOptional(.state(\.maybeChild))`, runs only while `.some`; the plain `liftOptional(\.maybeChild)` key-path form is sugar). `liftCollection` (route one addressed element) and `liftEach` (broadcast to all) are the 0-or-n hosts, and take the *same* leading-dot scope — the element-addressing rides in the lanes, so the spelling stays naked:
 
 ```swift
 // route one element by Identifiable id — same shape as a single child, only the host name differs:
@@ -434,10 +434,16 @@ TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setNam
 A **`Relay.Scope`** captures how a child feature embeds into the app — action prism, state slice, environment narrowing — as one declared, compile-checked value used by both the store fold *and* the view router. Given that wiring it lifts whatever the child provides: `.behavior(of:)` when the child is `HasBehavior`, `.view(of:from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:
 
 ```swift
+enum AppFeature: Rig {                                 // the app's (Action, State, Environment) triad
+    typealias Action = AppAction
+    typealias State = AppState
+    typealias Environment = World
+}
+
 enum AppScopes {                                       // one wiring per feature, declared once
-    static let movies = Relay.Empty
-        .action(AppAction.prism.movies)                // action prism — narrows incoming, embeds outgoing
-        .state(\AppState.movies)                       // WritableKeyPath — focus the slice
+    static let movies = ScopeOf<AppFeature>            // the identity-scope entry — pins the triad
+        .action(\.movies)                              // `\.case` prism — narrows incoming, embeds outgoing
+        .state(\.movies)                               // WritableKeyPath — focus the slice
         .environment { world in Movies.Environment(fetchMovies: world.api.movies) }
 }
 

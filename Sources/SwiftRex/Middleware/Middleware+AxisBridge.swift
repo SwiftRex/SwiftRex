@@ -14,13 +14,13 @@ extension Middleware {
     /// Route the trigger's payload by **embedding** it into an outbound action, optionally guarded by
     /// `when` (which sits right after the trigger, gating the routing).
     public func on<T: Sendable, Trigger: Relay.ActionAxis.ExtractsProtocol, Dispatch: Relay.ActionAxis.EmbedsProtocol>(
-        _ trigger: Relay.Scope<Trigger, Relay.Absurd, Relay.Absurd>,
+        _ trigger: Relay.Scope<Action, Trigger, State, Relay.Absurd<State>, Environment, Relay.Absurd<Environment>>,
         when condition: (@Sendable (State) -> Bool)? = nil,
-        dispatch out: Relay.Scope<Dispatch, Relay.Absurd, Relay.Absurd>,
+        dispatch out: Relay.Scope<Action, Dispatch, State, Relay.Absurd<State>, Environment, Relay.Absurd<Environment>>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Self where Trigger.G == Action, Trigger.L == T, Dispatch.G == Action, Dispatch.L == T {
+    ) -> Self where Trigger.Global == Action, Trigger.Local == T, Dispatch.Global == Action, Dispatch.Local == T {
         .combine(self, Middleware { action, context in
             guard let value = trigger.action.preview(action) else { return Reader { _ in .empty } }
             let stateBefore = context.stateBefore
