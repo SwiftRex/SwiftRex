@@ -106,3 +106,12 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 ### Composition
 
 - ``ReducerBuilder``
+- ``Relay``
+- ``Transceiver``
+- ``Rig``
+- ``ScopeOf``
+- ``BehaviorOf``
+- ``MiddlewareOf``
+- ``StoreOf``
+- ``ReducerOf``
+- ``StoreTypeOf``

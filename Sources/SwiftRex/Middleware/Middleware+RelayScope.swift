@@ -13,9 +13,9 @@ extension Middleware {
         S: Relay.StateAxis.ReadsProtocol,
         E: Relay.EnvironmentAxis.NarrowsProtocol
     >(
-        _ scope: Relay.Scope<A, S, E>
-    ) -> Middleware<A.G, S.G, E.G> where A.L == Action, S.L == State, E.L == Environment {
-        let prism = Prism<A.G, Action>(preview: scope.action.preview, review: scope.action.review)
+        _ scope: Relay.Scope<A.Global, A, S.Global, S, E.Global, E>
+    ) -> Middleware<A.Global, S.Global, E.Global> where A.Local == Action, S.Local == State, E.Local == Environment {
+        let prism = Prism<A.Global, Action>(preview: scope.action.preview, review: scope.action.review)
         return liftAction(prism).liftState(scope.state.get).liftEnvironment(scope.environment.narrow)
     }
 
@@ -29,13 +29,13 @@ extension Middleware {
     /// dayMiddleware.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
     /// ```
     public func liftOptional<S: Relay.StateAxis.WritesProtocol>(
-        _ scope: Relay.Scope<Relay.Identity, S, Relay.Identity>
-    ) -> Middleware<Action, S.G, Environment> where S.L == State {
-        let traversal = AffineTraversal<S.G, State>(
+        _ scope: Relay.Scope<Action, Relay.Identity<Action>, S.Global, S, Environment, Relay.Identity<Environment>>
+    ) -> Middleware<Action, S.Global, Environment> where S.Local == State {
+        let traversal = AffineTraversal<S.Global, State>(
             preview: scope.state.preview,
             setMut: { whole, part in scope.state.modify(&whole) { $0 = part } }
         )
-        return Middleware<Action, S.G, Environment>(
+        return Middleware<Action, S.Global, Environment>(
             // While the focus is absent the inner middleware is skipped entirely — no effect is produced.
             handle: { action, context in
                 guard let before = context.stateBefore, scope.state.preview(before) != nil else { return Reader { _ in .empty } }
@@ -43,7 +43,7 @@ extension Middleware {
                     .contramapEnvironment { $0.compactMap(traversal.preview) }
             },
             supervisor: supervisor.map { inner in
-                { @MainActor @Sendable (state: S.G) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+                { @MainActor @Sendable (state: S.Global) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
             }
         )
     }

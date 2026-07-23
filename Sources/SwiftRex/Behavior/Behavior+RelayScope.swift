@@ -15,10 +15,10 @@ extension Behavior {
         S: Relay.StateAxis.WritesProtocol,
         E: Relay.EnvironmentAxis.NarrowsProtocol
     >(
-        _ scope: Relay.Scope<A, S, E>
-    ) -> Behavior<A.G, S.G, E.G> where A.L == Action, S.L == State, E.L == Environment {
-        let prism = Prism<A.G, Action>(preview: scope.action.preview, review: scope.action.review)
-        let traversal = AffineTraversal<S.G, State>(
+        _ scope: Relay.Scope<A.Global, A, S.Global, S, E.Global, E>
+    ) -> Behavior<A.Global, S.Global, E.Global> where A.Local == Action, S.Local == State, E.Local == Environment {
+        let prism = Prism<A.Global, Action>(preview: scope.action.preview, review: scope.action.review)
+        let traversal = AffineTraversal<S.Global, State>(
             preview: scope.state.preview,
             set: { whole, part in
                 var copy = whole
@@ -40,13 +40,13 @@ extension Behavior {
     /// dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
     /// ```
     public func liftOptional<S: Relay.StateAxis.WritesProtocol>(
-        _ scope: Relay.Scope<Relay.Identity, S, Relay.Identity>
-    ) -> Behavior<Action, S.G, Environment> where S.L == State {
-        let traversal = AffineTraversal<S.G, State>(
+        _ scope: Relay.Scope<Action, Relay.Identity<Action>, S.Global, S, Environment, Relay.Identity<Environment>>
+    ) -> Behavior<Action, S.Global, Environment> where S.Local == State {
+        let traversal = AffineTraversal<S.Global, State>(
             preview: scope.state.preview,
             setMut: { whole, part in scope.state.modify(&whole) { $0 = part } }
         )
-        return Behavior<Action, S.G, Environment>(
+        return Behavior<Action, S.Global, Environment>(
             // While the focus is absent the inner behavior is skipped entirely — never asked to `handle`,
             // so it neither mutates nor produces effects (stricter than a plain affine state lift).
             handle: { action, context in
@@ -58,7 +58,7 @@ extension Behavior {
                 )
             },
             supervisor: supervisor.map { inner in
-                { @MainActor @Sendable (state: S.G) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
+                { @MainActor @Sendable (state: S.Global) in traversal.preview(state).map { inner($0) } ?? Reader { _ in [] } }
             }
         )
     }

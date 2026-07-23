@@ -287,19 +287,19 @@ struct LibraryView: View {
 The app lifts each feature's `behavior()` into the parent store and renders it through the erased `view()`. A whole child module lifts through a ``Relay/Scope`` (`.action(…).state(…).environment(…)`); an *optional* child screen uses an optional state key path (an **affine** state lane — it runs only while the sub-state is `.some`); a collection of children through `liftCollection` — see <doc:Lifting> and <doc:Modularisation>.
 
 ```swift
+// Declared scopes — `ScopeOf<AppFeature>` pins the app triad, so every root infers.
+let library = ScopeOf<AppFeature>
+    .action(\.library)                       // a `\.case` prism — Prism<AppAction, Library.Action>
+    .state(\.library)                        // total WritableKeyPath → ReadsWrites lane
+    .environment { $0.library }
+let heroDetail = ScopeOf<AppFeature>
+    .action(\.heroDetail)
+    .state(\.heroDetail)                     // optional key path → affine Writes lane
+    .environment { $0.heroDetail }
+
 let appBehavior = Behavior.combine(
-    Library.behavior().lift(
-        Relay.Scope.identity
-            .action(AppAction.prism.library)         // a Prism<AppAction, Library.Action>
-            .state(\AppState.library)                // total WritableKeyPath → ReadsWrites lane
-            .environment { $0.library }
-    ),
-    HeroDetails.behavior().lift(                      // active only while heroDetail != nil
-        Relay.Scope.identity
-            .action(AppAction.prism.heroDetail)
-            .state(\AppState.heroDetail)             // optional key path → affine Writes lane
-            .environment { $0.heroDetail }
-    )
+    Library.behavior().lift(library),
+    HeroDetails.behavior().lift(heroDetail)   // active only while heroDetail != nil
 )
 
 let store = Store(initial: .init(), behavior: appBehavior, environment: appEnv)

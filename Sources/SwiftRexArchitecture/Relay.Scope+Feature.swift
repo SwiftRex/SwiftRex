@@ -9,39 +9,48 @@
     // (its lanes' *local* types match the feature's) drives **both** the app behavior and the router view
     // from one declared value:
     //
-    //     let movies = Relay.Scope.identity
-    //         .action(AppAction.prism.movies).state(\AppState.movies).environment(\.moviesEnv)
-    //     movies.behavior(of: MoviesFeature.self)                  // fold into the app behavior
+    //     static let movies = ScopeOf<AppFeature>
+    //         .action(\.movies).state(\.movies).environment(\.moviesEnv)
+    //     movies.behavior(of: MoviesFeature.self)                          // fold into the app behavior
     //     movies.view(of: MoviesFeature.self, from: store, world: world)   // build the screen in the router
+    //
+    // The coherence constraints (`…Strategy.Global == …`) restate what the only `Scope` initializer
+    // already guarantees — they give the compiler the same-type knowledge locally.
 
     extension Relay.Scope where
-        Action: Relay.ActionAxis.ExtractsProtocol & Relay.ActionAxis.EmbedsProtocol,
-        State: Relay.StateAxis.WritesProtocol,
-        Environment: Relay.EnvironmentAxis.NarrowsProtocol {
+        ActionStrategy: Relay.ActionAxis.ExtractsProtocol & Relay.ActionAxis.EmbedsProtocol,
+        StateStrategy: Relay.StateAxis.WritesProtocol,
+        EnvironmentStrategy: Relay.EnvironmentAxis.NarrowsProtocol,
+        ActionStrategy.Global == Action,
+        StateStrategy.Global == State,
+        EnvironmentStrategy.Global == Environment {
         /// Lift `feature`'s behavior through this scope into the parent `(Action, State, Environment)`.
         /// Available when the child provides a ``HasBehavior`` and this scope's lanes match its local types.
         public func behavior<F: HasBehavior>(
             of feature: F.Type
-        ) -> Behavior<Action.G, State.G, Environment.G>
-        where F.Action == Action.L, F.State == State.L, F.Environment == Environment.L {
+        ) -> Behavior<Action, State, Environment>
+        where F.Action == ActionStrategy.Local, F.State == StateStrategy.Local, F.Environment == EnvironmentStrategy.Local {
             F.behavior().lift(self)
         }
     }
 
     extension Relay.Scope where
-        Action: Relay.ActionAxis.EmbedsProtocol,
-        State: Relay.StateAxis.ReadsProtocol,
-        Environment: Relay.EnvironmentAxis.NarrowsProtocol {
+        ActionStrategy: Relay.ActionAxis.EmbedsProtocol,
+        StateStrategy: Relay.StateAxis.ReadsProtocol,
+        EnvironmentStrategy: Relay.EnvironmentAxis.NarrowsProtocol,
+        ActionStrategy.Global == Action,
+        StateStrategy.Global == State,
+        EnvironmentStrategy.Global == Environment {
         /// Build `feature`'s view from this scope — projecting `store` and narrowing `world` to the child's
         /// environment. The WHAT of navigation: a router calls this; the environment-free view body never
         /// builds a child. Available when the child is a ``ViewFactory``.
         @MainActor
         public func view<F: ViewFactory>(
             of feature: F.Type,
-            from store: any StoreType<Action.G, State.G>,
-            world: Environment.G
+            from store: any StoreType<Action, State>,
+            world: Environment
         ) -> F.Body
-        where F.Action == Action.L, F.State == State.L, F.Environment == Environment.L {
+        where F.Action == ActionStrategy.Local, F.State == StateStrategy.Local, F.Environment == EnvironmentStrategy.Local {
             F.view(store: store.projection(action: action.review, state: state.get), environment: environment.narrow(world))
         }
     }

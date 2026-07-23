@@ -11,13 +11,13 @@ extension Middleware {
     /// Route-to-one collection lift for a middleware — an addressed global action drives the one element
     /// the action lane locates; the middleware observes that element's **unwrapped** state.
     public func liftCollection<A, S, E>(
-        _ scope: Relay.Scope<A, S, E>
-    ) -> Middleware<A.G, S.G, E.G>
+        _ scope: Relay.Scope<A.Global, A, S.Global, S, E.Global, E>
+    ) -> Middleware<A.Global, S.Global, E.Global>
     where
         A: Relay.ActionAxis.ElementProtocol,
         S: Relay.StateAxis.KeyedProtocol,
         E: Relay.EnvironmentAxis.NarrowsProtocol,
-        A.L == Action, S.L == State, E.L == Environment, A.ID == S.ID {
+        A.Local == Action, S.Local == State, E.Local == Environment, A.ID == S.ID {
         liftCollection(
             action: { ga in
                 scope.action.preview(ga).map { hit in
@@ -38,13 +38,13 @@ extension Middleware {
     /// Broadcast collection lift for a middleware — observes **every** present element, re-embedding and
     /// per-element stamping each element's emitted effects/channels.
     public func liftEach<A, S, E>(
-        _ scope: Relay.Scope<A, S, E>
-    ) -> Middleware<A.G, S.G, E.G>
+        _ scope: Relay.Scope<A.Global, A, S.Global, S, E.Global, E>
+    ) -> Middleware<A.Global, S.Global, E.Global>
     where
         A: Relay.ActionAxis.BroadcastProtocol,
         S: Relay.StateAxis.KeyedProtocol,
         E: Relay.EnvironmentAxis.NarrowsProtocol,
-        A.L == Action, S.L == State, E.L == Environment, A.ID == S.ID {
+        A.Local == Action, S.Local == State, E.Local == Environment, A.ID == S.ID {
         liftEach(
             action: scope.action.preview,
             embed: { action, id in scope.action.review(id, action) },

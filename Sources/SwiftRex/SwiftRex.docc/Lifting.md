@@ -148,7 +148,11 @@ let store = Store(initial: .init(), behavior: app, environment: appEnv)
 > function return, or a **typed `Behavior<Global,…>` local**. The only spot that can't infer is inlining
 > **directly** into `Behavior.combine(...)` (its bidirectional inference doesn't pin the global): there,
 > either lift into a typed local first and combine the locals, or pass an action **prism**
-> (`AppAction.prism.auth`). For a *declared* scope with no surrounding host, start from ``Relay/Scope/identity``.
+> (`AppAction.prism.auth`). For a *declared* scope with no surrounding host, enter through ``ScopeOf`` —
+> `let movies = ScopeOf<AppFeature>.action(\.movies).state(\.movies).environment(\.moviesEnv)` — the
+> concrete all-`Identity` scope over the ``Rig``'s triad, whose statics pin every key-path root. Axes the
+> chain leaves un-set stay concretely pass-through, so a partial declaration (`.action(…).state(…)`) is a
+> complete type the env-ignoring hosts accept.
 
 ## See Also
 

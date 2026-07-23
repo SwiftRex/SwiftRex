@@ -204,13 +204,13 @@ public extension AppFeature {
 
 ## Layer 5 — Scopes: declare the wiring once
 
-A ``Relay/Scope`` bundles `(action prism, state key path, env narrow)` and drives both a child's lifted `.behavior(of:)` and its `.view(of:from:world:)`. Declare each scope once — an explicit action prism pins the parent's action type, so the scope's type infers:
+A ``Relay/Scope`` bundles `(action prism, state key path, env narrow)` and drives both a child's lifted `.behavior(of:)` and its `.view(of:from:world:)`. Declare each scope once — the ``ScopeOf`` entry pins `AppFeature`'s triad, so every key-path root infers:
 
 ```swift
 public enum AppScopes {
-    public static let library = Relay.Scope.identity
-        .action(AppAction.prism.library)     // a PRESENT sibling slice → a clean total lift
-        .state(\AppState.library)
+    public static let library = ScopeOf<AppFeature>
+        .action(\.library)                   // a PRESENT sibling slice → a clean total lift
+        .state(\.library)
         .environment { world in LibraryFeature.Environment(loadShelves: world.loadShelves) }
 }
 ```

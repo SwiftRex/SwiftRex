@@ -9,6 +9,12 @@ private struct ChildState: Sendable, Equatable { var n = 0 }
 private enum AppAction: Sendable, Equatable { case child(ChildAction) }
 private struct AppState: Sendable, Equatable { var child = ChildState() }
 
+private enum TestApp: Rig {
+    typealias Action = AppAction
+    typealias State = AppState
+    typealias Environment = Void
+}
+
 @Suite("Relay.Scope builder")
 @MainActor
 struct RelayBuilderTests {
@@ -39,10 +45,11 @@ struct RelayBuilderTests {
             case .tick: state.n += 1
             }
         }
-        // Bare declaration starts from `Relay.Scope.identity`; full chain incl. environment for a behavior lift.
-        let scope = Relay.Scope.identity
+        // Bare declaration: `ScopeOf<TestApp>` is the concrete all-Identity entry — its statics pin the
+        // Rig's globals; full chain incl. environment for a behavior lift.
+        let scope = ScopeOf<TestApp>
             .action(childPrism)
-            .state(\AppState.child)
+            .state(\.child)
             .environment { (_: Void) in () }
         let base = store(childBehavior.lift(scope))
         base.dispatch(.child(.tick))
@@ -93,5 +100,72 @@ struct RelayBuilderTests {
         var state = AppState()
         lifted.reduce(.child(.tick))(&state)
         #expect(state.child.n == 1)
+    }
+
+    @Test func declaredPartialScopeServesReducerAndProjection() {
+        // A declared pair leaves env un-set → concretely `Identity<Void>`, NEVER `Absurd` (a `ScopeOf`
+        // chain can't produce a sealed axis — `Absurd` is host vocabulary, filled only in inline chains).
+        // The env-ignoring hosts take it through their generic-environment overloads, so ONE declared
+        // value drives the reducer lift AND the store projection.
+        let pair = ScopeOf<TestApp>.action(childPrism).state(\.child)
+
+        let childReducer = Reducer<ChildAction, ChildState>.reduce { action, state in
+            switch action {
+            case .tick: state.n += 1
+            }
+        }
+        let lifted: Reducer<AppAction, AppState> = childReducer.lift(pair)
+        var state = AppState()
+        lifted.reduce(.child(.tick))(&state)
+        #expect(state.child.n == 1)
+
+        let base = store(.reduce { action, state in
+            switch action {
+            case .child(.tick): state.child.n += 1
+            }
+        })
+        let child = base.projection(pair)
+        child.dispatch(.tick)
+        #expect(base.state.child.n == 1)
+        #expect(child.state.n == 1)
+    }
+
+    @Test func declaredDuplexScopeServesEveryHost() {
+        // ONE full declared scope — duplex action, total state, REAL env narrow. `Behavior.lift` consumes
+        // all three lanes; `Reducer.lift` and `projection` accept the same value through their
+        // generic-environment overloads, simply ignoring the `Narrows` lane.
+        let full = ScopeOf<TestApp>
+            .action(childPrism)
+            .state(\.child)
+            .environment { (_: Void) in () }
+
+        let childBehavior = Behavior<ChildAction, ChildState, Void>.reduce { action, state in
+            switch action {
+            case .tick: state.n += 1
+            }
+        }
+        let viaBehavior = store(childBehavior.lift(full))
+        viaBehavior.dispatch(.child(.tick))
+        #expect(viaBehavior.state.child.n == 1)
+
+        let childReducer = Reducer<ChildAction, ChildState>.reduce { action, state in
+            switch action {
+            case .tick: state.n += 1
+            }
+        }
+        let lifted: Reducer<AppAction, AppState> = childReducer.lift(full)
+        var state = AppState()
+        lifted.reduce(.child(.tick))(&state)
+        #expect(state.child.n == 1)
+
+        let base = store(.reduce { action, state in
+            switch action {
+            case .child(.tick): state.child.n += 1
+            }
+        })
+        let projected = base.projection(full)
+        projected.dispatch(.tick)
+        #expect(base.state.child.n == 1)
+        #expect(projected.state.n == 1)
     }
 }

@@ -27,8 +27,8 @@ struct ReducerRelayScopeTests {
     }
 
     @Test func liftsOverTotalState() {
-        // Extracts the action and focuses a present slice — env axis is `Absent` (reducer ignores it).
-        let lifted = child.lift(Relay.Scope.identity.action(childPrism).state(\AppState.child))
+        // Extracts the action and focuses a present slice — the env slot is sealed (reducer has none).
+        let lifted = child.lift(.action(childPrism).state(\AppState.child))
         var state = AppState()
         lifted.reduce(.child(.tick))(&state)
         #expect(state.child.n == 1)
@@ -36,7 +36,7 @@ struct ReducerRelayScopeTests {
 
     @Test func liftsOverAffineStateSkippingWhenAbsent() {
         // An optional key path builds a `Writes` (affine) lane — the reducer is a no-op while nil.
-        let lifted = child.lift(Relay.Scope.identity.action(childPrism).state(\AppState.optional))
+        let lifted = child.lift(.action(childPrism).state(\AppState.optional))
 
         var absent = AppState()
         lifted.reduce(.child(.tick))(&absent)
@@ -49,7 +49,7 @@ struct ReducerRelayScopeTests {
     }
 
     @Test func skipsWhenActionIsNotMatched() {
-        let lifted = child.lift(Relay.Scope.identity.action(childPrism).state(\AppState.child))
+        let lifted = child.lift(.action(childPrism).state(\AppState.child))
         var state = AppState()
         // A global action the prism doesn't match would be ignored; here every case matches, so assert
         // the positive path is the only mutation and unrelated state is untouched.

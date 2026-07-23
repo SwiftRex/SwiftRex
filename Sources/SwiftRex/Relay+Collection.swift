@@ -13,52 +13,52 @@ import CoreFP
 extension Relay.ActionAxis {
     /// Route-to-one action lane for ``Behavior/liftCollection(_:)`` — extracts the addressed element's
     /// `id` **and** its local action inbound, and re-embeds an emitted local action addressed at an `id`.
-    /// A decorator over a base `Prism<G, ElementAction<ID, L>>` — the id context the single lift lacks.
+    /// A decorator over a base `Prism<Global, ElementAction<ID, Local>>` — the id context the single lift lacks.
     public protocol ElementProtocol: LiftingProtocol {
         associatedtype ID: Hashable & Sendable
-        var preview: @Sendable (G) -> (id: ID, action: L)? { get }
-        var review: @Sendable (ID, L) -> G { get }
+        var preview: @Sendable (Global) -> (id: ID, action: Local)? { get }
+        var review: @Sendable (ID, Local) -> Global { get }
     }
 
     /// Broadcast action lane for ``Behavior/liftEach(_:)`` — no id inbound (every present element receives
     /// the action), re-embeds each element's emitted action addressed at its own `id`.
     public protocol BroadcastProtocol: LiftingProtocol {
         associatedtype ID: Hashable & Sendable
-        var preview: @Sendable (G) -> L? { get }
-        var review: @Sendable (ID, L) -> G { get }
+        var preview: @Sendable (Global) -> Local? { get }
+        var review: @Sendable (ID, Local) -> Global { get }
     }
 
     /// Route-to-one witness. Reuses a base ``Prism`` over ``ElementAction`` internally.
-    public struct Element<G: Sendable, ID: Hashable & Sendable, L: Sendable>: ElementProtocol {
-        public let preview: @Sendable (G) -> (id: ID, action: L)?
-        public let review: @Sendable (ID, L) -> G
+    public struct Element<Global: Sendable, ID: Hashable & Sendable, Local: Sendable>: ElementProtocol {
+        public let preview: @Sendable (Global) -> (id: ID, action: Local)?
+        public let review: @Sendable (ID, Local) -> Global
         public init(
-            preview: @escaping @Sendable (G) -> (id: ID, action: L)?,
-            review: @escaping @Sendable (ID, L) -> G
+            preview: @escaping @Sendable (Global) -> (id: ID, action: Local)?,
+            review: @escaping @Sendable (ID, Local) -> Global
         ) {
             self.preview = preview
             self.review = review
         }
-        public init(_ prism: CoreFP.Prism<G, ElementAction<ID, L>>) {
+        public init(_ prism: CoreFP.Prism<Global, ElementAction<ID, Local>>) {
             preview = { prism.preview($0).map { (id: $0.id, action: $0.action) } }
             review = { id, action in prism.review(ElementAction(id, action: action)) }
         }
-        public init(_ keyPath: PrismKeyPath<G, ElementAction<ID, L>>) { self.init(CoreFP.Prism(keyPath)) }
+        public init(_ keyPath: PrismKeyPath<Global, ElementAction<ID, Local>>) { self.init(CoreFP.Prism(keyPath)) }
     }
 
     /// Broadcast witness. Plain `preview` inbound + an id-addressed `review` outbound.
-    public struct Broadcast<G: Sendable, ID: Hashable & Sendable, L: Sendable>: BroadcastProtocol {
-        public let preview: @Sendable (G) -> L?
-        public let review: @Sendable (ID, L) -> G
+    public struct Broadcast<Global: Sendable, ID: Hashable & Sendable, Local: Sendable>: BroadcastProtocol {
+        public let preview: @Sendable (Global) -> Local?
+        public let review: @Sendable (ID, Local) -> Global
         public init(
-            preview: @escaping @Sendable (G) -> L?,
-            review: @escaping @Sendable (ID, L) -> G
+            preview: @escaping @Sendable (Global) -> Local?,
+            review: @escaping @Sendable (ID, Local) -> Global
         ) {
             self.preview = preview
             self.review = review
         }
         /// Extract from a plain inbound ``Prism``, re-address element outputs into an ``ElementAction`` prism.
-        public init(inbound: CoreFP.Prism<G, L>, into element: CoreFP.Prism<G, ElementAction<ID, L>>) {
+        public init(inbound: CoreFP.Prism<Global, Local>, into element: CoreFP.Prism<Global, ElementAction<ID, Local>>) {
             preview = inbound.preview
             review = { id, action in element.review(ElementAction(id, action: action)) }
         }
@@ -72,19 +72,19 @@ extension Relay.StateAxis {
     public protocol KeyedProtocol: LiftingProtocol {
         associatedtype ID: Hashable & Sendable
         associatedtype Container: Sendable
-        var container: Lens<G, Container> { get }
-        var element: @Sendable (ID) -> AffineTraversal<Container, L> { get }
+        var container: Lens<Global, Container> { get }
+        var element: @Sendable (ID) -> AffineTraversal<Container, Local> { get }
         var ids: @Sendable (Container) -> [ID] { get }
     }
 
     /// Keyed witness — general form (any container + explicit element/ids optics).
-    public struct Keyed<G: Sendable, Container: Sendable, ID: Hashable & Sendable, L: Sendable>: KeyedProtocol {
-        public let container: Lens<G, Container>
-        public let element: @Sendable (ID) -> AffineTraversal<Container, L>
+    public struct Keyed<Global: Sendable, Container: Sendable, ID: Hashable & Sendable, Local: Sendable>: KeyedProtocol {
+        public let container: Lens<Global, Container>
+        public let element: @Sendable (ID) -> AffineTraversal<Container, Local>
         public let ids: @Sendable (Container) -> [ID]
         public init(
-            container: Lens<G, Container>,
-            element: @escaping @Sendable (ID) -> AffineTraversal<Container, L>,
+            container: Lens<Global, Container>,
+            element: @escaping @Sendable (ID) -> AffineTraversal<Container, Local>,
             ids: @escaping @Sendable (Container) -> [ID]
         ) {
             self.container = container
@@ -97,17 +97,17 @@ extension Relay.StateAxis {
 // MARK: - Keyed witness conveniences (one per locator strategy)
 
 extension Relay.StateAxis.Keyed
-where Container: MutableCollection & Sendable, Container.Element == L, L: Identifiable, ID == L.ID, Container.Index: Sendable {
+where Container: MutableCollection & Sendable, Container.Element == Local, Local: Identifiable, ID == Local.ID, Container.Index: Sendable {
     /// Keyed over a mutable collection of `Identifiable` elements, located by `id`.
-    public init(collection: Lens<G, Container>) {
+    public init(collection: Lens<Global, Container>) {
         self.init(container: collection, element: { Container.ix(id: $0) }, ids: { $0.map(\.id) })
     }
 }
 
 extension Relay.StateAxis.Keyed
-where Container: MutableCollection & Sendable, Container.Element == L, Container.Index: Sendable {
+where Container: MutableCollection & Sendable, Container.Element == Local, Container.Index: Sendable {
     /// Keyed over a mutable collection, located by a custom `Hashable` key path (element need not be `Identifiable`).
-    public init(collection: Lens<G, Container>, id identifier: KeyPath<L, ID> & Sendable) {
+    public init(collection: Lens<Global, Container>, id identifier: KeyPath<Local, ID> & Sendable) {
         self.init(
             container: collection,
             element: { Container.ix(id: $0, by: identifier) },
@@ -117,17 +117,17 @@ where Container: MutableCollection & Sendable, Container.Element == L, Container
 }
 
 extension Relay.StateAxis.Keyed
-where Container: MutableCollection & Sendable, Container.Element == L, ID == Container.Index, Container.Index: Hashable & Sendable {
+where Container: MutableCollection & Sendable, Container.Element == Local, ID == Container.Index, Container.Index: Hashable & Sendable {
     /// Keyed over a mutable collection by **position** (`Container.Index`).
-    public init(indexed collection: Lens<G, Container>) {
+    public init(indexed collection: Lens<Global, Container>) {
         self.init(container: collection, element: { Container.ix($0) }, ids: { Array($0.indices) })
     }
 }
 
-extension Relay.StateAxis.Keyed where Container == [ID: L] {
+extension Relay.StateAxis.Keyed where Container == [ID: Local] {
     /// Keyed over a dictionary, located by `Key`.
-    public init(dictionary: Lens<G, [ID: L]>) {
-        self.init(container: dictionary, element: { [ID: L].ix(key: $0) }, ids: { Array($0.keys) })
+    public init(dictionary: Lens<Global, [ID: Local]>) {
+        self.init(container: dictionary, element: { [ID: Local].ix(key: $0) }, ids: { Array($0.keys) })
     }
 }
 
@@ -135,7 +135,7 @@ extension Relay.StateAxis.Keyed where Container == [ID: L] {
 
 extension Relay.StateAxis.KeyedProtocol {
     /// A `Traversal` visiting every present element — the broadcast (`liftEach`) view of a keyed lane.
-    var eachTraversal: Traversal<Container, L> {
+    var eachTraversal: Traversal<Container, Local> {
         Traversal(
             getAll: { container in ids(container).compactMap { element($0).preview(container) } },
             modifyMut: { container, transform in
@@ -151,53 +151,120 @@ extension Relay.StateAxis.KeyedProtocol {
 // they need no label. `liftCollection`/`liftEach` is the only signal; the host's expected type also
 // disambiguates against the base entries (e.g. `.state(\.identifiableArray)` → `ReadsWrites` for a
 // projection, `Keyed` for `liftCollection`). Broadcast (no id inbound) and the non-`Identifiable` state
-// locators can't key on specificity, so they carry the minimum extra param/label.
+// locators can't key on specificity, so they carry the minimum extra param/label. Like the base builder,
+// factories root their optics at `Self`'s globals and leave un-set axes ``Relay/AxisDefault``-generic;
+// refiners are gated on the axis still being `Identity`.
 
 // MARK: Action — route-to-one (Element)
 
 extension Relay.Scope {
     /// Start a route-to-one scope from a prism into an ``ElementAction`` case.
-    public static func action<GA, ID: Hashable & Sendable, LA>(
-        _ prism: CoreFP.Prism<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.Identity, Relay.Identity> {
+    public static func action<
+        ID: Hashable & Sendable,
+        LA,
+        S: Relay.StateAxis.Strategy & Relay.AxisDefault,
+        E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault
+    >(
+        _ prism: CoreFP.Prism<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, S, Environment, E>
+    where S.Global == State, E.Global == Environment {
         .init(action: .init(prism), state: .init(), environment: .init())
     }
 
     /// Start a route-to-one scope from a `\.case` key path into an ``ElementAction``.
-    public static func action<GA, ID: Hashable & Sendable, LA>(
-        _ keyPath: PrismKeyPath<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.Identity, Relay.Identity> {
+    public static func action<
+        ID: Hashable & Sendable,
+        LA,
+        S: Relay.StateAxis.Strategy & Relay.AxisDefault,
+        E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault
+    >(
+        _ keyPath: PrismKeyPath<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, S, Environment, E>
+    where S.Global == State, E.Global == Environment {
         .init(action: .init(keyPath), state: .init(), environment: .init())
     }
 
     /// Start a route-to-one scope from a `(preview, review)` closure pair (macro-free).
-    public static func action<GA, ID: Hashable & Sendable, LA>(
-        preview: @escaping @Sendable (GA) -> (id: ID, action: LA)?,
-        review: @escaping @Sendable (ID, LA) -> GA
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, Relay.Identity, Relay.Identity> {
+    public static func action<
+        ID: Hashable & Sendable,
+        LA,
+        S: Relay.StateAxis.Strategy & Relay.AxisDefault,
+        E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault
+    >(
+        preview: @escaping @Sendable (Action) -> (id: ID, action: LA)?,
+        review: @escaping @Sendable (ID, LA) -> Action
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, S, Environment, E>
+    where S.Global == State, E.Global == Environment {
         .init(action: .init(preview: preview, review: review), state: .init(), environment: .init())
     }
+}
 
-    /// Replace the action axis with a route-to-one ``ElementAction`` prism.
-    public func action<GA, ID: Hashable & Sendable, LA>(
-        _ prism: CoreFP.Prism<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, State, Environment> {
+extension Relay.Scope where ActionStrategy == Relay.Identity<Action> {
+    /// Replace the pass-through action axis with a route-to-one ``ElementAction`` prism.
+    public func action<ID: Hashable & Sendable, LA>(
+        _ prism: CoreFP.Prism<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
         .init(action: .init(prism), state: state, environment: environment)
     }
 
-    /// Replace the action axis with a route-to-one ``ElementAction`` key path.
-    public func action<GA, ID: Hashable & Sendable, LA>(
-        _ keyPath: PrismKeyPath<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, State, Environment> {
+    /// Replace the pass-through action axis with a route-to-one ``ElementAction`` key path.
+    public func action<ID: Hashable & Sendable, LA>(
+        _ keyPath: PrismKeyPath<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
         .init(action: .init(keyPath), state: state, environment: environment)
     }
 
-    /// Replace the action axis with a route-to-one `(preview, review)` closure pair.
-    public func action<GA, ID: Hashable & Sendable, LA>(
-        preview: @escaping @Sendable (GA) -> (id: ID, action: LA)?,
-        review: @escaping @Sendable (ID, LA) -> GA
-    ) -> Relay.Scope<Relay.ActionAxis.Element<GA, ID, LA>, State, Environment> {
+    /// Replace the pass-through action axis with a route-to-one `(preview, review)` closure pair.
+    public func action<ID: Hashable & Sendable, LA>(
+        preview: @escaping @Sendable (Action) -> (id: ID, action: LA)?,
+        review: @escaping @Sendable (ID, LA) -> Action
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
         .init(action: .init(preview: preview, review: review), state: state, environment: environment)
+    }
+}
+
+// MARK: Action — route-to-one, declared-entry statics (on the all-`Identity` `ScopeOf<R>` shape)
+
+extension Relay.Scope where
+    ActionStrategy == Relay.Identity<Action>,
+    StateStrategy == Relay.Identity<State>,
+    EnvironmentStrategy == Relay.Identity<Environment> {
+    /// Start a declared route-to-one scope from a prism into an ``ElementAction`` case.
+    public static func action<ID: Hashable & Sendable, LA>(
+        _ prism: CoreFP.Prism<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
+        .init(action: .init(prism), state: .init(), environment: .init())
+    }
+
+    /// Start a declared route-to-one scope from a `\.case` key path into an ``ElementAction``.
+    public static func action<ID: Hashable & Sendable, LA>(
+        _ keyPath: PrismKeyPath<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
+        .init(action: .init(keyPath), state: .init(), environment: .init())
+    }
+
+    /// Start a declared route-to-one scope from a `(preview, review)` closure pair (macro-free).
+    public static func action<ID: Hashable & Sendable, LA>(
+        preview: @escaping @Sendable (Action) -> (id: ID, action: LA)?,
+        review: @escaping @Sendable (ID, LA) -> Action
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Element<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
+        .init(action: .init(preview: preview, review: review), state: .init(), environment: .init())
+    }
+
+    /// Start a declared broadcast scope (`inbound` prism → `into` ``ElementAction`` prism).
+    public static func action<ID: Hashable & Sendable, LA>(
+        broadcast inbound: CoreFP.Prism<Action, LA>,
+        into element: CoreFP.Prism<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
+        .init(action: .init(inbound: inbound, into: element), state: .init(), environment: .init())
+    }
+
+    /// Start a declared broadcast scope from a raw inbound `preview` + id-addressed `embed`.
+    public static func action<ID: Hashable & Sendable, LA>(
+        broadcast preview: @escaping @Sendable (Action) -> LA?,
+        embed: @escaping @Sendable (ID, LA) -> Action
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
+        .init(action: .init(preview: preview, review: embed), state: .init(), environment: .init())
     }
 }
 
@@ -206,102 +273,116 @@ extension Relay.Scope {
 extension Relay.Scope {
     /// Start a broadcast scope: extract from a plain inbound prism, re-address outputs into an
     /// ``ElementAction`` prism.
-    public static func action<GA, ID: Hashable & Sendable, LA>(
-        broadcast inbound: CoreFP.Prism<GA, LA>,
-        into element: CoreFP.Prism<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, Relay.Identity, Relay.Identity> {
+    public static func action<
+        ID: Hashable & Sendable,
+        LA,
+        S: Relay.StateAxis.Strategy & Relay.AxisDefault,
+        E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault
+    >(
+        broadcast inbound: CoreFP.Prism<Action, LA>,
+        into element: CoreFP.Prism<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, S, Environment, E>
+    where S.Global == State, E.Global == Environment {
         .init(action: .init(inbound: inbound, into: element), state: .init(), environment: .init())
     }
 
     /// Start a broadcast scope from a raw inbound `preview` + id-addressed `embed`.
-    public static func action<GA, ID: Hashable & Sendable, LA>(
-        broadcast preview: @escaping @Sendable (GA) -> LA?,
-        embed: @escaping @Sendable (ID, LA) -> GA
-    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, Relay.Identity, Relay.Identity> {
+    public static func action<
+        ID: Hashable & Sendable,
+        LA,
+        S: Relay.StateAxis.Strategy & Relay.AxisDefault,
+        E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault
+    >(
+        broadcast preview: @escaping @Sendable (Action) -> LA?,
+        embed: @escaping @Sendable (ID, LA) -> Action
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, S, Environment, E>
+    where S.Global == State, E.Global == Environment {
         .init(action: .init(preview: preview, review: embed), state: .init(), environment: .init())
     }
+}
 
-    /// Replace the action axis with a broadcast (`inbound` prism → `into` ``ElementAction`` prism).
-    public func action<GA, ID: Hashable & Sendable, LA>(
-        broadcast inbound: CoreFP.Prism<GA, LA>,
-        into element: CoreFP.Prism<GA, ElementAction<ID, LA>>
-    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, State, Environment> {
+extension Relay.Scope where ActionStrategy == Relay.Identity<Action> {
+    /// Replace the pass-through action axis with a broadcast (`inbound` prism → `into` ``ElementAction`` prism).
+    public func action<ID: Hashable & Sendable, LA>(
+        broadcast inbound: CoreFP.Prism<Action, LA>,
+        into element: CoreFP.Prism<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
         .init(action: .init(inbound: inbound, into: element), state: state, environment: environment)
     }
 
-    /// Replace the action axis with a broadcast raw `preview` + id-addressed `embed`.
-    public func action<GA, ID: Hashable & Sendable, LA>(
-        broadcast preview: @escaping @Sendable (GA) -> LA?,
-        embed: @escaping @Sendable (ID, LA) -> GA
-    ) -> Relay.Scope<Relay.ActionAxis.Broadcast<GA, ID, LA>, State, Environment> {
+    /// Replace the pass-through action axis with a broadcast raw `preview` + id-addressed `embed`.
+    public func action<ID: Hashable & Sendable, LA>(
+        broadcast preview: @escaping @Sendable (Action) -> LA?,
+        embed: @escaping @Sendable (ID, LA) -> Action
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
         .init(action: .init(preview: preview, review: embed), state: state, environment: environment)
     }
 }
 
 // MARK: State — keyed (Keyed) — refiners, one per locator × container spelling
 
-extension Relay.Scope {
+extension Relay.Scope where StateStrategy == Relay.Identity<State> {
     /// Refine the state axis to a keyed collection of `Identifiable` elements (`WritableKeyPath`).
-    public func state<GS, C: MutableCollection & Sendable, LS>(
-        _ keyPath: WritableKeyPath<GS, C> & Sendable
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, C, LS.ID, LS>, Environment>
+    public func state<C: MutableCollection & Sendable, LS>(
+        _ keyPath: WritableKeyPath<State, C> & Sendable
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, LS.ID, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, LS: Identifiable, LS.ID: Hashable & Sendable, C.Index: Sendable {
         .init(action: action, state: .init(collection: lens(keyPath)), environment: environment)
     }
 
     /// Refine the state axis to a keyed collection of `Identifiable` elements (`Lens`).
-    public func state<GS, C: MutableCollection & Sendable, LS>(
-        _ container: Lens<GS, C>
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, C, LS.ID, LS>, Environment>
+    public func state<C: MutableCollection & Sendable, LS>(
+        _ container: Lens<State, C>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, LS.ID, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, LS: Identifiable, LS.ID: Hashable & Sendable, C.Index: Sendable {
         .init(action: action, state: .init(collection: container), environment: environment)
     }
 
     /// Refine the state axis to a keyed collection located by a custom `Hashable` key path (`WritableKeyPath`).
-    public func state<GS, C: MutableCollection & Sendable, LS, ID: Hashable & Sendable>(
-        _ keyPath: WritableKeyPath<GS, C> & Sendable,
+    public func state<C: MutableCollection & Sendable, LS, ID: Hashable & Sendable>(
+        _ keyPath: WritableKeyPath<State, C> & Sendable,
         id identifier: KeyPath<LS, ID> & Sendable
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, C, ID, LS>, Environment>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, ID, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, C.Index: Sendable {
         .init(action: action, state: .init(collection: lens(keyPath), id: identifier), environment: environment)
     }
 
     /// Refine the state axis to a keyed collection located by a custom `Hashable` key path (`Lens`).
-    public func state<GS, C: MutableCollection & Sendable, LS, ID: Hashable & Sendable>(
-        _ container: Lens<GS, C>,
+    public func state<C: MutableCollection & Sendable, LS, ID: Hashable & Sendable>(
+        _ container: Lens<State, C>,
         id identifier: KeyPath<LS, ID> & Sendable
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, C, ID, LS>, Environment>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, ID, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, C.Index: Sendable {
         .init(action: action, state: .init(collection: container, id: identifier), environment: environment)
     }
 
     /// Refine the state axis to a collection keyed by **position** (`WritableKeyPath`).
-    public func state<GS, C: MutableCollection & Sendable, LS>(
-        indexed keyPath: WritableKeyPath<GS, C> & Sendable
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, C, C.Index, LS>, Environment>
+    public func state<C: MutableCollection & Sendable, LS>(
+        indexed keyPath: WritableKeyPath<State, C> & Sendable
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, C.Index, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, C.Index: Hashable & Sendable {
         .init(action: action, state: .init(indexed: lens(keyPath)), environment: environment)
     }
 
     /// Refine the state axis to a collection keyed by **position** (`Lens`).
-    public func state<GS, C: MutableCollection & Sendable, LS>(
-        indexed container: Lens<GS, C>
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, C, C.Index, LS>, Environment>
+    public func state<C: MutableCollection & Sendable, LS>(
+        indexed container: Lens<State, C>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, C.Index, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, C.Index: Hashable & Sendable {
         .init(action: action, state: .init(indexed: container), environment: environment)
     }
 
     /// Refine the state axis to a dictionary keyed by `Key` (`WritableKeyPath`).
-    public func state<GS, K: Hashable & Sendable, V: Sendable>(
-        dictionary keyPath: WritableKeyPath<GS, [K: V]> & Sendable
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, [K: V], K, V>, Environment> {
+    public func state<K: Hashable & Sendable, V: Sendable>(
+        dictionary keyPath: WritableKeyPath<State, [K: V]> & Sendable
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, [K: V], K, V>, Environment, EnvironmentStrategy> {
         .init(action: action, state: .init(dictionary: lens(keyPath)), environment: environment)
     }
 
     /// Refine the state axis to a dictionary keyed by `Key` (`Lens`).
-    public func state<GS, K: Hashable & Sendable, V: Sendable>(
-        dictionary container: Lens<GS, [K: V]>
-    ) -> Relay.Scope<Action, Relay.StateAxis.Keyed<GS, [K: V], K, V>, Environment> {
+    public func state<K: Hashable & Sendable, V: Sendable>(
+        dictionary container: Lens<State, [K: V]>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, [K: V], K, V>, Environment, EnvironmentStrategy> {
         .init(action: action, state: .init(dictionary: container), environment: environment)
     }
 }
