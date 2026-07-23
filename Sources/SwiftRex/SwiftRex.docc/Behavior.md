@@ -45,7 +45,7 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 let lifted = room.lift(.action(AppAction.prism.room).state(\.room).environment(\.roomEnv))
 ```
 
-`liftOptional` is the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with the action and environment axes left absent. While the focus is `nil` the behavior is a **complete no-op** — never asked to mutate, produce, or supervise (stricter than a plain affine state lift); while present it runs on the **unwrapped** value. A key-path spelling is sugar for the same call:
+`liftOptional` is the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with the action and environment axes left pass-through (``Relay/Identity``). While the focus is `nil` the behavior is a **complete no-op** — never asked to mutate, produce, or supervise (stricter than a plain affine state lift); while present it runs on the **unwrapped** value. A key-path spelling is sugar for the same call:
 
 ```swift
 dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?

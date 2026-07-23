@@ -21,21 +21,21 @@ Focus a single collection element with the `projection(element:…)` (by `Identi
 
 A view reads its slice through a ``Relay/Scope`` — the same value that wires a child on the behavior side. A projection needs the action lane to **embed** and the state lane to **read**; the environment lane is ignored. There are three shapes, distinguished by what the state lane focuses:
 
-**Whole collection** — the base ``StoreType/projection(_:)`` over a state lane that reads the entire collection. The projected state is the collection itself; a list view iterates it and projects each row separately.
+**Whole collection** — the base ``StoreType/projection(_:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>)`` over a state lane that reads the entire collection. The projected state is the collection itself; a list view iterates it and projects each row separately.
 
 ```swift
 let rows = store.projection(.action(AppAction.prism.bulk).state(\.rows))
 // StoreProjection<BulkAction, [Row]>
 ```
 
-**Per-element** — ``StoreType/projection(_:element:)`` addresses one element by `id`, through a ``Relay/Scope`` whose action lane is an ``Relay/ActionAxis/Element`` and whose state lane is a ``Relay/StateAxis/Keyed``. The `Keyed` lane abstracts the locator, so one call covers every collection shape — `Identifiable` id, custom id, index position, or dictionary key. A store can't be absent, so the projected state is `Element?` (the view unwraps with `if let`); dispatched sub-actions are re-embedded addressed at `id`.
+**Per-element** — ``StoreType/projection(_:element:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>,_)`` addresses one element by `id`, through a ``Relay/Scope`` whose action lane is an ``Relay/ActionAxis/Element`` and whose state lane is a ``Relay/StateAxis/Keyed``. The `Keyed` lane abstracts the locator, so one call covers every collection shape — `Identifiable` id, custom id, index position, or dictionary key. A store can't be absent, so the projected state is `Element?` (the view unwraps with `if let`); dispatched sub-actions are re-embedded addressed at `id`.
 
 ```swift
 let row = store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
 // StoreProjection<RowAction, Row?>
 ```
 
-**Optional child** — the base ``StoreType/projection(_:)`` again, this time over a state lane that reads an optional slice. The projected state is `Child?`, present or absent as the slice is `.some` or `.none`.
+**Optional child** — the base ``StoreType/projection(_:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>)`` again, this time over a state lane that reads an optional slice. The projected state is `Child?`, present or absent as the slice is `.some` or `.none`.
 
 ```swift
 let child = store.projection(.action(AppAction.prism.child).state(\.child))
@@ -73,8 +73,10 @@ Because the fallback value is retained for the transient absent frame, the unwra
 
 ### Projecting & unwrapping
 
-- ``StoreType/projection(_:)``
-- ``StoreType/projection(_:element:)``
+- ``StoreType/projection(_:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>)``
+- ``StoreType/projection(_:)-(Relay.Scope<Self.Action,A,Self.State,S,GE,E>)``
+- ``StoreType/projection(_:element:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>,_)``
+- ``StoreType/projection(_:element:)-(Relay.Scope<Self.Action,A,Self.State,S,GE,E>,_)``
 - ``StoreType/transpose()``
 
 ## See Also

@@ -40,15 +40,15 @@ let app = Reducer.compose {
 
 A reducer written at *local* types is lifted to your app's *global* types before composing, each lift naming its axes through a ``Relay/Scope`` leading-dot builder. A reducer carries no environment, so only the `.action` and `.state` lanes matter:
 
-- **``lift(_:)``** — re-index the action (a `Prism`/`\.case`) and focus the state (a `WritableKeyPath`/`Lens`/`AffineTraversal`) in one scope.
-- **``liftCollection(_:)``** — route an addressed global action to **one** element of an `Identifiable`/custom-keyed collection or a dictionary; the state lane locates it (`.state(\.rows)`, `.state(\.rows, id: \.slug)`, `.state(indexed: \.rows)`, `.state(dictionary: \.configs)`).
-- **``liftEach(_:)``** — the broadcast form: apply to *every* element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``.
+- **``lift(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``** — re-index the action (a `Prism`/`\.case`) and focus the state (a `WritableKeyPath`/`Lens`/`AffineTraversal`) in one scope.
+- **``liftCollection(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``** — route an addressed global action to **one** element of an `Identifiable`/custom-keyed collection or a dictionary; the state lane locates it (`.state(\.rows)`, `.state(\.rows, id: \.slug)`, `.state(indexed: \.rows)`, `.state(dictionary: \.configs)`).
+- **``liftEach(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``** — the broadcast form: apply to *every* element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``.
 
 ```swift
 let app = itemReducer.liftCollection(.action(AppAction.prism.row).state(\.rows))
 ```
 
-In each case the lifted reducer sees the **unwrapped** element. There is no per-element effect stamping or supervision to carry — a reducer is pure — so these are the simplest of the collection hosts. A reducer has no 0-or-1 `liftOptional` host either (that lives on ``Behavior`` and ``Middleware``): an absent focus would be a no-op *mutation*, which is already ``identity`` — reach for ``liftCollection(_:)`` or an `AffineTraversal` state lane on ``lift(_:)`` instead. See <doc:Algebra> for why lifting composes cleanly, and ``ElementAction`` for how element actions are addressed.
+In each case the lifted reducer sees the **unwrapped** element. There is no per-element effect stamping or supervision to carry — a reducer is pure — so these are the simplest of the collection hosts. A reducer has no 0-or-1 `liftOptional` host either (that lives on ``Behavior`` and ``Middleware``): an absent focus would be a no-op *mutation*, which is already ``identity`` — reach for ``liftCollection(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)`` or an `AffineTraversal` state lane on ``lift(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)`` instead. See <doc:Algebra> for why lifting composes cleanly, and ``ElementAction`` for how element actions are addressed.
 
 ### Becoming a Behavior
 
@@ -70,7 +70,8 @@ In each case the lifted reducer sees the **unwrapped** element. There is no per-
 
 ### Lifting to a Larger Scope
 
-- ``lift(_:)``
+- ``lift(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``
+- ``lift(_:)-(Relay.Scope<A.Global,A,S.Global,S,GE,E>)``
 - ``liftCollection(action:stateContainer:)``
 - ``liftEach(action:each:stateContainer:)``
 
