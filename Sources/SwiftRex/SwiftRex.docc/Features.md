@@ -4,21 +4,21 @@ Co-locate a whole feature — state, actions, behavior, and its SwiftUI screen �
 
 ## Overview
 
-`SwiftRex.Architecture` is the opinionated layer on top of `SwiftRex.SwiftUI`. Where <doc:BuildYourFirstFeature> wires a `Store`, a `Behavior`, and a view by hand, `@Feature` folds that wiring into a single `enum` namespace: you describe the feature, and the macro synthesizes `initialState(with:)` and an erased `view(store:environment:) -> some View`, applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type — `@Lenses` for structs, `@Prisms` for enums, recursively down the whole nested tree — and builds the right kind of observable view store. (State you declare in an *extension* of the feature isn't visible to the macro: annotate that extension with `@ApplyOptics(recursively: true)` yourself.)
+`SwiftRex.Architecture` is the opinionated layer on top of `SwiftRex.SwiftUI`. Where <doc:BuildYourFirstFeature> wires a `Store`, a `Behavior`, and a view by hand, `@Feature` folds that wiring into a single `enum` namespace: you describe the feature, and the macro synthesizes `initialState(with:)` and an erased `view(store:environment:) -> some View`, applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type — `@Lenses` for structs, `@Prisms` for enums, recursively down the whole nested tree — and hands the view an `ObservableStore` that redraws only what changed. (State you declare in an *extension* of the feature isn't visible to the macro: annotate that extension with `@ApplyOptics(recursively: true)` yourself.)
 
-`@Feature(strategy:)` takes one knob:
+`@Feature` takes one optional knob:
 
-- **`strategy:`** — a `ViewStrategy`, the observation mechanism the view store uses. `.observationSimple` builds a coarse ``ViewStore``; `.observationGranular` builds a field-level ``TrackedViewStore`` and auto-applies `@Tracked` to the `ViewState`; `.combineObservable` builds a Combine `ObservableObjectStore`. The first two require iOS 17; the last works back to iOS 13.
+- **`strategy:`** — a `ViewStrategy`, how the view store signals SwiftUI. `.observation` (the default, iOS 17+) invalidates per key path through the Observation framework; `.combine` (iOS 13+) sends one `objectWillChange` when a path some view read has changed. Both track the same thing — see "L3 — observation and composition" below.
 
-**Access follows the `enum`'s own modifier** — exactly like `@BoundTo` and `@Tracked`. A `public enum` is a module's public entry: the generated `view()`/`initialState(with:)` are `public`, so the composing app can render and seed it (declare its `State`/`Action`/`Environment`/`Input` `public` too, so they can be lifted). A plain `enum` is a screen composed *inside* a module — its generated members stay `internal`. There is no `type:` argument; the declaration says it.
+**Access follows the `enum`'s own modifier** — exactly like `@BoundTo`. A `public enum` is a module's public entry: the generated `view()`/`initialState(with:)` are `public`, so the composing app can render and seed it (declare its `State`/`Action`/`Environment`/`Input` `public` too, so they can be lifted). A plain `enum` is a screen composed *inside* a module — its generated members stay `internal`. There is no `type:` argument; the declaration says it.
 
 **The `Feature` conformance is generated too.** A feature that builds a view (it has a `Content`, or a hand-written `view`) conforms to ``Feature`` — you never write `extension X: Feature {}` by hand. A view-less feature is a behavior only: it gets no `Feature` conformance, and (it already has `behavior()`) declares `: HasBehavior` itself in one line on the rare occasion it must be used through that protocol.
 
-The paired SwiftUI view carries `@BoundTo(Feature.self, strategy:)`, which injects a `viewStore` stored property with the wrapper matching the strategy. The view body is the same across all three strategies — `viewStore.state.<field>` to read, `viewStore.dispatch(.<action>)` to send.
+The paired SwiftUI view carries `@BoundTo(Feature.self)` (repeat `strategy:` if you changed it), which injects a `viewStore` stored property held the way the strategy needs. The view body is the same under both strategies — `viewStore.<field>` to read (granular: the view depends on that path only), `viewStore.dispatch(.<action>)` to send.
 
 This article is the full L0→L4 progression; the [README](https://github.com/SwiftRex/SwiftRex#readme) shows the condensed form — one feature in one screen.
 
-> `@Feature` requires a **Swift 6.3+** toolchain. The macro is not availability-gated, so a `.combineObservable` feature builds to the package floor (iOS 16, macOS 13, tvOS 16, watchOS 9); on Linux/Windows/Android the whole SwiftUI/Observation layer compiles out.
+> `@Feature` requires a **Swift 6.3+** toolchain. The macro is not availability-gated, so a `.combine` feature builds to the package floor (iOS 16, macOS 13, tvOS 16, watchOS 9); on Linux/Windows/Android the whole SwiftUI/Observation layer compiles out.
 
 ## What the macro needs
 
@@ -43,7 +43,7 @@ The view projection layer is **optional**. Omit `ViewState`/`ViewAction`/`mapSta
 `State`, `Action`, `behavior()`, and a `Content` view. No `Environment` (aliased to `Void`), no view projection.
 
 ```swift
-@Feature(strategy: .observationSimple)
+@Feature
 enum Counter {
     struct State: Sendable, Equatable { var count = 0 }
     enum Action: Sendable { case tick }
@@ -59,11 +59,11 @@ enum Counter {
     typealias Content = CounterView
 }
 
-@BoundTo(Counter.self, strategy: .observationSimple)
+@BoundTo(Counter.self)
 struct CounterView: View {
-    // injected: let viewStore: ViewStore<Counter.State, Counter.Action>
+    // injected: let viewStore: ObservableStore<Counter.Action, Counter.State>
     var body: some View {
-        Button("count: \(viewStore.state.count)") { viewStore.dispatch(.tick) }
+        Button("count: \(viewStore.count)") { viewStore.dispatch(.tick) }
     }
 }
 ```
@@ -85,7 +85,7 @@ Inside the behavior, an effect reads `ctx.environment` in phase 3 — see <doc:A
 When the UI needs a shape the domain doesn't have — an `Int` shown as a `String`, a joined list bound to a `TextField` — declare `ViewState`/`ViewAction` and the two maps. Each map is a `Reader<Environment, …>`, so it can format and parse with live dependencies. `mapAction` parses raw view input back into a domain `Action`.
 
 ```swift
-@Feature(strategy: .observationSimple)
+@Feature
 enum HeroDetails {
     struct State: Sendable {
         var codename = "Kryptonian"
@@ -146,15 +146,15 @@ enum HeroDetails {
 }
 ```
 
-Because ``ViewStore`` conforms to ``StoreType``, the store-backed SwiftUI helpers work straight off the `viewStore` — including two-way `binding`s whose write dispatches a `ViewAction`:
+The binding and presentation helpers live on the observable store, so they work straight off the `viewStore` — including two-way `binding`s whose write dispatches a `ViewAction`. (They don't exist on a plain `Store` or `StoreProjection`: a binding SwiftUI can't observe would never update, so it doesn't compile — wrap the store with `observable()`.)
 
 ```swift
-@BoundTo(HeroDetails.self, strategy: .observationSimple)
+@BoundTo(HeroDetails.self)
 struct HeroDetailsView: View {
-    // injected: let viewStore: ViewStore<HeroDetails.ViewState, HeroDetails.ViewAction>
+    // injected: let viewStore: ObservableStore<HeroDetails.ViewAction, HeroDetails.ViewState>
     var body: some View {
         Form {
-            Text(viewStore.state.displayName).font(.headline)
+            Text(viewStore.displayName).font(.headline)
             // `set:` is `(Value) -> ViewAction`, so pass the case constructor directly:
             TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(review: HeroDetails.ViewAction.editedPowers)))
             Toggle("Retired", isOn: viewStore.binding(.state(\.isRetired), dispatch: .action(review: { _ in .tappedRetirement })))
@@ -172,48 +172,78 @@ path / closure for the state):
 TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(\.editedPowers)))
 ```
 
-## L3 — pick your observation
+## L3 — observation and composition
 
-The strategy is the only thing that changes between the three variants — the view **body is identical**. `.observationGranular` builds a ``TrackedViewStore`` and applies `@Tracked` to the `ViewState` for you, giving field-level invalidation: SwiftUI registers per-field dependencies during `body`, so only views reading a changed field re-render. `.combineObservable` is the pre-Observation path — a Combine `ObservableObjectStore` bound as `@ObservedObject`, available back to iOS 13, coarse-grained.
+A view reads its store **granularly**: `viewStore.title` records a dependency on `\.title` alone, and the view redraws only when that value changes (compared with `==`, as `@Observable` does). State stays a plain struct where it lives — nothing is copied into a class.
+
+The walk goes as deep as you read. A member whose type is an `ObservableLeaf` (strings, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those…) comes back as the value; anything else comes back as a `StateNode` you keep reading into:
 
 ```swift
-// Field-level — @Tracked auto-applied to ViewState
-@Feature(strategy: .observationGranular)
-enum Gadget {
-    struct State: Sendable, Equatable { var name = "phone"; var battery = 100 }
-    enum Action: Sendable { case rename(String) }
-    struct ViewState: Sendable, Equatable { var title: String; var charge: Int } // no @Tracked here — added for you
-    enum ViewAction: Sendable { case tapped }
-    static let mapState  = Reader<Void, @MainActor @Sendable (State) -> ViewState> { _ in { .init(title: $0.name, charge: $0.battery) } }
-    static let mapAction = Reader<Void, @Sendable (ViewAction) -> Action>          { _ in { _ in .rename("x") } }
-    static func behavior() -> Behavior<Action, State, Environment> {
-        .reduce { a, s in switch a { case .rename(let n): s.name = n } }
+Text(viewStore.transport.position, format: .number)   // depends on \.transport.position only
+viewStore.transport                                   // a StateNode<…, Transport>
+viewStore.transport.value                             // the whole Transport — depends on \.transport
+extension Status: ObservableLeaf {}                   // opt a type in to be read whole
+```
+
+**Pass nodes, not values, to subviews.** The child then depends only on what *it* reads, so a hot field redraws the one view that shows it:
+
+```swift
+struct PlayerScreen: View {
+    let viewStore: ObservableStore<Player.ViewAction, Player.ViewState>
+    var body: some View {
+        Console(mixer: viewStore.mixer)            // never redraws on playhead ticks
+        Playhead(transport: viewStore.transport)   // redraws 10× a second, alone
     }
-    typealias Content = GadgetView
-}
-
-@BoundTo(Gadget.self, strategy: .observationGranular)
-struct GadgetView: View {
-    // injected: let viewStore: TrackedViewStore<Gadget.ViewState, Gadget.ViewAction>
-    var body: some View { Text(viewStore.state.title) }   // invalidates only when `title` changes
-}
-
-// Combine — iOS 13+; the generated view() is ungated
-@BoundTo(Widget.self, strategy: .combineObservable)
-struct WidgetView: View {
-    // injected: @ObservedObject var viewStore: ObservableObjectStore<Widget.ViewAction, Widget.ViewState>
-    var body: some View { Text(viewStore.state.label) }
 }
 ```
 
-Under `.observationGranular` with no distinct `ViewState`, `@Tracked` lands on `State` itself — you still get a ``TrackedViewStore``, just over the domain state. Prefer `.observationSimple` unless you have a genuinely hot, wide screen where field-level tracking measurably wins; SwiftUI's own structural diffing already keeps coarse redraws cheap.
+For lists, `each` gives one node per `Identifiable` element — the list depends on the ids (insert / remove / reorder), each row on its own element:
+
+```swift
+List(viewStore.each(\.songs)) { song in SongRow(song: song) }
+```
+
+A subview that needs to send actions or build bindings takes a **scoped** store — a key-path slice of the same observable store with its own action lane, sharing its snapshot and dependencies (no new subscription): `viewStore.transport.scoped(action: .action(\.transport))`.
+
+### Composing projection, buffer and observation
+
+Three operators, one job each:
+
+| Operator | Does | Costs per upstream change |
+|---|---|---|
+| `projection(action:state:)` | narrows types; lazy, keeps nothing | the map, on **every read** |
+| `buffer()` | keeps a snapshot, passes changes on only when `!=` | one `==` |
+| `observable()` | keeps a snapshot, signals SwiftUI per changed dependency | the map once (if upstream is a projection) + the changed dependencies |
+
+`observable()` already *is* the buffer after the map — it only signals what changed — so the one placement decision left is **before** the map: `store.buffer().projection(…)` skips the map entirely when the input didn't change. `@Feature`'s generated view does exactly that when the feature's `State` is `Equatable` (`buffer → projection → observable`), and observes directly when there is no view layer.
+
+Observing then projecting stays observable only through key paths (a node, or `scoped`): a projection through a closure can't be seen into, so it returns a plain `StoreProjection` — observe it again with `.observable()`. An observable store only notifies its own observers when its snapshot changed, so a store projected from it is woken only by changes that reached it.
+
+### Strategies
+
+The strategy changes only how the store signals SwiftUI — the body is identical:
+
+```swift
+@Feature(strategy: .combine)                 // iOS 13+, the generated view() is ungated
+enum Widget { … }
+
+@BoundTo(Widget.self, strategy: .combine)
+struct WidgetView: View {
+    // injected: @ObservedObject var viewStore: ObservableStore<Widget.ViewAction, Widget.ViewState>
+    var body: some View { Text(viewStore.label) }
+}
+```
+
+`.observation` redraws only the views that read a changed path. `.combine` can't be per view — `ObservableObject` has one signal — but still sends it only when a path some view read has changed, so unrelated state changes redraw nothing.
+
+A `ViewState` is never needed for performance; declare one only when the UI wants a different shape. A `State` member whose name clashes with a store member (`state`, `dispatch`, `each`, `binding`, `item`, …) is shadowed — read it with `viewStore.read(\.item)`.
 
 ## L4 — a full module
 
 A `public enum` module entry point is the only thing a composing app sees of a module. Its `State`/`Action`/`Environment`/`Input` are `public` (they must be liftable), and — because access follows the `enum` — so are the generated `view(store:environment:)` and `initialState(with:)`. It adds a seed (`Input`), an effect through the behavior, and state-driven navigation.
 
 ```swift
-@Feature(strategy: .observationSimple)
+@Feature
 public enum Library {
     public struct Input: Sendable { public var shelfID: String }
 
@@ -267,12 +297,12 @@ public enum Library {
 Navigation is state-driven: the `item` binding presents while `selected` is `.some` and only ever dispatches the *dismiss* action when SwiftUI clears it — presentation is always a function of state, never driven by the binding. The sibling `presence` binding does the same for `.sheet(isPresented:)`.
 
 ```swift
-@BoundTo(Library.self, strategy: .observationSimple)
+@BoundTo(Library.self)
 struct LibraryView: View {
-    // injected: let viewStore: ViewStore<Library.State, Library.Action>
+    // injected: let viewStore: ObservableStore<Library.Action, Library.State>
     var body: some View {
-        List(viewStore.state.books) { book in
-            Button(book.title) { viewStore.dispatch(.tapped(book)) }
+        List(viewStore.each(\.books)) { book in
+            Button(book.title) { viewStore.dispatch(.tapped(book.value)) }
         }
         .onAppear { viewStore.dispatch(.onAppear) }
         .sheet(item: viewStore.item(.state(\.selected), dismiss: .dismissedDetail)) { book in
@@ -352,5 +382,5 @@ A feature's `behavior()` is a pure value, so `TestStore` from `SwiftRex.Testing`
 - <doc:Lifting>
 - ``Behavior``
 - ``Store``
-- ``ViewStore``
-- ``TrackedViewStore``
+- ``StoreBuffer``
+- ``StoreProjection``

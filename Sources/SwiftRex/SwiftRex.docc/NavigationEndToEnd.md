@@ -43,7 +43,7 @@ Each screen is a feature `enum`. Access follows the declaration: a `public enum`
 
 ```swift
 // LibraryFeature — the shelves list (a module entry point).
-@Feature(strategy: .observationSimple)
+@Feature
 public enum LibraryFeature {
     public struct State: Sendable, Equatable { public var shelves: [Shelf] = [] }
     public enum Action: Sendable { case onAppear; case loaded([Shelf]); case tappedShelf(Shelf.ID) }
@@ -62,7 +62,7 @@ public enum LibraryFeature {
 }
 
 // BookFeature — a single book; owns "edit" + "delete" intents (a module entry point).
-@Feature(strategy: .observationSimple)
+@Feature
 public enum BookFeature {
     public struct State: Sendable, Equatable { public var book: Book; public var confirmingDelete = false }
     public enum Action: Sendable { case tappedEdit; case tappedDelete; case confirmDelete; case cancelDelete }
@@ -81,7 +81,7 @@ public enum BookFeature {
 }
 
 // EditorFeature — the modal editor (a module entry point).
-@Feature(strategy: .observationSimple)
+@Feature
 public enum EditorFeature {
     public struct State: Sendable, Equatable, Identifiable { public var book: Book; public var id: Book.ID { book.id } }
     public enum Action: Sendable { case editedTitle(String); case editedNotes(String); case tappedSave; case tappedCancel }
@@ -217,15 +217,15 @@ public enum AppScopes {
 
 `AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by ``StoreType/transpose()``, which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by `transpose()`, which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
-The **router** holds the store and the world and resolves a route to `some View`, supplying each child's environment (which an env-free view body can't):
+The **router** holds the *observed* store and the world and resolves a route to `some View`, supplying each child's environment (which an env-free view body can't). Navigation reads state in a view body, so it must go through an observable store — the binding and presentation helpers don't even exist on the plain `Store`:
 
 ```swift
 @MainActor struct AppRouter {
-    let store: MainStore
+    let store: AppStore   // the app store, observed once at launch (Layer 7)
     let world: World
 
     @ViewBuilder func view(for route: AppRoute) -> some View {
@@ -235,9 +235,10 @@ The **router** holds the store and the world and resolves a route to `some View`
         }
     }
     @ViewBuilder private func bookView(_ id: Book.ID) -> some View {
-        // The optional `book` slice transposes to `Optional<Store>` — build the child only while it's
-        // present (a real app loads `state.book` when `.book(id)` is pushed); the empty frame renders nothing.
-        if let child = store.projection(.action(AppAction.prism.book).state(\.book)).transpose() {
+        // The optional `book` slice, scoped with its action lane, transposes to `Optional<Store>` — build the
+        // child only while it's present (a real app loads `state.book` when `.book(id)` is pushed); the empty
+        // frame renders nothing. The router depends on the presence edge only, not on the book's contents.
+        if let child = store.book.scoped(action: .action(AppAction.prism.book)).transpose() {
             BookFeature.view(store: child, environment: .init())
         }
     }
@@ -248,7 +249,7 @@ The **root view** wires **selection** (tabs) and **stack** (path); the book view
 
 ```swift
 struct RootView: View {
-    let store: MainStore
+    let store: AppStore
     let router: AppRouter
 
     var body: some View {
@@ -265,19 +266,19 @@ struct RootView: View {
 }
 
 struct BookView: View, Routable {
-    let viewStore: ViewStore<BookFeature.State, BookFeature.Action>
+    let viewStore: ObservableStore<BookFeature.Action, BookFeature.State>
     let router: AppRouter
 
     var body: some View {
-        Form { Text(viewStore.state.book.title) }
+        Form { Text(viewStore.book.title) }
             .toolbar { Button("Edit") { viewStore.dispatch(.tappedEdit) } }
             // PRESENTATION — the modifier wires both dismiss edges; content is live from the store:
             .presenting(router.store, \.editor, dismiss: .editor(.dismiss)) { _ in
                 // Project the slot's action (`.editor(.child(_))`) + the `Presentation<…>` state, then
                 // `transpose()` inverts `Store<Presentation<Editor>>` into `Store<Editor>?` — live through
                 // both `presented` and `dismissing(last:)`, `nil` only once dismissed, so no flicker:
-                if let editor = router.store
-                    .projection(action: { AppAction.editor(.child($0)) }, state: { $0.editor })
+                if let editor = router.store.editor
+                    .scoped(action: .action(review: { AppAction.editor(.child($0)) }))
                     .transpose() {
                     EditorFeature.view(store: editor, environment: router.world.editorEnv)
                 }
@@ -291,22 +292,23 @@ struct BookView: View, Routable {
 }
 ```
 
-Prefer ``StoreType/presence(_:dismiss:)`` (the `Bool` binding, above) as the default; reach for ``StoreType/item(_:dismiss:)`` + `.presentingItem` only when a `.sheet(item:)` genuinely needs the `Identifiable` value (`EditorFeature.State` is `Identifiable`, so it qualifies).
+Prefer `presence(_:dismiss:)` (the `Bool` binding, above) as the default; reach for `item(_:dismiss:)` + `.presentingItem` only when a `.sheet(item:)` genuinely needs the `Identifiable` value (`EditorFeature.State` is `Identifiable`, so it qualifies).
 
 ## Layer 7 — The `@main` assembly (store, scene, deep link)
 
 The store is created once, at launch, and owns the whole tree. The deep link is an *action source* — turn the URL into an action; the reducer sets navigation state:
 
 ```swift
-public typealias MainStore = Store<AppAction, AppState, World>
+public typealias AppStore = ObservableStore<AppAction, AppState>
 
 @main struct BookshelfApp: App {
-    let store: MainStore
+    let store: AppStore
     let router: AppRouter
 
     init() {
         let world = World.live
-        let store = Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world)
+        // The store runs the app; `observable()` is what views read — identity, no projection, built once.
+        let store = Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world).observable()
         self.store = store
         self.router = AppRouter(store: store, world: world)
     }
