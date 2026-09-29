@@ -44,6 +44,7 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 - <doc:BuildYourFirstFeature>
 - <doc:AddingEffects>
 - <doc:Features>
+- <doc:ObservingInSwiftUI>
 - <doc:Navigation>
 - <doc:NavigationEndToEnd>
 
