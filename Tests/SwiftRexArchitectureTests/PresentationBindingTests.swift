@@ -30,7 +30,6 @@
     @Suite("Presentation bindings")
     @MainActor
     struct PresentationBindingTests {
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func boolBindingIsPresentedAndDismisses() {
             let store = makeStore(.presented(Item(id: 1, text: "a")))
             #expect(store.observable().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == true)
@@ -40,7 +39,6 @@
             #expect(store.observable().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == false)   // false while dismissing
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func itemBindingKeysOnPresentedThenDismisses() {
             let store = makeStore(.presented(Item(id: 7, text: "x")))
             #expect(store.observable().item(.state(\.modal), dismiss: .dismiss).wrappedValue == Item(id: 7, text: "x"))
