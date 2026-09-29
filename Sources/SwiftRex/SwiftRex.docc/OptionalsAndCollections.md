@@ -95,18 +95,28 @@ so nobody is forced into `@Prisms` or a hand-written prism:
 )
 ```
 
-## The view side — projecting stores
+## The view side — reading optionals and collections
 
-A view reads through a ``StoreProjection``. There are three read shapes for variable state:
+A view reads through an **observed** store (a `ViewStore`, handed down by `@Feature` or `@ObservedStore` — see
+<doc:ObservingInSwiftUI>), and variable state has three read shapes there:
 
 ```swift
-// whole collection — the list view iterates this, then projects each row
+// whole collection — one node per row; the list depends on the ids, each row on its own element
+ForEach(store.each(\.rows)) { row in RowView(row: row) }
+
+// an optional child — its presence, then the child's own store
+if let child = store.child.scoped(action: .action(\.child)).transpose() { ChildFeature.view(store: child, environment: world.childEnv) }
+
+// one element by id, through a closure lane
+if let cell = store.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } }) { … }
+```
+
+Projections feed the observer — they narrow types for whoever *follows* the store (`store.projection(…)` then
+`@ObservedStore` / a feature's view), but a view never reads a plain ``StoreProjection`` directly:
+
+```swift
 let list: StoreProjection<BulkAction, [Row]> = store.projection(.action(AppAction.prism.bulk).state(\.rows))
-
-// one element by id — the projected state is Row? (the view unwraps)
 let cell: StoreProjection<RowAction, Row?> = store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
-
-// an optional child — likewise Value?
 let child: StoreProjection<ChildAction, Child?> = store.projection(.action(AppAction.prism.child).state(\.child))
 ```
 
@@ -116,40 +126,46 @@ lane for `liftCollection` (which writes per element) — the host decides, with 
 ### transpose — a store of optional becomes an optional store
 
 To hand a child `Feature` a store of the **unwrapped** value, invert the two type constructors with
-``StoreType/transpose()``: `Store<Optional<T>>` becomes `Optional<Store<T>>` — the store analogue of
-transposing `Optional<[T]>` ⇄ `[Optional<T>]`.
+`transpose()`: `Store<Optional<T>>` becomes `Optional<Store<T>>` — the store analogue of transposing
+`Optional<[T]>` ⇄ `[Optional<T>]`.
 
 ```swift
-store.projection(scope, element: id)   // StoreProjection<RowAction, Row?>   — store of optional
-    .transpose()                        // StoreProjection<RowAction, Row>?   — optional store of unwrapped
-    .map { RowFeature.view(store: $0, environment: world.rowEnv) }   // View?  — nil if the row was gone
-// then:  if let rowView { rowView }
+// in a view body — on the observed store; the view depends on the presence edge only:
+store.child.scoped(action: .action(\.child))      // ScopedStore<…, Child?>   — store of optional
+    .transpose()                                     // StoreProjection<…, Child>? — optional store of unwrapped
+    .map { ChildFeature.view(store: $0, environment: world.childEnv) }   // View? — nil if the child is gone
+
+// a lane no key path expresses:
+store.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
 ```
+
+The core ``StoreType/transpose()`` on a plain store does the same swap, but decides presence by reading the
+whole `state` — right for tests and services, wrong inside a body (the view would redraw on every change).
 
 > It is deliberately **not** called `sequence`: a `Store` is not `Traversable`, so the swap claims no
 > traversal law. It works because a store is *peekable* — the current value decides the nesting at call
-> time. The unwrapped store falls back to the value captured at `transpose()`-time on the transient frame
-> where the source reads `nil`, so it never force-unwraps and holds the last value steady across a
-> dismissal.
+> time. The unwrapped store falls back to the last present value on the transient frame where the source
+> reads `nil`, so it never force-unwraps and holds the last value steady across a dismissal.
 
 ### Presentation — the flicker-free child
 
 For an animated modal, prefer ``Presentation`` (`presented` / `dismissing(last:)` / `dismissed`) over a
-bare `T?`. Its `transpose()` overload keeps the child store live through **both** `presented` and
-`dismissing`, going `nil` only at `dismissed` — so the sheet renders its last value steady as SwiftUI
-animates it out, with no flicker:
+bare `T?`. Its `transpose()` overload (on the observed store) keeps the child store live through **both**
+`presented` and `dismissing`, going `nil` only at `dismissed` — so the sheet renders its last value steady as
+SwiftUI animates it out, with no flicker:
 
 ```swift
 .presenting(store, \.editor, dismiss: .dismissEditor) { _ in
-    if let editorView = store.projection(editorScope).transpose().map({ EditorFeature.view(store: $0, environment: world.editorEnv) }) {
-        editorView
+    if let editor = store.editor.scoped(action: .action(\.editor)).transpose() {
+        EditorFeature.view(store: editor, environment: world.editorEnv)
     }
 }
 ```
 
 ## Two-way bindings
 
-A store-backed `Binding` reads state and *dispatches* on write (the reducer stays the only writer). It takes
+A store-backed `Binding` reads state and *dispatches* on write (the reducer stays the only writer). Bindings
+live on the observed store (`ViewStore`, `ScopedStore`). It takes
 the same axis pair as every host — a `.state(…)` read and a `.action(…)` embed of the same value type —
 so the slots can't be crossed and each offers only its own strategies (`\.case` / prism / `review:` /
 `preview:` for actions, key path / closure / lens for state):
@@ -160,9 +176,10 @@ TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setNam
 // or a transform, wrapping the closure in .action(review:):
 TextField("Name", text: store.binding(.state(\.name), dispatch: .action(review: { ViewAction.setName($0) })))
 
-// a field of a collection element — free, via transpose():
-if let rowStore = store.projection(scope, element: id).transpose() {
-    TextField("Name", text: rowStore.binding(.state(\.name), dispatch: .action(\.setName)))
+// a field of a collection element — scope the row node, then bind:
+ForEach(store.each(\.rows)) { row in
+    TextField("Name", text: row.scoped(action: .action(review: { AppAction.row(row.id, $0) }))
+        .binding(.state(\.name), dispatch: .action(\.setName)))
 }
 ```
 

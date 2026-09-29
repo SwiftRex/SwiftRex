@@ -18,6 +18,12 @@
 extension StoreType {
     /// Swap `Store<T?>` into `Store<T>?`: a projection onto the unwrapped value when it is present, or
     /// `nil` when absent. Map the result to build an optional child view: `store.transpose().map { … }`.
+    ///
+    /// It decides presence by reading ``StoreType/state``. Inside a SwiftUI body on an **observed** store
+    /// (a `ViewStore`) that is a read of the whole state — the view would redraw on every change. There,
+    /// use the observed store's own overloads (`SwiftRex.SwiftUI`), which depend on the presence edge only:
+    /// `store.child.scoped(action: …).transpose()` for a key-path lane, or
+    /// `store.transpose(action:state:)` for a closure lane.
     @MainActor
     public func transpose<Wrapped: Sendable>() -> StoreProjection<Action, Wrapped>? where State == Wrapped? {
         state.map { current in StoreProjection(store: self, action: { $0 }, state: { $0 ?? current }) }

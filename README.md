@@ -11,7 +11,7 @@
 
 SwiftRex is a [Redux](https://redux.js.org/basics/data-flow)-style unidirectional-dataflow framework for Swift. One `Store` owns your whole app state; views dispatch **actions**, pure **behaviors** describe what changes and what runs, and the Store — the only thing that executes anything — handles actions, maintains state, and performs effects. It works with the reactive runtime you already use: Swift Concurrency, Combine, [RxSwift](https://github.com/ReactiveX/RxSwift), [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift), or [ReactiveConcurrency](https://github.com/luizmb/ReactiveConcurrency).
 
-- **Single source of truth** — one state tree, one store; views observe projections of it.
+- **Single source of truth** — one state tree, one store; views observe it, granularly.
 - **Compiler-enforced layers** — everything but the Store is an inert, composable value; there is nowhere to hide a side-effect.
 - **No race conditions** — every event is an action, processed FIFO on `@MainActor`, one notification per change.
 - **Testable without mocks** — environments are plain closures, logic is pure functions.
@@ -61,7 +61,8 @@ enum Movies {
 
 @BoundTo(Movies.self)
 struct MoviesView: View {
-    // injected: let viewStore: ViewStore<Movies.Action, Movies.State>
+    // injected: let viewStore: ViewStore<Movies.ViewAction, Movies.ViewState>
+    // (no ViewState/ViewAction declared, so they alias State/Action — the view reads the domain state)
     var body: some View {
         List(viewStore.each(\.movies)) { movie in Text(movie.title) }   // each row depends on its own movie
             .onAppear { viewStore.dispatch(.onAppear) }
@@ -423,11 +424,13 @@ rowBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction
 
 The lifted behavior sees the **unwrapped** element (never `Element?`), and each element's effects/channels are re-embedded and scoped to its id automatically. The same lanes drive `Reducer`/`Middleware` lifts and a per-element `store.projection(scope, element: id)` (whose state is `Element?` — the view unwraps).
 
-**The view side inverts the store.** A projection over an optional slice is a *store of an optional*; a child screen wants an *optional store of the unwrapped value*. `transpose()` swaps the two — `Store<T?>` → `Store<T>?` — the store analogue of transposing `Optional<[T]>` ⇄ `[Optional<T>]` (it's not `sequence`: a `Store` isn't `Traversable`, only *peekable*). Map it to build an optional child view; a three-stage `Presentation` slot keeps the child live through the dismiss animation (flicker-free). Two-way bindings read state and *dispatch* on write, so the reducer stays the only writer:
+**The view side inverts the store.** A projection over an optional slice is a *store of an optional*; a child screen wants an *optional store of the unwrapped value*. `transpose()` swaps the two — `Store<T?>` → `Store<T>?` — the store analogue of transposing `Optional<[T]>` ⇄ `[Optional<T>]` (it's not `sequence`: a `Store` isn't `Traversable`, only *peekable*). In a view it runs on the observed store and depends only on whether the child is there; a three-stage `Presentation` slot keeps the child live through the dismiss animation (flicker-free). Two-way bindings read state and *dispatch* on write, so the reducer stays the only writer:
 
 ```swift
-// a list row → an unwrapped child store → a live child view (nil when the row is gone):
-store.projection(rowScope, element: id).transpose().map { RowFeature.view(store: $0, environment: world.rowEnv) }
+// an optional child → an unwrapped child store → a live child view (nothing while it's absent):
+if let detail = viewStore.detail.scoped(action: .action(\.detail)).transpose() {
+    DetailFeature.view(store: detail, environment: world.detailEnv)
+}
 
 // two-way binding — a `.state(…)` read paired with the `.action(…)` case it dispatches on write:
 TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setName)))
@@ -481,7 +484,7 @@ Navigation is a function of state: routes live in the state tree, behaviors muta
 
 | State shape | Binding | Container |
 |---|---|---|
-| `Route?` / `Bool` | `store.item(…)` / `store.presence(…)` | `.sheet`, `.fullScreenCover`, `.popover` |
+| `Route?` (the optional *is* the content) | `store.item(…)` / `store.presence(…)` | `.sheet`, `.fullScreenCover`, `.popover` |
 | `[Route]` | `store.binding(…)` | `NavigationStack(path:)` |
 | selection enum / id | `store.binding(…)` | `TabView`, `NavigationSplitView` |
 | collection of scene ids | `store.hasScene(…)` | `WindowGroup(for:)` |

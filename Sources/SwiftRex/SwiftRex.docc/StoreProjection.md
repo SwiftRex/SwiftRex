@@ -50,19 +50,33 @@ A projection onto an optional slice is a *store of an optional* (`StoreProjectio
 
 It is named **transpose**, not `sequence`/`traverse`, because a ``Store`` is not `Traversable` — there is no lawful traversal here. The swap works because a store is *peekable*: the current value decides the nesting at call time. The unwrapped store reads the live value, falling back to the value captured at `transpose()`-time on the transient frame where the source reads `nil`, so it never force-unwraps and holds the last value steady across a dismissal.
 
-The view flow composes the per-element (or optional) projection with `transpose()` and `map`:
+On a plain store — a test, a service, anything outside SwiftUI — compose the per-element (or optional) projection with `transpose()`:
 
 ```swift
 if let rowStore = store.projection(.action(AppAction.prism.row).state(\.rows), element: id).transpose() {
-    Row.view(store: rowStore, environment: world.rowEnv)
+    rowStore.dispatch(.rename("New"))
 }
-// or point-free:
-store.projection(scope, element: id)
-    .transpose()
-    .map { Row.view(store: $0, environment: world.rowEnv) }   // View?
 ```
 
-Because the fallback value is retained for the transient absent frame, the unwrapped store — and its view — survive the render on which the element is removed, rather than crashing or blanking. SwiftRexSwiftUI adds a ``Presentation`` overload (`transpose()` over `Presentation<Wrapped>`) that turns that retention into a modeled `dismissing(last:)` stage: it presents through **both** `presented` and `dismissing`, and reads `nil` only once `dismissed`, so a presented child stays alive and steady while SwiftUI animates the sheet out — flicker-free.
+Because the fallback value is retained for the transient absent frame, the unwrapped store — and its view — survive the render on which the element is removed, rather than crashing or blanking.
+
+### In a SwiftUI body — transpose the observed store
+
+This core overload decides presence by reading ``StoreType/state``. On an observed store inside a view body that is a read of the **whole** state, so the view would redraw on every change. `SwiftRex.SwiftUI` adds overloads on the observed store that depend on the **presence edge only**:
+
+| State | Form |
+|---|---|
+| `T?` reached by a key path | `store.child.scoped(action: .action(\.child)).transpose()` |
+| `T?` reached by a closure lane (an affine preview, the top of a stack) | `store.transpose(action: { .child($0) }, state: { $0.path.last?.child })` |
+| ``Presentation`` — alive through `presented` **and** `dismissing(last:)`, `nil` once `dismissed` (flicker-free) | `store.editor.scoped(action: .action(\.editor)).transpose()` |
+
+```swift
+if let row = store.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } }) {
+    Row.view(store: row, environment: world.rowEnv)
+}
+```
+
+For whole lists, prefer `ForEach(store.each(\.rows)) { row in … row.scoped(action: …) }` — see <doc:ObservingInSwiftUI>.
 
 ## Topics
 

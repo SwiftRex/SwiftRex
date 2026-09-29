@@ -125,7 +125,7 @@ The same lanes drive `Reducer` and `Middleware` lifts, and a per-element
 effect scheduling is tagged per element, so one row's `.debounce(id:)` never collides with another's.
 
 > For the full picture — the input zoo (prism / key path / macro-free closures), all four locators, the
-> view-side projections, ``StoreType/transpose()``, `Presentation`, and two-way bindings — see
+> view-side projections, `transpose()`, `Presentation`, and two-way bindings — see
 > <doc:OptionalsAndCollections>.
 
 ## Putting it together

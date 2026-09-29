@@ -4,7 +4,7 @@ Co-locate a whole feature — state, actions, behavior, and its SwiftUI screen �
 
 ## Overview
 
-`SwiftRex.Architecture` is the opinionated layer on top of `SwiftRex.SwiftUI`. Where <doc:BuildYourFirstFeature> wires a `Store`, a `Behavior`, and a view by hand, `@Feature` folds that wiring into a single `enum` namespace: you describe the feature, and the macro synthesizes `initialState(with:)` and an erased `view(store:environment:) -> some View`, applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type — `@Lenses` for structs, `@Prisms` for enums, recursively down the whole nested tree — and hands the view an `ObservableStore` that redraws only what changed. (State you declare in an *extension* of the feature isn't visible to the macro: annotate that extension with `@ApplyOptics(recursively: true)` yourself.)
+`SwiftRex.Architecture` is the opinionated layer on top of `SwiftRex.SwiftUI`. Where <doc:BuildYourFirstFeature> wires a `Store`, a `Behavior`, and a view by hand, `@Feature` folds that wiring into a single `enum` namespace: you describe the feature, and the macro synthesizes `initialState(with:)` and an erased `view(store:environment:) -> some View`, applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type — `@Lenses` for structs, `@Prisms` for enums, recursively down the whole nested tree — and hands `Content` a `ViewStore` that redraws only what changed. (State you declare in an *extension* of the feature isn't visible to the macro: annotate that extension with `@ApplyOptics(recursively: true)` yourself.)
 
 `@Feature` takes one optional knob:
 
@@ -61,7 +61,7 @@ enum Counter {
 
 @BoundTo(Counter.self)
 struct CounterView: View {
-    // injected: let viewStore: ViewStore<Counter.Action, Counter.State>
+    // injected: let viewStore: ViewStore<Counter.ViewAction, Counter.ViewState> (aliases of Action/State here)
     var body: some View {
         Button("count: \(viewStore.count)") { viewStore.dispatch(.tick) }
     }
@@ -155,7 +155,7 @@ struct HeroDetailsView: View {
     var body: some View {
         Form {
             Text(viewStore.displayName).font(.headline)
-            // `set:` is `(Value) -> ViewAction`, so pass the case constructor directly:
+            // `.action(review:)` takes `(Value) -> ViewAction`, so pass the case constructor directly:
             TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(review: HeroDetails.ViewAction.editedPowers)))
             Toggle("Retired", isOn: viewStore.binding(.state(\.isRetired), dispatch: .action(review: { _ in .tappedRetirement })))
         }
@@ -304,7 +304,7 @@ Navigation is state-driven: the `item` binding presents while `selected` is `.so
 ```swift
 @BoundTo(Library.self)
 struct LibraryView: View {
-    // injected: let viewStore: ViewStore<Library.Action, Library.State>
+    // injected: let viewStore: ViewStore<Library.ViewAction, Library.ViewState> (aliases of Action/State here)
     var body: some View {
         List(viewStore.each(\.books)) { book in
             Button(book.title) { viewStore.dispatch(.tapped(book.value)) }
@@ -346,11 +346,11 @@ Library.view(
 )
 ```
 
-That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), project it and ``StoreType/transpose()`` — inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?` — so the child view exists only while the state is `.some`, with no placeholder:
+That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the **observed** app store (`@ObservedStore var root = store`), scopes the slice and transposes it, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?`. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
 
 ```swift
-if let heroStore = store.projection(action: AppAction.heroDetail, state: { $0.heroDetail }).transpose() {
-    HeroDetails.view(store: heroStore, environment: appEnv.heroDetail)
+if let hero = root.heroDetail.scoped(action: .action(\.heroDetail)).transpose() {
+    HeroDetails.view(store: hero, environment: appEnv.heroDetail)
 }
 ```
 

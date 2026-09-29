@@ -53,9 +53,10 @@ The monoid-plus-one-interpreter design isn't aesthetic — it's where the runtim
 
 ## The view boundary stays pure too
 
-The ``Store`` never deduplicates — it always notifies, copies nothing. Narrowing for views is done by two pure helpers:
+The ``Store`` never deduplicates — it always notifies, copies nothing. Narrowing and observing for views is done by helpers around it:
 
 - ``StoreProjection`` — a *stateless* `struct` that maps global action/state to a local slice (a lens with no storage of its own).
+- the observed store (`SwiftRex.SwiftUI`) — what SwiftUI reads: one snapshot, and a dependency per key path each view read, signalled only when that value changes (see <doc:StoresAtAGlance>).
 - ``StoreBuffer`` — the caching/deduplicating layer that skips propagation when the projected slice is unchanged (`Equatable`, or a custom predicate).
 
 ## See also
