@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import SwiftRex
+
 // Key-path plumbing for granular observation. An observable store keys each dependency on a key path, and
 // key-path literals are uniqued instances — so a read that reuses the same instance hits a pointer-keyed
 // fast path instead of hashing the whole path. Everything here exists to keep composed paths (node hops,
@@ -123,4 +125,25 @@ final class ObservationPaths {
         rows.removeAll(keepingCapacity: true)
         parents.removeAll(keepingCapacity: true)
     }
+}
+
+// MARK: - Derived reads
+
+/// The identity of a derived read — where it was made, the types it involves, and an optional caller id.
+/// Two reads with the same identity are the same dependency, so a call site keeps one dependency however
+/// often its body runs. Observation plumbing behind `ObservableStoreType.read(derived:)`.
+struct ObservationDerivedID: Hashable, Sendable {
+    let site: String
+    let types: [ObjectIdentifier]
+    let id: AnyHashableSendable?
+}
+
+/// A key-path argument carrying a derivation — equal (and hashed) by its identity alone, since closures
+/// can't be compared. Observation plumbing behind `ObservableStoreType.read(derived:)`.
+struct ObservationDerivedKey<Root, Value>: Hashable {
+    let id: ObservationDerivedID
+    let compute: (Root) -> Value
+
+    static func == (lhs: Self, rhs: Self) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }

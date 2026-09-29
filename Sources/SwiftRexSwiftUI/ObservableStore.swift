@@ -48,7 +48,7 @@
     /// from it is woken only by changes that reached it.
     ///
     /// Bindings and presentation helpers (``ObservableStoreType/binding(_:dispatch:file:function:line:)``,
-    /// ``ObservableStoreType/presence(_:dismiss:file:function:line:)-(_,_,_,_,_)``, `presenting`) exist only on
+    /// `presence(_:dismiss:)`, `presenting`) exist only on
     /// observable stores: calling them on a plain `Store` or `StoreProjection` doesn't compile.
     @MainActor
     public final class ObservableStore<Action: Sendable, State: Sendable>: ObservableObject, ObservableStoreType {
@@ -96,9 +96,9 @@
         public init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy = .automatic) {
             self.upstream = upstream
             self.strategy = strategy
-            snapshot = upstream.state
+            snapshot = upstream.untrackedState
             registrar = ObservableStore.makeRegistrar(strategy)
-            token = upstream.observe(didChange: { [weak self] in self?.receive(upstream.state) })
+            token = upstream.observe(didChange: { [weak self] in self?.receive(upstream.untrackedState) })
         }
 
         // MARK: - StoreType
@@ -106,6 +106,9 @@
         /// The whole state — a coarse read: the view depends on **every** change. Prefer reading the path you
         /// need (`store.title`, `store.player.position`) so the view depends on that alone.
         public var state: State { read(prefix) }
+
+        /// The snapshot, recording nothing — what a store built on this one reads to follow it.
+        public var untrackedState: State { snapshot }
 
         public func dispatch(_ action: Action, source: ActionSource) {
             upstream.dispatch(action, source: source)
@@ -138,6 +141,21 @@
         /// Reads `keyPath` without recording a dependency.
         public func peek<T>(_ keyPath: KeyPath<State, T>) -> T {
             snapshot[keyPath: keyPath]
+        }
+
+        /// Reads a value derived from the state, recording a dependency on **that value** (compared with `==`)
+        /// rather than on the whole state. Plumbing behind ``ObservableStoreType/read(derived:id:fileID:line:column:)``.
+        func read<T: Equatable>(_ key: ObservationDerivedKey<State, T>) -> T {
+            let storeKey = \ObservableStore<Action, State>.[derived: key]
+            let dependency = dependencies[storeKey] ?? makeDerivedDependency(storeKey, key)
+            dependencies[storeKey] = dependency
+            if !dependency.armed { registry.arm(dependency) }
+            dependency.access?(self)
+            return key.compute(snapshot)
+        }
+
+        subscript<T>(derived key: ObservationDerivedKey<State, T>) -> T {
+            key.compute(snapshot)
         }
 
         // MARK: - Change propagation
@@ -196,6 +214,20 @@
             return Dependency(
                 changed: ObservableStore.comparator(keyPath),
                 parent: paths.parentGuard(of: keyPath, in: self) as? Dependency,
+                access: tracking?.access,
+                willSet: tracking?.willSet,
+                didSet: tracking?.didSet
+            )
+        }
+
+        private func makeDerivedDependency<T: Equatable>(
+            _ storeKey: KeyPath<ObservableStore, T>,
+            _ key: ObservationDerivedKey<State, T>
+        ) -> Dependency {
+            let tracking = ObservableStore.tracking(registrar, storeKey)
+            return Dependency(
+                changed: { key.compute($0) != key.compute($1) },
+                parent: nil,
                 access: tracking?.access,
                 willSet: tracking?.willSet,
                 didSet: tracking?.didSet

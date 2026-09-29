@@ -40,6 +40,9 @@
         /// The whole state — a coarse read (see ``ObservableStore/state``).
         public var state: State { root.state }
 
+        /// The state, recording nothing — what a store built on this one reads to follow it.
+        public var untrackedState: State { root.untrackedState }
+
         public func read<T>(_ keyPath: KeyPath<State, T>) -> T {
             root.read(keyPath)
         }
