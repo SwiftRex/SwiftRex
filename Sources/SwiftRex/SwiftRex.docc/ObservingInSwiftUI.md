@@ -211,6 +211,7 @@ For routers built on ``Relay/Scope`` and features, see <doc:Navigation> and <doc
 
 ## See Also
 
+- <doc:StoresAtAGlance>
 - <doc:Features>
 - <doc:Navigation>
 - ``StoreProjection``

@@ -68,6 +68,7 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 
 ### Running It — the Store
 
+- <doc:StoresAtAGlance>
 - ``Store``
 - ``StoreType``
 - ``StoreProjection``
