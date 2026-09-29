@@ -7,7 +7,7 @@
     import SwiftUI
     import Testing
 
-    // A child feature (a real @Feature so it conforms to `Feature`: behavior + view). Gateway derives
+    // A child feature (a real @Feature so it conforms to `Feature`: behavior + view). A `Relay.Scope` derives
     // both its lifted behavior and its view from it.
     @Feature
     enum SCCounter {
@@ -55,8 +55,8 @@
         var counterEnv: SCCounter.Environment { .init(step: step) }
     }
 
-    // The parent `Rig` — carries the app's (Action, State, Environment) triad; a `Gateway` relates it to
-    // a child domain. `Action` is `SCAction` (Prismatic via @Prisms), as `Gateway` requires.
+    // The parent `Rig` — carries the app's (Action, State, Environment) triad; a `Relay.Scope` relates it to
+    // a child domain. `Action` is `SCAction` (Prismatic via @Prisms), as the scope's action lane requires.
     private enum SCApp: FeatureDomain {
         typealias Action = SCAction
         typealias State = SCState
@@ -64,7 +64,7 @@
     }
 
     // A logic-only capability — `HasBehavior`, NO view (the shape of a system-event/capability package).
-    // It is NOT a `Feature`; a `Gateway` over it lifts `.behavior` and, being view-less, has no `.view`.
+    // It is NOT a `Feature`; a `Relay.Scope` over it lifts `.behavior(of:)` and, being view-less, has no `.view`.
     enum PingCapability {
         struct State: Sendable, Equatable { var pings = 0 }
         enum Action: Sendable, Equatable { case ping }

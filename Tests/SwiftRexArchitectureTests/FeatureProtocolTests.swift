@@ -27,7 +27,6 @@
         typealias Content = FPLeafView
     }
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(FPLeaf.self)
     struct FPLeafView: View { var body: some View { Text("\(viewStore.n)") } }
 
@@ -35,7 +34,6 @@
 
     // A generic that abstracts over ANY feature — driving both its behavior and its view through the
     // single Feature protocol, without naming the concrete feature inside.
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @MainActor
     private func drive<F: Feature>(_ feature: F.Type, store: any StoreType<F.Action, F.State>, environment: F.Environment) -> F.Body {
         _ = F.behavior()
@@ -45,7 +43,6 @@
     @Suite("Feature protocol")
     @MainActor
     struct FeatureProtocolTests {
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func abstractsFeatureGenerically() {
             // Compiles ⇒ `drive` used a feature purely through the protocol (no concrete naming inside).
             let store = Store(initial: FPLeaf.State(), behavior: FPLeaf.behavior(), environment: FPLeaf.Environment(step: 1))

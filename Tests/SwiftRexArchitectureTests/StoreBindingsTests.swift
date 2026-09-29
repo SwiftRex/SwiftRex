@@ -43,12 +43,10 @@
             )
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func bindingGetReadsState() {
             #expect(makeStore().observable().binding(.state(\.name), dispatch: .action(review: A.setName)).wrappedValue == "a")
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func bindingSetDispatches() async {
             let store = makeStore()
             store.observable().binding(.state(\.name), dispatch: .action(review: A.setName)).wrappedValue = "z"
@@ -56,7 +54,6 @@
             #expect(store.state.name == "z")
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func presenceIsFalseWhenNilTrueWhenSome() async {
             let store = makeStore()
             let presence = store.observable().presence(.state(\.editor), dismiss: .dismissEditor)
@@ -66,7 +63,6 @@
             #expect(presence.wrappedValue == true)
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func presenceSetFalseDispatchesDismiss() async {
             let store = makeStore()
             store.dispatch(.presentEditor(7))
@@ -77,7 +73,6 @@
             #expect(store.state.editor == nil)
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func presenceSetTrueIsIgnored() async {
             let store = makeStore()
             let presence = store.observable().presence(.state(\.editor), dismiss: .dismissEditor)
@@ -86,7 +81,6 @@
             #expect(store.state.editor == nil)
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func itemReadsAndDismisses() async {
             let store = makeStore()
             store.dispatch(.select(.init(id: 3)))
@@ -133,7 +127,6 @@
             )
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func pathReadsAndDispatchesWholeNewPath() async {
             let store = makeStore()
             store.dispatch(.setPath([.a]))
@@ -148,7 +141,6 @@
             #expect(store.state.path == [.a])
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func selectionDispatchesOnEveryChange() async {
             let store = makeStore()
             let tab = store.observable().binding(.state(\.tab), dispatch: .action(review: A.selectTab))
@@ -158,7 +150,6 @@
             #expect(store.state.tab == .search)
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func optionalSelectionHandlesNilAndValue() async {
             let store = makeStore()
             let sidebar = store.observable().binding(.state(\.sidebar), dispatch: .action(review: A.selectSidebar))
