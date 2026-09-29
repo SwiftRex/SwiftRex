@@ -221,7 +221,7 @@ Observing then projecting stays observable only through key paths (a node, or `s
 
 ### Owners, receivers and strategies
 
-> Note: Wiring views without `@Feature`? <doc:ObservingInSwiftUI> covers every owner / receiver / projection / strategy combination.
+> Note: Wiring views without `@Feature`? <doc:ObservingInSwiftUI> covers every owner / receiver / projection / strategy combination, and <doc:StoresAtAGlance> maps every store type and shows exactly which views redraw under Observation vs Combine.
 
 The observed store is built **once**, by its owner, and handed down: the owner is `@Feature`'s generated view, or `@ObservedStore var store = appStore` in a view you write (its initial value is lazy, like `@StateObject`'s, so re-creating the view never rebuilds the store); every view below takes `let store: ViewStore<…>`. Never build one in a `body`.
 

@@ -46,6 +46,7 @@ When `Environment == Void` a convenience initialiser omits it; another accepts a
 
 ## See Also
 
+- <doc:StoresAtAGlance> — every store-like type, and which views redraw when
 - ``StoreType``
 - ``StoreProjection``
 - ``StoreBuffer``
