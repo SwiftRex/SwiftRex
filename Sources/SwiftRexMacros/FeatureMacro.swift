@@ -15,11 +15,10 @@ import SwiftSyntaxMacros
 /// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
 ///   generates `view(store:environment:) -> some View` (when a `Content` view exists) handing `Content`
 ///   an `ObservableStore` (built once per view identity) over an environment-aware projection, signalling
-///   through `strategy:` (default `.observation`, iOS-17-gated; `.combine` is not).
+///   through `strategy:` (default `.automatic`: Observation on iOS 17+, Combine below; nothing is gated).
 /// - `ExtensionMacro`       — generates the `Feature` conformance when the type has a view (a `Content`,
 ///   or a hand-written `view`); a view-less feature is a behavior only and gets no `Feature`
-///   conformance. The `Feature` conformance is iOS-17-gated for `.observation`, ungated for
-///   Combine (matching the generated `view()`).
+///   conformance. Nothing is availability-gated: the store picks Observation or Combine at runtime.
 ///
 /// **Access follows the `enum`'s own modifier** — a `public enum` gets `public` members; a plain `enum`
 /// keeps them `internal` — read from the declaration, exactly like `@BoundTo`. `ViewState`/
@@ -73,7 +72,7 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
     }
 
     /// Builds `view(store:environment:)`. The view gets an `ObservableStore` built once per view identity
-    /// (`ObservableStoreHost`), signalling through `strategy:` (Observation is iOS-17-gated, Combine is not).
+    /// (`ObservableStoreHost`), signalling through `strategy:` (chosen at runtime by the store, so ungated).
     /// When a `ViewState` struct / `ViewAction` enum exists the store is projected through the (env-aware)
     /// maps — buffered before the map when the feature's `State` is `Equatable`, picked by overload
     /// resolution in `ObservableStore.feature` — otherwise the feature's store is observed as-is, with an
@@ -84,7 +83,6 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         declaration: some DeclGroupSyntax
     ) -> DeclSyntax {
         let strategy = strategyName(node)
-        let availability = strategy == "combine" ? "" : "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n"
 
         let projectsState = hasNestedStruct("ViewState", in: declaration)
         let projectsAction = hasNestedEnum("ViewAction", in: declaration)
@@ -106,7 +104,7 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         // cannot bind the `ViewFactory.Body` associated type, so the feature couldn't conform to
         // `Feature`; the existential can. Callers are unaffected — a `Store` boxes into it.
         return """
-        \(raw: availability)@MainActor \(raw: access)static func view(
+        @MainActor \(raw: access)static func view(
             store: any StoreType<Action, State>,
             environment: Environment
         ) -> some View {
@@ -123,9 +121,8 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
 
     /// Generates the protocol conformance. A feature that builds a view — it has a `Content` (the macro
     /// generates `view()`) or a hand-written `view` — conforms to `Feature`; a view-less feature is a
-    /// behavior only and conforms to `HasBehavior`. The `Feature` conformance carries the same iOS-17
-    /// gate as the generated `view()` for the Observation strategies (ungated for Combine); a witness
-    /// gated more narrowly than its requirement wouldn't satisfy it.
+    /// behavior only and conforms to `HasBehavior`. Ungated, like the generated `view()` — the store picks
+    /// Observation or Combine at runtime.
     public static func expansion(
         of node: AttributeSyntax,
         attachedTo declaration: some DeclGroupSyntax,
@@ -144,11 +141,7 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         guard hasNestedType("Content", in: declaration) || hasFunction("view", in: declaration) else {
             return []
         }
-        // Gated for Observation (its `view()` is iOS-17), ungated for Combine — matching the generated
-        // `view()`'s own availability.
-        let gated = strategyName(node) != "combine"
-        let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
-        let conformance: DeclSyntax = "\(raw: availability)extension \(raw: type.trimmedDescription): Feature {}"
+        let conformance: DeclSyntax = "extension \(raw: type.trimmedDescription): Feature {}"
         return conformance.as(ExtensionDeclSyntax.self).map { [$0] } ?? []
     }
 
@@ -224,9 +217,9 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             .map { "\($0.name.text) " } ?? ""
     }
 
-    /// The `strategy:` case name; defaults to `"observation"`.
+    /// The `strategy:` case name; defaults to `"automatic"`.
     private static func strategyName(_ node: AttributeSyntax) -> String {
-        argumentCase("strategy", in: node) ?? "observation"
+        argumentCase("strategy", in: node) ?? "automatic"
     }
 
     private static func hasAttribute(_ name: String, on attributes: AttributeListSyntax) -> Bool {

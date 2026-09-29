@@ -8,13 +8,13 @@ Co-locate a whole feature — state, actions, behavior, and its SwiftUI screen �
 
 `@Feature` takes one optional knob:
 
-- **`strategy:`** — a `ViewStrategy`, how the view store signals SwiftUI. `.observation` (the default, iOS 17+) invalidates per key path through the Observation framework; `.combine` (iOS 13+) sends one `objectWillChange` when a path some view read has changed. Both track the same thing — see "L3 — observation and composition" below.
+- **`strategy:`** — a `ViewStrategy`, how the view store signals SwiftUI. `.automatic` (the default) uses the Observation framework on iOS 17+ and a Combine signal below; `.combine` forces Combine everywhere. Nothing is availability-gated and the view never changes — see "L3 — observation and composition" below.
 
 **Access follows the `enum`'s own modifier** — exactly like `@BoundTo`. A `public enum` is a module's public entry: the generated `view()`/`initialState(with:)` are `public`, so the composing app can render and seed it (declare its `State`/`Action`/`Environment`/`Input` `public` too, so they can be lifted). A plain `enum` is a screen composed *inside* a module — its generated members stay `internal`. There is no `type:` argument; the declaration says it.
 
 **The `Feature` conformance is generated too.** A feature that builds a view (it has a `Content`, or a hand-written `view`) conforms to ``Feature`` — you never write `extension X: Feature {}` by hand. A view-less feature is a behavior only: it gets no `Feature` conformance, and (it already has `behavior()`) declares `: HasBehavior` itself in one line on the rare occasion it must be used through that protocol.
 
-The paired SwiftUI view carries `@BoundTo(Feature.self)` (repeat `strategy:` if you changed it), which injects a `viewStore` stored property held the way the strategy needs. The view body is the same under both strategies — `viewStore.<field>` to read (granular: the view depends on that path only), `viewStore.dispatch(.<action>)` to send.
+The paired SwiftUI view carries `@BoundTo(Feature.self)`, which injects `let viewStore: ViewStore<ViewAction, ViewState>` — a plain-`let` receiver under every strategy (the generated `view()` owns the store). The view body is the same under every strategy — `viewStore.<field>` to read (granular: the view depends on that path only), `viewStore.dispatch(.<action>)` to send.
 
 This article is the full L0→L4 progression; the [README](https://github.com/SwiftRex/SwiftRex#readme) shows the condensed form — one feature in one screen.
 
@@ -61,7 +61,7 @@ enum Counter {
 
 @BoundTo(Counter.self)
 struct CounterView: View {
-    // injected: let viewStore: ObservableStore<Counter.Action, Counter.State>
+    // injected: let viewStore: ViewStore<Counter.Action, Counter.State>
     var body: some View {
         Button("count: \(viewStore.count)") { viewStore.dispatch(.tick) }
     }
@@ -151,7 +151,7 @@ The binding and presentation helpers live on the observable store, so they work 
 ```swift
 @BoundTo(HeroDetails.self)
 struct HeroDetailsView: View {
-    // injected: let viewStore: ObservableStore<HeroDetails.ViewAction, HeroDetails.ViewState>
+    // injected: let viewStore: ViewStore<HeroDetails.ViewAction, HeroDetails.ViewState>
     var body: some View {
         Form {
             Text(viewStore.displayName).font(.headline)
@@ -189,7 +189,7 @@ extension Status: ObservableLeaf {}                   // opt a type in to be rea
 
 ```swift
 struct PlayerScreen: View {
-    let viewStore: ObservableStore<Player.ViewAction, Player.ViewState>
+    let viewStore: ViewStore<Player.ViewAction, Player.ViewState>
     var body: some View {
         Console(mixer: viewStore.mixer)            // never redraws on playhead ticks
         Playhead(transport: viewStore.transport)   // redraws 10× a second, alone
@@ -219,22 +219,25 @@ Three operators, one job each:
 
 Observing then projecting stays observable only through key paths (a node, or `scoped`): a projection through a closure can't be seen into, so it returns a plain `StoreProjection` — observe it again with `.observable()`. An observable store only notifies its own observers when its snapshot changed, so a store projected from it is woken only by changes that reached it.
 
-### Strategies
+### Owners, receivers and strategies
 
-The strategy changes only how the store signals SwiftUI — the body is identical:
+The observed store is built **once**, by its owner, and handed down: the owner is `@Feature`'s generated view, or `@ObservedStore var store = appStore` in a view you write (its initial value is lazy, like `@StateObject`'s, so re-creating the view never rebuilds the store); every view below takes `let store: ViewStore<…>`. Never build one in a `body`.
+
+The strategy is chosen by the owner and changes only how the store signals SwiftUI — receivers and bodies are identical:
 
 ```swift
-@Feature(strategy: .combine)                 // iOS 13+, the generated view() is ungated
+@Feature(strategy: .combine)                 // force Combine, even on iOS 17+
 enum Widget { … }
 
-@BoundTo(Widget.self, strategy: .combine)
+@BoundTo(Widget.self)                        // injects `let viewStore: ViewStore<…>` — no strategy here
 struct WidgetView: View {
-    // injected: @ObservedObject var viewStore: ObservableStore<Widget.ViewAction, Widget.ViewState>
     var body: some View { Text(viewStore.label) }
 }
+
+@ObservedStore(.combine) var store = appStore   // the same override on a hand-written owner
 ```
 
-`.observation` redraws only the views that read a changed path. `.combine` can't be per view — `ObservableObject` has one signal — but still sends it only when a path some view read has changed, so unrelated state changes redraw nothing.
+Under Observation (the `.automatic` default on iOS 17+) only the views that read a changed path redraw. Combine can't be per view — `ObservableObject` has one signal — but it's still sent only when a path some view read has changed, so unrelated state changes redraw nothing.
 
 A `ViewState` is never needed for performance; declare one only when the UI wants a different shape. A `State` member whose name clashes with a store member (`state`, `dispatch`, `each`, `binding`, `item`, …) is shadowed — read it with `viewStore.read(\.item)`.
 
@@ -299,7 +302,7 @@ Navigation is state-driven: the `item` binding presents while `selected` is `.so
 ```swift
 @BoundTo(Library.self)
 struct LibraryView: View {
-    // injected: let viewStore: ObservableStore<Library.Action, Library.State>
+    // injected: let viewStore: ViewStore<Library.Action, Library.State>
     var body: some View {
         List(viewStore.each(\.books)) { book in
             Button(book.title) { viewStore.dispatch(.tapped(book.value)) }

@@ -61,7 +61,7 @@ enum Movies {
 
 @BoundTo(Movies.self)
 struct MoviesView: View {
-    // injected: let viewStore: ObservableStore<Movies.Action, Movies.State>
+    // injected: let viewStore: ViewStore<Movies.Action, Movies.State>
     var body: some View {
         List(viewStore.each(\.movies)) { movie in Text(movie.title) }   // each row depends on its own movie
             .onAppear { viewStore.dispatch(.onAppear) }
@@ -117,7 +117,7 @@ Pick the products that match your project; the core is self-contained:
 | `SwiftRex.RxSwift` | `RxSwift` | The same bridge surface for `Observable` |
 | `SwiftRex.ReactiveSwift` | `ReactiveSwift` | The same bridge surface for `SignalProducer`/`Signal` |
 | `SwiftRex.ReactiveConcurrency` | `ReactiveConcurrency` | The same bridge surface for ReactiveConcurrency's cold, async/await-native `Publisher` |
-| `SwiftRex.SwiftUI` | — | `observable()` / `ObservableStore` — granular per-key-path observation (Observation iOS 17+, Combine iOS 13+), store-backed `Binding`s and presentation |
+| `SwiftRex.SwiftUI` | — | `@ObservedStore` / `ViewStore` — granular per-key-path observation (Observation on iOS 17+, Combine below, picked automatically), store-backed `Binding`s and presentation |
 | `SwiftRex.Architecture` | — | The `@Feature` / `@BoundTo` macros and the `Relay.Scope` feature lift — `.behavior(of:)` / `.view(of:from:world:)` (Swift 6.3+) |
 | `SwiftRex.Operators` | — | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
 | `SwiftRex.Testing` | — | `TestStore` — test target only |
@@ -354,9 +354,9 @@ Pair them back up with `Behavior(reducer:middleware:)`, or lift either half alon
 
 `SwiftRex.Architecture` packages the recommended app structure. `@Feature` turns a namespace enum into a full feature: it applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type (recursive `@Lenses`/`@Prisms` down the whole tree), generates `initialState(with:)` and the SwiftUI `view(store:environment:)` factory, and generates the `Feature` conformance when the feature has a view (a view-less feature is a behavior only, with no `Feature` conformance). `@BoundTo` injects the matching `viewStore` into the view — the body never changes when you swap observation strategies.
 
-Views read **granularly**, at any depth, with state kept as plain structs: `viewStore.title` makes the view depend on `\.title` alone (compared with `==`), `viewStore.player` is a node you keep reading into, and `viewStore.each(\.songs)` gives one dependency per row. Pass nodes to subviews and a hot field (a 10 Hz playhead) redraws only the view that shows it. Bindings and navigation exist only on observable stores — wrap any store with `observable()` (the real `Store` included, no identity projection needed). [Features → observation and composition](https://swiftrex.ios.lu/documentation/swiftrex/features) has the full model.
+Views read **granularly**, at any depth, with state kept as plain structs: `viewStore.title` makes the view depend on `\.title` alone (compared with `==`), `viewStore.player` is a node you keep reading into, and `viewStore.each(\.songs)` gives one dependency per row. Pass nodes to subviews and a hot field (a 10 Hz playhead) redraws only the view that shows it. Bindings and navigation exist only on observable stores. One view owns the observed store — `@Feature` does it for you, or `@ObservedStore var store = appStore` (the real `Store` included, no identity projection needed) — and every view below takes `let store: ViewStore<…>`. [Features → observation and composition](https://swiftrex.ios.lu/documentation/swiftrex/features) has the full model.
 
-You saw the minimal shape in the hero example. Features scale up by *adding* declarations, never rewriting: an `Environment` for dependencies, a distinct `ViewState`/`ViewAction` pair with `mapState`/`mapAction` as `Reader<Environment, …>` when the view's shape diverges from the domain's, an `Input` seed for parameterised features, `strategy: .combine` for pre-iOS 17 targets, and a `public enum` (access follows the declaration) when the feature becomes its own SPM module:
+You saw the minimal shape in the hero example. Features scale up by *adding* declarations, never rewriting: an `Environment` for dependencies, a distinct `ViewState`/`ViewAction` pair with `mapState`/`mapAction` as `Reader<Environment, …>` when the view's shape diverges from the domain's, an `Input` seed for parameterised features, and a `public enum` (access follows the declaration) when the feature becomes its own SPM module:
 
 ```swift
 @Feature

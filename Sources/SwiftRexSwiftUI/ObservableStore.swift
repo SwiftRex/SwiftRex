@@ -15,7 +15,7 @@
     /// records, per key path, what the views read. A read is granular by default:
     ///
     /// ```swift
-    /// let store = appStore.observable()
+    /// @ObservedStore var store = appStore   // owner; receivers take `let store: ViewStore<…>`
     /// Text(store.player.title)        // depends on \.player.title only
     /// PlayheadView(node: store.player) // a StateNode — the child reads deeper paths itself
     /// ```
@@ -25,25 +25,23 @@
     /// snapshot — with `==` when the value is `Equatable`, as `@Observable` does — and signals only the ones
     /// that differ. The ``ViewStrategy`` picks the signal:
     ///
-    /// - ``ViewStrategy/observation`` (iOS 17+): Observation-framework invalidation per changed path.
-    /// - ``ViewStrategy/combine`` (iOS 13+): a single `objectWillChange`, sent only when some path a view
-    ///   read has changed.
+    /// - ``ViewStrategy/automatic`` (default): Observation on iOS 17+, Combine below.
+    /// - ``ViewStrategy/observation``: Observation-framework invalidation per changed path.
+    /// - ``ViewStrategy/combine``: a single `objectWillChange`, sent only when some path a view read has
+    ///   changed — forced even where Observation is available.
     ///
     /// ## Ownership
     ///
-    /// The store *is* the buffer — its snapshot, dependencies and upstream subscription — so it must be built
-    /// **once** and owned by something that outlives body re-evaluations. Every view below the owner just
-    /// receives the reference:
+    /// The store *is* the buffer — its snapshot, dependencies and upstream subscription — so it is built
+    /// **once**, by an owner that outlives body re-evaluations, and every view below receives a ``ViewStore``
+    /// (a plain `let`, whatever the strategy):
     ///
-    /// | | ``ViewStrategy/observation`` | ``ViewStrategy/combine`` |
-    /// | --- | --- | --- |
-    /// | owner (builds it) | ``ObservableStoreHost``, or `@State` in a type initialised once (`App`, a root) | ``ObservableStoreHost`` or `@StateObject` |
-    /// | receivers | `let` | `@ObservedObject` |
+    /// - the owner: ``ObservedStore`` (`@ObservedStore var store = appStore`), ``ObservableStoreHost``, or
+    ///   `@Feature`'s generated view;
+    /// - everyone below: `let store: ViewStore<Action, State>`.
     ///
-    /// Never build one in a `body` (`ChildView(store: appStore.observable())`): every re-evaluation would
-    /// allocate and subscribe a fresh store, discarding the dependencies it had. `@State` in an ordinary view
-    /// keeps the first instance but still evaluates its initial value on every `init` — the host's `make`
-    /// closure runs only when there is no store yet.
+    /// Never build one in a `body` (`Child(store: ViewStore(appStore.observable()))`): every re-evaluation
+    /// would allocate and subscribe a fresh store, discarding the dependencies it had.
     ///
     /// `ObservableStore` is itself a ``StoreType`` whose own ``observe(willChange:didChange:)`` fires only
     /// when its snapshot changed (by `==` when `State` is `Equatable`), so a store observed or projected
@@ -93,9 +91,9 @@
         private var nextObserverKey: UInt64 = 0
         private lazy var wholeChanged: (State, State) -> Bool = ObservableStore.comparator(prefix)
 
-        /// Wraps `upstream`, observing it through `strategy` (``ViewStrategy/observation`` by default; on an OS
-        /// without the Observation framework the store falls back to ``ViewStrategy/combine`` signalling).
-        public init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy = .observation) {
+        /// Wraps `upstream`, observing it through `strategy` — ``ViewStrategy/automatic`` by default: the
+        /// Observation framework where the OS has it, Combine signalling below.
+        public init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy = .automatic) {
             self.upstream = upstream
             self.strategy = strategy
             snapshot = upstream.state
@@ -222,7 +220,7 @@
 
         private static func makeRegistrar(_ strategy: ViewStrategy) -> (any Sendable)? {
             #if canImport(Observation)
-                guard strategy == .observation, #available(iOS 17, macOS 14, tvOS 17, watchOS 10, *) else { return nil }
+                guard strategy != .combine, #available(iOS 17, macOS 14, tvOS 17, watchOS 10, *) else { return nil }
                 return ObservationRegistrar()
             #else
                 return nil
@@ -262,14 +260,12 @@
         /// a projection, a buffer, or another observable store.
         ///
         /// ```swift
-        /// ObservableStoreHost { appStore.observable() } content: { RootView(store: $0) }       // built once
-        /// ObservableStoreHost { appStore.buffer().projection(action: …, state: mapState).observable() }
-        ///     content: { ScreenView(store: $0) }
-        /// @StateObject var root = appStore.observable(.combine)                                // iOS 13+
+        /// @ObservedStore var store = appStore        // the usual way: a view owns it, built once
+        /// ObservableStoreHost { appStore.observable(.combine) } content: { RootView(store: $0) }
         /// ```
         ///
-        /// Build it once and hand the reference down — see ``ObservableStore`` → Ownership.
-        public func observable(_ strategy: ViewStrategy = .observation) -> ObservableStore<Action, State> {
+        /// Build it once and hand ``ViewStore``s down — see ``ObservableStore`` → Ownership.
+        public func observable(_ strategy: ViewStrategy = .automatic) -> ObservableStore<Action, State> {
             ObservableStore(self, strategy: strategy)
         }
     }

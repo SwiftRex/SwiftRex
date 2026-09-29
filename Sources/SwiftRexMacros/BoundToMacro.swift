@@ -4,20 +4,12 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-/// Implements `@BoundTo(Feature.self, strategy:)` — injects the view's `viewStore` stored property
-/// with the observation wrapper that matches the feature's `ViewStrategy`.
+/// Implements `@BoundTo(Feature.self)` — injects the view's `viewStore` stored property:
+/// `let viewStore: ViewStore<F.ViewAction, F.ViewState>`.
 ///
-/// The strategy can't be read off the feature (a macro sees only its own attached declaration and
-/// arguments, never another type's attributes), so it's passed here too; the compiler enforces
-/// consistency because `Feature.view()` builds a store of exactly this type.
-///
-/// | `strategy:` | injected property |
-/// | --- | --- |
-/// | `.observation` (default) | `let viewStore: ObservableStore<F.ViewAction, F.ViewState>` |
-/// | `.combine` | `@ObservedObject var viewStore: ObservableStore<F.ViewAction, F.ViewState>` |
-///
-/// The view reads `viewStore.field` / `viewStore.dispatch(_:)` identically under both; the struct's
-/// synthesised memberwise `init(viewStore:)` receives the store from `Feature.view()`.
+/// A `ViewStore` is a receiver that works under every `ViewStrategy` (it carries its own Combine
+/// subscription), so the strategy — chosen once, on `@Feature` — never has to be repeated here. The
+/// struct's synthesised memberwise `init(viewStore:)` receives the store from `Feature.view()`.
 public struct BoundToMacro: MemberMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -37,18 +29,9 @@ public struct BoundToMacro: MemberMacro {
             return []
         }
 
-        let strategy = args
-            .first(where: { $0.label?.text == "strategy" })?
-            .expression.as(MemberAccessExprSyntax.self)?
-            .declName.baseName.text ?? "observation"
-
         let access = accessModifier(from: structDecl.modifiers)
 
-        let storeType = "ObservableStore<\(feature).ViewAction, \(feature).ViewState>"
-        let property: DeclSyntax = strategy == "combine"
-            ? "\(raw: access)@ObservedObject var viewStore: \(raw: storeType)"
-            : "\(raw: access)let viewStore: \(raw: storeType)"
-        return [property]
+        return ["\(raw: access)let viewStore: ViewStore<\(raw: feature).ViewAction, \(raw: feature).ViewState>"]
     }
 
     private static func accessModifier(from modifiers: DeclModifierListSyntax) -> String {
