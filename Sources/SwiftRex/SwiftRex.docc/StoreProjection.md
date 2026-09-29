@@ -15,7 +15,7 @@ let counter = appStore.projection(
 
 Focus a single collection element with the `projection(element:…)` (by `Identifiable` id or custom identifier) or `projection(key:…)` (dictionary) factories — actions are wrapped in an ``ElementAction``.
 
-`StoreProjection` does **no** deduplication — the underlying ``Store`` always notifies. When you want to skip redundant view updates, wrap it in a ``StoreBuffer`` via ``StoreType/buffer()``.
+`StoreProjection` does **no** caching or deduplication — the underlying ``Store`` always notifies, and reading `state` runs the map every time. To skip redundant work, put a ``StoreBuffer`` (``StoreType/buffer()``) **before** the map: `store.buffer().projection(…)` runs the map only when its input changed. A buffer *after* the map (`projection(…).buffer()`) still runs the map on every change and only suppresses identical results — for SwiftUI the observed store already does that per key path.
 
 ## Three view-side read shapes
 
