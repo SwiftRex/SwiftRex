@@ -5,10 +5,13 @@
 ///
 /// Both strategies track the same thing — the key paths each view read — and differ only in the signal:
 ///
-/// | Case | Signal | Invalidates | Floor | View holds it as |
+/// | Case | Signal | Invalidates | Floor | Receiving view holds it as |
 /// | --- | --- | --- | --- | --- |
-/// | ``observation`` | Observation registrar, per changed path | only views that read a changed path | iOS 17 | `let` / `@State` |
-/// | ``combine`` | one `objectWillChange` when a read path changed | every view observing the store | iOS 13 | `@ObservedObject` / `@StateObject` |
+/// | ``observation`` | Observation registrar, per changed path | only views that read a changed path | iOS 17 | `let` |
+/// | ``combine`` | one `objectWillChange` when a read path changed | every view observing the store | iOS 13 | `@ObservedObject` |
+///
+/// Whoever *builds* the store owns it — ``ObservableStoreHost`` (what `@Feature` generates), or `@State` /
+/// `@StateObject` somewhere initialised once — see ``ObservableStore`` → Ownership.
 ///
 /// A plain value type carrying no platform dependency, so it stays available everywhere.
 public enum ViewStrategy: Sendable, Equatable {
