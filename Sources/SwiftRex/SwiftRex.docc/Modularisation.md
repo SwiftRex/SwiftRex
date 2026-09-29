@@ -32,7 +32,7 @@ public let counterBehavior = Behavior<CounterAction, CounterState, CounterEnviro
 }
 ```
 
-Its SwiftUI view renders from a ``StoreProjection`` of that slice, so the view, too, only knows the local types.
+Its SwiftUI view observes a projection of that slice (the feature's generated view owns an observed store over it), so the view, too, only knows the local types.
 
 ## Wiring features into the app
 

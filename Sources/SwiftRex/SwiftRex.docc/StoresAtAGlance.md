@@ -15,7 +15,7 @@ SwiftRex has one store that *runs* the app and several that *look like* it: they
 | Type | Kind | Module | What it is |
 |---|---|---|---|
 | ``StoreType`` | protocol | `SwiftRex` | Anything with `state`, `dispatch(_:source:)` and `observe(willChange:didChange:)`. Every row below conforms. |
-| `ObservableStoreType` | protocol | `SwiftRex.SwiftUI` | A ``StoreType`` **SwiftUI can observe**: reads register per key path. The binding / presentation helpers (`binding`, `presence`, `item`, `presenting`, `transpose`, `hasScene`) exist only here. |
+| `ObservableStoreType` | protocol | `SwiftRex.SwiftUI` | A ``StoreType`` **SwiftUI can observe**: reads register per key path. The binding / presentation helpers (`binding`, `presence`, `item`, `presenting`, `hasScene`) exist only here, as do the presence-only `transpose` overloads (`Presentation`, key-path and closure lanes). The core `transpose()` on ``StoreType`` reads the whole state — fine outside SwiftUI, coarse inside a body. |
 
 ### Running and shaping state (core — every platform)
 

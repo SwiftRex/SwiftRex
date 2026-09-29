@@ -4,26 +4,27 @@ Model navigation as a function of state: routes live in state, SwiftUI bindings 
 
 ## Overview
 
-Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one store for the whole app; a view holds only a projection. Behavior mutates the navigation *state* (a route, an optional, a path, a selection); it never touches the view or the router. Every SwiftUI navigation container — sheet, cover, popover, alert, dialog, inspector, `NavigationStack`, `NavigationSplitView`, `TabView`, pages, windows — is just a pluggable *rendering* of one of four state **shapes**:
+Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one store for the whole app; a view reads it through an observed store (a `ViewStore`, granular per key path — see <doc:StoresAtAGlance>). Behavior mutates the navigation *state* (a route, an optional, a path, a selection); it never touches the view or the router. Every SwiftUI navigation container — sheet, cover, popover, alert, dialog, inspector, `NavigationStack`, `NavigationSplitView`, `TabView`, pages, windows — is just a pluggable *rendering* of one of four state **shapes**:
 
 | Shape | State | Lift | Binding | Reducer |
 | --- | --- | --- | --- | --- |
-| **Optional / modal** — 0-or-1, child created on present | `Item?` (or `Bool`) | `liftOptional` | ``StoreType/item(_:dismiss:)`` / ``StoreType/presence(_:dismiss:)`` | ``Behavior/navigationItem(_:action:allow:)`` |
-| **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | ``StoreType/binding(_:dispatch:)`` | ``Behavior/navigationStack(_:action:allow:)`` |
-| **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | ``StoreType/binding(_:dispatch:)`` | ``Behavior/navigationSelection(_:action:allow:)`` |
-| **Scene set** — 0-to-N windows | keyed sub-states | element/dictionary projection | ``StoreType/hasScene(_:in:)`` + `WindowGroup(for:)` | ordinary open/close actions |
+| **Optional / modal** — 0-or-1, child created on present | `Item?` | `liftOptional` | `item(_:dismiss:)` / `presence(_:dismiss:)` | ``Behavior/navigationItem(_:action:allow:)`` |
+| **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | `binding(_:dispatch:)` | ``Behavior/navigationStack(_:action:allow:)`` |
+| **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | `binding(_:dispatch:)` | ``Behavior/navigationSelection(_:action:allow:)`` |
+| **Scene set** — 0-to-N windows | keyed sub-states | element/dictionary projection | `hasScene(_:in:)` + `WindowGroup(for:)` | ordinary open/close actions |
 
-The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers.
+The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers. The bindings live on the **observed** store (`ViewStore`, `ScopedStore`) — on a plain `Store` they don't compile, because SwiftUI couldn't observe them.
 
 > This page is the **reference** — each shape and container in isolation. For one app that wires all four shapes across every layer (domain → features → the global feature → behavior fold → scopes → router → views → `@main`), with the full stack shown, follow <doc:NavigationEndToEnd>.
 
 ## Every container, by shape
 
-### Optional / modal — `Item?` or `Bool`
+### Optional / modal — `Item?`
 
-Presentation and child lifetime are one fact: set the optional and the child exists and shows; clear it and it tears down. Use ``StoreType/item(_:dismiss:)`` when the presented content needs state (an `Identifiable` value), ``StoreType/presence(_:dismiss:)`` when a `Bool` suffices. Both only ever dispatch the *dismiss* action — presentation is driven by state, never by the binding.
+Presentation and child lifetime are one fact: set the optional and the child exists and shows; clear it and it tears down. Model the presentation as the **optional content** itself — never a `Bool` flag beside it: one value says both *whether* it shows and *what* it shows, so the two can't disagree. Then pick the binding the modifier wants: `item(_:dismiss:)` for `.sheet(item:)`-style modifiers (the content is `Identifiable`), `presence(_:dismiss:)` for `isPresented:`-style ones — a `Binding<Bool>` that is `true` while the optional is `.some` (pass the content through `presenting:` where the modifier takes it). Both only ever dispatch the *dismiss* action — presentation is driven by state, never by the binding.
 
 ```swift
+// Every `\.slot` below is an OPTIONAL holding the content (`onboarding: Onboarding.State?`, `tip: Tip?`, …).
 // Sheet, full-screen cover, popover — item- or isPresented-driven, interchangeably:
 .sheet(item: store.item(.state(\.editing), dismiss: .dismissEditor)) { item in router.view(for: .editor(item.id)) }
 .fullScreenCover(isPresented: store.presence(.state(\.onboarding), dismiss: .finishOnboarding)) { router.view(for: .onboarding) }
@@ -34,14 +35,14 @@ Presentation and child lifetime are one fact: set the optional and the child exi
     router.view(for: .filters).presentationDetents([.medium, .large])
 }
 
-// Inspector (iOS 17+) — Bool-driven:
+// Inspector (iOS 17+) — `isPresented:`-driven, over the optional inspected value:
 .inspector(isPresented: store.presence(.state(\.inspector), dismiss: .hideInspector)) { router.view(for: .inspector) }
 
 // Single push via NavigationStack, without a path:
 .navigationDestination(isPresented: store.presence(.state(\.detail), dismiss: .popDetail)) { router.view(for: .detail) }
 
 // Alert / confirmation dialog — present with `presence`/`item`; the BUTTONS dispatch their own actions:
-.alert("Delete?", isPresented: store.presence(.state(\.deleteConfirm), dismiss: .cancelDelete), presenting: store.state.deleteConfirm) { item in
+.alert("Delete?", isPresented: store.presence(.state(\.deleteConfirm), dismiss: .cancelDelete), presenting: store.read(\.deleteConfirm)) { item in
     Button("Delete", role: .destructive) { store.dispatch(.confirmDelete(item.id)) }
     Button("Cancel", role: .cancel) { store.dispatch(.cancelDelete) }
 }
@@ -68,42 +69,41 @@ Editor.behavior().liftPresentation(action: \.editor, state: \.editor, environmen
 content.presenting(store, \.editor, dismiss: .editor(.dismiss)) { _ in router.view(for: .editor) }
 ```
 
-The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the binding's `set(false)` steps `presented → dismissing`, and `onDismiss` (a real SwiftUI completion, not a timer) steps `dismissing → dismissed`. Content renders the value carried by *both* live stages, so it stays put through the animation. Use ``StoreType/presence(_:dismiss:)`` for the `Bool` binding (never churns identity — the safe default) or ``StoreType/item(_:dismiss:)`` for an `Identifiable` value with a **stable id** (`.sheet(item:)`); prefer the ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)`` / `presentingItem` modifiers, which wire `onDismiss` for you. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
+The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the binding's `set(false)` steps `presented → dismissing`, and `onDismiss` (a real SwiftUI completion, not a timer) steps `dismissing → dismissed`. Content renders the value carried by *both* live stages, so it stays put through the animation. Use `presence(_:dismiss:)` for the `Bool` binding (never churns identity — the safe default) or `item(_:dismiss:)` for an `Identifiable` value with a **stable id** (`.sheet(item:)`); prefer the ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)`` / `presentingItem` modifiers, which wire `onDismiss` for you. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
 
-#### Building the child view — `transpose()` + `map`
+#### Building the child view — `transpose()`
 
-Every optional-shaped destination hands the view a store of an *optional* (`StoreProjection<A, Child?>`), but `Child.view(store:environment:)` wants a store of the *unwrapped* value. ``StoreType/transpose()`` swaps the nesting — `Store<Child?>` becomes `Store<Child>?` — so the child store exists exactly when its state is present; `map` builds the view from it (see <doc:StoreProjection>):
-
-```swift
-// Optional child slice:
-store.projection(.action(AppAction.prism.child).state(\.child))
-    .transpose()
-    .map { Detail.view(store: $0, environment: world.detailEnv) }   // View?
-
-// One row of a collection, addressed by id (all locators — id / custom / index / dictionary):
-store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
-    .transpose()
-    .map { Row.view(store: $0, environment: world.rowEnv) }
-```
-
-For the ``Presentation`` shape, ``StoreType/transpose()`` reads the live child through **both** `presented` and `dismissing(last:)`, going `nil` only once `dismissed` — the child store (and its view) stay alive and steady while SwiftUI animates the sheet out, so building a destination this way is flicker-free without any view-layer latch:
+An optional-shaped destination is a store of an *optional* (`Child?`), but `Child.view(store:environment:)` wants a store of the *unwrapped* value. `transpose()` swaps the nesting — `Store<Child?>` becomes `Store<Child>?` — so the child store exists exactly when its state is present. On the observed store, the caller depends only on that **presence edge**: it redraws when the child appears or disappears, never when something inside the child changes (the child observes its own state).
 
 ```swift
-store.projection(.action(AppAction.prism.editor).state(\.editor))   // state: Presentation<Editor.State>
-    .transpose()
-    .map { Editor.view(store: $0, environment: world.editorEnv) }
-```
+// Optional child slice — scope by key path, then transpose:
+if let child = store.child.scoped(action: .action(\.child)).transpose() {
+    Detail.view(store: child, environment: world.detailEnv)
+}
 
-A list projects the **whole** collection for iteration, then re-projects each row per-element for its own store:
-
-```swift
-let rows = store.projection(.action(AppAction.prism.bulk).state(\.rows))   // StoreProjection<_, [Row]>
-List(rows.state) { row in
-    store.projection(.action(AppAction.prism.row).state(\.rows), element: row.id)
-        .transpose()
-        .map { Row.view(store: $0, environment: world.rowEnv) }
+// A lane no key path expresses (an affine `preview`, the top of a stack, an enum case):
+if let screen = store.transpose(action: { .detail($0) }, state: { $0.path.last?.detail }) {
+    Detail.view(store: screen, environment: world.detailEnv)
 }
 ```
+
+For the ``Presentation`` shape, `transpose()` reads the live child through **both** `presented` and `dismissing(last:)`, going `nil` only once `dismissed` — the child store (and its view) stay alive and steady while SwiftUI animates the sheet out, so building a destination this way is flicker-free without any view-layer latch:
+
+```swift
+if let editor = store.editor.scoped(action: .action(\.editor)).transpose() {   // state: Presentation<Editor.State>
+    Editor.view(store: editor, environment: world.editorEnv)
+}
+```
+
+A list iterates the collection with `each` — the list depends on the ids, each row on its own element — and scopes each row for its own store:
+
+```swift
+List(store.each(\.rows)) { row in
+    Row.view(store: row.scoped(action: .action(review: { AppAction.row(row.id, $0) })), environment: world.rowEnv)
+}
+```
+
+> Warning: Don't build these from `store.projection(…).transpose()` inside a body. The core `transpose()` decides presence by reading the whole `state`, so the view would redraw on every change in the app. The forms above read the presence edge only. (Outside SwiftUI — on a plain `Store` in a test or a service — the core overload is fine.)
 
 ### Stack — `[Route]`
 
@@ -120,7 +120,7 @@ Behavior side: `liftCollection` per element, plus ``Behavior/navigationStack(_:a
 
 ### Selection — 1-of-N, all children alive
 
-Tabs, split view, and paged/carousel views keep every child mounted; only the selection changes. All children are lifted **unconditionally** (siblings in state). Unlike modal dismiss, selecting is a normal state change, so ``StoreType/binding(_:dispatch:)`` dispatches on every change.
+Tabs, split view, and paged/carousel views keep every child mounted; only the selection changes. All children are lifted **unconditionally** (siblings in state). Unlike modal dismiss, selecting is a normal state change, so `binding(_:dispatch:)` dispatches on every change.
 
 ```swift
 // Tabs:
@@ -145,7 +145,7 @@ NavigationSplitView(columnVisibility: store.binding(.state(\.columns), dispatch:
 
 ### Scene set — windows, one store
 
-Multiple windows are still one store. Model open scenes as state (a dictionary of per-scene sub-states); each window projects its slice by id; open/close are ordinary actions; ``StoreType/hasScene(_:in:)`` tells a window body whether to render or dismiss.
+Multiple windows are still one store. Model open scenes as state (a dictionary of per-scene sub-states); each window projects its slice by id; open/close are ordinary actions; `hasScene(_:in:)` (on the observed store) tells a window body whether to render or dismiss.
 
 ```swift
 var body: some Scene {
@@ -266,5 +266,5 @@ A presented child talks back through the core ``Behavior/on(_:dispatch:reduce:)`
 - ``Routable``
 - ``Presentation``
 - ``PresentationAction``
-- ``StoreType/transpose()``
+- <doc:StoresAtAGlance>
 - <doc:StoreProjection>

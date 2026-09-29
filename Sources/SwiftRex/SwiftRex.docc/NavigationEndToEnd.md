@@ -12,7 +12,7 @@ Build one small app — **Bookshelf** — and wire every navigation shape across
 TabView  (selection)  ─┬─  Library tab
                        │      └─ NavigationStack (stack):  Shelves ─▶ Books ─▶ Book
                        │            └─ Book: "Edit" ─▶ Editor      (presentation modal)
-                       │                    "Delete" ─▶ confirm    (optional / Bool)
+                       │                    "Delete" ─▶ confirm    (optional)
                        └─  Settings tab
 deep link:  bookshelf://book/<id>  ─▶  select Library, push to that book
 ```
@@ -64,15 +64,15 @@ public enum LibraryFeature {
 // BookFeature — a single book; owns "edit" + "delete" intents (a module entry point).
 @Feature
 public enum BookFeature {
-    public struct State: Sendable, Equatable { public var book: Book; public var confirmingDelete = false }
+    public struct State: Sendable, Equatable { public var book: Book; public var deleting: Book? }
     public enum Action: Sendable { case tappedEdit; case tappedDelete; case confirmDelete; case cancelDelete }
     public struct Environment: Sendable {}
 
     public static func behavior() -> Behavior<Action, State, Environment> {
         .reduce { action, state in
             switch action {
-            case .tappedDelete:  state.confirmingDelete = true
-            case .cancelDelete:  state.confirmingDelete = false
+            case .tappedDelete:  state.deleting = state.book     // the alert's content IS the presentation
+            case .cancelDelete:  state.deleting = nil
             case .tappedEdit, .confirmDelete: break   // OUTPUT — bridged by the app (Layer 4)
             }
         }
@@ -148,7 +148,7 @@ public enum AppAction: Sendable {
 | Selection (tabs) | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` |
 | Stack (push path) | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` |
 | Presentation (editor modal) | `editor: Presentation<EditorFeature.State>` | `.editor(PresentationAction<…>)` |
-| Optional (delete alert) | `book.confirmingDelete: Bool` (inside the book slice) | `.book(.tappedDelete/.cancelDelete)` |
+| Optional (delete alert) | `book.deleting: Book?` (inside the book slice — the book being confirmed) | `.book(.tappedDelete/.cancelDelete)` |
 
 ## Layer 4 — `behavior()`: fold the features + drive the shapes
 
@@ -217,7 +217,7 @@ public enum AppScopes {
 
 `AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by `transpose()`, which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the observed store's `transpose()` (`store.book.scoped(action:).transpose()`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
@@ -283,10 +283,14 @@ struct BookView: View, Routable {
                     EditorFeature.view(store: editor, environment: router.world.editorEnv)
                 }
             }
-            // OPTIONAL / Bool — a delete confirmation:
-            .alert("Delete book?", isPresented: viewStore.presence(.state(\.confirmingDelete), dismiss: .cancelDelete)) {
-                Button("Delete", role: .destructive) { viewStore.dispatch(.confirmDelete) }
-                Button("Cancel",  role: .cancel)      { viewStore.dispatch(.cancelDelete) }
+            // OPTIONAL — a delete confirmation; the optional is both "is it shown" and "what it shows":
+            .alert(
+                "Delete book?",
+                isPresented: viewStore.presence(.state(\.deleting), dismiss: .cancelDelete),
+                presenting: viewStore.read(\.deleting)
+            ) { book in
+                Button("Delete \(book.title)", role: .destructive) { viewStore.dispatch(.confirmDelete) }
+                Button("Cancel", role: .cancel) { viewStore.dispatch(.cancelDelete) }
             }
     }
 }
@@ -327,10 +331,10 @@ The URL never navigates directly — `onOpenURL` turns it into `.openedURL`, and
 
 | Shape | State | Action | Behavior (Layer 4) | Binding (Layer 6) | Container |
 |---|---|---|---|---|---|
-| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | ``StoreType/binding(_:dispatch:)`` | `TabView` / split |
-| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | ``StoreType/binding(_:dispatch:)`` | `NavigationStack(path:)` |
-| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | ``StoreType/presence(_:dismiss:)`` + `.presenting` | sheet / cover |
-| **Optional** | `confirmingDelete: Bool` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | ``StoreType/presence(_:dismiss:)`` / ``StoreType/item(_:dismiss:)`` | alert / sheet / popover |
+| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | `binding(_:dispatch:)` | `TabView` / split |
+| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | `binding(_:dispatch:)` | `NavigationStack(path:)` |
+| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | `presence(_:dismiss:)` + `.presenting` | sheet / cover |
+| **Optional** | `deleting: Book?` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | `presence(_:dismiss:)` / `item(_:dismiss:)` | alert / sheet / popover |
 
 Every one is the same recipe: **store the shape in state, dispatch through an action, fold a reducer/lift for it, bind a native container to it, resolve destinations through the router.** No new dialect — just state, actions, and `some View`.
 
@@ -341,4 +345,4 @@ Every one is the same recipe: **store the shape in state, dispatch through an ac
 - <doc:Lifting>
 - ``Relay/Scope``
 - ``Presentation``
-- ``StoreType/transpose()``
+- <doc:StoresAtAGlance>

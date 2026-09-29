@@ -16,7 +16,8 @@
         /// value is the same slice for simple, value-only content.
         ///
         /// The binding is a `Bool`, so SwiftUI's identity never churns on child-state changes — the safe
-        /// default. Cover / popover are analogous (`presentingCover` / `presentingPopover`).
+        /// default. For a cover or popover, use `store.presence(…)` with `.fullScreenCover(isPresented:)` /
+        /// `.popover(isPresented:)` and dispatch the same `dismiss` from their `onDismiss`.
         @MainActor
         public func presenting<S: ObservableStoreType, Wrapped: Sendable, Presented: View>(
             _ store: S,
@@ -82,7 +83,7 @@
 
         /// `.sheet(item:)` counterpart of ``presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)``
         /// for an `Identifiable` presented value — wires both `dismiss` edges, and keys the sheet on
-        /// `id` (via ``ObservableStoreType/item(_:dismiss:file:function:line:)``) so a mutating child
+        /// `id` (via the `Presentation` overload of `item(_:dismiss:)`) so a mutating child
         /// never churns SwiftUI's identity. `content` receives the item.
         @MainActor
         public func presentingItem<S: ObservableStoreType, Wrapped: Identifiable & Sendable, Presented: View>(
