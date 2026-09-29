@@ -14,8 +14,8 @@
 
     /// Turns a feature `enum` into a full feature (behavior + view) or a logic-only one (behavior).
     ///
-    /// Apply to an `enum` namespace, optionally with a `ViewStrategy` (`strategy:`, default
-    /// `.observation`). The macro:
+    /// Apply to an `enum` namespace, optionally with a `ViewStrategy` (`strategy:`, default `.automatic` —
+    /// Observation on iOS 17+, Combine below; `.combine` forces Combine). The macro:
     /// - Applies `@ApplyOptics(recursively: true)` to every nested domain type — `@Lenses` on structs
     ///   (`State`, …), `@Prisms` on enums (`Action`, `ViewAction`, …). `ViewState` gets no optics.
     /// - Synthesises `static func initialState(with _: Void) -> State { .init() }` when you don't
@@ -23,9 +23,8 @@
     /// - Generates `static func view(store:environment:) -> some View` (when a `Content` view exists),
     ///   which builds an `ObservableStore` once per view identity (`ObservableStoreHost`) from an
     ///   environment-aware projection — buffered before the map when `State` is `Equatable` — and hands it
-    ///   to `Content`. The generated `view()` is `@available(iOS 17)` for `.observation`,
-    ///   ungated (iOS 13+) for `.combine`. `ViewState`/`ViewAction`/`Content` stay behind
-    ///   `some View`.
+    ///   to `Content` as a `ViewStore`. Nothing is availability-gated — the store picks its signal at
+    ///   runtime. `ViewState`/`ViewAction`/`Content` stay behind `some View`.
     ///
     /// The **view projection layer is optional**: omit `ViewState`/`ViewAction`/`mapState`/`mapAction`
     /// and the macro aliases `ViewState = State`, `ViewAction = Action`, and `view()` wraps the store
@@ -42,8 +41,7 @@
     ///
     /// **The `Feature` conformance is generated:** a feature that has a view (a `Content`, or a
     /// hand-written `view(store:environment:)`) conforms to ``Feature``; a view-less feature is a
-    /// behavior only and gets no `Feature` conformance. The `Feature` conformance is `@available(iOS 17)`
-    /// for `.observation`, ungated for `.combine`. You no longer write
+    /// behavior only and gets no `Feature` conformance (never availability-gated). You no longer write
     /// `extension X: Feature {}` by hand.
     ///
     /// ```swift
@@ -58,12 +56,12 @@
     ///     static let mapState  = ...                      // Reader<Environment, (State) -> ViewState>
     ///     static let mapAction = ...                      // Reader<Environment, (ViewAction) -> Action>
     ///     static func behavior() -> Behavior<Action, State, Environment> { ... }
-    ///     typealias Content = MoviesView                  // internal view; use @BoundTo(Movies.self)
+    ///     typealias Content = MoviesView                  // internal view; @BoundTo(Movies.self) injects its viewStore
     ///     // `initialState(with:)`, `view(store:environment:)`, and `: Feature` are generated.
     /// }
     /// ```
     @attached(member, names: named(initialState), named(view), named(ViewState), named(ViewAction), named(Environment))
     @attached(memberAttribute)
     @attached(extension, conformances: Feature)
-    public macro Feature(strategy: ViewStrategy = .observation) = #externalMacro(module: "SwiftRexMacros", type: "FeatureMacro")
+    public macro Feature(strategy: ViewStrategy = .automatic) = #externalMacro(module: "SwiftRexMacros", type: "FeatureMacro")
 #endif

@@ -17,7 +17,7 @@
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(HeroDetailsFeature.self)
     private struct HeroDetailsView: View {
-        // @BoundTo injects: let viewStore: ObservableStore<HeroDetailsFeature.ViewAction, HeroDetailsFeature.ViewState>
+        // @BoundTo injects: let viewStore: ViewStore<HeroDetailsFeature.ViewAction, HeroDetailsFeature.ViewState>
         var body: Never { fatalError("test stub") }
     }
 
@@ -94,12 +94,12 @@
     // MARK: - Combine fixture
 
 //
-    // No @available(iOS 17) anywhere — .combine is the pre-Observation path. The view holds the
-    // ObservableStore as an @ObservedObject (injected by @BoundTo); view() is generated ungated.
+    // .combine forces Combine signalling even on iOS 17+. The view's injected `let viewStore: ViewStore`
+    // carries the Combine subscription itself, so @BoundTo needs no strategy.
 
-    @BoundTo(WidgetFeature.self, strategy: .combine)
+    @BoundTo(WidgetFeature.self)
     private struct WidgetView: View {
-        // @BoundTo injects: @ObservedObject var viewStore: ObservableStore<WidgetFeature.ViewAction, WidgetFeature.ViewState>
+        // @BoundTo injects: let viewStore: ViewStore<WidgetFeature.ViewAction, WidgetFeature.ViewState> — the same under every strategy
         var body: Never { fatalError("test stub") }
     }
 
@@ -135,7 +135,7 @@
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(DirectFeature.self)
     private struct DirectView: View {
-        // @BoundTo injects: let viewStore: ObservableStore<DirectFeature.ViewAction, DirectFeature.ViewState>,
+        // @BoundTo injects: let viewStore: ViewStore<DirectFeature.ViewAction, DirectFeature.ViewState>,
         // and ViewState/ViewAction are macro-generated typealiases to State/Action.
         var body: Never { fatalError("test stub") }
     }
@@ -282,7 +282,7 @@
     struct GeneratedViewTests {
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func projectedFeatureBuildsObservableStore() {
-            // HeroDetailsView holds an `ObservableStore`; this only compiles if view() built one.
+            // HeroDetailsView holds a `ViewStore`; this only compiles if view() handed it one.
             let store = Store(
                 initial: HeroDetailsFeature.initialState(with: ()),
                 behavior: HeroDetailsFeature.behavior(),
@@ -304,7 +304,7 @@
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func directFeatureWrapsStoreWithoutProjection() {
-            // DirectView holds ObservableStore<Action, State> (via aliases); compiles only if view() wrapped
+            // DirectView holds ViewStore<Action, State> (via aliases); compiles only if view() wrapped
             // the store directly, no projection.
             let store = Store(initial: DirectFeature.initialState(with: ()), behavior: DirectFeature.behavior(), environment: .init())
             _ = DirectFeature.view(store: store, environment: .init())

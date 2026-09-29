@@ -41,7 +41,7 @@
     }
 
     private struct HotView: View {
-        let node: StateNode<ObservableStore<HAction, HState>, HState>
+        let node: StateNode<ViewStore<HAction, HState>, HState>
         let renders: Renders
         var body: some View {
             renders.hot += 1
@@ -50,7 +50,7 @@
     }
 
     private struct ColdView: View {
-        let node: StateNode<ObservableStore<HAction, HState>, HState>
+        let node: StateNode<ViewStore<HAction, HState>, HState>
         let renders: Renders
         var body: some View {
             renders.cold += 1
@@ -74,7 +74,7 @@
     }
 
     private struct ParentContent: View {
-        @ObservedObject var observed: ObservableStore<HAction, HState>
+        let observed: ViewStore<HAction, HState>   // a plain-`let` receiver under both strategies
         let renders: Renders
         var body: some View {
             renders.parent += 1
@@ -88,6 +88,33 @@
 
     // Flushes pending SwiftUI updates by forcing a layout pass — no run-loop spinning, which would hold the
     // main actor hostage and starve main-actor work in suites running in parallel.
+    // An owner built with @ObservedStore inside a parent that keeps re-rendering (it reads `tick`).
+    private struct OuterView: View {
+        let outer: ViewStore<HAction, HState>
+        let makeInner: @MainActor () -> Store<HAction, HState, Void>
+        let renders: Renders
+        var body: some View {
+            renders.parent += 1
+            return VStack {
+                Text("\(outer.tick)")
+                OwnerView(store: makeInner(), renders: renders)
+            }
+        }
+    }
+
+    private struct OwnerView: View {
+        @ObservedStore var store: ViewStore<HAction, HState>
+        let renders: Renders
+        init(store: @autoclosure @escaping () -> Store<HAction, HState, Void>, renders: Renders) {
+            _store = ObservedStore(wrappedValue: store())
+            self.renders = renders
+        }
+        var body: some View {
+            renders.hot += 1
+            return Text("\(store.hot)")
+        }
+    }
+
     @MainActor
     private func settle(_ view: NSHostingView<some View>) {
         view.needsLayout = true
@@ -113,6 +140,44 @@
             #expect(renders.cold == base.2)
             #expect(renders.parent == base.0)
             #expect(renders.makes == 1)
+        }
+
+        @Test func observedStoreBuildsOnceAcrossParentReRenders() {
+            let outerStore = makeHStore()
+            let renders = Renders()
+            let outer = ObservableStoreHost { outerStore.observable() } content: { outer in
+                OuterView(
+                    outer: outer,
+                    makeInner: {
+                        renders.makes += 1
+                        return makeHStore()
+                    },
+                    renders: renders
+                )
+            }
+            let host = NSHostingView(rootView: outer)
+            host.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+            settle(host)
+            let parentBefore = renders.parent
+            for _ in 0..<3 {
+                outerStore.dispatch(.tick)
+                settle(host)
+            }
+            #expect(renders.parent - parentBefore == 3)   // the parent re-rendered, re-initialising OwnerView…
+            #expect(renders.makes == 1)                   // …but the owned store was built exactly once
+        }
+
+        @available(macOS 14, *)
+        @Test func automaticUsesObservationWhereAvailable() {
+            let store = makeHStore()
+            let observed = store.observable()
+            #expect(observed.strategy == .automatic)
+            var sends = 0
+            let cancellable = observed.objectWillChange.sink { sends += 1 }
+            _ = observed.hot
+            store.dispatch(.hot)
+            #expect(sends == 0) // Observation signalled it, not Combine
+            cancellable.cancel()
         }
 
         @Test func combineRedrawsNodeHoldersWhenTheirPathChanged() {

@@ -13,14 +13,14 @@
     ///
     /// ```swift
     /// struct PlayerScreen: View {
-    ///     let store: ObservableStore<PlayerAction, PlayerState>
+    ///     let store: ViewStore<PlayerAction, PlayerState>
     ///     var body: some View {
     ///         Console(mixer: store.mixer)       // redraws on mixer changes only
     ///         Playhead(transport: store.transport)
     ///     }
     /// }
     /// struct Playhead: View {
-    ///     let transport: StateNode<ObservableStore<PlayerAction, PlayerState>, Transport>
+    ///     let transport: StateNode<ViewStore<PlayerAction, PlayerState>, Transport>
     ///     var body: some View { Text(transport.position, format: .number) }
     /// }
     /// ```

@@ -4,12 +4,12 @@
     import SwiftRex
     import SwiftUI
 
-    /// Builds an ``ObservableStore`` **once per view identity** and hands it to `content` — so re-rendering
+    /// Builds an ``ObservableStore`` **once per view identity** and hands `content` a ``ViewStore`` of it — so re-rendering
     /// a parent doesn't rebuild the child's store, re-subscribe it, or feed the child a new reference that
     /// forces its body to run. `@Feature`'s generated `view(store:environment:)` wraps its content in one.
     ///
     /// ```swift
-    /// ObservableStoreHost { appStore.projection(action: …, state: …).observable() } content: { store in
+    /// ObservableStoreHost { appStore.projection(action: …, state: …).observable() } content: { store in   // a ViewStore
     ///     SettingsView(viewStore: store)
     /// }
     /// ```
@@ -22,12 +22,12 @@
         @SwiftUI.State private var box = Box()
         private let id: AnyHashable?
         private let make: @MainActor () -> ObservableStore<Action, State>
-        private let content: @MainActor (ObservableStore<Action, State>) -> Content
+        private let content: @MainActor (ViewStore<Action, State>) -> Content
 
         public init(
             id: AnyHashable? = nil,
             _ make: @escaping @MainActor () -> ObservableStore<Action, State>,
-            @ViewBuilder content: @escaping @MainActor (ObservableStore<Action, State>) -> Content
+            @ViewBuilder content: @escaping @MainActor (ViewStore<Action, State>) -> Content
         ) {
             self.id = id
             self.make = make
@@ -35,7 +35,7 @@
         }
 
         public var body: some View {
-            content(box.store(id: id, make: make))
+            content(ViewStore(box.store(id: id, make: make)))
         }
 
         // A plain (non-observable) box: `@State` keeps the first instance across re-inits, and reading it never

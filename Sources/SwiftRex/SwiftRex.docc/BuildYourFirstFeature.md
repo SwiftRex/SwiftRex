@@ -67,25 +67,22 @@ That's a fully working feature — no UI required, and trivially testable with `
 
 ## Step 5 — Put it on screen
 
-Add `SwiftRex.SwiftUI` and wrap the store with `observable()` — the store a view reads. Reads are granular: `store.count` makes the view depend on `count` alone. Actions go out with ``StoreType/dispatch(_:source:)``.
-
-The observable store holds a snapshot and the list of what each view read, so it must be **built once** and owned by something that outlives body re-evaluations — here the `App`, which is initialised once. Views below it just receive the reference as a `let`.
+Add `SwiftRex.SwiftUI`. One view **owns** the observed store with `@ObservedStore`; every view below it **receives** a `ViewStore` as a plain `let`. That's the whole rule — on every OS and under every observation strategy. Reads are granular: `store.count` makes the view depend on `count` alone. Actions go out with ``StoreType/dispatch(_:source:)``.
 
 ```swift
 import SwiftUI
 import SwiftRexSwiftUI
 
-@main struct CounterApp: App {
-    // The owner: built once, when the app starts.
-    @State private var store = Store(initial: CounterState(), behavior: counterBehavior).observable()
+let appStore = Store(initial: CounterState(), behavior: counterBehavior)
 
-    var body: some Scene {
-        WindowGroup { CounterView(store: store) }
-    }
+struct RootView: View {
+    @ObservedStore var store = appStore   // the owner: observed once, however often RootView is re-created
+
+    var body: some View { CounterView(store: store) }
 }
 
 struct CounterView: View {
-    let store: ObservableStore<CounterAction, CounterState>   // a receiver — the reference, not a new store
+    let store: ViewStore<CounterAction, CounterState>   // a receiver — the same store, never a new one
 
     var body: some View {
         VStack(spacing: 16) {
@@ -99,16 +96,10 @@ struct CounterView: View {
     }
 }
 
-#Preview {
-    ObservableStoreHost {
-        Store(initial: CounterState(), behavior: counterBehavior).observable()
-    } content: { CounterView(store: $0) }
-}
+#Preview { RootView() }
 ```
 
-Owning it in an ordinary view instead? Use `ObservableStoreHost` (as the preview does): it builds the store once per view identity. Don't build one in a `body` (`CounterView(store: appStore.observable())`) — every re-evaluation would discard the store and subscribe a new one. And `@State` in an ordinary view keeps the first instance but still evaluates its initial value on every `init`; the host's closure runs only when there is no store yet.
-
-Targeting iOS 13–16? Observe with `.observable(.combine)`, own it with `@StateObject` (or the host) and receive it as `@ObservedObject var store` — the body stays the same.
+`@ObservedStore`'s initial value is lazy (like `@StateObject`'s): it runs the first time the view appears, not on every re-initialisation, so the store's snapshot and its record of what each view read survive parent re-renders. It picks the Observation framework on iOS 17+ and a Combine signal below — the `ViewStore` receivers work the same either way. Force Combine with `@ObservedStore(.combine)`.
 
 `withAnimation { store.dispatch(.increment) }` works too — the `Store` is `@MainActor`, so the change lands in the right SwiftUI transaction.
 

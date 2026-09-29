@@ -6,10 +6,10 @@
     /// A store a SwiftUI view can **observe** — reads through it register as dependencies of the reading
     /// body, so the view redraws when (and only when) something it read changes.
     ///
-    /// The conformers are ``ObservableStore`` (the root: it owns the snapshot and the registry) and
-    /// ``ScopedStore`` (a key-path slice of an observable store with its own action lane). The plain
-    /// ``StoreType``s — `Store`, `StoreProjection`, `StoreBuffer` — are **not** observable; wrap one with
-    /// ``SwiftRex/StoreType/observable(_:)`` to hand it to a view. That's also why the binding and presentation
+    /// The conformers are ``ObservableStore`` (the root: it owns the snapshot and the registry), ``ViewStore``
+    /// (what a view receives — a plain `let`), and ``ScopedStore`` (a key-path slice with its own action
+    /// lane). The plain ``StoreType``s — `Store`, `StoreProjection`, `StoreBuffer` — are **not** observable;
+    /// observe one with ``ObservedStore`` (`@ObservedStore var store = appStore`) to hand it to a view. That's also why the binding and presentation
     /// helpers live here: a binding over a store SwiftUI can't observe never updates, so it doesn't compile.
     ///
     /// Reads are granular by default through dynamic member lookup:

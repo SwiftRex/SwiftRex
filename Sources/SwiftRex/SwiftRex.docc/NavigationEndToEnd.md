@@ -266,7 +266,7 @@ struct RootView: View {
 }
 
 struct BookView: View, Routable {
-    let viewStore: ObservableStore<BookFeature.Action, BookFeature.State>
+    let viewStore: ViewStore<BookFeature.Action, BookFeature.State>
     let router: AppRouter
 
     var body: some View {
@@ -299,23 +299,22 @@ Prefer `presence(_:dismiss:)` (the `Bool` binding, above) as the default; reach 
 The store is created once, at launch, and owns the whole tree. The deep link is an *action source* — turn the URL into an action; the reducer sets navigation state:
 
 ```swift
-public typealias AppStore = ObservableStore<AppAction, AppState>
+public typealias AppStore = ViewStore<AppAction, AppState>
 
 @main struct BookshelfApp: App {
-    let store: AppStore
-    let router: AppRouter
+    let world: World
+    // The store runs the app; `@ObservedStore` is what views read — the owner, observed once (lazily).
+    @ObservedStore var store: AppStore
 
     init() {
         let world = World.live
-        // The store runs the app; `observable()` is what views read — identity, no projection, built once.
-        let store = Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world).observable()
-        self.store = store
-        self.router = AppRouter(store: store, world: world)
+        self.world = world
+        _store = ObservedStore(wrappedValue: Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world))
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView(store: store, router: router)
+            RootView(store: store, router: AppRouter(store: store, world: world))
                 .onOpenURL { store.dispatch(.openedURL($0)) }   // deep link → action (reduced in Layer 4)
         }
     }
