@@ -86,12 +86,12 @@
         }
     }
 
+    // Flushes pending SwiftUI updates by forcing a layout pass — no run-loop spinning, which would hold the
+    // main actor hostage and starve main-actor work in suites running in parallel.
     @MainActor
     private func settle(_ view: NSHostingView<some View>) {
-        for _ in 0..<5 {
-            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
-            view.layoutSubtreeIfNeeded()
-        }
+        view.needsLayout = true
+        view.layoutSubtreeIfNeeded()
     }
 
     @Suite("ObservableStore — hosted in SwiftUI")
