@@ -121,6 +121,9 @@ public enum Relay {
         /// A state lane that can **totally read** the local state (`get: Global → Local`) — a store projection.
         public protocol ReadsProtocol: LiftingProtocol {
             var get: @Sendable (Global) -> Local { get }
+            /// The key path this read was built from, when it was built from one — `nil` for closure and
+            /// lens reads. Observers use it to depend on exactly this path instead of the whole state.
+            var keyPath: (KeyPath<Global, Local> & Sendable)? { get }
         }
 
         /// A state lane that can **write back** — a reducer/behavior lift. Carries both the optional
@@ -135,9 +138,10 @@ public enum Relay {
         /// Read-only witness (total). Serves a projection; a reducer can't write through it.
         public struct Reads<Global: Sendable, Local: Sendable>: ReadsProtocol {
             public let get: @Sendable (Global) -> Local
-            public init(_ get: @escaping @Sendable (Global) -> Local) { self.get = get }
-            public init(_ keyPath: KeyPath<Global, Local> & Sendable) { get = { $0[keyPath: keyPath] } }
-            public init(_ lens: Lens<Global, Local>) { get = lens.get }
+            public let keyPath: (KeyPath<Global, Local> & Sendable)?
+            public init(_ get: @escaping @Sendable (Global) -> Local) { self.get = get; keyPath = nil }
+            public init(_ keyPath: KeyPath<Global, Local> & Sendable) { get = { $0[keyPath: keyPath] }; self.keyPath = keyPath }
+            public init(_ lens: Lens<Global, Local>) { get = lens.get; keyPath = nil }
         }
 
         /// Affine write-with-skip witness (the `liftOptional` / enum-case case). Serves reducer/behavior.
@@ -161,8 +165,15 @@ public enum Relay {
             public let get: @Sendable (Global) -> Local
             public let preview: @Sendable (Global) -> Local?
             public let modify: @Sendable (inout Global, (inout Local) -> Void) -> Void
-            public init(_ lens: Lens<Global, Local>) { get = lens.get; preview = { lens.get($0) }; modify = lens.modifyMut }
+            public let keyPath: (KeyPath<Global, Local> & Sendable)?
+            public init(_ lens: Lens<Global, Local>) {
+                get = lens.get
+                preview = { lens.get($0) }
+                modify = lens.modifyMut
+                keyPath = nil
+            }
             public init(_ keyPath: WritableKeyPath<Global, Local> & Sendable) {
+                self.keyPath = keyPath
                 get = { $0[keyPath: keyPath] }
                 preview = { $0[keyPath: keyPath] }
                 modify = { whole, transform in transform(&whole[keyPath: keyPath]) }
@@ -313,4 +324,10 @@ extension StoreType {
     ) -> StoreProjection<A.Local, S.Local> where A.Global == Action, S.Global == State {
         projection(action: scope.action.review, state: scope.state.get)
     }
+}
+
+extension Relay.StateAxis.ReadsProtocol {
+    /// Custom read witnesses carry no key path unless they provide one — observers then depend on the whole
+    /// state instead of a single path.
+    public var keyPath: (KeyPath<Global, Local> & Sendable)? { nil }
 }
