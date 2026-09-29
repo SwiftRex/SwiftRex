@@ -18,7 +18,7 @@
         /// The binding is a `Bool`, so SwiftUI's identity never churns on child-state changes — the safe
         /// default. Cover / popover are analogous (`presentingCover` / `presentingPopover`).
         @MainActor
-        public func presenting<S: StoreType, Wrapped: Sendable, Presented: View>(
+        public func presenting<S: ObservableStoreType, Wrapped: Sendable, Presented: View>(
             _ store: S,
             _ keyPath: KeyPath<S.State, Presentation<Wrapped>>,
             dismiss: S.Action,
@@ -41,7 +41,7 @@
                     onDismiss?()
                 },
                 content: {
-                    if let wrapped = store.state[keyPath: keyPath].wrapped {
+                    if let wrapped = store.read(keyPath, \Presentation<Wrapped>.wrapped) {
                         content(wrapped)
                     }
                 }
@@ -53,7 +53,7 @@
         /// as the sheet animates out (it ignores the dismissal frame). Reach for the ``Presentation``
         /// overload when that flicker matters; use this when it doesn't.
         @MainActor
-        public func presenting<S: StoreType, Wrapped: Sendable, Presented: View>(
+        public func presenting<S: ObservableStoreType, Wrapped: Sendable, Presented: View>(
             _ store: S,
             _ keyPath: KeyPath<S.State, Wrapped?>,
             dismiss: S.Action,
@@ -73,7 +73,7 @@
                 ),
                 onDismiss: onDismiss,
                 content: {
-                    if let wrapped = store.state[keyPath: keyPath] {
+                    if let wrapped = store.read(keyPath) {
                         content(wrapped)
                     }
                 }
@@ -82,10 +82,10 @@
 
         /// `.sheet(item:)` counterpart of ``presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)``
         /// for an `Identifiable` presented value — wires both `dismiss` edges, and keys the sheet on
-        /// `id` (via ``StoreType/item(_:dismiss:file:function:line:)``) so a mutating child
+        /// `id` (via ``ObservableStoreType/item(_:dismiss:file:function:line:)``) so a mutating child
         /// never churns SwiftUI's identity. `content` receives the item.
         @MainActor
-        public func presentingItem<S: StoreType, Wrapped: Identifiable & Sendable, Presented: View>(
+        public func presentingItem<S: ObservableStoreType, Wrapped: Identifiable & Sendable, Presented: View>(
             _ store: S,
             _ keyPath: KeyPath<S.State, Presentation<Wrapped>>,
             dismiss: S.Action,

@@ -7,7 +7,6 @@ import SwiftSyntaxMacros
 struct SwiftRexMacrosPlugin: CompilerPlugin {
     let providingMacros: [any Macro.Type] = [
         FeatureMacro.self,
-        TrackedMacro.self,
         BoundToMacro.self
     ]
 }

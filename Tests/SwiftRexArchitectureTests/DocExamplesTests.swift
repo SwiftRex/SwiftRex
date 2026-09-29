@@ -16,7 +16,7 @@
 
     // MARK: - L4 — a full module (Input seed, effect, state-driven navigation)
 
-    @Feature(strategy: .observationSimple)
+    @Feature
     enum Library {
         struct Input: Sendable { var shelfID: String }
 
@@ -65,11 +65,11 @@
     }
 
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @BoundTo(Library.self, strategy: .observationSimple)
+    @BoundTo(Library.self)
     struct LibraryView: View {
         var body: some View {
-            List(viewStore.state.books) { book in
-                Button(book.title) { viewStore.dispatch(.tapped(book)) }
+            List(viewStore.each(\.books)) { book in
+                Button(book.title) { viewStore.dispatch(.tapped(book.value)) }
             }
             .onAppear { viewStore.dispatch(.onAppear) }
             .sheet(item: viewStore.item(.state(\.selected), dismiss: .dismissedDetail)) { book in
@@ -80,7 +80,7 @@
 
     // MARK: - L2 — a distinct view shape with a two-way binding
 
-    @Feature(strategy: .observationSimple)
+    @Feature
     enum Editor {
         struct State: Sendable, Equatable { var powers = ["flight"] }
         enum Action: Sendable, Equatable { case savePowers([String]) }
@@ -111,7 +111,7 @@
     }
 
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @BoundTo(Editor.self, strategy: .observationSimple)
+    @BoundTo(Editor.self)
     struct EditorView: View {
         var body: some View {
             TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(review: Editor.ViewAction.editedPowers)))

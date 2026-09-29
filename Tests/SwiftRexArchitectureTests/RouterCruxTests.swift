@@ -12,7 +12,7 @@
     // cross-feature decoupling (the parent never names the child) and no AnyView (@ViewBuilder switch).
 
     // A leaf "module" with a NON-Void environment — so building its view demonstrably needs env.
-    @Feature(strategy: .observationSimple)
+    @Feature
     enum RDetail {
         struct State: Sendable, Equatable { var text = "detail" }
         enum Action: Sendable, Equatable { case tap }
@@ -29,9 +29,9 @@
     }
 
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-    @BoundTo(RDetail.self, strategy: .observationSimple)
+    @BoundTo(RDetail.self)
     struct RDetailView: View {
-        var body: some View { Text(viewStore.state.text) }
+        var body: some View { Text(viewStore.text) }
     }
 
     // @Prisms requires >= fileprivate.
@@ -76,7 +76,7 @@
     // detail through the router and never names `RDetail`. Cross-feature decoupling + crux resolution.
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     fileprivate struct RHomeView: View, Routable {
-        let viewStore: ViewStore<RAppState, RAppAction>
+        let viewStore: ObservableStore<RAppAction, RAppState>
         let router: RAppRouter
 
         var body: some View {
@@ -110,7 +110,7 @@
             // Compiles ⇒ the router resolves a route to a child view WITH env, from an env-free parent.
             let store = makeStore()
             let router = RAppRouter(store: store, world: RWorld())
-            let home = RHomeView(viewStore: ViewStore(store), router: router)
+            let home = RHomeView(viewStore: store.observable(), router: router)
             _ = home.router.view(for: .detail)
             _ = home.body
         }

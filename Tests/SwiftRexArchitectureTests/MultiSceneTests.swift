@@ -64,8 +64,8 @@
         @Test func hasSceneReflectsOpenWindows() {
             let store = makeStore()
             store.dispatch(.open(7, "Doc"))
-            #expect(store.hasScene(7, in: \.documents))
-            #expect(!store.hasScene(9, in: \.documents))
+            #expect(store.observable().hasScene(7, in: \.documents))
+            #expect(!store.observable().hasScene(9, in: \.documents))
         }
 
         @Test func perSceneProjectionCarriesTheSlice() {

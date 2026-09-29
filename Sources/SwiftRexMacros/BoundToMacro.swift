@@ -13,12 +13,11 @@ import SwiftSyntaxMacros
 ///
 /// | `strategy:` | injected property |
 /// | --- | --- |
-/// | `.observationSimple` | `let viewStore: ViewStore<F.ViewState, F.ViewAction>` |
-/// | `.observationGranular` | `let viewStore: TrackedViewStore<F.ViewState, F.ViewAction>` |
-/// | `.combineObservable` | `@ObservedObject var viewStore: ObservableObjectStore<F.ViewAction, F.ViewState>` |
+/// | `.observation` (default) | `let viewStore: ObservableStore<F.ViewAction, F.ViewState>` |
+/// | `.combine` | `@ObservedObject var viewStore: ObservableStore<F.ViewAction, F.ViewState>` |
 ///
-/// The view reads `viewStore.state.field` / `viewStore.dispatch(_:)` identically in all three; the
-/// struct's synthesised memberwise `init(viewStore:)` receives the store from `Feature.view()`.
+/// The view reads `viewStore.field` / `viewStore.dispatch(_:)` identically under both; the struct's
+/// synthesised memberwise `init(viewStore:)` receives the store from `Feature.view()`.
 public struct BoundToMacro: MemberMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -41,18 +40,14 @@ public struct BoundToMacro: MemberMacro {
         let strategy = args
             .first(where: { $0.label?.text == "strategy" })?
             .expression.as(MemberAccessExprSyntax.self)?
-            .declName.baseName.text ?? "observationSimple"
+            .declName.baseName.text ?? "observation"
 
         let access = accessModifier(from: structDecl.modifiers)
 
-        let property: DeclSyntax = switch strategy {
-        case "observationGranular":
-            "\(raw: access)let viewStore: TrackedViewStore<\(raw: feature).ViewState, \(raw: feature).ViewAction>"
-        case "combineObservable":
-            "\(raw: access)@ObservedObject var viewStore: ObservableObjectStore<\(raw: feature).ViewAction, \(raw: feature).ViewState>"
-        default:
-            "\(raw: access)let viewStore: ViewStore<\(raw: feature).ViewState, \(raw: feature).ViewAction>"
-        }
+        let storeType = "ObservableStore<\(feature).ViewAction, \(feature).ViewState>"
+        let property: DeclSyntax = strategy == "combine"
+            ? "\(raw: access)@ObservedObject var viewStore: \(raw: storeType)"
+            : "\(raw: access)let viewStore: \(raw: storeType)"
         return [property]
     }
 
