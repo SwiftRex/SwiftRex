@@ -8,7 +8,7 @@
     ///
     /// The conformers are ``ObservableStore`` (the root: it owns the snapshot and the registry), ``ViewStore``
     /// (what a view receives — a plain `let`), and ``ScopedStore`` (a key-path slice with its own action
-    /// lane). The plain ``StoreType``s — `Store`, `StoreProjection`, `StoreBuffer` — are **not** observable;
+    /// lane). The plain ``SwiftRex/StoreType`` conformers — `Store`, `StoreProjection`, `StoreBuffer` — are **not** observable;
     /// observe one with ``ObservedStore`` (`@ObservedStore var store = appStore`) to hand it to a view. That's also why the binding and presentation
     /// helpers live here: a binding over a store SwiftUI can't observe never updates, so it doesn't compile.
     ///
@@ -88,6 +88,47 @@
         ) -> [StateNode<Self, C.Element>] where C.Element: Identifiable & Sendable, C.Element.ID: Sendable {
             _ = read(keyPath, \C.observationIDs)
             return root.paths.rows(keyPath, in: peek(keyPath)).map { StateNode(source: self, path: $0) }
+        }
+
+        // MARK: - Derived reads
+
+        /// A value computed from the state, with the reader depending on **that value** (compared with `==`)
+        /// instead of on the whole state — for what no key path can express: a closure lane, a count, a
+        /// "has any unread" flag.
+        ///
+        /// ```swift
+        /// let hasUnread = store.read(derived: { $0.messages.contains { !$0.isRead } })   // redraws on the flag only
+        /// ```
+        ///
+        /// Closures can't be compared, so the dependency is identified by the call site plus the types
+        /// involved: one call site keeps one dependency however often the body runs. When a single call site
+        /// computes *different* derivations of the same type (a helper shared by several screens that differ
+        /// only in the closure), pass a distinguishing `id`.
+        public func read<T: Equatable>(
+            derived compute: @escaping (State) -> T,
+            id: AnyHashableSendable? = nil,
+            fileID: String = #fileID,
+            line: UInt = #line,
+            column: UInt = #column
+        ) -> T {
+            read(derived: compute, types: [], id: id, site: "\(fileID):\(line):\(column)")
+        }
+
+        func read<T: Equatable>(
+            derived compute: @escaping (State) -> T,
+            types: [ObjectIdentifier],
+            id: AnyHashableSendable?,
+            site: String
+        ) -> T {
+            let prefix = self.prefix
+            return root.read(ObservationDerivedKey(
+                id: ObservationDerivedID(
+                    site: site,
+                    types: [ObjectIdentifier(State.self), ObjectIdentifier(T.self), ObjectIdentifier(prefix)] + types,
+                    id: id
+                ),
+                compute: { compute($0[keyPath: prefix]) }
+            ))
         }
 
         // MARK: - Reading through a state lane

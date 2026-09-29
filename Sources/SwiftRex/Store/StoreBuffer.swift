@@ -93,13 +93,13 @@ StoreType, @unchecked Sendable {
         hasChanged: @escaping @Sendable (State, State) -> Bool
     ) {
         underlying = store
-        state = store.state
+        state = store.untrackedState
         self.hasChanged = hasChanged
         token = underlying.observe(
             willChange: {},
             didChange: { [weak self] in
                 guard let self else { return }
-                let new = underlying.state
+                let new = underlying.untrackedState
                 guard self.hasChanged(state, new) else { return }
                 observers.values.forEach { $0.willChange() }
                 state = new

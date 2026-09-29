@@ -54,7 +54,8 @@ import DataStructure
 /// - Note: `StoreProjection` is `@MainActor` and `Sendable`, consistent with ``StoreType``.
 @MainActor
 public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
-    private let _state: @MainActor @Sendable () -> State
+    // `untracked`: read the upstream's `untrackedState` instead of its `state` (see ``StoreType/untrackedState``).
+    private let _state: @MainActor @Sendable (_ untracked: Bool) -> State
     private let _dispatch: @MainActor @Sendable (Action, ActionSource) -> Void
     private let _observe: @MainActor @Sendable (
         @escaping @MainActor @Sendable () -> Void,
@@ -84,7 +85,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         action mapAction: @escaping @Sendable (Action) -> GA,
         state mapState: @escaping @MainActor @Sendable (GS) -> State
     ) {
-        _state = { mapState(store.state) }
+        _state = { mapState($0 ? store.untrackedState : store.state) }
         _dispatch = { action, source in store.dispatch(mapAction(action), source: source) }
         _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
@@ -112,7 +113,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) {
         let action = mapAction(environment)
         let state = mapState(environment)
-        _state = { state(store.state) }
+        _state = { state($0 ? store.untrackedState : store.state) }
         _dispatch = { a, source in store.dispatch(action(a), source: source) }
         _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
@@ -144,7 +145,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
         // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
         // StoreType.projection(element:actionReview:stateCollection:) for the Array/dictionary trade-off.
-        _state = { store.state[keyPath: stateCollection].first { $0.id == id } }
+        _state = { ($0 ? store.untrackedState : store.state)[keyPath: stateCollection].first { $0.id == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
         _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
@@ -178,7 +179,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) where C.Element: Sendable, State == C.Element? {
         // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
         // StoreType.projection(element:actionReview:stateCollection:identifier:) for the trade-off.
-        _state = { store.state[keyPath: stateCollection].first { identifier($0) == id } }
+        _state = { ($0 ? store.untrackedState : store.state)[keyPath: stateCollection].first { identifier($0) == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
         _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
@@ -206,7 +207,7 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         actionReview: @escaping @Sendable (ElementAction<Key, Action>) -> GA,
         stateDictionary: KeyPath<GS, [Key: Value]>
     ) where State == Value? {
-        _state = { store.state[keyPath: stateDictionary][key] }
+        _state = { ($0 ? store.untrackedState : store.state)[keyPath: stateDictionary][key] }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(key, action: action)), source: source) }
         _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
@@ -215,7 +216,10 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ///
     /// Computed on every access by applying the state mapping closure to the underlying store's
     /// current state. No caching or diffing — use ``StoreBuffer`` if you need deduplication.
-    public var state: State { _state() }
+    public var state: State { _state(false) }
+
+    /// The projected state, read through the underlying store's ``StoreType/untrackedState``.
+    public var untrackedState: State { _state(true) }
 
     /// Dispatches an action through the action mapping closure to the underlying store.
     ///

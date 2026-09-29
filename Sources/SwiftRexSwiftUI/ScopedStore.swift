@@ -34,6 +34,9 @@
         /// The whole slice — a coarse read (see ``ObservableStore/state``).
         public var state: State { root.read(prefix) }
 
+        /// The slice, recording nothing — what a store built on this one reads to follow it.
+        public var untrackedState: State { root.peek(prefix) }
+
         public func dispatch(_ action: Action, source: ActionSource) {
             root.dispatch(embed(action), source: source)
         }

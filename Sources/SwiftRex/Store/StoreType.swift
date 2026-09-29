@@ -71,6 +71,16 @@ public protocol StoreType<Action, State>: Sendable, Transceiver {
     /// to the underlying store's state on every access.
     var state: State { get }
 
+    /// The current state, read **without registering a view dependency** — how a store built on this one
+    /// (a ``StoreProjection``, a ``StoreBuffer``, an observed store in `SwiftRex.SwiftUI`) follows it.
+    ///
+    /// For most stores it's just ``state`` (the default). Observable stores override it: reading their
+    /// `state` inside a SwiftUI body records a dependency on the whole state, and a store that merely
+    /// *follows* one must not — otherwise building or updating a child would make its parent's views
+    /// depend on everything. Read ``state`` from views; read `untrackedState` from anything that follows a
+    /// store (subscriptions, projections, caches).
+    var untrackedState: State { get }
+
     /// Dispatches an action with explicit call-site provenance.
     ///
     /// The ``ActionSource`` carries the file, function, and line where the dispatch originated,
@@ -120,6 +130,9 @@ public protocol StoreType<Action, State>: Sendable, Transceiver {
 // MARK: - Convenience overloads
 
 extension StoreType {
+    /// ``state`` — a plain store records no view dependencies, so there's nothing to skip.
+    public var untrackedState: State { state }
+
     /// Dispatches an action, automatically capturing the call site for provenance.
     ///
     /// `#file`, `#function`, and `#line` are resolved at the call site, so logging and
