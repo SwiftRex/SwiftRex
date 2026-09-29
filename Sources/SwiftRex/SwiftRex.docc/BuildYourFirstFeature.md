@@ -67,18 +67,18 @@ That's a fully working feature — no UI required, and trivially testable with `
 
 ## Step 5 — Put it on screen
 
-Add `SwiftRex.SwiftUI` and turn the store into an `ObservableObject` with `asObservableObject()`. The view reads ``StoreType/state`` and sends actions with ``StoreType/dispatch(_:source:)``.
+Add `SwiftRex.SwiftUI` and wrap the store with `observable()` — the store a view reads. Reads are granular: `store.count` makes the view depend on `count` alone. Actions go out with ``StoreType/dispatch(_:source:)``.
 
 ```swift
 import SwiftUI
 import SwiftRexSwiftUI
 
 struct CounterView: View {
-    @ObservedObject var store: ObservableObjectStore<CounterAction, CounterState>
+    let store: ObservableStore<CounterAction, CounterState>   // iOS 17+; see below for iOS 13–16
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("\(store.state.count)").font(.largeTitle)
+            Text("\(store.count)").font(.largeTitle)
             HStack {
                 Button("–") { store.dispatch(.decrement) }
                 Button("Reset") { store.dispatch(.reset) }
@@ -90,9 +90,11 @@ struct CounterView: View {
 
 #Preview {
     let store = Store(initial: CounterState(), behavior: counterBehavior)
-    return CounterView(store: store.asObservableObject())
+    return CounterView(store: store.observable())
 }
 ```
+
+Targeting iOS 13–16? Observe with `store.observable(.combine)` and hold it as `@ObservedObject var store` — the body stays the same.
 
 `withAnimation { store.dispatch(.increment) }` works too — the `Store` is `@MainActor`, so the change lands in the right SwiftUI transaction.
 
