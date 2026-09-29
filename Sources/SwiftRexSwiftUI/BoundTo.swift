@@ -1,26 +1,27 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if canImport(SwiftUI)
-    /// Binds a SwiftUI view to a `@Feature`'s view store by injecting a `viewStore` stored property with
-    /// the observation wrapper that matches the feature's ``ViewStrategy``.
+    /// Binds a SwiftUI view to a `@Feature`'s view store by injecting a `viewStore` stored property held
+    /// the way the feature's ``ViewStrategy`` needs.
     ///
-    /// Pass the feature type and the **same** `strategy:` you gave `@Feature` — a macro can't read another
-    /// type's attributes, so the strategy is repeated here; the compiler enforces they agree (the
-    /// feature's generated `view()` builds a store of exactly the injected type).
+    /// Pass the feature type and the **same** `strategy:` you gave `@Feature` (both default to
+    /// ``ViewStrategy/observation``) — a macro can't read another type's attributes, so the strategy is
+    /// repeated here; the compiler enforces they agree (the feature's generated `view()` hands over a store
+    /// of exactly the injected type).
     ///
     /// ```swift
-    /// @BoundTo(Movies.self, strategy: .observationGranular)
+    /// @BoundTo(Movies.self)
     /// struct MoviesView: View {
-    ///     // injected: `let viewStore: TrackedViewStore<Movies.ViewState, Movies.ViewAction>`
+    ///     // injected: `let viewStore: ObservableStore<Movies.ViewAction, Movies.ViewState>`
     ///     var body: some View {
-    ///         Text(viewStore.state.title)                 // field-level here
+    ///         Text(viewStore.title)                     // depends on \.title only
     ///         Button("tap") { viewStore.dispatch(.tapped) }
     ///     }
     /// }
     /// ```
     ///
-    /// The `.combineObservable` strategy injects `@ObservedObject var viewStore: ObservableObjectStore<…>`
-    /// instead — same body, coarse updates, iOS 13+. The body never changes across strategies.
+    /// `.combine` injects `@ObservedObject var viewStore: ObservableStore<…>` instead — same body, iOS 13+.
     @attached(member, names: arbitrary)
-    public macro BoundTo<F>(_ feature: F.Type, strategy: ViewStrategy) = #externalMacro(module: "SwiftRexMacros", type: "BoundToMacro")
+    public macro BoundTo<F>(_ feature: F.Type, strategy: ViewStrategy = .observation) =
+        #externalMacro(module: "SwiftRexMacros", type: "BoundToMacro")
 #endif

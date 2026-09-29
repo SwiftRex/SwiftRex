@@ -10,7 +10,7 @@
     // Proves `@Feature` applies recursive optics — via `@ApplyOptics(recursively: true)` — to nested
     // domain state at any depth (not just top-level `State`/`Action`), and that the cross-macro
     // interaction (`@Feature`'s memberAttribute ADDING `@ApplyOptics`) still drives the recursion cycle.
-    @Feature(strategy: .observationSimple)
+    @Feature
     enum OpticsProbeFeature {
         struct State: Sendable, Equatable {
             var count: Int = 0

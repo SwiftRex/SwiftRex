@@ -9,7 +9,7 @@
     ///
     /// ```swift
     /// struct HomeView: View, Routable {
-    ///     let viewStore: ViewStore<Home.State, Home.Action>
+    ///     let viewStore: ObservableStore<Home.Action, Home.State>
     ///     let router: AppRouter                        // handed in at construction, traps store + world
     ///
     ///     var body: some View {

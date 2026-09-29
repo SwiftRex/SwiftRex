@@ -9,21 +9,20 @@ import SwiftSyntaxMacros
 /// - `MemberAttributeMacro` — adds `@ApplyOptics(recursively: true)` to **every** nested domain-state
 ///   struct/enum (`State`, `Action`, `ViewAction`, and any other nested type — a `Route`, a sub-state —
 ///   recursively down its own tree), skipping the non-state members `Environment`/`Content`/`Input` and
-///   the `ViewState` view projection; and (for `strategy: .observationGranular`) `@Tracked` to the
-///   tracked `State`/`ViewState`. A user attribute (`@ApplyOptics`/`@Lenses`/`@Prisms`/`@NoOptics`) on a
+///   the `ViewState` view projection. A user attribute (`@ApplyOptics`/`@Lenses`/`@Prisms`/`@NoOptics`) on a
 ///   nested type wins. State declared in an *extension* of the feature isn't visible to the macro —
 ///   annotate that extension with `@ApplyOptics(recursively: true)` directly.
 /// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
-///   generates `view(store:environment:) -> some View` (when a `Content` view exists) building the
-///   store named by `strategy:` (`ViewStore` / `TrackedViewStore` / `ObservableObjectStore`) from an
-///   environment-aware projection. The two Observation stores are iOS-17-gated; Combine is not.
+///   generates `view(store:environment:) -> some View` (when a `Content` view exists) handing `Content`
+///   an `ObservableStore` (built once per view identity) over an environment-aware projection, signalling
+///   through `strategy:` (default `.observation`, iOS-17-gated; `.combine` is not).
 /// - `ExtensionMacro`       — generates the `Feature` conformance when the type has a view (a `Content`,
 ///   or a hand-written `view`); a view-less feature is a behavior only and gets no `Feature`
-///   conformance. The `Feature` conformance is iOS-17-gated for the Observation strategies, ungated for
+///   conformance. The `Feature` conformance is iOS-17-gated for `.observation`, ungated for
 ///   Combine (matching the generated `view()`).
 ///
 /// **Access follows the `enum`'s own modifier** — a `public enum` gets `public` members; a plain `enum`
-/// keeps them `internal` — read from the declaration, exactly like `@BoundTo`/`@Tracked`. `ViewState`/
+/// keeps them `internal` — read from the declaration, exactly like `@BoundTo`. `ViewState`/
 /// `ViewAction`/`Content` stay whatever the author wrote and are hidden behind `view()`'s opaque return.
 public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
     // MARK: - MemberMacro
@@ -73,23 +72,19 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         return members
     }
 
-    /// Builds `view(store:environment:)`. `strategy:` picks the store (the two Observation stores are
-    /// iOS-17-gated, Combine is not). When a `ViewState` struct / `ViewAction` enum exists we project
-    /// through the (env-aware) maps; otherwise the store is wrapped as-is, with an unmapped axis in a
-    /// mixed feature falling back to identity.
+    /// Builds `view(store:environment:)`. The view gets an `ObservableStore` built once per view identity
+    /// (`ObservableStoreHost`), signalling through `strategy:` (Observation is iOS-17-gated, Combine is not).
+    /// When a `ViewState` struct / `ViewAction` enum exists the store is projected through the (env-aware)
+    /// maps — buffered before the map when the feature's `State` is `Equatable`, picked by overload
+    /// resolution in `ObservableStore.feature` — otherwise the feature's store is observed as-is, with an
+    /// unmapped axis in a mixed feature falling back to identity.
     private static func viewMember(
         access: String,
         node: AttributeSyntax,
         declaration: some DeclGroupSyntax
     ) -> DeclSyntax {
-        let storeType: String
-        let gated: Bool
-        switch strategyName(node) {
-        case "observationGranular": (storeType, gated) = ("TrackedViewStore", true)
-        case "combineObservable": (storeType, gated) = ("ObservableObjectStore", false)
-        default: (storeType, gated) = ("ViewStore", true)
-        }
-        let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
+        let strategy = strategyName(node)
+        let availability = strategy == "combine" ? "" : "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n"
 
         let projectsState = hasNestedStruct("ViewState", in: declaration)
         let projectsAction = hasNestedEnum("ViewAction", in: declaration)
@@ -101,9 +96,10 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             let actionMap = projectsAction
                 ? "mapAction"
                 : "Reader<Environment, @Sendable (ViewAction) -> Action> { _ in { $0 } }"
-            source = "store.projection(environment: environment, action: \(actionMap), state: \(stateMap))"
+            source = "ObservableStore<ViewAction, ViewState>.feature(store, environment: environment, " +
+                "action: \(actionMap), state: \(stateMap), strategy: .\(strategy))"
         } else {
-            source = "store" // no view layer — wrap the store directly (ViewState == State)
+            source = "ObservableStore<ViewAction, ViewState>.feature(store, strategy: .\(strategy))" // no view layer
         }
         // The store parameter is `any StoreType<Action, State>` (an existential — a CONCRETE type),
         // not `some StoreType<…>` (a generic parameter). A generic method returning `some View`
@@ -114,7 +110,11 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             store: any StoreType<Action, State>,
             environment: Environment
         ) -> some View {
-            Content(viewStore: \(raw: storeType)(\(raw: source)))
+            ObservableStoreHost {
+                \(raw: source)
+            } content: {
+                Content(viewStore: $0)
+            }
         }
         """
     }
@@ -144,9 +144,9 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         guard hasNestedType("Content", in: declaration) || hasFunction("view", in: declaration) else {
             return []
         }
-        // Gated for the Observation strategies (their `view()` is iOS-17), ungated for Combine —
-        // matching the generated `view()`'s own availability.
-        let gated = strategyName(node) != "combineObservable"
+        // Gated for Observation (its `view()` is iOS-17), ungated for Combine — matching the generated
+        // `view()`'s own availability.
+        let gated = strategyName(node) != "combine"
         let availability = gated ? "@available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)\n" : ""
         let conformance: DeclSyntax = "\(raw: availability)extension \(raw: type.trimmedDescription): Feature {}"
         return conformance.as(ExtensionDeclSyntax.self).map { [$0] } ?? []
@@ -160,12 +160,9 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         providingAttributesFor member: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
-        let granular = strategyName(node) == "observationGranular"
-
-        // `ViewState` is the view projection, not domain state: `@Tracked` for granular; never optics.
+        // `ViewState` is the view projection, not domain state: never optics.
         if let structDecl = member.as(StructDeclSyntax.self), structDecl.name.text == "ViewState" {
-            guard granular, !hasAttribute("Tracked", on: structDecl.attributes) else { return [] }
-            return ["@Tracked"]
+            return []
         }
 
         // Every other nested struct/enum is treated as domain state and gets recursive optics
@@ -189,27 +186,16 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         // Non-state framework members: dependencies, the view, and the seed carry no optics.
         guard !["Environment", "Content", "Input"].contains(name) else { return [] }
 
-        var result: [AttributeSyntax] = []
         // Respect a user-written optics choice — `@ApplyOptics`/`@Lenses`/`@Prisms` (custom options) or
         // `@NoOptics` (opt this type out).
         let userChoseOptics = ["ApplyOptics", "Lenses", "Prisms", "NoOptics"]
             .contains { hasAttribute($0, on: attributes) }
-        if !userChoseOptics {
-            result.append("@ApplyOptics(recursively: true)")
-        }
-        // Granular with no distinct `ViewState` struct ⇒ track the domain `State` directly.
-        if name == "State",
-           granular,
-           !hasNestedStruct("ViewState", in: declaration),
-           !hasAttribute("Tracked", on: attributes) {
-            result.append("@Tracked")
-        }
-        return result
+        return userChoseOptics ? [] : ["@ApplyOptics(recursively: true)"]
     }
 
     // MARK: - Private
 
-    /// The member-access case name of a labeled argument, e.g. `strategy: .observationSimple` → `"observationSimple"`.
+    /// The member-access case name of a labeled argument, e.g. `strategy: .combine` → `"combine"`.
     private static func argumentCase(_ label: String, in node: AttributeSyntax) -> String? {
         guard let args = node.arguments?.as(LabeledExprListSyntax.self) else { return nil }
         for arg in args where arg.label?.text == label {
@@ -219,7 +205,7 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
     }
 
     /// The access modifier the members should carry, read from the attached `enum` — `"public "`,
-    /// `"package "`, `""` (internal), etc. Matches `@BoundTo`/`@Tracked`: the declaration's own access
+    /// `"package "`, `""` (internal), etc. Matches `@BoundTo`: the declaration's own access
     /// drives the generated members, so there is no `type:` argument.
     private static func accessModifier(from modifiers: DeclModifierListSyntax) -> String {
         modifiers
@@ -238,9 +224,9 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             .map { "\($0.name.text) " } ?? ""
     }
 
-    /// The `strategy:` case name; defaults to `"observationSimple"` (coarse `ViewStore`).
+    /// The `strategy:` case name; defaults to `"observation"`.
     private static func strategyName(_ node: AttributeSyntax) -> String {
-        argumentCase("strategy", in: node) ?? "observationSimple"
+        argumentCase("strategy", in: node) ?? "observation"
     }
 
     private static func hasAttribute(_ name: String, on attributes: AttributeListSyntax) -> Bool {

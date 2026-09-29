@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-#if canImport(Observation) && canImport(SwiftUI)
+#if canImport(SwiftUI) && canImport(Combine)
     import SwiftRex
     import SwiftUI
 
@@ -28,15 +28,16 @@
 
     /// A convenience that reads whether a scene id currently has state — for a window body to decide
     /// between rendering its content and dismissing itself (e.g. `if store.hasScene(id, in: \.documents)`).
-    extension StoreType {
+    extension ObservableStoreType {
         /// `true` while a scene with `id` exists in the keyed sub-state collection — i.e. the window
-        /// should still render. Pair with `dismissWindow` when it becomes `false`.
+        /// should still render. Pair with `dismissWindow` when it becomes `false`. The reader depends on the
+        /// collection's key set only, not on the scenes' contents.
         @MainActor
         public func hasScene<Key: Hashable & Sendable, Value>(
             _ id: Key,
             in dictionary: KeyPath<State, [Key: Value]>
         ) -> Bool {
-            state[keyPath: dictionary][id] != nil
+            read(dictionary, \[Key: Value].keys).contains(id)
         }
     }
 #endif

@@ -26,8 +26,8 @@
         ///     .store(in: &cancellables)
         /// ```
         ///
-        /// For SwiftUI use, prefer ``asObservableObject()`` (iOS 15) or ``asObservableStore()``
-        /// (iOS 17), which wire `@ObjectWillChange` and `@Observable` respectively.
+        /// For SwiftUI, don't subscribe to this — wrap the store with `observable(_:)` from
+        /// `SwiftRex.SwiftUI`, which invalidates only the views that read what changed.
         public var publisher: StorePublisher<Self> { StorePublisher(store: self) }
     }
 
