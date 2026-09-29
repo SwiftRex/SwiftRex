@@ -11,24 +11,25 @@
 /// snapshot to diff against. A struct would lose the cached value on copy, making the
 /// `hasChanged` comparison meaningless.
 ///
-/// ## Building in two steps
+/// ## Where it goes
 ///
-/// The recommended pattern is to compose a ``StoreProjection`` (type narrowing) with a
-/// `StoreBuffer` (notification gating):
+/// Which side of a ``StoreProjection`` a buffer sits on decides what it saves. **Before** a map it dedups
+/// on the map's input, so the map doesn't run for unrelated changes (stops recomputation); **after** a map
+/// the map still runs on every change and only identical results are suppressed (stops invalidation).
 ///
 /// ```swift
-/// // Step 1 — narrow types via projection
-/// let counterProj = appStore.projection(
-///     action: { AppAction.counter($0) },
-///     state:  { $0.counterState }
-/// )
-///
-/// // Step 2 — add caching and deduplication (CounterState: Equatable)
-/// let buffered = counterProj.buffer()
+/// // Buffer the feature's slice (CounterState: Equatable), then map it for the view
+/// let counter = appStore
+///     .projection(action: { AppAction.counter($0) }, state: { $0.counterState })
+///     .buffer()
+///     .projection(action: { $0 }, state: CounterView.ViewState.init)
 ///
 /// // Or with a custom predicate when Equatable is not available/desired
-/// let buffered = counterProj.buffer { old, new in old.count != new.count }
+/// let buffered = counterSlice.buffer { old, new in old.count != new.count }
 /// ```
+///
+/// For SwiftUI, the observable store a view reads already suppresses unchanged results per key path, so
+/// the buffer's job there is the "before" one.
 ///
 /// ## Notification timing
 ///
