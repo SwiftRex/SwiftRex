@@ -25,10 +25,25 @@
     /// snapshot — with `==` when the value is `Equatable`, as `@Observable` does — and signals only the ones
     /// that differ. The ``ViewStrategy`` picks the signal:
     ///
-    /// - ``ViewStrategy/observation`` (iOS 17+): Observation-framework invalidation per changed path. Hold
-    ///   the store as a plain `let`/`@State`.
+    /// - ``ViewStrategy/observation`` (iOS 17+): Observation-framework invalidation per changed path.
     /// - ``ViewStrategy/combine`` (iOS 13+): a single `objectWillChange`, sent only when some path a view
-    ///   read has changed. Hold the store as `@ObservedObject`/`@StateObject`.
+    ///   read has changed.
+    ///
+    /// ## Ownership
+    ///
+    /// The store *is* the buffer — its snapshot, dependencies and upstream subscription — so it must be built
+    /// **once** and owned by something that outlives body re-evaluations. Every view below the owner just
+    /// receives the reference:
+    ///
+    /// | | ``ViewStrategy/observation`` | ``ViewStrategy/combine`` |
+    /// | --- | --- | --- |
+    /// | owner (builds it) | ``ObservableStoreHost``, or `@State` in a type initialised once (`App`, a root) | ``ObservableStoreHost`` or `@StateObject` |
+    /// | receivers | `let` | `@ObservedObject` |
+    ///
+    /// Never build one in a `body` (`ChildView(store: appStore.observable())`): every re-evaluation would
+    /// allocate and subscribe a fresh store, discarding the dependencies it had. `@State` in an ordinary view
+    /// keeps the first instance but still evaluates its initial value on every `init` — the host's `make`
+    /// closure runs only when there is no store yet.
     ///
     /// `ObservableStore` is itself a ``StoreType`` whose own ``observe(willChange:didChange:)`` fires only
     /// when its snapshot changed (by `==` when `State` is `Equatable`), so a store observed or projected
@@ -247,10 +262,13 @@
         /// a projection, a buffer, or another observable store.
         ///
         /// ```swift
-        /// @State var root = appStore.observable()                        // iOS 17+, Observation
-        /// @StateObject var root = appStore.observable(.combine)          // iOS 13+, Combine
-        /// let screen = appStore.buffer().projection(action: …, state: mapState).observable()
+        /// ObservableStoreHost { appStore.observable() } content: { RootView(store: $0) }       // built once
+        /// ObservableStoreHost { appStore.buffer().projection(action: …, state: mapState).observable() }
+        ///     content: { ScreenView(store: $0) }
+        /// @StateObject var root = appStore.observable(.combine)                                // iOS 13+
         /// ```
+        ///
+        /// Build it once and hand the reference down — see ``ObservableStore`` → Ownership.
         public func observable(_ strategy: ViewStrategy = .observation) -> ObservableStore<Action, State> {
             ObservableStore(self, strategy: strategy)
         }
