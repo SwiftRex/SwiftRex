@@ -57,7 +57,9 @@ struct DetailScreen: View {
 }
 ```
 
-To pick a strategy there, pass it after the upstream: `OwnedStore(wrappedValue: upstream, .combine)`.
+To pick a strategy there, pass it after the upstream: `OwnedStore(wrappedValue: upstream, .combine)`. When the store is held as an existential (`any StoreType<A, S>`, the usual type of an app's store property), use the unlabeled form: `_viewStore = OwnedStore(store)`.
+
+Handed a view store that already signals the same way — a router passing `viewStore.focus(…).transpose()` to a feature's view — an owner reuses it instead of building a second engine that re-follows the first.
 
 **In the `App`**, which is initialised once — the same wrapper:
 
