@@ -90,8 +90,8 @@
                     .navigationDestination(for: Route.self) { route in destination(route) }
             }
             .sheet(isPresented: viewStore.binding(.state(\.settings).action(\.closeSettings))) {
-                if let settings = viewStore.focus(.action(\.settings).state(\.settings)).transpose() {
-                    SettingsView(viewStore: settings)
+                if let settings = viewStore.transpose(.action(\.settings).state(\.settings)) {
+                    ProjectionKeeper { settings } content: { SettingsView(viewStore: $0) }
                 }
             }
         }
@@ -99,8 +99,8 @@
         @ViewBuilder func destination(_ route: Route) -> some View {
             switch route {
             case .detail:
-                if let detail = viewStore.focus(.action(\.detail).state(\.detail)).transpose() {
-                    DetailView(viewStore: detail)
+                if let detail = viewStore.transpose(.action(\.detail).state(\.detail)) {
+                    ProjectionKeeper { detail } content: { DetailView(viewStore: $0) }
                 }
             }
         }

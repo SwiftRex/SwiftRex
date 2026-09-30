@@ -297,15 +297,17 @@
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func ownObserversFireOnlyWhenTheSnapshotChanged() {
+        @Test func itsStreamIsThePureUpstreamNotTheSnapshot() {
+            // Followers of a view store follow its upstream: every upstream state reaches them, whatever the snapshot's
+            // diff decided — observation stays out of composition. (Dedupe with a `buffer()` where it matters.)
             let store = makeStore()
             let observed = store.viewStore()
             let counter = Counter()
             let (_, token) = observed.stateStream.subscribe { _ in counter.bump() }
-            store.dispatch(.mutate { $0.title = "a" }) // no-op write
-            #expect(counter.value == 0)
-            store.dispatch(.mutate { $0.title = "b" })
+            store.dispatch(.mutate { $0.title = "a" }) // equal state: the store still delivers it
             #expect(counter.value == 1)
+            store.dispatch(.mutate { $0.title = "b" })
+            #expect(counter.value == 2)
             token.cancel()
         }
 
@@ -360,53 +362,62 @@
         }
     }
 
-    // MARK: - Scoped stores
+    // MARK: - Deriving a child — a pure stage, owned by whoever observes it
 
-    @Suite("ViewStore — focus")
+    @Suite("ViewStore — deriving a child")
     @MainActor
-    struct ViewStoreFocusTests {
+    struct ViewStoreChildTests {
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func focusReadsGranularlyAndDispatchesThroughItsLane() {
+        @Test func aProjectedChildIsItsOwnViewStoreWithItsOwnSnapshot() {
             let store = makeStore()
-            let observed = store.viewStore()
-            let transport = observed.focus(.action(review: ScreenAction.transport).state(\.transport))
-            let playing = track { _ = transport.state.isPlaying }
-            let position = track { _ = transport.state.position }
-            transport.dispatch(.play)
+            let parent = store.viewStore(.observation)
+            let child = parent.projection(.action(review: ScreenAction.transport).state(\.transport)).viewStore(.observation)
+            #expect(child.testSignal !== parent.testSignal)             // its own engine, owned by the test
+            let playing = track { _ = child.state.isPlaying }
+            let position = track { _ = child.state.position }
+            child.dispatch(.play)                                        // through the lane, into the store
             #expect(store.currentState.transport.isPlaying)
             #expect(playing.value == 1)
             #expect(position.value == 0)
+            #expect(parent.testArmedCount == 0)                         // the child's reads never touch the parent
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func focusSupportsBindings() {
+        @Test func aChildSupportsBindings() {
             let store = makeStore()
-            let transport = store.viewStore().focus(.action(review: ScreenAction.transport).state(\.transport))
-            let playing = transport.binding(.state(\.isPlaying).action(review: { (_: Bool) in TransportAction.play }))
+            let child = store.viewStore().projection(.action(review: ScreenAction.transport).state(\.transport)).viewStore()
+            let playing = child.binding(.state(\.isPlaying).action(review: { (_: Bool) in TransportAction.play }))
             #expect(playing.wrappedValue == false)
             playing.wrappedValue = true
             #expect(store.currentState.transport.isPlaying)
         }
 
-        @Test func focusReadsThroughTheParentEngine() {
+        @Test func deriving_followsThePureSideNotTheSnapshot() {
+            // The parent view store has read nothing, so its snapshot diff would signal nothing — a child that followed
+            // the snapshot would miss changes. A child derived from it follows the upstream chain, so it sees them all.
             let store = makeStore()
-            let observed = store.viewStore(.combine)
-            let transport = observed.focus(.action(review: ScreenAction.transport).state(\.transport))
-            #expect(transport.testSignal === observed.testSignal)
-            _ = transport.state.position
-            #expect(observed.testArmedCount == 1)   // the slice's read armed the parent's engine
-            store.dispatch(.mutate { $0.transport.position = 5 })
-            #expect(transport.state.position == 5)
+            let parent = store.viewStore(.combine)
+            let sends = Counter()
+            let cancellable = parent.testSignal.objectWillChange.sink { sends.bump() }
+            var received: [Double] = []
+            let token = parent.projection(action: { $0 }, state: \.transport.position).stateStream.observe { received.append($0) }
+            store.dispatch(.mutate { $0.transport.position = 2 })
+            store.dispatch(.mutate { $0.transport.position = 3 })
+            #expect(received == [0, 2, 3])
+            #expect(sends.value == 0)                                    // and the parent was never signalled
+            cancellable.cancel()
+            _ = token
         }
 
-        @Test func focusStreamFollowsTheSlice() {
+        @Test func theParentKeepsNothingForItsChildren() {
             let store = makeStore()
-            let transport = store.viewStore(.combine).focus(.action(review: ScreenAction.transport).state(\.transport))
-            var received: [Double] = []
-            let token = transport.stateStream.observe { received.append($0.position) }
-            store.dispatch(.mutate { $0.transport.position = 2 })
-            #expect(received == [0, 2])
-            _ = token
+            let parent = store.viewStore(.combine)
+            var children = (0..<50).map { _ in parent.projection(.action(review: ScreenAction.transport).state(\.transport)).viewStore(.combine) }
+            children.forEach { _ = $0.state.position }
+            #expect(parent.testArmedCount == 0)
+            children.removeAll()                                         // children go; the parent is untouched
+            store.dispatch(.mutate { $0.transport.position = 9 })
+            #expect(parent.state.transport.position == 9)
         }
     }
 
@@ -416,28 +427,29 @@
     @MainActor
     struct ViewStoreTransposeTests {
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func optionalTransposeIsAViewStoreOnTheSameEngine() {
+        @Test func optionalTransposeDependsOnTheEdgeAndGivesAPureStage() {
             let store = makeStore(Screen(detail: Transport(position: 1)))
-            let observed = store.viewStore()
-            let slot = observed.focus(.action(review: ScreenAction.transport).state(\.detail))
-            var child: ViewStore<TransportAction, Transport>?
-            let edge = track { child = slot.transpose() }
-            #expect(child?.testSignal === observed.testSignal)           // no new engine, no owner needed
+            let parent = store.viewStore(.observation)
+            var slot: StoreUnwrap<TransportAction, Transport>?
+            let edge = track { slot = parent.transpose(.action(review: ScreenAction.transport).state(\.detail)) }
+            let child = slot?.viewStore(.observation)                   // the owner — here, the test
+            #expect(child?.testSignal !== parent.testSignal)
             let position = track { _ = child?.state.position }
             store.dispatch(.mutate { $0.detail?.isPlaying = true })     // the child's sibling field
             #expect(position.value == 0)
+            #expect(edge.value == 0)
             store.dispatch(.mutate { $0.detail?.position = 7 })
-            #expect(edge.value == 0)                                   // the caller depends on the edge only
+            #expect(edge.value == 0)                                   // the parent depends on the edge only
             #expect(position.value == 1)
             store.dispatch(.mutate { $0.detail = nil })
             #expect(edge.value == 1)
-            #expect(slot.transpose() == nil)
+            #expect(parent.transpose(.action(review: ScreenAction.transport).state(\.detail)) == nil)
             #expect(child?.state.position == 7)                        // holds the last present value
         }
 
-        @Test func optionalTransposeStreamHoldsTheLastPresentValue() {
+        @Test func aTransposedStageHoldsTheLastPresentValue() {
             let store = makeStore(Screen(detail: Transport(position: 1)))
-            let child = store.viewStore(.combine).focus(.action(review: ScreenAction.transport).state(\.detail)).transpose()
+            let child = store.viewStore(.combine).transpose(.action(review: ScreenAction.transport).state(\.detail))
             var shown: [Double] = []
             let token = child?.stateStream.observe { shown.append($0.position) }
             store.dispatch(.mutate { $0.detail?.position = 7 })
@@ -449,15 +461,16 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func presentationTransposeIsPresentWhileDismissing() {
             let store = makePresentationStore(.presented(Transport(position: 4)))
-            let observed = store.viewStore()
-            var child: ViewStore<PresentationAction<TransportAction>, Transport>?
-            let edge = track { child = observed.focus(.action(review: PAction.editor).state(\.editor)).transpose() }
+            let parent = store.viewStore()
+            var slot: StoreUnwrap<PresentationAction<TransportAction>, Transport>?
+            let edge = track { slot = parent.transpose(.action(review: PAction.editor).state(\.editor)) }
+            let child = slot?.viewStore()
             store.dispatch(.editor(.dismiss))                           // presented → dismissing: still present
             #expect(edge.value == 0)
             #expect(child?.state.position == 4)
             store.dispatch(.editor(.dismissed))                         // the animation ended → dismissed
             #expect(edge.value == 1)
-            #expect(observed.focus(.action(review: PAction.editor).state(\.editor)).transpose() == nil)
+            #expect(parent.transpose(.action(review: PAction.editor).state(\.editor)) == nil)
             #expect(child?.state.position == 4)
         }
     }
@@ -618,12 +631,13 @@
             #expect(owned.testSignal === parent.testSignal)          // no second engine
         }
 
-        @Test func theRouterCaseReusesTheParentsEngine() {
-            // A router hands a feature's view a transposed child of its own view store.
+        @Test func aDerivedChildGetsItsOwnEngine() {
+            // A router hands a feature's view a transposed child of its view store: a pure stage, so its owner builds
+            // its own engine — every view store owns its snapshot.
             let parent = makeStore(Screen(detail: Transport(position: 1))).viewStore(.combine)
-            let child = parent.focus(.action(review: ScreenAction.transport).state(\.detail)).transpose()
+            let child = parent.transpose(.action(review: ScreenAction.transport).state(\.detail))
             let owned = child.map { ViewStore.owning($0, strategy: .combine) }
-            #expect(owned?.testSignal === parent.testSignal)
+            #expect(owned?.testSignal !== parent.testSignal)
             #expect(owned?.state.position == 1)
         }
 
