@@ -97,8 +97,6 @@ struct LiftPresentationTests {
     }
 }
 
-#endif
-
 @Suite("PresentationAction — @Prisms")
 struct PresentationActionPrismsTests {
     @Prisms
@@ -121,3 +119,4 @@ struct PresentationActionPrismsTests {
         #expect(lane.preview(.editor(.dismissed)) == nil)
     }
 }
+#endif
