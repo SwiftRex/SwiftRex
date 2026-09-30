@@ -89,9 +89,9 @@
                 PlayerScreen(viewStore: viewStore)
                     .navigationDestination(for: Route.self) { route in destination(route) }
             }
-            .sheet(isPresented: viewStore.presence(.state(\.settings), dismiss: .closeSettings)) {
+            .sheet(isPresented: viewStore.binding(.state(\.settings), dismiss: .closeSettings)) {
                 if let settings = viewStore.focus(.state(\.settings), .action(\.settings)).transpose() {
-                    ProjectionKeeper { settings } content: { SettingsView(viewStore: $0) }
+                    SettingsView(viewStore: settings)
                 }
             }
         }
@@ -100,7 +100,7 @@
             switch route {
             case .detail:
                 if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
-                    ProjectionKeeper { detail } content: { DetailView(viewStore: $0) }
+                    DetailView(viewStore: detail)
                 }
             }
         }

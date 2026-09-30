@@ -74,7 +74,7 @@ To pick a strategy there, pass it after the upstream: `OwnedStore(wrappedValue: 
 **Inline, in a body — `ProjectionKeeper`**, where a property wrapper can't go: a router's `switch`, a `ForEach` row, a sheet's content. It builds once per view identity; pass `id:` when the same position can come to show a *different* store.
 
 ```swift
-.sheet(item: viewStore.item(.state(\.editing), dismiss: .closeEditor)) { item in
+.sheet(item: viewStore.binding(.state(\.editing), dismiss: .closeEditor)) { item in
     ProjectionKeeper(id: item.id) {
         appStore.projection(action: { .editor($0) }, state: { $0.editor ?? .empty })
     } content: { editor in
@@ -184,10 +184,10 @@ struct RootView: View {
             HomeView(viewStore: viewStore)
                 .navigationDestination(for: Route.self) { route in destination(route) }
         }
-        .sheet(isPresented: viewStore.presence(.state(\.settings), dismiss: .closeSettings)) {
+        .sheet(isPresented: viewStore.binding(.state(\.settings), dismiss: .closeSettings)) {
             // `settings` is optional state: present while it exists, the child follows its own state.
             if let settings = viewStore.focus(.state(\.settings), .action(\.settings)).transpose() {
-                ProjectionKeeper { settings } content: { SettingsView(viewStore: $0) }
+                SettingsView(viewStore: settings)
             }
         }
     }
@@ -196,14 +196,14 @@ struct RootView: View {
         switch route {
         case .detail:
             if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
-                ProjectionKeeper { detail } content: { DetailView(viewStore: $0) }
+                DetailView(viewStore: detail)
             }
         }
     }
 }
 ```
 
-`transpose()` turns a view store of `T?` (or `Presentation<T>`) into a store of `T` that exists exactly while the state does. The caller depends on the **presence edge only**; the child follows its own state, and holds its last value while SwiftUI animates it away. For lanes no key path expresses (an enum case, the top of a stack), `viewStore.transpose(action:state:)` takes the closures directly.
+`transpose()` turns a `ViewStore<T?>` (or `ViewStore<Presentation<T>>`) into a `ViewStore<T>?` that exists exactly while the state does — a view store on the same engine, so no owner is needed. The caller depends on the **presence edge only**; the child reads its own state granularly, and holds its last value while SwiftUI animates it away. For lanes no key path expresses (an enum case, the top of a stack), `viewStore.transpose(action:state:)` takes the closures directly and returns a `StoreProjection?` for a feature's view to own.
 
 For routers built on ``Relay/Scope`` and features, see <doc:Navigation> and <doc:NavigationEndToEnd>.
 
@@ -217,7 +217,15 @@ for await state in store.stateStream { … }                    // AsyncSequence
 store.stateStream.sink { … }.store(in: &cancellables)          // a Combine Publisher (SwiftRex.Combine)
 ```
 
-Keep the returned ``UISubscriptionToken`` for as long as you follow; releasing it stops delivery immediately. The RxSwift, ReactiveSwift and ReactiveConcurrency products make the stream an `ObservableType`, a `SignalProducerConvertible` and `asPublisher` respectively.
+Keep the returned ``UISubscriptionToken`` for as long as you follow; releasing it stops delivery immediately.
+
+An optional child outside SwiftUI follows the same edge through ``StoreType/transpose()``: a stream that emits a child store when the value appears and `nil` when it goes away — present on `.some`, tear down on `nil`:
+
+```swift
+token = store.projection(action: AppAction.editor, state: \.editor).transpose().observe { editor in
+    editor.map(presentEditor) ?? dismissEditor()
+}
+``` The RxSwift, ReactiveSwift and ReactiveConcurrency products make the stream an `ObservableType`, a `SignalProducerConvertible` and `asPublisher` respectively.
 
 ## Pitfalls
 

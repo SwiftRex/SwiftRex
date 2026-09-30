@@ -416,22 +416,67 @@
     @MainActor
     struct ViewStoreTransposeTests {
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func optionalTransposeDependsOnThePresenceEdgeOnly() {
+        @Test func optionalTransposeIsAViewStoreOnTheSameEngine() {
             let store = makeStore(Screen(detail: Transport(position: 1)))
             let observed = store.viewStore()
             let slot = observed.focus(.state(\.detail), .action(review: ScreenAction.transport))
-            var child: StoreProjection<TransportAction, Transport>?
+            var child: ViewStore<TransportAction, Transport>?
             let edge = track { child = slot.transpose() }
-            var shown: [Double] = []
-            let token = child?.stateStream.observe { shown.append($0.position) }   // the child screen's engine
+            #expect(child?.testSignal === observed.testSignal)           // no new engine, no owner needed
+            let position = track { _ = child?.state.position }
+            store.dispatch(.mutate { $0.detail?.isPlaying = true })     // the child's sibling field
+            #expect(position.value == 0)
             store.dispatch(.mutate { $0.detail?.position = 7 })
-            #expect(edge.value == 0)
+            #expect(edge.value == 0)                                   // the caller depends on the edge only
+            #expect(position.value == 1)
             store.dispatch(.mutate { $0.detail = nil })
             #expect(edge.value == 1)
             #expect(slot.transpose() == nil)
-            #expect(shown == [1, 7, 7])   // follows its own state, then holds the last present value
+            #expect(child?.state.position == 7)                        // holds the last present value
+        }
+
+        @Test func optionalTransposeStreamHoldsTheLastPresentValue() {
+            let store = makeStore(Screen(detail: Transport(position: 1)))
+            let child = store.viewStore(.combine).focus(.state(\.detail), .action(review: ScreenAction.transport)).transpose()
+            var shown: [Double] = []
+            let token = child?.stateStream.observe { shown.append($0.position) }
+            store.dispatch(.mutate { $0.detail?.position = 7 })
+            store.dispatch(.mutate { $0.detail = nil })
+            #expect(shown == [1, 7, 7])
             _ = token
         }
+
+        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+        @Test func presentationTransposeIsPresentWhileDismissing() {
+            let store = makePresentationStore(.presented(Transport(position: 4)))
+            let observed = store.viewStore()
+            var child: ViewStore<PresentationAction<TransportAction>, Transport>?
+            let edge = track { child = observed.focus(.state(\.editor), .action(review: PAction.editor)).transpose() }
+            store.dispatch(.editor(.dismiss))                           // presented → dismissing: still present
+            #expect(edge.value == 0)
+            #expect(child?.state.position == 4)
+            store.dispatch(.editor(.dismiss))                           // dismissing → dismissed
+            #expect(edge.value == 1)
+            #expect(observed.focus(.state(\.editor), .action(review: PAction.editor)).transpose() == nil)
+            #expect(child?.state.position == 4)
+        }
+    }
+
+    private struct PState: Sendable, Equatable { var editor: Presentation<Transport> }
+    private enum PAction: Sendable { case editor(PresentationAction<TransportAction>) }
+
+    @MainActor
+    private func makePresentationStore(_ editor: Presentation<Transport>) -> Store<PAction, PState, Void> {
+        Store(
+            initial: PState(editor: editor),
+            behavior: Reducer.reduce { (action: PAction, state: inout PState) in
+                switch action {
+                case .editor(.dismiss): state.editor = state.editor.dismiss()
+                case .editor(.child): break
+                }
+            }.asBehavior(),
+            environment: ()
+        )
     }
 
     // MARK: - Synchronous chain
@@ -464,7 +509,7 @@
         @Test func presenceDependsOnThePresenceEdge() {
             let store = makeStore(Screen(detail: Transport()))
             let observed = store.viewStore()
-            let presence = observed.presence(.state(\.detail), dismiss: .mutate { $0.detail = nil })
+            let presence: Binding<Bool> = observed.binding(.state(\.detail), dismiss: .mutate { $0.detail = nil })
             let edge = track { _ = presence.wrappedValue }
             store.dispatch(.mutate { $0.detail?.position = 3 })
             #expect(edge.value == 0)
@@ -476,7 +521,7 @@
         @Test func closureLaneFallsBackToWholeState() {
             let store = makeStore()
             let observed = store.viewStore()
-            let presence = observed.presence(.state { $0.detail }, dismiss: .mutate { $0.detail = nil })
+            let presence: Binding<Bool> = observed.binding(.state { $0.detail }, dismiss: .mutate { $0.detail = nil })
             let whole = track { _ = presence.wrappedValue }
             store.dispatch(.mutate { $0.count += 1 })
             #expect(whole.value == 1)

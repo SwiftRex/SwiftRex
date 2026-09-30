@@ -27,25 +27,69 @@
         )
     }
 
+    // Compile check for the documented spellings: `.sheet(item:)` straight from a `Binding<Presentation>`, and the
+    // parts for any other container.
+    private struct ModalHost: View {
+        let viewStore: ViewStore<BindAction, BindState>
+
+        var body: some View {
+            let modal = viewStore.binding(.state(\.modal), dismiss: .dismiss)
+            Text("host")
+                .sheet(item: viewStore.binding(.state(\.modal), dismiss: .dismiss)) { item in Text(item.text) }
+                .sheet(isPresented: modal.isPresented(), onDismiss: modal.onDismiss()) { Text("cover") }
+                .popover(item: modal.item()) { item in Text(item.text) }
+        }
+    }
+
     @Suite("Presentation bindings")
     @MainActor
     struct PresentationBindingTests {
-        @Test func boolBindingIsPresentedAndDismisses() {
+        @Test func isPresentedIsTrueOnlyWhilePresentedAndStartsTheDismissal() {
             let store = makeStore(.presented(Item(id: 1, text: "a")))
-            #expect(store.viewStore().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == true)
+            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            #expect(modal.isPresented().wrappedValue == true)
 
-            store.viewStore().presence(.state(\.modal), dismiss: .dismiss).wrappedValue = false // set(false) → dismiss
+            modal.isPresented().wrappedValue = false // SwiftUI starts dismissing → dismiss
             #expect(store.currentState.modal == .dismissing(last: Item(id: 1, text: "a")))
-            #expect(store.viewStore().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == false)   // false while dismissing
+            #expect(modal.isPresented().wrappedValue == false) // false while dismissing
         }
 
-        @Test func itemBindingKeysOnPresentedThenDismisses() {
+        @Test func itemIsThePresentedValueAndStartsTheDismissal() {
             let store = makeStore(.presented(Item(id: 7, text: "x")))
-            #expect(store.viewStore().item(.state(\.modal), dismiss: .dismiss).wrappedValue == Item(id: 7, text: "x"))
+            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            #expect(modal.item().wrappedValue == Item(id: 7, text: "x"))
 
-            store.viewStore().item(.state(\.modal), dismiss: .dismiss).wrappedValue = nil // set(nil) → dismiss
+            modal.item().wrappedValue = nil // SwiftUI clears the item → dismiss
             #expect(store.currentState.modal == .dismissing(last: Item(id: 7, text: "x")))
-            #expect(store.viewStore().item(.state(\.modal), dismiss: .dismiss).wrappedValue == nil)   // nil while dismissing
+            #expect(modal.item().wrappedValue == nil) // nil while dismissing
+        }
+
+        @Test func aWriteThatDoesNotAdvanceTheStageIsIgnored() {
+            let store = makeStore(.presented(Item(id: 4, text: "d")))
+            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            modal.isPresented().wrappedValue = true // SwiftUI re-affirming: no dismissal
+            #expect(store.currentState.modal == .presented(Item(id: 4, text: "d")))
+        }
+
+        @Test func documentedSpellingsBuild() {
+            _ = ModalHost(viewStore: makeStore(.dismissed).viewStore()).body
+        }
+
+        @Test func onDismissCompletesTheDismissal() {
+            let store = makeStore(.presented(Item(id: 2, text: "b")))
+            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            modal.item().wrappedValue = nil // first edge: presented → dismissing
+            modal.onDismiss()() // second edge, when the animation ends: dismissing → dismissed
+            #expect(store.currentState.modal == .dismissed)
+        }
+
+        @Test func aProgrammaticDismissNeedsOnlyTheSecondEdge() {
+            let store = makeStore(.presented(Item(id: 3, text: "c")))
+            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            store.dispatch(.dismiss) // the reducer starts it: presented → dismissing
+            #expect(modal.item().wrappedValue == nil)
+            modal.onDismiss()()
+            #expect(store.currentState.modal == .dismissed)
         }
     }
 #endif

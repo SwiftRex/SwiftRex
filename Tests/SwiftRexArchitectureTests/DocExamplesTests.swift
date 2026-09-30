@@ -72,7 +72,7 @@
                 Button(book.title) { viewStore.dispatch(.tapped(book.value)) }
             }
             .onAppear { viewStore.dispatch(.onAppear) }
-            .sheet(item: viewStore.item(.state(\.selected), dismiss: .dismissedDetail)) { book in
+            .sheet(item: viewStore.binding(.state(\.selected), dismiss: .dismissedDetail)) { book in
                 Text(book.title)
             }
         }

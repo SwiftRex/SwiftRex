@@ -64,7 +64,7 @@
 
         /// A behavior that reduces ``ModalNavigation`` into an optional (`Item?`) slice — present sets
         /// `.some`, dismiss clears. `allow` gates an operation (return `false` to block, e.g. refuse to
-        /// dismiss with unsaved edits). For sheets/covers/popovers driven by an observed store's `item(_:dismiss:)`.
+        /// dismiss with unsaved edits). For sheets/covers/popovers driven by a view store's `binding(_:dismiss:)`.
         public static func navigationItem<Item: Sendable>(
             _ item: WritableKeyPath<State, Item?>,
             action navigation: PrismKeyPath<Action, ModalNavigation<Item>>,

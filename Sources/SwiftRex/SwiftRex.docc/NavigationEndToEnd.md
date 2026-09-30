@@ -272,8 +272,8 @@ struct BookView: View, Routable {
     var body: some View {
         Form { Text(viewStore.state.book.title) }
             .toolbar { Button("Edit") { viewStore.dispatch(.tappedEdit) } }
-            // PRESENTATION — the modifier wires both dismiss edges; content is live from the store:
-            .presenting(router.store, \.editor, dismiss: .editor(.dismiss)) { _ in
+            // PRESENTATION — a Binding<Presentation> wires both dismiss edges; content is live from the store:
+            .sheet(item: router.store.binding(.state(\.editor), dismiss: .editor(.dismiss))) { _ in
                 // Project the slot's action (`.editor(.child(_))`) + the `Presentation<…>` state, then
                 // `transpose()` inverts `Store<Presentation<Editor>>` into `Store<Editor>?` — live through
                 // both `presented` and `dismissing(last:)`, `nil` only once dismissed, so no flicker:
@@ -286,7 +286,7 @@ struct BookView: View, Routable {
             // OPTIONAL — a delete confirmation; the optional is both "is it shown" and "what it shows":
             .alert(
                 "Delete book?",
-                isPresented: viewStore.presence(.state(\.deleting), dismiss: .cancelDelete),
+                isPresented: viewStore.binding(.state(\.deleting), dismiss: .cancelDelete),
                 presenting: viewStore.state.deleting.value
             ) { book in
                 Button("Delete \(book.title)", role: .destructive) { viewStore.dispatch(.confirmDelete) }
@@ -296,7 +296,7 @@ struct BookView: View, Routable {
 }
 ```
 
-Prefer `presence(_:dismiss:)` (the `Bool` binding, above) as the default; reach for `item(_:dismiss:)` + `.presentingItem` only when a `.sheet(item:)` genuinely needs the `Identifiable` value (`EditorFeature.State` is `Identifiable`, so it qualifies).
+`binding(_:dismiss:)` on a `Presentation` slot gives a `Binding<Presentation<…>>`: `.sheet(item:)` takes it directly when the value is `Identifiable` (`EditorFeature.State` is), and for any other container use its parts — `.fullScreenCover(isPresented: editor.isPresented(), onDismiss: editor.onDismiss())`. On an optional slot the same `binding(_:dismiss:)` gives the `Binding<Bool>` or `Binding<Item?>` the SwiftUI parameter asks for.
 
 ## Layer 7 — The `@main` assembly (store, scene, deep link)
 
@@ -333,8 +333,8 @@ The URL never navigates directly — `onOpenURL` turns it into `.openedURL`, and
 |---|---|---|---|---|---|
 | **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | `binding(_:dispatch:)` | `TabView` / split |
 | **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | `binding(_:dispatch:)` | `NavigationStack(path:)` |
-| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | `presence(_:dismiss:)` + `.presenting` | sheet / cover |
-| **Optional** | `deleting: Book?` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | `presence(_:dismiss:)` / `item(_:dismiss:)` | alert / sheet / popover |
+| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | `binding(_:dismiss:)` → `Binding<Presentation<…>>` | sheet / cover |
+| **Optional** | `deleting: Book?` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | `binding(_:dismiss:)` → `Binding<Bool>` / `Binding<Item?>` | alert / sheet / popover |
 
 Every one is the same recipe: **store the shape in state, dispatch through an action, fold a reducer/lift for it, bind a native container to it, resolve destinations through the router.** No new dialect — just state, actions, and `some View`.
 

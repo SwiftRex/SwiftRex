@@ -8,7 +8,7 @@ Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one
 
 | Shape | State | Lift | Binding | Reducer |
 | --- | --- | --- | --- | --- |
-| **Optional / modal** — 0-or-1, child created on present | `Item?` | `liftOptional` | `item(_:dismiss:)` / `presence(_:dismiss:)` | ``Behavior/navigationItem(_:action:allow:)`` |
+| **Optional / modal** — 0-or-1, child created on present | `Item?` | `liftOptional` | `binding(_:dismiss:)` → `Binding<Item?>` / `Binding<Bool>` | ``Behavior/navigationItem(_:action:allow:)`` |
 | **Stack** — 0-to-N ordered | `[Route]` | `liftCollection` | `binding(_:dispatch:)` | ``Behavior/navigationStack(_:action:allow:)`` |
 | **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | `binding(_:dispatch:)` | ``Behavior/navigationSelection(_:action:allow:)`` |
 | **Scene set** — 0-to-N windows | keyed sub-states | element/dictionary projection | `hasScene(_:in:)` + `WindowGroup(for:)` | ordinary open/close actions |
@@ -26,27 +26,27 @@ Presentation and child lifetime are one fact: set the optional and the child exi
 ```swift
 // Every `\.slot` below is an OPTIONAL holding the content (`onboarding: Onboarding.State?`, `tip: Tip?`, …).
 // Sheet, full-screen cover, popover — item- or isPresented-driven, interchangeably:
-.sheet(item: store.item(.state(\.editing), dismiss: .dismissEditor)) { item in router.view(for: .editor(item.id)) }
-.fullScreenCover(isPresented: store.presence(.state(\.onboarding), dismiss: .finishOnboarding)) { router.view(for: .onboarding) }
-.popover(item: store.item(.state(\.tip), dismiss: .dismissTip)) { tip in TipView(tip) }
+.sheet(item: store.binding(.state(\.editing), dismiss: .dismissEditor)) { item in router.view(for: .editor(item.id)) }
+.fullScreenCover(isPresented: store.binding(.state(\.onboarding), dismiss: .finishOnboarding)) { router.view(for: .onboarding) }
+.popover(item: store.binding(.state(\.tip), dismiss: .dismissTip)) { tip in TipView(tip) }
 
 // Bottom sheet — a sheet whose content carries detents:
-.sheet(isPresented: store.presence(.state(\.filters), dismiss: .closeFilters)) {
+.sheet(isPresented: store.binding(.state(\.filters), dismiss: .closeFilters)) {
     router.view(for: .filters).presentationDetents([.medium, .large])
 }
 
 // Inspector (iOS 17+) — `isPresented:`-driven, over the optional inspected value:
-.inspector(isPresented: store.presence(.state(\.inspector), dismiss: .hideInspector)) { router.view(for: .inspector) }
+.inspector(isPresented: store.binding(.state(\.inspector), dismiss: .hideInspector)) { router.view(for: .inspector) }
 
 // Single push via NavigationStack, without a path:
-.navigationDestination(isPresented: store.presence(.state(\.detail), dismiss: .popDetail)) { router.view(for: .detail) }
+.navigationDestination(isPresented: store.binding(.state(\.detail), dismiss: .popDetail)) { router.view(for: .detail) }
 
-// Alert / confirmation dialog — present with `presence`/`item`; the BUTTONS dispatch their own actions:
-.alert("Delete?", isPresented: store.presence(.state(\.deleteConfirm), dismiss: .cancelDelete), presenting: store.state.deleteConfirm.value) { item in
+// Alert / confirmation dialog — present with a `binding(…, dismiss:)`; the BUTTONS dispatch their own actions:
+.alert("Delete?", isPresented: store.binding(.state(\.deleteConfirm), dismiss: .cancelDelete), presenting: store.state.deleteConfirm.value) { item in
     Button("Delete", role: .destructive) { store.dispatch(.confirmDelete(item.id)) }
     Button("Cancel", role: .cancel) { store.dispatch(.cancelDelete) }
 }
-.confirmationDialog("Sort", isPresented: store.presence(.state(\.sortDialog), dismiss: .closeSort)) {
+.confirmationDialog("Sort", isPresented: store.binding(.state(\.sortDialog), dismiss: .closeSort)) {
     Button("Newest") { store.dispatch(.sort(.newest)) }
     Button("Oldest") { store.dispatch(.sort(.oldest)) }
 }
@@ -65,11 +65,11 @@ enum Action  { case editor(PresentationAction<Editor.Action>) }                /
 // behavior — one lift folds present, the stage machine, and the child:
 Editor.behavior().liftPresentation(action: \.editor, state: \.editor, environment: { $0.editorEnv })
 
-// view — the modifier wires BOTH dismiss edges so the state can't get stuck mid-dismiss:
-content.presenting(store, \.editor, dismiss: .editor(.dismiss)) { _ in router.view(for: .editor) }
+// view — a Binding<Presentation> carries BOTH dismiss edges, so the state can't get stuck mid-dismiss:
+content.sheet(item: store.binding(.state(\.editor), dismiss: .editor(.dismiss))) { _ in router.view(for: .editor) }
 ```
 
-The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the binding's `set(false)` steps `presented → dismissing`, and `onDismiss` (a real SwiftUI completion, not a timer) steps `dismissing → dismissed`. Content renders the value carried by *both* live stages, so it stays put through the animation. Use `presence(_:dismiss:)` for the `Bool` binding (never churns identity — the safe default) or `item(_:dismiss:)` for an `Identifiable` value with a **stable id** (`.sheet(item:)`); prefer the ``SwiftUICore/View/presenting(_:_:dismiss:onDismiss:file:function:line:content:)-(_,KeyPath<_,Presentation<_>>,_,_,_,_,_,_)`` / `presentingItem` modifiers, which wire `onDismiss` for you. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
+The single `dismiss` action is stage-dependent (``Presentation/dismiss()``). SwiftUI reports a dismissal twice: the binding goes `false`/`nil` when it *starts* (`presented → dismissing`), and `onDismiss` fires when the animation *ends* (`dismissing → dismissed`, a real SwiftUI completion, not a timer). `binding(.state(\.editor), dismiss:)` on a `Presentation` slot returns a `Binding<Presentation<T>>` that carries both: `.sheet(item:)` takes it directly for an `Identifiable` value; for any other container take its parts — `.fullScreenCover(isPresented: editor.isPresented(), onDismiss: editor.onDismiss())`, or `.item()` for an `item:` parameter. There is deliberately no `Bool` binding straight from a `Presentation` slot: without `onDismiss` the slot would stay `dismissing`. Content renders the value carried by *both* live stages, so it stays put through the animation. The plain `Item?` bindings above remain the *simple* path when the dismissal flicker doesn't matter.
 
 #### Building the child view — `transpose()`
 
@@ -103,7 +103,7 @@ List(store.each(\.rows)) { row in
 }
 ```
 
-> Note: `transpose` exists only on `ViewStore` — deciding presence is a read, and only a view store reads. The forms above depend on the presence edge only, never on the child's contents.
+> Note: On a `ViewStore`, `transpose` reads the presence edge synchronously in a body. Outside SwiftUI, ``StoreType/transpose()`` gives the same edge as a stream of optional child stores. The forms above depend on the presence edge only, never on the child's contents.
 
 ### Stack — `[Route]`
 
@@ -169,13 +169,13 @@ var body: some Scene {
 Interruptive system UI and UIKit screens aren't a new shape — they're the **optional/modal** shape with a `UIViewControllerRepresentable`/`UIViewRepresentable` as the presented *content*. State drives *whether* it shows (`item`/`presence`, dismiss-only as always); the representable's `Coordinator` dispatches actions back for its results, so an outcome flows in as an ordinary action.
 
 ```swift
-.sheet(item: store.item(.state(\.sharing), dismiss: .doneSharing)) { payload in
+.sheet(item: store.binding(.state(\.sharing), dismiss: .doneSharing)) { payload in
     ActivityView(items: payload.items)              // UIViewControllerRepresentable(UIActivityViewController)
 }
-.sheet(isPresented: store.presence(.state(\.picker), dismiss: .cancelPicker)) {
+.sheet(isPresented: store.binding(.state(\.picker), dismiss: .cancelPicker)) {
     PhotoPicker { images in store.dispatch(.picked(images)) }   // Coordinator dispatches the result
 }
-.fullScreenCover(item: store.item(.state(\.browsing), dismiss: .closeBrowser)) { page in
+.fullScreenCover(item: store.binding(.state(\.browsing), dismiss: .closeBrowser)) { page in
     WebView(url: page.url)                          // WKWebView / SwiftUI WebView, or SFSafariViewController
 }
 ```
@@ -248,7 +248,7 @@ struct HomeView: View, Routable {
     let viewStore: ViewStore<Home.Action, Home.State>
     let router: AppRouter
     var body: some View {
-        List { … }.sheet(isPresented: viewStore.presence(.state(\.route), dismiss: .dismiss)) {
+        List { … }.sheet(isPresented: viewStore.binding(.state(\.route), dismiss: .dismiss)) {
             router.view(for: .detail)   // router supplies env — crux resolved
         }
     }

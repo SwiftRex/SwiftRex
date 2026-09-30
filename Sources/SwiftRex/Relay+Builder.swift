@@ -245,7 +245,7 @@ extension Relay.Scope where ActionStrategy == Relay.Identity<Action> {
 //
 // Like the action entries, the un-set action/env axes are a constructible ``Relay/AxisDefault`` generic
 // over `Self`'s globals: a lift/projection chain fills them ``Relay/Identity``, a state-only binding
-// (`presence`/`item`) seals them ``Relay/Absurd`` — chosen by the host's expected type.
+// (the dismiss-only `binding(_:dismiss:)`) seals them ``Relay/Absurd`` — chosen by the host's expected type.
 
 extension Relay.Scope {
     /// Start a scope from a total state key path.

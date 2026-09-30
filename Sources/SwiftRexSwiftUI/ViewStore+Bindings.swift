@@ -4,22 +4,22 @@
 import SwiftRex
 import SwiftUI
 
-// The axis-separated store bindings — three verbs under one vocabulary. Each slot is typed as the concrete
-// capability witness it needs (a `Reads` for the state slice, an `Embeds` for the emitted action), so the
-// slots can't be crossed and autocomplete offers only the right axis: `.state(…)` carries every read strategy
-// (key path / closure / lens), `.action(…)` every embed strategy (`\.case` / prism / review). Writes
+// One name for everything SwiftUI takes as a `Binding` — `binding` — typed by what the SwiftUI parameter expects.
+// Each slot is typed as the concrete capability witness it needs (a `Reads` for the state slice, an `Embeds` for
+// the emitted action), so the slots can't be crossed and autocomplete offers only the right axis. Writes
 // round-trip through a dispatched action — the reducer stays the only writer.
 //
-//   • `binding`  — two-way, dispatches on EVERY change. Subsumes what were once `path`/`selection`.
-//   • `presence` — dismiss-only → `Binding<Bool>`   for `.sheet(isPresented:)` / alert / cover / popover.
-//   • `item`     — dismiss-only → `Binding<Item?>`  for `.sheet(item:)` / `.popover(item:)`.
-//
-// `presence` and `item` each take EITHER a plain optional slice (1-stage) OR a `Presentation<Wrapped>` slice
-// (3-stage, flicker-free) — the state shape you pass picks the behaviour, not a differently-named method.
+//   • `binding(.state(…), dispatch: .action(…))` — two-way `Binding<T>`, dispatches on every change:
+//     `TextField`, `Toggle`, `NavigationStack(path:)`, `TabView(selection:)`.
+//   • `binding(.state(\.optional), dismiss: action)` — presentation driven by state, the binding only dismisses:
+//     `Binding<Bool>` for `isPresented:`, `Binding<T?>` for `item:` — whichever the SwiftUI parameter asks for.
+//   • `binding(.state(\.presentation), dismiss: action)` — a `Binding<Presentation<T>>` carrying **both** dismiss
+//     edges: hand it straight to `.sheet(item:)`, or take `.isPresented()` / `.item()` + `.onDismiss()` for any other
+//     container.
 //
 // They live on `ViewStore`, not `StoreType`: a binding's getter must register what it reads so the view redraws
-// when it changes, and only a view store can. A `.state(\.path)` lane registers exactly
-// that path (and `presence` only its presence edge); a closure/lens lane depends on the whole state.
+// when it changes, and only a view store can. A `.state(\.path)` lane registers exactly that path (and a
+// `Binding<Bool>` only the presence edge); a closure/lens lane depends on the whole state.
 
 extension ViewStore {
     /// A two-way `Binding<T>` from a **state read** and an **action embed** of the same value type — the one
@@ -49,7 +49,7 @@ extension ViewStore {
     /// (SwiftUI dismissing) dispatches `dismiss`. Presentation is driven by state — the binding only
     /// dismisses. For `.sheet(isPresented:)` / `.fullScreenCover(isPresented:)` / alerts.
     @MainActor
-    public func presence<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
+    public func binding<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
         _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
         dismiss: Action,
         file: String = #fileID,
@@ -65,31 +65,10 @@ extension ViewStore {
         )
     }
 
-    /// The `Binding<Bool>` for a ``Presentation`` slice — `true` only while `.presented`. Setting `false`
-    /// dispatches `dismiss` (`presented → dismissing`); the slice keeps rendering `dismissing(last:)` while
-    /// SwiftUI animates out (flicker-free). Pair with an `onDismiss:` dispatching the same `dismiss`, or use
-    /// the `presenting` view modifier, which wires both edges for you.
-    @MainActor
-    public func presence<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
-        dismiss: Action,
-        file: String = #fileID,
-        function: String = #function,
-        line: UInt = #line
-    ) -> Binding<Bool> where S.Global == State, S.Local == Presentation<Wrapped> {
-        Binding(
-            get: { self.read(state.state, \Presentation<Wrapped>.isPresented) },
-            set: { isPresented in
-                guard !isPresented else { return }
-                self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
-            }
-        )
-    }
-
     /// A `Binding<Item?>` for `.sheet(item:)` / `.popover(item:)` — present while the optional slice is
     /// `.some`; dispatch `dismiss` when SwiftUI clears it. SwiftUI keys the sheet on `Item.id`.
     @MainActor
-    public func item<Item: Identifiable & Sendable, S: Relay.StateAxis.ReadsProtocol>(
+    public func binding<Item: Sendable, S: Relay.StateAxis.ReadsProtocol>(
         _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
         dismiss: Action,
         file: String = #fileID,
@@ -105,24 +84,39 @@ extension ViewStore {
         )
     }
 
-    /// The `.sheet(item:)` binding for an `Identifiable` ``Presentation`` slice — `.some` only while
-    /// `.presented` (entering `dismissing` flips it to `nil` so SwiftUI starts the out-animation); setting
-    /// `nil` dispatches `dismiss`. The stable `Item.id` keeps the sheet put as the child state changes.
+    /// A `Binding<Presentation<T>>` for a ``Presentation`` slice — the binding that carries **both** dismiss edges.
+    /// A write that advances the stage dispatches `dismiss`, the single stage-dependent command
+    /// (`presented → dismissing → dismissed`).
+    ///
+    /// Hand it straight to `.sheet(item:)` (for an `Identifiable` value), which wires both edges; for any other
+    /// container take its parts:
+    ///
+    /// ```swift
+    /// .sheet(item: viewStore.binding(.state(\.editor), dismiss: .editor(.dismiss))) { _ in
+    ///     if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() { EditorView(viewStore: editor) }
+    /// }
+    ///
+    /// let cover = viewStore.binding(.state(\.editor), dismiss: .editor(.dismiss))
+    /// .fullScreenCover(isPresented: cover.isPresented(), onDismiss: cover.onDismiss()) { … }
+    /// ```
+    ///
+    /// There is deliberately no `Binding<Bool>` straight from a `Presentation` slice: SwiftUI's second edge
+    /// (`onDismiss`, when the animation ends) must dispatch too, or the slot stays `dismissing` forever — the
+    /// `Binding<Presentation<T>>` keeps both edges together.
     @MainActor
-    public func item<Wrapped: Identifiable & Sendable, S: Relay.StateAxis.ReadsProtocol>(
+    public func binding<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
         _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
         dismiss: Action,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Wrapped?> where S.Global == State, S.Local == Presentation<Wrapped> {
+    ) -> Binding<Presentation<Wrapped>> where S.Global == State, S.Local == Presentation<Wrapped> {
         Binding(
-            get: {
-                let presentation = self.read(state.state)
-                return presentation.isPresented ? presentation.wrapped : nil
-            },
+            get: { self.read(state.state) },
             set: { newValue in
-                guard newValue == nil else { return }
+                // Only a write that advances the stage dismisses; a no-op write (SwiftUI re-affirming
+                // `isPresented = true`) leaves the slot alone.
+                guard newValue.stage != state.state.get(self.reader.peekWhole()).stage else { return }
                 self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
             }
         )

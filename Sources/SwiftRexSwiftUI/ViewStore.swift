@@ -29,7 +29,7 @@
     /// **Focusing.** ``focus(_:_:)`` gives a child a `ViewStore` of a key-path slice — reading through the same
     /// engine (no new subscription, no owner needed), dispatching through its own action lane.
     ///
-    /// Bindings (``binding(_:dispatch:file:function:line:)``, `presence`, `item`), `transpose` and
+    /// Bindings (``binding(_:dispatch:file:function:line:)`` and the dismiss-only `binding(_:dismiss:)`), `transpose` and
     /// ``read(derived:id:fileID:line:column:)`` live here too: a binding SwiftUI can't observe would never
     /// update, so they don't exist on plain stores.
     @MainActor

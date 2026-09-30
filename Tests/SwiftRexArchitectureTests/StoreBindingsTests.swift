@@ -56,7 +56,7 @@
 
         @Test func presenceIsFalseWhenNilTrueWhenSome() async {
             let store = makeStore()
-            let presence = store.viewStore().presence(.state(\.editor), dismiss: .dismissEditor)
+            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor), dismiss: .dismissEditor)
             #expect(presence.wrappedValue == false)
             store.dispatch(.presentEditor(7))
             await Task.yield()
@@ -67,7 +67,7 @@
             let store = makeStore()
             store.dispatch(.presentEditor(7))
             await Task.yield()
-            let presence = store.viewStore().presence(.state(\.editor), dismiss: .dismissEditor)
+            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor), dismiss: .dismissEditor)
             presence.wrappedValue = false // SwiftUI dismissing
             await Task.yield()
             #expect(store.currentState.editor == nil)
@@ -75,7 +75,7 @@
 
         @Test func presenceSetTrueIsIgnored() async {
             let store = makeStore()
-            let presence = store.viewStore().presence(.state(\.editor), dismiss: .dismissEditor)
+            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor), dismiss: .dismissEditor)
             presence.wrappedValue = true // binding never drives presentation
             await Task.yield()
             #expect(store.currentState.editor == nil)
@@ -85,7 +85,7 @@
             let store = makeStore()
             store.dispatch(.select(.init(id: 3)))
             await Task.yield()
-            let item = store.viewStore().item(.state(\.selected), dismiss: .deselect)
+            let item: Binding<Item?> = store.viewStore().binding(.state(\.selected), dismiss: .deselect)
             #expect(item.wrappedValue == Item(id: 3))
             item.wrappedValue = nil // SwiftUI clearing the sheet
             await Task.yield()

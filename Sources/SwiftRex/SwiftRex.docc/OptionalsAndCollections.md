@@ -139,7 +139,7 @@ viewStore.focus(.state(\.child), .action(\.child))   // ViewStore<ChildAction, C
 viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
 ```
 
-`transpose` exists only on `ViewStore`: deciding presence is a *read*, and only a view store can read.
+On a `ViewStore` it's a synchronous read in a body, returning a `ViewStore<T>?` on the same engine. On any other store — UIKit, a renderer on another platform, a service — ``StoreType/transpose()`` returns the same edge as a stream, `StateStream<StoreProjection<A, T>?>`: a child store when the value appears, `nil` when it goes away. Act on the stream (present on `.some`, tear down on `nil`); a child store kept past its `nil` still shows its last value and still dispatches, to a reducer that no longer has it.
 
 > It is deliberately **not** called `sequence`: a `Store` is not `Traversable`, so the swap claims no
 > traversal law. It works because a view store knows the current value, which decides the nesting at call
@@ -154,7 +154,7 @@ bare `T?`. Its `transpose()` overload (on the view store) keeps the child store 
 SwiftUI animates it out, with no flicker:
 
 ```swift
-.presenting(viewStore, \.editor, dismiss: .dismissEditor) { _ in
+.sheet(item: viewStore.binding(.state(\.editor), dismiss: .dismissEditor)) { _ in
     if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
         EditorFeature.view(store: editor, environment: world.editorEnv)
     }
