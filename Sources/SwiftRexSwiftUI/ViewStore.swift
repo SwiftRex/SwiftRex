@@ -4,92 +4,187 @@
     import SwiftRex
     import SwiftUI
 
-    /// The store a view **receives** — hold it as a plain `let`, whatever the ``ViewStrategy``.
+    /// The store a SwiftUI view holds — the only store you can **read**.
     ///
-    /// A `ViewStore` is a reference to an ``ObservableStore`` someone else owns (``ObservedStore``,
-    /// ``ObservableStoreHost``, or `@Feature`'s generated view). Re-initialising the receiving view hands it
-    /// the same store back, so the snapshot and the recorded dependencies survive parent re-renders. It is a
-    /// `DynamicProperty` that also carries the store's Combine subscription, so the same `let` works whether
-    /// the store signals through Observation or Combine — a receiver never picks a property wrapper.
+    /// A plain ``SwiftRex/StoreType`` can only be followed (its `stateStream`) and dispatched to. A
+    /// `ViewStore` adds ``state``: a ``GranularTracking`` position you read granularly, recording exactly what
+    /// the view depends on. It works the same whether it signals SwiftUI through the Observation framework or
+    /// Combine (its ``ViewStrategy``, chosen by whoever owns it).
     ///
     /// ```swift
-    /// struct Root: View {
-    ///     @ObservedStore var store = appStore        // the owner: built once
-    ///     var body: some View { Counter(store: store) }
-    /// }
     /// struct Counter: View {
-    ///     let store: ViewStore<AppAction, AppState>  // a receiver
-    ///     var body: some View { Text("\(store.count)") }   // depends on \.count only
+    ///     let viewStore: ViewStore<CounterAction, CounterState>       // a receiver: a plain `let`
+    ///     var body: some View {
+    ///         Text("\(viewStore.state.count)")                         // depends on \.count only
+    ///         Button("+") { viewStore.dispatch(.increment) }
+    ///     }
     /// }
     /// ```
     ///
-    /// Reads are granular exactly as on ``ObservableStore`` — leaves, ``StateNode``s, `each`, `scoped` — and
-    /// the binding and presentation helpers work straight off it.
-    @MainActor @dynamicMemberLookup
-    public struct ViewStore<Action: Sendable, State: Sendable>: ObservableStoreType, DynamicProperty {
-        @ObservedObject public private(set) var root: ObservableStore<Action, State>
+    /// **Who owns it.** A view store keeps a snapshot and the record of what its views read, so it is built once
+    /// and owned: by `@Feature`'s generated view, by ``OwnedStore`` (`@OwnedStore var viewStore = appStore`), or
+    /// by ``ProjectionKeeper`` inside a body. Views below receive it as a plain `let` — it carries its own
+    /// Combine subscription, so no property wrapper is needed under either signal.
+    ///
+    /// **Focusing.** ``focus(_:_:)`` gives a child a `ViewStore` of a key-path slice — reading through the same
+    /// engine (no new subscription, no owner needed), dispatching through its own action lane.
+    ///
+    /// Bindings (``binding(_:dispatch:file:function:line:)``, `presence`, `item`), `transpose` and
+    /// ``read(derived:id:fileID:line:column:)`` live here too: a binding SwiftUI can't observe would never
+    /// update, so they don't exist on plain stores.
+    @MainActor
+    public struct ViewStore<Action: Sendable, State: Sendable>: StoreType, DynamicProperty {
+        let reader: any TrackingReader<State>
+        private let send: @MainActor (Action, ActionSource) -> Void
+        /// The state over time, as far as this view store is concerned — for stores that follow it
+        /// (`viewStore.projection(…)`, a feature's view, a bridge). Views read ``state`` instead.
+        public let stateStream: StateStream<State>
+        @ObservedObject private var signal: ViewStoreSignal
 
-        /// A receiver of `store`. Build the store once, elsewhere — see ``ObservableStore`` → Ownership.
-        public init(_ store: ObservableStore<Action, State>) {
-            _root = ObservedObject(wrappedValue: store)
+        init(
+            reader: any TrackingReader<State>,
+            send: @escaping @MainActor (Action, ActionSource) -> Void,
+            stateStream: StateStream<State>
+        ) {
+            self.reader = reader
+            self.send = send
+            self.stateStream = stateStream
+            _signal = ObservedObject(wrappedValue: reader.signal)
         }
 
-        public var prefix: KeyPath<State, State> { root.prefix }
-        public var embed: @Sendable (Action) -> Action { root.embed }
-
-        /// The whole state — a coarse read (see ``ObservableStore/state``).
-        public var state: State { root.state }
-
-        /// The state, recording nothing — what a store built on this one reads to follow it.
-        public var untrackedState: State { root.untrackedState }
-
-        public func read<T>(_ keyPath: KeyPath<State, T>) -> T {
-            root.read(keyPath)
+        init(engine: ViewStoreEngine<Action, State>) {
+            self.init(reader: RootReader(engine: engine), send: engine.dispatch, stateStream: engine.stateStream)
         }
 
-        public func peek<T>(_ keyPath: KeyPath<State, T>) -> T {
-            root.peek(keyPath)
+        /// Builds a view store over `upstream` with a new engine — whoever holds the result owns it. Views use
+        /// ``OwnedStore`` / ``ProjectionKeeper`` instead, which build it once per view identity.
+        init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy = .automatic) {
+            self.init(engine: ViewStoreEngine(upstream, strategy: strategy))
         }
+
+        /// The state, read granularly: `viewStore.state.player.title` depends on `\.player.title` alone.
+        public var state: GranularTracking<State> { GranularTracking(reader) }
 
         public func dispatch(_ action: Action, source: ActionSource) {
-            root.dispatch(action, source: source)
+            send(action, source)
         }
 
-        public func observe(
-            willChange: @escaping @MainActor @Sendable () -> Void,
-            didChange: @escaping @MainActor @Sendable () -> Void
-        ) -> SubscriptionToken {
-            root.observe(willChange: willChange, didChange: didChange)
+        // MARK: - Focus
+
+        /// A key-path slice of the state, for ``focus(_:_:)`` — only key paths can be focused, since the slice
+        /// reads through the parent's engine and its paths must extend the parent's.
+        public struct FocusedState<Child> {
+            let keyPath: KeyPath<State, Child>
+
+            /// The slice at `keyPath`.
+            public static func state(_ keyPath: KeyPath<State, Child>) -> FocusedState { FocusedState(keyPath: keyPath) }
+        }
+
+        /// A view store of a slice: it reads through this view store's engine (granularly, no new subscription —
+        /// cheap to create in a body) and dispatches through `action` into this store. Hand it to a child view
+        /// that reads, dispatches or binds into that slice:
+        ///
+        /// ```swift
+        /// TransportControls(viewStore: viewStore.focus(.state(\.transport), .action(\.transport)))
+        /// ```
+        public func focus<A: Relay.ActionAxis.EmbedsProtocol, Child: Sendable>(
+            _ state: FocusedState<Child>,
+            _ action: Relay.Scope<Action, A, State, Relay.Absurd<State>, Never, Relay.Absurd<Never>>
+        ) -> ViewStore<A.Local, Child> where A.Global == Action {
+            let send = self.send
+            let review = action.action.review
+            let keyPath = state.keyPath
+            return ViewStore<A.Local, Child>(
+                reader: reader.slice(keyPath),
+                send: { send(review($0), $1) },
+                stateStream: stateStream.map { $0[keyPath: keyPath] }
+            )
+        }
+
+        // MARK: - Derived reads
+
+        /// A value computed from the state, with the view depending on **that value** (compared with `==`)
+        /// instead of on the whole state — for what no key path expresses: a count, a "has any unread" flag.
+        ///
+        /// ```swift
+        /// let hasUnread = viewStore.read(derived: { $0.messages.contains { !$0.isRead } })   // redraws on the flag only
+        /// ```
+        ///
+        /// Closures can't be compared, so the dependency is identified by the call site plus the types involved:
+        /// one call site keeps one dependency however often the body runs. When a single call site computes
+        /// *different* derivations of the same type, pass a distinguishing `id`.
+        public func read<T: Equatable>(
+            derived compute: @escaping (State) -> T,
+            id: AnyHashableSendable? = nil,
+            fileID: String = #fileID,
+            line: UInt = #line,
+            column: UInt = #column
+        ) -> T {
+            read(derived: compute, types: [], id: id, site: "\(fileID):\(line):\(column)")
+        }
+
+        func read<T: Equatable>(
+            derived compute: @escaping (State) -> T,
+            types: [ObjectIdentifier],
+            id: AnyHashableSendable?,
+            site: String
+        ) -> T {
+            reader.read(
+                derived: compute,
+                id: ObservationDerivedID(site: site, types: [ObjectIdentifier(State.self), ObjectIdentifier(T.self)] + types, id: id)
+            )
+        }
+
+        // MARK: - Internal reads (bindings, presentation)
+
+        func read<T>(_ keyPath: KeyPath<State, T>) -> T { reader.read(keyPath) }
+
+        func read<Middle, T>(_ path: KeyPath<State, Middle>, _ then: KeyPath<Middle, T>) -> T {
+            reader.slice(path).read(then)
+        }
+
+        /// The value a `.state(…)` lane reads — registered on its key path when it has one, on the whole state
+        /// when it's a closure or lens.
+        func read<R: Relay.StateAxis.ReadsProtocol>(_ reads: R) -> R.Local where R.Global == State {
+            reads.keyPath.map { reader.read($0) } ?? reads.get(reader.readWhole())
+        }
+
+        /// `then` applied to the value a `.state(…)` lane reads — registered on the composed path when the lane
+        /// has a key path.
+        func read<R: Relay.StateAxis.ReadsProtocol, T>(_ reads: R, _ then: KeyPath<R.Local, T>) -> T where R.Global == State {
+            reads.keyPath.map { read($0, then) } ?? reads.get(reader.readWhole())[keyPath: then]
         }
     }
 
-    /// The store a view **owns** — observes any ``StoreType`` once per view identity and hands the view a
-    /// ``ViewStore``.
+    // MARK: - @OwnedStore
+
+    /// The store a view **owns** — observes any ``SwiftRex/StoreType`` once per view identity and hands the view
+    /// a ``ViewStore``.
     ///
-    /// The initial value is an autoclosure, evaluated only the first time the view appears (like
-    /// `@StateObject`), so re-initialising the view never rebuilds or re-subscribes the store:
+    /// The initial value is an autoclosure, evaluated only the first time the view appears (like `@StateObject`),
+    /// so re-initialising the view never rebuilds or re-subscribes the store:
     ///
     /// ```swift
     /// struct Root: View {
-    ///     @ObservedStore var store = appStore                    // Observation on iOS 17+, Combine below
-    ///     @ObservedStore(.combine) var legacy = otherStore       // force Combine signalling
-    ///     var body: some View { Child(store: store) }            // children receive `let ViewStore`
+    ///     @OwnedStore var viewStore = appStore                       // Observation on iOS 17+, Combine below
+    ///     var body: some View { Child(viewStore: viewStore) }         // children receive `let ViewStore`
     /// }
     /// ```
     ///
-    /// Works in any view (and in an `App`). To observe a projection, pass it: `@ObservedStore var screen =
-    /// appStore.buffer().projection(action: …, state: …)`.
+    /// Choose the signal with a second argument — `@OwnedStore(.combine) var viewStore = appStore` — or, when
+    /// assigning in `init`, `_viewStore = OwnedStore(wrappedValue: upstream, .combine)`. Inside a body, where no
+    /// property can be declared, use ``ProjectionKeeper``.
     @MainActor @propertyWrapper
-    public struct ObservedStore<Action: Sendable, State: Sendable>: DynamicProperty {
-        @StateObject private var store: ObservableStore<Action, State>
+    public struct OwnedStore<Action: Sendable, State: Sendable>: DynamicProperty {
+        @StateObject private var engine: ViewStoreEngine<Action, State>
 
         public init<Upstream: StoreType>(
             wrappedValue upstream: @autoclosure @escaping () -> Upstream,
             _ strategy: ViewStrategy = .automatic
         ) where Upstream.Action == Action, Upstream.State == State {
-            _store = StateObject(wrappedValue: ObservableStore(upstream(), strategy: strategy))
+            _engine = StateObject(wrappedValue: ViewStoreEngine(upstream(), strategy: strategy))
         }
 
-        public var wrappedValue: ViewStore<Action, State> { ViewStore(store) }
+        public var wrappedValue: ViewStore<Action, State> { ViewStore(engine: engine) }
     }
 #endif

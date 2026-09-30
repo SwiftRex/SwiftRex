@@ -14,14 +14,14 @@ struct BehaviorCombineArrayTests {
         let r2 = Behavior<A, S, Void>.reduce { _, s in s.b += 1; s.log += "2" }
         let store = Store(initial: S(), behavior: .combine([r1, r2]), environment: ())
         store.dispatch(.go)
-        #expect(store.state.a == 1)
-        #expect(store.state.b == 1)
-        #expect(store.state.log == "12") // left-to-right order preserved
+        #expect(store.currentState.a == 1)
+        #expect(store.currentState.b == 1)
+        #expect(store.currentState.log == "12") // left-to-right order preserved
     }
 
     @Test func emptyIsIdentity() {
         let store = Store(initial: S(), behavior: Behavior<A, S, Void>.combine([]), environment: ())
         store.dispatch(.go)
-        #expect(store.state == S()) // no-op
+        #expect(store.currentState == S()) // no-op
     }
 }

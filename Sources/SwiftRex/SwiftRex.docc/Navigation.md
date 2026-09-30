@@ -4,7 +4,7 @@ Model navigation as a function of state: routes live in state, SwiftUI bindings 
 
 ## Overview
 
-Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one store for the whole app; a view reads it through an observed store (a `ViewStore`, granular per key path — see <doc:StoresAtAGlance>). Behavior mutates the navigation *state* (a route, an optional, a path, a selection); it never touches the view or the router. Every SwiftUI navigation container — sheet, cover, popover, alert, dialog, inspector, `NavigationStack`, `NavigationSplitView`, `TabView`, pages, windows — is just a pluggable *rendering* of one of four state **shapes**:
+Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one store for the whole app; a view reads it through a view store (a `ViewStore`, granular per key path — see <doc:StoresAtAGlance>). Behavior mutates the navigation *state* (a route, an optional, a path, a selection); it never touches the view or the router. Every SwiftUI navigation container — sheet, cover, popover, alert, dialog, inspector, `NavigationStack`, `NavigationSplitView`, `TabView`, pages, windows — is just a pluggable *rendering* of one of four state **shapes**:
 
 | Shape | State | Lift | Binding | Reducer |
 | --- | --- | --- | --- | --- |
@@ -13,7 +13,7 @@ Navigation in SwiftRex is **pure SwiftUI Views reacting to state**. There is one
 | **Selection** — exactly 1-of-N, all alive | `Sel` (enum/id) | plain `lift` ×N | `binding(_:dispatch:)` | ``Behavior/navigationSelection(_:action:allow:)`` |
 | **Scene set** — 0-to-N windows | keyed sub-states | element/dictionary projection | `hasScene(_:in:)` + `WindowGroup(for:)` | ordinary open/close actions |
 
-The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers. The bindings live on the **observed** store (`ViewStore`, `ScopedStore`) — on a plain `Store` they don't compile, because SwiftUI couldn't observe them.
+The rest is: pick the shape, drive its binding, resolve the destination through a router. No new dialect — the bindings feed *native* SwiftUI modifiers. The bindings live on the **view store** (`ViewStore`) — on a plain `Store` they don't compile, because SwiftUI couldn't observe them.
 
 > This page is the **reference** — each shape and container in isolation. For one app that wires all four shapes across every layer (domain → features → the global feature → behavior fold → scopes → router → views → `@main`), with the full stack shown, follow <doc:NavigationEndToEnd>.
 
@@ -42,7 +42,7 @@ Presentation and child lifetime are one fact: set the optional and the child exi
 .navigationDestination(isPresented: store.presence(.state(\.detail), dismiss: .popDetail)) { router.view(for: .detail) }
 
 // Alert / confirmation dialog — present with `presence`/`item`; the BUTTONS dispatch their own actions:
-.alert("Delete?", isPresented: store.presence(.state(\.deleteConfirm), dismiss: .cancelDelete), presenting: store.read(\.deleteConfirm)) { item in
+.alert("Delete?", isPresented: store.presence(.state(\.deleteConfirm), dismiss: .cancelDelete), presenting: store.state.deleteConfirm.value) { item in
     Button("Delete", role: .destructive) { store.dispatch(.confirmDelete(item.id)) }
     Button("Cancel", role: .cancel) { store.dispatch(.cancelDelete) }
 }
@@ -73,11 +73,11 @@ The single `dismiss` action is stage-dependent (``Presentation/dismiss()``): the
 
 #### Building the child view — `transpose()`
 
-An optional-shaped destination is a store of an *optional* (`Child?`), but `Child.view(store:environment:)` wants a store of the *unwrapped* value. `transpose()` swaps the nesting — `Store<Child?>` becomes `Store<Child>?` — so the child store exists exactly when its state is present. On the observed store, the caller depends only on that **presence edge**: it redraws when the child appears or disappears, never when something inside the child changes (the child observes its own state).
+An optional-shaped destination is a store of an *optional* (`Child?`), but `Child.view(store:environment:)` wants a store of the *unwrapped* value. `transpose()` swaps the nesting — `Store<Child?>` becomes `Store<Child>?` — so the child store exists exactly when its state is present. On the view store, the caller depends only on that **presence edge**: it redraws when the child appears or disappears, never when something inside the child changes (the child observes its own state).
 
 ```swift
 // Optional child slice — scope by key path, then transpose:
-if let child = store.child.scoped(action: .action(\.child)).transpose() {
+if let child = store.focus(.state(\.child), .action(\.child)).transpose() {
     Detail.view(store: child, environment: world.detailEnv)
 }
 
@@ -90,7 +90,7 @@ if let screen = store.transpose(action: { .detail($0) }, state: { $0.path.last?.
 For the ``Presentation`` shape, `transpose()` reads the live child through **both** `presented` and `dismissing(last:)`, going `nil` only once `dismissed` — the child store (and its view) stay alive and steady while SwiftUI animates the sheet out, so building a destination this way is flicker-free without any view-layer latch:
 
 ```swift
-if let editor = store.editor.scoped(action: .action(\.editor)).transpose() {   // state: Presentation<Editor.State>
+if let editor = store.focus(.state(\.editor), .action(\.editor)).transpose() {   // state: Presentation<Editor.State>
     Editor.view(store: editor, environment: world.editorEnv)
 }
 ```
@@ -103,7 +103,7 @@ List(store.each(\.rows)) { row in
 }
 ```
 
-> Warning: Don't build these from `store.projection(…).transpose()` inside a body. The core `transpose()` decides presence by reading the whole `state`, so the view would redraw on every change in the app. The forms above read the presence edge only. (Outside SwiftUI — on a plain `Store` in a test or a service — the core overload is fine.)
+> Note: `transpose` exists only on `ViewStore` — deciding presence is a read, and only a view store reads. The forms above depend on the presence edge only, never on the child's contents.
 
 ### Stack — `[Route]`
 
@@ -145,7 +145,7 @@ NavigationSplitView(columnVisibility: store.binding(.state(\.columns), dispatch:
 
 ### Scene set — windows, one store
 
-Multiple windows are still one store. Model open scenes as state (a dictionary of per-scene sub-states); each window projects its slice by id; open/close are ordinary actions; `hasScene(_:in:)` (on the observed store) tells a window body whether to render or dismiss.
+Multiple windows are still one store. Model open scenes as state (a dictionary of per-scene sub-states); each window projects its slice by id; open/close are ordinary actions; `hasScene(_:in:)` (on the view store) tells a window body whether to render or dismiss.
 
 ```swift
 var body: some Scene {
@@ -224,11 +224,11 @@ A child feature's `Feature` conformance is generated by `@Feature` — no hand-w
 
 ## Router — the WHAT (and the environment crux)
 
-`Feature.view(store:environment:)` needs an environment, but a navigation destination runs inside the *environment-free* view body. A **router** — a value holding the observed store and the world — resolves that: its `@ViewBuilder view(for:)` switch builds each child (via `Relay.Scope`'s `.view(of:from:world:)` or directly), supplying the child's environment there. `some View` throughout — no `AnyView`.
+`Feature.view(store:environment:)` needs an environment, but a navigation destination runs inside the *environment-free* view body. A **router** — a value holding the view store and the world — resolves that: its `@ViewBuilder view(for:)` switch builds each child (via `Relay.Scope`'s `.view(of:from:world:)` or directly), supplying the child's environment there. `some View` throughout — no `AnyView`.
 
 ```swift
 @MainActor struct AppRouter {
-    let store: ViewStore<AppAction, AppState>   // received from the owner (`@ObservedStore` at the root)
+    let store: ViewStore<AppAction, AppState>   // received from the owner (`@OwnedStore` at the root)
     let world: World
     let detail = ScopeOf<AppFeature>
         .action(\.detail).state(\.detail).environment(\.detailEnv)

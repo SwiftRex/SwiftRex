@@ -20,12 +20,12 @@ private func makeStore(initial: Int = 0) -> Store<Int, Int, Void> {
 struct StoreInitTests {
     @Test func reducerInitSetsInitialState() {
         let store = Store(initial: 42, reducer: Reducer<Int, Int>.reduce { _, _ in })
-        #expect(store.state == 42)
+        #expect(store.currentState == 42)
     }
 
     @Test func behaviorInitSetsInitialState() {
         let store = Store(initial: 7, behavior: Behavior<Int, Int, Void>.identity, environment: ())
-        #expect(store.state == 7)
+        #expect(store.currentState == 7)
     }
 }
 
@@ -37,14 +37,14 @@ struct StoreDispatchTests {
     @Test func dispatchMutatesState() {
         let store = makeStore()
         store.dispatch(5)
-        #expect(store.state == 5)
+        #expect(store.currentState == 5)
     }
 
     @Test func dispatchIsAccumulative() {
         let store = makeStore()
         store.dispatch(3)
         store.dispatch(4)
-        #expect(store.state == 7)
+        #expect(store.currentState == 7)
     }
 
     @Test func dispatchWithSourcePreservesCallSite() {
@@ -63,58 +63,56 @@ struct StoreDispatchTests {
     }
 }
 
-// MARK: - observe(willChange:didChange:)
+// MARK: - stateStream
 
-@Suite("Store observe")
+@Suite("Store stateStream")
 @MainActor
 struct StoreObserveTests {
-    @Test func willChangeFiresBeforeMutation() {
+    @Test func observeDeliversTheCurrentStateFirstSynchronously() {
         let store = makeStore()
-        var stateAtWillChange = -1
-        _ = store.observe(
-            willChange: { stateAtWillChange = store.state },
-            didChange: {}
-        )
+        var seen: [Int] = []
+        let token = store.stateStream.observe { seen.append($0) }
+        #expect(seen == [0]) // before `observe` returned
         store.dispatch(10)
-        #expect(stateAtWillChange == 0) // saw pre-mutation state
+        #expect(seen == [0, 10])
+        withExtendedLifetime(token) {}
     }
 
-    @Test func didChangeFiresAfterMutation() {
+    @Test func subscribeReturnsTheCurrentStateAndDeliversOnlyChanges() {
         let store = makeStore()
-        var stateAtDidChange = -1
-        _ = store.observe(
-            willChange: {},
-            didChange: { stateAtDidChange = store.state }
-        )
+        var changes: [Int] = []
+        let (current, token) = store.stateStream.subscribe { changes.append($0) }
+        #expect(current == 0)
+        #expect(changes.isEmpty)
         store.dispatch(10)
-        #expect(stateAtDidChange == 10) // saw post-mutation state
+        #expect(changes == [10]) // the post-mutation state
+        withExtendedLifetime(token) {}
     }
 
     @Test func multipleObserversAllFire() {
         let store = makeStore()
         let count = LockProtected(0)
-        _ = store.observe(willChange: {}, didChange: { count.mutate { $0 += 1 } })
-        _ = store.observe(willChange: {}, didChange: { count.mutate { $0 += 1 } })
+        let first = store.stateStream.subscribe { _ in count.mutate { $0 += 1 } }.token
+        let second = store.stateStream.subscribe { _ in count.mutate { $0 += 1 } }.token
         store.dispatch(1)
         #expect(count.value == 2)
+        withExtendedLifetime((first, second)) {}
     }
 
     @Test func composedNoOpBehaviorsSkipNotifications() {
         // Item-21 guard: a composition of many no-op behaviors must still fold to `.unchanged`,
-        // so the Store fires NEITHER willChange NOR didChange. If the flat fold ever collapsed
-        // them into a non-`.unchanged` mutation, every routing/effect-only action would re-render.
+        // so the Store notifies no one. If the flat fold ever collapsed them into a non-`.unchanged`
+        // mutation, every routing/effect-only action would re-render.
         let noop = Behavior<Int, Int, Void>.identity
         let doNothing = Behavior<Int, Int, Void>.handle { _, _ in .doNothing }
         let composed = mconcat(Array(repeating: noop, count: 8) + Array(repeating: doNothing, count: 8))
         let store = Store(initial: 0, behavior: composed)
         let count = LockProtected(0)
-        _ = store.observe(
-            willChange: { count.mutate { $0 += 1 } },
-            didChange: { count.mutate { $0 += 1 } }
-        )
+        let token = store.stateStream.subscribe { _ in count.mutate { $0 += 1 } }.token
         store.dispatch(1)
         #expect(count.value == 0) // folded mutation is `.unchanged` → no notifications
-        #expect(store.state == 0)
+        #expect(store.currentState == 0)
+        withExtendedLifetime(token) {}
     }
 
     @Test func composedWithOneMutatorStillNotifies() {
@@ -126,23 +124,32 @@ struct StoreObserveTests {
         let composed = mconcat([noop, noop, mutator, noop])
         let store = Store(initial: 0, behavior: composed)
         let count = LockProtected(0)
-        _ = store.observe(willChange: {}, didChange: { count.mutate { $0 += 1 } })
+        let token = store.stateStream.subscribe { _ in count.mutate { $0 += 1 } }.token
         store.dispatch(5)
         #expect(count.value == 1)
-        #expect(store.state == 5)
+        #expect(store.currentState == 5)
+        withExtendedLifetime(token) {}
     }
 
-    @Test func cancellingTokenRemovesObserver() async {
+    @Test func cancellingTokenRemovesObserverSynchronously() {
         let store = makeStore()
         let count = LockProtected(0)
-        let token = store.observe(willChange: {}, didChange: { count.mutate { $0 += 1 } })
+        let token = store.stateStream.subscribe { _ in count.mutate { $0 += 1 } }.token
         store.dispatch(1)
         token.cancel()
-        // Cancellation hops through a Task; yield so it can run
-        await Task.yield()
-        await Task.yield()
+        store.dispatch(1) // no hop needed: cancellation already removed the observer
+        #expect(count.value == 1)
+    }
+
+    @Test func releasingTokenRemovesObserverSynchronously() {
+        let store = makeStore()
+        let count = LockProtected(0)
+        var token: UISubscriptionToken? = store.stateStream.subscribe { _ in count.mutate { $0 += 1 } }.token
+        store.dispatch(1)
+        token = nil // released on the main actor → its isolated deinit cancels right here
         store.dispatch(1)
         #expect(count.value == 1)
+        _ = token
     }
 }
 
@@ -164,7 +171,7 @@ struct StoreEffectSchedulingTests {
         store.dispatch(0)
         await Task.yield()
         await Task.yield()
-        #expect(store.state == 0) // behavior produced effect but no mutation
+        #expect(store.currentState == 0) // behavior produced effect but no mutation
     }
 
     @Test func replacingCancelsInFlightEffect() async {
@@ -182,7 +189,7 @@ struct StoreEffectSchedulingTests {
         await Task.yield()
         _ = dispatched
         // Simply verify no crash and the store is still alive
-        #expect(store.state == 0)
+        #expect(store.currentState == 0)
     }
 
     @Test func cancelInFlightStopsEffect() {
@@ -197,7 +204,7 @@ struct StoreEffectSchedulingTests {
         )
         store.dispatch(0)
         // No crash; effect cancelled immediately
-        #expect(store.state == 0)
+        #expect(store.currentState == 0)
     }
 
     /// A negative debounce delay must not trap; it is clamped to `.zero`, so the effect fires
@@ -217,10 +224,10 @@ struct StoreEffectSchedulingTests {
         // (up to ~2s) for the looped-back action rather than asserting after one fixed sleep —
         // the fixed 100ms wait raced under load on the Linux CI runner.
         for _ in 0..<200 {
-            if store.state == 5 { break }
+            if store.currentState == 5 { break }
             try? await Task.sleep(nanoseconds: 10_000_000)
         }
-        #expect(store.state == 5)
+        #expect(store.currentState == 5)
     }
 }
 
@@ -252,10 +259,10 @@ struct StoreClockInjectionTests {
         )
         store.dispatch(0)
         await clock.waitForSleepers() // the debounce task is parked on clock.sleep
-        #expect(store.state == 0) // nothing fired before the delay elapses
+        #expect(store.currentState == 0) // nothing fired before the delay elapses
         await clock.advance(by: .seconds(1))
-        await poll { store.state == 5 } // delay elapsed → effect fires, loops 5 back
-        #expect(store.state == 5)
+        await poll { store.currentState == 5 } // delay elapsed → effect fires, loops 5 back
+        #expect(store.currentState == 5)
     }
 
     @Test func debounceCollapsesRapidDispatchesOnInjectedClock() async {
@@ -277,8 +284,8 @@ struct StoreClockInjectionTests {
         store.dispatch(.trigger) // resets the timer: cancels the first pending task
         await clock.waitForSleepers()
         await clock.advance(by: .seconds(1))
-        await poll { store.state == 1 }
-        #expect(store.state == 1) // collapsed to a single fire
+        await poll { store.currentState == 1 }
+        #expect(store.currentState == 1) // collapsed to a single fire
     }
 
     @Test func throttleDropsWithinIntervalThenFiresAfterAdvance() async {
@@ -296,16 +303,16 @@ struct StoreClockInjectionTests {
             clock: { _ in clock }
         )
         store.dispatch(.ping)
-        await poll { store.state == 1 } // first one fires immediately
+        await poll { store.currentState == 1 } // first one fires immediately
         store.dispatch(.ping) // still within the interval → dropped
         for _ in 0..<20 {
             await Task.yield()
         }
-        #expect(store.state == 1)
+        #expect(store.currentState == 1)
         await clock.advance(by: .seconds(1)) // interval elapses on the injected clock
         store.dispatch(.ping)
-        await poll { store.state == 2 } // now fires again
-        #expect(store.state == 2)
+        await poll { store.currentState == 2 } // now fires again
+        #expect(store.currentState == 2)
     }
 }
 
@@ -327,7 +334,7 @@ struct StoreReducerMiddlewareInitTests {
         store.dispatch(5)
         await Task.yield()
         await Task.yield()
-        #expect(store.state == 1_005) // 5 from reducer + 1000 from effect loop-back
+        #expect(store.currentState == 1_005) // 5 from reducer + 1000 from effect loop-back
     }
 }
 
@@ -358,7 +365,7 @@ struct StoreDispatchSerializationTests {
     /// action must finish scheduling its own effect before the re-entrant action's effect is
     /// scheduled. Under the old nested behavior the order would be reversed (`["B", "A"]`).
     ///
-    /// The behavior mutates so `didChange` actually fires (effect-only actions don't notify).
+    /// The behavior mutates so observers are actually notified (effect-only actions don't notify).
     @Test func reentrantDispatchDoesNotNestEffectScheduling() {
         let log = LockProtected([String]())
         let store = Store(
@@ -369,12 +376,12 @@ struct StoreDispatchSerializationTests {
             environment: ()
         )
         var didReenter = false
-        let token = store.observe(didChange: {
+        let token = store.stateStream.subscribe { _ in
             if !didReenter {
                 didReenter = true
-                store.dispatch(2) // synchronous re-dispatch from inside the first action's didChange
+                store.dispatch(2) // synchronous re-dispatch from inside the first action's notification
             }
-        })
+        }.token
 
         store.dispatch(1)
 
@@ -383,7 +390,7 @@ struct StoreDispatchSerializationTests {
     }
 
     /// Re-entrant dispatch never produces a partial-state notification: each action's
-    /// willChange/didChange pair is fully sequenced, never interleaved.
+    /// notification is fully sequenced, never interleaved.
     @Test func reentrantDispatchNotificationsAreNotInterleaved() {
         let order = LockProtected([String]())
         let store = Store(
@@ -391,21 +398,19 @@ struct StoreDispatchSerializationTests {
             reducer: Reducer<Int, Int>.reduce { action, state in state += action }
         )
         var didReenter = false
-        _ = store.observe(
-            willChange: { order.mutate { $0.append("will(\(store.state))") } },
-            didChange: {
-                order.mutate { $0.append("did(\(store.state))") }
-                if !didReenter {
-                    didReenter = true
-                    store.dispatch(10)
-                }
+        let token = store.stateStream.subscribe { state in
+            order.mutate { $0.append("did(\(state))") }
+            if !didReenter {
+                didReenter = true
+                store.dispatch(10)
             }
-        )
+        }.token
 
         store.dispatch(1)
 
-        #expect(order.value == ["will(0)", "did(1)", "will(1)", "did(11)"])
-        #expect(store.state == 11)
+        #expect(order.value == ["did(1)", "did(11)"])
+        #expect(store.currentState == 11)
+        withExtendedLifetime(token) {}
     }
 
     /// Multiple actions dispatched synchronously in a single observer callback are drained in
@@ -417,20 +422,21 @@ struct StoreDispatchSerializationTests {
             reducer: Reducer<Int, Int>.reduce { action, state in state += action }
         )
         var fired = false
-        _ = store.observe(didChange: {
-            seen.mutate { $0.append(store.state) }
+        let token = store.stateStream.subscribe { state in
+            seen.mutate { $0.append(state) }
             if !fired {
                 fired = true
                 store.dispatch(3)
                 store.dispatch(2)
                 store.dispatch(1)
             }
-        })
+        }.token
 
         store.dispatch(0)
 
         #expect(seen.value == [0, 3, 5, 6]) // 0, then +3, +2, +1 in dispatch order
-        #expect(store.state == 6)
+        #expect(store.currentState == 6)
+        withExtendedLifetime(token) {}
     }
 }
 
@@ -441,64 +447,55 @@ struct StoreDispatchSerializationTests {
 struct StoreNotificationSkippingTests {
     private func countingStore(
         _ behavior: Behavior<Int, Int, Void>
-    ) -> (store: Store<Int, Int, Void>, will: LockProtected<Int>, did: LockProtected<Int>, token: SubscriptionToken) {
-        let will = LockProtected(0)
+    ) -> (store: Store<Int, Int, Void>, did: LockProtected<Int>, token: UISubscriptionToken) {
         let did = LockProtected(0)
         let store = Store(initial: 0, behavior: behavior, environment: ())
-        let token = store.observe(
-            willChange: { will.mutate { $0 += 1 } },
-            didChange: { did.mutate { $0 += 1 } }
-        )
-        return (store, will, did, token)
+        let token = store.stateStream.subscribe { _ in did.mutate { $0 += 1 } }.token
+        return (store, did, token)
     }
 
     @Test func effectOnlyActionDoesNotNotify() {
-        let (store, will, did, token) = countingStore(
+        let (store, did, token) = countingStore(
             .handle { _, _ in .produce { _ in .empty } }
         )
         store.dispatch(1)
-        #expect(will.value == 0)
         #expect(did.value == 0)
         withExtendedLifetime(token) {}
     }
 
     @Test func doNothingDoesNotNotify() {
-        let (store, will, did, token) = countingStore(.handle { _, _ in .doNothing })
+        let (store, did, token) = countingStore(.handle { _, _ in .doNothing })
         store.dispatch(1)
-        #expect(will.value == 0)
         #expect(did.value == 0)
         withExtendedLifetime(token) {}
     }
 
     @Test func pureRoutingOnDoesNotNotify() {
         // `.on(predicate, dispatch:)` routes without mutating; the routed action also does nothing.
-        let (store, will, did, token) = countingStore(
+        let (store, did, token) = countingStore(
             Behavior<Int, Int, Void>.identity.on(.action(preview: { $0 == 1 ? () : nil }), dispatch: .action(review: { _ in 99 }))
         )
         store.dispatch(1)
-        #expect(will.value == 0)
         #expect(did.value == 0)
         withExtendedLifetime(token) {}
     }
 
     @Test func mutatingActionNotifiesExactlyOnce() {
-        let (store, will, did, token) = countingStore(
+        let (store, did, token) = countingStore(
             .handle { action, _ in .reduce { $0 = action } }
         )
         store.dispatch(7)
-        #expect(store.state == 7)
-        #expect(will.value == 1)
+        #expect(store.currentState == 7)
         #expect(did.value == 1)
         withExtendedLifetime(token) {}
     }
 
     @Test func onWithReduceNotifies() {
-        let (store, will, did, token) = countingStore(
+        let (store, did, token) = countingStore(
             Behavior<Int, Int, Void>.identity.on(.action(preview: { $0 == 1 ? () : nil }), reduce: { _, s in s = 42 })
         )
         store.dispatch(1)
-        #expect(store.state == 42)
-        #expect(will.value == 1)
+        #expect(store.currentState == 42)
         #expect(did.value == 1)
         withExtendedLifetime(token) {}
     }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-// The dependency registry behind `ObservableStore`: one node per key path a view has read, arranged as a tree
+// The dependency registry behind the view store's engine: one node per key path a view has read, arranged as a tree
 // that follows how paths were composed (`\.player` → `\.player.title`; `\.songs` → a row → the row's
 // `title`). Only the **live** part of the tree is kept — dependencies read since they last fired, and the
 // ancestors leading to them — and a diff walks it top-down, descending only into subtrees whose root

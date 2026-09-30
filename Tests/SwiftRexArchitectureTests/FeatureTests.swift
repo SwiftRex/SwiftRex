@@ -185,7 +185,7 @@
 
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @MainActor
-    private func makeHeroViewStore() -> ObservableStore<HeroDetailsFeature.ViewAction, HeroDetailsFeature.ViewState> {
+    private func makeHeroViewStore() -> ViewStore<HeroDetailsFeature.ViewAction, HeroDetailsFeature.ViewState> {
         let store = Store(
             initial: HeroDetailsFeature.initialState(with: ()),
             behavior: HeroDetailsFeature.behavior(),
@@ -195,7 +195,7 @@
             environment: .init(),
             action: HeroDetailsFeature.mapAction,
             state: HeroDetailsFeature.mapState
-        ).observable()
+        ).viewStore()
     }
 
     // MARK: - mapState
@@ -254,8 +254,8 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func seedsStateFromInitial() {
             let vs = makeHeroViewStore()
-            #expect(vs.displayName == "Superman")
-            #expect(vs.powersText == "flight, heat vision")
+            #expect(vs.state.displayName == "Superman")
+            #expect(vs.state.powersText == "flight, heat vision")
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
@@ -263,7 +263,7 @@
             let vs = makeHeroViewStore()
             vs.dispatch(.editedPowers("flying, invulnerability"))
             await Task.yield()
-            #expect(vs.powersText == "flying, invulnerability")
+            #expect(vs.state.powersText == "flying, invulnerability")
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
@@ -271,7 +271,7 @@
             let vs = makeHeroViewStore()
             vs.dispatch(.tappedRetirement)
             await Task.yield()
-            #expect(vs.isRetired == true)
+            #expect(vs.state.isRetired == true)
         }
     }
 

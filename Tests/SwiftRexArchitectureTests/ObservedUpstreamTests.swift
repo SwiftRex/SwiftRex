@@ -50,38 +50,37 @@
     struct ObservedUpstreamTests {
         @Test func childStoresDoNotPinAWholeStateDependencyOnTheParent() {
             let store = makeUStore()
-            let parent = store.observable(.combine)
-            let view = ViewStore(parent)
-            let child = view.projection(action: { $0 }, state: \.child).buffer().observable(.combine)
-            _ = child.state
+            let parent = store.viewStore(.combine)
+            let child = parent.projection(action: { $0 }, state: \.child).buffer().viewStore(.combine)
+            _ = child.state.value
             let sends = Sends()
-            let cancellable = parent.objectWillChange.sink { sends.bump() }
+            let cancellable = parent.testSignal.objectWillChange.sink { sends.bump() }
             store.dispatch(.other)
             store.dispatch(.child)
             #expect(sends.value == 0)       // nobody *viewed* anything on the parent
-            #expect(parent.armedCount == 0)
-            #expect(child.state == 1)       // yet the child still follows it
+            #expect(parent.testArmedCount == 0)
+            #expect(child.currentState == 1) // yet the child still follows it
             cancellable.cancel()
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func buildingAChildInABodyDoesNotMakeTheBodyDependOnEverything() {
             let store = makeUStore()
-            let view = ViewStore(store.observable())
+            let view = store.viewStore()
             let fired = Sends()
-            var child: ObservableStore<UAction, Int>?
+            var child: ViewStore<UAction, Int>?
             withObservationTracking {
-                child = view.projection(action: { $0 }, state: \.child).observable()   // what a host's `make` does
+                child = view.projection(action: { $0 }, state: \.child).viewStore()   // what a host's `make` does
             } onChange: { fired.bump() }
             store.dispatch(.other)
             #expect(fired.value == 0)
-            #expect(child?.state == 0)
+            #expect(child?.currentState == 0)
         }
 
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func closureTransposeDependsOnPresenceOnly() {
             let store = makeUStore()
-            let view = ViewStore(store.observable())
+            let view = store.viewStore()
             let fired = Sends()
             withObservationTracking {
                 _ = view.transpose(action: { $0 }, state: { $0.detail })
@@ -94,13 +93,13 @@
 
         @Test func closureTransposeFollowsTheValue() {
             let store = makeUStore()
-            let view = ViewStore(store.observable())
+            let view = store.viewStore()
             #expect(view.transpose(action: { $0 }, state: { $0.detail }) == nil)
             store.dispatch(.show)
             let detail = view.transpose(action: { $0 }, state: { $0.detail })
-            #expect(detail?.state == 1)
+            #expect(detail?.currentState == 1)
             store.dispatch(.hide)
-            #expect(detail?.state == 1)     // lingers on its last value while SwiftUI tears it down
+            #expect(detail?.currentState == 1)     // lingers on its last value while SwiftUI tears it down
         }
     }
 #endif

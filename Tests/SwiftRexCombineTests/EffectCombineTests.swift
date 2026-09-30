@@ -143,46 +143,71 @@
         }
     }
 
-    // MARK: - StoreType+Combine: .publisher
+    // MARK: - StateStream is a Combine Publisher
 
-    @Suite("StoreType+Combine: publisher")
+    @Suite("StateStream+Combine: Publisher")
     @MainActor
-    struct StorePublisherTests {
-        @Test func publisherIsLazyDoesNotSubscribeUntilStarted() async {
+    struct StateStreamPublisherTests {
+        @Test func isLazyThenDeliversTheCurrentValueFirst() {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             var received = [Int]()
-            let pub = store.publisher
+            let pub = store.stateStream
             store.dispatch(10)
-            // Not yet subscribed — received should be empty
-            #expect(received.isEmpty)
-            var token: AnyCancellable?
-            token = pub.sink { received.append($0) }
-            await Task.yield() // let StoreSubscription.init's Task set up the token
-            store.dispatch(5) // state: 10+5=15
-            #expect(received == [15])
-            token?.cancel()
-        }
-
-        @Test func publisherDeliversStateAfterEachDispatch() async {
-            let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
-            var received = [Int]()
-            let token = store.publisher.sink { received.append($0) }
-            await Task.yield()
-            store.dispatch(3) // state: 3
-            store.dispatch(4) // state: 7
-            #expect(received == [3, 7])
+            #expect(received.isEmpty) // nothing subscribed yet
+            let token = pub.sink { received.append($0) }
+            #expect(received == [10]) // current value, synchronously on subscription from the main actor
+            store.dispatch(5)
+            #expect(received == [10, 15])
             token.cancel()
         }
 
-        @Test func cancellingSubscriptionStopsDelivery() async {
+        @Test func deliversStateAfterEachDispatch() {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             var received = [Int]()
-            var token: AnyCancellable? = store.publisher.sink { received.append($0) }
-            await Task.yield()
-            store.dispatch(1) // state: 1, received: [1]
+            let token = store.stateStream.sink { received.append($0) }
+            store.dispatch(3)
+            store.dispatch(4)
+            #expect(received == [0, 3, 7])
+            token.cancel()
+        }
+
+        @Test func cancellingStopsDelivery() {
+            let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
+            var received = [Int]()
+            var token: AnyCancellable? = store.stateStream.sink { received.append($0) }
+            store.dispatch(1)
             token = nil
-            store.dispatch(2) // state: 3, not subscribed
-            #expect(received == [1])
+            store.dispatch(2)
+            #expect(received == [0, 1])
+            _ = token
+        }
+
+        @Test func honoursDemandKeepingOnlyTheLatestValue() {
+            let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
+            var received = [Int]()
+            var subscription: (any Subscription)?
+            let subscriber = AnySubscriber<Int, Never>(
+                receiveSubscription: { subscription = $0; $0.request(.max(1)) },
+                receiveValue: { received.append($0); return .none },
+                receiveCompletion: { _ in }
+            )
+            store.stateStream.subscribe(subscriber)
+            #expect(received == [0])
+            store.dispatch(1)
+            store.dispatch(2)
+            #expect(received == [0]) // no demand: nothing delivered, only the latest kept
+            subscription?.request(.max(1))
+            #expect(received == [0, 3]) // the latest state, not the backlog
+            subscription?.cancel()
+        }
+
+        @Test func ownMapKeepsItAStateStream() {
+            let store = Store(initial: 1, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
+            let doubled: StateStream<Int> = store.stateStream.map { $0 * 2 } // StateStream's map, not Combine's
+            var received = [Int]()
+            let token = doubled.sink { received.append($0) }
+            #expect(received == [2])
+            token.cancel()
         }
     }
 #endif

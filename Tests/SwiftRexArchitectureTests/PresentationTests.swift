@@ -74,22 +74,22 @@ struct LiftPresentationTests {
 
     @Test func childMutatesWhilePresentedAndDismissingThenDismissWalks() {
         let store = makeStore()
-        #expect(store.state.detail == .presented(ChildState(n: 5)))
+        #expect(store.currentState.detail == .presented(ChildState(n: 5)))
 
         store.dispatch(.detail(.child(.inc)))            // child runs while presented
-        #expect(store.state.detail == .presented(ChildState(n: 6)))
+        #expect(store.currentState.detail == .presented(ChildState(n: 6)))
 
         store.dispatch(.detail(.dismiss))                // presented -> dismissing(last:)
-        #expect(store.state.detail == .dismissing(last: ChildState(n: 6)))
+        #expect(store.currentState.detail == .dismissing(last: ChildState(n: 6)))
 
         store.dispatch(.detail(.child(.inc)))            // child still runs while dismissing (late effect)
-        #expect(store.state.detail == .dismissing(last: ChildState(n: 7)))
+        #expect(store.currentState.detail == .dismissing(last: ChildState(n: 7)))
 
         store.dispatch(.detail(.dismiss))                // dismissing -> dismissed
-        #expect(store.state.detail == .dismissed)
+        #expect(store.currentState.detail == .dismissed)
 
         store.dispatch(.detail(.child(.inc)))            // no wrapped state -> no-op
-        #expect(store.state.detail == .dismissed)
+        #expect(store.currentState.detail == .dismissed)
     }
 }
 

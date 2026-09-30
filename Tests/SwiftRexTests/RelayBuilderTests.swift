@@ -35,8 +35,8 @@ struct RelayBuilderTests {
         // Leading-dot: the host pins the generics, so the builder needs no annotation.
         let child = base.projection(.action(childPrism).state(\.child))
         child.dispatch(.tick)
-        #expect(base.state.child.n == 1)
-        #expect(child.state.n == 1)
+        #expect(base.currentState.child.n == 1)
+        #expect(child.currentState.n == 1)
     }
 
     @Test func liftsABehaviorViaADeclaredBuilder() {
@@ -53,7 +53,7 @@ struct RelayBuilderTests {
             .environment { (_: Void) in () }
         let base = store(childBehavior.lift(scope))
         base.dispatch(.child(.tick))
-        #expect(base.state.child.n == 1)
+        #expect(base.currentState.child.n == 1)
     }
 
     @Test func buildsViaClosurePairSugar() {
@@ -68,8 +68,8 @@ struct RelayBuilderTests {
                 .state(get: { $0.child }, set: { app, value in var copy = app; copy.child = value; return copy })
         )
         child.dispatch(.tick)
-        #expect(base.state.child.n == 1)
-        #expect(child.state.n == 1)
+        #expect(base.currentState.child.n == 1)
+        #expect(child.currentState.n == 1)
     }
 
     @Test func buildsViaSingleClosureSugar() {
@@ -81,8 +81,8 @@ struct RelayBuilderTests {
         // Minimum closures: embeds-only action (the enum case ctor) + reads-only state → a projection.
         let child = base.projection(.action(review: AppAction.child).state { $0.child })
         child.dispatch(.tick)
-        #expect(base.state.child.n == 1)
-        #expect(child.state.n == 1)
+        #expect(base.currentState.child.n == 1)
+        #expect(child.currentState.n == 1)
     }
 
     @Test func liftsReducerViaExtractsPreviewSugar() {
@@ -126,8 +126,8 @@ struct RelayBuilderTests {
         })
         let child = base.projection(pair)
         child.dispatch(.tick)
-        #expect(base.state.child.n == 1)
-        #expect(child.state.n == 1)
+        #expect(base.currentState.child.n == 1)
+        #expect(child.currentState.n == 1)
     }
 
     @Test func declaredDuplexScopeServesEveryHost() {
@@ -146,7 +146,7 @@ struct RelayBuilderTests {
         }
         let viaBehavior = store(childBehavior.lift(full))
         viaBehavior.dispatch(.child(.tick))
-        #expect(viaBehavior.state.child.n == 1)
+        #expect(viaBehavior.currentState.child.n == 1)
 
         let childReducer = Reducer<ChildAction, ChildState>.reduce { action, state in
             switch action {
@@ -165,7 +165,7 @@ struct RelayBuilderTests {
         })
         let projected = base.projection(full)
         projected.dispatch(.tick)
-        #expect(base.state.child.n == 1)
-        #expect(projected.state.n == 1)
+        #expect(base.currentState.child.n == 1)
+        #expect(projected.currentState.n == 1)
     }
 }

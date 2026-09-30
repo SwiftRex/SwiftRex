@@ -63,7 +63,7 @@ struct MiddlewareLiftEachTests {
         )
         let store = Store(initial: AppState(timers: [Timer(id: 1), Timer(id: 2)]), behavior: behavior, environment: ())
         store.dispatch(.tickAll)
-        await poll { store.state.timers.allSatisfy(\.ticked) }
-        #expect(store.state.timers.map(\.ticked) == [true, true])
+        await poll { store.currentState.timers.allSatisfy(\.ticked) }
+        #expect(store.currentState.timers.map(\.ticked) == [true, true])
     }
 }

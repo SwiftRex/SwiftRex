@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
-/// A cancellation handle returned by an effect subscription or a state observation registration.
+/// A cancellation handle returned by an effect subscription.
 ///
-/// When the ``Store`` starts an ``Effect`` component or when ``StoreType/observe(willChange:didChange:)``
-/// registers callbacks, a `SubscriptionToken` is returned. Call ``cancel()`` on it to stop the
-/// work or remove the observer.
+/// When the ``Store`` starts an ``Effect`` component, a `SubscriptionToken` is returned. Call ``cancel()``
+/// on it to stop the work. (Following a store's state returns a ``UISubscriptionToken`` instead — the
+/// main-actor sibling that cancels synchronously.)
 ///
 /// ## Why not `Cancellable`?
 ///
@@ -35,26 +35,12 @@
 /// - **Effect subscriptions** are owned by the ``Store``'s registry. Replacing the token under a
 ///   key (`.replacing`, `.debounce`, `.throttle`) releases the previous one and cancels its
 ///   effect; tearing down the Store releases the whole registry and cancels everything in flight.
-/// - **Observations** are owned by *you*. Retain the token for as long as you want the callbacks
-///   to fire — store it in a property or a `Set`/array — exactly like Combine's `AnyCancellable`:
-///
-/// ```swift
-/// var tokens: [SubscriptionToken] = []
-///
-/// func subscribe() {
-///     tokens.append(store.observe(didChange: { self.updateUI() }))
-/// }
-/// // Dropping `tokens` (or this object) cancels the observation automatically.
-/// ```
-///
-/// Discarding an observation token without retaining it cancels the observation **immediately** —
-/// the callbacks never fire. This is why ``StoreType/observe(willChange:didChange:)`` is not
-/// `@discardableResult`.
+/// - **Bridges** that hand a framework's cancellation back to SwiftRex are owned by whoever holds the token
+///   — retain it for as long as the work should run, exactly like Combine's `AnyCancellable`.
 ///
 /// - Note: `cancel()` may be called from any thread, and is also called by `deinit`, so it may
 ///   run more than once — keeping the underlying cancellation idempotent is the resource's
 ///   responsibility (`Task.cancel()`, `AnyCancellable.cancel()`, `Disposable.dispose()` all are).
-///   The ``Store`` and ``StoreBuffer`` remove observers via `Task { @MainActor }` for thread safety.
 public final class SubscriptionToken: Sendable {
     private let _cancel: @Sendable () -> Void
 
@@ -70,9 +56,8 @@ public final class SubscriptionToken: Sendable {
     /// Cancels the associated subscription or observation.
     ///
     /// For effect subscriptions, this calls the ``SubscriptionToken`` returned from the
-    /// `Effect.Component.subscribe` closure. For state observers registered via
-    /// ``StoreType/observe(willChange:didChange:)``, this removes both callbacks. Also invoked
-    /// automatically by `deinit` when the last reference is released.
+    /// `Effect.Component.subscribe` closure. Also invoked automatically by `deinit` when the last
+    /// reference is released.
     public func cancel() {
         _cancel()
     }

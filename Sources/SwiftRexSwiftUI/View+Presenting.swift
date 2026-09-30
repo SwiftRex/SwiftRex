@@ -19,10 +19,10 @@
         /// default. For a cover or popover, use `store.presence(…)` with `.fullScreenCover(isPresented:)` /
         /// `.popover(isPresented:)` and dispatch the same `dismiss` from their `onDismiss`.
         @MainActor
-        public func presenting<S: ObservableStoreType, Wrapped: Sendable, Presented: View>(
-            _ store: S,
-            _ keyPath: KeyPath<S.State, Presentation<Wrapped>>,
-            dismiss: S.Action,
+        public func presenting<Action: Sendable, State: Sendable, Wrapped: Sendable, Presented: View>(
+            _ store: ViewStore<Action, State>,
+            _ keyPath: KeyPath<State, Presentation<Wrapped>>,
+            dismiss: Action,
             onDismiss: (@MainActor () -> Void)? = nil,
             file: String = #fileID,
             function: String = #function,
@@ -54,10 +54,10 @@
         /// as the sheet animates out (it ignores the dismissal frame). Reach for the ``Presentation``
         /// overload when that flicker matters; use this when it doesn't.
         @MainActor
-        public func presenting<S: ObservableStoreType, Wrapped: Sendable, Presented: View>(
-            _ store: S,
-            _ keyPath: KeyPath<S.State, Wrapped?>,
-            dismiss: S.Action,
+        public func presenting<Action: Sendable, State: Sendable, Wrapped: Sendable, Presented: View>(
+            _ store: ViewStore<Action, State>,
+            _ keyPath: KeyPath<State, Wrapped?>,
+            dismiss: Action,
             onDismiss: (@MainActor () -> Void)? = nil,
             file: String = #fileID,
             function: String = #function,
@@ -86,10 +86,10 @@
         /// `id` (via the `Presentation` overload of `item(_:dismiss:)`) so a mutating child
         /// never churns SwiftUI's identity. `content` receives the item.
         @MainActor
-        public func presentingItem<S: ObservableStoreType, Wrapped: Identifiable & Sendable, Presented: View>(
-            _ store: S,
-            _ keyPath: KeyPath<S.State, Presentation<Wrapped>>,
-            dismiss: S.Action,
+        public func presentingItem<Action: Sendable, State: Sendable, Wrapped: Identifiable & Sendable, Presented: View>(
+            _ store: ViewStore<Action, State>,
+            _ keyPath: KeyPath<State, Presentation<Wrapped>>,
+            dismiss: Action,
             onDismiss: (@MainActor () -> Void)? = nil,
             file: String = #fileID,
             function: String = #function,

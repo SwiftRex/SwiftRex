@@ -1,158 +1,57 @@
 // SPDX-License-Identifier: Apache-2.0
 
-/// A reference-type store wrapper that caches state and gates observer notifications
-/// through a `hasChanged` predicate.
+/// A store that skips repeated states: its ``stateStream`` passes a state on only when it differs from the
+/// previous one — by `Equatable` (`!=`), or by a `hasChanged` predicate you supply. Dispatch goes straight
+/// through to the underlying store.
 ///
-/// While ``StoreProjection`` focuses on narrowing action and state types, `StoreBuffer`
-/// focuses on **caching and deduplication**: it owns a `state` snapshot and only propagates
-/// `willChange`/`didChange` to its own observers when `hasChanged(old, new)` returns `true`.
-///
-/// `StoreBuffer` is a **class** (reference type) because it must hold a previous-state
-/// snapshot to diff against. A struct would lose the cached value on copy, making the
-/// `hasChanged` comparison meaningless.
-///
-/// ## Where it goes
-///
-/// Which side of a ``StoreProjection`` a buffer sits on decides what it saves. **Before** a map it dedups
-/// on the map's input, so the map doesn't run for unrelated changes (stops recomputation); **after** a map
-/// the map still runs on every change and only identical results are suppressed (stops invalidation).
+/// Where it sits decides what it saves. **Before** a projection's map it deduplicates the map's *input*, so
+/// the map doesn't run for changes elsewhere in the app — it stops redundant **recomputation**:
 ///
 /// ```swift
-/// // Buffer the feature's slice (CounterState: Equatable), then map it for the view
 /// let counter = appStore
-///     .projection(action: { AppAction.counter($0) }, state: { $0.counterState })
-///     .buffer()
-///     .projection(action: { $0 }, state: CounterView.ViewState.init)
-///
-/// // Or with a custom predicate when Equatable is not available/desired
-/// let buffered = counterSlice.buffer { old, new in old.count != new.count }
+///     .projection(action: { AppAction.counter($0) }, state: \.counter)   // the feature's slice
+///     .buffer()                                                           // skip repeats of it (Counter.State: Equatable)
+///     .projection(action: { $0 }, state: CounterView.ViewState.init)      // the view map runs only on real changes
 /// ```
 ///
-/// For SwiftUI, the observable store a view reads already suppresses unchanged results per key path, so
-/// the buffer's job there is the "before" one.
+/// **After** a map it only drops identical results, so the map still runs on every upstream change. For
+/// SwiftUI the `ViewStore` already signals only what each view read changed, so the buffer's job there is the
+/// "before" one — `@Feature` builds exactly that chain when the feature's `State` is `Equatable`.
 ///
-/// ## Notification timing
-///
-/// `StoreBuffer` subscribes to the underlying store's `didChange` notification. When `didChange`
-/// fires, `StoreBuffer` reads the underlying store's new state and runs `hasChanged`. If the
-/// predicate returns `true`:
-///
-/// 1. **`willChange` fires** (to its own observers) — before `self.state` is updated.
-/// 2. **`self.state` is updated** to the new value.
-/// 3. **`didChange` fires** (to its own observers) — after `self.state` is updated.
-///
-/// This ordering means `StoreBuffer`'s `willChange` fires *after* the underlying store's
-/// mutation but *before* `self.state` updates — which is correct for `ObservableObject`
-/// animation semantics.
-///
-/// ## Equatable shorthand
-///
-/// When `State: Equatable`, use the argument-free ``buffer()`` factory on ``StoreType``:
-///
-/// ```swift
-/// let buffered = counterProj.buffer()  // uses !=
-/// ```
-///
-/// - Note: `@unchecked Sendable` is used because the mutable stored properties (`state`,
-///   `observers`, etc.) are only accessed on `@MainActor`, but Swift cannot statically prove
-///   this for a `final class`.
+/// A `StoreBuffer` keeps no shared cache: each observer of its stream remembers its own previous value, so
+/// creating one costs nothing until something observes it.
 @MainActor
-public final class StoreBuffer<Action: Sendable, State: Sendable>:
-StoreType, @unchecked Sendable {
-    /// The cached state snapshot.
-    ///
-    /// Updated only when `hasChanged(old, new)` returns `true`. Between updates, this value
-    /// reflects the last state for which the predicate was satisfied.
-    public private(set) var state: State
+public struct StoreBuffer<Action: Sendable, State: Sendable>: StoreType {
+    /// The underlying state over time, with repeats removed.
+    public let stateStream: StateStream<State>
+    private let _dispatch: @MainActor @Sendable (Action, ActionSource) -> Void
 
-    private let underlying: any StoreType<Action, State>
-    private let hasChanged: @Sendable (State, State) -> Bool
-    private var token: SubscriptionToken?
-    // Observer keys are a monotonic counter — internal, never surfaced, so no UUID/RNG is needed.
-    private var observers: [UInt64: (willChange: @MainActor @Sendable () -> Void,
-                                     didChange: @MainActor @Sendable () -> Void)] = [:]
-    private var nextObserverKey: UInt64 = 0
-
-    /// Creates a `StoreBuffer` wrapping `store` with a custom change predicate.
-    ///
-    /// The predicate receives the **old** cached state and the **new** underlying-store state.
-    /// Returning `true` triggers a notification cycle; returning `false` suppresses it.
+    /// A buffer over `store` that passes a state on only when `hasChanged(previous, new)` is `true`.
     ///
     /// ```swift
-    /// // Only propagate when the visible item count changes
     /// let buffered = StoreBuffer(listStore) { old, new in old.items.count != new.items.count }
     /// ```
-    ///
-    /// - Parameters:
-    ///   - store: The underlying ``StoreType`` to observe. The buffer holds a `weak` reference
-    ///     to the underlying store's observer list via the returned ``SubscriptionToken``.
-    ///   - hasChanged: A predicate called with `(oldState, newState)`. Return `true` to notify
-    ///     the buffer's own observers and update the cached `state`.
     public init(
         _ store: some StoreType<Action, State>,
         hasChanged: @escaping @Sendable (State, State) -> Bool
     ) {
-        underlying = store
-        state = store.untrackedState
-        self.hasChanged = hasChanged
-        token = underlying.observe(
-            willChange: {},
-            didChange: { [weak self] in
-                guard let self else { return }
-                let new = underlying.untrackedState
-                guard self.hasChanged(state, new) else { return }
-                observers.values.forEach { $0.willChange() }
-                state = new
-                observers.values.forEach { $0.didChange() }
-            }
-        )
+        stateStream = store.stateStream.removeDuplicates { !hasChanged($0, $1) }
+        _dispatch = { action, source in store.dispatch(action, source: source) }
     }
 
-    /// Forwards the dispatch call to the underlying store unchanged.
-    ///
-    /// - Parameters:
-    ///   - action: The action to dispatch.
-    ///   - source: The call-site provenance.
+    /// Forwards the action to the underlying store unchanged.
     public func dispatch(_ action: Action, source: ActionSource) {
-        underlying.dispatch(action, source: source)
-    }
-
-    /// Registers callbacks that fire only when `hasChanged` returns `true`.
-    ///
-    /// Unlike registering directly on the underlying store (which fires on every mutation),
-    /// callbacks registered on a `StoreBuffer` are gated by the predicate. This makes
-    /// `StoreBuffer` useful for suppressing redundant UI updates in high-frequency dispatch
-    /// scenarios.
-    ///
-    /// - Parameters:
-    ///   - willChange: Called before `self.state` is updated (after the underlying mutation).
-    ///   - didChange: Called after `self.state` is updated.
-    /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when cancelled.
-    public func observe(
-        willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange: @escaping @MainActor @Sendable () -> Void
-    ) -> SubscriptionToken {
-        let id = nextObserverKey
-        nextObserverKey &+= 1
-        observers[id] = (willChange: willChange, didChange: didChange)
-        return SubscriptionToken { [weak self] in
-            Task { @MainActor [weak self] in self?.observers.removeValue(forKey: id) }
-        }
+        _dispatch(action, source)
     }
 }
 
 extension StoreBuffer where State: Equatable {
-    /// Creates a `StoreBuffer` using `!=` as the change predicate.
-    ///
-    /// The most common case: notify observers only when the projected state actually differs
-    /// from the cached value using `Equatable` equality.
+    /// A buffer over `store` that skips a state equal (`==`) to the previous one.
     ///
     /// ```swift
     /// let buffered = counterProj.buffer()
     /// ```
-    ///
-    /// - Parameter store: The underlying ``StoreType`` to observe.
-    public convenience init(_ store: some StoreType<Action, State>) {
+    public init(_ store: some StoreType<Action, State>) {
         self.init(store, hasChanged: !=)
     }
 }

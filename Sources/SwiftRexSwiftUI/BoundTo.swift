@@ -13,7 +13,7 @@
     /// struct MoviesView: View {
     ///     // injected: `let viewStore: ViewStore<Movies.ViewAction, Movies.ViewState>`
     ///     var body: some View {
-    ///         Text(viewStore.title)                     // depends on \.title only
+    ///         Text(viewStore.state.title)               // depends on \.title only
     ///         Button("tap") { viewStore.dispatch(.tapped) }
     ///     }
     /// }

@@ -155,33 +155,32 @@
         }
     }
 
-    // MARK: - StoreType+RxSwift: .observable
+    // MARK: - StateStream is an ObservableType
 
-    @Suite("StoreType+RxSwift: observable")
+    @Suite("StateStream+RxSwift: ObservableType")
     @MainActor
     struct StoreObservableTests {
         @Test func observableIsLazyDoesNotEmitBeforeSubscribe() async {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             var received = [Int]()
-            let obs = store.observable
+            let obs = store.stateStream.asObservable()
             store.dispatch(10)
             #expect(received.isEmpty)
             let bag = DisposeBag()
             obs.subscribe(onNext: { received.append($0) }).disposed(by: bag)
-            await Task.yield() // let the observe token set up
+            #expect(received == [10]) // current value, synchronously on the main actor
             store.dispatch(5) // state: 10+5=15
-            #expect(received == [15])
+            #expect(received == [10, 15])
         }
 
         @Test func observableDeliversStateAfterEachDispatch() async {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             var received = [Int]()
             let bag = DisposeBag()
-            store.observable.subscribe(onNext: { received.append($0) }).disposed(by: bag)
-            await Task.yield()
+            store.stateStream.asObservable().subscribe(onNext: { received.append($0) }).disposed(by: bag)
             store.dispatch(3) // state: 3
             store.dispatch(4) // state: 7
-            #expect(received == [3, 7])
+            #expect(received == [0, 3, 7])
         }
     }
 #endif

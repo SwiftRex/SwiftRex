@@ -147,53 +147,54 @@
         }
     }
 
-    // MARK: - StoreType+ReactiveConcurrency: .publisher
+    // MARK: - StateStream+ReactiveConcurrency: .asPublisher
 
 //
-    // RC's `store.publisher` is a cold publisher consumed by a Task, so delivery is asynchronous
+    // RC's `stateStream.asPublisher` is a cold publisher consumed by a Task, so delivery is asynchronous
     // (unlike Combine's synchronous observer). Tests await propagation and read through a lock.
 
-    @Suite("StoreType+ReactiveConcurrency: publisher")
+    @Suite("StateStream+ReactiveConcurrency: asPublisher")
     @MainActor
     struct StorePublisherTests {
         @Test func publisherIsLazyDoesNotSubscribeUntilStarted() async {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             let received = LockProtected([Int]())
-            let pub = store.publisher
+            let pub = store.stateStream.asPublisher
             store.dispatch(10)
             try? await Task.sleep(for: .milliseconds(50))
             #expect(received.value.isEmpty)
             let token = pub.sink { value in received.mutate { $0.append(value) } }
             try? await Task.sleep(for: .milliseconds(50)) // let the observer register on @MainActor
+            #expect(received.value == [10]) // the current value first
             store.dispatch(5) // state: 10+5=15
             try? await Task.sleep(for: .milliseconds(50))
-            #expect(received.value == [15])
+            #expect(received.value == [10, 15])
             token.cancel()
         }
 
         @Test func publisherDeliversStateAfterEachDispatch() async {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             let received = LockProtected([Int]())
-            let token = store.publisher.sink { value in received.mutate { $0.append(value) } }
+            let token = store.stateStream.asPublisher.sink { value in received.mutate { $0.append(value) } }
             try? await Task.sleep(for: .milliseconds(50))
             store.dispatch(3) // state: 3
             store.dispatch(4) // state: 7
             try? await Task.sleep(for: .milliseconds(50))
-            #expect(received.value == [3, 7])
+            #expect(received.value == [0, 3, 7])
             token.cancel()
         }
 
         @Test func cancellingSubscriptionStopsDelivery() async {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             let received = LockProtected([Int]())
-            var token: AnyCancellable? = store.publisher.sink { value in received.mutate { $0.append(value) } }
+            var token: AnyCancellable? = store.stateStream.asPublisher.sink { value in received.mutate { $0.append(value) } }
             try? await Task.sleep(for: .milliseconds(50))
             store.dispatch(1) // state: 1
             try? await Task.sleep(for: .milliseconds(50))
             token = nil
             store.dispatch(2) // state: 3, not subscribed
             try? await Task.sleep(for: .milliseconds(50))
-            #expect(received.value == [1])
+            #expect(received.value == [0, 1])
             _ = token
         }
     }

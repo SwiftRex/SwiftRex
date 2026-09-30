@@ -8,8 +8,8 @@ import Hourglass
 /// The sole owner of mutable `State` and the central coordinator of the three-phase dispatch pipeline.
 ///
 /// Create one `Store` per application and pass it — or narrowed ``StoreProjection`` values — to
-/// your features. The ``Store`` is `@MainActor`, so all state reads, mutations, and observer
-/// notifications happen on the main thread without any manual actor-hopping.
+/// your features. The ``Store`` is `@MainActor`, so all mutations and observer notifications happen on
+/// the main thread without any manual actor-hopping. Its state is private: follow it through ``stateStream``.
 ///
 /// ## Dispatch pipeline
 ///
@@ -17,24 +17,22 @@ import Hourglass
 ///
 /// ```
 /// 1. behavior.handle(action, stateAccess)    — all Behaviors; stateAccess = pre-mutation state
-/// 2. stateObservers.willChange fired         — ObservableObject fires objectWillChange here
-///    consequence.mutation.runEndoMut(&state)  — zero-copy inout; refcount stays at 1
-///    stateObservers.didChange fired           — @Observable / push-based observers
+/// 2. consequence.mutation.runEndoMut(&state)  — zero-copy inout; refcount stays at 1
+///    stateStream observers receive the new state (skipped for a provably unchanged action)
 /// 3. consequence.produce.runReader(env)        — Reader runs; stateAccess = post-mutation state
 /// 4. engine.schedule(component) per component — action-driven effects (produce / Cmd)
 /// 5. engine.reconcile(behavior.supervisor(state)) — state-driven channels (Sub); only if state changed
 /// ```
 ///
-/// Grouping all `willChange` notifications before the mutation (and all `didChange` notifications
-/// after) means observers never see a partially-mutated state. `withAnimation { store.dispatch(...) }`
-/// works correctly because SwiftUI animation transactions are thread-local and the mutation lands
-/// on `@MainActor` inside the transaction.
+/// Observers only ever receive fully-committed states. `withAnimation { store.dispatch(...) }` works because
+/// the mutation and every observer (down to the view layer, which signals SwiftUI against its own snapshot)
+/// run synchronously on `@MainActor` inside the transaction.
 ///
 /// ## Serialized, never-nested processing
 ///
 /// Actions are serialized through a FIFO `queue` guarded by an `isProcessing` flag, so
 /// `runPhases` never runs nested. A synchronous ``dispatch(_:source:)`` runs its action — and
-/// any actions dispatched synchronously while it runs (for example a `didChange` observer that
+/// any actions dispatched synchronously while it runs (for example an observer that
 /// re-dispatches) — within the same run loop turn, draining the queue in order. Because the
 /// pipeline is never re-entered mid-action, observers always see a fully-committed state.
 ///
@@ -92,8 +90,9 @@ import Hourglass
 public final class Store<Action: Sendable, State: Sendable, Environment: Sendable>: StoreType, @unchecked Sendable {
     // MARK: - State
 
-    /// The current state. Updated atomically in phase 2 of every dispatch cycle.
-    public private(set) var state: State
+    /// The current state. Updated atomically in phase 2 of every dispatch cycle. Private: a store is followed
+    /// through ``stateStream``, never read imperatively.
+    private var state: State
 
     // MARK: - Core
 
@@ -113,11 +112,9 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// cancelling every in-flight effect.
     private lazy var engine = EffectEngine<Action>(clock: resolvedClock, send: makeSend())
 
-    /// Both observer closures are stored together under one key so a single token cancels both.
-    /// Keys come from ``nextObserverKey`` — a monotonic counter; these keys are internal and never
-    /// surfaced, so no `UUID`/RNG is needed (a wrapping `UInt64` cannot realistically collide).
-    private var stateObservers: [UInt64: (willChange: @MainActor @Sendable () -> Void,
-                                          didChange: @MainActor @Sendable () -> Void)] = [:]
+    /// ``stateStream`` observers. Keys come from ``nextObserverKey`` — a monotonic counter; these keys are
+    /// internal and never surfaced, so no `UUID`/RNG is needed (a wrapping `UInt64` cannot realistically collide).
+    private var stateObservers: [UInt64: @MainActor (State) -> Void] = [:]
     private var nextObserverKey: UInt64 = 0
 
     // MARK: - Dispatch serialization
@@ -128,7 +125,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     // `send`, which hops onto the main actor via `Task` before touching either.
     //
     // The rule: a synchronous `dispatch` runs its action — and any further actions dispatched
-    // synchronously while it runs (e.g. a `didChange` observer that re-dispatches) — within the
+    // synchronously while it runs (e.g. an observer that re-dispatches) — within the
     // current run loop turn, draining the queue in FIFO order without re-entering `runPhases`.
     // Effect-produced actions arrive through `makeSend`'s `Task` hop, so they are always
     // processed on a later turn.
@@ -222,7 +219,7 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
     /// let store = Store(initial: 0, reducer: counterReducer)
     /// store.dispatch(.increment)
     /// store.dispatch(.increment)
-    /// // store.state == 2
+    /// // store.stateStream delivers 2
     /// ```
     ///
     /// - Parameters:
@@ -300,27 +297,15 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         process(DispatchedAction(action, dispatcher: source))
     }
 
-    /// Registers callbacks for both sides of each state mutation.
-    ///
-    /// - `willChange` fires before the mutation — `state` still holds the old value.
-    /// - `didChange` fires after the mutation — `state` holds the new value.
-    ///
-    /// The token is released on cancel via a `Task { @MainActor }` hop, keeping deregistration
-    /// safe regardless of which thread calls ``SubscriptionToken/cancel()``.
-    ///
-    /// - Parameters:
-    ///   - willChange: Called on `@MainActor` before each mutation.
-    ///   - didChange: Called on `@MainActor` after each mutation.
-    /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when cancelled.
-    public func observe(
-        willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange: @escaping @MainActor @Sendable () -> Void
-    ) -> SubscriptionToken {
-        let id = nextObserverKey
-        nextObserverKey &+= 1
-        stateObservers[id] = (willChange: willChange, didChange: didChange)
-        return SubscriptionToken { [weak self] in
-            Task { @MainActor [weak self] in self?.stateObservers.removeValue(forKey: id) }
+    /// The state over time: an observer receives the current state immediately, then the new state after
+    /// every mutation (a provably unchanged action notifies no one). Releasing the token removes the observer
+    /// synchronously on the main actor.
+    public var stateStream: StateStream<State> {
+        StateStream { [self] onChange in
+            let id = nextObserverKey
+            nextObserverKey &+= 1
+            stateObservers[id] = onChange
+            return (state, UISubscriptionToken { [weak self] in self?.stateObservers[id] = nil })
         }
     }
 
@@ -364,19 +349,18 @@ public final class Store<Action: Sendable, State: Sendable, Environment: Sendabl
         // Phase 1 — pre-mutation: collect ReducerOutcome + Reader from the behavior
         let consequence = behavior.handle(dispatched.action, preCtx)
 
-        // Phase 2 — zero-copy mutation, bracketed by observer notifications. A provably no-op
-        // action (`.unchanged` — pure routing, effect-only, `.doNothing`) fires no notifications,
-        // so ObservableObject/@Observable consumers never re-render on actions that can't change
-        // state. `willChange` still precedes the mutation (ObservableObject.objectWillChange
-        // requirement) and `didChange` follows it.
+        // Phase 2 — zero-copy mutation, then the new state goes to every observer. A provably no-op
+        // action (`.unchanged` — pure routing, effect-only, `.doNothing`) notifies no one, so views never
+        // re-render on actions that can't change state. There is no "about to change" moment here: the
+        // view layer keeps its own snapshot and signals SwiftUI before replacing it.
         let didMutate: Bool
         switch consequence.mutation {
         case .unchanged:
             didMutate = false
         case let .mutation(mutation):
-            stateObservers.values.forEach { $0.willChange() }
             mutation.runEndoMut(&state)
-            stateObservers.values.forEach { $0.didChange() }
+            let current = state
+            stateObservers.values.forEach { $0(current) }
             didMutate = true
         }
 

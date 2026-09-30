@@ -68,7 +68,7 @@ func runLoader() {
     let live = API(fetch: { id in /* URLSession … */ "item \(id)" })
     let store = Store(initial: LoaderState(), behavior: loaderBehavior, environment: live)
 
-    let token = store.observe(didChange: { print(store.state) })
+    let token = store.stateStream.observe { print($0) }
     store.dispatch(.load(42))   // isLoading = true → … → value = "item 42", isLoading = false
     _ = token
 }

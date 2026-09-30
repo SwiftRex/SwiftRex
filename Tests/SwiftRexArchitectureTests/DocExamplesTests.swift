@@ -68,7 +68,7 @@
     @BoundTo(Library.self)
     struct LibraryView: View {
         var body: some View {
-            List(viewStore.each(\.books)) { book in
+            List(viewStore.state.each(\.books)) { book in
                 Button(book.title) { viewStore.dispatch(.tapped(book.value)) }
             }
             .onAppear { viewStore.dispatch(.onAppear) }

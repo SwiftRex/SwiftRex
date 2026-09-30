@@ -67,19 +67,19 @@ struct ChannelDeliveryTimingTests {
         let store = feedStore(.throttle(.seconds(1)), clock: clock, opens: opens)
 
         store.dispatch(.connect) // opens NOW — the throttle never defers creation
-        await poll { opens.value == 1 && store.state.received == [0] }
+        await poll { opens.value == 1 && store.currentState.received == [0] }
         #expect(opens.value == 1)
-        #expect(store.state.received == [0]) // the open's current value delivered immediately
+        #expect(store.currentState.received == [0]) // the open's current value delivered immediately
 
         store.dispatch(.bump) // tick 1, inside the throttle window → dropped
         for _ in 0..<20 {
             await Task.yield()
         }
-        #expect(store.state.received == [0])
+        #expect(store.currentState.received == [0])
 
         await clock.advance(by: .seconds(1)) // window elapses
         store.dispatch(.bump) // tick 2 → delivered into the SAME live channel
-        await poll { store.state.received == [0, 2] }
+        await poll { store.currentState.received == [0, 2] }
         #expect(opens.value == 1) // never reopened across the throttle
     }
 
@@ -89,14 +89,14 @@ struct ChannelDeliveryTimingTests {
         let store = feedStore(.debounce(.seconds(1)), clock: clock, opens: opens)
 
         store.dispatch(.connect) // opens + delivers the current value immediately
-        await poll { store.state.received == [0] }
+        await poll { store.currentState.received == [0] }
 
         store.dispatch(.bump) // tick 1, debounced…
         store.dispatch(.bump) // tick 2, restarts the window → only the latest survives
         await clock.waitForSleepers()
         await clock.advance(by: .seconds(1))
-        await poll { store.state.received == [0, 2] }
-        #expect(store.state.received == [0, 2])
+        await poll { store.currentState.received == [0, 2] }
+        #expect(store.currentState.received == [0, 2])
         #expect(opens.value == 1)
     }
 
@@ -184,18 +184,18 @@ struct ChannelDeliveryTimingTests {
 
         store.dispatch(.connect) // opens the channel — delivers nothing (no initial value)
         store.dispatch(.send(1)) // first broadcast → straight through; the open set no window
-        await poll { store.state.received == [1] }
-        #expect(store.state.received == [1])
+        await poll { store.currentState.received == [1] }
+        #expect(store.currentState.received == [1])
 
         store.dispatch(.send(2)) // inside the window → throttled
         for _ in 0..<20 {
             await Task.yield()
         }
-        #expect(store.state.received == [1])
+        #expect(store.currentState.received == [1])
 
         await clock.advance(by: .seconds(1))
         store.dispatch(.send(3)) // window elapsed → delivered into the same live channel
-        await poll { store.state.received == [1, 3] }
-        #expect(store.state.received == [1, 3])
+        await poll { store.currentState.received == [1, 3] }
+        #expect(store.currentState.received == [1, 3])
     }
 }

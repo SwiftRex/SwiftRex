@@ -54,12 +54,12 @@
         // A: bla.ble.bli · B: bla.ble.value · C: node ble, reads blo · D: whole state
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         private func observers(_ store: ViewStore<Mutate<GlanceState>, GlanceState>) -> [Hits] {
-            let ble = store.bla.ble
+            let ble = store.state.bla.ble
             return [
-                track { _ = store.bla.ble.bli },
-                track { _ = store.bla.ble.value },
+                track { _ = store.state.bla.ble.bli },
+                track { _ = store.state.bla.ble.value },
                 track { _ = ble.blo },
-                track { _ = store.state }
+                track { _ = store.state.value }
             ]
         }
 
@@ -72,7 +72,7 @@
         ])
         func observationRedrawsOnlyReadersOfChangedPaths(_ row: (String, [Int])) {
             let store = makeStore(GlanceState())
-            let view = ViewStore(store.observable(.observation))   // the owner keeps it alive
+            let view = store.viewStore(.observation)   // the test owns it
             let hits = observers(view)
             store.dispatch(.apply(Self.change(row.0)))
             #expect(hits.map(\.value) == row.1, "\(row.0)")
@@ -88,14 +88,13 @@
         ])
         func combineSendsOneSignalOnlyWhenAReadPathChanged(_ row: (String, Bool, Int)) {
             let store = makeStore(GlanceState())
-            let observed = store.observable(.combine)
-            let view = ViewStore(observed)
-            _ = view.bla.ble.bli
-            _ = view.bla.ble.value
-            _ = view.bla.ble.blo
-            if row.1 { _ = view.state }                          // with or without ViewD
+            let view = store.viewStore(.combine)
+            _ = view.state.bla.ble.bli
+            _ = view.state.bla.ble.value
+            _ = view.state.bla.ble.blo
+            if row.1 { _ = view.state.value }                        // with or without ViewD
             let sends = Hits()
-            let cancellable = observed.objectWillChange.sink { sends.bump() }
+            let cancellable = view.testSignal.objectWillChange.sink { sends.bump() }
             store.dispatch(.apply(Self.change(row.0)))
             #expect(sends.value == row.2, "\(row.0), ViewD: \(row.1)")
             cancellable.cancel()
@@ -104,8 +103,8 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func nonEquatableValueAlwaysCountsAsChanged() {
             let store = makeStore(OpaqueState())
-            let view = ViewStore(store.observable(.observation))
-            let whole = track { _ = view.ble.value }
+            let view = store.viewStore(.observation)
+            let whole = track { _ = view.state.ble.value }
             store.dispatch(.apply { $0.other += 1 })
             #expect(whole.value == 1)
         }

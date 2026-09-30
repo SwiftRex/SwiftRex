@@ -97,22 +97,22 @@ so nobody is forced into `@Prisms` or a hand-written prism:
 
 ## The view side — reading optionals and collections
 
-A view reads through an **observed** store (a `ViewStore`, handed down by `@Feature` or `@ObservedStore` — see
+A view reads through a **view store** (a `ViewStore`, handed down by `@Feature` or `@OwnedStore` — see
 <doc:ObservingInSwiftUI>), and variable state has three read shapes there:
 
 ```swift
-// whole collection — one node per row; the list depends on the ids, each row on its own element
-ForEach(store.each(\.rows)) { row in RowView(row: row) }
+// whole collection — one position per row; the list depends on the ids, each row on its own element
+ForEach(viewStore.state.each(\.rows)) { row in RowView(row: row) }
 
 // an optional child — its presence, then the child's own store
-if let child = store.child.scoped(action: .action(\.child)).transpose() { ChildFeature.view(store: child, environment: world.childEnv) }
+if let child = viewStore.focus(.state(\.child), .action(\.child)).transpose() { ChildFeature.view(store: child, environment: world.childEnv) }
 
 // one element by id, through a closure lane
-if let cell = store.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } }) { … }
+if let cell = viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } }) { … }
 ```
 
-Projections feed the observer — they narrow types for whoever *follows* the store (`store.projection(…)` then
-`@ObservedStore` / a feature's view), but a view never reads a plain ``StoreProjection`` directly:
+Projections narrow types for whoever *follows* the store (`store.projection(…)` then `@OwnedStore` / a
+feature's view) — a plain ``StoreProjection`` has no state to read, only a stream to follow:
 
 ```swift
 let list: StoreProjection<BulkAction, [Row]> = store.projection(.action(AppAction.prism.bulk).state(\.rows))
@@ -130,33 +130,32 @@ To hand a child `Feature` a store of the **unwrapped** value, invert the two typ
 `Optional<[T]>` ⇄ `[Optional<T>]`.
 
 ```swift
-// in a view body — on the observed store; the view depends on the presence edge only:
-store.child.scoped(action: .action(\.child))      // ScopedStore<…, Child?>   — store of optional
-    .transpose()                                     // StoreProjection<…, Child>? — optional store of unwrapped
+// in a view body — on the view store; the view depends on the presence edge only:
+viewStore.focus(.state(\.child), .action(\.child))   // ViewStore<ChildAction, Child?>  — store of optional
+    .transpose()                                        // StoreProjection<…, Child>?      — optional store of unwrapped
     .map { ChildFeature.view(store: $0, environment: world.childEnv) }   // View? — nil if the child is gone
 
 // a lane no key path expresses:
-store.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
+viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
 ```
 
-The core ``StoreType/transpose()`` on a plain store does the same swap, but decides presence by reading the
-whole `state` — right for tests and services, wrong inside a body (the view would redraw on every change).
+`transpose` exists only on `ViewStore`: deciding presence is a *read*, and only a view store can read.
 
 > It is deliberately **not** called `sequence`: a `Store` is not `Traversable`, so the swap claims no
-> traversal law. It works because a store is *peekable* — the current value decides the nesting at call
-> time. The unwrapped store falls back to the last present value on the transient frame where the source
-> reads `nil`, so it never force-unwraps and holds the last value steady across a dismissal.
+> traversal law. It works because a view store knows the current value, which decides the nesting at call
+> time. Once the source reads `nil`, the unwrapped store holds the last present value, so it never
+> force-unwraps and keeps a dismissing screen steady.
 
 ### Presentation — the flicker-free child
 
 For an animated modal, prefer ``Presentation`` (`presented` / `dismissing(last:)` / `dismissed`) over a
-bare `T?`. Its `transpose()` overload (on the observed store) keeps the child store live through **both**
+bare `T?`. Its `transpose()` overload (on the view store) keeps the child store live through **both**
 `presented` and `dismissing`, going `nil` only at `dismissed` — so the sheet renders its last value steady as
 SwiftUI animates it out, with no flicker:
 
 ```swift
-.presenting(store, \.editor, dismiss: .dismissEditor) { _ in
-    if let editor = store.editor.scoped(action: .action(\.editor)).transpose() {
+.presenting(viewStore, \.editor, dismiss: .dismissEditor) { _ in
+    if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
         EditorFeature.view(store: editor, environment: world.editorEnv)
     }
 }
@@ -165,16 +164,16 @@ SwiftUI animates it out, with no flicker:
 ## Two-way bindings
 
 A store-backed `Binding` reads state and *dispatches* on write (the reducer stays the only writer). Bindings
-live on the observed store (`ViewStore`, `ScopedStore`). It takes
+live on the view store (`ViewStore`, focused or not). It takes
 the same axis pair as every host — a `.state(…)` read and a `.action(…)` embed of the same value type —
 so the slots can't be crossed and each offers only its own strategies (`\.case` / prism / `review:` /
 `preview:` for actions, key path / closure / lens for state):
 
 ```swift
 // action case:
-TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setName)))
+TextField("Name", text: viewStore.binding(.state(\.name), dispatch: .action(\.setName)))
 // or a transform, wrapping the closure in .action(review:):
-TextField("Name", text: store.binding(.state(\.name), dispatch: .action(review: { ViewAction.setName($0) })))
+TextField("Name", text: viewStore.binding(.state(\.name), dispatch: .action(review: { ViewAction.setName($0) })))
 
 // a field of a collection element — scope the row node, then bind:
 ForEach(store.each(\.rows)) { row in

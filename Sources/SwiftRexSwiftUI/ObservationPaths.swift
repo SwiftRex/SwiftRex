@@ -10,7 +10,7 @@ import SwiftRex
 // MARK: - Public key-path components
 
 /// The key-path component that addresses one element of an `Identifiable` collection **by id**, used by
-/// ``ObservableStoreType/each(_:)`` rows. Two keys are equal when their ids are — the offset hint and the
+/// ``GranularTracking/each(_:)`` rows. Two keys are equal when their ids are — the offset hint and the
 /// fallback don't take part — so a row keeps the same dependency however the collection reorders.
 ///
 /// Observation plumbing: you never build one by hand.
@@ -26,7 +26,7 @@ public struct ObservationElementKey<Element: Identifiable & Sendable>: Hashable,
 extension RandomAccessCollection where Element: Identifiable & Sendable, Element.ID: Sendable {
     /// The element with `key.id` — O(1) while it still sits at the offset it had when the row was built,
     /// a linear search after a reorder, and the last-known value once it's gone (a row can outlive its
-    /// element for a frame while SwiftUI removes it). Observation plumbing behind ``StateNode`` rows.
+    /// element for a frame while SwiftUI removes it). Observation plumbing behind ``GranularTracking`` rows.
     public subscript(observationElement key: ObservationElementKey<Element>) -> Element {
         let hinted = index(startIndex, offsetBy: key.offset, limitedBy: endIndex).flatMap { $0 == endIndex ? nil : $0 }
         return hinted.flatMap { self[$0].id == key.id ? self[$0] : nil }
@@ -35,7 +35,7 @@ extension RandomAccessCollection where Element: Identifiable & Sendable, Element
     }
 
     /// The ids in order — what a list body depends on, so it redraws on insert / remove / reorder but not
-    /// when a row's content changes. Observation plumbing behind ``ObservableStoreType/each(_:)``.
+    /// when a row's content changes. Observation plumbing behind ``GranularTracking/each(_:)``.
     public var observationIDs: [Element.ID] { map(\.id) }
 }
 
@@ -131,7 +131,7 @@ final class ObservationPaths {
 
 /// The identity of a derived read — where it was made, the types it involves, and an optional caller id.
 /// Two reads with the same identity are the same dependency, so a call site keeps one dependency however
-/// often its body runs. Observation plumbing behind `ObservableStoreType.read(derived:)`.
+/// often its body runs. Observation plumbing behind `ViewStore.read(derived:)`.
 struct ObservationDerivedID: Hashable, Sendable {
     let site: String
     let types: [ObjectIdentifier]
@@ -139,7 +139,7 @@ struct ObservationDerivedID: Hashable, Sendable {
 }
 
 /// A key-path argument carrying a derivation — equal (and hashed) by its identity alone, since closures
-/// can't be compared. Observation plumbing behind `ObservableStoreType.read(derived:)`.
+/// can't be compared. Observation plumbing behind `ViewStore.read(derived:)`.
 struct ObservationDerivedKey<Root, Value>: Hashable {
     let id: ObservationDerivedID
     let compute: (Root) -> Value

@@ -55,16 +55,16 @@
             }
             let store = Store(initial: S(), behavior: .combine(reducer, supervisor), environment: feed)
 
-            #expect(store.state.received.isEmpty) // not subscribed yet → no channel, no value
+            #expect(store.currentState.received.isEmpty) // not subscribed yet → no channel, no value
 
             store.dispatch(.subscribe) // opens the channel; subject emits 1 synchronously
-            await poll { store.state.received == [1] }
-            #expect(store.state.received == [1]) // the sync emission landed exactly once
+            await poll { store.currentState.received == [1] }
+            #expect(store.currentState.received == [1]) // the sync emission landed exactly once
 
             feed.subject.send(2) // ongoing emissions flow through the live channel
             feed.subject.send(3)
-            await poll { store.state.received == [1, 2, 3] }
-            #expect(store.state.received == [1, 2, 3])
+            await poll { store.currentState.received == [1, 2, 3] }
+            #expect(store.currentState.received == [1, 2, 3])
         }
 
         /// Leaving the implying state cancels the `AnyCancellable`; later emissions are not delivered.
@@ -76,15 +76,15 @@
             let store = Store(initial: S(), behavior: .combine(reducer, supervisor), environment: feed)
 
             store.dispatch(.subscribe)
-            await poll { store.state.received == [0] }
+            await poll { store.currentState.received == [0] }
 
             store.dispatch(.unsubscribe) // desired set empties → channel cancelled
-            await poll { !store.state.subscribed }
+            await poll { !store.currentState.subscribed }
             feed.subject.send(99) // arrives after teardown
             for _ in 0..<20 {
                 await Task.yield()
             }
-            #expect(store.state.received == [0]) // 99 never delivered — subscription was cancelled
+            #expect(store.currentState.received == [0]) // 99 never delivered — subscription was cancelled
         }
     }
 #endif

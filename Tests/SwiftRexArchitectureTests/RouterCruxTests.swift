@@ -31,7 +31,7 @@
     @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(RDetail.self)
     struct RDetailView: View {
-        var body: some View { Text(viewStore.text) }
+        var body: some View { Text(viewStore.state.text) }
     }
 
     // @Prisms requires >= fileprivate.
@@ -110,7 +110,7 @@
             // Compiles ⇒ the router resolves a route to a child view WITH env, from an env-free parent.
             let store = makeStore()
             let router = RAppRouter(store: store, world: RWorld())
-            let home = RHomeView(viewStore: ViewStore(store.observable()), router: router)
+            let home = RHomeView(viewStore: store.viewStore(), router: router)
             _ = home.router.view(for: .detail)
             _ = home.body
         }
@@ -120,7 +120,7 @@
             // The child dispatches into the same single store; its behavior (lifted) runs.
             let store = makeStore()
             store.dispatch(.detail(.tap))
-            #expect(store.state.detail.text == "tapped")
+            #expect(store.currentState.detail.text == "tapped")
         }
     }
 #endif

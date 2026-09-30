@@ -55,15 +55,15 @@ struct ChannelConcurrencyTests {
         store.dispatch(.listen) // opens the channel; the Task starts iterating
         feed.continuation.yield(1)
         feed.continuation.yield(2)
-        await poll { store.state.received == [1, 2] }
-        #expect(store.state.received == [1, 2]) // elements dispatched in order, after setup
+        await poll { store.currentState.received == [1, 2] }
+        #expect(store.currentState.received == [1, 2]) // elements dispatched in order, after setup
 
         store.dispatch(.stop) // desired set empties → channel cancelled
-        await poll { !store.state.listening }
+        await poll { !store.currentState.listening }
         feed.continuation.yield(3) // produced after the iterating Task is cancelled
         for _ in 0..<30 {
             await Task.yield()
         }
-        #expect(store.state.received == [1, 2]) // 3 never delivered — iteration was torn down
+        #expect(store.currentState.received == [1, 2]) // 3 never delivered — iteration was torn down
     }
 }

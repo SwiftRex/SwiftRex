@@ -1,62 +1,39 @@
 // SPDX-License-Identifier: Apache-2.0
 
-/// The common interface shared by ``Store``, ``StoreProjection``, ``StoreBuffer``, and any mock.
+/// The common interface of every store: send it actions, follow its state.
 ///
-/// Views, coordinators, and tests accept `any StoreType<Action, State>`, letting the real
-/// ``Store`` and its derived types be used interchangeably without coupling call sites to
-/// concrete types.
+/// A store is **declarative**. There is no `state` to read at a given moment — you *observe* it through
+/// ``stateStream`` (the current value first, then every change) and *act* on it through
+/// ``dispatch(_:source:)``. Nothing that follows a store can peek into it, and nothing in a view can read a
+/// store SwiftUI isn't observing: views read through a `ViewStore` (`SwiftRex.SwiftUI`), which keeps the
+/// snapshot and records what each view read.
 ///
 /// ```swift
-/// struct CounterView: View {
-///     let store: any StoreType<CounterAction, CounterState>
-///
-///     var body: some View {
-///         Text("\(store.state.count)")
-///         Button("+") { store.dispatch(.increment) }
-///         Button("−") { store.dispatch(.decrement) }
-///     }
-/// }
+/// let token = store.stateStream.observe { state in print(state.count) }   // prints now, then on every change
+/// store.dispatch(.increment)
 /// ```
 ///
 /// ## Conformers
 ///
 /// | Type | Purpose |
 /// |---|---|
-/// | ``Store`` | Concrete owner of mutable state — typically one per app |
-/// | ``StoreProjection`` | Struct; type-erases action and state via mapping closures; no cached state |
-/// | ``StoreBuffer`` | Class; caches state and gates notifications via a `hasChanged` predicate |
+/// | ``Store`` | Runs the app: owns the state, reduces actions, schedules effects — typically one per app |
+/// | ``StoreProjection`` | Narrows action and state types: a mapped ``stateStream`` + a mapped dispatch |
+/// | ``StoreBuffer`` | Skips states equal to the previous one (`Equatable`, or a predicate) |
+/// | `ViewStore` (`SwiftRex.SwiftUI`) | What SwiftUI views hold — adds a granular, observed `state` |
 ///
 /// ## Dispatch
 ///
-/// Calling ``dispatch(_:source:)`` enqueues an action into the ``Store``'s three-phase pipeline:
-///
-/// 1. All ``Behavior/handle`` closures run (pre-mutation).
-/// 2. Observers fire `willChange`; all `EndoMut` mutations apply; observers fire `didChange`.
-/// 3. All ``Effect`` components are scheduled.
-///
-/// The convenience overload ``dispatch(_:file:function:line:)`` auto-captures the call site,
-/// so provenance is always available for logging and debugging.
-///
-/// ## Observation
-///
-/// ``observe(willChange:didChange:)`` registers callbacks for both sides of each state change
-/// and returns a ``SubscriptionToken``. Call ``SubscriptionToken/cancel()`` on the token to
-/// stop receiving notifications.
+/// Calling ``dispatch(_:source:)`` enqueues an action into the ``Store``'s pipeline: behaviors run, the
+/// mutation applies, ``stateStream`` observers receive the new state, then effects are scheduled. The
+/// convenience overload ``dispatch(_:file:function:line:)`` captures the call site for provenance.
 ///
 /// ## @MainActor
 ///
-/// The entire `StoreType` surface is `@MainActor`. State reads and dispatches always happen
-/// on the main thread, keeping SwiftUI animation transactions working correctly:
+/// The whole surface is `@MainActor`: dispatching, observing and every delivered value happen on the main
+/// actor, synchronously — so `withAnimation { store.dispatch(…) }` animates through every store that follows.
 ///
-/// ```swift
-/// // withAnimation and store.dispatch() both run on @MainActor — animations just work
-/// Button("Expand") {
-///     withAnimation(.easeInOut) { store.dispatch(.toggle) }
-/// }
-/// ```
-///
-/// - Note: `StoreType` does not require `AnyObject`, so struct conformers (``StoreProjection``)
-///   are allowed.
+/// - Note: `StoreType` does not require `AnyObject`, so struct conformers (``StoreProjection``) are allowed.
 @MainActor
 public protocol StoreType<Action, State>: Sendable, Transceiver {
     /// The action type this store accepts.
@@ -64,75 +41,23 @@ public protocol StoreType<Action, State>: Sendable, Transceiver {
     /// The state type this store manages.
     associatedtype State: Sendable
 
-    /// The current state snapshot.
-    ///
-    /// Always accessed on `@MainActor`. For ``Store`` and ``StoreBuffer`` this is a stored
-    /// property; for ``StoreProjection`` it is computed by applying the state mapping closure
-    /// to the underlying store's state on every access.
-    var state: State { get }
-
-    /// The current state, read **without registering a view dependency** — how a store built on this one
-    /// (a ``StoreProjection``, a ``StoreBuffer``, an observed store in `SwiftRex.SwiftUI`) follows it.
-    ///
-    /// For most stores it's just ``state`` (the default). Observable stores override it: reading their
-    /// `state` inside a SwiftUI body records a dependency on the whole state, and a store that merely
-    /// *follows* one must not — otherwise building or updating a child would make its parent's views
-    /// depend on everything. Read ``state`` from views; read `untrackedState` from anything that follows a
-    /// store (subscriptions, projections, caches).
-    var untrackedState: State { get }
+    /// The state over time: observing it delivers the current state immediately, then every new state.
+    var stateStream: StateStream<State> { get }
 
     /// Dispatches an action with explicit call-site provenance.
     ///
-    /// The ``ActionSource`` carries the file, function, and line where the dispatch originated,
-    /// making it available to logging and analytics ``Middleware`` values.
-    ///
-    /// Prefer the convenience overload ``dispatch(_:file:function:line:)`` which captures the
-    /// source automatically.
+    /// Prefer the convenience overload ``dispatch(_:file:function:line:)``, which captures the source
+    /// automatically.
     ///
     /// - Parameters:
     ///   - action: The action to dispatch.
     ///   - source: The call-site origin of the dispatch.
     func dispatch(_ action: Action, source: ActionSource)
-
-    /// Registers callbacks for both sides of each state mutation and returns a cancellation token.
-    ///
-    /// - `willChange` fires **before** `runEndoMut` — `store.state` still holds the old value.
-    ///   This is the correct place to fire `ObservableObject.objectWillChange`.
-    /// - `didChange` fires **after** `runEndoMut` — `store.state` holds the new value.
-    ///   This is where `@Observable` or push-based UI frameworks should re-render.
-    ///
-    /// Neither closure receives the state directly; read `store.state` inside them when needed.
-    /// The returned ``SubscriptionToken`` cancels **both** callbacks when cancelled — there is
-    /// no way to cancel them independently.
-    ///
-    /// ```swift
-    /// let token = store.observe(
-    ///     willChange: { print("About to change") },
-    ///     didChange:  { print("New state:", store.state) }
-    /// )
-    ///
-    /// // Later — stops both callbacks
-    /// token.cancel()
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - willChange: Called on `@MainActor` immediately before each state mutation.
-    ///   - didChange: Called on `@MainActor` immediately after each state mutation.
-    /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when released or cancelled.
-    ///   You **must** retain it for as long as you want the callbacks to fire — dropping it
-    ///   cancels the observation immediately (RAII, like `AnyCancellable`).
-    func observe(
-        willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange: @escaping @MainActor @Sendable () -> Void
-    ) -> SubscriptionToken
 }
 
 // MARK: - Convenience overloads
 
 extension StoreType {
-    /// ``state`` — a plain store records no view dependencies, so there's nothing to skip.
-    public var untrackedState: State { state }
-
     /// Dispatches an action, automatically capturing the call site for provenance.
     ///
     /// `#file`, `#function`, and `#line` are resolved at the call site, so logging and
@@ -161,36 +86,5 @@ extension StoreType {
     ) -> Self {
         dispatch(action, source: ActionSource(file: file, function: function, line: line))
         return self
-    }
-
-    /// Observes only post-mutation notifications.
-    ///
-    /// Shorthand for `observe(willChange: {}, didChange: didChange)`.
-    ///
-    /// ```swift
-    /// let token = store.observe(didChange: { self.updateUI() })
-    /// ```
-    ///
-    /// - Parameter didChange: Called on `@MainActor` after each state mutation.
-    /// - Returns: A ``SubscriptionToken`` you must retain; releasing it cancels the callback.
-    public func observe(didChange: @escaping @MainActor @Sendable () -> Void) -> SubscriptionToken {
-        observe(willChange: {}, didChange: didChange)
-    }
-
-    /// Observes only pre-mutation notifications.
-    ///
-    /// Shorthand for `observe(willChange: willChange, didChange: {})`.
-    ///
-    /// Useful for `ObservableObject` wrappers that need to call `objectWillChange.send()`
-    /// before the state changes:
-    ///
-    /// ```swift
-    /// let token = store.observe(willChange: { self.objectWillChange.send() })
-    /// ```
-    ///
-    /// - Parameter willChange: Called on `@MainActor` before each state mutation.
-    /// - Returns: A ``SubscriptionToken`` you must retain; releasing it cancels the callback.
-    public func observe(willChange: @escaping @MainActor @Sendable () -> Void) -> SubscriptionToken {
-        observe(willChange: willChange, didChange: {})
     }
 }
