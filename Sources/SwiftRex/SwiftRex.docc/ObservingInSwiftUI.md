@@ -175,7 +175,7 @@ Either way, a dispatch reaches the view store synchronously on the main actor �
 
 ## Bindings and navigation
 
-The binding and presentation helpers exist only on `ViewStore`. On a plain `Store` or `StoreProjection` they don't compile: a binding SwiftUI can't observe would never update. They read granularly too — `presence(.state(\.detail))` redraws on the presence edge, not on every change inside `detail`.
+The binding and presentation helpers exist only on `ViewStore`. A two-way binding over an `Equatable` value dispatches only real changes — SwiftUI sometimes writes a binding twice for one gesture (a list row tap writes its selection twice), and an equal write is dropped. On iPhone, make `List(selection:)` rows `NavigationLink(value:)`: a `.tag`ged row selects only in edit mode there. On a plain `Store` or `StoreProjection` they don't compile: a binding SwiftUI can't observe would never update. They read granularly too — `presence(.state(\.detail))` redraws on the presence edge, not on every change inside `detail`.
 
 ```swift
 struct RootView: View {
