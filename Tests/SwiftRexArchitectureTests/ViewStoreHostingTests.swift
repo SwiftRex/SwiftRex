@@ -64,9 +64,9 @@
         let strategy: ViewStrategy
         let renders: Renders
         var body: some View {
-            ProjectionKeeper(strategy: strategy) {
+            ProjectionKeeper {
                 renders.makes += 1
-                return store
+                return store.viewStore(strategy)
             } content: { observed in
                 ParentContent(observed: observed, renders: renders)
             }
@@ -106,7 +106,7 @@
         @OwnedStore var store: ViewStore<HAction, HState>
         let renders: Renders
         init(store: @autoclosure @escaping () -> Store<HAction, HState, Void>, renders: Renders) {
-            _store = OwnedStore(wrappedValue: store())
+            _store = OwnedStore(wrappedValue: store().viewStore())
             self.renders = renders
         }
         var body: some View {
@@ -120,7 +120,7 @@
         @OwnedStore var store: ViewStore<HAction, HState>
         let renders: Renders
         init(store: Store<HAction, HState, Void>, renders: Renders) {
-            _store = OwnedStore(wrappedValue: store, .combine)
+            _store = OwnedStore(wrappedValue: store.viewStore(.combine))
             self.renders = renders
         }
         var body: some View {
@@ -129,12 +129,12 @@
         }
     }
 
-    // A Combine owner handed a Combine view store — reuses it, and still redraws through it.
+    // An owner handed a view store keeps that one, and still redraws through it.
     private struct ReusingOwnerView: View {
         @OwnedStore var store: ViewStore<HAction, HState>
         let renders: Renders
         init(parent: ViewStore<HAction, HState>, renders: Renders) {
-            _store = OwnedStore(wrappedValue: parent, .combine)
+            _store = OwnedStore(wrappedValue: parent)
             self.renders = renders
         }
         var body: some View {
@@ -173,7 +173,7 @@
         @Test func ownedStoreBuildsOnceAcrossParentReRenders() {
             let outerStore = makeHStore()
             let renders = Renders()
-            let outer = ProjectionKeeper { outerStore } content: { outer in
+            let outer = ProjectionKeeper { outerStore.viewStore() } content: { outer in
                 OuterView(
                     outer: outer,
                     makeInner: {

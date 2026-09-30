@@ -608,7 +608,7 @@
             let box = ProjectionKeeper<ScreenAction, Screen, EmptyView>.Box()
             let make = { () -> ViewStore<ScreenAction, Screen> in
                 makes.bump()
-                return ViewStore.owning(store, strategy: .combine)
+                return store.viewStore(.combine)
             }
             let first = box.viewStore(id: nil, make: make)
             let again = box.viewStore(id: nil, make: make)
@@ -620,46 +620,38 @@
         }
     }
 
-    // MARK: - Owners reuse a view store they're handed
+    // MARK: - Making a view store is explicit
 
-    @Suite("ViewStore — owners reuse")
+    @Suite("ViewStore — .viewStore()")
     @MainActor
-    struct ViewStoreOwnerReuseTests {
-        @Test func aViewStoreSignallingTheSameWayIsReused() {
-            let parent = makeStore().viewStore(.combine)
-            let owned = ViewStore.owning(parent, strategy: .combine)
-            #expect(owned.testSignal === parent.testSignal)          // no second engine
-        }
-
-        @Test func aDerivedChildGetsItsOwnEngine() {
-            // A router hands a feature's view a transposed child of its view store: a pure stage, so its owner builds
-            // its own engine — every view store owns its snapshot.
-            let parent = makeStore(Screen(detail: Transport(position: 1))).viewStore(.combine)
-            let child = parent.transpose(.action(review: ScreenAction.transport).state(\.detail))
-            let owned = child.map { ViewStore.owning($0, strategy: .combine) }
-            #expect(owned?.testSignal !== parent.testSignal)
-            #expect(owned?.state.position == 1)
-        }
-
+    struct MakingAViewStoreTests {
         @Test func aPlainStoreGetsItsOwnEngine() {
-            let store = makeStore()
-            let owned = ViewStore.owning(store, strategy: .combine)
+            let owned = makeStore().viewStore(.combine)
             #expect(owned.testArmedCount == 0)                       // a root view store over its own engine
             #expect(owned.state.title == "a")
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func aDifferentSignalGetsItsOwnEngine() {
-            let parent = makeStore().viewStore(.combine)
-            let owned = ViewStore.owning(parent, strategy: .observation)
-            #expect(owned.testSignal !== parent.testSignal)          // Observation asked for: not the Combine one
+        @Test func onAViewStoreItMakesANewOneOverThePureUpstream() {
+            let store = makeStore()
+            let parent = store.viewStore(.combine)
+            let child = parent.viewStore(.combine)
+            #expect(child.testSignal !== parent.testSignal)          // its own engine and snapshot
+            store.dispatch(.mutate { $0.title = "b" })
+            #expect(child.state.title == "b")
         }
 
-        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func automaticMatchesWhatItResolvesTo() {
-            let parent = makeStore().viewStore(.observation)
-            let owned = ViewStore.owning(parent, strategy: .automatic) // .automatic is Observation here
-            #expect(owned.testSignal === parent.testSignal)
+        @Test func aDerivedChildGetsItsOwnEngine() {
+            // A router hands a feature's view a transposed child of its view store: a pure stage, made into its own
+            // view store — every view store owns its snapshot.
+            let parent = makeStore(Screen(detail: Transport(position: 1))).viewStore(.combine)
+            let child = parent.transpose(.action(review: ScreenAction.transport).state(\.detail))?.viewStore(.combine)
+            #expect(child?.testSignal !== parent.testSignal)
+            #expect(child?.state.position == 1)
+        }
+
+        @Test func anExistentialStoreMakesOne() {
+            let store: any StoreType<ScreenAction, Screen> = makeStore()
+            #expect(store.viewStore(.combine).state.title == "a")
         }
     }
 #endif

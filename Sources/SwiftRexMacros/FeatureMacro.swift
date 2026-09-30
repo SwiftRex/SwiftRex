@@ -107,8 +107,8 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             store: any StoreType<Action, State>,
             environment: Environment
         ) -> some View {
-            ProjectionKeeper(strategy: .\(raw: strategy)) {
-                \(raw: source)
+            ProjectionKeeper {
+                \(raw: source).viewStore(.\(raw: strategy))
             } content: {
                 Content(viewStore: $0)
             }

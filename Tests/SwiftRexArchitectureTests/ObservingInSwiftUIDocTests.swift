@@ -80,8 +80,8 @@
         @OwnedStore var legacy: ViewStore<DocAction, DocState>
 
         init(appStore: Store<DocAction, DocState, Void>) {
-            _viewStore = OwnedStore(wrappedValue: appStore)
-            _legacy = OwnedStore(wrappedValue: appStore, .combine)
+            _viewStore = OwnedStore(wrappedValue: appStore.viewStore())
+            _legacy = OwnedStore(wrappedValue: appStore.viewStore(.combine))
         }
 
         var body: some View {
@@ -91,7 +91,7 @@
             }
             .sheet(isPresented: viewStore.binding(.state(\.settings).action(\.closeSettings))) {
                 if let settings = viewStore.transpose(.action(\.settings).state(\.settings)) {
-                    ProjectionKeeper { settings } content: { SettingsView(viewStore: $0) }
+                    ProjectionKeeper { settings.viewStore() } content: { SettingsView(viewStore: $0) }
                 }
             }
         }
@@ -100,7 +100,7 @@
             switch route {
             case .detail:
                 if let detail = viewStore.transpose(.action(\.detail).state(\.detail)) {
-                    ProjectionKeeper { detail } content: { DetailView(viewStore: $0) }
+                    ProjectionKeeper { detail.viewStore() } content: { DetailView(viewStore: $0) }
                 }
             }
         }
@@ -113,7 +113,8 @@
             _viewStore = OwnedStore(wrappedValue: appStore
                 .projection(action: { $0 }, state: \.transport)
                 .buffer()
-                .projection(action: { $0 }, state: { "\($0.position)" }))
+                .projection(action: { $0 }, state: { "\($0.position)" })
+                .viewStore())
         }
 
         var body: some View { Text(viewStore.state.value) }
@@ -124,7 +125,7 @@
         @OwnedStore var viewStore: ViewStore<DocAction, DocState>
 
         init(appStore: any StoreType<DocAction, DocState>) {
-            _viewStore = OwnedStore(appStore)
+            _viewStore = OwnedStore(wrappedValue: appStore.viewStore())
         }
 
         var body: some View { Text(viewStore.state.title) }

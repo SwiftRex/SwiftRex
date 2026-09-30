@@ -56,7 +56,7 @@
 
         @MainActor
         static func view(store: any StoreType<Action, State>, environment: RPWorld) -> some View {
-            ProjectionKeeper { store } content: { viewStore in
+            ProjectionKeeper { store.viewStore() } content: { viewStore in
                 RPRootView(viewStore: viewStore, router: RPRouter(store: viewStore, world: environment))
             }
         }

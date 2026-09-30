@@ -21,7 +21,7 @@
         /// Swap a view store of `T?` into a store of `T` — present while `.some`.
         ///
         /// ```swift
-        /// if let book = viewStore.transpose() { ProjectionKeeper { book } content: { BookView(viewStore: $0) } }
+        /// if let book = viewStore.transpose() { ProjectionKeeper { book.viewStore() } content: { BookView(viewStore: $0) } }
         /// ```
         public func transpose<Wrapped: Sendable>() -> StoreUnwrap<Action, Wrapped>? where State == Wrapped? {
             reader.read(\Wrapped?.observationIsPresent)
@@ -105,7 +105,7 @@
         /// ```swift
         /// ForEach(viewStore.state.each(\.rows)) { row in
         ///     if let rowStore = viewStore.transpose(.action(\.row).state(\.rows), element: row.id) {
-        ///         RowFeature.view(store: rowStore, environment: world.rowEnv)      // or ProjectionKeeper { rowStore } …
+        ///         RowFeature.view(store: rowStore, environment: world.rowEnv)      // or ProjectionKeeper { rowStore.viewStore() } …
         ///     }
         /// }
         /// ```

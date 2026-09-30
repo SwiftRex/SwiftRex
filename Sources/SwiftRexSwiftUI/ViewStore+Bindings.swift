@@ -131,7 +131,7 @@ extension ViewStore {
     /// ```swift
     /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
     ///     if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
-    ///         ProjectionKeeper { editor } content: { EditorView(viewStore: $0) }
+    ///         ProjectionKeeper { editor.viewStore() } content: { EditorView(viewStore: $0) }
     ///     }
     /// }
     ///

@@ -37,9 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`Binding<Presentation<T>>` carrying both dismissal edges — `.sheet(item:)` takes it directly;
   `.isPresented()`, `.item()` and `.onDismiss()` feed any other container).
 - `PresentationAction` gets the full `@Prisms` surface (`\.editor.child` reaches the presented child's lane).
-- Owners (`@OwnedStore`, `ProjectionKeeper`, and so every `@Feature` view) reuse a `ViewStore` they're handed
-  when it signals the same way, instead of building a second engine; `OwnedStore(store)` owns a store held as
-  `any StoreType<Action, State>`.
+- A `ViewStore` is made explicitly, from any store: `store.viewStore()` / `store.viewStore(.combine)` (existentials
+  included). `@OwnedStore` and `ProjectionKeeper` only keep the `ViewStore` they're given — no strategy argument,
+  no upstream-taking initialiser: `@OwnedStore var viewStore = store.viewStore()`.
 - A two-way `binding` over an `Equatable` value drops a write equal to the current value — SwiftUI can write a
   binding twice for one gesture, which dispatched the action twice.
 - `ForEach(viewStore.state.items)` now fails with a message naming the fix (`each(\.items)`, or `.value`) instead of
