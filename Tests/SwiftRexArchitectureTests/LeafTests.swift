@@ -275,7 +275,7 @@
                     if let rowStore = viewStore.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: row.id) {
                         ProjectionKeeper(id: row.id) {
                             renders.rowMakes += 1
-                            return rowStore
+                            return rowStore.viewStore()
                         } content: { HostedRow(viewStore: $0, renders: renders) }
                     }
                 }
@@ -285,7 +285,7 @@
 
     @MainActor
     private func hostedList(_ store: Store<ListAction, ListState, Void>, _ strategy: ViewStrategy, _ renders: ListRenders) -> some View {
-        ProjectionKeeper(strategy: strategy) { store } content: { HostedList(viewStore: $0, renders: renders) }
+        ProjectionKeeper { store.viewStore(strategy) } content: { HostedList(viewStore: $0, renders: renders) }
     }
 
     @MainActor

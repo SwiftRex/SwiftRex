@@ -36,12 +36,13 @@ SwiftRex has one store that *runs* the app and several that *follow* it: they ta
 |---|---|---|---|
 | `ViewStore<Action, State>` | struct | **the receiver** — the only readable store. `viewStore.state` is the root position; `dispatch`, bindings, `transpose` and `read(derived:)` live here. It owns a snapshot, so it always has one owner; everything derived from it is a pure stage. Carries its own Combine subscription so a plain `let` works under every strategy. | `let` |
 | `GranularTracking<Value>` | struct | a *position* in the state (`viewStore.state.player`) — reads through it are granular; hand it to a subview that only reads. | `let` |
-| `@OwnedStore` | property wrapper | **the owner** in a view or `App`: follows any ``StoreType`` once per view identity (lazy, like `@StateObject`) and hands out a `ViewStore`. | `@OwnedStore var viewStore = appStore` |
-| `ProjectionKeeper` | view | **the owner** inline in a body (a router, a sheet, a list row): builds the view store once per identity and passes it to its content. | — |
+| `.viewStore(_:)` | method on every ``StoreType`` | **makes** a `ViewStore` — the only way to make one, always explicit; takes the `ViewStrategy`. Make it where it's kept. | — |
+| `@OwnedStore` | property wrapper | **keeps** a `ViewStore` in a view for the view's life (lazy, like `@StateObject`) — nothing more. | `@OwnedStore var viewStore = appStore.viewStore()` |
+| `ProjectionKeeper` | view | **keeps** a `ViewStore` inline in a body (a router, a sheet, a list row), once per identity, and passes it to its content. | — |
 | `IndivisibleTracking` | protocol | marks types read *whole* (`String`, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those; your own via an empty extension). Everything else is read as a `GranularTracking` position. | — |
-| `ViewStrategy` | enum | how an owner signals SwiftUI: `.automatic` (default), `.observation`, `.combine`. | — |
+| `ViewStrategy` | enum | how a view store signals SwiftUI, chosen in `.viewStore(_:)`: `.automatic` (default), `.observation`, `.combine`. | — |
 
-**Pure until the leaf.** Every stage above is pure: it follows a stream and keeps nothing a parent holds. The `ViewStore` is the only leaf — the only store with a snapshot and observation, and the only one that needs an owner. A child that dispatches or binds gets its own view store: derive a stage (`viewStore.projection(scope)`, `viewStore.transpose(scope)`, `viewStore.transpose(scope, element: id)`) and own it where the child is built.
+**Pure until the leaf.** Every stage above is pure: it follows a stream and keeps nothing a parent holds. The `ViewStore` is the only leaf — the only store with a snapshot and observation, and the only one that needs an owner. A child that dispatches or binds gets its own view store: derive a stage (`viewStore.projection(scope)`, `viewStore.transpose(scope)`, `viewStore.transpose(scope, element: id)`) and make its `.viewStore()` where the child keeps it.
 
 ### Macros (`SwiftRex.Architecture` / `SwiftRex.SwiftUI`)
 
@@ -78,12 +79,12 @@ Migrating an app step by step, with the rewrite rules and the pitfalls: <doc:Mig
 | `presence` / `item` / `presenting` / `presentingItem` | `binding(.state(…).action(…))`, typed by the SwiftUI parameter; `.sheet(item:)` takes a `Binding<Presentation<T>>` |
 | `ScopedStore` / `node.scoped(action:)` | `viewStore.projection(.action(\.x).state(\.x))`, owned by the child (`ProjectionKeeper`) |
 | `@ObservedStore` | `@OwnedStore` |
-| `ObservableStoreHost` / `observable()` | `ProjectionKeeper { store } content: { viewStore in … }` |
+| `ObservableStoreHost` / `observable()` | `ProjectionKeeper { store.viewStore() } content: { viewStore in … }` |
 | `peek` in action closures | dispatch the intent; the reducer reads the state |
 | `store.publisher` / `store.stream` | `store.stateStream` (a `Publisher` / an `AsyncSequence`) |
 | core `transpose()` on ``StoreType`` | `viewStore.transpose(scope)` → ``StoreUnwrap```?`, owned by the child; elsewhere presence is state (`stateStream.map { $0.child != nil }.removeDuplicates()`) |
 | `TrackedViewStore` + `@Tracked` | nothing to write — reads are granular at any depth |
-| `ObservableObjectStore` / `asObservableObject()` | `@OwnedStore(.combine) var viewStore = appStore` |
+| `ObservableObjectStore` / `asObservableObject()` | `@OwnedStore var viewStore = appStore.viewStore(.combine)` |
 | `ViewStrategy.observationSimple` / `.observationGranular` / `.combineObservable` | `.automatic` / `.observation` / `.combine` |
 | `@BoundTo(X.self, strategy: …)` | `@BoundTo(X.self)` |
 

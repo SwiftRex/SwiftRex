@@ -23,8 +23,8 @@
     /// ```
     ///
     /// **Who owns it.** A view store keeps a snapshot and the record of what its views read, so it is built once
-    /// and owned: by `@Feature`'s generated view, by ``OwnedStore`` (`@OwnedStore var viewStore = appStore`), or
-    /// by ``ProjectionKeeper`` inside a body. Views below receive it as a plain `let` — it carries its own
+    /// and owned. You make it explicitly — `store.viewStore()` — and keep it in ``OwnedStore`` (a property), in
+    /// ``ProjectionKeeper`` (inside a body) or in `@Feature`'s generated view. Views below receive it as a plain `let` — it carries its own
     /// Combine subscription, so no property wrapper is needed under either signal.
     ///
     /// **The leaf.** Composition is pure — `StoreProjection`, `StoreBuffer`,
@@ -32,7 +32,7 @@
     /// holds. A view store is where that ends: it owns a snapshot (a cache) and the observation work, which are
     /// effects. Deriving a child from a view store — `viewStore.projection(…)`, or `transpose(…)` for an optional or
     /// an element — gives a pure stage built on the view store's **pure side** (its upstream), never on its snapshot;
-    /// to observe that child, own it (``OwnedStore``, ``ProjectionKeeper``, a feature's view).
+    /// to observe that child, make its own view store (`.viewStore()`) and keep it.
     ///
     /// Bindings (`binding(.state(…).action(…))`), `transpose` and
     /// ``read(derived:id:fileID:line:column:)`` live here too: a binding SwiftUI can't observe would never
@@ -61,21 +61,8 @@
             self.init(reader: RootReader(engine: engine), send: engine.dispatch, stateStream: engine.upstreamStream)
         }
 
-        /// Builds a view store over `upstream` with a new engine — whoever holds the result owns it. Views use
-        /// ``OwnedStore`` / ``ProjectionKeeper`` instead, which build it once per view identity.
-        init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy = .automatic) {
+        init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy) {
             self.init(engine: ViewStoreEngine(upstream, strategy: strategy))
-        }
-
-        /// The view store an owner hands out for `upstream`: `upstream` itself when it already **is** a view store
-        /// signalling the same way (no second engine re-following the first — a view store handed straight to a
-        /// feature's view), a new engine over it otherwise.
-        static func owning(_ upstream: any StoreType<Action, State>, strategy: ViewStrategy) -> ViewStore<Action, State> {
-            if let viewStore = upstream as? ViewStore<Action, State>,
-               viewStore.reader.signal.signalsThroughObservation == strategy.signalsThroughObservation {
-                return viewStore
-            }
-            return ViewStore(engine: ViewStoreEngine(upstream, strategy: strategy))
         }
 
         /// The state, read granularly: `viewStore.state.player.title` depends on `\.player.title` alone.
@@ -140,53 +127,55 @@
         }
     }
 
+    // MARK: - Making a view store
+
+    extension StoreType {
+        /// A view store over this store — the one way to make one, always explicit. It builds the leaf: a snapshot,
+        /// the record of what views read, and the signal to SwiftUI through `strategy` (Observation on iOS 17+,
+        /// Combine below, by default).
+        ///
+        /// Whoever holds the result owns it, so make it where it's kept — ``OwnedStore``, ``ProjectionKeeper``, a
+        /// feature's view — never in a `body` on its own (a new one per render would forget what the views read):
+        ///
+        /// ```swift
+        /// @OwnedStore var viewStore = store.viewStore()
+        /// ProjectionKeeper { store.projection(\.detail).viewStore() } content: { DetailView(viewStore: $0) }
+        /// ```
+        ///
+        /// On a view store it makes a **new** one, following the same pure upstream (never the first one's snapshot).
+        public func viewStore(_ strategy: ViewStrategy = .automatic) -> ViewStore<Action, State> {
+            ViewStore(self, strategy: strategy)
+        }
+    }
+
     // MARK: - @OwnedStore
 
-    /// The store a view **owns** — observes any `StoreType` once per view identity and hands the view
-    /// a ``ViewStore``.
-    ///
-    /// The initial value is an autoclosure, evaluated only the first time the view appears (like `@StateObject`),
-    /// so re-initialising the view never rebuilds or re-subscribes the store:
+    /// Keeps a ``ViewStore`` for as long as the view lives — nothing more. The initial value is an autoclosure,
+    /// evaluated only the first time the view appears (like `@StateObject`), so re-initialising the view never
+    /// rebuilds the view store:
     ///
     /// ```swift
     /// struct Root: View {
-    ///     @OwnedStore var viewStore = appStore                       // Observation on iOS 17+, Combine below
+    ///     @OwnedStore var viewStore: ViewStore<AppAction, AppState>
+    ///     init(store: Store<AppAction, AppState, World>) { _viewStore = OwnedStore(wrappedValue: store.viewStore()) }
     ///     var body: some View { Child(viewStore: viewStore) }         // children receive `let ViewStore`
     /// }
     /// ```
     ///
-    /// Choose the signal with a second argument — `@OwnedStore(.combine) var viewStore = appStore` — or, when
-    /// assigning in `init`, `_viewStore = OwnedStore(wrappedValue: upstream, .combine)`. Inside a body, where no
+    /// The signal is chosen where the view store is made: `store.viewStore(.combine)`. Inside a body, where no
     /// property can be declared, use ``ProjectionKeeper``.
-    ///
-    /// Handed a view store that already signals the same way (`@OwnedStore var viewStore = parentViewStore`), it
-    /// reuses it instead of building a second engine that re-follows the first.
     @MainActor @propertyWrapper
     public struct OwnedStore<Action: Sendable, State: Sendable>: DynamicProperty {
         @StateObject private var holder: OwnedViewStore<Action, State>
 
-        public init<Upstream: StoreType>(
-            wrappedValue upstream: @autoclosure @escaping () -> Upstream,
-            _ strategy: ViewStrategy = .automatic
-        ) where Upstream.Action == Action, Upstream.State == State {
-            _holder = StateObject(wrappedValue: OwnedViewStore(ViewStore.owning(upstream(), strategy: strategy)))
-        }
-
-        /// Owns a view store over a store held as an existential — `any StoreType<Action, State>`, the usual type of
-        /// an app's store property. Assign it in `init`: `_viewStore = OwnedStore(store)`. (A property wrapper's
-        /// `wrappedValue` initializer can't take an existential, so this form has no label.)
-        public init(
-            _ upstream: @autoclosure @escaping () -> any StoreType<Action, State>,
-            _ strategy: ViewStrategy = .automatic
-        ) {
-            _holder = StateObject(wrappedValue: OwnedViewStore(ViewStore.owning(upstream(), strategy: strategy)))
+        public init(wrappedValue viewStore: @autoclosure @escaping () -> ViewStore<Action, State>) {
+            _holder = StateObject(wrappedValue: OwnedViewStore(viewStore()))
         }
 
         public var wrappedValue: ViewStore<Action, State> { holder.viewStore }
     }
 
-    /// What `@OwnedStore` keeps in SwiftUI's state: the view store it owns — a new engine, or a view store it was
-    /// handed. Its `objectWillChange` **is** that view store's signal (no forwarding), so under
+    /// What `@OwnedStore` keeps in SwiftUI's state: the view store it holds. Its `objectWillChange` **is** that view store's signal (no forwarding), so under
     /// ``ViewStrategy/combine`` SwiftUI subscribes to the engine directly; under Observation it never sends.
     @MainActor
     final class OwnedViewStore<Action: Sendable, State: Sendable>: @MainActor ObservableObject {

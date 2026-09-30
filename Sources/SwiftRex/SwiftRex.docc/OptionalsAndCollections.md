@@ -108,7 +108,7 @@ ForEach(viewStore.state.each(\.rows)) { row in RowView(row: row) }
 if let child = viewStore.transpose(.action(\.child).state(\.child)) { ChildFeature.view(store: child, environment: world.childEnv) }
 
 // one element — by id, by position or by key — through the same collection scope a projection takes
-if let cell = viewStore.transpose(.action(\.row).state(\.rows), element: id) { ProjectionKeeper { cell } content: { … } }
+if let cell = viewStore.transpose(.action(\.row).state(\.rows), element: id) { ProjectionKeeper { cell.viewStore() } content: { … } }
 ```
 
 Deriving from any store gives a **pure stage** — something that follows a stream and keeps nothing a parent holds.
@@ -174,7 +174,7 @@ the element's presence and returns the row's store to own:
 ```swift
 ForEach(viewStore.state.each(\.rows)) { row in
     if let rowStore = viewStore.transpose(.action(\.row).state(\.rows), element: row.id) {
-        ProjectionKeeper(id: row.id) { rowStore } content: { RowView(viewStore: $0) }   // or RowFeature.view(store:…)
+        ProjectionKeeper(id: row.id) { rowStore.viewStore() } content: { RowView(viewStore: $0) }   // or RowFeature.view(store:…)
     }
 }
 ```

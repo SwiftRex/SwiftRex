@@ -68,7 +68,7 @@ A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it decides the nesting directly:
 
 ```swift
 if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
-    ProjectionKeeper { editor } content: { EditorView(viewStore: $0) }   // or EditorFeature.view(store: editor, …)
+    ProjectionKeeper { editor.viewStore() } content: { EditorView(viewStore: $0) }   // or EditorFeature.view(store: editor, …)
 }
 ```
 

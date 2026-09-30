@@ -327,7 +327,7 @@ struct AppShell: View {
     let world: World
 
     init(store: Store<AppAction, AppState, World>, world: World) {
-        _viewStore = OwnedStore(wrappedValue: store)
+        _viewStore = OwnedStore(wrappedValue: store.viewStore())
         self.world = world
     }
 

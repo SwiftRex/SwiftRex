@@ -76,7 +76,7 @@ import SwiftRexSwiftUI
 let appStore = Store(initial: CounterState(), behavior: counterBehavior)
 
 struct RootView: View {
-    @OwnedStore var viewStore = appStore   // the owner: built once, however often RootView is re-created
+    @OwnedStore var viewStore = appStore.viewStore()   // the owner: built once, however often RootView is re-created
 
     var body: some View { CounterView(viewStore: viewStore) }
 }
@@ -99,7 +99,7 @@ struct CounterView: View {
 #Preview { RootView() }
 ```
 
-`@OwnedStore`'s initial value is lazy (like `@StateObject`'s): it runs the first time the view appears, not on every re-initialisation, so the view store's snapshot and its record of what each view read survive parent re-renders. It picks the Observation framework on iOS 17+ and a Combine signal below — the `ViewStore` receivers work the same either way. Force Combine with `@OwnedStore(.combine)`.
+`@OwnedStore`'s initial value is lazy (like `@StateObject`'s): it runs the first time the view appears, not on every re-initialisation, so the view store's snapshot and its record of what each view read survive parent re-renders. It picks the Observation framework on iOS 17+ and a Combine signal below — the `ViewStore` receivers work the same either way. Force Combine with `appStore.viewStore(.combine)`.
 
 `withAnimation { viewStore.dispatch(.increment) }` works too — dispatch reaches the view store synchronously on the main actor, so the change lands in the right SwiftUI transaction.
 

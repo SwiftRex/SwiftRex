@@ -217,13 +217,13 @@ Three stages, one job each — each follows the one below through its `stateStre
 
 The view store already *is* the buffer after the map — it only signals what changed — so the one placement decision left is **before** the map: `store.buffer().projection(…)` skips the map entirely when the input didn't change. `@Feature`'s generated view does exactly that when the feature's `State` is `Equatable` (`buffer → projection → view store`).
 
-Focusing stays on the same view store only through key paths (`focus`): a projection through a closure can't be seen into, so it returns a plain `StoreProjection`, which gets its own view store from an owner (`@OwnedStore`, `ProjectionKeeper`). A view store only passes a state on when its snapshot changed, so a store projected from it is woken only by changes that reached it.
+A projection from a view store is a plain `StoreProjection` over the view store's pure upstream (never its snapshot); to observe it, make its `.viewStore()` and keep it (`@OwnedStore`, `ProjectionKeeper`).
 
 ### Owners, receivers and strategies
 
 > Note: Wiring views without `@Feature`? <doc:ObservingInSwiftUI> covers every owner / receiver / projection / strategy combination, and <doc:StoresAtAGlance> maps every store type and shows exactly which views redraw under Observation vs Combine.
 
-The view store is built **once**, by its owner, and handed down: the owner is `@Feature`'s generated view, or `@OwnedStore var viewStore = appStore` in a view you write (its initial value is lazy, like `@StateObject`'s, so re-creating the view never rebuilds it); every view below takes `let viewStore: ViewStore<…>`.
+The view store is built **once**, by its owner, and handed down: the owner is `@Feature`'s generated view, or `@OwnedStore var viewStore = appStore.viewStore()` in a view you write (its initial value is lazy, like `@StateObject`'s, so re-creating the view never rebuilds it); every view below takes `let viewStore: ViewStore<…>`.
 
 The strategy is chosen by the owner and changes only how the store signals SwiftUI — receivers and bodies are identical:
 
@@ -236,7 +236,7 @@ struct WidgetView: View {
     var body: some View { Text(viewStore.state.label) }
 }
 
-@OwnedStore(.combine) var viewStore = appStore   // the same override on a hand-written owner
+@OwnedStore var viewStore = appStore.viewStore(.combine)   // the same override on a hand-written owner
 ```
 
 Under Observation (the `.automatic` default on iOS 17+) only the views that read a changed path redraw. Combine can't be per view — `ObservableObject` has one signal — but it's still sent only when a path some view read has changed, so unrelated state changes redraw nothing.
@@ -346,7 +346,7 @@ Library.view(
 )
 ```
 
-That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (`@OwnedStore var root = store`) and transposes the slice, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?` — a pure stage the child feature's view owns. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
+That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (`@OwnedStore var root = store.viewStore()`) and transposes the slice, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?` — a pure stage the child feature's view owns. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
 
 ```swift
 if let hero = root.transpose(.action(\.heroDetail).state(\.heroDetail)) {

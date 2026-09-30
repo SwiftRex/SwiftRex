@@ -9,39 +9,32 @@
     /// content, a static `view(store:environment:)` function.
     ///
     /// ```swift
-    /// ProjectionKeeper { appStore.projection(action: { .detail($0) }, state: DetailScreen.makeViewState) } content: { viewStore in
+    /// ProjectionKeeper { appStore.projection(action: { .detail($0) }, state: DetailScreen.makeViewState).viewStore() } content: { viewStore in
     ///     DetailScreen(viewStore: viewStore)
     /// }
     /// ```
     ///
-    /// It's the composition `(store) -> ViewStore >>> (ViewStore) -> View`, with ownership in the middle: `make`
-    /// (usually a projection) runs the first time this position appears and again only when `id` changes; the
-    /// observed store it builds lives in SwiftUI's state for this view, so re-rendering the parent never rebuilds
-    /// it, re-subscribes it, or loses what its views recorded. `content` runs on every render with the same
-    /// ``ViewStore``.
+    /// It keeps a view store and nothing more: `make` runs the first time this position appears and again only when
+    /// `id` changes; the view store it returns lives in SwiftUI's state for this view, so re-rendering the parent
+    /// never rebuilds it, re-subscribes it, or loses what its views recorded. `content` runs on every render with
+    /// the same ``ViewStore``.
     ///
     /// Pass an `id` when the same position can come to show a *different* store (a sheet for another item).
-    /// Handed a view store that already signals the same way, it reuses it instead of building a second engine that
-    /// re-follows the first. Handed a pure stage (a projection, `viewStore.transpose(…)`), it owns a new view store
-    /// for it — every view store owns its snapshot.
     /// `@Feature`'s generated view is one of these.
     @MainActor
     public struct ProjectionKeeper<Action: Sendable, State: Sendable, Content: View>: View {
         @SwiftUI.State private var box = Box()
         private let id: AnyHashable?
-        private let strategy: ViewStrategy
         private let make: @MainActor () -> ViewStore<Action, State>
         private let content: @MainActor (ViewStore<Action, State>) -> Content
 
         public init(
             id: AnyHashable? = nil,
-            strategy: ViewStrategy = .automatic,
-            _ make: @escaping @MainActor () -> any StoreType<Action, State>,
+            _ make: @escaping @MainActor () -> ViewStore<Action, State>,
             @ViewBuilder content: @escaping @MainActor (ViewStore<Action, State>) -> Content
         ) {
             self.id = id
-            self.strategy = strategy
-            self.make = { ViewStore.owning(make(), strategy: strategy) }
+            self.make = make
             self.content = content
         }
 
