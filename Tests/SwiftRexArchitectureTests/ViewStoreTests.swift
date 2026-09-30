@@ -576,17 +576,59 @@
             let store = makeStore()
             let makes = Counter()
             let box = ProjectionKeeper<ScreenAction, Screen, EmptyView>.Box()
-            let make = { () -> ViewStoreEngine<ScreenAction, Screen> in
+            let make = { () -> ViewStore<ScreenAction, Screen> in
                 makes.bump()
-                return ViewStoreEngine(store, strategy: .combine)
+                return ViewStore.owning(store, strategy: .combine)
             }
-            let first = box.engine(id: nil, make: make)
-            let again = box.engine(id: nil, make: make)
-            #expect(first === again)
+            let first = box.viewStore(id: nil, make: make)
+            let again = box.viewStore(id: nil, make: make)
+            #expect(first.testSignal === again.testSignal)
             #expect(makes.value == 1)
-            let other = box.engine(id: 1, make: make)
-            #expect(other !== first)
+            let other = box.viewStore(id: 1, make: make)
+            #expect(other.testSignal !== first.testSignal)
             #expect(makes.value == 2)
+        }
+    }
+
+    // MARK: - Owners reuse a view store they're handed
+
+    @Suite("ViewStore — owners reuse")
+    @MainActor
+    struct ViewStoreOwnerReuseTests {
+        @Test func aViewStoreSignallingTheSameWayIsReused() {
+            let parent = makeStore().viewStore(.combine)
+            let owned = ViewStore.owning(parent, strategy: .combine)
+            #expect(owned.testSignal === parent.testSignal)          // no second engine
+        }
+
+        @Test func theRouterCaseReusesTheParentsEngine() {
+            // A router hands a feature's view a transposed child of its own view store.
+            let parent = makeStore(Screen(detail: Transport(position: 1))).viewStore(.combine)
+            let child = parent.focus(.action(review: ScreenAction.transport).state(\.detail)).transpose()
+            let owned = child.map { ViewStore.owning($0, strategy: .combine) }
+            #expect(owned?.testSignal === parent.testSignal)
+            #expect(owned?.state.position == 1)
+        }
+
+        @Test func aPlainStoreGetsItsOwnEngine() {
+            let store = makeStore()
+            let owned = ViewStore.owning(store, strategy: .combine)
+            #expect(owned.testArmedCount == 0)                       // a root view store over its own engine
+            #expect(owned.state.title == "a")
+        }
+
+        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+        @Test func aDifferentSignalGetsItsOwnEngine() {
+            let parent = makeStore().viewStore(.combine)
+            let owned = ViewStore.owning(parent, strategy: .observation)
+            #expect(owned.testSignal !== parent.testSignal)          // Observation asked for: not the Combine one
+        }
+
+        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+        @Test func automaticMatchesWhatItResolvesTo() {
+            let parent = makeStore().viewStore(.observation)
+            let owned = ViewStore.owning(parent, strategy: .automatic) // .automatic is Observation here
+            #expect(owned.testSignal === parent.testSignal)
         }
     }
 #endif

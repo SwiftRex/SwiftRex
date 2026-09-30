@@ -115,6 +115,34 @@
         }
     }
 
+    // A Combine owner reading its own view store — redraws through the owned object's `objectWillChange`.
+    private struct CombineOwnerView: View {
+        @OwnedStore var store: ViewStore<HAction, HState>
+        let renders: Renders
+        init(store: Store<HAction, HState, Void>, renders: Renders) {
+            _store = OwnedStore(wrappedValue: store, .combine)
+            self.renders = renders
+        }
+        var body: some View {
+            renders.hot += 1
+            return Text("\(store.state.hot)")
+        }
+    }
+
+    // A Combine owner handed a Combine view store — reuses it, and still redraws through it.
+    private struct ReusingOwnerView: View {
+        @OwnedStore var store: ViewStore<HAction, HState>
+        let renders: Renders
+        init(parent: ViewStore<HAction, HState>, renders: Renders) {
+            _store = OwnedStore(wrappedValue: parent, .combine)
+            self.renders = renders
+        }
+        var body: some View {
+            renders.hot += 1
+            return Text("\(store.state.hot)")
+        }
+    }
+
     @MainActor
     private func settle(_ view: NSHostingView<some View>) {
         view.needsLayout = true
@@ -178,6 +206,36 @@
             store.dispatch(.hot)
             #expect(sends == 0) // Observation signalled it, not Combine
             cancellable.cancel()
+        }
+
+        @Test func combineOwnerRedrawsItsOwnBody() {
+            let store = makeHStore()
+            let renders = Renders()
+            let host = NSHostingView(rootView: CombineOwnerView(store: store, renders: renders))
+            host.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+            settle(host)
+            let before = renders.hot
+            store.dispatch(.hot)
+            settle(host)
+            #expect(renders.hot > before)
+            let afterHot = renders.hot
+            store.dispatch(.cold) // unread path
+            settle(host)
+            #expect(renders.hot == afterHot)
+        }
+
+        @Test func reusingOwnerSharesTheEngineAndRedraws() {
+            let store = makeHStore()
+            let parent = store.viewStore(.combine)
+            let renders = Renders()
+            let host = NSHostingView(rootView: ReusingOwnerView(parent: parent, renders: renders))
+            host.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+            settle(host)
+            #expect(parent.testArmedCount == 1) // the owner's read of `hot` landed on the parent's engine
+            let before = renders.hot
+            store.dispatch(.hot)
+            settle(host)
+            #expect(renders.hot > before)
         }
 
         @Test func combineRedrawsNodeHoldersWhenTheirPathChanged() {

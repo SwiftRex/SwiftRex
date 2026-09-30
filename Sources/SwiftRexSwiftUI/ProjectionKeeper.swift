@@ -21,13 +21,15 @@
     /// ``ViewStore``.
     ///
     /// Pass an `id` when the same position can come to show a *different* store (a sheet for another item).
+    /// Handed a view store that already signals the same way (a router passing `viewStore.focus(…).transpose()`
+    /// to a feature's view), it reuses it instead of building a second engine that re-follows the first.
     /// `@Feature`'s generated view is one of these.
     @MainActor
     public struct ProjectionKeeper<Action: Sendable, State: Sendable, Content: View>: View {
         @SwiftUI.State private var box = Box()
         private let id: AnyHashable?
         private let strategy: ViewStrategy
-        private let make: @MainActor () -> ViewStoreEngine<Action, State>
+        private let make: @MainActor () -> ViewStore<Action, State>
         private let content: @MainActor (ViewStore<Action, State>) -> Content
 
         public init(
@@ -38,27 +40,27 @@
         ) {
             self.id = id
             self.strategy = strategy
-            self.make = { ViewStoreEngine(make(), strategy: strategy) }
+            self.make = { ViewStore.owning(make(), strategy: strategy) }
             self.content = content
         }
 
         public var body: some View {
-            content(ViewStore(engine: box.engine(id: id, make: make)))
+            content(box.viewStore(id: id, make: make))
         }
 
         // A plain (non-observable) box: `@State` keeps the first instance across re-inits, and reading it never
         // invalidates anything.
         @MainActor
         final class Box {
-            private var current: (id: AnyHashable?, engine: ViewStoreEngine<Action, State>)?
+            private var current: (id: AnyHashable?, viewStore: ViewStore<Action, State>)?
 
-            func engine(id: AnyHashable?, make: () -> ViewStoreEngine<Action, State>) -> ViewStoreEngine<Action, State> {
-                current.flatMap { $0.id == id ? $0.engine : nil } ?? remember(id, make())
+            func viewStore(id: AnyHashable?, make: () -> ViewStore<Action, State>) -> ViewStore<Action, State> {
+                current.flatMap { $0.id == id ? $0.viewStore : nil } ?? remember(id, make())
             }
 
-            private func remember(_ id: AnyHashable?, _ engine: ViewStoreEngine<Action, State>) -> ViewStoreEngine<Action, State> {
-                current = (id, engine)
-                return engine
+            private func remember(_ id: AnyHashable?, _ viewStore: ViewStore<Action, State>) -> ViewStore<Action, State> {
+                current = (id, viewStore)
+                return viewStore
             }
         }
     }

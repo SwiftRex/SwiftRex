@@ -119,6 +119,17 @@
         var body: some View { Text(viewStore.state.value) }
     }
 
+    // An owner over an existential store — the usual type of an app's store property.
+    private struct ExistentialOwner: View {
+        @OwnedStore var viewStore: ViewStore<DocAction, DocState>
+
+        init(appStore: any StoreType<DocAction, DocState>) {
+            _viewStore = OwnedStore(appStore)
+        }
+
+        var body: some View { Text(viewStore.state.title) }
+    }
+
     // MARK: - Receivers
 
     private struct PlayerScreen: View {
@@ -169,6 +180,7 @@
             let appStore = makeDocStore()
             _ = RootView(appStore: appStore).body
             _ = DerivedOwner(appStore: appStore)
+            _ = ExistentialOwner(appStore: appStore)
         }
 
         @Test func observeProjectObserveChainsThroughAViewStore() {
