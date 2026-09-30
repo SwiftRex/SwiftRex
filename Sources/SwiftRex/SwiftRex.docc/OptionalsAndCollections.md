@@ -104,19 +104,19 @@ A view reads through a **view store** (a `ViewStore`, handed down by `@Feature` 
 // whole collection — one position per row; the list depends on the ids, each row on its own element
 ForEach(viewStore.state.each(\.rows)) { row in RowView(row: row) }
 
-// an optional child — its presence, then the child's own store
-if let child = viewStore.focus(.action(\.child).state(\.child)).transpose() { ChildFeature.view(store: child, environment: world.childEnv) }
+// an optional child — its presence (a read, on the view store), then a pure stage the child's view owns
+if let child = viewStore.transpose(.action(\.child).state(\.child)) { ChildFeature.view(store: child, environment: world.childEnv) }
 
 // one element — by id, by position or by key — through the same collection scope a projection takes
-if let cell = viewStore.focus(.action(\.row).state(\.rows), element: id).transpose() { … }
+if let cell = viewStore.transpose(.action(\.row).state(\.rows), element: id) { ProjectionKeeper { cell } content: { … } }
 ```
 
-Projections narrow types for whoever *follows* the store (`store.projection(…)` then `@OwnedStore` / a
-feature's view) — a plain ``StoreProjection`` has no state to read, only a stream to follow:
+Deriving from any store gives a **pure stage** — something that follows a stream and keeps nothing a parent holds.
+To observe one, own it: a feature's view does, `ProjectionKeeper` in a body, `@OwnedStore` as a property.
 
 ```swift
 let list: StoreProjection<BulkAction, [Row]> = store.projection(.action(AppAction.prism.bulk).state(\.rows))
-let cell: StoreProjection<RowAction, Row?> = store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
+let cell: StoreElement<RowAction, Row> = store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
 let child: StoreProjection<ChildAction, Child?> = store.projection(.action(AppAction.prism.child).state(\.child))
 ```
 
@@ -126,20 +126,24 @@ lane for `liftCollection` (which writes per element) — the host decides, with 
 ### transpose — a store of optional becomes an optional store
 
 To hand a child `Feature` a store of the **unwrapped** value, invert the two type constructors with
-`transpose()`: `Store<Optional<T>>` becomes `Optional<Store<T>>` — the store analogue of transposing
+`transpose`: `Store<Optional<T>>` becomes `Optional<Store<T>>` — the store analogue of transposing
 `Optional<[T]>` ⇄ `[Optional<T>]`.
 
+Deciding *whether* the value is there is a read, so `transpose` lives on the `ViewStore` and the calling view
+depends on the **presence edge only**. What it returns is a pure ``StoreUnwrap``: a store of the unwrapped value that
+holds its last present value while the child animates away. Own it where the child is built.
+
 ```swift
-// in a view body — on the view store; the view depends on the presence edge only:
-viewStore.focus(.action(\.child).state(\.child))   // ViewStore<ChildAction, Child?>  — store of optional
-    .transpose()                                        // StoreProjection<…, Child>?      — optional store of unwrapped
-    .map { ChildFeature.view(store: $0, environment: world.childEnv) }   // View? — nil if the child is gone
+// in a view body:
+viewStore.transpose(.action(\.child).state(\.child))                 // StoreUnwrap<ChildAction, Child>?
+    .map { ChildFeature.view(store: $0, environment: world.childEnv) }  // View? — the feature's view owns it
 
 // a lane no key path expresses:
 viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
 ```
 
-It's a read, so it lives on `ViewStore` — a synchronous read in a body, returning a `ViewStore<T>?` on the same engine. Outside SwiftUI, presence is plain state: follow `store.stateStream.map { $0.child != nil }.removeDuplicates()` and present or dismiss on the edge.
+Outside SwiftUI, presence is plain state: follow `store.stateStream.map { $0.child != nil }.removeDuplicates()`,
+and on `true` build `StoreUnwrap(store.projection(…), present: value)` for the child screen.
 
 > It is deliberately **not** called `sequence`: a `Store` is not `Traversable`, so the swap claims no
 > traversal law. It works because a view store knows the current value, which decides the nesting at call
@@ -149,30 +153,49 @@ It's a read, so it lives on `ViewStore` — a synchronous read in a body, return
 ### Presentation — the flicker-free child
 
 For an animated modal, prefer ``Presentation`` (`presented` / `dismissing(last:)` / `dismissed`) over a
-bare `T?`. Its `transpose()` overload (on the view store) keeps the child store live through **both**
-`presented` and `dismissing`, going `nil` only at `dismissed` — so the sheet renders its last value steady as
-SwiftUI animates it out, with no flicker:
+bare `T?`. Its `transpose` form keeps the child store live through **both** `presented` and `dismissing`, going
+`nil` only at `dismissed` — so the sheet renders its last value steady as SwiftUI animates it out, with no flicker:
 
 ```swift
-.sheet(item: viewStore.binding(.state(\.editor).action(\.dismissEditor))) { _ in
-    if let editor = viewStore.focus(.action(\.editor.child).state(\.editor)).transpose() {
+.sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
+    if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
         EditorFeature.view(store: editor, environment: world.editorEnv)
     }
 }
 ```
 
-### Focusing one element
+### One element of a collection
 
-`viewStore.focus(scope, element:)` is `store.projection(scope, element:)` on a view store: the same collection scopes (by `id`, custom id `.state(\.rows, id: \.slug)`, position `.state(indexed:)`, key `.state(dictionary:)`), the same `ElementAction` envelope, and an optional element — `ViewStore<RowAction, Row?>` — to `transpose()` into a row store that exists while the row does.
+``StoreElement`` is a pure stage for one element: `store.projection(scope, element: id)` — by `id`, custom id
+`.state(\.rows, id: \.slug)`, position `.state(indexed:)` or key `.state(dictionary:)` — with the `ElementAction`
+envelope, and an optional element because it can go away. In a view, `viewStore.transpose(scope, element: id)` reads
+the element's presence and returns the row's store to own:
 
-It reads through the parent's engine, so a row redraws only for its own element. By position and by key the lookup is O(1) natively. By **id** it's a search, kept O(1) without asking anything of the state: each focused row remembers where it last found its element and checks there first, then its neighbours (one insert or remove shifts later rows by one), then the shift another row just learned (a block insert or remove), and only a shuffle or sort builds an id → offset table — once per state change, on demand. Every candidate is verified by id, so hints only ever make a lookup faster. With 1,000 focused rows a change costs about 2 ms, an insert at the top 2.5 ms, a full reverse 4 ms (release).
+```swift
+ForEach(viewStore.state.each(\.rows)) { row in
+    if let rowStore = viewStore.transpose(.action(\.row).state(\.rows), element: row.id) {
+        ProjectionKeeper(id: row.id) { rowStore } content: { RowView(viewStore: $0) }   // or RowFeature.view(store:…)
+    }
+}
+```
 
-By position follows the *position*: after a removal the same index holds another element. Prefer ids unless the list never changes shape.
+Each row owns its own view store: it redraws only for its own element, is built once per id, and survives reorders.
+The list's body depends on the ids (`each`) and each row's presence, never on a row's contents.
+
+Finding the element: by position and by key it's O(1). By **id** each row's stage keeps a hint — where it last found
+its element — and searches outward from it, so an element that moved by `k` costs `k` steps: O(1) for an insert or
+remove, O(k) for a block of `k`, O(n) per row only after a shuffle, sort or reverse. The hint belongs to that row's
+subscription; nothing is cached in the list. Measured with 1,000 owned rows (release): one row change ~7 ms, an insert
+at the top 9 ms, a block of 10 at the top 20 ms, a full reverse ~320 ms. A `List` builds only its visible rows, so a
+real screen pays for those alone.
+
+By position follows the *position*: after a removal the same index holds another element. Prefer ids unless the list
+never changes shape.
 
 ## Two-way bindings
 
 A store-backed `Binding` reads state and *dispatches* on write (the reducer stays the only writer). Bindings
-live on the view store (`ViewStore`, focused or not). It takes
+live on the view store. It takes
 the same axis pair as every host — a `.state(…)` read and a `.action(…)` embed of the same value type —
 so the slots can't be crossed and each offers only its own strategies (`\.case` / prism / `review:` /
 `preview:` for actions, key path / closure / lens for state):
@@ -183,11 +206,10 @@ TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName)))
 // or a transform, wrapping the closure in .action(review:):
 TextField("Name", text: viewStore.binding(.state(\.name).action(review: { ViewAction.setName($0) })))
 
-// a field of a collection element — focus the row, then bind:
-ForEach(viewStore.state.each(\.rows)) { row in
-    if let rowStore = viewStore.focus(.action(\.row).state(\.rows), element: row.id).transpose() {
-        TextField("Name", text: rowStore.binding(.state(\.name).action(\.setName)))
-    }
+// a field of a collection element — the row's own view store, then bind:
+struct RowView: View {
+    let viewStore: ViewStore<RowAction, Row>
+    var body: some View { TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName))) }
 }
 ```
 

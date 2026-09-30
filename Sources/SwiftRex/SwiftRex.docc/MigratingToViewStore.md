@@ -18,6 +18,8 @@ viewStore.state.player         // GranularTracking<Player> — a position you ke
 viewStore.state.player.value   // the whole Player — a coarse read, depends on \.player
 ```
 
+The same rule, one level up: **only a `ViewStore` reads, and every view store has one owner.** Anything you derive — a projection, a transposed optional, a collection element — is a pure stage with no state to read; a child observes it through its own view store, owned where the child is built.
+
 That one fact explains most compiler errors below. Old code where `viewStore.state.title` was a plain read keeps compiling (now granular). Old code that *used* `viewStore.state.x` as a value — `ForEach(viewStore.state.items)`, `.detail(for: viewStore.state.selection)`, `.dispatch(.open(viewStore.state.item))` — doesn't, because `x` is now a position.
 
 ## Step 1 — Macros: drop the strategy arguments
@@ -76,7 +78,6 @@ Every binding is `binding(_:)` taking one chained scope — a `.state(…)` lane
 | `item(.state(\.x), dismiss: .closeX)` | `binding(.state(\.x).action(\.closeX))` → `Binding<X?>` |
 | `presenting(store, \.slot, dismiss: .slot(.dismiss)) { … }` | `.sheet(item: viewStore.binding(.state(\.slot).action(\.slot))) { … }` |
 | `presentingItem(…)` | the same `.sheet(item:)` |
-| `focus(.state(\.x), .action(\.x))` | `focus(.action(\.x).state(\.x))` |
 
 SwiftUI's parameter picks the binding type: `.sheet(isPresented:)` gets the `Bool`, `.sheet(item:)` the optional. Bindings exist only on `ViewStore` — a binding on a plain `Store` or `StoreProjection` no longer compiles (it never updated a view).
 
@@ -88,7 +89,6 @@ Safe rewrites (these **must** be paren-aware — see *Pitfalls*):
 .binding(.state(X), dispatch: Y)   →  .binding(.state(X)Y)
 .presence(.state(X), dismiss: .c)  →  .binding(.state(X).action(\.c))
 .item(.state(X), dismiss: .c)      →  .binding(.state(X).action(\.c))
-.focus(.state(X), Y)               →  .focus(Y.state(X))
 ```
 
 ## Step 5 — Reads that need a value
@@ -107,11 +107,13 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 
 | Before | After |
 |---|---|
-| `store.projection(…).transpose()` in a body or router | `viewStore.transpose(action: …, state: …)` (closure lane) or `viewStore.focus(.action(\.x).state(\.x)).transpose()` (key paths) |
+| `store.projection(…).transpose()` in a body or router | `viewStore.transpose(.action(\.x).state(\.x))` (key paths) or `viewStore.transpose(action: …, state: …)` (closure lane) |
+| a list row built with a projection by id | `viewStore.transpose(.action(\.row).state(\.rows), element: row.id)` |
+| a child view taking a slice it dispatches into | `ProjectionKeeper { viewStore.projection(.action(\.x).state(\.x)) } content: { Child(viewStore: $0) }` |
 | a router holding `any StoreType<…>` / `MainStoreType` | a router holding the app's `ViewStore<AppAction, AppState>` |
 | `store.projection(…).transpose()` outside SwiftUI (UIKit) | follow presence as state: `store.stateStream.map { $0.x != nil }.removeDuplicates().observe { … }` |
 
-`viewStore.focus(…).transpose()` gives a `ViewStore<T>?` on the same engine — pass it straight to a child view or a feature's `view(store:environment:)`; owners reuse a view store they're handed, so no second engine is built.
+**Pure until the leaf.** Everything derived — a projection, a transposed slot, an element — is a pure stage: it follows a stream and has no state to read. A child observes it through its **own** view store, so own it where the child is built: a feature's `view(store:environment:)` does it for you, `ProjectionKeeper` in a body, `@OwnedStore` as a property. The parent keeps nothing for its children, and a child redraws only for what it reads.
 
 ## Step 7 — Code outside SwiftUI
 
@@ -140,6 +142,8 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 | `'subscript(dynamicMember:)' is unavailable: a state collection is a position, not a collection …` | `ForEach` over a position | step 5 — `each(\.items)` (older SwiftRex said `requires that 'X' conform to 'IndivisibleTracking'`) |
 | `… on 'Optional' requires that 'X' conform to 'IndivisibleTracking'` | a non-leaf position passed as a value | step 5 — `.value` |
 | `value of type 'StoreProjection<…>' has no member 'transpose'` | core transpose is gone | step 6 |
+| `value of type 'ViewStore<…>' has no member 'focus'` | children are derived and owned | step 6 — `projection(scope)` / `transpose(scope)`, owned by the child |
+| `value of type 'StoreUnwrap<…>' has no member 'state'` / `'binding'` | a derived stage used as a view store | own it: `ProjectionKeeper { stage } content: { … }` or the child feature's view |
 | `'state' is inaccessible due to 'private' protection level` | reading a `Store` | step 7 |
 
 ## Pitfalls — learned doing this

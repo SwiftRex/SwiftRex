@@ -173,25 +173,32 @@
 
     // MARK: - Collections: performance
 
-    @Suite("Leaf — a thousand owned rows")
+    @Suite("Leaf — many owned rows")
     @MainActor
     struct LeafPerformanceTests {
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
-        @Test func changesStayCheapWithAThousandOwnedRows() {
+        @Test func changesStayCheapWithManyOwnedRows() {
+            // 1,000 rows in release (the numbers in the docs); 200 in debug, so the suite doesn't hold the main actor
+            // for seconds and starve timing-sensitive tests running alongside.
+            #if DEBUG
+                let count = 200
+            #else
+                let count = 1_000
+            #endif
             var initial = ListState()
-            initial.rows = (0..<1_000).map { Row(id: $0, title: "\($0)") }
+            initial.rows = (0..<count).map { Row(id: $0, title: "\($0)") }
             let store = makeStore(initial)
             let list = store.viewStore(.observation)
             let clock = ContinuousClock()
             var rows: [ViewStore<RowAction, Row>] = []
             let build = clock.measure {
-                rows = (0..<1_000).compactMap { id in
+                rows = (0..<count).compactMap { id in
                     list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: id)?.viewStore(.observation)
                 }
             }
             func arm() { rows.forEach { row in _ = track { _ = row.state.title } } }
             arm()
-            let steady = clock.measure { for tick in 0..<20 { store.dispatch(.row(ElementAction(999, action: .rename("t\(tick)")))) } }
+            let steady = clock.measure { for tick in 0..<20 { store.dispatch(.row(ElementAction(count - 1, action: .rename("t\(tick)")))) } }
             arm()
             let insertTop = clock.measure { store.dispatch(mutate { $0.rows.insert(Row(id: 5_000, title: "top"), at: 0) }) }
             arm()
@@ -199,9 +206,9 @@
             let block = clock.measure { store.dispatch(mutate { $0.rows.insert(contentsOf: blockRows, at: 0) }) }
             arm()
             let reverse = clock.measure { store.dispatch(mutate { $0.rows.reverse() }) }
-            #expect(rows.count == 1_000)
-            #expect(rows[500].state.title == "500")
-            print("LEAF-COST build=\(build) steady20=\(steady) insertTop=\(insertTop) block10=\(block) reverse=\(reverse)")
+            #expect(rows.count == count)
+            #expect(rows[count / 2].state.title == "\(count / 2)")
+            print("LEAF-COST rows=\(count) build=\(build) steady20=\(steady) insertTop=\(insertTop) block10=\(block) reverse=\(reverse)")
             #expect(steady < .seconds(2))
             #expect(insertTop < .seconds(1))
             #expect(block < .seconds(1))

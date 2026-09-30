@@ -203,7 +203,7 @@ For lists, `each` gives one position per `Identifiable` element — the list dep
 List(viewStore.state.each(\.songs)) { song in SongRow(song: song) }
 ```
 
-A subview that needs to send actions or build bindings takes a **focused** view store — a key-path slice read through the same snapshot, with its own action lane (no new subscription): `viewStore.focus(.action(\.transport).state(\.transport))`.
+A subview that needs to send actions or build bindings gets its **own** view store: derive a pure stage (`viewStore.projection(.action(\.transport).state(\.transport))`) and own it where the subview is built (`ProjectionKeeper { … } content: { … }`, or a child feature's view).
 
 ### Composing projection, buffer and the view store
 
@@ -346,10 +346,10 @@ Library.view(
 )
 ```
 
-That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (`@OwnedStore var root = store`), focuses the slice and transposes it, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?`. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
+That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (`@OwnedStore var root = store`) and transposes the slice, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?` — a pure stage the child feature's view owns. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
 
 ```swift
-if let hero = root.focus(.action(\.heroDetail).state(\.heroDetail)).transpose() {
+if let hero = root.transpose(.action(\.heroDetail).state(\.heroDetail)) {
     HeroDetails.view(store: hero, environment: appEnv.heroDetail)
 }
 ```

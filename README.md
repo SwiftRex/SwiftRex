@@ -428,7 +428,7 @@ The lifted behavior sees the **unwrapped** element (never `Element?`), and each 
 
 ```swift
 // an optional child → an unwrapped child store → a live child view (nothing while it's absent):
-if let detail = viewStore.focus(.action(\.detail).state(\.detail)).transpose() {
+if let detail = viewStore.transpose(.action(\.detail).state(\.detail)) {
     DetailFeature.view(store: detail, environment: world.detailEnv)
 }
 

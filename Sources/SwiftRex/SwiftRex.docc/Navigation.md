@@ -77,7 +77,7 @@ An optional-shaped destination is a store of an *optional* (`Child?`), but `Chil
 
 ```swift
 // Optional child slice — scope by key path, then transpose:
-if let child = store.focus(.action(\.child).state(\.child)).transpose() {
+if let child = store.transpose(.action(\.child).state(\.child)) {
     Detail.view(store: child, environment: world.detailEnv)
 }
 
@@ -90,22 +90,22 @@ if let screen = store.transpose(action: { .detail($0) }, state: { $0.path.last?.
 For the ``Presentation`` shape, `transpose()` reads the live child through **both** `presented` and `dismissing(last:)`, going `nil` only once `dismissed` — the child store (and its view) stay alive and steady while SwiftUI animates the sheet out, so building a destination this way is flicker-free without any view-layer latch:
 
 ```swift
-if let editor = store.focus(.action(\.editor.child).state(\.editor)).transpose() {   // state: Presentation<Editor.State>
+if let editor = store.transpose(.action(\.editor.child).state(\.editor)) {   // state: Presentation<Editor.State>
     Editor.view(store: editor, environment: world.editorEnv)
 }
 ```
 
-A list iterates the collection with `each` — the list depends on the ids, each row on its own element — and focuses each row for its own store, through the same collection scope a projection takes:
+A list iterates the collection with `each` — the list depends on the ids, each row on its own element — and transposes each row into its own store, through the same collection scope a projection takes:
 
 ```swift
 List(store.state.each(\.rows)) { row in
-    if let rowStore = store.focus(.action(\.row).state(\.rows), element: row.id).transpose() {
+    if let rowStore = store.transpose(.action(\.row).state(\.rows), element: row.id) {
         Row.view(store: rowStore, environment: world.rowEnv)
     }
 }
 ```
 
-The row store reads through the list's view store (no new subscription), dispatches `RowAction` as `.row(ElementAction(id, action))`, finds its element in O(1) however the array moves, and holds its last value while it animates out. Nothing is asked of the state: a plain array of `Identifiable` values.
+The row store is a pure stage (``StoreElement`` under ``StoreUnwrap``) that the row's feature view owns: its own view store, redrawing only for its own element. It dispatches `RowAction` as `.row(ElementAction(id, action))`, finds its element through a hint of its own (O(distance moved)), and holds its last value while it animates out. The list holds nothing for it, and nothing is asked of the state: a plain array of `Identifiable` values.
 
 > Note: `transpose` reads the presence edge synchronously in a body, so it lives on `ViewStore`. Outside SwiftUI, presence is plain state — follow `stateStream.map { $0.child != nil }.removeDuplicates()` and present or dismiss on the edge. The forms above depend on the presence edge only, never on the child's contents.
 

@@ -8,12 +8,18 @@ Wire a store to SwiftUI by hand: who owns the view store, how child views receiv
 
 A ``StoreType`` can't be read — only observed (its ``StoreType/stateStream``) and dispatched to. A SwiftUI view reads a **`ViewStore`** instead: it follows any store, keeps one snapshot of the state, and records — per key path — what each view read. When the state changes it signals only the views that read something that changed, compared with `==`.
 
-Everything in this article follows from one rule:
+Everything in this article follows from two rules:
+
+**Pure until the leaf.** Stores compose as pure stages — ``Store`` → ``StoreProjection`` / ``StoreBuffer`` / ``StoreElement`` / ``StoreUnwrap`` → … — each following the one before, keeping nothing a parent holds. The `ViewStore` is the leaf where that ends: it owns a snapshot (a cache) and does the observation work, which are effects. Deriving anything from a view store — `projection`, `transpose` — gives a pure stage again, built on the view store's pure side.
+
+**Every view store has one owner; views below receive it.**
 
 | | Code | Under every strategy |
 |---|---|---|
-| **One owner** builds the view store, once | `@OwnedStore var viewStore = appStore` | ✓ |
+| **One owner** builds a view store, once | `@OwnedStore var viewStore = appStore`, or `ProjectionKeeper { stage } content: { … }` in a body | ✓ |
 | **Every view below** receives it | `let viewStore: ViewStore<Action, State>` | ✓ |
+
+So the three questions are always answered the same way: *derived* → a pure stage; *to observe a stage* → own it; *given by a parent* → `let`.
 
 The pieces, from the `SwiftRex.SwiftUI` product:
 
@@ -59,7 +65,7 @@ struct DetailScreen: View {
 
 To pick a strategy there, pass it after the upstream: `OwnedStore(wrappedValue: upstream, .combine)`. When the store is held as an existential (`any StoreType<A, S>`, the usual type of an app's store property), use the unlabeled form: `_viewStore = OwnedStore(store)`.
 
-Handed a view store that already signals the same way — a router passing `viewStore.focus(…).transpose()` to a feature's view — an owner reuses it instead of building a second engine that re-follows the first.
+Handed a view store that already signals the same way, an owner reuses it instead of building a second engine that re-follows the first. Handed a pure stage (a projection, a transposed slot), it owns a new view store for it.
 
 **In the `App`**, which is initialised once — the same wrapper:
 
@@ -97,8 +103,8 @@ A child never builds anything. It takes what the parent hands down, as a plain `
 |---|---|---|
 | reads and dispatches on the whole state | the `ViewStore` | `let viewStore: ViewStore<A, S>` |
 | only reads one region | a position: `viewStore.state.player` | `let player: GranularTracking<Player>` |
-| reads a region and dispatches / binds into it | a focused view store: `viewStore.focus(.action(\.player).state(\.player))` | `let viewStore: ViewStore<PlayerAction, Player>` |
-| is a row that dispatches or binds | a focused element: `viewStore.focus(.action(\.row).state(\.rows), element: row.id).transpose()` | `let viewStore: ViewStore<RowAction, Row>` |
+| reads a region and dispatches / binds into it | its own view store, owned where it's built: `ProjectionKeeper { viewStore.projection(.action(\.player).state(\.player)) } content: { … }` | `let viewStore: ViewStore<PlayerAction, Player>` |
+| is a row that dispatches or binds | its own view store per row: `ProjectionKeeper(id: row.id) { rowStore } content: { … }` with `rowStore` from `viewStore.transpose(.action(\.row).state(\.rows), element: row.id)` | `let viewStore: ViewStore<RowAction, Row>` |
 | is a row of a list | a row position: `ForEach(viewStore.state.each(\.songs)) { SongRow(song: $0) }` | `let song: GranularTracking<Song>` |
 | only needs values | plain values | `let title: String` |
 
@@ -125,7 +131,7 @@ struct PlayerScreen: View {
 }
 ```
 
-**Focusing** gives a child its own `ViewStore` of a key-path slice: it reads through the parent's view store (no new subscription, no owner needed — cheap to create in a body) and dispatches through its own action lane. Use it when the child dispatches or binds, not only reads.
+**A child that dispatches or binds gets its own view store.** Derive a pure stage from yours — `viewStore.projection(scope)` for a slice, `viewStore.transpose(scope)` for an optional, `viewStore.transpose(scope, element: id)` for a row — and own it where the child is built (a feature's view does it for you). The child's view store follows its own stage, diffs its own snapshot, and redraws only for what *it* reads; the parent holds nothing for it.
 
 **Dispatch intent, don't read in closures.** An action closure has no business reading the state — send what the user meant and let the reducer, which has the state, decide: `Button("Mark") { viewStore.dispatch(.markAtPlayhead) }`, not `.mark(at: <current position>)`. The view then depends on nothing it doesn't show.
 
@@ -144,13 +150,14 @@ A view store already *is* a buffer on its output — it only signals what change
 | The view needs | Owner | Notes |
 |---|---|---|
 | the app state as it is | `@OwnedStore var viewStore = appStore` | reads are granular; no projection at all |
-| a slice (`\.player`) | own the parent once, pass `viewStore.state.player` / `viewStore.focus(…)` down | no new subscription, no extra work |
+| a slice (`\.player`) that a subview only reads | own the parent once, pass `viewStore.state.player` down | no new subscription, no extra work |
+| a slice a subview dispatches into or binds | `ProjectionKeeper { viewStore.projection(.action(\.player).state(\.player)) } content: { … }` | the child's own view store |
 | a derived view state (a map) | `@OwnedStore var viewStore = appStore.projection(action: …, state: makeViewState)` | the map runs once per upstream change |
 | a derived view state, and the map is expensive or the app is busy | `@OwnedStore var viewStore = appStore.buffer().projection(…)` | the map runs only when its input changed — needs the input `Equatable` |
 | a derived view state of one feature's slice | `appStore.projection(action: …, state: \.feature).buffer().projection(action: { $0 }, state: makeViewState)` | slice → dedup on the slice → map |
-| a derived view state *from a view store* | `@OwnedStore var detail = viewStore.projection(action: …, state: …)` | the child follows the parent's already-filtered changes |
+| a derived view state *from a view store* | `@OwnedStore var detail = viewStore.projection(action: …, state: …)` | the child follows the parent's pure chain, not its snapshot |
 
-Focusing through a **key path** reads through the same view store for free. Projecting through a **closure** can't — nothing can see into an arbitrary function — so the result is a plain ``StoreProjection``, which you own again with `@OwnedStore` or `ProjectionKeeper`. The types enforce this: a `StoreProjection` has no `state` to read and no bindings.
+A pure stage has no `state` to read and no bindings — the types make you own it before you can observe it.
 
 ## Choosing the signal: Observation or Combine
 
@@ -188,9 +195,9 @@ struct RootView: View {
                 .navigationDestination(for: Route.self) { route in destination(route) }
         }
         .sheet(isPresented: viewStore.binding(.state(\.settings).action(\.closeSettings))) {
-            // `settings` is optional state: present while it exists, the child follows its own state.
-            if let settings = viewStore.focus(.action(\.settings).state(\.settings)).transpose() {
-                SettingsView(viewStore: settings)
+            // `settings` is optional state: present while it exists; the child owns a view store of its own.
+            if let settings = viewStore.transpose(.action(\.settings).state(\.settings)) {
+                ProjectionKeeper { settings } content: { SettingsView(viewStore: $0) }
             }
         }
     }
@@ -198,15 +205,15 @@ struct RootView: View {
     @ViewBuilder func destination(_ route: Route) -> some View {
         switch route {
         case .detail:
-            if let detail = viewStore.focus(.action(\.detail).state(\.detail)).transpose() {
-                DetailView(viewStore: detail)
+            if let detail = viewStore.transpose(.action(\.detail).state(\.detail)) {
+                ProjectionKeeper { detail } content: { DetailView(viewStore: $0) }
             }
         }
     }
 }
 ```
 
-`transpose()` turns a `ViewStore<T?>` (or `ViewStore<Presentation<T>>`) into a `ViewStore<T>?` that exists exactly while the state does — a view store on the same engine, so no owner is needed. The caller depends on the **presence edge only**; the child reads its own state granularly, and holds its last value while SwiftUI animates it away. For lanes no key path expresses (an enum case, the top of a stack), `viewStore.transpose(action:state:)` takes the closures directly and returns a `StoreProjection?` for a feature's view to own.
+`transpose(scope)` reads whether the slot is there — a read, so it's on the view store, and the caller depends on the **presence edge only** — and returns a ``StoreUnwrap``, a pure stage of the unwrapped value that holds its last value while SwiftUI animates the child away. Own it where the child is built: `ProjectionKeeper` for a plain view, nothing for a feature's view (`DetailFeature.view(store: detail, environment: …)` owns it). The same works for a `Presentation` slot, a collection element (`transpose(scope, element: id)`), and lanes no key path expresses (`transpose(action:state:)`).
 
 For routers built on ``Relay/Scope`` and features, see <doc:Navigation> and <doc:NavigationEndToEnd>.
 

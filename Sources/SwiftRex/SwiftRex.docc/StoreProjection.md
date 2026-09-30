@@ -57,17 +57,18 @@ token = store.stateStream
 
 ### In SwiftUI — `transpose()`
 
-A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it swaps the nesting directly: `transpose()` turns a `ViewStore<T?>` into a `ViewStore<T>?` on the same engine, depending on the presence edge only — the body re-runs exactly when the child appears or goes away:
+A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it decides the nesting directly: `transpose(scope)` reads the presence edge from its snapshot — the body re-runs exactly when the child appears or goes away — and returns a pure ``StoreUnwrap`` of the unwrapped value, for the child to own:
 
 | State | Form |
 |---|---|
-| `T?` reached by a key path | `viewStore.focus(.action(\.child).state(\.child)).transpose()` |
-| ``Presentation`` — alive through `presented` **and** `dismissing(last:)`, `nil` once `dismissed` (flicker-free) | `viewStore.focus(.action(\.editor.child).state(\.editor)).transpose()` |
-| `T?` reached by a closure lane (an affine preview, the top of a stack) | `viewStore.transpose(action: { .child($0) }, state: { $0.path.last?.child })` — a `StoreProjection?` |
+| `T?` reached by a key path | `viewStore.transpose(.action(\.child).state(\.child))` |
+| ``Presentation`` — alive through `presented` **and** `dismissing(last:)`, `nil` once `dismissed` (flicker-free) | `viewStore.transpose(.action(\.editor.child).state(\.editor))` |
+| `T?` reached by a closure lane (an affine preview, the top of a stack) | `viewStore.transpose(action: { .child($0) }, state: { $0.path.last?.child })` |
+| one element of a collection | `viewStore.transpose(.action(\.row).state(\.rows), element: id)` |
 
 ```swift
-if let editor = viewStore.focus(.action(\.editor.child).state(\.editor)).transpose() {
-    EditorView(viewStore: editor)
+if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
+    ProjectionKeeper { editor } content: { EditorView(viewStore: $0) }   // or EditorFeature.view(store: editor, …)
 }
 ```
 
