@@ -63,6 +63,8 @@ Every bridge delivers the current state first, then each new state, on the main 
 
 ### Removed — and what replaced them
 
+Migrating an app step by step, with the rewrite rules and the pitfalls: <doc:MigratingToViewStore>.
+
 | Was | Now |
 |---|---|
 | `store.state` on any store | follow `store.stateStream`; views read `viewStore.state` (`TestStore.state` stays) |

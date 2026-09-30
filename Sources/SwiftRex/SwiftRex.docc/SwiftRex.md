@@ -47,6 +47,7 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 - <doc:ObservingInSwiftUI>
 - <doc:Navigation>
 - <doc:NavigationEndToEnd>
+- <doc:MigratingToViewStore>
 
 ### Concepts
 

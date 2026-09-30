@@ -31,7 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Binding<T?>`, typed by the SwiftUI parameter), or a `PresentationAction` on a `Presentation` slot
   (`Binding<Presentation<T>>` carrying both dismissal edges — `.sheet(item:)` takes it directly;
   `.isPresented()`, `.item()` and `.onDismiss()` feed any other container).
-- `PresentationAction` is `Prismatic` (`\.editor.child` reaches the presented child's lane).
+- `PresentationAction` gets the full `@Prisms` surface (`\.editor.child` reaches the presented child's lane).
+- Owners (`@OwnedStore`, `ProjectionKeeper`, and so every `@Feature` view) reuse a `ViewStore` they're handed
+  when it signals the same way, instead of building a second engine; `OwnedStore(store)` owns a store held as
+  `any StoreType<Action, State>`.
+- Article: *Migrating to ViewStore and StateStream* — ordered, mechanical steps, rewrite rules, compiler
+  symptoms, and pitfalls.
 - Articles: *Stores at a Glance*, *Observing a Store in SwiftUI*.
 
 ### Changed
