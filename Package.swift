@@ -131,7 +131,8 @@ let package = Package(
             name: "SwiftRexSwiftUI",
             dependencies: [
                 "SwiftRex",
-                "SwiftRexMacros"
+                "SwiftRexMacros",
+                .product(name: "FPMacros", package: "FP")
             ],
             path: "Sources/SwiftRexSwiftUI"
         ),

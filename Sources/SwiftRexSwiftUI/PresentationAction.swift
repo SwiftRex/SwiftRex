@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if canImport(SwiftUI)
-import CoreFP
+import FPMacros
 
 /// The standard action set for a ``Presentation`` slot — the two dismissal edges plus a pass-through for the
 /// presented child's own actions. It is generic **only over the child's `Action`** — never its `State` —
@@ -19,6 +19,7 @@ import CoreFP
 /// **ends** (SwiftUI's `onDismiss` — `→ dismissed`). A view store's `Binding<Presentation<T>>` dispatches both.
 /// To dismiss programmatically, dispatch `dismiss` (or set `dismissing` in your reducer); SwiftUI's `onDismiss`
 /// then sends `dismissed`.
+@Prisms
 public enum PresentationAction<Child> {
     /// The dismissal started: `presented → dismissing(last:)`. Ignored unless `presented`.
     case dismiss
@@ -29,32 +30,6 @@ public enum PresentationAction<Child> {
 }
 
 extension PresentationAction: Sendable where Child: Sendable {}
-
-// Prisms by hand, so key paths reach through the slot's action: `.action(\.editor.child)` is the presented
-// child's lane (what a focused child view store dispatches through), `.action(\.editor)` the whole slot's.
-extension PresentationAction: Prismatic {
-    /// One `Prism` per case.
-    public struct Prisms {
-        /// The dismissal started.
-        public let dismiss = Prism<PresentationAction, Void>(
-            preview: { if case .dismiss = $0 { () } else { nil } },
-            review: { .dismiss }
-        )
-        /// The dismissal finished.
-        public let dismissed = Prism<PresentationAction, Void>(
-            preview: { if case .dismissed = $0 { () } else { nil } },
-            review: { .dismissed }
-        )
-        /// An action from the presented child.
-        public let child = Prism<PresentationAction, Child>(
-            preview: { if case let .child(action) = $0 { action } else { nil } },
-            review: { .child($0) }
-        )
-    }
-
-    /// The per-case prisms.
-    public static var prism: Prisms { Prisms() }
-}
 extension PresentationAction: Equatable where Child: Equatable {}
 
 #endif
