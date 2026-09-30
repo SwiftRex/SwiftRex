@@ -14,7 +14,7 @@
     ///
     ///     var body: some View {
     ///         List { … }
-    ///             .sheet(isPresented: viewStore.binding(.state(\.route), dismiss: .dismiss)) {
+    ///             .sheet(isPresented: viewStore.binding(.state(\.route).action(\.dismiss))) {
     ///                 router.view(for: .detail)        // env-free body; the router supplies env
     ///             }
     ///     }

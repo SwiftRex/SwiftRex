@@ -428,12 +428,12 @@ The lifted behavior sees the **unwrapped** element (never `Element?`), and each 
 
 ```swift
 // an optional child → an unwrapped child store → a live child view (nothing while it's absent):
-if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
+if let detail = viewStore.focus(.action(\.detail).state(\.detail)).transpose() {
     DetailFeature.view(store: detail, environment: world.detailEnv)
 }
 
 // two-way binding — a `.state(…)` read paired with the `.action(…)` case it dispatches on write:
-TextField("Name", text: viewStore.binding(.state(\.name), dispatch: .action(\.setName)))
+TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName)))
 ```
 
 A **`Relay.Scope`** captures how a child feature embeds into the app — action prism, state slice, environment narrowing — as one declared, compile-checked value used by both the store fold *and* the view router. Given that wiring it lifts whatever the child provides: `.behavior(of:)` when the child is `HasBehavior`, `.view(of:from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:
@@ -484,13 +484,13 @@ Navigation is a function of state: routes live in the state tree, behaviors muta
 
 | State shape | Binding | Container |
 |---|---|---|
-| `Route?` (the optional *is* the content) | `store.binding(…, dismiss:)` → `Binding<Route?>` / `Binding<Bool>` | `.sheet`, `.fullScreenCover`, `.popover` |
+| `Route?` (the optional *is* the content) | `store.binding(.state(…).action(…))` → `Binding<Route?>` / `Binding<Bool>` | `.sheet`, `.fullScreenCover`, `.popover` |
 | `[Route]` | `store.binding(…)` | `NavigationStack(path:)` |
 | selection enum / id | `store.binding(…)` | `TabView`, `NavigationSplitView` |
 | collection of scene ids | `store.hasScene(…)` | `WindowGroup(for:)` |
 
 ```swift
-NavigationStack(path: store.binding(.state(\.nav.path), dispatch: .action(review: { .nav(.setPath($0)) }))) {
+NavigationStack(path: store.binding(.state(\.nav.path).action(review: { .nav(.setPath($0)) }))) {
     HomeView()
         .navigationDestination(for: AppRoute.self) { route in
             route.view(in: store, world: world)   // a switch resolving scopes — no AnyView

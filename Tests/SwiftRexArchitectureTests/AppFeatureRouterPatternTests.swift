@@ -104,7 +104,7 @@
         let router: RPRouter
 
         var body: some View {
-            NavigationStack(path: viewStore.binding(.state(\.path), dispatch: .action(\.setPath))) {
+            NavigationStack(path: viewStore.binding(.state(\.path).action(\.setPath))) {
                 router.root().navigationDestination(for: RPRoute.self) { router.destination(for: $0) }
             }
         }

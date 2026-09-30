@@ -31,7 +31,7 @@
     /// ```
     ///
     /// A `DynamicProperty`: stored in a view, it also carries the view store's Combine signal, so a plain `let`
-    /// redraws under ``ViewStrategy/combine`` too. Its own members (`value`, `each`, `isPresent()`, `unwrapped()`,
+    /// redraws under ``ViewStrategy/combine`` too. Its own members (`value`, `each`, `isPresent()`, `transpose()`,
     /// `id`) hide state fields with the same name.
     @MainActor @dynamicMemberLookup
     public struct GranularTracking<Value>: DynamicProperty {
@@ -80,9 +80,15 @@
             reader.read(\Wrapped?.observationIsPresent)
         }
 
-        /// The position of the wrapped value while `.some`, `nil` otherwise. The check depends on the presence
-        /// edge only; reads through the returned position depend on what they read.
-        public func unwrapped<Wrapped: Sendable>() -> GranularTracking<Wrapped>? where Value == Wrapped? {
+        /// Swap a position of an optional into an optional position — `GranularTracking<T?>` into
+        /// `GranularTracking<T>?`: the position of the wrapped value while `.some`, `nil` otherwise. The check
+        /// depends on the presence edge only; reads through the returned position depend on what they read, and a
+        /// position kept after the value is gone shows the last value it had.
+        ///
+        /// ```swift
+        /// if let detail = viewStore.state.detail.transpose() { Text(detail.title) }
+        /// ```
+        public func transpose<Wrapped: Sendable>() -> GranularTracking<Wrapped>? where Value == Wrapped? {
             isPresent()
                 ? reader.peekWhole().map { current in
                     GranularTracking<Wrapped>(reader.slice(\Wrapped?.[observationUnwrapped: ObservationLastPresent(current)]))
@@ -105,6 +111,8 @@
         func readWhole() -> Base
         func peekWhole() -> Base
         func slice<T>(_ keyPath: KeyPath<Base, T>) -> any TrackingReader<T>
+        /// A position reached through a closure or lens — no key path, so reads through it depend on the whole state.
+        func lane<T>(_ get: @escaping (Base) -> T) -> any TrackingReader<T>
         func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T
         func rows<C: RandomAccessCollection & Sendable>(
             _ keyPath: KeyPath<Base, C>
@@ -124,6 +132,10 @@
 
         func slice<T>(_ keyPath: KeyPath<State, T>) -> any TrackingReader<T> {
             SliceReader(engine: engine, prefix: keyPath)
+        }
+
+        func lane<T>(_ get: @escaping (State) -> T) -> any TrackingReader<T> {
+            LaneReader(engine: engine, get: get)
         }
 
         func read<T: Equatable>(derived compute: @escaping (State) -> T, id: ObservationDerivedID) -> T {
@@ -154,6 +166,11 @@
             SliceReader<Action, Root, T>(engine: engine, prefix: engine.paths.append(prefix, keyPath))
         }
 
+        func lane<T>(_ get: @escaping (Base) -> T) -> any TrackingReader<T> {
+            let prefix = self.prefix
+            return LaneReader<Action, Root, T>(engine: engine, get: { get($0[keyPath: prefix]) })
+        }
+
         func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T {
             let prefix = self.prefix
             return engine.read(ObservationDerivedKey(
@@ -171,12 +188,54 @@
         }
     }
 
+    /// A position reached through a closure or lens. Without a key path nothing narrower can be recorded, so every
+    /// read through it depends on the whole state — the same fallback a closure lane gets in a binding. Key-path
+    /// lanes stay granular; this keeps closure lanes correct.
+    @MainActor
+    struct LaneReader<Action: Sendable, Root: Sendable, Base>: TrackingReader {
+        let engine: ViewStoreEngine<Action, Root>
+        let get: (Root) -> Base
+
+        var signal: ViewStoreSignal { engine }
+        func read<T>(_ keyPath: KeyPath<Base, T>) -> T { get(engine.read(engine.whole))[keyPath: keyPath] }
+        func peek<T>(_ keyPath: KeyPath<Base, T>) -> T { get(engine.snapshot)[keyPath: keyPath] }
+        func readWhole() -> Base { get(engine.read(engine.whole)) }
+        func peekWhole() -> Base { get(engine.snapshot) }
+
+        func slice<T>(_ keyPath: KeyPath<Base, T>) -> any TrackingReader<T> {
+            let get = self.get
+            return LaneReader<Action, Root, T>(engine: engine, get: { get($0)[keyPath: keyPath] })
+        }
+
+        func lane<T>(_ transform: @escaping (Base) -> T) -> any TrackingReader<T> {
+            let get = self.get
+            return LaneReader<Action, Root, T>(engine: engine, get: { transform(get($0)) })
+        }
+
+        func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T {
+            let get = self.get
+            return engine.read(ObservationDerivedKey(id: id, compute: { compute(get($0)) }))
+        }
+
+        func rows<C: RandomAccessCollection & Sendable>(
+            _ keyPath: KeyPath<Base, C>
+        ) -> [any TrackingReader<C.Element>] where C.Element: Identifiable & Sendable, C.Element.ID: Sendable {
+            let get = self.get
+            return readWhole()[keyPath: keyPath].map { element in
+                let id = element.id
+                return LaneReader<Action, Root, C.Element>(engine: engine, get: { root in
+                    get(root)[keyPath: keyPath].first { $0.id == id } ?? element
+                })
+            }
+        }
+    }
+
     // MARK: - Unwrapping plumbing
 
     /// A key-path argument remembering the **last present value** of an optional, without taking part in
     /// equality — so the path stays the same dependency, and a position (or a transposed view store) that
     /// outlives its value keeps showing what it last showed instead of what it showed when it was built.
-    /// Observation plumbing behind ``GranularTracking/unwrapped()`` and `ViewStore.transpose()`.
+    /// Observation plumbing behind ``GranularTracking/transpose()`` and `ViewStore.transpose()`.
     ///
     /// `@unchecked Sendable`: key-path components must be `Sendable`, but this box is only ever read and written
     /// through a view store's reads and diffs, which all run on the main actor.
@@ -191,7 +250,7 @@
 
     extension Optional where Wrapped: Sendable {
         /// The wrapped value — remembered — or the last present one once `nil` (a position can outlive its value
-        /// while SwiftUI animates it away). Observation plumbing behind ``GranularTracking/unwrapped()``.
+        /// while SwiftUI animates it away). Observation plumbing behind ``GranularTracking/transpose()``.
         public subscript(observationUnwrapped last: ObservationLastPresent<Wrapped>) -> Wrapped {
             guard let value = self else { return last.value }
             last.value = value

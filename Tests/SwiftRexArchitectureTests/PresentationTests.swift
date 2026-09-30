@@ -23,9 +23,9 @@ struct PresentationTests {
         #expect(Presentation<Int>.dismissed.map { $0 * 10 } == .dismissed)
     }
 
-    @Test func dismissWalksStagesAndIsIdempotent() {
+    @Test func dismissOnlyStartsTheDismissal() {
         #expect(Presentation.presented(1).dismiss() == .dismissing(last: 1))
-        #expect(Presentation.dismissing(last: 1).dismiss() == .dismissed)
+        #expect(Presentation.dismissing(last: 1).dismiss() == .dismissing(last: 1)) // the end is `.dismissed`
         #expect(Presentation<Int>.dismissed.dismiss() == .dismissed)
     }
 
@@ -72,7 +72,7 @@ struct LiftPresentationTests {
         return Store(initial: GlobalSt(detail: .presented(ChildState(n: 5))), behavior: behavior, environment: ())
     }
 
-    @Test func childMutatesWhilePresentedAndDismissingThenDismissWalks() {
+    @Test func childMutatesWhilePresentedAndDismissingThenDismissedEnds() {
         let store = makeStore()
         #expect(store.currentState.detail == .presented(ChildState(n: 5)))
 
@@ -85,7 +85,10 @@ struct LiftPresentationTests {
         store.dispatch(.detail(.child(.inc)))            // child still runs while dismissing (late effect)
         #expect(store.currentState.detail == .dismissing(last: ChildState(n: 7)))
 
-        store.dispatch(.detail(.dismiss))                // dismissing -> dismissed
+        store.dispatch(.detail(.dismiss))                // already dismissing: no-op
+        #expect(store.currentState.detail == .dismissing(last: ChildState(n: 7)))
+
+        store.dispatch(.detail(.dismissed))              // the animation ended -> dismissed
         #expect(store.currentState.detail == .dismissed)
 
         store.dispatch(.detail(.child(.inc)))            // no wrapped state -> no-op

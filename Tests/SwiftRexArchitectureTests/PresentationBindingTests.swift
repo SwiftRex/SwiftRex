@@ -11,7 +11,7 @@
         var text: String
     }
 
-    private enum BindAction: Sendable, Equatable { case dismiss }
+    private enum BindAction: Sendable, Equatable { case modal(PresentationAction<Never>) }
     private struct BindState: Sendable, Equatable { var modal: Presentation<Item> = .dismissed }
 
     @MainActor
@@ -20,7 +20,8 @@
             initial: BindState(modal: initial),
             behavior: Behavior<BindAction, BindState, Void>.reduce { action, state in
                 switch action {
-                case .dismiss: state.modal = state.modal.dismiss()
+                case .modal(.dismiss): state.modal = state.modal.dismiss()
+                case .modal(.dismissed): state.modal = .dismissed
                 }
             },
             environment: ()
@@ -33,9 +34,9 @@
         let viewStore: ViewStore<BindAction, BindState>
 
         var body: some View {
-            let modal = viewStore.binding(.state(\.modal), dismiss: .dismiss)
+            let modal = viewStore.binding(.state(\.modal).action(review: BindAction.modal))
             Text("host")
-                .sheet(item: viewStore.binding(.state(\.modal), dismiss: .dismiss)) { item in Text(item.text) }
+                .sheet(item: viewStore.binding(.state(\.modal).action(review: BindAction.modal))) { item in Text(item.text) }
                 .sheet(isPresented: modal.isPresented(), onDismiss: modal.onDismiss()) { Text("cover") }
                 .popover(item: modal.item()) { item in Text(item.text) }
         }
@@ -46,7 +47,7 @@
     struct PresentationBindingTests {
         @Test func isPresentedIsTrueOnlyWhilePresentedAndStartsTheDismissal() {
             let store = makeStore(.presented(Item(id: 1, text: "a")))
-            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            let modal = store.viewStore().binding(.state(\.modal).action(review: BindAction.modal))
             #expect(modal.isPresented().wrappedValue == true)
 
             modal.isPresented().wrappedValue = false // SwiftUI starts dismissing → dismiss
@@ -56,7 +57,7 @@
 
         @Test func itemIsThePresentedValueAndStartsTheDismissal() {
             let store = makeStore(.presented(Item(id: 7, text: "x")))
-            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            let modal = store.viewStore().binding(.state(\.modal).action(review: BindAction.modal))
             #expect(modal.item().wrappedValue == Item(id: 7, text: "x"))
 
             modal.item().wrappedValue = nil // SwiftUI clears the item → dismiss
@@ -66,7 +67,7 @@
 
         @Test func aWriteThatDoesNotAdvanceTheStageIsIgnored() {
             let store = makeStore(.presented(Item(id: 4, text: "d")))
-            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            let modal = store.viewStore().binding(.state(\.modal).action(review: BindAction.modal))
             modal.isPresented().wrappedValue = true // SwiftUI re-affirming: no dismissal
             #expect(store.currentState.modal == .presented(Item(id: 4, text: "d")))
         }
@@ -77,7 +78,7 @@
 
         @Test func onDismissCompletesTheDismissal() {
             let store = makeStore(.presented(Item(id: 2, text: "b")))
-            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
+            let modal = store.viewStore().binding(.state(\.modal).action(review: BindAction.modal))
             modal.item().wrappedValue = nil // first edge: presented → dismissing
             modal.onDismiss()() // second edge, when the animation ends: dismissing → dismissed
             #expect(store.currentState.modal == .dismissed)
@@ -85,8 +86,8 @@
 
         @Test func aProgrammaticDismissNeedsOnlyTheSecondEdge() {
             let store = makeStore(.presented(Item(id: 3, text: "c")))
-            let modal = store.viewStore().binding(.state(\.modal), dismiss: .dismiss)
-            store.dispatch(.dismiss) // the reducer starts it: presented → dismissing
+            let modal = store.viewStore().binding(.state(\.modal).action(review: BindAction.modal))
+            store.dispatch(.modal(.dismiss)) // the reducer starts it: presented → dismissing
             #expect(modal.item().wrappedValue == nil)
             modal.onDismiss()()
             #expect(store.currentState.modal == .dismissed)

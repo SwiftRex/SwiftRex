@@ -156,8 +156,8 @@ struct HeroDetailsView: View {
         Form {
             Text(viewStore.state.displayName).font(.headline)
             // `.action(review:)` takes `(Value) -> ViewAction`, so pass the case constructor directly:
-            TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(review: HeroDetails.ViewAction.editedPowers)))
-            Toggle("Retired", isOn: viewStore.binding(.state(\.isRetired), dispatch: .action(review: { _ in .tappedRetirement })))
+            TextField("Powers", text: viewStore.binding(.state(\.powersText).action(review: HeroDetails.ViewAction.editedPowers)))
+            Toggle("Retired", isOn: viewStore.binding(.state(\.isRetired).action(\.tappedRetirement)))
         }
     }
 }
@@ -169,7 +169,7 @@ be crossed, and each offers only its own strategies (`\.case` / prism / `review:
 path / closure for the state):
 
 ```swift
-TextField("Powers", text: viewStore.binding(.state(\.powersText), dispatch: .action(\.editedPowers)))
+TextField("Powers", text: viewStore.binding(.state(\.powersText).action(\.editedPowers)))
 ```
 
 ## L3 — observation and composition
@@ -203,7 +203,7 @@ For lists, `each` gives one position per `Identifiable` element — the list dep
 List(viewStore.state.each(\.songs)) { song in SongRow(song: song) }
 ```
 
-A subview that needs to send actions or build bindings takes a **focused** view store — a key-path slice read through the same snapshot, with its own action lane (no new subscription): `viewStore.focus(.state(\.transport), .action(\.transport))`.
+A subview that needs to send actions or build bindings takes a **focused** view store — a key-path slice read through the same snapshot, with its own action lane (no new subscription): `viewStore.focus(.action(\.transport).state(\.transport))`.
 
 ### Composing projection, buffer and the view store
 
@@ -299,7 +299,7 @@ public enum Library {
 }
 ```
 
-Navigation is state-driven: the `Binding<Book?>` from `binding(_:dismiss:)` presents while `selected` is `.some` and only ever dispatches the *dismiss* action when SwiftUI clears it — presentation is always a function of state, never driven by the binding. The sibling `presence` binding does the same for `.sheet(isPresented:)`.
+Navigation is state-driven: the `Binding<Book?>` from `binding(.state(\.selected).action(\.dismissedDetail))` presents while `selected` is `.some` and only ever dispatches the *dismiss* action when SwiftUI clears it — presentation is always a function of state, never driven by the binding. The sibling `presence` binding does the same for `.sheet(isPresented:)`.
 
 ```swift
 @BoundTo(Library.self)
@@ -310,7 +310,7 @@ struct LibraryView: View {
             Button(book.title) { viewStore.dispatch(.tapped(book.value)) }
         }
         .onAppear { viewStore.dispatch(.onAppear) }
-        .sheet(item: viewStore.binding(.state(\.selected), dismiss: .dismissedDetail)) { book in
+        .sheet(item: viewStore.binding(.state(\.selected).action(\.dismissedDetail))) { book in
             Text(book.title)
         }
     }
@@ -349,7 +349,7 @@ Library.view(
 That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (`@OwnedStore var root = store`), focuses the slice and transposes it, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?`. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
 
 ```swift
-if let hero = root.focus(.state(\.heroDetail), .action(\.heroDetail)).transpose() {
+if let hero = root.focus(.action(\.heroDetail).state(\.heroDetail)).transpose() {
     HeroDetails.view(store: hero, environment: appEnv.heroDetail)
 }
 ```

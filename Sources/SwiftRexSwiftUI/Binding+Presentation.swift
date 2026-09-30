@@ -3,11 +3,11 @@
 #if canImport(SwiftUI)
     import SwiftUI
 
-    // A `Binding<Presentation<T>>` (from `viewStore.binding(.state(\.slot), dismiss: …)`) is a presentation's two
+    // A `Binding<Presentation<T>>` (from `viewStore.binding(.state(\.slot).action(\.slot))`) is a presentation's two
     // dismiss edges in one value. SwiftUI splits them across two parameters — the binding going `false`/`nil` when
     // dismissal *starts* (swipe, tap-out, a programmatic dismiss), and `onDismiss:` when the animation *ends* — so
-    // these accessors hand each parameter its part. Each edge writes `dismiss()` back, advancing the slot one stage:
-    // `presented → dismissing(last:) → dismissed`.
+    // these accessors hand each parameter its part: the first edge writes `dismissing(last:)` back, the second
+    // `dismissed` — which the view store's binding turns into `PresentationAction.dismiss` and `.dismissed`.
 
     extension Binding {
         /// `true` only while `presented` — for `isPresented:` parameters. Setting `false` starts the dismissal.
@@ -25,7 +25,7 @@
         /// The second edge — for `onDismiss:` parameters: once SwiftUI finishes animating out, the slot moves from
         /// `dismissing` to `dismissed`.
         public func onDismiss<Wrapped>() -> () -> Void where Value == Presentation<Wrapped> {
-            { wrappedValue = wrappedValue.dismiss() }
+            { wrappedValue = .dismissed }
         }
     }
 
@@ -36,15 +36,6 @@
         var presentedFlag: Bool {
             get { isPresented }
             set { if !newValue { self = dismiss() } }
-        }
-
-        /// The lifecycle position alone, ignoring the payload — `presented` 0, `dismissing` 1, `dismissed` 2.
-        var stage: Int {
-            switch self {
-            case .presented: 0
-            case .dismissing: 1
-            case .dismissed: 2
-            }
         }
 
         /// The value while `presented`, `nil` otherwise; writing `nil` advances the dismissal one stage.
@@ -59,8 +50,8 @@
         /// `.sheet(item: presentation.item(), onDismiss: presentation.onDismiss(), content:)`:
         ///
         /// ```swift
-        /// .sheet(item: viewStore.binding(.state(\.editor), dismiss: .editor(.dismiss))) { _ in
-        ///     if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
+        /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
+        ///     if let editor = viewStore.focus(.action(\.editor.child).state(\.editor)).transpose() {
         ///         EditorView(viewStore: editor)
         ///     }
         /// }
