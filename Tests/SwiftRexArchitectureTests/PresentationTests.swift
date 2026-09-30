@@ -2,6 +2,7 @@
 
 #if canImport(SwiftUI)
 import CoreFP
+import FPMacros
 @testable import SwiftRex
 import SwiftRexSwiftUI
 import Testing
@@ -97,3 +98,26 @@ struct LiftPresentationTests {
 }
 
 #endif
+
+@Suite("PresentationAction — @Prisms")
+struct PresentationActionPrismsTests {
+    @Prisms
+    fileprivate enum ParentAction: Sendable, Equatable {
+        case editor(PresentationAction<Int>)
+    }
+
+    @Test func caseAccessorsAndIs() {
+        let child = PresentationAction<Int>.child(7)
+        #expect(child.child == 7)
+        #expect(child.dismiss == nil)
+        #expect(PresentationAction<Int>.dismissed.is(.dismissed))
+        #expect(!PresentationAction<Int>.dismiss.is(.dismissed))
+    }
+
+    @Test func keyPathsReachThroughTheParent() {
+        let lane = Prism<ParentAction, Int>(\.editor.child)
+        #expect(lane.review(3) == .editor(.child(3)))
+        #expect(lane.preview(.editor(.child(4))) == 4)
+        #expect(lane.preview(.editor(.dismissed)) == nil)
+    }
+}
