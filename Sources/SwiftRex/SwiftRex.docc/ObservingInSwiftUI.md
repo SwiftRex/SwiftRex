@@ -67,15 +67,25 @@ To pick a strategy there, pass it after the upstream: `OwnedStore(wrappedValue: 
 
 Handed a view store that already signals the same way, an owner reuses it instead of building a second engine that re-follows the first. Handed a pure stage (a projection, a transposed slot), it owns a new view store for it.
 
-**In the `App`**, which is initialised once — the same wrapper:
+**In the `App`**, keep the two apart. The real ``Store`` runs the app and is never observed — create it once, in the shell, and keep a plain reference (deep links, scene delegates and effects dispatch to it). The root view owns the view store that follows it:
 
 ```swift
 @main struct MyApp: App {
-    @OwnedStore var viewStore = Store(initial: AppState(), behavior: appBehavior, environment: World.live)
+    let store = Store(initial: AppState(), behavior: appBehavior, environment: World.live)   // runs the app
 
     var body: some Scene {
-        WindowGroup { RootView(viewStore: viewStore) }
+        WindowGroup { RootView(store: store) }
     }
+}
+
+struct RootView: View {
+    @OwnedStore var viewStore: ViewStore<AppAction, AppState>                              // the leaf, owned here
+
+    init(store: Store<AppAction, AppState, World>) {
+        _viewStore = OwnedStore(wrappedValue: store)
+    }
+
+    var body: some View { HomeView(viewStore: viewStore) }
 }
 ```
 
@@ -174,7 +184,7 @@ Owner × strategy, spelled out — the receiving side never changes:
 | Owner | Observation (`.automatic` on iOS 17+) | Combine (`.automatic` below 17, or forced) | Receivers |
 |---|---|---|---|
 | a view | `@OwnedStore var viewStore = appStore` | `@OwnedStore(.combine) var viewStore = appStore` | `let viewStore: ViewStore<…>` |
-| the `App` | `@OwnedStore var viewStore = Store(…)` | `@OwnedStore(.combine) var viewStore = Store(…)` | `let viewStore: ViewStore<…>` |
+| the root view (the `App` keeps the real `Store`) | `_viewStore = OwnedStore(wrappedValue: store)` | `_viewStore = OwnedStore(wrappedValue: store, .combine)` | `let viewStore: ViewStore<…>` |
 | a body / router / row | `ProjectionKeeper { upstream } content: { … }` | `ProjectionKeeper(strategy: .combine) { upstream } content: { … }` | `let viewStore: ViewStore<…>` |
 
 Force Combine to sidestep the Observation framework. There is no `@ObservedObject` anywhere: `ViewStore` and `GranularTracking` are `DynamicProperty`s that carry the Combine subscription themselves, so a plain `let` re-renders under Combine too (and the subscription simply never fires under Observation).
