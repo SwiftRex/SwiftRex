@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Owners (`@OwnedStore`, `ProjectionKeeper`, and so every `@Feature` view) reuse a `ViewStore` they're handed
   when it signals the same way, instead of building a second engine; `OwnedStore(store)` owns a store held as
   `any StoreType<Action, State>`.
+- A two-way `binding` over an `Equatable` value drops a write equal to the current value — SwiftUI can write a
+  binding twice for one gesture, which dispatched the action twice.
+- `ForEach(viewStore.state.items)` now fails with a message naming the fix (`each(\.items)`, or `.value`) instead of
+  an unrelated `IndivisibleTracking` requirement.
 - Article: *Migrating to ViewStore and StateStream* — ordered, mechanical steps, rewrite rules, compiler
   symptoms, and pitfalls.
 - Articles: *Stores at a Glance*, *Observing a Store in SwiftUI*.

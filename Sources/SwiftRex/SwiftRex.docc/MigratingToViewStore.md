@@ -137,7 +137,7 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 | `type 'any StoreType<…>' cannot conform to 'StoreType'` | an existential passed to `OwnedStore(wrappedValue:)` | `OwnedStore(store)` |
 | `extra argument 'dispatch' in call` / `extra argument 'dismiss'` / `has no member 'presence'` | old binding shape | step 4 |
 | `generic parameter 'A' could not be inferred` on a binding | an untyped closure lane | pitfall 6 |
-| `referencing subscript 'subscript(dynamicMember:)' on 'Array' requires that 'X' conform to 'IndivisibleTracking'` | `ForEach` over a position | step 5 — `each(\.items)` |
+| `'subscript(dynamicMember:)' is unavailable: a state collection is a position, not a collection …` | `ForEach` over a position | step 5 — `each(\.items)` (older SwiftRex said `requires that 'X' conform to 'IndivisibleTracking'`) |
 | `… on 'Optional' requires that 'X' conform to 'IndivisibleTracking'` | a non-leaf position passed as a value | step 5 — `.value` |
 | `value of type 'StoreProjection<…>' has no member 'transpose'` | core transpose is gone | step 6 |
 | `'state' is inaccessible due to 'private' protection level` | reading a `Store` | step 7 |
@@ -156,7 +156,10 @@ These all happened while building this API or migrating the sample app. Each one
 8. **Deleting a hand-written block by slicing to a marker takes its neighbours with it.** Cutting "from this comment to `#endif`" also deleted an `Equatable` conformance that sat below the block. Review the diff of every scripted deletion.
 9. **Build for iOS, not just macOS.** Stale iOS 17 gates (step 2) and Linux-only guards pass a macOS build. Build the iOS simulator target before calling it done.
 10. **A first-launch screenshot can be blank.** The first frame of a freshly installed app takes a few seconds; a blank white screen right after `simctl launch` is not a rendering bug — capture again before investigating.
-11. **Fixed sleeps in tests flake under load.** A test that sleeps 50 ms and expects a value fails when the whole suite starts together: hundreds of main-actor tests queue at once, and any hop to the main actor waits ~250 ms. Poll with a bounded wait instead.
+11. **A tap that does nothing: read the action log before blaming the store.** Log every action and the state it produced (a DEBUG-only `produce` behavior, first in the app's fold). No action after the gesture means SwiftUI never wrote its binding — a view wiring problem; an action with unchanged state means the reducer or lift; new state with no redraw means the view reads a different path. The NavGallery Split tab looked like a SwiftRex regression and was neither: see the next pitfall.
+12. **`List(selection:)` rows on iPhone must be `NavigationLink(value:)`.** A `.tag(…)`ged row selects on tap on iPad and Mac but, on iPhone (compact width), only in edit mode — so a `NavigationSplitView` sidebar of tagged rows does nothing on a phone, before and after migrating. Use `NavigationLink(item.title, value: Selection.item(item.value))` rows.
+13. **SwiftUI may write a binding twice for one gesture** (a list row tap writes its selection twice). A two-way `binding` over an `Equatable` value drops a write equal to the current value, so the reducer sees one action; for a non-`Equatable` value, make the reducer idempotent.
+14. **Fixed sleeps in tests flake under load.** A test that sleeps 50 ms and expects a value fails when the whole suite starts together: hundreds of main-actor tests queue at once, and any hop to the main actor waits ~250 ms. Poll with a bounded wait instead.
 
 ## A worked example
 

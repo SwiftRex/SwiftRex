@@ -51,6 +51,17 @@
             reader.read(keyPath)
         }
 
+        /// Catches `ForEach(viewStore.state.items)`: a collection reached through a position is still a position, not
+        /// a collection. Without this the compiler reports an unrelated `IndivisibleTracking` requirement.
+        @available(
+            *,
+            unavailable,
+            message: "a state collection is a position, not a collection: iterate it with `each(\\.items)`, or read it whole with `.items.value`"
+        )
+        public subscript<C: RandomAccessCollection>(dynamicMember keyPath: KeyPath<Value, C>) -> C where C.Element: Identifiable {
+            reader.read(keyPath)
+        }
+
         /// A member read granularly — a deeper position.
         public subscript<T>(dynamicMember keyPath: KeyPath<Value, T>) -> GranularTracking<T> {
             GranularTracking<T>(reader.slice(keyPath))

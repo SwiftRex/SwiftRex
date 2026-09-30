@@ -503,6 +503,23 @@
 
     // MARK: - Bindings
 
+    @Suite("ViewStore — binding writes")
+    @MainActor
+    struct ViewStoreBindingWriteTests {
+        @Test func anEqualWriteDispatchesNothing() {
+            let store = makeStore()
+            // A deliberately non-idempotent lane: every dispatch bumps `count`, whatever the value.
+            let count = store.viewStore(.combine).binding(.state(\.count).action(review: { (_: Int) in ScreenAction.mutate { $0.count += 1 } }))
+            count.wrappedValue = 0 // equal to the current value (0): SwiftUI re-writing it
+            count.wrappedValue = 0
+            #expect(store.currentState.count == 0) // swiftlint:disable:this empty_count
+            count.wrappedValue = 7 // a real change: one dispatch
+            #expect(store.currentState.count == 1)
+            count.wrappedValue = 1 // equal to the current value (now 1): nothing
+            #expect(store.currentState.count == 1)
+        }
+    }
+
     @Suite("ViewStore — binding registration")
     @MainActor
     struct ViewStoreBindingTests {

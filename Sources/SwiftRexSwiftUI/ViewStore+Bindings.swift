@@ -44,6 +44,32 @@ extension ViewStore {
         )
     }
 
+    /// A two-way `Binding<T>` for an `Equatable` value — the same as the general form, except that a write equal to
+    /// the current value dispatches **nothing**. SwiftUI sometimes writes a binding more than once for one gesture
+    /// (a list row tap writes its selection twice), so without this a reducer that isn't idempotent — a counter, a
+    /// toggle, an "append to history" — would run twice.
+    ///
+    /// ```swift
+    /// List(selection: viewStore.binding(.state(\.selection).action(\.select))) { … }   // one `.select` per tap
+    /// ```
+    @MainActor
+    public func binding<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
+        _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
+        file: String = #fileID,
+        function: String = #function,
+        line: UInt = #line
+    ) -> Binding<S.Local> where A.Global == Action, S.Global == State, A.Local == S.Local, S.Local: Equatable {
+        let reads = scope.state
+        let review = scope.action.review
+        return Binding(
+            get: { self.read(reads) },
+            set: { newValue in
+                guard newValue != reads.get(self.reader.peekWhole()) else { return }
+                self.dispatch(review(newValue), source: ActionSource(file: file, function: function, line: line))
+            }
+        )
+    }
+
     /// A dismiss-only `Binding<Bool>` for an optional slot — `true` while it's `.some`; SwiftUI setting `false`
     /// dispatches the action lane's no-payload case. Presentation is driven by state; the binding only dismisses.
     /// For `isPresented:` parameters (sheets, covers, alerts, `navigationDestination(isPresented:)`). Depends on the
