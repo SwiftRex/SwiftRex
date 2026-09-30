@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if ReactiveSwift
-    import Foundation
     @preconcurrency import ReactiveSwift
     import SwiftRex
 
@@ -22,10 +21,10 @@
         nonisolated public var producer: SignalProducer<State, Never> {
             SignalProducer { [self] observer, lifetime in
                 let subscription = ProducerStateSubscription<State>()
-                onMain {
+                onMainActor {
                     subscription.token = observe { observer.send(value: $0) }
                 }
-                lifetime.observeEnded { onMain { subscription.token = nil } }
+                lifetime.observeEnded { onMainActor { subscription.token = nil } }
             }
         }
     }
@@ -35,12 +34,4 @@
         @MainActor var token: UISubscriptionToken?
     }
 
-    /// Runs `work` on the main actor: right away when already on the main thread, after one hop otherwise.
-    private func onMain(_ work: @escaping @MainActor () -> Void) {
-        if Thread.isMainThread {
-            MainActor.assumeIsolated(work)
-        } else {
-            DispatchQueue.main.async { MainActor.assumeIsolated(work) }
-        }
-    }
 #endif

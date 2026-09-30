@@ -2,7 +2,6 @@
 
 #if canImport(Combine)
     @preconcurrency import Combine
-    import Foundation
     import SwiftRex
 
     // MARK: - StateStream is a Publisher
@@ -54,7 +53,7 @@
         }
 
         func request(_ more: Subscribers.Demand) {
-            onMain { [self] in
+            onMainActor { [self] in
                 demand += more
                 if !started {
                     started = true
@@ -67,7 +66,7 @@
         }
 
         func cancel() {
-            onMain { [self] in
+            onMainActor { [self] in
                 token = nil
                 subscriber = nil
                 pending = nil
@@ -90,12 +89,4 @@
         }
     }
 
-    /// Runs `work` on the main actor: right away when already on the main thread, after one hop otherwise.
-    private func onMain(_ work: @escaping @MainActor () -> Void) {
-        if Thread.isMainThread {
-            MainActor.assumeIsolated(work)
-        } else {
-            DispatchQueue.main.async { MainActor.assumeIsolated(work) }
-        }
-    }
 #endif
