@@ -69,43 +69,7 @@ final class ObservationPaths {
     // skipped wholesale when `\.a.b` didn't change.
     private var parents: [ObjectIdentifier: (path: AnyKeyPath, resolve: (any ObservationGuardResolver) -> AnyObject?)] = [:]
 
-    // Focused collection elements (`viewStore.focus(scope, element: id)`), created only when an element is focused:
-    // the state-change counter their lookups share, one lookup per collection, and one path per element — the same
-    // instance every render, so its position hint survives. See `Relay+CollectionObservation.swift` in SwiftRex.
-    private var clock: ElementLookupClock?
-    private var lookups: [ObjectIdentifier: (collection: AnyKeyPath, lookup: ElementLookup)] = [:]
-    private var elements: [ElementPathKey: (collection: AnyKeyPath, path: AnyKeyPath)] = [:]
-
-    private struct ElementPathKey: Hashable {
-        let collection: ObjectIdentifier
-        let id: AnyHashable
-    }
-
-    var count: Int { appended.count + rows.values.reduce(0) { $0 + $1.byID.count } + elements.count }
-
-    /// A new state arrived: element lookups start over (their shift and table describe the previous state).
-    func advanceGeneration() {
-        clock?.generation &+= 1
-    }
-
-    /// The path to one element of the collection at `collection` — cached per (collection, id), linked to the
-    /// collection so an unchanged collection skips it.
-    func element<Root, Container, ID: Hashable & Sendable, Local>(
-        _ collection: KeyPath<Root, Container>,
-        id: ID,
-        observation: Relay.StateAxis.KeyedObservation<some Any, Container, ID, Local>
-    ) -> KeyPath<Root, Local?> {
-        let key = ElementPathKey(collection: ObjectIdentifier(collection), id: AnyHashable(id))
-        if let cached = elements[key]?.path as? KeyPath<Root, Local?> { return cached }
-        let clock = self.clock ?? ElementLookupClock()
-        self.clock = clock
-        let lookup = lookups[ObjectIdentifier(collection)]?.lookup ?? ElementLookup(clock: clock)
-        lookups[ObjectIdentifier(collection)] = (collection, lookup)
-        let path = collection.appending(path: observation.element(id, lookup))
-        elements[key] = (collection, path)
-        link(path, to: collection)
-        return path
-    }
+    var count: Int { appended.count + rows.values.reduce(0) { $0 + $1.byID.count } }
 
     /// The dependency guarding `path` — the one on the path it was composed from (`\.a.b` for `\.a.b.c`
     /// built by ``append(_:_:)``, the collection for a row built by ``rows(_:in:)``), resolved by the store;
@@ -160,8 +124,6 @@ final class ObservationPaths {
         appended.removeAll(keepingCapacity: true)
         rows.removeAll(keepingCapacity: true)
         parents.removeAll(keepingCapacity: true)
-        lookups.removeAll(keepingCapacity: true)
-        elements.removeAll(keepingCapacity: true)
     }
 }
 

@@ -122,13 +122,8 @@
         func readWhole() -> Base
         func peekWhole() -> Base
         func slice<T>(_ keyPath: KeyPath<Base, T>) -> any TrackingReader<T>
-        /// A position reached through a closure or lens — no key path, so reads through it depend on the whole state.
-        func lane<T>(_ get: @escaping (Base) -> T) -> any TrackingReader<T>
-        /// One element of a keyed collection, by its key path (with the engine's position hints).
-        func element<Container, ID: Hashable & Sendable, Local>(
-            _ observation: Relay.StateAxis.KeyedObservation<Base, Container, ID, Local>,
-            id: ID
-        ) -> any TrackingReader<Local?>
+        /// The hint the owning view store keeps for one of its own element-presence reads.
+        func elementHint(_ key: AnyHashable) -> ElementHint
         func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T
         func rows<C: RandomAccessCollection & Sendable>(
             _ keyPath: KeyPath<Base, C>
@@ -150,16 +145,7 @@
             SliceReader(engine: engine, prefix: keyPath)
         }
 
-        func lane<T>(_ get: @escaping (State) -> T) -> any TrackingReader<T> {
-            LaneReader(engine: engine, get: get)
-        }
-
-        func element<Container, ID: Hashable & Sendable, Local>(
-            _ observation: Relay.StateAxis.KeyedObservation<State, Container, ID, Local>,
-            id: ID
-        ) -> any TrackingReader<Local?> {
-            SliceReader(engine: engine, prefix: engine.paths.element(observation.container, id: id, observation: observation))
-        }
+        func elementHint(_ key: AnyHashable) -> ElementHint { engine.elementHint(key) }
 
         func read<T: Equatable>(derived compute: @escaping (State) -> T, id: ObservationDerivedID) -> T {
             engine.read(ObservationDerivedKey(id: id, compute: compute))
@@ -189,18 +175,7 @@
             SliceReader<Action, Root, T>(engine: engine, prefix: engine.paths.append(prefix, keyPath))
         }
 
-        func lane<T>(_ get: @escaping (Base) -> T) -> any TrackingReader<T> {
-            let prefix = self.prefix
-            return LaneReader<Action, Root, T>(engine: engine, get: { get($0[keyPath: prefix]) })
-        }
-
-        func element<Container, ID: Hashable & Sendable, Local>(
-            _ observation: Relay.StateAxis.KeyedObservation<Base, Container, ID, Local>,
-            id: ID
-        ) -> any TrackingReader<Local?> {
-            let collection = engine.paths.append(prefix, observation.container)
-            return SliceReader<Action, Root, Local?>(engine: engine, prefix: engine.paths.element(collection, id: id, observation: observation))
-        }
+        func elementHint(_ key: AnyHashable) -> ElementHint { engine.elementHint(key) }
 
         func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T {
             let prefix = self.prefix
@@ -216,57 +191,6 @@
             let collection = engine.paths.append(prefix, keyPath)
             _ = engine.read(engine.paths.append(collection, \C.observationIDs))
             return engine.paths.rows(collection, in: engine.peek(collection)).map { SliceReader<Action, Root, C.Element>(engine: engine, prefix: $0) }
-        }
-    }
-
-    /// A position reached through a closure or lens. Without a key path nothing narrower can be recorded, so every
-    /// read through it depends on the whole state — the same fallback a closure lane gets in a binding. Key-path
-    /// lanes stay granular; this keeps closure lanes correct.
-    @MainActor
-    struct LaneReader<Action: Sendable, Root: Sendable, Base>: TrackingReader {
-        let engine: ViewStoreEngine<Action, Root>
-        let get: (Root) -> Base
-
-        var signal: ViewStoreSignal { engine }
-        func read<T>(_ keyPath: KeyPath<Base, T>) -> T { get(engine.read(engine.whole))[keyPath: keyPath] }
-        func peek<T>(_ keyPath: KeyPath<Base, T>) -> T { get(engine.snapshot)[keyPath: keyPath] }
-        func readWhole() -> Base { get(engine.read(engine.whole)) }
-        func peekWhole() -> Base { get(engine.snapshot) }
-
-        func slice<T>(_ keyPath: KeyPath<Base, T>) -> any TrackingReader<T> {
-            let get = self.get
-            return LaneReader<Action, Root, T>(engine: engine, get: { get($0)[keyPath: keyPath] })
-        }
-
-        func lane<T>(_ transform: @escaping (Base) -> T) -> any TrackingReader<T> {
-            let get = self.get
-            return LaneReader<Action, Root, T>(engine: engine, get: { transform(get($0)) })
-        }
-
-        func element<Container, ID: Hashable & Sendable, Local>(
-            _ observation: Relay.StateAxis.KeyedObservation<Base, Container, ID, Local>,
-            id: ID
-        ) -> any TrackingReader<Local?> {
-            // No key path to the collection here: read coarsely, with a lookup of its own.
-            let path = observation.element(id, ElementLookup(clock: ElementLookupClock()))
-            return lane { $0[keyPath: observation.container][keyPath: path] }
-        }
-
-        func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T {
-            let get = self.get
-            return engine.read(ObservationDerivedKey(id: id, compute: { compute(get($0)) }))
-        }
-
-        func rows<C: RandomAccessCollection & Sendable>(
-            _ keyPath: KeyPath<Base, C>
-        ) -> [any TrackingReader<C.Element>] where C.Element: Identifiable & Sendable, C.Element.ID: Sendable {
-            let get = self.get
-            return readWhole()[keyPath: keyPath].map { element in
-                let id = element.id
-                return LaneReader<Action, Root, C.Element>(engine: engine, get: { root in
-                    get(root)[keyPath: keyPath].first { $0.id == id } ?? element
-                })
-            }
         }
     }
 

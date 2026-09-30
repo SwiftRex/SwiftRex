@@ -27,9 +27,12 @@
     /// by ``ProjectionKeeper`` inside a body. Views below receive it as a plain `let` — it carries its own
     /// Combine subscription, so no property wrapper is needed under either signal.
     ///
-    /// **Focusing.** `focus(_:)` gives a child a `ViewStore` of a slice — the same
-    /// scope a projection takes — reading through the same engine (no new subscription, no owner needed),
-    /// dispatching through its own action lane.
+    /// **The leaf.** Composition is pure — ``SwiftRex/StoreProjection``, ``SwiftRex/StoreBuffer``,
+    /// ``SwiftRex/StoreElement``, ``SwiftRex/StoreUnwrap`` are stages that follow a stream and keep nothing a parent
+    /// holds. A view store is where that ends: it owns a snapshot (a cache) and the observation work, which are
+    /// effects. Deriving a child from a view store — `viewStore.projection(…)`, or `transpose(…)` for an optional or
+    /// an element — gives a pure stage built on the view store's **pure side** (its upstream), never on its snapshot;
+    /// to observe that child, own it (``OwnedStore``, ``ProjectionKeeper``, a feature's view).
     ///
     /// Bindings (`binding(.state(…).action(…))`), `transpose` and
     /// ``read(derived:id:fileID:line:column:)`` live here too: a binding SwiftUI can't observe would never
@@ -38,8 +41,8 @@
     public struct ViewStore<Action: Sendable, State: Sendable>: StoreType, DynamicProperty {
         let reader: any TrackingReader<State>
         private let send: @MainActor (Action, ActionSource) -> Void
-        /// The state over time, as far as this view store is concerned — for stores that follow it
-        /// (`viewStore.projection(…)`, a feature's view, a bridge). Views read ``state`` instead.
+        /// The state over time — the **pure** side of this view store: its upstream's stream, untouched by the
+        /// snapshot or observation. Stores derived from a view store follow this. Views read ``state`` instead.
         public let stateStream: StateStream<State>
         @ObservedObject private var signal: ViewStoreSignal
 
@@ -55,7 +58,7 @@
         }
 
         init(engine: ViewStoreEngine<Action, State>) {
-            self.init(reader: RootReader(engine: engine), send: engine.dispatch, stateStream: engine.stateStream)
+            self.init(reader: RootReader(engine: engine), send: engine.dispatch, stateStream: engine.upstreamStream)
         }
 
         /// Builds a view store over `upstream` with a new engine — whoever holds the result owns it. Views use
@@ -65,8 +68,8 @@
         }
 
         /// The view store an owner hands out for `upstream`: `upstream` itself when it already **is** a view store
-        /// signalling the same way (no second engine re-following the first — the router case,
-        /// `Feature.view(store: viewStore.focus(…).transpose())`), a new engine over it otherwise.
+        /// signalling the same way (no second engine re-following the first — a view store handed straight to a
+        /// feature's view), a new engine over it otherwise.
         static func owning(_ upstream: any StoreType<Action, State>, strategy: ViewStrategy) -> ViewStore<Action, State> {
             if let viewStore = upstream as? ViewStore<Action, State>,
                viewStore.reader.signal.signalsThroughObservation == strategy.signalsThroughObservation {
@@ -80,91 +83,6 @@
 
         public func dispatch(_ action: Action, source: ActionSource) {
             send(action, source)
-        }
-
-        // MARK: - Focus
-
-        /// A view store of a slice, through the same `Relay/Scope` a projection takes — it reads through
-        /// this view store's engine (no new subscription, no owner needed: cheap to create in a body) and
-        /// dispatches through the scope's action lane into this store:
-        ///
-        /// ```swift
-        /// TransportControls(viewStore: viewStore.focus(.action(\.transport).state(\.transport)))
-        /// ```
-        ///
-        /// A key-path state lane stays granular: `\.transport` plus whatever the child reads. A closure or lens lane
-        /// has no path to record, so the focused store depends on the whole state (the same fallback a binding
-        /// gets).
-        public func focus<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
-            _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>
-        ) -> ViewStore<A.Local, S.Local> where A.Global == Action, S.Global == State {
-            focused(action: scope.action.review, state: scope.state)
-        }
-
-        /// Focus through a **declared** `Relay/Scope` (`ScopeOf<AppFeature>.action(…).state(…)…`) — the
-        /// environment axis is ignored, so the one scope a feature declares also serves the view.
-        public func focus<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol, GE, E: Relay.EnvironmentAxis.Strategy>(
-            _ scope: Relay.Scope<Action, A, State, S, GE, E>
-        ) -> ViewStore<A.Local, S.Local> where A.Global == Action, S.Global == State {
-            focused(action: scope.action.review, state: scope.state)
-        }
-
-        private func focused<LocalAction: Sendable, R: Relay.StateAxis.ReadsProtocol>(
-            action review: @escaping @Sendable (LocalAction) -> Action,
-            state reads: R
-        ) -> ViewStore<LocalAction, R.Local> where R.Global == State {
-            let send = self.send
-            return ViewStore<LocalAction, R.Local>(
-                reader: reads.keyPath.map { reader.slice($0) } ?? reader.lane(reads.get),
-                send: { send(review($0), $1) },
-                stateStream: stateStream.map(reads.get)
-            )
-        }
-
-        /// A view store of **one element** of a collection, through the same collection scope a projection takes —
-        /// by `id` (`.state(\.rows)`, `.state(\.rows, id: \.slug)`), by position (`.state(indexed: \.rows)`) or
-        /// by key (`.state(dictionary: \.byID)`). The element can be absent, so its state is optional; transpose it
-        /// for a child that exists only while the element does:
-        ///
-        /// ```swift
-        /// ForEach(viewStore.state.each(\.rows)) { row in
-        ///     if let rowStore = viewStore.focus(.action(\.row).state(\.rows), element: row.id).transpose() {
-        ///         RowView(viewStore: rowStore)                     // dispatches `RowAction`, reads its own row
-        ///     }
-        /// }
-        /// ```
-        ///
-        /// It reads through this view store's engine (no new subscription) and dispatches through the scope's
-        /// element lane (`ElementAction(id, action)`). By id, the element is found in O(1) in the usual case and stays
-        /// the same dependency however the collection reorders — nothing is asked of the state: a plain array of
-        /// `Identifiable` values is enough.
-        public func focus<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol>(
-            _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
-            element id: A.ID
-        ) -> ViewStore<A.Local, S.Local?> where A.Global == Action, S.Global == State, A.ID == S.ID {
-            focusedElement(review: scope.action.review, state: scope.state, id: id)
-        }
-
-        /// Focus one element through a **declared** collection scope — the environment axis is ignored.
-        public func focus<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol, GE, E: Relay.EnvironmentAxis.Strategy>(
-            _ scope: Relay.Scope<Action, A, State, S, GE, E>,
-            element id: A.ID
-        ) -> ViewStore<A.Local, S.Local?> where A.Global == Action, S.Global == State, A.ID == S.ID {
-            focusedElement(review: scope.action.review, state: scope.state, id: id)
-        }
-
-        private func focusedElement<LocalAction: Sendable, K: Relay.StateAxis.KeyedProtocol>(
-            review: @escaping @Sendable (K.ID, LocalAction) -> Action,
-            state keyed: K,
-            id: K.ID
-        ) -> ViewStore<LocalAction, K.Local?> where K.Global == State {
-            let send = self.send
-            let read: @Sendable (State) -> K.Local? = { keyed.element(id).preview(keyed.container.get($0)) }
-            return ViewStore<LocalAction, K.Local?>(
-                reader: keyed.observation.map { reader.element($0, id: id) } ?? reader.lane(read),
-                send: { send(review(id, $0), $1) },
-                stateStream: stateStream.map(read)
-            )
         }
 
         // MARK: - Derived reads

@@ -65,9 +65,12 @@
         private let registry = ObservationRegistry<ViewStoreEngine, State>()
         private var sweepThreshold = ViewStoreEngine.minimumSweepThreshold
 
-        private var observers: [UInt64: @MainActor (State) -> Void] = [:]
-        private var nextObserverKey: UInt64 = 0
-        private lazy var wholeChanged: (State, State) -> Bool = ViewStoreEngine.comparator(whole)
+        /// The upstream's state over time — the **pure** side of a view store. Stores that follow a view store
+        /// (`viewStore.projection(…)`, a bridge) follow this, never the snapshot: observation stays out of composition.
+        let upstreamStream: StateStream<State>
+        // The hints this view store's own element-presence reads keep (`transpose(_:element:)`) — observation state
+        // of this leaf, keyed by call site + element id; never held for a child.
+        private var elementHints: [AnyHashable: ElementHint] = [:]
 
         /// Follows `upstream`, signalling SwiftUI through `strategy`.
         init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy) {
@@ -76,6 +79,7 @@
             self.strategy = strategy
             snapshot = current
             send = { action, source in upstream.dispatch(action, source: source) }
+            upstreamStream = upstream.stateStream
             registrar = ViewStoreEngine.makeRegistrar(strategy)
             self.token = token
             super.init()
@@ -86,15 +90,12 @@
             send(action, source)
         }
 
-        /// The state over time, as far as this engine is concerned: the snapshot now, then each new snapshot
-        /// that differs (a recorded dependency changed, or — by `==` when `State` is `Equatable` — the whole).
-        var stateStream: StateStream<State> {
-            StateStream { [self] onChange in
-                let id = nextObserverKey
-                nextObserverKey &+= 1
-                observers[id] = onChange
-                return (snapshot, UISubscriptionToken { [weak self] in self?.observers[id] = nil })
-            }
+        /// The hint kept for one element-presence read of this view store.
+        func elementHint(_ key: AnyHashable) -> ElementHint {
+            if let hint = elementHints[key] { return hint }
+            let hint = ElementHint()
+            elementHints[key] = hint
+            return hint
         }
 
         // MARK: - Reads
@@ -132,8 +133,7 @@
         // MARK: - Change propagation
 
         private func receive(_ new: State) {
-            paths.advanceGeneration()
-            guard !registry.isEmpty || !observers.isEmpty else {
+            guard !registry.isEmpty else {
                 snapshot = new
                 return
             }
@@ -150,8 +150,6 @@
                 snapshot = new
                 fired.forEach { $0.didSet?(self) }
             }
-            guard !observers.isEmpty, !fired.isEmpty || wholeChanged(old, new) else { return }
-            observers.values.forEach { $0(new) }
         }
 
         // MARK: - Registry
@@ -174,6 +172,7 @@
             fastDependencies.removeAll(keepingCapacity: true)
             fastKeys.removeAll(keepingCapacity: true)
             paths.removeAll()
+            elementHints.removeAll(keepingCapacity: true)
             sweepThreshold = max(ViewStoreEngine.minimumSweepThreshold, dependencies.count * 4)
         }
 
