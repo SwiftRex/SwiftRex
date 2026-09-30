@@ -124,6 +124,11 @@
         func slice<T>(_ keyPath: KeyPath<Base, T>) -> any TrackingReader<T>
         /// A position reached through a closure or lens — no key path, so reads through it depend on the whole state.
         func lane<T>(_ get: @escaping (Base) -> T) -> any TrackingReader<T>
+        /// One element of a keyed collection, by its key path (with the engine's position hints).
+        func element<Container, ID: Hashable & Sendable, Local>(
+            _ observation: Relay.StateAxis.KeyedObservation<Base, Container, ID, Local>,
+            id: ID
+        ) -> any TrackingReader<Local?>
         func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T
         func rows<C: RandomAccessCollection & Sendable>(
             _ keyPath: KeyPath<Base, C>
@@ -147,6 +152,13 @@
 
         func lane<T>(_ get: @escaping (State) -> T) -> any TrackingReader<T> {
             LaneReader(engine: engine, get: get)
+        }
+
+        func element<Container, ID: Hashable & Sendable, Local>(
+            _ observation: Relay.StateAxis.KeyedObservation<State, Container, ID, Local>,
+            id: ID
+        ) -> any TrackingReader<Local?> {
+            SliceReader(engine: engine, prefix: engine.paths.element(observation.container, id: id, observation: observation))
         }
 
         func read<T: Equatable>(derived compute: @escaping (State) -> T, id: ObservationDerivedID) -> T {
@@ -180,6 +192,14 @@
         func lane<T>(_ get: @escaping (Base) -> T) -> any TrackingReader<T> {
             let prefix = self.prefix
             return LaneReader<Action, Root, T>(engine: engine, get: { get($0[keyPath: prefix]) })
+        }
+
+        func element<Container, ID: Hashable & Sendable, Local>(
+            _ observation: Relay.StateAxis.KeyedObservation<Base, Container, ID, Local>,
+            id: ID
+        ) -> any TrackingReader<Local?> {
+            let collection = engine.paths.append(prefix, observation.container)
+            return SliceReader<Action, Root, Local?>(engine: engine, prefix: engine.paths.element(collection, id: id, observation: observation))
         }
 
         func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T {
@@ -221,6 +241,15 @@
         func lane<T>(_ transform: @escaping (Base) -> T) -> any TrackingReader<T> {
             let get = self.get
             return LaneReader<Action, Root, T>(engine: engine, get: { transform(get($0)) })
+        }
+
+        func element<Container, ID: Hashable & Sendable, Local>(
+            _ observation: Relay.StateAxis.KeyedObservation<Base, Container, ID, Local>,
+            id: ID
+        ) -> any TrackingReader<Local?> {
+            // No key path to the collection here: read coarsely, with a lookup of its own.
+            let path = observation.element(id, ElementLookup(clock: ElementLookupClock()))
+            return lane { $0[keyPath: observation.container][keyPath: path] }
         }
 
         func read<T: Equatable>(derived compute: @escaping (Base) -> T, id: ObservationDerivedID) -> T {

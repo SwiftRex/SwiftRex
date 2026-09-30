@@ -107,8 +107,8 @@ ForEach(viewStore.state.each(\.rows)) { row in RowView(row: row) }
 // an optional child — its presence, then the child's own store
 if let child = viewStore.focus(.action(\.child).state(\.child)).transpose() { ChildFeature.view(store: child, environment: world.childEnv) }
 
-// one element by id, through a closure lane
-if let cell = viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } }) { … }
+// one element — by id, by position or by key — through the same collection scope a projection takes
+if let cell = viewStore.focus(.action(\.row).state(\.rows), element: id).transpose() { … }
 ```
 
 Projections narrow types for whoever *follows* the store (`store.projection(…)` then `@OwnedStore` / a
@@ -161,6 +161,14 @@ SwiftUI animates it out, with no flicker:
 }
 ```
 
+### Focusing one element
+
+`viewStore.focus(scope, element:)` is `store.projection(scope, element:)` on a view store: the same collection scopes (by `id`, custom id `.state(\.rows, id: \.slug)`, position `.state(indexed:)`, key `.state(dictionary:)`), the same `ElementAction` envelope, and an optional element — `ViewStore<RowAction, Row?>` — to `transpose()` into a row store that exists while the row does.
+
+It reads through the parent's engine, so a row redraws only for its own element. By position and by key the lookup is O(1) natively. By **id** it's a search, kept O(1) without asking anything of the state: each focused row remembers where it last found its element and checks there first, then its neighbours (one insert or remove shifts later rows by one), then the shift another row just learned (a block insert or remove), and only a shuffle or sort builds an id → offset table — once per state change, on demand. Every candidate is verified by id, so hints only ever make a lookup faster. With 1,000 focused rows a change costs about 2 ms, an insert at the top 2.5 ms, a full reverse 4 ms (release).
+
+By position follows the *position*: after a removal the same index holds another element. Prefer ids unless the list never changes shape.
+
 ## Two-way bindings
 
 A store-backed `Binding` reads state and *dispatches* on write (the reducer stays the only writer). Bindings
@@ -175,10 +183,11 @@ TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName)))
 // or a transform, wrapping the closure in .action(review:):
 TextField("Name", text: viewStore.binding(.state(\.name).action(review: { ViewAction.setName($0) })))
 
-// a field of a collection element — scope the row node, then bind:
-ForEach(store.each(\.rows)) { row in
-    TextField("Name", text: row.scoped(action: .action(review: { AppAction.row(row.id, $0) }))
-        .binding(.state(\.name).action(\.setName)))
+// a field of a collection element — focus the row, then bind:
+ForEach(viewStore.state.each(\.rows)) { row in
+    if let rowStore = viewStore.focus(.action(\.row).state(\.rows), element: row.id).transpose() {
+        TextField("Name", text: rowStore.binding(.state(\.name).action(\.setName)))
+    }
 }
 ```
 

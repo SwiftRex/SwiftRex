@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Owners (`@OwnedStore`, `ProjectionKeeper`, and so every `@Feature` view) reuse a `ViewStore` they're handed
   when it signals the same way, instead of building a second engine; `OwnedStore(store)` owns a store held as
   `any StoreType<Action, State>`.
+- `ViewStore.focus(_:element:)` — one element of a collection (by id, custom id, position or dictionary key), through
+  the same collection scope `projection(_:element:)` takes: a `ViewStore<RowAction, Row?>` to transpose into a row
+  store. By id the element is found in O(1) in the usual case (position hints kept by the view store, nothing
+  asked of the state) and stays the same dependency however the array reorders.
 - A two-way `binding` over an `Equatable` value drops a write equal to the current value — SwiftUI can write a
   binding twice for one gesture, which dispatched the action twice.
 - `ForEach(viewStore.state.items)` now fails with a message naming the fix (`each(\.items)`, or `.value`) instead of

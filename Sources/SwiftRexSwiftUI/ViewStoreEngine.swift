@@ -132,6 +132,7 @@
         // MARK: - Change propagation
 
         private func receive(_ new: State) {
+            paths.advanceGeneration()
             guard !registry.isEmpty || !observers.isEmpty else {
                 snapshot = new
                 return

@@ -98,6 +98,7 @@ A child never builds anything. It takes what the parent hands down, as a plain `
 | reads and dispatches on the whole state | the `ViewStore` | `let viewStore: ViewStore<A, S>` |
 | only reads one region | a position: `viewStore.state.player` | `let player: GranularTracking<Player>` |
 | reads a region and dispatches / binds into it | a focused view store: `viewStore.focus(.action(\.player).state(\.player))` | `let viewStore: ViewStore<PlayerAction, Player>` |
+| is a row that dispatches or binds | a focused element: `viewStore.focus(.action(\.row).state(\.rows), element: row.id).transpose()` | `let viewStore: ViewStore<RowAction, Row>` |
 | is a row of a list | a row position: `ForEach(viewStore.state.each(\.songs)) { SongRow(song: $0) }` | `let song: GranularTracking<Song>` |
 | only needs values | plain values | `let title: String` |
 
