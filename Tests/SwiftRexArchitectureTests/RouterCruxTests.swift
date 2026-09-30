@@ -28,7 +28,6 @@
         typealias Content = RDetailView
     }
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(RDetail.self)
     struct RDetailView: View {
         var body: some View { Text(viewStore.state.text) }
@@ -54,7 +53,6 @@
 
     // The router: one concrete type that knows the whole tree. Its @ViewBuilder switch resolves a route
     // to a child view, supplying that child's env — the crux — and keeping `some View` (no AnyView).
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @MainActor
     fileprivate struct RAppRouter {
         let store: Store<RAppAction, RAppState, RWorld>
@@ -74,7 +72,6 @@
 
     // The parent view: it holds only a `viewStore` and a `router` — NO environment. It presents the
     // detail through the router and never names `RDetail`. Cross-feature decoupling + crux resolution.
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     fileprivate struct RHomeView: View, Routable {
         let viewStore: ViewStore<RAppAction, RAppState>
         let router: RAppRouter
