@@ -95,13 +95,17 @@ if let editor = store.focus(.action(\.editor.child).state(\.editor)).transpose()
 }
 ```
 
-A list iterates the collection with `each` — the list depends on the ids, each row on its own element — and scopes each row for its own store:
+A list iterates the collection with `each` — the list depends on the ids, each row on its own element — and focuses each row for its own store, through the same collection scope a projection takes:
 
 ```swift
-List(store.each(\.rows)) { row in
-    Row.view(store: row.scoped(action: .action(review: { AppAction.row(row.id, $0) })), environment: world.rowEnv)
+List(store.state.each(\.rows)) { row in
+    if let rowStore = store.focus(.action(\.row).state(\.rows), element: row.id).transpose() {
+        Row.view(store: rowStore, environment: world.rowEnv)
+    }
 }
 ```
+
+The row store reads through the list's view store (no new subscription), dispatches `RowAction` as `.row(ElementAction(id, action))`, finds its element in O(1) however the array moves, and holds its last value while it animates out. Nothing is asked of the state: a plain array of `Identifiable` values.
 
 > Note: `transpose` reads the presence edge synchronously in a body, so it lives on `ViewStore`. Outside SwiftUI, presence is plain state — follow `stateStream.map { $0.child != nil }.removeDuplicates()` and present or dismiss on the edge. The forms above depend on the presence edge only, never on the child's contents.
 

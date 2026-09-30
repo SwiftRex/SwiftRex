@@ -75,6 +75,8 @@ extension Relay.StateAxis {
         var container: Lens<Global, Container> { get }
         var element: @Sendable (ID) -> AffineTraversal<Container, Local> { get }
         var ids: @Sendable (Container) -> [ID] { get }
+        /// How an observer reaches one element by key path — `nil` for a lane built from a `Lens`.
+        var observation: KeyedObservation<Global, Container, ID, Local>? { get }
     }
 
     /// Keyed witness — general form (any container + explicit element/ids optics).
@@ -82,14 +84,25 @@ extension Relay.StateAxis {
         public let container: Lens<Global, Container>
         public let element: @Sendable (ID) -> AffineTraversal<Container, Local>
         public let ids: @Sendable (Container) -> [ID]
+        public let observation: KeyedObservation<Global, Container, ID, Local>?
         public init(
             container: Lens<Global, Container>,
             element: @escaping @Sendable (ID) -> AffineTraversal<Container, Local>,
             ids: @escaping @Sendable (Container) -> [ID]
         ) {
+            self.init(container: container, element: element, ids: ids, observation: nil)
+        }
+
+        package init(
+            container: Lens<Global, Container>,
+            element: @escaping @Sendable (ID) -> AffineTraversal<Container, Local>,
+            ids: @escaping @Sendable (Container) -> [ID],
+            observation: KeyedObservation<Global, Container, ID, Local>?
+        ) {
             self.container = container
             self.element = element
             self.ids = ids
+            self.observation = observation
         }
     }
 }
@@ -128,6 +141,65 @@ extension Relay.StateAxis.Keyed where Container == [ID: Local] {
     /// Keyed over a dictionary, located by `Key`.
     public init(dictionary: Lens<Global, [ID: Local]>) {
         self.init(container: dictionary, element: { [ID: Local].ix(key: $0) }, ids: { Array($0.keys) })
+    }
+}
+
+// MARK: Key-path forms — the same locators, keeping the key path so a view store can focus one element
+
+extension Relay.StateAxis.Keyed
+where Container: MutableCollection & Sendable, Container.Element == Local, Local: Identifiable,
+    ID == Local.ID, Container.Index: Sendable {
+    /// Keyed over a collection of `Identifiable` elements at `keyPath`, located by `id`.
+    package init(collection keyPath: WritableKeyPath<Global, Container> & Sendable) {
+        self.init(
+            container: lens(keyPath),
+            element: { Container.ix(id: $0) },
+            ids: { $0.map(\.id) },
+            observation: Relay.StateAxis.KeyedObservation(container: keyPath) { id, lookup in
+                \Container.[observedElement: ObservedElementKey(id: id, identifier: \Local.id, lookup: lookup)]
+            }
+        )
+    }
+}
+
+extension Relay.StateAxis.Keyed
+where Container: MutableCollection & Sendable, Container.Element == Local, Container.Index: Sendable {
+    /// Keyed over a collection at `keyPath`, located by a custom `Hashable` key path.
+    package init(collection keyPath: WritableKeyPath<Global, Container> & Sendable, id identifier: KeyPath<Local, ID> & Sendable) {
+        self.init(
+            container: lens(keyPath),
+            element: { Container.ix(id: $0, by: identifier) },
+            ids: { c in c.map { $0[keyPath: identifier] } },
+            observation: Relay.StateAxis.KeyedObservation(container: keyPath) { id, lookup in
+                \Container.[observedElement: ObservedElementKey(id: id, identifier: identifier, lookup: lookup)]
+            }
+        )
+    }
+}
+
+extension Relay.StateAxis.Keyed
+where Container: MutableCollection & Sendable, Container.Element == Local, ID == Container.Index,
+    Container.Index: Hashable & Sendable {
+    /// Keyed over a collection at `keyPath` by **position**.
+    package init(indexed keyPath: WritableKeyPath<Global, Container> & Sendable) {
+        self.init(
+            container: lens(keyPath),
+            element: { Container.ix($0) },
+            ids: { Array($0.indices) },
+            observation: Relay.StateAxis.KeyedObservation(container: keyPath) { position, _ in \Container.[observedPosition: position] }
+        )
+    }
+}
+
+extension Relay.StateAxis.Keyed where Container == [ID: Local] {
+    /// Keyed over a dictionary at `keyPath`, located by `Key`.
+    package init(dictionary keyPath: WritableKeyPath<Global, [ID: Local]> & Sendable) {
+        self.init(
+            container: lens(keyPath),
+            element: { [ID: Local].ix(key: $0) },
+            ids: { Array($0.keys) },
+            observation: Relay.StateAxis.KeyedObservation(container: keyPath) { key, _ in \[ID: Local].[key] }
+        )
     }
 }
 
@@ -327,7 +399,7 @@ extension Relay.Scope where StateStrategy == Relay.Identity<State> {
         _ keyPath: WritableKeyPath<State, C> & Sendable
     ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, LS.ID, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, LS: Identifiable, LS.ID: Hashable & Sendable, C.Index: Sendable {
-        .init(action: action, state: .init(collection: lens(keyPath)), environment: environment)
+        .init(action: action, state: .init(collection: keyPath), environment: environment)
     }
 
     /// Refine the state axis to a keyed collection of `Identifiable` elements (`Lens`).
@@ -344,7 +416,7 @@ extension Relay.Scope where StateStrategy == Relay.Identity<State> {
         id identifier: KeyPath<LS, ID> & Sendable
     ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, ID, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, C.Index: Sendable {
-        .init(action: action, state: .init(collection: lens(keyPath), id: identifier), environment: environment)
+        .init(action: action, state: .init(collection: keyPath, id: identifier), environment: environment)
     }
 
     /// Refine the state axis to a keyed collection located by a custom `Hashable` key path (`Lens`).
@@ -361,7 +433,7 @@ extension Relay.Scope where StateStrategy == Relay.Identity<State> {
         indexed keyPath: WritableKeyPath<State, C> & Sendable
     ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, C, C.Index, LS>, Environment, EnvironmentStrategy>
     where C.Element == LS, C.Index: Hashable & Sendable {
-        .init(action: action, state: .init(indexed: lens(keyPath)), environment: environment)
+        .init(action: action, state: .init(indexed: keyPath), environment: environment)
     }
 
     /// Refine the state axis to a collection keyed by **position** (`Lens`).
@@ -376,7 +448,7 @@ extension Relay.Scope where StateStrategy == Relay.Identity<State> {
     public func state<K: Hashable & Sendable, V: Sendable>(
         dictionary keyPath: WritableKeyPath<State, [K: V]> & Sendable
     ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Keyed<State, [K: V], K, V>, Environment, EnvironmentStrategy> {
-        .init(action: action, state: .init(dictionary: lens(keyPath)), environment: environment)
+        .init(action: action, state: .init(dictionary: keyPath), environment: environment)
     }
 
     /// Refine the state axis to a dictionary keyed by `Key` (`Lens`).

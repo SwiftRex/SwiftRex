@@ -121,6 +121,52 @@
             )
         }
 
+        /// A view store of **one element** of a collection, through the same collection scope a projection takes —
+        /// by `id` (`.state(\.rows)`, `.state(\.rows, id: \.slug)`), by position (`.state(indexed: \.rows)`) or
+        /// by key (`.state(dictionary: \.byID)`). The element can be absent, so its state is optional; transpose it
+        /// for a child that exists only while the element does:
+        ///
+        /// ```swift
+        /// ForEach(viewStore.state.each(\.rows)) { row in
+        ///     if let rowStore = viewStore.focus(.action(\.row).state(\.rows), element: row.id).transpose() {
+        ///         RowView(viewStore: rowStore)                     // dispatches `RowAction`, reads its own row
+        ///     }
+        /// }
+        /// ```
+        ///
+        /// It reads through this view store's engine (no new subscription) and dispatches through the scope's
+        /// element lane (`ElementAction(id, action)`). By id, the element is found in O(1) in the usual case and stays
+        /// the same dependency however the collection reorders — nothing is asked of the state: a plain array of
+        /// `Identifiable` values is enough.
+        public func focus<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol>(
+            _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
+            element id: A.ID
+        ) -> ViewStore<A.Local, S.Local?> where A.Global == Action, S.Global == State, A.ID == S.ID {
+            focusedElement(review: scope.action.review, state: scope.state, id: id)
+        }
+
+        /// Focus one element through a **declared** collection scope — the environment axis is ignored.
+        public func focus<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol, GE, E: Relay.EnvironmentAxis.Strategy>(
+            _ scope: Relay.Scope<Action, A, State, S, GE, E>,
+            element id: A.ID
+        ) -> ViewStore<A.Local, S.Local?> where A.Global == Action, S.Global == State, A.ID == S.ID {
+            focusedElement(review: scope.action.review, state: scope.state, id: id)
+        }
+
+        private func focusedElement<LocalAction: Sendable, K: Relay.StateAxis.KeyedProtocol>(
+            review: @escaping @Sendable (K.ID, LocalAction) -> Action,
+            state keyed: K,
+            id: K.ID
+        ) -> ViewStore<LocalAction, K.Local?> where K.Global == State {
+            let send = self.send
+            let read: @Sendable (State) -> K.Local? = { keyed.element(id).preview(keyed.container.get($0)) }
+            return ViewStore<LocalAction, K.Local?>(
+                reader: keyed.observation.map { reader.element($0, id: id) } ?? reader.lane(read),
+                send: { send(review(id, $0), $1) },
+                stateStream: stateStream.map(read)
+            )
+        }
+
         // MARK: - Derived reads
 
         /// A value computed from the state, with the view depending on **that value** (compared with `==`)
