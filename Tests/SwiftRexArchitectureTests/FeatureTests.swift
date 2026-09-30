@@ -14,7 +14,6 @@
     // A screen with feature-level ViewState/ViewAction (no ViewModel class). The view holds a
     // `viewStore`; @Feature generates `view()` handing it an `ObservableStore` over the projection.
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(HeroDetailsFeature.self)
     private struct HeroDetailsView: View {
         // @BoundTo injects: let viewStore: ViewStore<HeroDetailsFeature.ViewAction, HeroDetailsFeature.ViewState>
@@ -132,7 +131,6 @@
 
     // MARK: - Direct fixtures (no ViewState/ViewAction — view sees State/Action)
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(DirectFeature.self)
     private struct DirectView: View {
         // @BoundTo injects: let viewStore: ViewStore<DirectFeature.ViewAction, DirectFeature.ViewState>,
@@ -159,7 +157,6 @@
 
     // MARK: - L0 fixture (no Environment, no ViewState/ViewAction — the leanest feature)
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(MinimalFeature.self)
     private struct MinimalView: View {
         var body: Never { fatalError("test stub") }

@@ -64,7 +64,6 @@
         typealias Content = LibraryView
     }
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(Library.self)
     struct LibraryView: View {
         var body: some View {
@@ -110,7 +109,6 @@
         typealias Content = EditorView
     }
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(Editor.self)
     struct EditorView: View {
         var body: some View {

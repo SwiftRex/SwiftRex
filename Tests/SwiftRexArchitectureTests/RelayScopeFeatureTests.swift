@@ -28,7 +28,6 @@
         typealias Content = SCCounterView
     }
 
-    @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
     @BoundTo(SCCounter.self)
     struct SCCounterView: View { var body: some View { Text("\(viewStore.state.count)") } }
 
