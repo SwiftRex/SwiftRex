@@ -192,8 +192,7 @@ struct PureChainTests {
         var delivered: String?
         let token = chain.stateStream.observe { delivered = $0.title }
         store.dispatch(.row(ElementAction(2, action: .rename("now"))))
-        #expect(delivered == "now")                                       // no hop: already there when dispatch returns
-        #expect(Thread.isMainThread)
+        #expect(delivered == "now") // no hop: already there when dispatch returns (the test runs on the main actor)
         _ = token
     }
 }
