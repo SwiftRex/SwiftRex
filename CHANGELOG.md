@@ -18,16 +18,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Granular SwiftUI reads (`SwiftRex.SwiftUI`): `ViewStore<Action, State>` — the only readable store —
   keeps one snapshot and a dependency per key path each view read through `viewStore.state`, signalling only
   what changed (compared with `==`), at any depth. `GranularTracking` (a position in the state, `each(_:)`
-  for list rows), `IndivisibleTracking` (types read whole), `viewStore.focus(.state(…), .action(…))` (a
+  for list rows), `IndivisibleTracking` (types read whole), `viewStore.focus(.action(…).state(…))` (a
   key-path slice with its own action lane), owners `@OwnedStore` and `ProjectionKeeper`.
 - `ViewStrategy.automatic` (default): Observation on iOS 17+, Combine below, decided at runtime.
 - `read(derived:)` — depend on a computed value instead of the whole state.
-- `transpose()` everywhere, depending on the presence edge only: on `ViewStore`, `ViewStore<T?>` (or
-  `ViewStore<Presentation<T>>`) becomes `ViewStore<T>?` on the same engine; on any store, a
-  `StateStream<StoreProjection<A, T>?>` that emits a child store when the value appears and `nil` when it goes
-  away (for UIKit and other non-SwiftUI renderers). `transpose(action:state:)` on `ViewStore` for closure lanes.
-- `Binding<Presentation<T>>` from `binding(.state(\.slot), dismiss:)`, carrying both dismiss edges:
-  `.sheet(item:)` takes it directly; `.isPresented()`, `.item()` and `.onDismiss()` feed any other container.
+- `transpose()` — `F<T?>` into `F<T>?`, depending on the presence edge only: a `ViewStore<T?>` (or
+  `ViewStore<Presentation<T>>`) becomes a `ViewStore<T>?` on the same engine, and a `GranularTracking<T?>` a
+  `GranularTracking<T>?`; both hold the last present value while the value is going away.
+  `transpose(action:state:)` on `ViewStore` for closure lanes.
+- One `binding` taking a chained scope, `binding(.state(…).action(…))`; what the action lane embeds decides the
+  kind: the value (two-way `Binding<T>`), a no-payload case on an optional slot (dismiss-only `Binding<Bool>` /
+  `Binding<T?>`, typed by the SwiftUI parameter), or a `PresentationAction` on a `Presentation` slot
+  (`Binding<Presentation<T>>` carrying both dismissal edges — `.sheet(item:)` takes it directly;
+  `.isPresented()`, `.item()` and `.onDismiss()` feed any other container).
+- `PresentationAction` is `Prismatic` (`\.editor.child` reaches the presented child's lane).
 - Articles: *Stores at a Glance*, *Observing a Store in SwiftUI*.
 
 ### Changed
@@ -35,10 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Store`'s is private; `TestStore.state` stays) and no `observe(willChange:didChange:)` — a store is
   followed, not read; views read through a `ViewStore`. `StoreBuffer` is a struct with no shared cache.
 - **Breaking:** bindings live on `ViewStore` only — they no longer compile on a raw `Store` or
-  `StoreProjection`, which SwiftUI can't observe — and they share one name: `presence` and `item` are
-  `binding(_:dismiss:)` (typed `Binding<Bool>` / `Binding<T?>` by the SwiftUI parameter), and the
-  `presenting` / `presentingItem` modifiers are `.sheet(item:)` with a `Binding<Presentation<T>>`. A
-  transposed child is a view store holding its last present value while it is dismissed.
+  `StoreProjection`, which SwiftUI can't observe. `presence`, `item`, `presenting` and `presentingItem` are
+  gone (one `binding`, above); `focus` and `binding` take one chained scope, like `projection`.
+- **Breaking:** `PresentationAction` has two dismissal cases: `.dismiss` when a dismissal starts
+  (`presented → dismissing`) and `.dismissed` when SwiftUI's animation ends (`→ dismissed`).
+  `Presentation.dismiss()` only starts a dismissal.
 - **Breaking:** `@BoundTo(Feature.self)` takes no `strategy:` and injects `let viewStore: ViewStore<…>`;
   `@Feature(strategy:)` defaults to `.automatic`; generated views and `Feature` conformances are no longer
   availability-gated. The generated view owns its view store once per view identity (a `ProjectionKeeper`),
@@ -58,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - **Breaking:** the old `ViewStore` class, `TrackedViewStore`, `@Tracked`, `ObservableObjectStore`,
-  `asObservableObject()`, `store.publisher`, `store.stream`, the core `StoreType.transpose()` and `peek` in
+  `asObservableObject()`, `store.publisher`, `store.stream`, the core `StoreType.transpose()`, `unwrapped()` and `peek` in
   views (dispatch the intent instead) — see *Stores at a Glance* → "Removed — and what replaced them".
 - Dropped the XCFramework release path entirely — the pre-built binary artifacts were broken and
   unused. SwiftRex is distributed via Swift Package Manager only. Removes the `rc-build-xcframework`

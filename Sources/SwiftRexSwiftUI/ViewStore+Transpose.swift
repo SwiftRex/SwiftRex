@@ -5,8 +5,7 @@
 
     // `transpose` — swap `ViewStore<T?>` (or `ViewStore<Presentation<T>>`) into `ViewStore<T>?`, so an optional child
     // screen exists exactly when its state does: `if let child = viewStore.focus(…).transpose() { ChildView(viewStore: child) }`.
-    // It's the synchronous, in-a-body reading of `StoreType.transpose()` (a stream of optional stores): the caller
-    // depends on the **presence edge only**, never on the child's contents, and the child is a view store on the
+    // It's a read, so it lives here: the caller depends on the **presence edge only**, never on the child's contents, and the child is a view store on the
     // same engine — no new subscription, no owner needed — that holds its last present value while it's dismissed.
     //
     //   • `T?`                — present while `.some`.
@@ -18,7 +17,7 @@
         /// Swap `ViewStore<T?>` into `ViewStore<T>?`, depending only on the presence edge.
         ///
         /// ```swift
-        /// if let book = viewStore.focus(.state(\.book), .action(\.book)).transpose() {
+        /// if let book = viewStore.focus(.action(\.book).state(\.book)).transpose() {
         ///     BookView(viewStore: book)
         /// }
         /// ```
@@ -30,7 +29,7 @@
         /// `presented` **or** `dismissing`, `nil` once `dismissed`.
         ///
         /// ```swift
-        /// if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
+        /// if let editor = viewStore.focus(.action(\.editor.child).state(\.editor)).transpose() {
         ///     EditorView(viewStore: editor)
         /// }
         /// ```

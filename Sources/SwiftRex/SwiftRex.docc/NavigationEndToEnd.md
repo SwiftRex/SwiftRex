@@ -217,7 +217,7 @@ public enum AppScopes {
 
 `AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the view store's `transpose()` (`store.focus(.state(\.book), .action(…)).transpose()`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the view store's `transpose()` (`store.focus(.action(…).state(\.book)).transpose()`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
@@ -238,7 +238,7 @@ The **router** holds the app's *view store* and the world and resolves a route t
         // The optional `book` slice, focused with its action lane, transposes to `Optional<Store>` — build the
         // child only while it's present (a real app loads `state.book` when `.book(id)` is pushed); the empty
         // frame renders nothing. The router depends on the presence edge only, not on the book's contents.
-        if let child = store.focus(.state(\.book), .action(AppAction.prism.book)).transpose() {
+        if let child = store.focus(.action(AppAction.prism.book).state(\.book)).transpose() {
             BookFeature.view(store: child, environment: .init())
         }
     }
@@ -253,8 +253,8 @@ struct RootView: View {
     let router: AppRouter
 
     var body: some View {
-        TabView(selection: store.binding(.state(\.tab), dispatch: .action(review: { AppAction.tab(.select($0)) }))) {   // SELECTION
-            NavigationStack(path: store.binding(.state(\.path), dispatch: .action(review: { AppAction.nav(.setPath($0)) }))) {   // STACK
+        TabView(selection: store.binding(.state(\.tab).action(review: { AppAction.tab(.select($0)) }))) {   // SELECTION
+            NavigationStack(path: store.binding(.state(\.path).action(review: { AppAction.nav(.setPath($0)) }))) {   // STACK
                 AppScopes.library.view(of: LibraryFeature.self, from: store, world: router.world)
                     .navigationDestination(for: AppRoute.self) { router.view(for: $0) }
             }
@@ -273,12 +273,12 @@ struct BookView: View, Routable {
         Form { Text(viewStore.state.book.title) }
             .toolbar { Button("Edit") { viewStore.dispatch(.tappedEdit) } }
             // PRESENTATION — a Binding<Presentation> wires both dismiss edges; content is live from the store:
-            .sheet(item: router.store.binding(.state(\.editor), dismiss: .editor(.dismiss))) { _ in
+            .sheet(item: router.store.binding(.state(\.editor).action(\.editor))) { _ in
                 // Project the slot's action (`.editor(.child(_))`) + the `Presentation<…>` state, then
                 // `transpose()` inverts `Store<Presentation<Editor>>` into `Store<Editor>?` — live through
                 // both `presented` and `dismissing(last:)`, `nil` only once dismissed, so no flicker:
                 if let editor = router.store
-                    .focus(.state(\.editor), .action(review: { AppAction.editor(.child($0)) }))
+                    .focus(.action(review: { AppAction.editor(.child($0)) }).state(\.editor))
                     .transpose() {
                     EditorFeature.view(store: editor, environment: router.world.editorEnv)
                 }
@@ -286,7 +286,7 @@ struct BookView: View, Routable {
             // OPTIONAL — a delete confirmation; the optional is both "is it shown" and "what it shows":
             .alert(
                 "Delete book?",
-                isPresented: viewStore.binding(.state(\.deleting), dismiss: .cancelDelete),
+                isPresented: viewStore.binding(.state(\.deleting).action(\.cancelDelete)),
                 presenting: viewStore.state.deleting.value
             ) { book in
                 Button("Delete \(book.title)", role: .destructive) { viewStore.dispatch(.confirmDelete) }
@@ -296,7 +296,7 @@ struct BookView: View, Routable {
 }
 ```
 
-`binding(_:dismiss:)` on a `Presentation` slot gives a `Binding<Presentation<…>>`: `.sheet(item:)` takes it directly when the value is `Identifiable` (`EditorFeature.State` is), and for any other container use its parts — `.fullScreenCover(isPresented: editor.isPresented(), onDismiss: editor.onDismiss())`. On an optional slot the same `binding(_:dismiss:)` gives the `Binding<Bool>` or `Binding<Item?>` the SwiftUI parameter asks for.
+`binding(.state(\.editor).action(\.editor))` on a `Presentation` slot gives a `Binding<Presentation<…>>`: `.sheet(item:)` takes it directly when the value is `Identifiable` (`EditorFeature.State` is), and for any other container use its parts — `.fullScreenCover(isPresented: editor.isPresented(), onDismiss: editor.onDismiss())`. On an optional slot, `binding(.state(\.deleting).action(\.cancelDelete))` gives the `Binding<Bool>` or `Binding<Item?>` the SwiftUI parameter asks for.
 
 ## Layer 7 — The `@main` assembly (store, scene, deep link)
 
@@ -331,10 +331,10 @@ The URL never navigates directly — `onOpenURL` turns it into `.openedURL`, and
 
 | Shape | State | Action | Behavior (Layer 4) | Binding (Layer 6) | Container |
 |---|---|---|---|---|---|
-| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | `binding(_:dispatch:)` | `TabView` / split |
-| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | `binding(_:dispatch:)` | `NavigationStack(path:)` |
-| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | `binding(_:dismiss:)` → `Binding<Presentation<…>>` | sheet / cover |
-| **Optional** | `deleting: Book?` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | `binding(_:dismiss:)` → `Binding<Bool>` / `Binding<Item?>` | alert / sheet / popover |
+| **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | `binding(.state(…).action(…))` | `TabView` / split |
+| **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | `binding(.state(…).action(…))` | `NavigationStack(path:)` |
+| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | `binding(.state(…).action(…))` → `Binding<Presentation<…>>` | sheet / cover |
+| **Optional** | `deleting: Book?` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | `binding(.state(…).action(…))` → `Binding<Bool>` / `Binding<Item?>` | alert / sheet / popover |
 
 Every one is the same recipe: **store the shape in state, dispatch through an action, fold a reducer/lift for it, bind a native container to it, resolve destinations through the router.** No new dialect — just state, actions, and `some View`.
 

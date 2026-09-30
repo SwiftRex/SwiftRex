@@ -6,7 +6,7 @@
 
     /// The store a SwiftUI view holds — the only store you can **read**.
     ///
-    /// A plain ``SwiftRex/StoreType`` can only be followed (its `stateStream`) and dispatched to. A
+    /// A plain `StoreType` can only be followed (its `stateStream`) and dispatched to. A
     /// `ViewStore` adds ``state``: a ``GranularTracking`` position you read granularly, recording exactly what
     /// the view depends on. It works the same whether it signals SwiftUI through the Observation framework or
     /// Combine (its ``ViewStrategy``, chosen by whoever owns it).
@@ -26,10 +26,11 @@
     /// by ``ProjectionKeeper`` inside a body. Views below receive it as a plain `let` — it carries its own
     /// Combine subscription, so no property wrapper is needed under either signal.
     ///
-    /// **Focusing.** ``focus(_:_:)`` gives a child a `ViewStore` of a key-path slice — reading through the same
-    /// engine (no new subscription, no owner needed), dispatching through its own action lane.
+    /// **Focusing.** `focus(_:)` gives a child a `ViewStore` of a slice — the same
+    /// scope a projection takes — reading through the same engine (no new subscription, no owner needed),
+    /// dispatching through its own action lane.
     ///
-    /// Bindings (``binding(_:dispatch:file:function:line:)`` and the dismiss-only `binding(_:dismiss:)`), `transpose` and
+    /// Bindings (`binding(.state(…).action(…))`), `transpose` and
     /// ``read(derived:id:fileID:line:column:)`` live here too: a binding SwiftUI can't observe would never
     /// update, so they don't exist on plain stores.
     @MainActor
@@ -71,33 +72,40 @@
 
         // MARK: - Focus
 
-        /// A key-path slice of the state, for ``focus(_:_:)`` — only key paths can be focused, since the slice
-        /// reads through the parent's engine and its paths must extend the parent's.
-        public struct FocusedState<Child> {
-            let keyPath: KeyPath<State, Child>
-
-            /// The slice at `keyPath`.
-            public static func state(_ keyPath: KeyPath<State, Child>) -> FocusedState { FocusedState(keyPath: keyPath) }
-        }
-
-        /// A view store of a slice: it reads through this view store's engine (granularly, no new subscription —
-        /// cheap to create in a body) and dispatches through `action` into this store. Hand it to a child view
-        /// that reads, dispatches or binds into that slice:
+        /// A view store of a slice, through the same `Relay/Scope` a projection takes — it reads through
+        /// this view store's engine (no new subscription, no owner needed: cheap to create in a body) and
+        /// dispatches through the scope's action lane into this store:
         ///
         /// ```swift
-        /// TransportControls(viewStore: viewStore.focus(.state(\.transport), .action(\.transport)))
+        /// TransportControls(viewStore: viewStore.focus(.action(\.transport).state(\.transport)))
         /// ```
-        public func focus<A: Relay.ActionAxis.EmbedsProtocol, Child: Sendable>(
-            _ state: FocusedState<Child>,
-            _ action: Relay.Scope<Action, A, State, Relay.Absurd<State>, Never, Relay.Absurd<Never>>
-        ) -> ViewStore<A.Local, Child> where A.Global == Action {
+        ///
+        /// A key-path state lane stays granular: `\.transport` plus whatever the child reads. A closure or lens lane
+        /// has no path to record, so the focused store depends on the whole state (the same fallback a binding
+        /// gets).
+        public func focus<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
+            _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>
+        ) -> ViewStore<A.Local, S.Local> where A.Global == Action, S.Global == State {
+            focused(action: scope.action.review, state: scope.state)
+        }
+
+        /// Focus through a **declared** `Relay/Scope` (`ScopeOf<AppFeature>.action(…).state(…)…`) — the
+        /// environment axis is ignored, so the one scope a feature declares also serves the view.
+        public func focus<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol, GE, E: Relay.EnvironmentAxis.Strategy>(
+            _ scope: Relay.Scope<Action, A, State, S, GE, E>
+        ) -> ViewStore<A.Local, S.Local> where A.Global == Action, S.Global == State {
+            focused(action: scope.action.review, state: scope.state)
+        }
+
+        private func focused<LocalAction: Sendable, R: Relay.StateAxis.ReadsProtocol>(
+            action review: @escaping @Sendable (LocalAction) -> Action,
+            state reads: R
+        ) -> ViewStore<LocalAction, R.Local> where R.Global == State {
             let send = self.send
-            let review = action.action.review
-            let keyPath = state.keyPath
-            return ViewStore<A.Local, Child>(
-                reader: reader.slice(keyPath),
+            return ViewStore<LocalAction, R.Local>(
+                reader: reads.keyPath.map { reader.slice($0) } ?? reader.lane(reads.get),
                 send: { send(review($0), $1) },
-                stateStream: stateStream.map { $0[keyPath: keyPath] }
+                stateStream: stateStream.map(reads.get)
             )
         }
 
@@ -158,7 +166,7 @@
 
     // MARK: - @OwnedStore
 
-    /// The store a view **owns** — observes any ``SwiftRex/StoreType`` once per view identity and hands the view
+    /// The store a view **owns** — observes any `StoreType` once per view identity and hands the view
     /// a ``ViewStore``.
     ///
     /// The initial value is an autoclosure, evaluated only the first time the view appears (like `@StateObject`),

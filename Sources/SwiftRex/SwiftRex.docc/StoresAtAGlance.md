@@ -39,7 +39,7 @@ SwiftRex has one store that *runs* the app and several that *follow* it: they ta
 | `IndivisibleTracking` | protocol | marks types read *whole* (`String`, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those; your own via an empty extension). Everything else is read as a `GranularTracking` position. | — |
 | `ViewStrategy` | enum | how an owner signals SwiftUI: `.automatic` (default), `.observation`, `.combine`. | — |
 
-`viewStore.focus(.state(\.player), .action(\.player))` gives a child a `ViewStore` of a key-path slice: it reads through the parent's snapshot (no new subscription, no owner needed) and dispatches through its own lane.
+`viewStore.focus(.action(\.player).state(\.player))` gives a child a `ViewStore` of a key-path slice: it reads through the parent's snapshot (no new subscription, no owner needed) and dispatches through its own lane.
 
 ### Macros (`SwiftRex.Architecture` / `SwiftRex.SwiftUI`)
 
@@ -70,12 +70,14 @@ Every bridge delivers the current state first, then each new state, on the main 
 | `ObservableStore` / `ObservableStoreType` | `ViewStore` (concrete) — its engine is internal |
 | `StateNode<Store, Value>` | `GranularTracking<Value>` |
 | `ObservableLeaf` | `IndivisibleTracking` |
-| `ScopedStore` / `node.scoped(action:)` | `viewStore.focus(.state(\.x), .action(\.x))` — a `ViewStore` |
+| `node.unwrapped()` | `position.transpose()` |
+| `presence` / `item` / `presenting` / `presentingItem` | `binding(.state(…).action(…))`, typed by the SwiftUI parameter; `.sheet(item:)` takes a `Binding<Presentation<T>>` |
+| `ScopedStore` / `node.scoped(action:)` | `viewStore.focus(.action(\.x).state(\.x))` — a `ViewStore` |
 | `@ObservedStore` | `@OwnedStore` |
 | `ObservableStoreHost` / `observable()` | `ProjectionKeeper { store } content: { viewStore in … }` |
 | `peek` in action closures | dispatch the intent; the reducer reads the state |
 | `store.publisher` / `store.stream` | `store.stateStream` (a `Publisher` / an `AsyncSequence`) |
-| `transpose()` on ``StoreType`` returning `Store<T>?` | `viewStore.transpose()` → `ViewStore<T>?` in a body; ``StoreType/transpose()`` → a stream of optional stores elsewhere |
+| core `transpose()` on ``StoreType`` | `viewStore.transpose()` → `ViewStore<T>?` in a body; elsewhere presence is state (`stateStream.map { $0.child != nil }.removeDuplicates()`) |
 | `TrackedViewStore` + `@Tracked` | nothing to write — reads are granular at any depth |
 | `ObservableObjectStore` / `asObservableObject()` | `@OwnedStore(.combine) var viewStore = appStore` |
 | `ViewStrategy.observationSimple` / `.observationGranular` / `.combineObservable` | `.automatic` / `.observation` / `.combine` |

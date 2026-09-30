@@ -13,17 +13,16 @@ extension Behavior {
     /// but over the three-stage presentation lifecycle instead of a bare `Optional`.
     ///
     /// It folds three things into one behavior:
-    /// - **`.present(wrapped)`** → `slot = .presented(wrapped)` (open, seeding the child state);
-    /// - **`.dismiss`** → `slot = slot.dismiss()` — the single stage-dependent step
-    ///   (`presented → dismissing → dismissed`), dispatched once by the view binding and once by
-    ///   `onDismiss`;
+    /// - **`.dismiss`** → `slot = slot.dismiss()` — the dismissal started (`presented → dismissing(last:)`),
+    ///   dispatched by the view binding going `false`/`nil`, or by you to dismiss programmatically;
+    /// - **`.dismissed`** → `slot = .dismissed` — SwiftUI's `onDismiss`, when the animation ended;
     /// - **`.child(_)`** → the child behavior, run while the slot is `presented` **or** `dismissing`
     ///   (so late effects still land), its actions re-embedded and its state read/written through
     ///   `slot.wrapped`.
     ///
     /// ```swift
     /// DetailFeature.behavior().liftPresentation(
-    ///     action: \.detail,     // Action.detail: PresentationAction<DetailFeature.State, DetailFeature.Action>
+    ///     action: \.detail,     // Action.detail: PresentationAction<DetailFeature.Action>
     ///     state:  \.detail,     // State.detail:  Presentation<DetailFeature.State>
     ///     environment: { $0.detailEnv }
     /// )
@@ -42,11 +41,12 @@ extension Behavior {
             review: { childAction in outer.review(.child(childAction)) }
         )
 
-        // `dismiss` — the pure stage machine on the presentation slot. (Presenting is the parent's own
-        // reducer setting `slot = .presented(_)`, so it never needs the child State in the action.)
+        // The two dismissal edges — the pure stage machine on the presentation slot. (Presenting is the parent's
+        // own reducer setting `slot = .presented(_)`, so it never needs the child State in the action.)
         let control = Behavior<GlobalAction, GlobalState, GlobalEnvironment>.reduce { global, state in
             switch outer.preview(global) {
             case .dismiss?: state[keyPath: slot] = state[keyPath: slot].dismiss()
+            case .dismissed?: state[keyPath: slot] = .dismissed
             case .child?, nil: break
             }
         }

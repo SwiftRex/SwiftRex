@@ -4,120 +4,134 @@
 import SwiftRex
 import SwiftUI
 
-// One name for everything SwiftUI takes as a `Binding` — `binding` — typed by what the SwiftUI parameter expects.
-// Each slot is typed as the concrete capability witness it needs (a `Reads` for the state slice, an `Embeds` for
-// the emitted action), so the slots can't be crossed and autocomplete offers only the right axis. Writes
-// round-trip through a dispatched action — the reducer stays the only writer.
+// One name for everything SwiftUI takes as a `Binding`: `binding`, taking the same chained scope as `focus` and
+// `projection` — a `.state(…)` lane to read and an `.action(…)` lane to dispatch. What the action lane embeds
+// decides the kind of binding:
 //
-//   • `binding(.state(…), dispatch: .action(…))` — two-way `Binding<T>`, dispatches on every change:
-//     `TextField`, `Toggle`, `NavigationStack(path:)`, `TabView(selection:)`.
-//   • `binding(.state(\.optional), dismiss: action)` — presentation driven by state, the binding only dismisses:
-//     `Binding<Bool>` for `isPresented:`, `Binding<T?>` for `item:` — whichever the SwiftUI parameter asks for.
-//   • `binding(.state(\.presentation), dismiss: action)` — a `Binding<Presentation<T>>` carrying **both** dismiss
-//     edges: hand it straight to `.sheet(item:)`, or take `.isPresented()` / `.item()` + `.onDismiss()` for any other
-//     container.
+//   • `.state(\.name).action(\.setName)`       — the lane embeds the value: two-way `Binding<T>`, dispatching on
+//     every change (`TextField`, `Toggle`, `NavigationStack(path:)`, `TabView(selection:)`).
+//   • `.state(\.deleting).action(\.cancelDelete)` — an optional slot and a no-payload case: dismiss-only,
+//     `Binding<Bool>` for `isPresented:` or `Binding<T?>` for `item:` — whichever the SwiftUI parameter asks for.
+//   • `.state(\.editor).action(\.editor)`      — a `Presentation` slot and its `PresentationAction`: a
+//     `Binding<Presentation<T>>` carrying **both** dismissal edges (`.dismiss`, then `.dismissed`). Hand it straight
+//     to `.sheet(item:)`, or take `.isPresented()` / `.item()` + `.onDismiss()` for any other container.
 //
-// They live on `ViewStore`, not `StoreType`: a binding's getter must register what it reads so the view redraws
-// when it changes, and only a view store can. A `.state(\.path)` lane registers exactly that path (and a
-// `Binding<Bool>` only the presence edge); a closure/lens lane depends on the whole state.
+// Writes round-trip through a dispatched action — the reducer stays the only writer. Bindings live on `ViewStore`,
+// not `StoreType`: a binding's getter must register what it reads so the view redraws when it changes, and only a
+// view store can. A key-path `.state(\.path)` lane registers exactly that path (and a `Binding<Bool>` only the
+// presence edge); a closure/lens lane depends on the whole state.
 
 extension ViewStore {
-    /// A two-way `Binding<T>` from a **state read** and an **action embed** of the same value type — the one
-    /// write-through binding. It dispatches on **every** change, so besides `TextField`/`Toggle`/sliders it
-    /// also drives `NavigationStack(path:)` (`T == [Route]`) and `TabView(selection:)` (`T == Tab` / `Tab?`).
+    /// A two-way `Binding<T>` — the action lane embeds the value the state lane reads, so every change dispatches
+    /// it: `TextField`/`Toggle`/sliders, `NavigationStack(path:)` (`T == [Route]`), `TabView(selection:)`.
     ///
     /// ```swift
-    /// TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setName)))
-    /// NavigationStack(path: store.binding(.state(\.path), dispatch: .action(\.setPath))) { root }
-    /// TabView(selection: store.binding(.state(\.tab), dispatch: .action(\.selectTab))) { … }
+    /// TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName)))
+    /// NavigationStack(path: viewStore.binding(.state(\.path).action(\.setPath))) { root }
     /// ```
     @MainActor
-    public func binding<S: Relay.StateAxis.ReadsProtocol, A: Relay.ActionAxis.EmbedsProtocol>(
-        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
-        dispatch action: Relay.Scope<Action, A, State, Relay.Absurd<State>, Never, Relay.Absurd<Never>>,
+    public func binding<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
+        _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<S.Local> where S.Global == State, A.Global == Action, A.Local == S.Local {
-        Binding(
-            get: { self.read(state.state) },
-            set: { self.dispatch(action.action.review($0), source: ActionSource(file: file, function: function, line: line)) }
+    ) -> Binding<S.Local> where A.Global == Action, S.Global == State, A.Local == S.Local {
+        let reads = scope.state
+        let review = scope.action.review
+        return Binding(
+            get: { self.read(reads) },
+            set: { self.dispatch(review($0), source: ActionSource(file: file, function: function, line: line)) }
         )
     }
 
-    /// A `Binding<Bool>` that is `true` while the optional state slice is `.some`; setting `false`
-    /// (SwiftUI dismissing) dispatches `dismiss`. Presentation is driven by state — the binding only
-    /// dismisses. For `.sheet(isPresented:)` / `.fullScreenCover(isPresented:)` / alerts.
+    /// A dismiss-only `Binding<Bool>` for an optional slot — `true` while it's `.some`; SwiftUI setting `false`
+    /// dispatches the action lane's no-payload case. Presentation is driven by state; the binding only dismisses.
+    /// For `isPresented:` parameters (sheets, covers, alerts, `navigationDestination(isPresented:)`). Depends on the
+    /// presence edge only.
+    ///
+    /// ```swift
+    /// .alert("Delete?", isPresented: viewStore.binding(.state(\.deleting).action(\.cancelDelete)),
+    ///        presenting: viewStore.state.deleting.value) { … }
+    /// ```
     @MainActor
-    public func binding<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
-        dismiss: Action,
+    public func binding<Wrapped: Sendable, A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
+        _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Bool> where S.Global == State, S.Local == Wrapped? {
-        Binding(
-            get: { self.read(state.state, \Wrapped?.observationIsPresent) },
+    ) -> Binding<Bool> where A.Global == Action, S.Global == State, S.Local == Wrapped?, A.Local == Void {
+        let reads = scope.state
+        let review = scope.action.review
+        return Binding(
+            get: { self.read(reads, \Wrapped?.observationIsPresent) },
             set: { isPresented in
                 guard !isPresented else { return }
-                self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
+                self.dispatch(review(()), source: ActionSource(file: file, function: function, line: line))
             }
         )
     }
 
-    /// A `Binding<Item?>` for `.sheet(item:)` / `.popover(item:)` — present while the optional slice is
-    /// `.some`; dispatch `dismiss` when SwiftUI clears it. SwiftUI keys the sheet on `Item.id`.
+    /// A dismiss-only `Binding<T?>` for an optional slot — the value while `.some`; SwiftUI setting `nil` dispatches
+    /// the action lane's no-payload case. For `item:` parameters (SwiftUI keys the sheet on `T.id`).
+    ///
+    /// ```swift
+    /// .sheet(item: viewStore.binding(.state(\.sharing).action(\.doneSharing))) { payload in ShareSheet(payload) }
+    /// ```
     @MainActor
-    public func binding<Item: Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
-        dismiss: Action,
+    public func binding<Wrapped: Sendable, A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
+        _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Item?> where S.Global == State, S.Local == Item? {
-        Binding(
-            get: { self.read(state.state) },
+    ) -> Binding<Wrapped?> where A.Global == Action, S.Global == State, S.Local == Wrapped?, A.Local == Void {
+        let reads = scope.state
+        let review = scope.action.review
+        return Binding(
+            get: { self.read(reads) },
             set: { newValue in
                 guard newValue == nil else { return }
-                self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
+                self.dispatch(review(()), source: ActionSource(file: file, function: function, line: line))
             }
         )
     }
 
-    /// A `Binding<Presentation<T>>` for a ``Presentation`` slice — the binding that carries **both** dismiss edges.
-    /// A write that advances the stage dispatches `dismiss`, the single stage-dependent command
-    /// (`presented → dismissing → dismissed`).
+    /// A `Binding<Presentation<T>>` for a ``Presentation`` slot and its ``PresentationAction`` — the binding that
+    /// carries **both** dismissal edges: the start (`presented → dismissing`) dispatches `.dismiss`, the end
+    /// (SwiftUI's `onDismiss`) dispatches `.dismissed`. A write that doesn't move the stage dispatches nothing.
     ///
     /// Hand it straight to `.sheet(item:)` (for an `Identifiable` value), which wires both edges; for any other
     /// container take its parts:
     ///
     /// ```swift
-    /// .sheet(item: viewStore.binding(.state(\.editor), dismiss: .editor(.dismiss))) { _ in
-    ///     if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() { EditorView(viewStore: editor) }
+    /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
+    ///     if let editor = viewStore.focus(.action(\.editor.child).state(\.editor)).transpose() { EditorView(viewStore: editor) }
     /// }
     ///
-    /// let cover = viewStore.binding(.state(\.editor), dismiss: .editor(.dismiss))
+    /// let cover = viewStore.binding(.state(\.editor).action(\.editor))
     /// .fullScreenCover(isPresented: cover.isPresented(), onDismiss: cover.onDismiss()) { … }
     /// ```
     ///
-    /// There is deliberately no `Binding<Bool>` straight from a `Presentation` slice: SwiftUI's second edge
-    /// (`onDismiss`, when the animation ends) must dispatch too, or the slot stays `dismissing` forever — the
-    /// `Binding<Presentation<T>>` keeps both edges together.
+    /// There is deliberately no `Binding<Bool>` straight from a `Presentation` slot: without its second edge
+    /// (`onDismiss`) the slot would stay `dismissing` forever.
     @MainActor
-    public func binding<Wrapped: Sendable, S: Relay.StateAxis.ReadsProtocol>(
-        _ state: Relay.Scope<Action, Relay.Absurd<Action>, State, S, Never, Relay.Absurd<Never>>,
-        dismiss: Action,
+    public func binding<Wrapped: Sendable, Child, A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
+        _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
         file: String = #fileID,
         function: String = #function,
         line: UInt = #line
-    ) -> Binding<Presentation<Wrapped>> where S.Global == State, S.Local == Presentation<Wrapped> {
-        Binding(
-            get: { self.read(state.state) },
+    ) -> Binding<Presentation<Wrapped>>
+    where A.Global == Action, S.Global == State, S.Local == Presentation<Wrapped>, A.Local == PresentationAction<Child> {
+        let reads = scope.state
+        let review = scope.action.review
+        return Binding(
+            get: { self.read(reads) },
             set: { newValue in
-                // Only a write that advances the stage dismisses; a no-op write (SwiftUI re-affirming
-                // `isPresented = true`) leaves the slot alone.
-                guard newValue.stage != state.state.get(self.reader.peekWhole()).stage else { return }
-                self.dispatch(dismiss, source: ActionSource(file: file, function: function, line: line))
+                let source = ActionSource(file: file, function: function, line: line)
+                switch (reads.get(self.reader.peekWhole()), newValue) {
+                case (.presented, .dismissing): self.dispatch(review(.dismiss), source: source)
+                case (.presented, .dismissed), (.dismissing, .dismissed): self.dispatch(review(.dismissed), source: source)
+                default: break
+                }
             }
         )
     }

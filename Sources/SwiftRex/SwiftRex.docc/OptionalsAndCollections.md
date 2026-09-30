@@ -105,7 +105,7 @@ A view reads through a **view store** (a `ViewStore`, handed down by `@Feature` 
 ForEach(viewStore.state.each(\.rows)) { row in RowView(row: row) }
 
 // an optional child — its presence, then the child's own store
-if let child = viewStore.focus(.state(\.child), .action(\.child)).transpose() { ChildFeature.view(store: child, environment: world.childEnv) }
+if let child = viewStore.focus(.action(\.child).state(\.child)).transpose() { ChildFeature.view(store: child, environment: world.childEnv) }
 
 // one element by id, through a closure lane
 if let cell = viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } }) { … }
@@ -131,7 +131,7 @@ To hand a child `Feature` a store of the **unwrapped** value, invert the two typ
 
 ```swift
 // in a view body — on the view store; the view depends on the presence edge only:
-viewStore.focus(.state(\.child), .action(\.child))   // ViewStore<ChildAction, Child?>  — store of optional
+viewStore.focus(.action(\.child).state(\.child))   // ViewStore<ChildAction, Child?>  — store of optional
     .transpose()                                        // StoreProjection<…, Child>?      — optional store of unwrapped
     .map { ChildFeature.view(store: $0, environment: world.childEnv) }   // View? — nil if the child is gone
 
@@ -139,7 +139,7 @@ viewStore.focus(.state(\.child), .action(\.child))   // ViewStore<ChildAction, C
 viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
 ```
 
-On a `ViewStore` it's a synchronous read in a body, returning a `ViewStore<T>?` on the same engine. On any other store — UIKit, a renderer on another platform, a service — ``StoreType/transpose()`` returns the same edge as a stream, `StateStream<StoreProjection<A, T>?>`: a child store when the value appears, `nil` when it goes away. Act on the stream (present on `.some`, tear down on `nil`); a child store kept past its `nil` still shows its last value and still dispatches, to a reducer that no longer has it.
+It's a read, so it lives on `ViewStore` — a synchronous read in a body, returning a `ViewStore<T>?` on the same engine. Outside SwiftUI, presence is plain state: follow `store.stateStream.map { $0.child != nil }.removeDuplicates()` and present or dismiss on the edge.
 
 > It is deliberately **not** called `sequence`: a `Store` is not `Traversable`, so the swap claims no
 > traversal law. It works because a view store knows the current value, which decides the nesting at call
@@ -154,8 +154,8 @@ bare `T?`. Its `transpose()` overload (on the view store) keeps the child store 
 SwiftUI animates it out, with no flicker:
 
 ```swift
-.sheet(item: viewStore.binding(.state(\.editor), dismiss: .dismissEditor)) { _ in
-    if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
+.sheet(item: viewStore.binding(.state(\.editor).action(\.dismissEditor))) { _ in
+    if let editor = viewStore.focus(.action(\.editor.child).state(\.editor)).transpose() {
         EditorFeature.view(store: editor, environment: world.editorEnv)
     }
 }
@@ -171,14 +171,14 @@ so the slots can't be crossed and each offers only its own strategies (`\.case` 
 
 ```swift
 // action case:
-TextField("Name", text: viewStore.binding(.state(\.name), dispatch: .action(\.setName)))
+TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName)))
 // or a transform, wrapping the closure in .action(review:):
-TextField("Name", text: viewStore.binding(.state(\.name), dispatch: .action(review: { ViewAction.setName($0) })))
+TextField("Name", text: viewStore.binding(.state(\.name).action(review: { ViewAction.setName($0) })))
 
 // a field of a collection element — scope the row node, then bind:
 ForEach(store.each(\.rows)) { row in
     TextField("Name", text: row.scoped(action: .action(review: { AppAction.row(row.id, $0) }))
-        .binding(.state(\.name), dispatch: .action(\.setName)))
+        .binding(.state(\.name).action(\.setName)))
 }
 ```
 

@@ -10,7 +10,7 @@
 ///
 /// `dismissing(last:)` keeps the last presented value, so the view renders **unchanged** while SwiftUI
 /// animates the sheet out; the `dismissing → dismissed` step is driven by SwiftUI's `onDismiss`
-/// completion (a real lifecycle event), never a timer. Prefer this over `Wrapped?` for animated
+/// completion (a real lifecycle event, ``PresentationAction/dismissed``), never a timer. Prefer this over `Wrapped?` for animated
 /// presentation — exactly as you prefer ``Loading`` over a bool + spinner for async state, because the
 /// in-between stage is real and deserves a name.
 ///
@@ -71,14 +71,13 @@ extension Presentation {
         }
     }
 
-    /// The single stage-dependent dismiss step — non-mutating copy/rewrap, returning the next stage:
-    /// `presented → dismissing(last:) → dismissed`. Idempotent at `dismissed`. The two `dismiss`
-    /// dispatches (binding `set(false)`, then `onDismiss`) walk it one step each.
+    /// Start dismissing: `presented → dismissing(last:)`, keeping the value on screen while SwiftUI animates
+    /// out. Unchanged when already `dismissing` or `dismissed` — the end of the dismissal is ``PresentationAction/dismissed``
+    /// (SwiftUI's `onDismiss`), which sets `.dismissed`.
     public func dismiss() -> Presentation {
         switch self {
         case let .presented(value): .dismissing(last: value)
-        case .dismissing: .dismissed
-        case .dismissed: self
+        case .dismissing, .dismissed: self
         }
     }
 }

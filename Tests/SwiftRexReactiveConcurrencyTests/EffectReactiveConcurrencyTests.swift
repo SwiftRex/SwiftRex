@@ -164,10 +164,10 @@
             try? await Task.sleep(for: .milliseconds(50))
             #expect(received.value.isEmpty)
             let token = pub.sink { value in received.mutate { $0.append(value) } }
-            try? await Task.sleep(for: .milliseconds(50)) // let the observer register on @MainActor
-            #expect(received.value == [10]) // the current value first
+            await eventually { received.value == [10] } // the observer registers on the main actor; current value first
+            #expect(received.value == [10])
             store.dispatch(5) // state: 10+5=15
-            try? await Task.sleep(for: .milliseconds(50))
+            await eventually { received.value == [10, 15] }
             #expect(received.value == [10, 15])
             token.cancel()
         }
@@ -196,6 +196,15 @@
             try? await Task.sleep(for: .milliseconds(50))
             #expect(received.value == [0, 1])
             _ = token
+        }
+    }
+
+    /// Waits (up to a second) for `condition` — the publisher subscribes asynchronously, so a fixed sleep is flaky
+    /// under a loaded test run.
+    @MainActor
+    private func eventually(_ condition: () -> Bool) async {
+        for _ in 0..<100 where !condition() {
+            try? await Task.sleep(for: .milliseconds(10))
         }
     }
 #endif

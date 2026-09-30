@@ -44,19 +44,19 @@
         }
 
         @Test func bindingGetReadsState() {
-            #expect(makeStore().viewStore().binding(.state(\.name), dispatch: .action(review: A.setName)).wrappedValue == "a")
+            #expect(makeStore().viewStore().binding(.state(\.name).action(review: A.setName)).wrappedValue == "a")
         }
 
         @Test func bindingSetDispatches() async {
             let store = makeStore()
-            store.viewStore().binding(.state(\.name), dispatch: .action(review: A.setName)).wrappedValue = "z"
+            store.viewStore().binding(.state(\.name).action(review: A.setName)).wrappedValue = "z"
             await Task.yield()
             #expect(store.currentState.name == "z")
         }
 
         @Test func presenceIsFalseWhenNilTrueWhenSome() async {
             let store = makeStore()
-            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor), dismiss: .dismissEditor)
+            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor).action(review: { (_: Void) in .dismissEditor }))
             #expect(presence.wrappedValue == false)
             store.dispatch(.presentEditor(7))
             await Task.yield()
@@ -67,7 +67,7 @@
             let store = makeStore()
             store.dispatch(.presentEditor(7))
             await Task.yield()
-            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor), dismiss: .dismissEditor)
+            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor).action(review: { (_: Void) in .dismissEditor }))
             presence.wrappedValue = false // SwiftUI dismissing
             await Task.yield()
             #expect(store.currentState.editor == nil)
@@ -75,7 +75,7 @@
 
         @Test func presenceSetTrueIsIgnored() async {
             let store = makeStore()
-            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor), dismiss: .dismissEditor)
+            let presence: Binding<Bool> = store.viewStore().binding(.state(\.editor).action(review: { (_: Void) in .dismissEditor }))
             presence.wrappedValue = true // binding never drives presentation
             await Task.yield()
             #expect(store.currentState.editor == nil)
@@ -85,7 +85,7 @@
             let store = makeStore()
             store.dispatch(.select(.init(id: 3)))
             await Task.yield()
-            let item: Binding<Item?> = store.viewStore().binding(.state(\.selected), dismiss: .deselect)
+            let item: Binding<Item?> = store.viewStore().binding(.state(\.selected).action(review: { (_: Void) in .deselect }))
             #expect(item.wrappedValue == Item(id: 3))
             item.wrappedValue = nil // SwiftUI clearing the sheet
             await Task.yield()
@@ -131,7 +131,7 @@
             let store = makeStore()
             store.dispatch(.setPath([.a]))
             await Task.yield()
-            let path = store.viewStore().binding(.state(\.path), dispatch: .action(review: A.setPath))
+            let path = store.viewStore().binding(.state(\.path).action(review: A.setPath))
             #expect(path.wrappedValue == [.a])
             path.wrappedValue = [.a, .b] // SwiftUI push
             await Task.yield()
@@ -143,7 +143,7 @@
 
         @Test func selectionDispatchesOnEveryChange() async {
             let store = makeStore()
-            let tab = store.viewStore().binding(.state(\.tab), dispatch: .action(review: A.selectTab))
+            let tab = store.viewStore().binding(.state(\.tab).action(review: A.selectTab))
             #expect(tab.wrappedValue == .home)
             tab.wrappedValue = .search // selecting a tab is a real state change (not dismiss-only)
             await Task.yield()
@@ -152,7 +152,7 @@
 
         @Test func optionalSelectionHandlesNilAndValue() async {
             let store = makeStore()
-            let sidebar = store.viewStore().binding(.state(\.sidebar), dispatch: .action(review: A.selectSidebar))
+            let sidebar = store.viewStore().binding(.state(\.sidebar).action(review: A.selectSidebar))
             #expect(sidebar.wrappedValue == nil)
             sidebar.wrappedValue = .c
             await Task.yield()

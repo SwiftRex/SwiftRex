@@ -44,45 +44,29 @@ let child = store.projection(.action(AppAction.prism.child).state(\.child))
 
 The last two shapes both hand back a store of an *optional*. A child screen wants a store of the *unwrapped* value — that is what `transpose()` is for.
 
-## Transpose — `Store<T?>` into `Store<T>?`
+## Optional children — presence is state
 
-A store of an optional slice (`Store<A, T?>`) is not what a child screen wants: it wants a *store of the unwrapped value*, and, when absent, no store at all. `transpose()` swaps the two type constructors' nesting: `Store<Optional<T>>` becomes `Optional<Store<T>>`.
-
-Whether the value is there changes over time, and a plain store can't be read — so on a projection (or any store) `transpose()` keeps the answer in time: it returns a **stream of optional stores**, emitting only on the presence edge.
+A store of an optional slice (`Store<A, T?>`) is what a projection gives for an optional child, an element by id or a dictionary value. Deciding *whether* to show the child is a read of the current value, and a plain store can't be read — but it can be followed, and presence is just part of the state it delivers. Outside SwiftUI (UIKit, AppKit, a renderer on another platform), follow the presence edge and present or dismiss on it; the child screen gets an ordinary projection of the slot:
 
 ```swift
-let editor = store.projection(action: AppAction.editor, state: \.editor)   // StoreProjection<EditorAction, Editor?>
-token = editor.transpose().observe { child in                              // StoreProjection<EditorAction, Editor>?
-    child.map(presentEditor) ?? dismissEditor()
-}
+token = store.stateStream
+    .map { $0.editor != nil }
+    .removeDuplicates()
+    .observe { isShown in isShown ? presentEditor() : dismissEditor() }
 ```
 
-### The mechanics
+### In SwiftUI — `transpose()`
 
-- **Observing** delivers the current presence at once: a child store if the value is there, `nil` if not.
-- **Only the edge** is emitted afterwards: `nil → some` delivers a new child store, `some → nil` delivers `nil`. Changes *inside* a present value are not re-emitted — the child store follows its own state.
-- **Each child store** dispatches through the parent, follows its own state, and **holds its last present value** once the value is gone, so a screen still animating away keeps showing what it showed.
-- **A value that comes back is a new child**: every `.some` after a `nil` is a new store.
-- A ``Presentation`` slot (`SwiftRex.SwiftUI`) transposes the same way, counting `presented` **and** `dismissing(last:)` as present.
-
-### The pitfalls
-
-- **Act on the stream, not on a store you kept.** Present on `.some`, tear down on `nil`. A child store held past its `nil` still shows its last value and still dispatches — to a reducer that no longer has the value, so its actions are usually ignored.
-- **Don't decide once.** Subscribing, looking at the current value and keeping the answer is a snapshot nothing invalidates. The edge stream is the invalidation.
-- **Keep the token.** Releasing the ``UISubscriptionToken`` stops the edges — and with them your present / dismiss calls.
-
-### In SwiftUI
-
-A `ViewStore` (`SwiftRex.SwiftUI`) reads the same edge synchronously in a body and returns a `ViewStore<T>?` on the same engine — the body re-runs exactly when the stream above would emit:
+A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it swaps the nesting directly: `transpose()` turns a `ViewStore<T?>` into a `ViewStore<T>?` on the same engine, depending on the presence edge only — the body re-runs exactly when the child appears or goes away:
 
 | State | Form |
 |---|---|
-| `T?` reached by a key path | `viewStore.focus(.state(\.child), .action(\.child)).transpose()` |
-| ``Presentation`` — alive through `presented` **and** `dismissing(last:)`, `nil` once `dismissed` (flicker-free) | `viewStore.focus(.state(\.editor), .action(\.editor)).transpose()` |
+| `T?` reached by a key path | `viewStore.focus(.action(\.child).state(\.child)).transpose()` |
+| ``Presentation`` — alive through `presented` **and** `dismissing(last:)`, `nil` once `dismissed` (flicker-free) | `viewStore.focus(.action(\.editor.child).state(\.editor)).transpose()` |
 | `T?` reached by a closure lane (an affine preview, the top of a stack) | `viewStore.transpose(action: { .child($0) }, state: { $0.path.last?.child })` — a `StoreProjection?` |
 
 ```swift
-if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
+if let editor = viewStore.focus(.action(\.editor.child).state(\.editor)).transpose() {
     EditorView(viewStore: editor)
 }
 ```
@@ -98,7 +82,6 @@ It is named **transpose**, not `sequence`/`traverse`, because a ``Store`` is not
 
 ### Projecting & unwrapping
 
-- ``StoreType/transpose()``
 
 - ``StoreType/projection(_:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>)``
 - ``StoreType/projection(_:)-(Relay.Scope<Self.Action,A,Self.State,S,GE,E>)``

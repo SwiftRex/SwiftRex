@@ -74,7 +74,7 @@ To pick a strategy there, pass it after the upstream: `OwnedStore(wrappedValue: 
 **Inline, in a body — `ProjectionKeeper`**, where a property wrapper can't go: a router's `switch`, a `ForEach` row, a sheet's content. It builds once per view identity; pass `id:` when the same position can come to show a *different* store.
 
 ```swift
-.sheet(item: viewStore.binding(.state(\.editing), dismiss: .closeEditor)) { item in
+.sheet(item: viewStore.binding(.state(\.editing).action(\.closeEditor))) { item in
     ProjectionKeeper(id: item.id) {
         appStore.projection(action: { .editor($0) }, state: { $0.editor ?? .empty })
     } content: { editor in
@@ -95,7 +95,7 @@ A child never builds anything. It takes what the parent hands down, as a plain `
 |---|---|---|
 | reads and dispatches on the whole state | the `ViewStore` | `let viewStore: ViewStore<A, S>` |
 | only reads one region | a position: `viewStore.state.player` | `let player: GranularTracking<Player>` |
-| reads a region and dispatches / binds into it | a focused view store: `viewStore.focus(.state(\.player), .action(\.player))` | `let viewStore: ViewStore<PlayerAction, Player>` |
+| reads a region and dispatches / binds into it | a focused view store: `viewStore.focus(.action(\.player).state(\.player))` | `let viewStore: ViewStore<PlayerAction, Player>` |
 | is a row of a list | a row position: `ForEach(viewStore.state.each(\.songs)) { SongRow(song: $0) }` | `let song: GranularTracking<Song>` |
 | only needs values | plain values | `let title: String` |
 
@@ -180,13 +180,13 @@ struct RootView: View {
     @OwnedStore var viewStore = appStore
 
     var body: some View {
-        NavigationStack(path: viewStore.binding(.state(\.path), dispatch: .action(review: AppAction.setPath))) {
+        NavigationStack(path: viewStore.binding(.state(\.path).action(review: AppAction.setPath))) {
             HomeView(viewStore: viewStore)
                 .navigationDestination(for: Route.self) { route in destination(route) }
         }
-        .sheet(isPresented: viewStore.binding(.state(\.settings), dismiss: .closeSettings)) {
+        .sheet(isPresented: viewStore.binding(.state(\.settings).action(\.closeSettings))) {
             // `settings` is optional state: present while it exists, the child follows its own state.
-            if let settings = viewStore.focus(.state(\.settings), .action(\.settings)).transpose() {
+            if let settings = viewStore.focus(.action(\.settings).state(\.settings)).transpose() {
                 SettingsView(viewStore: settings)
             }
         }
@@ -195,7 +195,7 @@ struct RootView: View {
     @ViewBuilder func destination(_ route: Route) -> some View {
         switch route {
         case .detail:
-            if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
+            if let detail = viewStore.focus(.action(\.detail).state(\.detail)).transpose() {
                 DetailView(viewStore: detail)
             }
         }
@@ -219,13 +219,16 @@ store.stateStream.sink { … }.store(in: &cancellables)          // a Combine Pu
 
 Keep the returned ``UISubscriptionToken`` for as long as you follow; releasing it stops delivery immediately.
 
-An optional child outside SwiftUI follows the same edge through ``StoreType/transpose()``: a stream that emits a child store when the value appears and `nil` when it goes away — present on `.some`, tear down on `nil`:
+An optional child outside SwiftUI is just state: follow its presence and present or dismiss on the edge, handing the child screen an ordinary projection of the slot:
 
 ```swift
-token = store.projection(action: AppAction.editor, state: \.editor).transpose().observe { editor in
-    editor.map(presentEditor) ?? dismissEditor()
-}
-``` The RxSwift, ReactiveSwift and ReactiveConcurrency products make the stream an `ObservableType`, a `SignalProducerConvertible` and `asPublisher` respectively.
+token = store.stateStream
+    .map { $0.editor != nil }
+    .removeDuplicates()
+    .observe { isShown in isShown ? presentEditor() : dismissEditor() }
+```
+
+The RxSwift, ReactiveSwift and ReactiveConcurrency products make the stream an `ObservableType`, a `SignalProducerConvertible` and `asPublisher` respectively.
 
 ## Pitfalls
 

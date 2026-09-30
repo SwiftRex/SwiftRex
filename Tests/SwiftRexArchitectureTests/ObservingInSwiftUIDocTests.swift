@@ -85,12 +85,12 @@
         }
 
         var body: some View {
-            NavigationStack(path: viewStore.binding(.state(\.path), dispatch: .action(review: DocAction.setPath))) {
+            NavigationStack(path: viewStore.binding(.state(\.path).action(review: DocAction.setPath))) {
                 PlayerScreen(viewStore: viewStore)
                     .navigationDestination(for: Route.self) { route in destination(route) }
             }
-            .sheet(isPresented: viewStore.binding(.state(\.settings), dismiss: .closeSettings)) {
-                if let settings = viewStore.focus(.state(\.settings), .action(\.settings)).transpose() {
+            .sheet(isPresented: viewStore.binding(.state(\.settings).action(\.closeSettings))) {
+                if let settings = viewStore.focus(.action(\.settings).state(\.settings)).transpose() {
                     SettingsView(viewStore: settings)
                 }
             }
@@ -99,7 +99,7 @@
         @ViewBuilder func destination(_ route: Route) -> some View {
             switch route {
             case .detail:
-                if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
+                if let detail = viewStore.focus(.action(\.detail).state(\.detail)).transpose() {
                     DetailView(viewStore: detail)
                 }
             }
