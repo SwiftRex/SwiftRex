@@ -81,7 +81,7 @@ import Testing
 /// ## StoreType conformance
 ///
 /// `TestStore` conforms to ``StoreType`` so it can be used as a backing store for
-/// ``StoreProjection`` — and, wrapped with `observable()`, behind a live SwiftUI view — so a feature's
+/// ``StoreProjection`` — and, owned by `@OwnedStore` / `ProjectionKeeper`, behind a live SwiftUI view — so a feature's
 /// real view can run against the test store (e.g. for snapshot tests).
 @MainActor
 public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable>: StoreType, @unchecked Sendable {
@@ -109,10 +109,8 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// not retroactively rebind already-pending effects.
     public var environment: Environment
 
-    /// Registered will/didChange callbacks — keyed by a monotonic counter (internal, never
-    /// surfaced) so a single token cancels both.
-    private var stateObservers: [UInt64: (willChange: @MainActor @Sendable () -> Void,
-                                          didChange: @MainActor @Sendable () -> Void)] = [:]
+    /// ``stateStream`` observers — keyed by a monotonic counter (internal, never surfaced).
+    private var stateObservers: [UInt64: @MainActor (State) -> Void] = [:]
     private var nextObserverKey: UInt64 = 0
 
     // Mirrored counts for deinit — Swift 6 deinit is nonisolated and cannot read @MainActor
@@ -237,21 +235,15 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         run(DispatchedAction(action, dispatcher: source))
     }
 
-    /// Registers callbacks for both sides of each state mutation.
-    ///
-    /// Required by ``StoreType``; used by ``StoreProjection`` and `ObservableStore` to observe
-    /// state changes. In `TestStore`, callbacks fire **synchronously** inside each `run(_:)` call,
-    /// so `ObservableStore` dependencies update immediately when ``dispatch(_:sourceLocation:assert:)``
-    /// or ``receive`` runs — one `flush()` is enough for SwiftUI to pick up the change.
-    public func observe(
-        willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange: @escaping @MainActor @Sendable () -> Void
-    ) -> SubscriptionToken {
-        let id = nextObserverKey
-        nextObserverKey &+= 1
-        stateObservers[id] = (willChange: willChange, didChange: didChange)
-        return SubscriptionToken { [weak self] in
-            Task { @MainActor [weak self] in self?.stateObservers.removeValue(forKey: id) }
+    /// The state over time, as for a ``Store``: the current state immediately, then the new state after every
+    /// mutation — synchronously inside each ``dispatch(_:sourceLocation:assert:)`` / ``receive``, so a view
+    /// store following it updates immediately (one `flush()` is enough for SwiftUI to pick up the change).
+    public var stateStream: StateStream<State> {
+        StateStream { [self] onChange in
+            let id = nextObserverKey
+            nextObserverKey &+= 1
+            stateObservers[id] = onChange
+            return (state, UISubscriptionToken { [weak self] in self?.stateObservers[id] = nil })
         }
     }
 
@@ -467,9 +459,9 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         case .unchanged:
             break
         case let .mutation(mutation):
-            stateObservers.values.forEach { $0.willChange() }
             mutation.runEndoMut(&state)
-            stateObservers.values.forEach { $0.didChange() }
+            let current = state
+            stateObservers.values.forEach { $0(current) }
         }
         let postCtx = PostReducerContext<State, Environment>(
             environment: environment,

@@ -3,7 +3,7 @@
 #if canImport(Observation) && canImport(SwiftUI)
     // A single `import SwiftRexArchitecture` covers everything:
     // SwiftRex core (StoreType/Behavior/Reducer), @Prisms/@Lenses/@ApplyOptics (FPMacros),
-    // ObservableStore/StateNode/@BoundTo (SwiftRexSwiftUI), Reader (DataStructure), and Observation.
+    // ViewStore/GranularTracking/@OwnedStore/ProjectionKeeper/@BoundTo (SwiftRexSwiftUI), Reader (DataStructure), and Observation.
     @_exported import DataStructure
     @_exported import FPMacros
     @_exported import Observation
@@ -21,7 +21,7 @@
     /// - Synthesises `static func initialState(with _: Void) -> State { .init() }` when you don't
     ///   write one (skipped if you declare a custom `Input` seed).
     /// - Generates `static func view(store:environment:) -> some View` (when a `Content` view exists),
-    ///   which builds an `ObservableStore` once per view identity (`ObservableStoreHost`) from an
+    ///   which builds a `ViewStore` once per view identity (a `ProjectionKeeper`) from an
     ///   environment-aware projection — buffered before the map when `State` is `Equatable` — and hands it
     ///   to `Content` as a `ViewStore`. Nothing is availability-gated — the store picks its signal at
     ///   runtime. `ViewState`/`ViewAction`/`Content` stay behind `some View`.

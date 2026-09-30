@@ -8,27 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Granular SwiftUI observation (`SwiftRex.SwiftUI`): `ObservableStore` keeps one state snapshot and a
-  dependency per key path each view read, signalling only what changed (compared with `==`), at any depth.
-  `ViewStore` (the receiver, a plain `let`), `StateNode` (reads into a region), `ScopedStore`
-  (`node.scoped(action:)`), `each(_:)` for list rows, `@ObservedStore` and `ObservableStoreHost` (owners),
-  `ObservableLeaf`, `store.observable(_:)`.
+- `StateStream<State>` — a store's state over time, lazy and main-actor: `observe { }` delivers the current
+  state during the call, then every new state; `subscribe(onChange:)`; `map` / `removeDuplicates`; an
+  `AsyncSequence` that keeps only the latest value. `UISubscriptionToken` — its main-actor cancellation
+  handle, cancelling synchronously (also on release).
+- Bridges make `StateStream` the framework's own type: a Combine `Publisher` (demand honoured with the latest
+  value), an RxSwift `ObservableType`, a ReactiveSwift `SignalProducerConvertible`, and `asPublisher` for
+  ReactiveConcurrency. All deliver the current state first, on the main actor.
+- Granular SwiftUI reads (`SwiftRex.SwiftUI`): `ViewStore<Action, State>` — the only readable store —
+  keeps one snapshot and a dependency per key path each view read through `viewStore.state`, signalling only
+  what changed (compared with `==`), at any depth. `GranularTracking` (a position in the state, `each(_:)`
+  for list rows), `IndivisibleTracking` (types read whole), `viewStore.focus(.state(…), .action(…))` (a
+  key-path slice with its own action lane), owners `@OwnedStore` and `ProjectionKeeper`.
 - `ViewStrategy.automatic` (default): Observation on iOS 17+, Combine below, decided at runtime.
 - `read(derived:)` — depend on a computed value instead of the whole state.
-- `transpose(action:state:)` on observed stores — the closure-lane form, depending on the presence edge only.
-- `StoreType.untrackedState` — follow a store without viewing it (what projections, buffers and child
-  observed stores read).
+- `transpose(action:state:)` on `ViewStore` — the closure-lane form, depending on the presence edge only.
 - Articles: *Stores at a Glance*, *Observing a Store in SwiftUI*.
 
 ### Changed
+- **Breaking:** `StoreType` is `dispatch(_:source:)` + `stateStream`. There is no `state` on a store (a
+  `Store`'s is private; `TestStore.state` stays) and no `observe(willChange:didChange:)` — a store is
+  followed, not read; views read through a `ViewStore`. `StoreBuffer` is a struct with no shared cache.
 - **Breaking:** binding and presentation helpers (`binding`, `presence`, `item`, `presenting`,
-  `presentingItem`, `transpose` over `Presentation`, `hasScene`) moved from `StoreType` to
-  `ObservableStoreType` — they no longer compile on a raw `Store` or `StoreProjection`, which SwiftUI can't
-  observe.
+  `presentingItem`, `transpose`, `hasScene`) live on `ViewStore` only — they no longer compile on a raw
+  `Store` or `StoreProjection`, which SwiftUI can't observe.
 - **Breaking:** `@BoundTo(Feature.self)` takes no `strategy:` and injects `let viewStore: ViewStore<…>`;
   `@Feature(strategy:)` defaults to `.automatic`; generated views and `Feature` conformances are no longer
-  availability-gated. The generated view builds its store once per view identity, buffered before the map
-  when `State: Equatable`.
+  availability-gated. The generated view owns its view store once per view identity (a `ProjectionKeeper`),
+  buffered before the map when `State: Equatable`.
 - **Breaking:** `ViewStrategy` cases are `.automatic` / `.observation` / `.combine`.
 - Bumped dependencies to their first stable majors: FP → 2.0.1, Hourglass → 1.0.1,
   ReactiveConcurrency → 1.0.0. No SwiftRex source changes were required — none of the majors'
@@ -37,13 +44,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   license attribution.
 
 ### Fixed
-- A store built from an observed store (a projection, a buffer, a feature's view store) no longer records a
-  whole-state dependency on its parent when it follows it — which under Combine turned every change into a
-  full redraw, and under Observation made the building body depend on everything.
+- Navigation built on a raw `Store` silently never updated; bindings and presentation now require a
+  `ViewStore`, which does.
+- A transposed child screen holds its last present value while it is dismissed, instead of the value it had
+  when `transpose()` last ran.
 
 ### Removed
-- **Breaking:** the old `ViewStore` class, `TrackedViewStore`, `@Tracked`, `ObservableObjectStore` and
-  `asObservableObject()` (see *Stores at a Glance* → "Removed — and what replaced them").
+- **Breaking:** the old `ViewStore` class, `TrackedViewStore`, `@Tracked`, `ObservableObjectStore`,
+  `asObservableObject()`, `store.publisher`, `store.stream`, the core `StoreType.transpose()` and `peek` in
+  views (dispatch the intent instead) — see *Stores at a Glance* → "Removed — and what replaced them".
 - Dropped the XCFramework release path entirely — the pre-built binary artifacts were broken and
   unused. SwiftRex is distributed via Swift Package Manager only. Removes the `rc-build-xcframework`
   CI job and all XCFramework references from the README and the Installation article.

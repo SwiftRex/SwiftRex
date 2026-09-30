@@ -48,7 +48,7 @@ struct PresentationTransposeTests {
     private func transposed(_ detail: Presentation<SeqChild>) -> SeqChild? {
         Store<SeqAppAction, SeqApp, Void>(initial: SeqApp(detail: detail), behavior: .identity, environment: ())
             .projection(.action(SeqAppAction.prism.child).state(\SeqApp.detail))
-            .observable().transpose()?.state
+            .viewStore().transpose()?.currentState
     }
 
     @Test func presentedSwapsToStore() {
@@ -73,10 +73,10 @@ struct RelayScopeBindingTests {
             if case let .setName(v) = action { state.name = v }
         }
         let store = Store<SeqChildAction, SeqChild, Void>(initial: SeqChild(name: "old"), behavior: reducer, environment: ())
-        let binding = store.observable().binding(.state(\SeqChild.name), dispatch: .action(SeqChildAction.prism.setName))
+        let binding = store.viewStore().binding(.state(\SeqChild.name), dispatch: .action(SeqChildAction.prism.setName))
         #expect(binding.wrappedValue == "old")   // get reads state
         binding.wrappedValue = "new"             // set dispatches .setName → reducer writes
-        #expect(store.state.name == "new")
+        #expect(store.currentState.name == "new")
     }
 
     // #1 — element-field binding composes for free through transpose(): the unwrapped element store
@@ -90,12 +90,12 @@ struct RelayScopeBindingTests {
             behavior: rowBehavior.liftCollection(.action(ListAppAction.prism.row).state(\ListApp.rows).environment { (v: Void) in v }),
             environment: ())
         // project element 2 → transpose to an unwrapped Store<SeqRowAction, SeqRow> → bind its \.name field
-        if let rowStore = store.projection(.action(ListAppAction.prism.row).state(\ListApp.rows), element: 2).transpose() {
-            let binding = rowStore.observable().binding(.state(\.name), dispatch: .action(review: SeqRowAction.setName))
+        if let rowStore = store.projection(.action(ListAppAction.prism.row).state(\ListApp.rows), element: 2).viewStore().transpose() {
+            let binding = rowStore.viewStore().binding(.state(\.name), dispatch: .action(review: SeqRowAction.setName))
             #expect(binding.wrappedValue == "B")
             binding.wrappedValue = "B2"
-            #expect(store.state.rows.first(where: { $0.id == 2 })?.name == "B2")
-            #expect(store.state.rows.first(where: { $0.id == 1 })?.name == "A")
+            #expect(store.currentState.rows.first(where: { $0.id == 2 })?.name == "B2")
+            #expect(store.currentState.rows.first(where: { $0.id == 1 })?.name == "A")
         } else {
             Issue.record("expected element 2 present")
         }

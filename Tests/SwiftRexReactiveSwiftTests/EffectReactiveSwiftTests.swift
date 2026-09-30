@@ -146,22 +146,22 @@
         }
     }
 
-    // MARK: - StoreType+ReactiveSwift: .signal
+    // MARK: - StateStream is a SignalProducerConvertible
 
-    @Suite("StoreType+ReactiveSwift: signal")
+    @Suite("StateStream+ReactiveSwift: producer")
     @MainActor
     struct StoreSignalTests {
         @Test func signalIsLazyDoesNotEmitBeforeStarted() async {
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             var received = [Int]()
-            let producer = store.signal
+            let producer = store.stateStream.producer
             store.dispatch(10)
             #expect(received.isEmpty)
             let (lifetime, token) = Lifetime.make()
             producer.take(during: lifetime).startWithValues { received.append($0) }
-            await Task.yield() // let the observe token set up
+            #expect(received == [10]) // current value, synchronously on the main actor
             store.dispatch(5) // state: 10+5=15
-            #expect(received == [15])
+            #expect(received == [10, 15])
             token.dispose()
         }
 
@@ -169,11 +169,10 @@
             let store = Store(initial: 0, reducer: Reducer<Int, Int>.reduce { a, s in s += a })
             var received = [Int]()
             let (lifetime, token) = Lifetime.make()
-            store.signal.take(during: lifetime).startWithValues { received.append($0) }
-            await Task.yield()
+            store.stateStream.producer.take(during: lifetime).startWithValues { received.append($0) }
             store.dispatch(3) // state: 3
             store.dispatch(4) // state: 7
-            #expect(received == [3, 7])
+            #expect(received == [0, 3, 7])
             token.dispose()
         }
     }

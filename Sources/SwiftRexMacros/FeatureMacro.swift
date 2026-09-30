@@ -14,7 +14,7 @@ import SwiftSyntaxMacros
 ///   annotate that extension with `@ApplyOptics(recursively: true)` directly.
 /// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
 ///   generates `view(store:environment:) -> some View` (when a `Content` view exists) handing `Content`
-///   an `ObservableStore` (built once per view identity) over an environment-aware projection, signalling
+///   a `ViewStore` (built once per view identity by a `ProjectionKeeper`) over an environment-aware projection, signalling
 ///   through `strategy:` (default `.automatic`: Observation on iOS 17+, Combine below; nothing is gated).
 /// - `ExtensionMacro`       — generates the `Feature` conformance when the type has a view (a `Content`,
 ///   or a hand-written `view`); a view-less feature is a behavior only and gets no `Feature`
@@ -71,12 +71,12 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         return members
     }
 
-    /// Builds `view(store:environment:)`. The view gets an `ObservableStore` built once per view identity
-    /// (`ObservableStoreHost`), signalling through `strategy:` (chosen at runtime by the store, so ungated).
-    /// When a `ViewState` struct / `ViewAction` enum exists the store is projected through the (env-aware)
-    /// maps — buffered before the map when the feature's `State` is `Equatable`, picked by overload
-    /// resolution in `ObservableStore.feature` — otherwise the feature's store is observed as-is, with an
-    /// unmapped axis in a mixed feature falling back to identity.
+    /// Builds `view(store:environment:)`: a `ProjectionKeeper` that builds the feature's `ViewStore` once per view
+    /// identity, signalling through `strategy:` (chosen at runtime, so ungated). When a `ViewState` struct /
+    /// `ViewAction` enum exists the store is projected through the (env-aware) maps — buffered before the map
+    /// when the feature's `State` is `Equatable`, picked by overload resolution in `featureProjection` —
+    /// otherwise the feature's store is observed as-is, with an unmapped axis in a mixed feature falling back to
+    /// identity.
     private static func viewMember(
         access: String,
         node: AttributeSyntax,
@@ -94,10 +94,9 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             let actionMap = projectsAction
                 ? "mapAction"
                 : "Reader<Environment, @Sendable (ViewAction) -> Action> { _ in { $0 } }"
-            source = "ObservableStore<ViewAction, ViewState>.feature(store, environment: environment, " +
-                "action: \(actionMap), state: \(stateMap), strategy: .\(strategy))"
+            source = "store.featureProjection(environment: environment, action: \(actionMap), state: \(stateMap))"
         } else {
-            source = "ObservableStore<ViewAction, ViewState>.feature(store, strategy: .\(strategy))" // no view layer
+            source = "store" // no view layer — the feature's store is observed as-is
         }
         // The store parameter is `any StoreType<Action, State>` (an existential — a CONCRETE type),
         // not `some StoreType<…>` (a generic parameter). A generic method returning `some View`
@@ -108,7 +107,7 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             store: any StoreType<Action, State>,
             environment: Environment
         ) -> some View {
-            ObservableStoreHost {
+            ProjectionKeeper(strategy: .\(raw: strategy)) {
                 \(raw: source)
             } content: {
                 Content(viewStore: $0)

@@ -33,7 +33,7 @@ struct StoreProjectionTests {
             action: { AppAction(counter: $0, other: nil) },
             state: { $0.count }
         )
-        #expect(proj.state == 42)
+        #expect(proj.currentState == 42)
     }
 
     @Test func stateReflectsLiveStoreChanges() {
@@ -43,7 +43,7 @@ struct StoreProjectionTests {
             state: { $0.count }
         )
         store.dispatch(AppAction(counter: 5, other: nil))
-        #expect(proj.state == 5)
+        #expect(proj.currentState == 5)
     }
 
     @Test func dispatchIsForwardedWithActionMapping() {
@@ -53,19 +53,20 @@ struct StoreProjectionTests {
             state: { $0.count }
         )
         proj.dispatch(3)
-        #expect(store.state.count == 3)
+        #expect(store.currentState.count == 3)
     }
 
-    @Test func observeForwardsToUnderlyingStore() {
+    @Test func streamMapsTheUnderlyingStream() {
         let store = appStore(count: 0)
         let proj = store.projection(
             action: { AppAction(counter: $0, other: nil) },
             state: { $0.count }
         )
         let seen = LockProtected([Int]())
-        _ = proj.observe(willChange: {}, didChange: { seen.mutate { $0.append(proj.state) } })
+        let token = proj.stateStream.subscribe { value in seen.mutate { $0.append(value) } }.token
         store.dispatch(AppAction(counter: 7, other: nil))
         #expect(seen.value == [7])
+        withExtendedLifetime(token) {}
     }
 }
 
@@ -98,8 +99,8 @@ struct StoreProjectionIdentifiableTests {
             actionReview: { $0 },
             stateCollection: \.items
         )
-        #expect(proj.state?.id == 2)
-        #expect(proj.state?.value == "b")
+        #expect(proj.currentState?.id == 2)
+        #expect(proj.currentState?.value == "b")
     }
 
     @Test func stateIsNilWhenElementAbsent() {
@@ -109,7 +110,7 @@ struct StoreProjectionIdentifiableTests {
             actionReview: { $0 },
             stateCollection: \.items
         )
-        #expect(proj.state == nil)
+        #expect(proj.currentState == nil)
     }
 
     @Test func dispatchWrapsActionInElementAction() {
@@ -120,7 +121,7 @@ struct StoreProjectionIdentifiableTests {
             stateCollection: \.items
         )
         proj.dispatch("new")
-        #expect(store.state.items.first?.value == "new")
+        #expect(store.currentState.items.first?.value == "new")
     }
 }
 
@@ -147,14 +148,14 @@ struct StoreProjectionReadOnlyKeyPathTests {
             actionReview: { $0 },
             stateCollection: \.visibleItems // KeyPath, not WritableKeyPath
         )
-        #expect(proj.state?.value == "c")
+        #expect(proj.currentState?.value == "c")
     }
 
     @Test func projectionIsNilWhenElementFilteredOut() {
         let store = store(raw: [Item(id: 1, value: "a"), Item(id: 2, value: "")])
         // id 2 has an empty value, so it is excluded from `visibleItems` → nil projection.
         let proj = store.projection(element: 2, actionReview: { $0 }, stateCollection: \.visibleItems)
-        #expect(proj.state == nil)
+        #expect(proj.currentState == nil)
     }
 }
 
@@ -187,7 +188,7 @@ struct StoreProjectionCustomIdentifierTests {
             stateCollection: \.entries,
             identifier: { $0.tag }
         )
-        #expect(proj.state?.score == 2)
+        #expect(proj.currentState?.score == 2)
     }
 
     @Test func stateIsNilWhenElementAbsent() {
@@ -198,7 +199,7 @@ struct StoreProjectionCustomIdentifierTests {
             stateCollection: \.entries,
             identifier: { $0.tag }
         )
-        #expect(proj.state == nil)
+        #expect(proj.currentState == nil)
     }
 
     @Test func dispatchUpdatesCorrectElement() {
@@ -210,8 +211,8 @@ struct StoreProjectionCustomIdentifierTests {
             identifier: { $0.tag }
         )
         proj.dispatch(99)
-        #expect(store.state.entries[0].score == 99)
-        #expect(store.state.entries[1].score == 5)
+        #expect(store.currentState.entries[0].score == 99)
+        #expect(store.currentState.entries[1].score == 5)
     }
 }
 
@@ -235,20 +236,20 @@ struct StoreProjectionDictionaryTests {
     @Test func stateIsValueWhenKeyPresent() {
         let store = dictStore(map: ["x": 10])
         let proj = store.projection(key: "x", actionReview: { $0 }, stateDictionary: \.map)
-        #expect(proj.state == 10)
+        #expect(proj.currentState == 10)
     }
 
     @Test func stateIsNilWhenKeyAbsent() {
         let store = dictStore(map: [:])
         let proj = store.projection(key: "missing", actionReview: { $0 }, stateDictionary: \.map)
-        #expect(proj.state == nil)
+        #expect(proj.currentState == nil)
     }
 
     @Test func dispatchWritesNewValue() {
         let store = dictStore(map: ["k": 0])
         let proj = store.projection(key: "k", actionReview: { $0 }, stateDictionary: \.map)
         proj.dispatch(99)
-        #expect(store.state.map["k"] == 99)
+        #expect(store.currentState.map["k"] == 99)
     }
 }
 
@@ -266,7 +267,7 @@ struct StoreProjectionEnvironmentTests {
             action: Reader { _ in { (a: Int) in AppAction(counter: a, other: nil) } },
             state: Reader { env in { (s: AppState) in "\(env.prefix)\(s.count * env.scale)" } }
         )
-        #expect(proj.state == "n30") // 3 * 10, prefixed by "n"
+        #expect(proj.currentState == "n30") // 3 * 10, prefixed by "n"
     }
 
     @Test func actionMapUsesEnvironment() {
@@ -277,7 +278,7 @@ struct StoreProjectionEnvironmentTests {
             state: Reader { _ in { (s: AppState) in s.count } }
         )
         proj.dispatch(2) // 2 * scale(4) forwarded to the underlying store
-        #expect(store.state.count == 8)
+        #expect(store.currentState.count == 8)
     }
 
     @Test func stateReflectsLiveStoreChanges() {
@@ -288,6 +289,6 @@ struct StoreProjectionEnvironmentTests {
             state: Reader { env in { (s: AppState) in s.count * env.scale } }
         )
         store.dispatch(AppAction(counter: 5, other: nil))
-        #expect(proj.state == 10) // env applied to the freshly-read store state
+        #expect(proj.currentState == 10) // env applied to the freshly-read store state
     }
 }

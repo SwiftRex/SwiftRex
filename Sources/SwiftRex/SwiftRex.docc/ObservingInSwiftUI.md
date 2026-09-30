@@ -1,43 +1,42 @@
 # Observing a Store in SwiftUI
 
-Wire a store to SwiftUI by hand: who owns the observed store, how child views receive it, where projections and buffers go, and how Observation and Combine differ.
+Wire a store to SwiftUI by hand: who owns the view store, how child views receive it, where projections and buffers go, and how Observation and Combine differ.
 
 ## Overview
 
-> Tip: Using `@Feature`? You can skip this article — the macro makes every decision below for you (the generated view owns the store, buffers before the map when your `State` is `Equatable`, and `@BoundTo` injects the receiver). See <doc:Features>. This article is for wiring views to a store **manually**.
+> Tip: Using `@Feature`? You can skip this article — the macro makes every decision below for you (the generated view owns the view store, buffers before the map when your `State` is `Equatable`, and `@BoundTo` injects the receiver). See <doc:Features>. This article is for wiring views to a store **manually**.
 
-A ``Store`` runs your app; it isn't something SwiftUI can observe. A view reads an **observed store** instead — an `ObservableStore` wrapped around any ``StoreType`` — which keeps one snapshot of the state and records, per key path, what each view read. When the state changes it signals only the views that read something that changed, compared with `==`.
+A ``StoreType`` can't be read — only observed (its ``StoreType/stateStream``) and dispatched to. A SwiftUI view reads a **`ViewStore`** instead: it follows any store, keeps one snapshot of the state, and records — per key path — what each view read. When the state changes it signals only the views that read something that changed, compared with `==`.
 
 Everything in this article follows from one rule:
 
 | | Code | Under every strategy |
 |---|---|---|
-| **One owner** builds the observed store, once | `@ObservedStore var store = appStore` | ✓ |
-| **Every view below** receives it | `let store: ViewStore<Action, State>` | ✓ |
+| **One owner** builds the view store, once | `@OwnedStore var viewStore = appStore` | ✓ |
+| **Every view below** receives it | `let viewStore: ViewStore<Action, State>` | ✓ |
 
 The pieces, from the `SwiftRex.SwiftUI` product:
 
 | Type | Role |
 |---|---|
-| `@ObservedStore` | The **owner**: a property wrapper observing any store once per view identity (lazy, like `@StateObject`). |
-| `ObservableStoreHost` | The owner, as a view: `ObservableStoreHost { make } content: { store in … }` — for a body, a router, a list row. |
-| `ViewStore<Action, State>` | The **receiver**: what views hold, as a plain `let`. |
-| `StateNode<Store, Value>` | A position inside the state (`store.player`) — hand it to a subview that only reads. |
-| `ScopedStore` | A key-path slice with its own action lane (`store.player.scoped(action: …)`) — hand it to a subview that also dispatches or binds. |
-| `ObservableStore` | The class underneath; you rarely name it. |
-| `ViewStrategy` | How the store signals SwiftUI: `.automatic` (default), `.observation`, `.combine`. |
+| `@OwnedStore` | The **owner**: a property wrapper that follows any store once per view identity (lazy, like `@StateObject`) and hands the view a `ViewStore`. |
+| `ProjectionKeeper` | The owner, as a view: `ProjectionKeeper { make } content: { viewStore in … }` — for a body, a router, a list row. |
+| `ViewStore<Action, State>` | The **receiver**: what views hold, as a plain `let`. Read through `viewStore.state`, dispatch with `viewStore.dispatch`. |
+| `GranularTracking<Value>` | A position inside the state (`viewStore.state.player`) — hand it to a subview that only reads. |
+| `IndivisibleTracking` | Marks a type that is read whole (strings, numbers, `Bool`, …; opt your own in). |
+| `ViewStrategy` | How the view store signals SwiftUI: `.automatic` (default), `.observation`, `.combine`. |
 
-## Owning the observed store
+## Owning the view store
 
-The observed store *is* the buffer — its snapshot, its record of what each view read, and its subscription to the upstream store — so it must be built **once**, by something that outlives body re-evaluations. Three ways, identical under every strategy:
+A view store holds a snapshot, the record of what each view read, and its subscription to the upstream store — so it must be built **once**, by something that outlives body re-evaluations. Three ways, identical under every strategy:
 
-**In a view — `@ObservedStore`** (the common case). The initial value is an autoclosure: it runs the first time the view appears, never on a re-initialisation.
+**In a view — `@OwnedStore`** (the common case). The initial value is an autoclosure: it runs the first time the view appears, never on a re-initialisation.
 
 ```swift
 struct RootView: View {
-    @ObservedStore var store = appStore          // any StoreType: a Store, a projection, a buffer…
+    @OwnedStore var viewStore = appStore          // any StoreType: a Store, a projection, a buffer…
 
-    var body: some View { HomeView(store: store) }
+    var body: some View { HomeView(viewStore: viewStore) }
 }
 ```
 
@@ -45,10 +44,10 @@ When the upstream comes from the view's own inputs, assign it in `init`:
 
 ```swift
 struct DetailScreen: View {
-    @ObservedStore var store: ViewStore<DetailAction, DetailState>
+    @OwnedStore var viewStore: ViewStore<DetailAction, DetailState>
 
     init(appStore: some StoreType<AppAction, AppState>, id: Item.ID) {
-        _store = ObservedStore(wrappedValue: appStore.projection(
+        _viewStore = OwnedStore(wrappedValue: appStore.projection(
             action: { AppAction.detail(id, $0) },
             state: { $0.details[id] ?? .empty }
         ))
@@ -58,130 +57,137 @@ struct DetailScreen: View {
 }
 ```
 
-To pick a strategy there, pass it after the upstream: `ObservedStore(wrappedValue: upstream, .combine)`.
+To pick a strategy there, pass it after the upstream: `OwnedStore(wrappedValue: upstream, .combine)`.
 
 **In the `App`**, which is initialised once — the same wrapper:
 
 ```swift
 @main struct MyApp: App {
-    @ObservedStore var store = Store(initial: AppState(), behavior: appBehavior, environment: World.live)
+    @OwnedStore var viewStore = Store(initial: AppState(), behavior: appBehavior, environment: World.live)
 
     var body: some Scene {
-        WindowGroup { RootView(store: store) }
+        WindowGroup { RootView(viewStore: viewStore) }
     }
 }
 ```
 
-**Inline, in a body — `ObservableStoreHost`**, where a property wrapper can't go: a router's `switch`, a `ForEach` row, a sheet's content. It builds once per view identity; pass `id:` when the same position can come to show a *different* store.
+**Inline, in a body — `ProjectionKeeper`**, where a property wrapper can't go: a router's `switch`, a `ForEach` row, a sheet's content. It builds once per view identity; pass `id:` when the same position can come to show a *different* store.
 
 ```swift
-.sheet(item: store.item(.state(\.editing), dismiss: .closeEditor)) { item in
-    ObservableStoreHost(id: item.id) {
-        appStore.projection(action: { .editor($0) }, state: { $0.editor ?? .empty }).observable()
+.sheet(item: viewStore.item(.state(\.editing), dismiss: .closeEditor)) { item in
+    ProjectionKeeper(id: item.id) {
+        appStore.projection(action: { .editor($0) }, state: { $0.editor ?? .empty })
     } content: { editor in
-        EditorView(store: editor)                  // a ViewStore
+        EditorView(viewStore: editor)              // a ViewStore
     }
 }
 ```
 
-> Warning: Never build an observed store in a `body` — `Child(store: ViewStore(appStore.observable()))`. Every re-evaluation allocates a new store, subscribes it upstream and throws away everything the old one recorded. `@State var store = appStore.observable()` in an ordinary view has the same cost in a quieter form: `@State` keeps the first instance, but Swift still evaluates the initial value on every `init`. `@ObservedStore` and the host evaluate their closure only when there's no store yet.
+`ProjectionKeeper` is the composition *store → view store → view*, with ownership in the middle: `make` runs when the position first appears (or its `id` changes), `content` on every render with the same view store.
+
+> Note: There is no public way to build a `ViewStore` directly — only the owners build one, so a body can't accidentally re-create it (and re-subscribe, and forget what its views read) on every render.
 
 ## Receiving it
 
-A child never builds anything. It takes what the parent hands down, as a plain `let` — a re-initialised child gets the same store back, so nothing is lost.
+A child never builds anything. It takes what the parent hands down, as a plain `let` — a re-initialised child gets the same view store back, so nothing is lost.
 
 | The child… | Pass it | Its property |
 |---|---|---|
-| reads and dispatches on the whole state | the `ViewStore` | `let store: ViewStore<A, S>` |
-| only reads one region | a node: `store.player` | `let player: StateNode<ViewStore<A, S>, Player>` |
-| reads a region and dispatches / binds into it | a scoped store: `store.player.scoped(action: .action(\.player))` | `let store: ScopedStore<A, S, PlayerAction, Player>` |
-| is a row of a list | a row node: `ForEach(store.each(\.songs)) { SongRow(song: $0) }` | `let song: StateNode<ViewStore<A, S>, Song>` |
+| reads and dispatches on the whole state | the `ViewStore` | `let viewStore: ViewStore<A, S>` |
+| only reads one region | a position: `viewStore.state.player` | `let player: GranularTracking<Player>` |
+| reads a region and dispatches / binds into it | a focused view store: `viewStore.focus(.state(\.player), .action(\.player))` | `let viewStore: ViewStore<PlayerAction, Player>` |
+| is a row of a list | a row position: `ForEach(viewStore.state.each(\.songs)) { SongRow(song: $0) }` | `let song: GranularTracking<Song>` |
 | only needs values | plain values | `let title: String` |
 
-Reads are granular at any depth. A member whose type is an `ObservableLeaf` (strings, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those…) comes back as the value; anything else comes back as a node you keep reading into:
+Reads are granular at any depth. A member whose type is `IndivisibleTracking` (strings, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those…) comes back as the value; anything else comes back as a position you keep reading into:
 
 ```swift
-Text(store.title)                       // depends on \.title
-Text(store.player.title)                // depends on \.player.title only
-store.player                            // StateNode<…, Player> — nothing recorded yet
-store.player.value                      // the whole Player — depends on \.player
-extension Status: ObservableLeaf {}     // opt a small value in to be read whole: store.status is now a Status
+Text(viewStore.state.title)                   // depends on \.title
+Text(viewStore.state.player.title)            // depends on \.player.title only
+viewStore.state.player                        // GranularTracking<Player> — nothing recorded yet
+viewStore.state.player.value                  // the whole Player — depends on \.player
+extension Status: IndivisibleTracking {}      // opt a small value in to be read whole
 ```
 
-**Pass nodes down, not values.** A child that receives `store.transport` depends only on what *it* reads, so a field that changes ten times a second redraws the one small view that shows it — no hand-split sub-stores:
+**Pass positions down, not values.** A child that receives `viewStore.state.transport` depends only on what *it* reads, so a field that changes ten times a second redraws the one small view that shows it — no hand-split sub-stores:
 
 ```swift
 struct PlayerScreen: View {
-    let store: ViewStore<PlayerAction, PlayerState>
+    let viewStore: ViewStore<PlayerAction, PlayerState>
 
     var body: some View {
-        Console(mixer: store.mixer)            // untouched by playhead ticks
-        Playhead(transport: store.transport)   // redraws on every tick, alone
+        Console(mixer: viewStore.state.mixer)            // untouched by playhead ticks
+        Playhead(transport: viewStore.state.transport)   // redraws on every tick, alone
     }
 }
 ```
 
-In an action closure, read with `peek` so neither the closure nor the view depends on the value: `Button("Mark") { store.dispatch(.mark(at: store.peek(\.transport.position))) }`.
+**Focusing** gives a child its own `ViewStore` of a key-path slice: it reads through the parent's view store (no new subscription, no owner needed — cheap to create in a body) and dispatches through its own action lane. Use it when the child dispatches or binds, not only reads.
 
-## Projecting, buffering, observing
+**Dispatch intent, don't read in closures.** An action closure has no business reading the state — send what the user meant and let the reducer, which has the state, decide: `Button("Mark") { viewStore.dispatch(.markAtPlayhead) }`, not `.mark(at: <current position>)`. The view then depends on nothing it doesn't show.
 
-Three operators, each with one job:
+## Projecting, buffering, following
 
-| Operator | Does | Costs per upstream change |
+Stores compose declaratively: each one *follows* the one below through its ``StoreType/stateStream``. Nothing runs until something observes, and following a store never registers a view dependency.
+
+| Operator | Does | Costs per upstream change, per observer |
 |---|---|---|
-| `projection(action:state:)` | narrows the types; lazy, keeps nothing | runs the map on **every read** |
-| `buffer()` | keeps a snapshot; passes a change on only when `!=` | one `==` |
-| observing (`@ObservedStore` / host) | keeps a snapshot; signals the views whose paths changed | the map once (if upstream is a projection) + the changed paths |
+| `projection(action:state:)` | narrows the types; keeps nothing | the map, once |
+| `buffer()` | passes a change on only when `!=` | one `==` |
+| a view store (`@OwnedStore` / `ProjectionKeeper`) | keeps a snapshot; signals the views whose paths changed | the changed paths |
 
-Observing already *is* a buffer on its output — it only signals what changed, per path — so the one placement decision left is **before a map**: `buffer()` there skips the map entirely when its input didn't change. Pick the recipe by what the view needs:
+A view store already *is* a buffer on its output — it only signals what changed, per path — so the one placement decision left is **before a map**: `buffer()` there skips the map entirely when its input didn't change. Pick the recipe by what the view needs:
 
 | The view needs | Owner | Notes |
 |---|---|---|
-| the app state as it is | `@ObservedStore var store = appStore` | reads are granular; no projection at all |
-| a slice (`\.player`) | observe the parent once, pass `store.player` / `.scoped(…)` down | no new subscription, no extra work |
-| a derived view state (a map) | `@ObservedStore var s = appStore.projection(action: …, state: makeViewState)` | the map runs once per upstream change |
-| a derived view state, and the map is expensive or the app is busy | `@ObservedStore var s = appStore.buffer().projection(…)` | the map runs only when its input changed — needs the input `Equatable` |
+| the app state as it is | `@OwnedStore var viewStore = appStore` | reads are granular; no projection at all |
+| a slice (`\.player`) | own the parent once, pass `viewStore.state.player` / `viewStore.focus(…)` down | no new subscription, no extra work |
+| a derived view state (a map) | `@OwnedStore var viewStore = appStore.projection(action: …, state: makeViewState)` | the map runs once per upstream change |
+| a derived view state, and the map is expensive or the app is busy | `@OwnedStore var viewStore = appStore.buffer().projection(…)` | the map runs only when its input changed — needs the input `Equatable` |
 | a derived view state of one feature's slice | `appStore.projection(action: …, state: \.feature).buffer().projection(action: { $0 }, state: makeViewState)` | slice → dedup on the slice → map |
-| a derived view state *from an already observed store* | `@ObservedStore var detail = store.projection(action: …, state: …)` (where `store` is a `ViewStore`) | observe → project → observe: the child subscribes to the parent's already-filtered changes |
+| a derived view state *from a view store* | `@OwnedStore var detail = viewStore.projection(action: …, state: …)` | the child follows the parent's already-filtered changes |
 
-Projecting through a **key path** stays observable for free (a node, a scoped store). Projecting through a **closure** can't — the store can't see into an arbitrary function — so the result is a plain ``StoreProjection``, and you observe it again with `@ObservedStore` or the host. The types enforce this: bindings don't exist on a `StoreProjection`.
+Focusing through a **key path** reads through the same view store for free. Projecting through a **closure** can't — nothing can see into an arbitrary function — so the result is a plain ``StoreProjection``, which you own again with `@OwnedStore` or `ProjectionKeeper`. The types enforce this: a `StoreProjection` has no `state` to read and no bindings.
 
 ## Choosing the signal: Observation or Combine
 
-The strategy is chosen **once, by the owner**, and changes only how the store tells SwiftUI something changed. Receivers, nodes, bindings and bodies are identical under every strategy.
+The strategy is chosen **once, by the owner**, and changes only how the view store tells SwiftUI something changed. Receivers, positions, bindings and bodies are identical under every strategy.
 
 | Strategy | Signal | Redraws | Where it runs |
 |---|---|---|---|
 | `.automatic` (default) | Observation on iOS 17 / macOS 14 / tvOS 17 / watchOS 10, Combine below | — | everywhere |
 | `.observation` | Observation-framework registrar, per changed path | only the views that read a changed path | falls back to Combine below iOS 17 |
-| `.combine` | one `objectWillChange`, sent only when a path some view read has changed | every view observing the store | everywhere, including iOS 17+ |
+| `.combine` | one `objectWillChange`, sent only when a path some view read has changed | every view holding the view store or a position of it | everywhere, including iOS 17+ |
 
 Owner × strategy, spelled out — the receiving side never changes:
 
 | Owner | Observation (`.automatic` on iOS 17+) | Combine (`.automatic` below 17, or forced) | Receivers |
 |---|---|---|---|
-| a view | `@ObservedStore var store = appStore` | `@ObservedStore(.combine) var store = appStore` | `let store: ViewStore<…>` |
-| the `App` | `@ObservedStore var store = Store(…)` | `@ObservedStore(.combine) var store = Store(…)` | `let store: ViewStore<…>` |
-| a body / router / row | `ObservableStoreHost { upstream.observable() } content: { … }` | `ObservableStoreHost { upstream.observable(.combine) } content: { … }` | `let store: ViewStore<…>` |
+| a view | `@OwnedStore var viewStore = appStore` | `@OwnedStore(.combine) var viewStore = appStore` | `let viewStore: ViewStore<…>` |
+| the `App` | `@OwnedStore var viewStore = Store(…)` | `@OwnedStore(.combine) var viewStore = Store(…)` | `let viewStore: ViewStore<…>` |
+| a body / router / row | `ProjectionKeeper { upstream } content: { … }` | `ProjectionKeeper(strategy: .combine) { upstream } content: { … }` | `let viewStore: ViewStore<…>` |
 
-Force Combine when something listens to `objectWillChange` directly, or to sidestep the Observation framework. There is no `@ObservedObject` anywhere: `ViewStore`, `StateNode` and `ScopedStore` are `DynamicProperty`s that carry the Combine subscription themselves, so a plain `let` re-renders under Combine too (and the subscription simply never fires under Observation).
+Force Combine to sidestep the Observation framework. There is no `@ObservedObject` anywhere: `ViewStore` and `GranularTracking` are `DynamicProperty`s that carry the Combine subscription themselves, so a plain `let` re-renders under Combine too (and the subscription simply never fires under Observation).
+
+Either way, a dispatch reaches the view store synchronously on the main actor — store, projections, buffers, view store — so `withAnimation { viewStore.dispatch(.toggle) }` animates.
 
 ## Bindings and navigation
 
-The binding and presentation helpers exist only on observed stores — `ViewStore`, `ScopedStore`, `ObservableStore`. On a plain `Store` or `StoreProjection` they don't compile: a binding SwiftUI can't observe would never update. They read granularly too — `presence(.state(\.detail))` redraws on the presence edge, not on every change inside `detail`.
+The binding and presentation helpers exist only on `ViewStore`. On a plain `Store` or `StoreProjection` they don't compile: a binding SwiftUI can't observe would never update. They read granularly too — `presence(.state(\.detail))` redraws on the presence edge, not on every change inside `detail`.
 
 ```swift
 struct RootView: View {
-    @ObservedStore var store = appStore
+    @OwnedStore var viewStore = appStore
 
     var body: some View {
-        NavigationStack(path: store.binding(.state(\.path), dispatch: .action(review: AppAction.setPath))) {
-            HomeView(store: store)
+        NavigationStack(path: viewStore.binding(.state(\.path), dispatch: .action(review: AppAction.setPath))) {
+            HomeView(viewStore: viewStore)
                 .navigationDestination(for: Route.self) { route in destination(route) }
         }
-        .sheet(isPresented: store.presence(.state(\.settings), dismiss: .closeSettings)) {
-            if let settings = store.settings.unwrapped() {          // `settings` is optional state
-                SettingsView(store: settings.scoped(action: .action(\.settings)))
+        .sheet(isPresented: viewStore.presence(.state(\.settings), dismiss: .closeSettings)) {
+            // `settings` is optional state: present while it exists, the child follows its own state.
+            if let settings = viewStore.focus(.state(\.settings), .action(\.settings)).transpose() {
+                ProjectionKeeper { settings } content: { SettingsView(viewStore: $0) }
             }
         }
     }
@@ -189,25 +195,38 @@ struct RootView: View {
     @ViewBuilder func destination(_ route: Route) -> some View {
         switch route {
         case .detail:
-            // An optional child: depend on its presence only; the child observes its own state.
-            if let detail = store.detail.scoped(action: .action(\.detail)).transpose() {
-                ObservableStoreHost { detail.observable() } content: { DetailView(store: $0) }
+            if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
+                ProjectionKeeper { detail } content: { DetailView(viewStore: $0) }
             }
         }
     }
 }
 ```
 
+`transpose()` turns a view store of `T?` (or `Presentation<T>`) into a store of `T` that exists exactly while the state does. The caller depends on the **presence edge only**; the child follows its own state, and holds its last value while SwiftUI animates it away. For lanes no key path expresses (an enum case, the top of a stack), `viewStore.transpose(action:state:)` takes the closures directly.
+
 For routers built on ``Relay/Scope`` and features, see <doc:Navigation> and <doc:NavigationEndToEnd>.
+
+## Following a store outside SwiftUI
+
+Anything that isn't a SwiftUI view follows a store through its ``StoreType/stateStream``: the current state immediately, then every new state, on the main actor.
+
+```swift
+let token = store.stateStream.map(\.username).removeDuplicates().observe { nameLabel.text = $0 }
+for await state in store.stateStream { … }                    // AsyncSequence, latest value first
+store.stateStream.sink { … }.store(in: &cancellables)          // a Combine Publisher (SwiftRex.Combine)
+```
+
+Keep the returned ``UISubscriptionToken`` for as long as you follow; releasing it stops delivery immediately. The RxSwift, ReactiveSwift and ReactiveConcurrency products make the stream an `ObservableType`, a `SignalProducerConvertible` and `asPublisher` respectively.
 
 ## Pitfalls
 
-- **Reading `store.state`** — a coarse read: the view depends on *every* change. Read the paths you need (`store.title`).
-- **A state member named like a store member** (`state`, `dispatch`, `each`, `binding`, `item`, `presence`, …) is shadowed — read it with `store.read(\.item)`.
-- **Non-`Equatable` values** can't be compared, so a view reading one redraws on every change that reaches the store. Make view-facing types `Equatable`.
-- **An enum or small value read as a node** — `store.status.value` works; `extension Status: ObservableLeaf {}` lets you write `store.status`.
-- **Capturing a fast-changing value in a closure** makes the view depend on it and rebuilds the closure every tick. Read it inside the closure with `store.peek(\.transport.position)`.
-- **Building an observed store in a `body`**, or in `@State`'s initial value of an ordinary view — see *Owning the observed store*.
+- **Reading `viewStore.state.value`** — a coarse read: the view depends on *every* change. Read the paths you need (`viewStore.state.title`).
+- **A state member named like a position member** (`value`, `each`, `id`, …) is shadowed — read it with `viewStore.state[dynamicMember: \.value]`.
+- **Non-`Equatable` values** can't be compared, so a view reading one redraws on every change that reaches the view store. Make view-facing types `Equatable`.
+- **An enum or small value read as a position** — `viewStore.state.status.value` works; `extension Status: IndivisibleTracking {}` lets you write `viewStore.state.status`.
+- **Reading state to decide what to dispatch** — dispatch the intent instead (`.markAtPlayhead`); the reducer has the state.
+- **Owning a view store in a `body`** — use `ProjectionKeeper` there, never a fresh `@OwnedStore` view per render with a changing identity.
 
 ## See Also
 

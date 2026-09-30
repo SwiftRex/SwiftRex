@@ -217,15 +217,15 @@ public enum AppScopes {
 
 `AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the observed store's `transpose()` (`store.book.scoped(action:).transpose()`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the view store's `transpose()` (`store.focus(.state(\.book), .action(…)).transpose()`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
-The **router** holds the *observed* store and the world and resolves a route to `some View`, supplying each child's environment (which an env-free view body can't). Navigation reads state in a view body, so it must go through an observable store — the binding and presentation helpers don't even exist on the plain `Store`:
+The **router** holds the app's *view store* and the world and resolves a route to `some View`, supplying each child's environment (which an env-free view body can't). Navigation reads state in a view body, so it must go through a `ViewStore` — the binding and presentation helpers don't even exist on the plain `Store`:
 
 ```swift
 @MainActor struct AppRouter {
-    let store: AppStore   // the app store, observed once at launch (Layer 7)
+    let store: AppStore   // the app's view store, owned once at launch (Layer 7)
     let world: World
 
     @ViewBuilder func view(for route: AppRoute) -> some View {
@@ -235,10 +235,10 @@ The **router** holds the *observed* store and the world and resolves a route to 
         }
     }
     @ViewBuilder private func bookView(_ id: Book.ID) -> some View {
-        // The optional `book` slice, scoped with its action lane, transposes to `Optional<Store>` — build the
+        // The optional `book` slice, focused with its action lane, transposes to `Optional<Store>` — build the
         // child only while it's present (a real app loads `state.book` when `.book(id)` is pushed); the empty
         // frame renders nothing. The router depends on the presence edge only, not on the book's contents.
-        if let child = store.book.scoped(action: .action(AppAction.prism.book)).transpose() {
+        if let child = store.focus(.state(\.book), .action(AppAction.prism.book)).transpose() {
             BookFeature.view(store: child, environment: .init())
         }
     }
@@ -270,15 +270,15 @@ struct BookView: View, Routable {
     let router: AppRouter
 
     var body: some View {
-        Form { Text(viewStore.book.title) }
+        Form { Text(viewStore.state.book.title) }
             .toolbar { Button("Edit") { viewStore.dispatch(.tappedEdit) } }
             // PRESENTATION — the modifier wires both dismiss edges; content is live from the store:
             .presenting(router.store, \.editor, dismiss: .editor(.dismiss)) { _ in
                 // Project the slot's action (`.editor(.child(_))`) + the `Presentation<…>` state, then
                 // `transpose()` inverts `Store<Presentation<Editor>>` into `Store<Editor>?` — live through
                 // both `presented` and `dismissing(last:)`, `nil` only once dismissed, so no flicker:
-                if let editor = router.store.editor
-                    .scoped(action: .action(review: { AppAction.editor(.child($0)) }))
+                if let editor = router.store
+                    .focus(.state(\.editor), .action(review: { AppAction.editor(.child($0)) }))
                     .transpose() {
                     EditorFeature.view(store: editor, environment: router.world.editorEnv)
                 }
@@ -287,7 +287,7 @@ struct BookView: View, Routable {
             .alert(
                 "Delete book?",
                 isPresented: viewStore.presence(.state(\.deleting), dismiss: .cancelDelete),
-                presenting: viewStore.read(\.deleting)
+                presenting: viewStore.state.deleting.value
             ) { book in
                 Button("Delete \(book.title)", role: .destructive) { viewStore.dispatch(.confirmDelete) }
                 Button("Cancel", role: .cancel) { viewStore.dispatch(.cancelDelete) }
@@ -307,13 +307,13 @@ public typealias AppStore = ViewStore<AppAction, AppState>
 
 @main struct BookshelfApp: App {
     let world: World
-    // The store runs the app; `@ObservedStore` is what views read — the owner, observed once (lazily).
-    @ObservedStore var store: AppStore
+    // The store runs the app; `@OwnedStore` gives views the store they read — built once (lazily).
+    @OwnedStore var store: AppStore
 
     init() {
         let world = World.live
         self.world = world
-        _store = ObservedStore(wrappedValue: Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world))
+        _store = OwnedStore(wrappedValue: Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world))
     }
 
     var body: some Scene {

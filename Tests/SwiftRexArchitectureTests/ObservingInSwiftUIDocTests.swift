@@ -63,7 +63,7 @@
         case closeSettings
         case settings(SettingsAction)
         case detail(DetailAction)
-        case mark(Double)
+        case markAtPlayhead
     }
 
     // swiftlint:enable private_over_fileprivate
@@ -76,22 +76,22 @@
     // MARK: - Owners
 
     private struct RootView: View {
-        @ObservedStore var store: ViewStore<DocAction, DocState>
-        @ObservedStore var legacy: ViewStore<DocAction, DocState>
+        @OwnedStore var viewStore: ViewStore<DocAction, DocState>
+        @OwnedStore var legacy: ViewStore<DocAction, DocState>
 
         init(appStore: Store<DocAction, DocState, Void>) {
-            _store = ObservedStore(wrappedValue: appStore)
-            _legacy = ObservedStore(wrappedValue: appStore, .combine)
+            _viewStore = OwnedStore(wrappedValue: appStore)
+            _legacy = OwnedStore(wrappedValue: appStore, .combine)
         }
 
         var body: some View {
-            NavigationStack(path: store.binding(.state(\.path), dispatch: .action(review: DocAction.setPath))) {
-                PlayerScreen(store: store)
+            NavigationStack(path: viewStore.binding(.state(\.path), dispatch: .action(review: DocAction.setPath))) {
+                PlayerScreen(viewStore: viewStore)
                     .navigationDestination(for: Route.self) { route in destination(route) }
             }
-            .sheet(isPresented: store.presence(.state(\.settings), dismiss: .closeSettings)) {
-                if let settings = store.settings.unwrapped() {
-                    SettingsView(store: settings.scoped(action: .action(\.settings)))
+            .sheet(isPresented: viewStore.presence(.state(\.settings), dismiss: .closeSettings)) {
+                if let settings = viewStore.focus(.state(\.settings), .action(\.settings)).transpose() {
+                    ProjectionKeeper { settings } content: { SettingsView(viewStore: $0) }
                 }
             }
         }
@@ -99,65 +99,65 @@
         @ViewBuilder func destination(_ route: Route) -> some View {
             switch route {
             case .detail:
-                if let detail = store.detail.scoped(action: .action(\.detail)).transpose() {
-                    ObservableStoreHost { detail.observable() } content: { DetailView(store: $0) }
+                if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
+                    ProjectionKeeper { detail } content: { DetailView(viewStore: $0) }
                 }
             }
         }
     }
 
     private struct DerivedOwner: View {
-        @ObservedStore var screen: ViewStore<DocAction, String>
+        @OwnedStore var viewStore: ViewStore<DocAction, String>
 
         init(appStore: some StoreType<DocAction, DocState>) {
-            _screen = ObservedStore(wrappedValue: appStore
+            _viewStore = OwnedStore(wrappedValue: appStore
                 .projection(action: { $0 }, state: \.transport)
                 .buffer()
                 .projection(action: { $0 }, state: { "\($0.position)" }))
         }
 
-        var body: some View { Text(screen.state) }
+        var body: some View { Text(viewStore.state.value) }
     }
 
     // MARK: - Receivers
 
     private struct PlayerScreen: View {
-        let store: ViewStore<DocAction, DocState>
+        let viewStore: ViewStore<DocAction, DocState>
 
         var body: some View {
             VStack {
-                Text(store.title)
-                Console(mixer: store.mixer)
-                Playhead(transport: store.transport)
-                ForEach(store.each(\.songs)) { SongRow(song: $0) }
-                Button("Mark") { store.dispatch(.mark(store.peek(\.transport.position))) }
+                Text(viewStore.state.title)
+                Console(mixer: viewStore.state.mixer)
+                Playhead(transport: viewStore.state.transport)
+                ForEach(viewStore.state.each(\.songs)) { SongRow(song: $0) }
+                Button("Mark") { viewStore.dispatch(.markAtPlayhead) }
             }
         }
     }
 
     private struct Console: View {
-        let mixer: StateNode<ViewStore<DocAction, DocState>, Mixer>
+        let mixer: GranularTracking<Mixer>
         var body: some View { Text("\(mixer.volume)") }
     }
 
     private struct Playhead: View {
-        let transport: StateNode<ViewStore<DocAction, DocState>, Transport>
+        let transport: GranularTracking<Transport>
         var body: some View { Text("\(transport.position)") }
     }
 
     private struct SongRow: View {
-        let song: StateNode<ViewStore<DocAction, DocState>, Song>
+        let song: GranularTracking<Song>
         var body: some View { Text(song.title) }
     }
 
     private struct SettingsView: View {
-        let store: ScopedStore<DocAction, DocState, SettingsAction, Settings>
-        var body: some View { Button("Dark: \(store.darkMode)") { store.dispatch(.toggleDark) } }
+        let viewStore: ViewStore<SettingsAction, Settings>
+        var body: some View { Button("Dark: \(viewStore.state.darkMode)") { viewStore.dispatch(.toggleDark) } }
     }
 
     private struct DetailView: View {
-        let store: ViewStore<DetailAction, Detail>
-        var body: some View { Text(store.text) }
+        let viewStore: ViewStore<DetailAction, Detail>
+        var body: some View { Text(viewStore.state.text) }
     }
 
     // MARK: - Tests
@@ -173,9 +173,9 @@
 
         @Test func observeProjectObserveChainsThroughAViewStore() {
             let appStore = makeDocStore()
-            let parent = ViewStore(appStore.observable())
-            let child = parent.projection(action: { $0 }, state: { $0.title.uppercased() }).observable()
-            #expect(child.state == "A")
+            let parent = appStore.viewStore()
+            let child = parent.projection(action: { $0 }, state: { $0.title.uppercased() }).viewStore()
+            #expect(child.state.value == "A")
         }
     }
 #endif

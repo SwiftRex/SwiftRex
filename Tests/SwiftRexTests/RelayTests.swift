@@ -37,8 +37,8 @@ struct RelayScopeTests {
         let local = store.projection(scope) // StoreProjection<LocalAction, LocalState>
 
         local.dispatch(.tick)
-        #expect(store.state.local.n == 1) // Embeds review lifted the local action; the reducer ran
-        #expect(local.state.n == 1) // Reads get projected the global state
+        #expect(store.currentState.local.n == 1) // Embeds review lifted the local action; the reducer ran
+        #expect(local.currentState.n == 1) // Reads get projected the global state
     }
 
     @Test func projectsThroughTheMinimalLanes() {
@@ -51,7 +51,7 @@ struct RelayScopeTests {
         let local = store.projection(scope)
 
         local.dispatch(.tick)
-        #expect(store.state.local.n == 1)
-        #expect(local.state.n == 1)
+        #expect(store.currentState.local.n == 1)
+        #expect(local.currentState.n == 1)
     }
 }

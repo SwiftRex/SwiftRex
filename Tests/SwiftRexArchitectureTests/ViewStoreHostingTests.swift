@@ -41,7 +41,7 @@
     }
 
     private struct HotView: View {
-        let node: StateNode<ViewStore<HAction, HState>, HState>
+        let node: GranularTracking<HState>
         let renders: Renders
         var body: some View {
             renders.hot += 1
@@ -50,7 +50,7 @@
     }
 
     private struct ColdView: View {
-        let node: StateNode<ViewStore<HAction, HState>, HState>
+        let node: GranularTracking<HState>
         let renders: Renders
         var body: some View {
             renders.cold += 1
@@ -64,9 +64,9 @@
         let strategy: ViewStrategy
         let renders: Renders
         var body: some View {
-            ObservableStoreHost {
+            ProjectionKeeper(strategy: strategy) {
                 renders.makes += 1
-                return store.observable(strategy)
+                return store
             } content: { observed in
                 ParentContent(observed: observed, renders: renders)
             }
@@ -79,16 +79,16 @@
         var body: some View {
             renders.parent += 1
             return VStack {
-                Text("\(observed.tick)")
-                HotView(node: observed[dynamicMember: \HState.self], renders: renders)
-                ColdView(node: observed[dynamicMember: \HState.self], renders: renders)
+                Text("\(observed.state.tick)")
+                HotView(node: observed.state, renders: renders)
+                ColdView(node: observed.state, renders: renders)
             }
         }
     }
 
     // Flushes pending SwiftUI updates by forcing a layout pass — no run-loop spinning, which would hold the
     // main actor hostage and starve main-actor work in suites running in parallel.
-    // An owner built with @ObservedStore inside a parent that keeps re-rendering (it reads `tick`).
+    // An owner built with @OwnedStore inside a parent that keeps re-rendering (it reads `tick`).
     private struct OuterView: View {
         let outer: ViewStore<HAction, HState>
         let makeInner: @MainActor () -> Store<HAction, HState, Void>
@@ -96,22 +96,22 @@
         var body: some View {
             renders.parent += 1
             return VStack {
-                Text("\(outer.tick)")
+                Text("\(outer.state.tick)")
                 OwnerView(store: makeInner(), renders: renders)
             }
         }
     }
 
     private struct OwnerView: View {
-        @ObservedStore var store: ViewStore<HAction, HState>
+        @OwnedStore var store: ViewStore<HAction, HState>
         let renders: Renders
         init(store: @autoclosure @escaping () -> Store<HAction, HState, Void>, renders: Renders) {
-            _store = ObservedStore(wrappedValue: store())
+            _store = OwnedStore(wrappedValue: store())
             self.renders = renders
         }
         var body: some View {
             renders.hot += 1
-            return Text("\(store.hot)")
+            return Text("\(store.state.hot)")
         }
     }
 
@@ -121,9 +121,9 @@
         view.layoutSubtreeIfNeeded()
     }
 
-    @Suite("ObservableStore — hosted in SwiftUI")
+    @Suite("ViewStore — hosted in SwiftUI")
     @MainActor
-    struct ObservableStoreHostingTests {
+    struct ViewStoreHostingTests {
         @available(macOS 14, *)
         @Test func observationRedrawsOnlyTheReaderOfAChangedPath() {
             let store = makeHStore()
@@ -142,10 +142,10 @@
             #expect(renders.makes == 1)
         }
 
-        @Test func observedStoreBuildsOnceAcrossParentReRenders() {
+        @Test func ownedStoreBuildsOnceAcrossParentReRenders() {
             let outerStore = makeHStore()
             let renders = Renders()
-            let outer = ObservableStoreHost { outerStore.observable() } content: { outer in
+            let outer = ProjectionKeeper { outerStore } content: { outer in
                 OuterView(
                     outer: outer,
                     makeInner: {
@@ -170,11 +170,11 @@
         @available(macOS 14, *)
         @Test func automaticUsesObservationWhereAvailable() {
             let store = makeHStore()
-            let observed = store.observable()
-            #expect(observed.strategy == .automatic)
+            let observed = store.viewStore()
+            #expect(observed.testStrategy == .automatic)
             var sends = 0
-            let cancellable = observed.objectWillChange.sink { sends += 1 }
-            _ = observed.hot
+            let cancellable = observed.testSignal.objectWillChange.sink { sends += 1 }
+            _ = observed.state.hot
             store.dispatch(.hot)
             #expect(sends == 0) // Observation signalled it, not Combine
             cancellable.cancel()

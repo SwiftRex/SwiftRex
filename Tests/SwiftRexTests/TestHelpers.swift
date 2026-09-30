@@ -32,3 +32,8 @@ func subscribeAll<A: Sendable>(
     _effectSubscriptionSink.mutate { $0.append(contentsOf: tokens) }
     return tokens
 }
+
+// Test-only: a store's current state, for assertions (stores themselves can only be observed).
+extension StoreType {
+    @MainActor var currentState: State { stateStream.subscribe { _ in }.current }
+}

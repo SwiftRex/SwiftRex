@@ -38,10 +38,10 @@ struct BehaviorCaseKeyPathLiftTests {
         let store = Store(initial: 0, behavior: lifted, environment: ())
 
         store.dispatch(.counter(5))
-        #expect(store.state == 5)
+        #expect(store.currentState == 5)
 
         store.dispatch(.other("ignored")) // not matched by \.counter → no-op
-        #expect(store.state == 5)
+        #expect(store.currentState == 5)
     }
 
     @Test func liftActionViaCaseKeyPathRewrapsProducedActions() async {
@@ -57,7 +57,7 @@ struct BehaviorCaseKeyPathLiftTests {
         store.dispatch(.counter(0)) // → effect produces .counter(7) (re-embedded), loops back, adds 7
         await Task.yield()
         await Task.yield()
-        #expect(store.state == 7) // proves review re-embedded the produced action as .counter(7)
+        #expect(store.currentState == 7) // proves review re-embedded the produced action as .counter(7)
     }
 
     @Test func combinedLiftViaCaseKeyPath() {
@@ -66,6 +66,6 @@ struct BehaviorCaseKeyPathLiftTests {
         let store = Store(initial: 0, behavior: lifted, environment: ())
 
         store.dispatch(.counter(3))
-        #expect(store.state == 3)
+        #expect(store.currentState == 3)
     }
 }

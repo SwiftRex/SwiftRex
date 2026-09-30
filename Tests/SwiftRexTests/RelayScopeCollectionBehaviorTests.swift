@@ -54,7 +54,7 @@ struct RelayScopeCollectionBehaviorTests {
             .action(AppAction.prism.row).state(\AppState.rows).environment { (v: Void) in v })
         let s = store(lifted, AppState(rows: rows()))
         s.dispatch(.row(ElementAction(2, action: .bump)))
-        #expect(s.state.rows.map(\.taps) == [0, 1, 0])
+        #expect(s.currentState.rows.map(\.taps) == [0, 1, 0])
     }
 
     @Test func identifiableLensRoutesToOne() {
@@ -62,7 +62,7 @@ struct RelayScopeCollectionBehaviorTests {
             .action(AppAction.prism.row).state(lens(\AppState.rows)).environment { (v: Void) in v })
         let s = store(lifted, AppState(rows: rows()))
         s.dispatch(.row(ElementAction(3, action: .bump)))
-        #expect(s.state.rows.map(\.taps) == [0, 0, 1])
+        #expect(s.currentState.rows.map(\.taps) == [0, 0, 1])
     }
 
     @Test func customIdRoutesByKeyPath() {
@@ -70,7 +70,7 @@ struct RelayScopeCollectionBehaviorTests {
             .action(AppAction.prism.byName).state(\AppState.rows, id: \.name).environment { (v: Void) in v })
         let s = store(lifted, AppState(rows: rows()))
         s.dispatch(.byName(ElementAction("B", action: .bump)))
-        #expect(s.state.rows.map(\.taps) == [0, 1, 0])
+        #expect(s.currentState.rows.map(\.taps) == [0, 1, 0])
     }
 
     @Test func indexRoutesByPosition() {
@@ -78,7 +78,7 @@ struct RelayScopeCollectionBehaviorTests {
             .action(AppAction.prism.row).state(indexed: \AppState.rows).environment { (v: Void) in v })
         let s = store(lifted, AppState(rows: rows()))
         s.dispatch(.row(ElementAction(0, action: .bump)))   // position 0
-        #expect(s.state.rows.map(\.taps) == [1, 0, 0])
+        #expect(s.currentState.rows.map(\.taps) == [1, 0, 0])
     }
 
     @Test func dictionaryRoutesByKey() {
@@ -86,8 +86,8 @@ struct RelayScopeCollectionBehaviorTests {
             .action(AppAction.prism.dict).state(dictionary: \AppState.dict).environment { (v: Void) in v })
         let s = store(lifted, AppState(dict: ["x": Row(id: 9, name: "X"), "y": Row(id: 8, name: "Y")]))
         s.dispatch(.dict(ElementAction("y", action: .bump)))
-        #expect(s.state.dict["y"]?.taps == 1)
-        #expect(s.state.dict["x"]?.taps == 0)
+        #expect(s.currentState.dict["y"]?.taps == 1)
+        #expect(s.currentState.dict["x"]?.taps == 0)
     }
 
     @Test func doubleClosureMacroFree() {
@@ -103,7 +103,7 @@ struct RelayScopeCollectionBehaviorTests {
             .environment { (v: Void) in v })
         let s = store(lifted, AppState(rows: rows()))
         s.dispatch(.row(ElementAction(1, action: .bump)))
-        #expect(s.state.rows.map(\.taps) == [1, 0, 0])
+        #expect(s.currentState.rows.map(\.taps) == [1, 0, 0])
     }
 
     @Test func broadcastPrismIntoHitsEvery() {
@@ -113,7 +113,7 @@ struct RelayScopeCollectionBehaviorTests {
                 .environment { (v: Void) in v })
         let s = store(lifted, AppState(rows: rows()))
         s.dispatch(.tickAll(.bump))
-        #expect(s.state.rows.allSatisfy { $0.taps == 1 })
+        #expect(s.currentState.rows.allSatisfy { $0.taps == 1 })
     }
 
     @Test func broadcastRawHitsEvery() {
@@ -126,6 +126,6 @@ struct RelayScopeCollectionBehaviorTests {
             .environment { (v: Void) in v })
         let s = store(lifted, AppState(rows: rows()))
         s.dispatch(.tickAll(.bump))
-        #expect(s.state.rows.allSatisfy { $0.taps == 1 })
+        #expect(s.currentState.rows.allSatisfy { $0.taps == 1 })
     }
 }

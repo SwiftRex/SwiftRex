@@ -29,7 +29,7 @@
 
     @BoundTo(RPChild.self)
     struct RPChildView: View {
-        var body: some View { Text("\(viewStore.count)") }
+        var body: some View { Text("\(viewStore.state.count)") }
     }
 
     struct RPWorld: Sendable {
@@ -56,7 +56,7 @@
 
         @MainActor
         static func view(store: any StoreType<Action, State>, environment: RPWorld) -> some View {
-            ObservableStoreHost { store.observable() } content: { viewStore in
+            ProjectionKeeper { store } content: { viewStore in
                 RPRootView(viewStore: viewStore, router: RPRouter(store: viewStore, world: environment))
             }
         }
@@ -122,8 +122,8 @@
             store.dispatch(.setPath([.child]))
             host.needsLayout = true
             host.layoutSubtreeIfNeeded()
-            #expect(store.state.child.count == 1)
-            #expect(store.state.path == [.child])
+            #expect(store.currentState.child.count == 1)
+            #expect(store.currentState.path == [.child])
         }
     }
 #endif

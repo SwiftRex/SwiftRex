@@ -5,14 +5,10 @@ import DataStructure
 /// A type-erasing, stateless projection of a ``StoreType`` that presents a narrower
 /// action and state interface.
 ///
-/// `StoreProjection` is a **struct** — it holds no state of its own. Its `state` property is
-/// computed by calling the stored mapping closure on the underlying store's state every time it
-/// is accessed. This means:
-///
-/// - There is no caching or diffing overhead.
-/// - Multiple accesses within the same frame may return different values if the store mutated
-///   between them (which can't happen on `@MainActor`, but is worth noting conceptually).
-/// - If you need caching and notification deduplication, use ``StoreBuffer`` via `.buffer()`.
+/// `StoreProjection` is a **struct** — it holds no state of its own. Its ``stateStream`` is the underlying
+/// store's stream mapped through the state closure, so the map runs once per upstream change for each
+/// observer — never "on every read" (a store can't be read). To skip the map when its input didn't change,
+/// put a ``StoreBuffer`` before it: `store.buffer().projection(…)`.
 ///
 /// ## Global types appear in the init only
 ///
@@ -47,20 +43,21 @@ import DataStructure
 ///
 /// ## Observation
 ///
-/// Observer registrations are forwarded directly to the underlying store. `willChange` and
-/// `didChange` fire whenever the **underlying store** mutates — not just when the projected
-/// state slice changes. Use ``StoreBuffer`` if you need notification gating.
+/// ``stateStream`` delivers the projected state whenever the **underlying store** changes — not only when
+/// the projected slice changed. Put a ``StoreBuffer`` after it (`.buffer()`) to skip repeats.
 ///
 /// - Note: `StoreProjection` is `@MainActor` and `Sendable`, consistent with ``StoreType``.
 @MainActor
 public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
-    // `untracked`: read the upstream's `untrackedState` instead of its `state` (see ``StoreType/untrackedState``).
-    private let _state: @MainActor @Sendable (_ untracked: Bool) -> State
+    /// The projected state over time: the underlying stream, mapped.
+    public let stateStream: StateStream<State>
     private let _dispatch: @MainActor @Sendable (Action, ActionSource) -> Void
-    private let _observe: @MainActor @Sendable (
-        @escaping @MainActor @Sendable () -> Void,
-        @escaping @MainActor @Sendable () -> Void
-    ) -> SubscriptionToken
+
+    /// A projection over an already-derived stream — for stream operators no state closure expresses.
+    package init<S: StoreType>(store: S, action mapAction: @escaping @Sendable (Action) -> S.Action, stateStream: StateStream<State>) {
+        self.stateStream = stateStream
+        _dispatch = { action, source in store.dispatch(mapAction(action), source: source) }
+    }
 
     /// Creates a projection that maps a local action to a global action and projects a
     /// global state to a local state.
@@ -85,9 +82,8 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         action mapAction: @escaping @Sendable (Action) -> GA,
         state mapState: @escaping @MainActor @Sendable (GS) -> State
     ) {
-        _state = { mapState($0 ? store.untrackedState : store.state) }
+        stateStream = store.stateStream.mapIsolated(mapState)
         _dispatch = { action, source in store.dispatch(mapAction(action), source: source) }
-        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection whose action **and** state maps are `Reader`s over an `Environment`,
@@ -113,9 +109,8 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ) {
         let action = mapAction(environment)
         let state = mapState(environment)
-        _state = { state($0 ? store.untrackedState : store.state) }
+        stateStream = store.stateStream.mapIsolated(state)
         _dispatch = { a, source in store.dispatch(action(a), source: source) }
-        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection focused on a single `Identifiable` element in a collection.
@@ -143,11 +138,10 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         actionReview: @escaping @Sendable (ElementAction<C.Element.ID, Action>) -> GA,
         stateCollection: KeyPath<GS, C>
     ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
-        // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
+        // O(n) per upstream change: a linear scan. See the perf discussion on
         // StoreType.projection(element:actionReview:stateCollection:) for the Array/dictionary trade-off.
-        _state = { ($0 ? store.untrackedState : store.state)[keyPath: stateCollection].first { $0.id == id } }
+        stateStream = store.stateStream.map { $0[keyPath: stateCollection].first { $0.id == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
-        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection focused on the first element whose custom `identifier` field matches `id`.
@@ -177,11 +171,10 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         stateCollection: KeyPath<GS, C>,
         identifier: @escaping @Sendable (C.Element) -> ID
     ) where C.Element: Sendable, State == C.Element? {
-        // O(n) per read: linear scan re-runs on every state access. See the perf discussion on
+        // O(n) per upstream change: a linear scan. See the perf discussion on
         // StoreType.projection(element:actionReview:stateCollection:identifier:) for the trade-off.
-        _state = { ($0 ? store.untrackedState : store.state)[keyPath: stateCollection].first { identifier($0) == id } }
+        stateStream = store.stateStream.map { $0[keyPath: stateCollection].first { identifier($0) == id } }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
-        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
 
     /// Creates a projection focused on a value in a `[Key: Value]` dictionary by key.
@@ -207,19 +200,9 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         actionReview: @escaping @Sendable (ElementAction<Key, Action>) -> GA,
         stateDictionary: KeyPath<GS, [Key: Value]>
     ) where State == Value? {
-        _state = { ($0 ? store.untrackedState : store.state)[keyPath: stateDictionary][key] }
+        stateStream = store.stateStream.map { $0[keyPath: stateDictionary][key] }
         _dispatch = { action, source in store.dispatch(actionReview(ElementAction(key, action: action)), source: source) }
-        _observe = { wc, dc in store.observe(willChange: wc, didChange: dc) }
     }
-
-    /// The current projected state.
-    ///
-    /// Computed on every access by applying the state mapping closure to the underlying store's
-    /// current state. No caching or diffing — use ``StoreBuffer`` if you need deduplication.
-    public var state: State { _state(false) }
-
-    /// The projected state, read through the underlying store's ``StoreType/untrackedState``.
-    public var untrackedState: State { _state(true) }
 
     /// Dispatches an action through the action mapping closure to the underlying store.
     ///
@@ -228,21 +211,5 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ///   - source: The call-site provenance forwarded unchanged to the underlying store.
     public func dispatch(_ action: Action, source: ActionSource) {
         _dispatch(action, source)
-    }
-
-    /// Forwards the observation registration to the underlying store.
-    ///
-    /// - Note: Notifications fire on every underlying-store mutation, not only when the
-    ///   projected state slice changes. Wrap in ``StoreBuffer`` for filtered notifications.
-    ///
-    /// - Parameters:
-    ///   - willChange: Called before each underlying mutation.
-    ///   - didChange: Called after each underlying mutation.
-    /// - Returns: A ``SubscriptionToken`` that cancels both callbacks when cancelled.
-    public func observe(
-        willChange: @escaping @MainActor @Sendable () -> Void,
-        didChange: @escaping @MainActor @Sendable () -> Void
-    ) -> SubscriptionToken {
-        _observe(willChange, didChange)
     }
 }

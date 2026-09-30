@@ -141,7 +141,7 @@ struct TestStoreReducerTests {
         withKnownIssue("wrong expected value should record a mismatch failure") {
             store.dispatch(.increment) { $0.count = 99 } // wrong — actual becomes 1
         }
-        #expect(store.state.count == 1)
+        #expect(store.currentState.count == 1)
     }
 }
 
@@ -211,8 +211,8 @@ struct TestStoreRunEffectsTests {
             state.isLoading = false
             state.count = value
         }
-        #expect(store.state.count == 99)
-        #expect(!store.state.isLoading)
+        #expect(store.currentState.count == 99)
+        #expect(!store.currentState.isLoading)
         // Returned action is the dequeued one (for inspection if needed)
         if case let .loaded(v) = action { #expect(v == 99) }
     }
@@ -450,12 +450,12 @@ struct TestStoreSchedulingTests {
         store.dispatch(.connect(1)) { _ in } // opens the channel, pipes 1 → send(.received(1))
         await store.runEffects()
         store.receive(socketReceivedPrism) { v, s in s = v }
-        #expect(store.state == 1)
+        #expect(store.currentState == 1)
 
         store.dispatch(.connect(2)) { _ in } // pipes 2 into the SAME live channel
         await store.runEffects()
         store.receive(socketReceivedPrism) { v, s in s = v }
-        #expect(store.state == 2)
+        #expect(store.currentState == 2)
 
         store.dispatch(.disconnect) { _ in } // cancelInFlight(id: "socket") → closes it
         await store.runEffects()
@@ -489,12 +489,12 @@ struct TestStoreSchedulingTests {
         store.dispatch(.ping) { _ in }
         await store.runEffects()
         store.receive(socketTickPrism) { $0 += 1 } // first fires
-        #expect(store.state == 1)
+        #expect(store.currentState == 1)
 
         store.dispatch(.ping) { _ in } // within the (frozen) interval → dropped
         await store.runEffects()
         #expect(store.receivedActions.isEmpty) // no spurious second .tick to receive
-        #expect(store.state == 1)
+        #expect(store.currentState == 1)
     }
 
     @Test func throttleFiresAgainAfterAdvancingAnInjectedTestClock() async {
@@ -514,12 +514,12 @@ struct TestStoreSchedulingTests {
         store.dispatch(.ping) { _ in }
         await store.runEffects()
         store.receive(socketTickPrism) { $0 += 1 }
-        #expect(store.state == 1)
+        #expect(store.currentState == 1)
 
         await clock.advance(by: .seconds(1)) // interval elapses on the injected clock
         store.dispatch(.ping) { _ in }
         await store.runEffects()
         store.receive(socketTickPrism) { $0 += 1 } // now fires again
-        #expect(store.state == 2)
+        #expect(store.currentState == 2)
     }
 }

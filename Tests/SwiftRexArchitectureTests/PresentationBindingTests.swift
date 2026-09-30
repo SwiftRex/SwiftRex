@@ -32,20 +32,20 @@
     struct PresentationBindingTests {
         @Test func boolBindingIsPresentedAndDismisses() {
             let store = makeStore(.presented(Item(id: 1, text: "a")))
-            #expect(store.observable().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == true)
+            #expect(store.viewStore().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == true)
 
-            store.observable().presence(.state(\.modal), dismiss: .dismiss).wrappedValue = false // set(false) → dismiss
-            #expect(store.state.modal == .dismissing(last: Item(id: 1, text: "a")))
-            #expect(store.observable().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == false)   // false while dismissing
+            store.viewStore().presence(.state(\.modal), dismiss: .dismiss).wrappedValue = false // set(false) → dismiss
+            #expect(store.currentState.modal == .dismissing(last: Item(id: 1, text: "a")))
+            #expect(store.viewStore().presence(.state(\.modal), dismiss: .dismiss).wrappedValue == false)   // false while dismissing
         }
 
         @Test func itemBindingKeysOnPresentedThenDismisses() {
             let store = makeStore(.presented(Item(id: 7, text: "x")))
-            #expect(store.observable().item(.state(\.modal), dismiss: .dismiss).wrappedValue == Item(id: 7, text: "x"))
+            #expect(store.viewStore().item(.state(\.modal), dismiss: .dismiss).wrappedValue == Item(id: 7, text: "x"))
 
-            store.observable().item(.state(\.modal), dismiss: .dismiss).wrappedValue = nil // set(nil) → dismiss
-            #expect(store.state.modal == .dismissing(last: Item(id: 7, text: "x")))
-            #expect(store.observable().item(.state(\.modal), dismiss: .dismiss).wrappedValue == nil)   // nil while dismissing
+            store.viewStore().item(.state(\.modal), dismiss: .dismiss).wrappedValue = nil // set(nil) → dismiss
+            #expect(store.currentState.modal == .dismissing(last: Item(id: 7, text: "x")))
+            #expect(store.viewStore().item(.state(\.modal), dismiss: .dismiss).wrappedValue == nil)   // nil while dismissing
         }
     }
 #endif

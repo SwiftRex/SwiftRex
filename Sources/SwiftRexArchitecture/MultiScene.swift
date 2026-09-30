@@ -28,7 +28,7 @@
 
     /// A convenience that reads whether a scene id currently has state — for a window body to decide
     /// between rendering its content and dismissing itself (e.g. `if store.hasScene(id, in: \.documents)`).
-    extension ObservableStoreType {
+    extension ViewStore {
         /// `true` while a scene with `id` exists in the keyed sub-state collection — i.e. the window
         /// should still render. Pair with `dismissWindow` when it becomes `false`. The reader depends on the
         /// collection's key set only, not on the scenes' contents.
@@ -37,7 +37,7 @@
             _ id: Key,
             in dictionary: KeyPath<State, [Key: Value]>
         ) -> Bool {
-            read(dictionary, \[Key: Value].keys).contains(id)
+            state[dynamicMember: dictionary][dynamicMember: \[Key: Value].keys].value.contains(id)
         }
     }
 #endif

@@ -66,8 +66,8 @@ struct StoreReactionTests {
         #expect(cancels.value == 0)
 
         store.dispatch(.setOutbox(7)) // value changes → pipes 7 into the SAME channel
-        await poll { store.state.lastReceived == 7 }
-        #expect(store.state.lastReceived == 7)
+        await poll { store.currentState.lastReceived == 7 }
+        #expect(store.currentState.lastReceived == 7)
         #expect(opens.value == 1) // not reopened
         #expect(cancels.value == 0)
 
@@ -84,8 +84,8 @@ struct StoreReactionTests {
         }
         // Start already connected — the initial reconcile fires the channel's body with no dispatch.
         let store = Store(initial: S(connected: true), behavior: .combine(reducerBehavior, supervisor))
-        await poll { store.state.lastReceived == 99 }
-        #expect(store.state.lastReceived == 99)
+        await poll { store.currentState.lastReceived == 99 }
+        #expect(store.currentState.lastReceived == 99)
     }
 
     @Test func unchangedDesiredSetReopensNothing() async {

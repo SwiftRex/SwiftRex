@@ -54,18 +54,18 @@
             let store = makeStore()
             store.dispatch(.open(1, "A"))
             store.dispatch(.open(2, "B"))
-            #expect(store.state.documents.count == 2)
+            #expect(store.currentState.documents.count == 2)
             store.dispatch(.close(1))
-            #expect(store.state.documents[1] == nil)
-            #expect(store.state.documents[2]?.title == "B")
+            #expect(store.currentState.documents[1] == nil)
+            #expect(store.currentState.documents[2]?.title == "B")
         }
 
         @available(iOS 16.1, macOS 13, tvOS 16.1, watchOS 9.1, *)
         @Test func hasSceneReflectsOpenWindows() {
             let store = makeStore()
             store.dispatch(.open(7, "Doc"))
-            #expect(store.observable().hasScene(7, in: \.documents))
-            #expect(!store.observable().hasScene(9, in: \.documents))
+            #expect(store.viewStore().hasScene(7, in: \.documents))
+            #expect(!store.viewStore().hasScene(9, in: \.documents))
         }
 
         @Test func perSceneProjectionCarriesTheSlice() {
@@ -77,9 +77,9 @@
                 actionReview: SceneAppAction.document,
                 stateDictionary: \.documents
             )
-            #expect(window.state?.title == "C")
+            #expect(window.currentState?.title == "C")
             window.dispatch(.bumpEdits) // dispatches into the ONE store, scoped to id 3
-            #expect(store.state.documents[3]?.edits == 1)
+            #expect(store.currentState.documents[3]?.edits == 1)
         }
     }
 
@@ -89,7 +89,7 @@
     @MainActor
     private func multiSceneBody(store: Store<SceneAppAction, SceneAppState, Void>) -> some Scene {
         WindowGroup(for: Int.self) { $id in
-            if let id, let doc = store.state.documents[id] {
+            if let id, let doc = store.currentState.documents[id] {
                 Text(doc.title) // real apps build the scene's feature view here
             }
         }

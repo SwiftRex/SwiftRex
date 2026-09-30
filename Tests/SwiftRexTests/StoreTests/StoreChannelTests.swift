@@ -73,10 +73,10 @@ struct StoreChannelTests {
             environment: ()
         )
         store.dispatch(.write(10))
-        await poll { store.state == 10 }
+        await poll { store.currentState == 10 }
         store.dispatch(.write(5)) // piped into the same channel → send(.received(5))
-        await poll { store.state == 15 }
-        #expect(store.state == 15)
+        await poll { store.currentState == 15 }
+        #expect(store.currentState == 15)
     }
 
     @Test func throttleGatesValuesWithoutTearingDownTheChannel() async {
@@ -203,11 +203,11 @@ struct StoreChannelTests {
             environment: ()
         )
         store.dispatch(.write(1))
-        await poll { store.state == 1 }
+        await poll { store.currentState == 1 }
         store.dispatch(.write(2))
         store.dispatch(.write(3))
-        await poll { store.state == 6 } // 1 + 2 + 3, all through a single live for-await consumer
-        #expect(store.state == 6)
+        await poll { store.currentState == 6 } // 1 + 2 + 3, all through a single live for-await consumer
+        #expect(store.currentState == 6)
     }
 
     @Test func mapCarriesTheChannel() {

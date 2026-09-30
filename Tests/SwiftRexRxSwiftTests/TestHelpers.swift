@@ -29,3 +29,8 @@
         return tokens
     }
 #endif
+
+// Test-only: a store's current state, for assertions (stores themselves can only be observed).
+extension StoreType {
+    @MainActor var currentState: State { stateStream.subscribe { _ in }.current }
+}

@@ -41,13 +41,13 @@
             let store = makeStore(.navigationStack(\.path, action: \.stack))
             store.dispatch(.stack(.push(.a)))
             store.dispatch(.stack(.push(.b)))
-            #expect(store.state.path == [.a, .b])
+            #expect(store.currentState.path == [.a, .b])
             store.dispatch(.stack(.pop))
-            #expect(store.state.path == [.a])
+            #expect(store.currentState.path == [.a])
             store.dispatch(.stack(.setPath([.a, .b, .c])))
-            #expect(store.state.path == [.a, .b, .c])
+            #expect(store.currentState.path == [.a, .b, .c])
             store.dispatch(.stack(.popToRoot))
-            #expect(store.state.path == [])
+            #expect(store.currentState.path == [])
         }
 
         @Test func stackVetoBlocks() {
@@ -60,7 +60,7 @@
                 NavState(path: [.a, .b], locked: true)
             )
             store.dispatch(.stack(.pop))
-            #expect(store.state.path == [.a, .b]) // vetoed
+            #expect(store.currentState.path == [.a, .b]) // vetoed
         }
 
         // MARK: Modal
@@ -68,9 +68,9 @@
         @Test func modalPresentDismiss() {
             let store = makeStore(.navigationItem(\.sheet, action: \.modal))
             store.dispatch(.modal(.present(.init(id: 7))))
-            #expect(store.state.sheet == NavItem(id: 7))
+            #expect(store.currentState.sheet == NavItem(id: 7))
             store.dispatch(.modal(.dismiss))
-            #expect(store.state.sheet == nil)
+            #expect(store.currentState.sheet == nil)
         }
 
         @Test func modalVetoBlocksDismiss() {
@@ -82,7 +82,7 @@
                 NavState(sheet: NavItem(id: 1))
             )
             store.dispatch(.modal(.dismiss))
-            #expect(store.state.sheet == NavItem(id: 1)) // vetoed
+            #expect(store.currentState.sheet == NavItem(id: 1)) // vetoed
         }
 
         // MARK: Selection
@@ -90,7 +90,7 @@
         @Test func selectionSelects() {
             let store = makeStore(.navigationSelection(\.tab, action: \.select))
             store.dispatch(.select(.select(.search)))
-            #expect(store.state.tab == .search)
+            #expect(store.currentState.tab == .search)
         }
 
         @Test func selectionVetoBlocks() {
@@ -99,7 +99,7 @@
                 NavState(locked: true)
             )
             store.dispatch(.select(.select(.search)))
-            #expect(store.state.tab == .home) // vetoed
+            #expect(store.currentState.tab == .home) // vetoed
         }
 
         // MARK: Composition — nav reducers fold with feature behaviors
@@ -112,8 +112,8 @@
             let store = makeStore(app)
             store.dispatch(.stack(.push(.a)))
             store.dispatch(.modal(.present(.init(id: 2))))
-            #expect(store.state.path == [.a])
-            #expect(store.state.sheet == NavItem(id: 2))
+            #expect(store.currentState.path == [.a])
+            #expect(store.currentState.sheet == NavItem(id: 2))
         }
     }
 #endif

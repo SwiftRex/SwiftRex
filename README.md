@@ -64,7 +64,7 @@ struct MoviesView: View {
     // injected: let viewStore: ViewStore<Movies.ViewAction, Movies.ViewState>
     // (no ViewState/ViewAction declared, so they alias State/Action — the view reads the domain state)
     var body: some View {
-        List(viewStore.each(\.movies)) { movie in Text(movie.title) }   // each row depends on its own movie
+        List(viewStore.state.each(\.movies)) { movie in Text(movie.title) }   // each row depends on its own movie
             .onAppear { viewStore.dispatch(.onAppear) }
     }
 }
@@ -113,12 +113,12 @@ Pick the products that match your project; the core is self-contained:
 | Product | Trait | What it adds |
 |---|---|---|
 | `SwiftRex` | — | The core: store, reducers, middlewares, behaviors, effects, channels |
-| `SwiftRex.SwiftConcurrency` | — | `Effect.task`/`.throwingTask`/`.asyncSequence`, `asChannel` on `AsyncSequence`, `store.stream` |
-| `SwiftRex.Combine` | — | `asEffect()`/`asChannel()` on `Publisher`, `store.publisher`, `ctx.readLiveState()` |
+| `SwiftRex.SwiftConcurrency` | — | `Effect.task`/`.throwingTask`/`.asyncSequence`, `asChannel` on `AsyncSequence` |
+| `SwiftRex.Combine` | — | `asEffect()`/`asChannel()` on `Publisher`, `stateStream` as a `Publisher`, `ctx.readLiveState()` |
 | `SwiftRex.RxSwift` | `RxSwift` | The same bridge surface for `Observable` |
 | `SwiftRex.ReactiveSwift` | `ReactiveSwift` | The same bridge surface for `SignalProducer`/`Signal` |
 | `SwiftRex.ReactiveConcurrency` | `ReactiveConcurrency` | The same bridge surface for ReactiveConcurrency's cold, async/await-native `Publisher` |
-| `SwiftRex.SwiftUI` | — | `@ObservedStore` / `ViewStore` — granular per-key-path observation (Observation on iOS 17+, Combine below, picked automatically), store-backed `Binding`s and presentation |
+| `SwiftRex.SwiftUI` | — | `@OwnedStore` / `ProjectionKeeper` / `ViewStore` — granular per-key-path observation (Observation on iOS 17+, Combine below, picked automatically), store-backed `Binding`s and presentation |
 | `SwiftRex.Architecture` | — | The `@Feature` / `@BoundTo` macros and the `Relay.Scope` feature lift — `.behavior(of:)` / `.view(of:from:world:)` (Swift 6.3+) |
 | `SwiftRex.Operators` | — | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
 | `SwiftRex.Testing` | — | `TestStore` — test target only |
@@ -296,8 +296,8 @@ Effect.throwingTask(Action.saved) { try await ctx.environment.save(draft) }
     }
 }
 
-// observe the store outside SwiftUI
-for await state in store.stream() { render(state) }
+// follow the store outside SwiftUI — its stateStream is an AsyncSequence (current state first)
+for await state in store.stateStream { render(state) }
 ```
 
 **ReactiveConcurrency** (`SwiftRex.ReactiveConcurrency`, trait-gated) — a cold, `Sendable`, async/await-native `Publisher`, ideal when your environment is `@Sendable (Args) -> Publisher<Value, Failure>`:
@@ -316,11 +316,11 @@ for await state in store.stream() { render(state) }
     }
 }
 
-// observe the store as a cold Publisher<State, Never>
-store.publisher
+// follow the store as a ReactiveConcurrency Publisher<State, Never> (current state first)
+store.stateStream.asPublisher
 ```
 
-Combine (`store.publisher`, `asEffect`/`asChannel` on any `Publisher`), RxSwift (`Observable`), and ReactiveSwift (`SignalProducer`/`Signal`) expose the exact same surface — swap the runtime, keep the architecture. Mixing is fine too: Combine in the app target, a portable bridge in library code.
+Combine (`store.stateStream` is a `Publisher`, `asEffect`/`asChannel` on any `Publisher`), RxSwift (`Observable`), and ReactiveSwift (`SignalProducer`/`Signal`) expose the exact same surface — swap the runtime, keep the architecture. Mixing is fine too: Combine in the app target, a portable bridge in library code.
 
 # Middleware and Reducer
 
@@ -355,7 +355,7 @@ Pair them back up with `Behavior(reducer:middleware:)`, or lift either half alon
 
 `SwiftRex.Architecture` packages the recommended app structure. `@Feature` turns a namespace enum into a full feature: it applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type (recursive `@Lenses`/`@Prisms` down the whole tree), generates `initialState(with:)` and the SwiftUI `view(store:environment:)` factory, and generates the `Feature` conformance when the feature has a view (a view-less feature is a behavior only, with no `Feature` conformance). `@BoundTo` injects the matching `viewStore` into the view — the body never changes when you swap observation strategies.
 
-Views read **granularly**, at any depth, with state kept as plain structs: `viewStore.title` makes the view depend on `\.title` alone (compared with `==`), `viewStore.player` is a node you keep reading into, and `viewStore.each(\.songs)` gives one dependency per row. Pass nodes to subviews and a hot field (a 10 Hz playhead) redraws only the view that shows it. Bindings and navigation exist only on observable stores. One view owns the observed store — `@Feature` does it for you, or `@ObservedStore var store = appStore` (the real `Store` included, no identity projection needed) — and every view below takes `let store: ViewStore<…>`. [Features → observation and composition](https://swiftrex.ios.lu/documentation/swiftrex/features) has the full model, and [Stores at a Glance](https://swiftrex.ios.lu/documentation/swiftrex/storesataglance) maps every store type and which views redraw under Observation vs Combine.
+Views read **granularly**, at any depth, with state kept as plain structs: `viewStore.state.title` makes the view depend on `\.title` alone (compared with `==`), `viewStore.state.player` is a position you keep reading into, and `viewStore.state.each(\.songs)` gives one dependency per row. Pass positions to subviews and a hot field (a 10 Hz playhead) redraws only the view that shows it. A plain store can't be read at all — only followed through its `stateStream` — so bindings and navigation exist only on the `ViewStore`. One view owns it — `@Feature` does it for you, or `@OwnedStore var viewStore = appStore` (the real `Store` included, no identity projection needed) — and every view below takes `let viewStore: ViewStore<…>`. [Features → observation and composition](https://swiftrex.ios.lu/documentation/swiftrex/features) has the full model, and [Stores at a Glance](https://swiftrex.ios.lu/documentation/swiftrex/storesataglance) maps every store type and which views redraw under Observation vs Combine.
 
 You saw the minimal shape in the hero example. Features scale up by *adding* declarations, never rewriting: an `Environment` for dependencies, a distinct `ViewState`/`ViewAction` pair with `mapState`/`mapAction` as `Reader<Environment, …>` when the view's shape diverges from the domain's, an `Input` seed for parameterised features, and a `public enum` (access follows the declaration) when the feature becomes its own SPM module:
 
@@ -424,16 +424,16 @@ rowBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction
 
 The lifted behavior sees the **unwrapped** element (never `Element?`), and each element's effects/channels are re-embedded and scoped to its id automatically. The same lanes drive `Reducer`/`Middleware` lifts and a per-element `store.projection(scope, element: id)` (whose state is `Element?` — the view unwraps).
 
-**The view side inverts the store.** A projection over an optional slice is a *store of an optional*; a child screen wants an *optional store of the unwrapped value*. `transpose()` swaps the two — `Store<T?>` → `Store<T>?` — the store analogue of transposing `Optional<[T]>` ⇄ `[Optional<T>]` (it's not `sequence`: a `Store` isn't `Traversable`, only *peekable*). In a view it runs on the observed store and depends only on whether the child is there; a three-stage `Presentation` slot keeps the child live through the dismiss animation (flicker-free). Two-way bindings read state and *dispatch* on write, so the reducer stays the only writer:
+**The view side inverts the store.** A projection over an optional slice is a *store of an optional*; a child screen wants an *optional store of the unwrapped value*. `transpose()` swaps the two — `Store<T?>` → `Store<T>?` — the store analogue of transposing `Optional<[T]>` ⇄ `[Optional<T>]` (it's not `sequence`: a `Store` isn't `Traversable`). It runs on the view store and depends only on whether the child is there; a three-stage `Presentation` slot keeps the child live through the dismiss animation (flicker-free). Two-way bindings read state and *dispatch* on write, so the reducer stays the only writer:
 
 ```swift
 // an optional child → an unwrapped child store → a live child view (nothing while it's absent):
-if let detail = viewStore.detail.scoped(action: .action(\.detail)).transpose() {
+if let detail = viewStore.focus(.state(\.detail), .action(\.detail)).transpose() {
     DetailFeature.view(store: detail, environment: world.detailEnv)
 }
 
 // two-way binding — a `.state(…)` read paired with the `.action(…)` case it dispatches on write:
-TextField("Name", text: store.binding(.state(\.name), dispatch: .action(\.setName)))
+TextField("Name", text: viewStore.binding(.state(\.name), dispatch: .action(\.setName)))
 ```
 
 A **`Relay.Scope`** captures how a child feature embeds into the app — action prism, state slice, environment narrowing — as one declared, compile-checked value used by both the store fold *and* the view router. Given that wiring it lifts whatever the child provides: `.behavior(of:)` when the child is `HasBehavior`, `.view(of:from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:

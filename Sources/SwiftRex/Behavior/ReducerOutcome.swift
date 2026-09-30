@@ -22,9 +22,9 @@ import CoreFP
 ///
 /// - SeeAlso: ``Consequence``, `EndoMut`
 public enum ReducerOutcome<State: Sendable>: Sendable {
-    /// No mutation — the Store applies nothing and fires no observer notifications.
+    /// No mutation — the Store applies nothing and notifies no observer.
     case unchanged
-    /// A concrete in-place mutation to apply in phase 2, bracketed by `willChange`/`didChange`.
+    /// A concrete in-place mutation to apply in phase 2; observers receive the new state afterwards.
     case mutation(EndoMut<State>)
 
     /// Applies the mutation to `state` in place, or does nothing when ``unchanged``.

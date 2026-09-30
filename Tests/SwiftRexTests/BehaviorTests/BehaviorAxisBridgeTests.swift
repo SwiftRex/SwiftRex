@@ -36,20 +36,20 @@ struct BehaviorAxisBridgeTests {
         let behavior = base.on(.action(\.counter), reduce: { value, state in state.count += value })
         let store = Store(initial: AppState(), behavior: behavior, environment: ())
         store.dispatch(.counter(5))
-        #expect(store.state.count == 5)
+        #expect(store.currentState.count == 5)
         store.dispatch(.other("ignored"))   // unmatched trigger → no-op
-        #expect(store.state.count == 5)
+        #expect(store.currentState.count == 5)
     }
 
     @Test func reduceGuardedByWhen() {
         let behavior = base.on(.action(\.counter), when: { $0.count < 10 }, reduce: { v, s in s.count += v })
         let store = Store(initial: AppState(), behavior: behavior, environment: ())
         store.dispatch(.counter(6))          // 0 < 10 → 6
-        #expect(store.state.count == 6)
+        #expect(store.currentState.count == 6)
         store.dispatch(.counter(6))          // 6 < 10 → 12
-        #expect(store.state.count == 12)
+        #expect(store.currentState.count == 12)
         store.dispatch(.counter(6))          // 12 < 10 false → skipped
-        #expect(store.state.count == 12)
+        #expect(store.currentState.count == 12)
     }
 
     @Test func embedDispatchAppliesReduce() {
@@ -57,7 +57,7 @@ struct BehaviorAxisBridgeTests {
         let behavior = base.on(.action(\.counter), dispatch: .action(\.bumped), reduce: { v, s in s.count += v })
         let store = Store(initial: AppState(), behavior: behavior, environment: ())
         store.dispatch(.counter(4))
-        #expect(store.state.count == 4)      // reduce ran (the routed action is inert here)
+        #expect(store.currentState.count == 4)      // reduce ran (the routed action is inert here)
     }
 
     @Test func closureDispatchExtractPreview() {
@@ -68,9 +68,9 @@ struct BehaviorAxisBridgeTests {
             reduce: { v, s in s.count += v })
         let store = Store(initial: AppState(), behavior: behavior, environment: ())
         store.dispatch(.counter(3))
-        #expect(store.state.count == 3)
+        #expect(store.currentState.count == 3)
         store.dispatch(.counter(-1))         // preview nil (not > 0) → no-op
-        #expect(store.state.count == 3)
+        #expect(store.currentState.count == 3)
     }
 
     @Test func routedActionReportsDeclarationSiteNotBridgeInternals() {
@@ -91,7 +91,7 @@ struct BehaviorAxisBridgeTests {
         func run(_ behavior: Behavior<AppAction, AppState, Void>) -> Int {
             let store = Store(initial: AppState(), behavior: behavior, environment: ())
             store.dispatch(.counter(5)); store.dispatch(.counter(2))
-            return store.state.count
+            return store.currentState.count
         }
         let axis = base.on(.action(\.counter), when: { $0.count < 6 }, reduce: { v, s in s.count += v })
         let prism = base.on(.action(AppAction.prism.counter), when: { $0.count < 6 }, reduce: { v, s in s.count += v })

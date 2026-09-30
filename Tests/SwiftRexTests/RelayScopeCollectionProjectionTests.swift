@@ -58,11 +58,11 @@ struct RelayScopeCollectionProjectionTests {
         // read: projected state is the unwrapped-or-nil element
         let cell: StoreProjection<RowAction, Row?> = store.projection(
             .action(AppAction.prism.row).state(\AppState.rows), element: 2)
-        #expect(cell.state == Row(id: 2, name: "B"))
+        #expect(cell.currentState == Row(id: 2, name: "B"))
         // dispatch through the projection routes to the global store (addressed at id 2)
         cell.dispatch(.bump)
-        #expect(cell.state?.taps == 1)
-        #expect(store.state.rows.map(\.taps) == [0, 1, 0])
+        #expect(cell.currentState?.taps == 1)
+        #expect(store.currentState.rows.map(\.taps) == [0, 1, 0])
     }
 
     @Test func absentElementProjectsNil() {
@@ -70,7 +70,7 @@ struct RelayScopeCollectionProjectionTests {
             initial: AppState(rows: rows()), behavior: .identity, environment: ())
         let missing: StoreProjection<RowAction, Row?> = store.projection(
             .action(AppAction.prism.row).state(\AppState.rows), element: 99)
-        #expect(missing.state == nil)
+        #expect(missing.currentState == nil)
     }
 
     @Test func wholeCollectionProjection() {
@@ -80,7 +80,7 @@ struct RelayScopeCollectionProjectionTests {
             initial: AppState(rows: rows()), behavior: .identity, environment: ())
         let list: StoreProjection<ListAction, [Row]> = store.projection(
             .action(AppAction.prism.bulk).state(\AppState.rows))
-        #expect(list.state.map(\.id) == [1, 2, 3])
+        #expect(list.currentState.map(\.id) == [1, 2, 3])
     }
 
     @Test func optionalChildProjection() {
@@ -89,7 +89,7 @@ struct RelayScopeCollectionProjectionTests {
             initial: AppState(only: Row(id: 5, name: "E")), behavior: .identity, environment: ())
         let opt: StoreProjection<RowAction, Row?> = store.projection(
             .action(AppAction.prism.only).state(\AppState.only))
-        #expect(opt.state == Row(id: 5, name: "E"))
+        #expect(opt.currentState == Row(id: 5, name: "E"))
     }
 
     @Test func projectsByCustomIdAndDictionary() {
@@ -97,9 +97,9 @@ struct RelayScopeCollectionProjectionTests {
             initial: AppState(rows: rows(), dict: ["k": Row(id: 7, name: "K")]), behavior: .identity, environment: ())
         let byName: StoreProjection<RowAction, Row?> = store.projection(
             .action(AppAction.prism.byName).state(\AppState.rows, id: \.name), element: "C")
-        #expect(byName.state == Row(id: 3, name: "C"))
+        #expect(byName.currentState == Row(id: 3, name: "C"))
         let byKey: StoreProjection<RowAction, Row?> = store.projection(
             .action(AppAction.prism.dict).state(dictionary: \AppState.dict), element: "k")
-        #expect(byKey.state == Row(id: 7, name: "K"))
+        #expect(byKey.currentState == Row(id: 7, name: "K"))
     }
 }

@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
-/// How an ``ObservableStore`` signals SwiftUI. Chosen once, where the store is **built** (``ObservedStore``,
-/// `@Feature`, ``SwiftRex/StoreType/observable(_:)``) — receivers hold a ``ViewStore`` as a plain `let` and
-/// never see it.
+/// How a ``ViewStore`` signals SwiftUI. Chosen once, by its **owner** (``OwnedStore``, ``ProjectionKeeper``,
+/// `@Feature`) — receivers hold the ``ViewStore`` as a plain `let` and never see it.
 ///
 /// Every strategy tracks the same thing — the key paths each view read — and differs only in the signal:
 ///

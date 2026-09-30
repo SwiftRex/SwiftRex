@@ -17,11 +17,11 @@ import SwiftUI
 // `presence` and `item` each take EITHER a plain optional slice (1-stage) OR a `Presentation<Wrapped>` slice
 // (3-stage, flicker-free) — the state shape you pass picks the behaviour, not a differently-named method.
 //
-// They live on `ObservableStoreType`, not `StoreType`: a binding's getter must register what it reads so the
-// view redraws when it changes, and only an observable store can. A `.state(\.path)` lane registers exactly
+// They live on `ViewStore`, not `StoreType`: a binding's getter must register what it reads so the view redraws
+// when it changes, and only a view store can. A `.state(\.path)` lane registers exactly
 // that path (and `presence` only its presence edge); a closure/lens lane depends on the whole state.
 
-extension ObservableStoreType {
+extension ViewStore {
     /// A two-way `Binding<T>` from a **state read** and an **action embed** of the same value type — the one
     /// write-through binding. It dispatches on **every** change, so besides `TextField`/`Toggle`/sliders it
     /// also drives `NavigationStack(path:)` (`T == [Route]`) and `TabView(selection:)` (`T == Tab` / `Tab?`).

@@ -39,7 +39,7 @@ A ``Reducer``, an ``Effect``, a ``Behavior`` are *descriptions*. Building one ex
 For each action, on the main actor, the Store runs three phases:
 
 1. **Pre-mutation.** `behavior.handle(action, preContext)` folds the action-clock reactions into one ``Reaction``. The ``PreReducerContext`` exposes the *current* state.
-2. **Mutation (zero-copy).** If the outcome is ``ReducerOutcome/unchanged``, nothing happens and **no observer is notified**. Otherwise: `willChange` → the `EndoMut` mutates `state` in place → `didChange`.
+2. **Mutation (zero-copy).** If the outcome is ``ReducerOutcome/unchanged``, nothing happens and **no observer is notified**. Otherwise the `EndoMut` mutates `state` in place, then every ``StoreType/stateStream`` observer receives the new state.
 3. **Effects.** A ``PostReducerContext`` (now exposing *post-mutation* state and the `Environment`) resolves the effect `Reader`; each ``Effect`` component is scheduled by its ``EffectScheduling`` (``EffectScheduling/immediately``, `.replacing`, `.debounce`, `.throttle`, `.cancelInFlight`). Actions produced by effects loop back to phase 1.
 
 ## What the algebra guarantees
