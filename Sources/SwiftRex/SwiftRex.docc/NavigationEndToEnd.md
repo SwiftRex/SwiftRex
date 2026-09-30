@@ -225,7 +225,7 @@ The **router** holds the app's *view store* and the world and resolves a route t
 
 ```swift
 @MainActor struct AppRouter {
-    let store: AppStore   // the app's view store, owned once at launch (Layer 7)
+    let store: AppViewStore   // the app's view store, owned once by the shell (Layer 7)
     let world: World
 
     @ViewBuilder func view(for route: AppRoute) -> some View {
@@ -249,7 +249,7 @@ The **root view** wires **selection** (tabs) and **stack** (path); the book view
 
 ```swift
 struct RootView: View {
-    let store: AppStore
+    let store: AppViewStore
     let router: AppRouter
 
     var body: some View {
@@ -299,27 +299,40 @@ struct BookView: View, Routable {
 
 ## Layer 7 — The `@main` assembly (store, scene, deep link)
 
-The store is created once, at launch, and owns the whole tree. The deep link is an *action source* — turn the URL into an action; the reducer sets navigation state:
+The real store is created once, at launch, and runs the whole tree; one view store follows it, owned by the shell view. The deep link is an *action source* — turn the URL into an action; the reducer sets navigation state:
 
 ```swift
-public typealias AppStore = ViewStore<AppAction, AppState>
+public typealias AppViewStore = ViewStore<AppAction, AppState>
 
 @main struct BookshelfApp: App {
-    let world: World
-    // The store runs the app; `@OwnedStore` gives views the store they read — built once (lazily).
-    @OwnedStore var store: AppStore
+    let world = World.live
+    // The real store: created once, it runs the app and is never observed.
+    let store: Store<AppAction, AppState, World>
 
     init() {
-        let world = World.live
-        self.world = world
-        _store = OwnedStore(wrappedValue: Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world))
+        store = Store(initial: AppState(), behavior: AppFeature.behavior(world: world), environment: world)
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView(store: store, router: AppRouter(store: store, world: world))
-                .onOpenURL { store.dispatch(.openedURL($0)) }   // deep link → action (reduced in Layer 4)
+            AppShell(store: store, world: world)
+                .onOpenURL { store.dispatch(.openedURL($0)) }   // deep link → action on the real store (reduced in Layer 4)
         }
+    }
+}
+
+// The leaf: one view store following the real store, owned here; everything below receives it.
+struct AppShell: View {
+    @OwnedStore var viewStore: AppViewStore
+    let world: World
+
+    init(store: Store<AppAction, AppState, World>, world: World) {
+        _viewStore = OwnedStore(wrappedValue: store)
+        self.world = world
+    }
+
+    var body: some View {
+        RootView(store: viewStore, router: AppRouter(store: viewStore, world: world))
     }
 }
 ```
