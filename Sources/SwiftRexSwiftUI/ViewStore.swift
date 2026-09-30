@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if canImport(SwiftUI) && canImport(Combine)
+    import Combine
     import SwiftRex
     import SwiftUI
 
@@ -61,6 +62,17 @@
         /// ``OwnedStore`` / ``ProjectionKeeper`` instead, which build it once per view identity.
         init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy = .automatic) {
             self.init(engine: ViewStoreEngine(upstream, strategy: strategy))
+        }
+
+        /// The view store an owner hands out for `upstream`: `upstream` itself when it already **is** a view store
+        /// signalling the same way (no second engine re-following the first — the router case,
+        /// `Feature.view(store: viewStore.focus(…).transpose())`), a new engine over it otherwise.
+        static func owning(_ upstream: any StoreType<Action, State>, strategy: ViewStrategy) -> ViewStore<Action, State> {
+            if let viewStore = upstream as? ViewStore<Action, State>,
+               viewStore.reader.signal.signalsThroughObservation == strategy.signalsThroughObservation {
+                return viewStore
+            }
+            return ViewStore(engine: ViewStoreEngine(upstream, strategy: strategy))
         }
 
         /// The state, read granularly: `viewStore.state.player.title` depends on `\.player.title` alone.
@@ -182,17 +194,44 @@
     /// Choose the signal with a second argument — `@OwnedStore(.combine) var viewStore = appStore` — or, when
     /// assigning in `init`, `_viewStore = OwnedStore(wrappedValue: upstream, .combine)`. Inside a body, where no
     /// property can be declared, use ``ProjectionKeeper``.
+    ///
+    /// Handed a view store that already signals the same way (`@OwnedStore var viewStore = parentViewStore`), it
+    /// reuses it instead of building a second engine that re-follows the first.
     @MainActor @propertyWrapper
     public struct OwnedStore<Action: Sendable, State: Sendable>: DynamicProperty {
-        @StateObject private var engine: ViewStoreEngine<Action, State>
+        @StateObject private var holder: OwnedViewStore<Action, State>
 
         public init<Upstream: StoreType>(
             wrappedValue upstream: @autoclosure @escaping () -> Upstream,
             _ strategy: ViewStrategy = .automatic
         ) where Upstream.Action == Action, Upstream.State == State {
-            _engine = StateObject(wrappedValue: ViewStoreEngine(upstream(), strategy: strategy))
+            _holder = StateObject(wrappedValue: OwnedViewStore(ViewStore.owning(upstream(), strategy: strategy)))
         }
 
-        public var wrappedValue: ViewStore<Action, State> { ViewStore(engine: engine) }
+        /// Owns a view store over a store held as an existential — `any StoreType<Action, State>`, the usual type of
+        /// an app's store property. Assign it in `init`: `_viewStore = OwnedStore(store)`. (A property wrapper's
+        /// `wrappedValue` initializer can't take an existential, so this form has no label.)
+        public init(
+            _ upstream: @autoclosure @escaping () -> any StoreType<Action, State>,
+            _ strategy: ViewStrategy = .automatic
+        ) {
+            _holder = StateObject(wrappedValue: OwnedViewStore(ViewStore.owning(upstream(), strategy: strategy)))
+        }
+
+        public var wrappedValue: ViewStore<Action, State> { holder.viewStore }
+    }
+
+    /// What `@OwnedStore` keeps in SwiftUI's state: the view store it owns — a new engine, or a view store it was
+    /// handed. Its `objectWillChange` **is** that view store's signal (no forwarding), so under
+    /// ``ViewStrategy/combine`` SwiftUI subscribes to the engine directly; under Observation it never sends.
+    @MainActor
+    final class OwnedViewStore<Action: Sendable, State: Sendable>: @MainActor ObservableObject {
+        let viewStore: ViewStore<Action, State>
+        let objectWillChange: ObservableObjectPublisher
+
+        init(_ viewStore: ViewStore<Action, State>) {
+            self.viewStore = viewStore
+            objectWillChange = viewStore.reader.signal.objectWillChange
+        }
     }
 #endif

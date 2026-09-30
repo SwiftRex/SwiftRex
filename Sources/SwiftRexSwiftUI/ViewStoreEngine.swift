@@ -12,7 +12,22 @@
     /// whatever the engine's state type. Only engines using the ``ViewStrategy/combine`` signal (or
     /// ``ViewStrategy/automatic`` below iOS 17) ever send on it.
     @MainActor
-    class ViewStoreSignal: ObservableObject {}
+    class ViewStoreSignal: ObservableObject {
+        /// Whether this view store signals through the Observation framework (else Combine).
+        var signalsThroughObservation: Bool { false }
+    }
+
+    extension ViewStrategy {
+        /// What this strategy resolves to on this OS: the Observation framework, or Combine.
+        var signalsThroughObservation: Bool {
+            #if canImport(Observation)
+                guard self != .combine, #available(iOS 17, macOS 14, tvOS 17, watchOS 10, *) else { return false }
+                return true
+            #else
+                return false
+            #endif
+        }
+    }
 
     /// What makes a `ViewStore` observable: one snapshot of the upstream's state, the dependencies views
     /// recorded while reading it, and the signal that tells SwiftUI when one of them changed.
@@ -203,9 +218,11 @@
             didSet: (ViewStoreEngine) -> Void
         )
 
+        override var signalsThroughObservation: Bool { registrar != nil }
+
         private static func makeRegistrar(_ strategy: ViewStrategy) -> (any Sendable)? {
             #if canImport(Observation)
-                guard strategy != .combine, #available(iOS 17, macOS 14, tvOS 17, watchOS 10, *) else { return nil }
+                guard strategy.signalsThroughObservation, #available(iOS 17, macOS 14, tvOS 17, watchOS 10, *) else { return nil }
                 return ObservationRegistrar()
             #else
                 return nil
