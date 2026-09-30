@@ -22,6 +22,14 @@
     }
 
     private struct Row: Sendable, Equatable, Identifiable { var id: Int; var title: String }
+
+    private final class LockProtectedCounter: @unchecked Sendable {
+        // Bumped from state maps, which run on the main actor.
+        private let lock = NSLock()
+        private var n = 0
+        var value: Int { lock.withLock { n } }
+        func bump() { lock.withLock { n += 1 } }
+    }
     private enum RowAction: Sendable, Equatable { case rename(String) }
 
     private struct ListState: Sendable, Equatable {
@@ -161,6 +169,27 @@
             #expect(presence.value == 1)
             #expect(list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: 4) == nil)
             #expect(row?.state.title == "R4")
+        }
+
+        @Test func aDroppedChildLeavesNothingBehind() {
+            let store = makeStore()
+            let list = store.viewStore(.combine)
+            let reads = LockProtectedCounter()
+            weak var engine: ViewStoreSignal?
+            do {
+                let child = StoreUnwrap(
+                    list.projection(action: { $0 }, state: { (state: ListState) -> ListState in reads.bump(); return state })
+                        .projection(.action(ListAction.prism.row).state(\ListState.rows), element: 1),
+                    present: Row(id: 1, title: "r1")
+                ).viewStore(.combine)
+                engine = child.testSignal
+                _ = child.state.title
+                #expect(engine != nil)
+            }
+            #expect(engine == nil)                                            // the child's view store is gone
+            let before = reads.value
+            store.dispatch(.row(ElementAction(1, action: .rename("R1"))))
+            #expect(reads.value == before)                                    // and nothing still follows the store for it
         }
 
         @Test func aRowDispatchesThroughItsElementLane() {
