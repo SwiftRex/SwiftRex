@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if RxSwift
-    import Foundation
     @preconcurrency import RxSwift
     import SwiftRex
 
@@ -27,10 +26,10 @@
             let subscription = RxStateSubscription<State>()
             // RxSwift observers aren't `Sendable`; this one is only ever called from the main actor, below.
             nonisolated(unsafe) let observer = observer
-            onMain { [self] in
+            onMainActor { [self] in
                 subscription.token = observe { observer.onNext($0) }
             }
-            return Disposables.create { onMain { subscription.token = nil } }
+            return Disposables.create { onMainActor { subscription.token = nil } }
         }
     }
 
@@ -39,12 +38,4 @@
         @MainActor var token: UISubscriptionToken?
     }
 
-    /// Runs `work` on the main actor: right away when already on the main thread, after one hop otherwise.
-    private func onMain(_ work: @escaping @MainActor () -> Void) {
-        if Thread.isMainThread {
-            MainActor.assumeIsolated(work)
-        } else {
-            DispatchQueue.main.async { MainActor.assumeIsolated(work) }
-        }
-    }
 #endif
