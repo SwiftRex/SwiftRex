@@ -25,6 +25,8 @@ SwiftRex has one store that *runs* the app and several that *follow* it: they ta
 | ``Store`` | class | owns *the* state (privately) | run the app: reducers, effects, the one source of truth. Build it once, at launch. |
 | ``StoreProjection`` | struct | no — maps each state for each observer | narrow action/state types (`store.projection(action:state:)`, or through a ``Relay/Scope``). |
 | ``StoreBuffer`` | struct | no — each observer remembers its previous value | skip redundant work: passes a change on only when `!=`. Put it **before** a costly map. |
+| ``StoreElement`` | struct | no — each observer keeps a hint of where its element was | one element of a collection (by id, position or key): `store.projection(scope, element: id)`. O(distance moved) per change. |
+| ``StoreUnwrap`` | struct | no — each observer remembers the last present value | a store of `T` over a store of `T?`, holding the last present value; what `viewStore.transpose(…)` returns. |
 | `TestStore` | class | owns a test state, readable (`state`) | exhaustive tests (`SwiftRex.Testing`). |
 | ``StoreOf`` / ``StoreTypeOf`` | type aliases | — | spell `Store<A, S, E>` / `any StoreType<A, S>` from a ``Rig`` / ``Transceiver``. |
 
@@ -32,14 +34,14 @@ SwiftRex has one store that *runs* the app and several that *follow* it: they ta
 
 | Type | Kind | Role | Hold it as |
 |---|---|---|---|
-| `ViewStore<Action, State>` | struct | **the receiver** — the only readable store. `viewStore.state` is the root position; `dispatch`, `focus`, bindings, `transpose` and `read(derived:)` live here. Carries its own Combine subscription so a plain `let` works under every strategy. | `let` |
+| `ViewStore<Action, State>` | struct | **the receiver** — the only readable store. `viewStore.state` is the root position; `dispatch`, bindings, `transpose` and `read(derived:)` live here. It owns a snapshot, so it always has one owner; everything derived from it is a pure stage. Carries its own Combine subscription so a plain `let` works under every strategy. | `let` |
 | `GranularTracking<Value>` | struct | a *position* in the state (`viewStore.state.player`) — reads through it are granular; hand it to a subview that only reads. | `let` |
 | `@OwnedStore` | property wrapper | **the owner** in a view or `App`: follows any ``StoreType`` once per view identity (lazy, like `@StateObject`) and hands out a `ViewStore`. | `@OwnedStore var viewStore = appStore` |
 | `ProjectionKeeper` | view | **the owner** inline in a body (a router, a sheet, a list row): builds the view store once per identity and passes it to its content. | — |
 | `IndivisibleTracking` | protocol | marks types read *whole* (`String`, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those; your own via an empty extension). Everything else is read as a `GranularTracking` position. | — |
 | `ViewStrategy` | enum | how an owner signals SwiftUI: `.automatic` (default), `.observation`, `.combine`. | — |
 
-`viewStore.focus(.action(\.player).state(\.player))` gives a child a `ViewStore` of a key-path slice: it reads through the parent's snapshot (no new subscription, no owner needed) and dispatches through its own lane.
+**Pure until the leaf.** Every stage above is pure: it follows a stream and keeps nothing a parent holds. The `ViewStore` is the only leaf — the only store with a snapshot and observation, and the only one that needs an owner. A child that dispatches or binds gets its own view store: derive a stage (`viewStore.projection(scope)`, `viewStore.transpose(scope)`, `viewStore.transpose(scope, element: id)`) and own it where the child is built.
 
 ### Macros (`SwiftRex.Architecture` / `SwiftRex.SwiftUI`)
 
@@ -74,12 +76,12 @@ Migrating an app step by step, with the rewrite rules and the pitfalls: <doc:Mig
 | `ObservableLeaf` | `IndivisibleTracking` |
 | `node.unwrapped()` | `position.transpose()` |
 | `presence` / `item` / `presenting` / `presentingItem` | `binding(.state(…).action(…))`, typed by the SwiftUI parameter; `.sheet(item:)` takes a `Binding<Presentation<T>>` |
-| `ScopedStore` / `node.scoped(action:)` | `viewStore.focus(.action(\.x).state(\.x))` — a `ViewStore` |
+| `ScopedStore` / `node.scoped(action:)` | `viewStore.projection(.action(\.x).state(\.x))`, owned by the child (`ProjectionKeeper`) |
 | `@ObservedStore` | `@OwnedStore` |
 | `ObservableStoreHost` / `observable()` | `ProjectionKeeper { store } content: { viewStore in … }` |
 | `peek` in action closures | dispatch the intent; the reducer reads the state |
 | `store.publisher` / `store.stream` | `store.stateStream` (a `Publisher` / an `AsyncSequence`) |
-| core `transpose()` on ``StoreType`` | `viewStore.transpose()` → `ViewStore<T>?` in a body; elsewhere presence is state (`stateStream.map { $0.child != nil }.removeDuplicates()`) |
+| core `transpose()` on ``StoreType`` | `viewStore.transpose(scope)` → ``StoreUnwrap```?`, owned by the child; elsewhere presence is state (`stateStream.map { $0.child != nil }.removeDuplicates()`) |
 | `TrackedViewStore` + `@Tracked` | nothing to write — reads are granular at any depth |
 | `ObservableObjectStore` / `asObservableObject()` | `@OwnedStore(.combine) var viewStore = appStore` |
 | `ViewStrategy.observationSimple` / `.observationGranular` / `.combineObservable` | `.automatic` / `.observation` / `.combine` |

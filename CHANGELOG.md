@@ -18,14 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Granular SwiftUI reads (`SwiftRex.SwiftUI`): `ViewStore<Action, State>` — the only readable store —
   keeps one snapshot and a dependency per key path each view read through `viewStore.state`, signalling only
   what changed (compared with `==`), at any depth. `GranularTracking` (a position in the state, `each(_:)`
-  for list rows), `IndivisibleTracking` (types read whole), `viewStore.focus(.action(…).state(…))` (a
-  key-path slice with its own action lane), owners `@OwnedStore` and `ProjectionKeeper`.
+  for list rows), `IndivisibleTracking` (types read whole), owners `@OwnedStore` and `ProjectionKeeper`.
+- **Pure until the leaf.** Composition is pure stages — `StoreProjection`, `StoreBuffer`, and new `StoreElement`
+  (one element of a collection, by id, position or key; each observer keeps a hint, O(distance moved)) and
+  `StoreUnwrap` (a store of `T` over `T?`, holding the last present value). The `ViewStore` is the only leaf: it
+  owns a snapshot and the observation work, always has one owner, and whatever is derived from it is a pure stage
+  built on its pure side (its `stateStream` is the upstream chain, never the snapshot).
 - `ViewStrategy.automatic` (default): Observation on iOS 17+, Combine below, decided at runtime.
 - `read(derived:)` — depend on a computed value instead of the whole state.
-- `transpose()` — `F<T?>` into `F<T>?`, depending on the presence edge only: a `ViewStore<T?>` (or
-  `ViewStore<Presentation<T>>`) becomes a `ViewStore<T>?` on the same engine, and a `GranularTracking<T?>` a
-  `GranularTracking<T>?`; both hold the last present value while the value is going away.
-  `transpose(action:state:)` on `ViewStore` for closure lanes.
+- `transpose` — `F<T?>` into `F<T>?`, depending on the presence edge only. On a `ViewStore`: its own optional or
+  `Presentation` state, a scope's slot (`transpose(.action(\.x).state(\.x))`), a collection element
+  (`transpose(scope, element: id)`) or a closure lane (`transpose(action:state:)`) — each returns a `StoreUnwrap`
+  for the child to own. On a position, `GranularTracking<T?>` → `GranularTracking<T>?`. Both hold the last present
+  value while the value is going away.
 - One `binding` taking a chained scope, `binding(.state(…).action(…))`; what the action lane embeds decides the
   kind: the value (two-way `Binding<T>`), a no-payload case on an optional slot (dismiss-only `Binding<Bool>` /
   `Binding<T?>`, typed by the SwiftUI parameter), or a `PresentationAction` on a `Presentation` slot
@@ -35,10 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Owners (`@OwnedStore`, `ProjectionKeeper`, and so every `@Feature` view) reuse a `ViewStore` they're handed
   when it signals the same way, instead of building a second engine; `OwnedStore(store)` owns a store held as
   `any StoreType<Action, State>`.
-- `ViewStore.focus(_:element:)` — one element of a collection (by id, custom id, position or dictionary key), through
-  the same collection scope `projection(_:element:)` takes: a `ViewStore<RowAction, Row?>` to transpose into a row
-  store. By id the element is found in O(1) in the usual case (position hints kept by the view store, nothing
-  asked of the state) and stays the same dependency however the array reorders.
 - A two-way `binding` over an `Equatable` value drops a write equal to the current value — SwiftUI can write a
   binding twice for one gesture, which dispatched the action twice.
 - `ForEach(viewStore.state.items)` now fails with a message naming the fix (`each(\.items)`, or `.value`) instead of
@@ -53,7 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   followed, not read; views read through a `ViewStore`. `StoreBuffer` is a struct with no shared cache.
 - **Breaking:** bindings live on `ViewStore` only — they no longer compile on a raw `Store` or
   `StoreProjection`, which SwiftUI can't observe. `presence`, `item`, `presenting` and `presentingItem` are
-  gone (one `binding`, above); `focus` and `binding` take one chained scope, like `projection`.
+  gone (one `binding`, above); `binding` takes one chained scope, like `projection`; there is no `focus` — children are derived (`projection`,
+  `transpose`) and owned.
 - **Breaking:** `PresentationAction` has two dismissal cases: `.dismiss` when a dismissal starts
   (`presented → dismissing`) and `.dismissed` when SwiftUI's animation ends (`→ dismissed`).
   `Presentation.dismiss()` only starts a dismissal.

@@ -21,8 +21,9 @@
     /// ``ViewStore``.
     ///
     /// Pass an `id` when the same position can come to show a *different* store (a sheet for another item).
-    /// Handed a view store that already signals the same way (a router passing `viewStore.focus(…).transpose()`
-    /// to a feature's view), it reuses it instead of building a second engine that re-follows the first.
+    /// Handed a view store that already signals the same way, it reuses it instead of building a second engine that
+    /// re-follows the first. Handed a pure stage (a projection, `viewStore.transpose(…)`), it owns a new view store
+    /// for it — every view store owns its snapshot.
     /// `@Feature`'s generated view is one of these.
     @MainActor
     public struct ProjectionKeeper<Action: Sendable, State: Sendable, Content: View>: View {
