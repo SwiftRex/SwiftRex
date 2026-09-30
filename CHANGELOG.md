@@ -22,16 +22,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   key-path slice with its own action lane), owners `@OwnedStore` and `ProjectionKeeper`.
 - `ViewStrategy.automatic` (default): Observation on iOS 17+, Combine below, decided at runtime.
 - `read(derived:)` — depend on a computed value instead of the whole state.
-- `transpose(action:state:)` on `ViewStore` — the closure-lane form, depending on the presence edge only.
+- `transpose()` everywhere, depending on the presence edge only: on `ViewStore`, `ViewStore<T?>` (or
+  `ViewStore<Presentation<T>>`) becomes `ViewStore<T>?` on the same engine; on any store, a
+  `StateStream<StoreProjection<A, T>?>` that emits a child store when the value appears and `nil` when it goes
+  away (for UIKit and other non-SwiftUI renderers). `transpose(action:state:)` on `ViewStore` for closure lanes.
+- `Binding<Presentation<T>>` from `binding(.state(\.slot), dismiss:)`, carrying both dismiss edges:
+  `.sheet(item:)` takes it directly; `.isPresented()`, `.item()` and `.onDismiss()` feed any other container.
 - Articles: *Stores at a Glance*, *Observing a Store in SwiftUI*.
 
 ### Changed
 - **Breaking:** `StoreType` is `dispatch(_:source:)` + `stateStream`. There is no `state` on a store (a
   `Store`'s is private; `TestStore.state` stays) and no `observe(willChange:didChange:)` — a store is
   followed, not read; views read through a `ViewStore`. `StoreBuffer` is a struct with no shared cache.
-- **Breaking:** binding and presentation helpers (`binding`, `presence`, `item`, `presenting`,
-  `presentingItem`, `transpose`, `hasScene`) live on `ViewStore` only — they no longer compile on a raw
-  `Store` or `StoreProjection`, which SwiftUI can't observe.
+- **Breaking:** bindings live on `ViewStore` only — they no longer compile on a raw `Store` or
+  `StoreProjection`, which SwiftUI can't observe — and they share one name: `presence` and `item` are
+  `binding(_:dismiss:)` (typed `Binding<Bool>` / `Binding<T?>` by the SwiftUI parameter), and the
+  `presenting` / `presentingItem` modifiers are `.sheet(item:)` with a `Binding<Presentation<T>>`. A
+  transposed child is a view store holding its last present value while it is dismissed.
 - **Breaking:** `@BoundTo(Feature.self)` takes no `strategy:` and injects `let viewStore: ViewStore<…>`;
   `@Feature(strategy:)` defaults to `.automatic`; generated views and `Feature` conformances are no longer
   availability-gated. The generated view owns its view store once per view identity (a `ProjectionKeeper`),

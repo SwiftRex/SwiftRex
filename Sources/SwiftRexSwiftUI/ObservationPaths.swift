@@ -40,7 +40,7 @@ extension RandomAccessCollection where Element: Identifiable & Sendable, Element
 }
 
 extension Optional {
-    /// `true` while `.some` — the presence edge a `presence` binding depends on, so a sheet redraws when it
+    /// `true` while `.some` — the presence edge a dismiss-only `Binding<Bool>` depends on, so a sheet redraws when it
     /// appears or disappears but not when the presented value changes. Observation plumbing.
     public var observationIsPresent: Bool { self != nil }
 }

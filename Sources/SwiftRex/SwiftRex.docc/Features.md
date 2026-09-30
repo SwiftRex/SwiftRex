@@ -299,7 +299,7 @@ public enum Library {
 }
 ```
 
-Navigation is state-driven: the `item` binding presents while `selected` is `.some` and only ever dispatches the *dismiss* action when SwiftUI clears it — presentation is always a function of state, never driven by the binding. The sibling `presence` binding does the same for `.sheet(isPresented:)`.
+Navigation is state-driven: the `Binding<Book?>` from `binding(_:dismiss:)` presents while `selected` is `.some` and only ever dispatches the *dismiss* action when SwiftUI clears it — presentation is always a function of state, never driven by the binding. The sibling `presence` binding does the same for `.sheet(isPresented:)`.
 
 ```swift
 @BoundTo(Library.self)
@@ -310,7 +310,7 @@ struct LibraryView: View {
             Button(book.title) { viewStore.dispatch(.tapped(book.value)) }
         }
         .onAppear { viewStore.dispatch(.onAppear) }
-        .sheet(item: viewStore.item(.state(\.selected), dismiss: .dismissedDetail)) { book in
+        .sheet(item: viewStore.binding(.state(\.selected), dismiss: .dismissedDetail)) { book in
             Text(book.title)
         }
     }

@@ -122,3 +122,65 @@ struct StateStreamTests {
         _ = token
     }
 }
+
+@Suite("StoreType.transpose — a stream of optional stores")
+@MainActor
+struct StoreTransposeStreamTests {
+    private enum Action: Sendable { case set(Int?), bump }
+
+    private func optionalStore(_ initial: Int?) -> Store<Action, Int?, Void> {
+        Store(initial: initial, reducer: Reducer.reduce { action, state in
+            switch action {
+            case let .set(value): state = value
+            case .bump: state = state.map { $0 + 1 }
+            }
+        })
+    }
+
+    @Test func emitsOnThePresenceEdgeOnly() {
+        let store = optionalStore(nil)
+        var edges: [Bool] = []
+        let token = store.transpose().observe { edges.append($0 != nil) }
+        store.dispatch(.set(1))
+        store.dispatch(.bump)          // still present: no emission
+        store.dispatch(.bump)
+        store.dispatch(.set(nil))
+        store.dispatch(.set(nil))      // still absent: no emission
+        store.dispatch(.set(5))
+        #expect(edges == [false, true, false, true])
+        _ = token
+    }
+
+    @Test func childFollowsItsOwnStateThenHoldsTheLastPresentValue() {
+        let store = optionalStore(1)
+        var child: StoreProjection<Action, Int>?
+        let edges = store.transpose().observe { child = $0 }
+        var shown: [Int] = []
+        let token = child?.stateStream.observe { shown.append($0) }
+        store.dispatch(.bump)
+        store.dispatch(.bump)
+        store.dispatch(.set(nil))
+        #expect(shown == [1, 2, 3, 3])
+        #expect(child == nil)          // the stream told us it's gone
+        _ = (edges, token)
+    }
+
+    @Test func childDispatchesThroughTheParent() {
+        let store = optionalStore(1)
+        var child: StoreProjection<Action, Int>?
+        let edges = store.transpose().observe { child = $0 }
+        child?.dispatch(.bump)
+        #expect(store.currentState == 2)
+        _ = edges
+    }
+
+    @Test func aValueThatComesBackIsANewChild() {
+        let store = optionalStore(1)
+        var children = 0
+        let token = store.transpose().observe { if $0 != nil { children += 1 } }
+        store.dispatch(.set(nil))
+        store.dispatch(.set(1))
+        #expect(children == 2)
+        _ = token
+    }
+}

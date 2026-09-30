@@ -484,7 +484,7 @@ Navigation is a function of state: routes live in the state tree, behaviors muta
 
 | State shape | Binding | Container |
 |---|---|---|
-| `Route?` (the optional *is* the content) | `store.item(…)` / `store.presence(…)` | `.sheet`, `.fullScreenCover`, `.popover` |
+| `Route?` (the optional *is* the content) | `store.binding(…, dismiss:)` → `Binding<Route?>` / `Binding<Bool>` | `.sheet`, `.fullScreenCover`, `.popover` |
 | `[Route]` | `store.binding(…)` | `NavigationStack(path:)` |
 | selection enum / id | `store.binding(…)` | `TabView`, `NavigationSplitView` |
 | collection of scene ids | `store.hasScene(…)` | `WindowGroup(for:)` |

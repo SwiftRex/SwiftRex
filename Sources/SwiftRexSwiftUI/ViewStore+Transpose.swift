@@ -3,49 +3,51 @@
 #if canImport(SwiftUI) && canImport(Combine)
     import SwiftRex
 
-    // `transpose` — swap `Store<T?>` (or `Store<Presentation<T>>`) into `Store<T>?`, so an optional child screen
-    // exists exactly when its state does. It lives on `ViewStore` because deciding presence is a *read*, and only a
-    // view store can read: the caller depends on the **presence edge only**, never on the child's contents (the
-    // child follows its own state through the returned projection). Three forms:
+    // `transpose` — swap `ViewStore<T?>` (or `ViewStore<Presentation<T>>`) into `ViewStore<T>?`, so an optional child
+    // screen exists exactly when its state does: `if let child = viewStore.focus(…).transpose() { ChildView(viewStore: child) }`.
+    // It's the synchronous, in-a-body reading of `StoreType.transpose()` (a stream of optional stores): the caller
+    // depends on the **presence edge only**, never on the child's contents, and the child is a view store on the
+    // same engine — no new subscription, no owner needed — that holds its last present value while it's dismissed.
     //
-    //   • `Presentation<T>` — present through **both** `presented` and `dismissing(last:)`, so the child stays
-    //     alive and steady while SwiftUI animates the sheet out; `nil` only once `dismissed` (no flicker).
-    //   • `T?` — focus the slot first: `viewStore.focus(.state(\.child), .action(\.child)).transpose()`.
-    //   • a closure lane — `viewStore.transpose(action:state:)`, for what no key path expresses (an affine preview).
-    //
-    // It's named transpose, not `sequence`: a store isn't `Traversable`, only peekable — the current value decides
-    // the nesting. The returned projection holds the last present value once it disappears (each observer its own).
+    //   • `T?`                — present while `.some`.
+    //   • `Presentation<T>`   — present through **both** `presented` and `dismissing(last:)`, `nil` only once
+    //                           `dismissed`, so the child stays alive and steady while SwiftUI animates it out.
+    //   • a closure lane      — `viewStore.transpose(action:state:)`, for what no key path expresses.
 
     extension ViewStore {
-        /// Swap `Store<Presentation<T>>` into `Store<T>?`: a projection onto the presented value while `presented`
-        /// **or** `dismissing`, `nil` while `dismissed`.
-        ///
-        /// ```swift
-        /// if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
-        ///     EditorFeature.view(store: editor, environment: world.editorEnv)
-        /// }
-        /// ```
-        public func transpose<Wrapped: Sendable>() -> StoreProjection<Action, Wrapped>? where State == Presentation<Wrapped> {
-            reader.read(\Presentation<Wrapped>.wrapped.observationIsPresent)
-                ? reader.peek(\Presentation<Wrapped>.wrapped).map { current in
-                    StoreProjection(store: self, action: { $0 }, stateStream: stateStream.map(\.wrapped).holdingLastPresent(fallback: current))
-                }
-                : nil
-        }
-
-        /// Swap `Store<T?>` into `Store<T>?`, depending only on the presence edge.
+        /// Swap `ViewStore<T?>` into `ViewStore<T>?`, depending only on the presence edge.
         ///
         /// ```swift
         /// if let book = viewStore.focus(.state(\.book), .action(\.book)).transpose() {
-        ///     BookFeature.view(store: book, environment: world.bookEnv)
+        ///     BookView(viewStore: book)
         /// }
         /// ```
-        public func transpose<Wrapped: Sendable>() -> StoreProjection<Action, Wrapped>? where State == Wrapped? {
-            reader.read(\Wrapped?.observationIsPresent)
-                ? reader.peekWhole().map { current in
-                    StoreProjection(store: self, action: { $0 }, stateStream: stateStream.holdingLastPresent(fallback: current))
-                }
-                : nil
+        public func transpose<Wrapped: Sendable>() -> ViewStore<Action, Wrapped>? where State == Wrapped? {
+            unwrapping(reader, stateStream)
+        }
+
+        /// Swap `ViewStore<Presentation<T>>` into `ViewStore<T>?`: a view store of the presented value while
+        /// `presented` **or** `dismissing`, `nil` once `dismissed`.
+        ///
+        /// ```swift
+        /// if let editor = viewStore.focus(.state(\.editor), .action(\.editor)).transpose() {
+        ///     EditorView(viewStore: editor)
+        /// }
+        /// ```
+        public func transpose<Wrapped: Sendable>() -> ViewStore<Action, Wrapped>? where State == Presentation<Wrapped> {
+            unwrapping(reader.slice(\Presentation<Wrapped>.wrapped), stateStream.map(\.wrapped))
+        }
+
+        private func unwrapping<Wrapped: Sendable>(
+            _ optional: any TrackingReader<Wrapped?>,
+            _ stream: StateStream<Wrapped?>
+        ) -> ViewStore<Action, Wrapped>? {
+            guard optional.read(\Wrapped?.observationIsPresent), let current = optional.peekWhole() else { return nil }
+            return ViewStore<Action, Wrapped>(
+                reader: optional.slice(\Wrapped?.[observationUnwrapped: ObservationLastPresent(current)]),
+                send: dispatch,
+                stateStream: stream.holdingLastPresent(fallback: current)
+            )
         }
 
         /// Projects through a **closure** lane and swaps `Store<T?>` into `Store<T>?` — depending only on the

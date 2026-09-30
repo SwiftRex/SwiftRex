@@ -75,7 +75,7 @@ Every bridge delivers the current state first, then each new state, on the main 
 | `ObservableStoreHost` / `observable()` | `ProjectionKeeper { store } content: { viewStore in … }` |
 | `peek` in action closures | dispatch the intent; the reducer reads the state |
 | `store.publisher` / `store.stream` | `store.stateStream` (a `Publisher` / an `AsyncSequence`) |
-| core `transpose()` on ``StoreType`` | `viewStore.transpose()` — depends on the presence edge only |
+| `transpose()` on ``StoreType`` returning `Store<T>?` | `viewStore.transpose()` → `ViewStore<T>?` in a body; ``StoreType/transpose()`` → a stream of optional stores elsewhere |
 | `TrackedViewStore` + `@Tracked` | nothing to write — reads are granular at any depth |
 | `ObservableObjectStore` / `asObservableObject()` | `@OwnedStore(.combine) var viewStore = appStore` |
 | `ViewStrategy.observationSimple` / `.observationGranular` / `.combineObservable` | `.automatic` / `.observation` / `.combine` |

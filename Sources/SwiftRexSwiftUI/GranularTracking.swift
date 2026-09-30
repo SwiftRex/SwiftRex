@@ -85,7 +85,7 @@
         public func unwrapped<Wrapped: Sendable>() -> GranularTracking<Wrapped>? where Value == Wrapped? {
             isPresent()
                 ? reader.peekWhole().map { current in
-                    GranularTracking<Wrapped>(reader.slice(\Wrapped?.[observationUnwrapped: ObservationFallback(current)]))
+                    GranularTracking<Wrapped>(reader.slice(\Wrapped?.[observationUnwrapped: ObservationLastPresent(current)]))
                 }
                 : nil
         }
@@ -173,22 +173,29 @@
 
     // MARK: - Unwrapping plumbing
 
-    /// A key-path argument carrying a fallback value that doesn't take part in equality — so the path stays the
-    /// same dependency whatever the fallback. Observation plumbing behind ``GranularTracking/unwrapped()``.
-    public struct ObservationFallback<Value: Sendable>: Hashable, Sendable {
-        let value: Value
+    /// A key-path argument remembering the **last present value** of an optional, without taking part in
+    /// equality — so the path stays the same dependency, and a position (or a transposed view store) that
+    /// outlives its value keeps showing what it last showed instead of what it showed when it was built.
+    /// Observation plumbing behind ``GranularTracking/unwrapped()`` and `ViewStore.transpose()`.
+    ///
+    /// `@unchecked Sendable`: key-path components must be `Sendable`, but this box is only ever read and written
+    /// through a view store's reads and diffs, which all run on the main actor.
+    public final class ObservationLastPresent<Value: Sendable>: Hashable, @unchecked Sendable {
+        var value: Value
 
         init(_ value: Value) { self.value = value }
 
-        public static func == (lhs: Self, rhs: Self) -> Bool { true }
+        public static func == (lhs: ObservationLastPresent, rhs: ObservationLastPresent) -> Bool { true }
         public func hash(into hasher: inout Hasher) {}
     }
 
     extension Optional where Wrapped: Sendable {
-        /// The wrapped value, or the fallback once `nil` (a position can outlive its value for a frame).
-        /// Observation plumbing behind ``GranularTracking/unwrapped()``.
-        public subscript(observationUnwrapped fallback: ObservationFallback<Wrapped>) -> Wrapped {
-            self ?? fallback.value
+        /// The wrapped value — remembered — or the last present one once `nil` (a position can outlive its value
+        /// while SwiftUI animates it away). Observation plumbing behind ``GranularTracking/unwrapped()``.
+        public subscript(observationUnwrapped last: ObservationLastPresent<Wrapped>) -> Wrapped {
+            guard let value = self else { return last.value }
+            last.value = value
+            return value
         }
     }
 #endif
