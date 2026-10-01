@@ -289,6 +289,14 @@ extension Relay.Scope where
         .init(action: .init(inbound: inbound, into: element), state: .init(), environment: .init())
     }
 
+    /// Start a declared broadcast scope from `\.case` key paths (`inbound` → `into` an ``ElementAction`` case).
+    public static func action<ID: Hashable & Sendable, LA>(
+        broadcast inbound: PrismKeyPath<Action, LA>,
+        into element: PrismKeyPath<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
+        .init(action: .init(inbound: CoreFP.Prism(inbound), into: CoreFP.Prism(element)), state: .init(), environment: .init())
+    }
+
     /// Start a declared broadcast scope from a raw inbound `preview` + id-addressed `embed`.
     public static func action<ID: Hashable & Sendable, LA>(
         broadcast preview: @escaping @Sendable (Action) -> LA?,
@@ -316,6 +324,21 @@ extension Relay.Scope {
         .init(action: .init(inbound: inbound, into: element), state: .init(), environment: .init())
     }
 
+    /// Start a broadcast scope from `\.case` key paths: extract from `inbound`, re-address outputs into an
+    /// ``ElementAction`` case.
+    public static func action<
+        ID: Hashable & Sendable,
+        LA,
+        S: Relay.StateAxis.Strategy & Relay.AxisDefault,
+        E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault
+    >(
+        broadcast inbound: PrismKeyPath<Action, LA>,
+        into element: PrismKeyPath<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, S, Environment, E>
+    where S.Global == State, E.Global == Environment {
+        .init(action: .init(inbound: CoreFP.Prism(inbound), into: CoreFP.Prism(element)), state: .init(), environment: .init())
+    }
+
     /// Start a broadcast scope from a raw inbound `preview` + id-addressed `embed`.
     public static func action<
         ID: Hashable & Sendable,
@@ -338,6 +361,14 @@ extension Relay.Scope where ActionStrategy == Relay.Identity<Action> {
         into element: CoreFP.Prism<Action, ElementAction<ID, LA>>
     ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
         .init(action: .init(inbound: inbound, into: element), state: state, environment: environment)
+    }
+
+    /// Replace the pass-through action axis with a broadcast from `\.case` key paths.
+    public func action<ID: Hashable & Sendable, LA>(
+        broadcast inbound: PrismKeyPath<Action, LA>,
+        into element: PrismKeyPath<Action, ElementAction<ID, LA>>
+    ) -> Relay.Scope<Action, Relay.ActionAxis.Broadcast<Action, ID, LA>, State, StateStrategy, Environment, EnvironmentStrategy> {
+        .init(action: .init(inbound: CoreFP.Prism(inbound), into: CoreFP.Prism(element)), state: state, environment: environment)
     }
 
     /// Replace the pass-through action axis with a broadcast raw `preview` + id-addressed `embed`.

@@ -32,8 +32,7 @@ import DataStructure
 ///
 /// One element of a collection is a ``StoreCollectionFocus``, made through a collection scope:
 /// `store.projection(.action(\.row).state(\.rows), element: id)` (also `.state(\.rows, id: \.slug)`,
-/// `.state(indexed: \.rows)`, `.state(dictionary: \.byKey)`). The older element initialisers below
-/// (`init(store:element:actionReview:stateCollection:)` and siblings) remain, with a linear scan per change.
+/// `.state(indexed: \.rows)`, `.state(dictionary: \.byKey)`).
 ///
 /// ## Observation
 ///
@@ -108,90 +107,6 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
         let state = mapState(environment)
         stateStream = store.stateStream.mapIsolated(state)
         _dispatch = { a, source in store.dispatch(action(a), source: source) }
-    }
-
-    /// Creates a projection focused on a single `Identifiable` element in a collection.
-    ///
-    /// The projected `State` is `C.Element?` — `nil` when no element with the given `id`
-    /// exists in the collection. Actions are wrapped in an ``ElementAction`` and lifted
-    /// through `actionReview` before reaching the global store.
-    ///
-    /// Prefer the collection scope, which finds the element through a per-observer hint instead of a scan:
-    ///
-    /// ```swift
-    /// let todo = appStore.projection(.action(\.todo).state(\.todos), element: todo.id) // StoreCollectionFocus
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - store: The underlying ``StoreType``.
-    ///   - id: The `Identifiable.ID` of the target element.
-    ///   - actionReview: Wraps `ElementAction<ID, Action>` into the global action type `GA`.
-    ///   - stateCollection: Key path from global state `GS` to the collection `C`.
-    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>, C: Collection & Sendable>(
-        store: S,
-        element id: C.Element.ID,
-        actionReview: @escaping @Sendable (ElementAction<C.Element.ID, Action>) -> GA,
-        stateCollection: KeyPath<GS, C>
-    ) where C.Element: Identifiable & Sendable, C.Element.ID: Hashable & Sendable, State == C.Element? {
-        // O(n) per upstream change: a linear scan. See the perf discussion on
-        // StoreType.projection(element:actionReview:stateCollection:) for the Array/dictionary trade-off.
-        stateStream = store.stateStream.map { $0[keyPath: stateCollection].first { $0.id == id } }
-        _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
-    }
-
-    /// Creates a projection focused on the first element whose custom `identifier` field matches `id`.
-    ///
-    /// Use this when the collection's element type is not `Identifiable` or when you want to
-    /// focus by a field other than the standard `id` property.
-    ///
-    /// Prefer the collection scope with a custom id:
-    ///
-    /// ```swift
-    /// let feature = appStore.projection(.action(\.feature).state(\.features, id: \.slug), element: "auth")
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - store: The underlying ``StoreType``.
-    ///   - id: The identifier value to match.
-    ///   - actionReview: Wraps `ElementAction<ID, Action>` into the global action type `GA`.
-    ///   - stateCollection: Key path from global state `GS` to the collection `C`.
-    ///   - identifier: A function that extracts the comparable `ID` from a collection element.
-    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>, C: Collection & Sendable, ID: Hashable & Sendable>(
-        store: S,
-        element id: ID,
-        actionReview: @escaping @Sendable (ElementAction<ID, Action>) -> GA,
-        stateCollection: KeyPath<GS, C>,
-        identifier: @escaping @Sendable (C.Element) -> ID
-    ) where C.Element: Sendable, State == C.Element? {
-        // O(n) per upstream change: a linear scan. See the perf discussion on
-        // StoreType.projection(element:actionReview:stateCollection:identifier:) for the trade-off.
-        stateStream = store.stateStream.map { $0[keyPath: stateCollection].first { identifier($0) == id } }
-        _dispatch = { action, source in store.dispatch(actionReview(ElementAction(id, action: action)), source: source) }
-    }
-
-    /// Creates a projection focused on a value in a `[Key: Value]` dictionary by key.
-    ///
-    /// The projected `State` is `Value?` — `nil` when the key is absent from the dictionary.
-    ///
-    /// Prefer the dictionary collection scope:
-    ///
-    /// ```swift
-    /// let config = appStore.projection(.action(\.config).state(dictionary: \.userSettings), element: "darkMode")
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - store: The underlying ``StoreType``.
-    ///   - key: The dictionary key to focus on.
-    ///   - actionReview: Wraps `ElementAction<Key, Action>` into the global action type `GA`.
-    ///   - stateDictionary: Key path from global state `GS` to the `[Key: Value]` dictionary.
-    public init<GA: Sendable, GS: Sendable, S: StoreType<GA, GS>, Key: Hashable & Sendable, Value: Sendable>(
-        store: S,
-        key: Key,
-        actionReview: @escaping @Sendable (ElementAction<Key, Action>) -> GA,
-        stateDictionary: KeyPath<GS, [Key: Value]>
-    ) where State == Value? {
-        stateStream = store.stateStream.map { $0[keyPath: stateDictionary][key] }
-        _dispatch = { action, source in store.dispatch(actionReview(ElementAction(key, action: action)), source: source) }
     }
 
     /// Dispatches an action through the action mapping closure to the underlying store.

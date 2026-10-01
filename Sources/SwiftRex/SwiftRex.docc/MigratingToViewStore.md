@@ -84,7 +84,7 @@ Every binding is `binding(_:)` taking one chained scope — a `.state(…)` lane
 
 SwiftUI's parameter picks the binding type: `.sheet(isPresented:)` gets the `Bool`, `.sheet(item:)` the optional. Bindings exist only on `ViewStore` — a binding on a plain `Store` or `StoreProjection` no longer compiles (it never updated a view).
 
-`Presentation` slots: the action lane is the slot's `PresentationAction`, which now has two dismissal cases — `.dismiss` when a dismissal starts, `.dismissed` when SwiftUI's animation ends. Reducers that handled `.dismiss` twice (`presented → dismissing → dismissed`) handle `.dismissed` for the second step (`liftPresentation(action:state:environment:)` does it for you). For containers other than `.sheet(item:)`, take the binding's parts: `.fullScreenCover(isPresented: b.isPresented(), onDismiss: b.onDismiss())`.
+`Presentation` slots: the action lane is the slot's `PresentationAction`, which now has two dismissal cases — `.dismiss` when a dismissal starts, `.dismissed` when SwiftUI's animation ends. Reducers that handled `.dismiss` twice (`presented → dismissing → dismissed`) handle `.dismissed` for the second step (`liftPresentation(.action(\.x).state(\.x).environment { … })` does it for you). For containers other than `.sheet(item:)`, take the binding's parts: `.fullScreenCover(isPresented: b.isPresented(), onDismiss: b.onDismiss())`.
 
 Safe rewrites (these **must** be paren-aware — see *Pitfalls*):
 
@@ -153,6 +153,27 @@ If you already moved to an earlier cut of this API, these names are gone:
 | `viewStore.focus(…)` | `viewStore.projection(scope)` for a slice, `viewStore.traverse(scope)` for an optional, `viewStore.each(scope)` / `traverse(scope, element:)` for elements |
 | `viewStore.transpose(scope)` (with arguments) | `viewStore.traverse(scope)`; `transpose()` takes no arguments |
 | `StoreElement` / `StoreUnwrap` | ``StoreCollectionFocus`` / ``StoreOptionalFocus`` |
+
+## Coming from the pre-scope overloads
+
+Everything that lifts, projects, reacts or traverses takes one ``Relay/Scope`` — an inline chain
+(`.action(\.x).state(\.x).environment(…)`) or a declared one (`static let x = ScopeOf<AppFeature>.action(…)…`). The
+older per-optic overloads are gone:
+
+| Removed | Use |
+|---|---|
+| `store.projection(action: \.detail, state: \.detail)` | `store.projection(.action(\.detail).state(\.detail))` |
+| `store.projection(element: id, actionReview: AppAction.row, stateCollection: \.rows)` (and the `identifier:` / `key:…stateDictionary:` forms) | `store.projection(.action(\.row).state(\.rows), element: id)` → ``StoreCollectionFocus`` — custom id `.state(\.rows, id: \.slug)`, position `.state(indexed: \.rows)`, key `.state(dictionary: \.byKey)` |
+| `behavior.on(\.select, reduce: { id, state in … })` / `.on(AppAction.prism.select, reduce: …, when: …)` | `behavior.on(.action(\.select), when: …) { id, state in … }` |
+| `.on(\.retry) { state in … }` (a payload-less case) | `.on(.action(\.retry)) { _, state in … }` — the `_` is the `Void` payload |
+| `behavior.liftOptional(\.detail)` | `behavior.liftOptional(.state(\AppState.detail))`, or `lift(.action(\.detail).state(\.detail)…)` (an affine lane) |
+| `liftCollection(action: AppAction.prism.row, stateCollection: \.rows)` (and `identifier:` / `stateDictionary:` / closure forms) | `liftCollection(.action(\.row).state(\.rows).environment(…))` (`.state(\.rows, id:)`, `.state(indexed:)`, `.state(dictionary:)`) |
+| `liftEach(action:embed:stateCollection:)` (and the other `liftEach` forms) | `liftEach(.action(broadcast: \.tickAll, into: \.row).state(\.rows).environment(…))` |
+| `liftPresentation(action: \.editor, state: \.editor, environment: { $0.editorEnv })` | `liftPresentation(.action(\.editor).state(\.editor).environment(\.editorEnv))` |
+| `liftState(SessionState.prism.loggedIn)` to focus one case of a state enum | `lift(.action(\.session).state(\.loggedIn)…)` — `.state` takes a `\.case` key path, a `Prism` or an `AffineTraversal` |
+| `.action(review: { AppAction.nav(.setPath($0)) })` | `.action(\.nav.setPath)` — `StackNavigation`, `ModalNavigation`, `SelectionNavigation` are `@Prisms` |
+| `if let x = viewStore.traverse(.action(\.x).state(\.x)) { X.view(store: x, environment: world.xEnv) }` in a router | `if let x = AppScopes.x.view(of: X.self, from: viewStore, world: world) { x }` (optional or `Presentation` slot) |
+| `TestStore.enqueue(_:)` | gone, with the retired view-layer test harness it served |
 
 ## Symptoms → fixes
 

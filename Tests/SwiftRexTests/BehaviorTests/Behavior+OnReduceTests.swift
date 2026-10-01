@@ -24,13 +24,6 @@ extension AppAction: Prismatic {
     static let prism = Prisms()
 }
 
-// Optional case properties (the `@Prisms` `.properties` shape) so `\.counter` resolves as
-// `KeyPath<AppAction, Int?>` — the key-path spelling the `on` family uses.
-extension AppAction {
-    var counter: Int? { if case let .counter(value) = self { value } else { nil } }
-    var other: String? { if case let .other(value) = self { value } else { nil } }
-}
-
 private struct AppState: Equatable, Sendable {
     var count: Int = 0
 }

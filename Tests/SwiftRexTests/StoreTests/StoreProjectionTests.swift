@@ -70,13 +70,16 @@ struct StoreProjectionTests {
     }
 }
 
-// MARK: - Collection element projection (Identifiable)
+// MARK: - Collection element focus (Identifiable)
 
 private struct Item: Identifiable, Sendable { let id: Int; var value: String }
 private struct ListState: Sendable { var items: [Item] = [] }
 private enum ListAction: Sendable { case update(id: Int, value: String) }
 
-@Suite("StoreProjection collection element (Identifiable)")
+// The stores below take the element action itself as their global action, so the action lane is the identity prism.
+private func identity<A>() -> Prism<A, A> { Prism(preview: { $0 }, review: { $0 }) }
+
+@Suite("StoreCollectionFocus (Identifiable)")
 @MainActor
 struct StoreProjectionIdentifiableTests {
     private func listStore(items: [Item]) -> Store<ElementAction<Int, String>, ListState, Void> {
@@ -94,77 +97,31 @@ struct StoreProjectionIdentifiableTests {
 
     @Test func stateIsElementWhenPresent() {
         let store = listStore(items: [Item(id: 1, value: "a"), Item(id: 2, value: "b")])
-        let proj = store.projection(
-            element: 2,
-            actionReview: { $0 },
-            stateCollection: \.items
-        )
+        let proj = store.projection(.action(identity()).state(\ListState.items), element: 2)
         #expect(proj.currentState?.id == 2)
         #expect(proj.currentState?.value == "b")
     }
 
     @Test func stateIsNilWhenElementAbsent() {
         let store = listStore(items: [Item(id: 1, value: "a")])
-        let proj = store.projection(
-            element: 99,
-            actionReview: { $0 },
-            stateCollection: \.items
-        )
+        let proj = store.projection(.action(identity()).state(\ListState.items), element: 99)
         #expect(proj.currentState == nil)
     }
 
     @Test func dispatchWrapsActionInElementAction() {
         let store = listStore(items: [Item(id: 1, value: "old")])
-        let proj = store.projection(
-            element: 1,
-            actionReview: { $0 },
-            stateCollection: \.items
-        )
+        let proj = store.projection(.action(identity()).state(\ListState.items), element: 1)
         proj.dispatch("new")
         #expect(store.currentState.items.first?.value == "new")
     }
 }
 
-// MARK: - Collection element projection via a read-only key path
-
-private struct ComputedListState: Sendable {
-    var raw: [Item] = []
-    /// Get-only computed property — it forms a `KeyPath`, never a `WritableKeyPath`. Projecting
-    /// through it would not compile under the former `WritableKeyPath` signature.
-    var visibleItems: [Item] { raw.filter { !$0.value.isEmpty } }
-}
-
-@Suite("StoreProjection collection element via read-only key path")
-@MainActor
-struct StoreProjectionReadOnlyKeyPathTests {
-    private func store(raw: [Item]) -> Store<ElementAction<Int, String>, ComputedListState, Void> {
-        Store(initial: ComputedListState(raw: raw), behavior: .handle { _, _ in .doNothing }, environment: ())
-    }
-
-    @Test func projectsThroughGetOnlyComputedCollection() {
-        let store = store(raw: [Item(id: 1, value: "a"), Item(id: 2, value: ""), Item(id: 3, value: "c")])
-        let proj = store.projection(
-            element: 3,
-            actionReview: { $0 },
-            stateCollection: \.visibleItems // KeyPath, not WritableKeyPath
-        )
-        #expect(proj.currentState?.value == "c")
-    }
-
-    @Test func projectionIsNilWhenElementFilteredOut() {
-        let store = store(raw: [Item(id: 1, value: "a"), Item(id: 2, value: "")])
-        // id 2 has an empty value, so it is excluded from `visibleItems` → nil projection.
-        let proj = store.projection(element: 2, actionReview: { $0 }, stateCollection: \.visibleItems)
-        #expect(proj.currentState == nil)
-    }
-}
-
-// MARK: - Collection element projection (custom identifier closure)
+// MARK: - Collection element focus (custom identifier)
 
 private struct Tagged: Sendable { let tag: String; var score: Int }
 private struct TaggedState: Sendable { var entries: [Tagged] = [] }
 
-@Suite("StoreProjection collection element (custom identifier closure)")
+@Suite("StoreCollectionFocus (custom identifier)")
 @MainActor
 struct StoreProjectionCustomIdentifierTests {
     private func taggedStore(entries: [Tagged]) -> Store<ElementAction<String, Int>, TaggedState, Void> {
@@ -182,43 +139,28 @@ struct StoreProjectionCustomIdentifierTests {
 
     @Test func stateIsElementWhenPresent() {
         let store = taggedStore(entries: [Tagged(tag: "a", score: 1), Tagged(tag: "b", score: 2)])
-        let proj = store.projection(
-            element: "b",
-            actionReview: { $0 },
-            stateCollection: \.entries,
-            identifier: { $0.tag }
-        )
+        let proj = store.projection(.action(identity()).state(\TaggedState.entries, id: \.tag), element: "b")
         #expect(proj.currentState?.score == 2)
     }
 
     @Test func stateIsNilWhenElementAbsent() {
         let store = taggedStore(entries: [Tagged(tag: "a", score: 1)])
-        let proj = store.projection(
-            element: "missing",
-            actionReview: { $0 },
-            stateCollection: \.entries,
-            identifier: { $0.tag }
-        )
+        let proj = store.projection(.action(identity()).state(\TaggedState.entries, id: \.tag), element: "missing")
         #expect(proj.currentState == nil)
     }
 
     @Test func dispatchUpdatesCorrectElement() {
         let store = taggedStore(entries: [Tagged(tag: "x", score: 0), Tagged(tag: "y", score: 5)])
-        let proj = store.projection(
-            element: "x",
-            actionReview: { $0 },
-            stateCollection: \.entries,
-            identifier: { $0.tag }
-        )
+        let proj = store.projection(.action(identity()).state(\TaggedState.entries, id: \.tag), element: "x")
         proj.dispatch(99)
         #expect(store.currentState.entries[0].score == 99)
         #expect(store.currentState.entries[1].score == 5)
     }
 }
 
-// MARK: - Dictionary projection
+// MARK: - Dictionary element focus
 
-@Suite("StoreProjection dictionary key")
+@Suite("StoreCollectionFocus (dictionary key)")
 @MainActor
 struct StoreProjectionDictionaryTests {
     private struct DictState: Sendable { var map: [String: Int] = [:] }
@@ -235,19 +177,19 @@ struct StoreProjectionDictionaryTests {
 
     @Test func stateIsValueWhenKeyPresent() {
         let store = dictStore(map: ["x": 10])
-        let proj = store.projection(key: "x", actionReview: { $0 }, stateDictionary: \.map)
+        let proj = store.projection(.action(identity()).state(dictionary: \DictState.map), element: "x")
         #expect(proj.currentState == 10)
     }
 
     @Test func stateIsNilWhenKeyAbsent() {
         let store = dictStore(map: [:])
-        let proj = store.projection(key: "missing", actionReview: { $0 }, stateDictionary: \.map)
+        let proj = store.projection(.action(identity()).state(dictionary: \DictState.map), element: "missing")
         #expect(proj.currentState == nil)
     }
 
     @Test func dispatchWritesNewValue() {
         let store = dictStore(map: ["k": 0])
-        let proj = store.projection(key: "k", actionReview: { $0 }, stateDictionary: \.map)
+        let proj = store.projection(.action(identity()).state(dictionary: \DictState.map), element: "k")
         proj.dispatch(99)
         #expect(store.currentState.map["k"] == 99)
     }

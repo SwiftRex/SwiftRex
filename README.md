@@ -423,7 +423,7 @@ let moviesBehavior: Behavior<AppAction, AppState, World> =
 
 Each host's `lift` takes **one `Relay.Scope`** built axis-by-axis with the fluent builder, constrained on only the capabilities that host needs — a `Reducer` writes state, a `Middleware` only reads it, and `supervise` threads through automatically so a lifted feature's channels cancel when its sub-state disappears. Every axis accepts an optic, a key path, or plain closures — pick the minimum: `.action(prism)` / `.action(\.case)` / `.action(preview:review:)` (or `.action(preview:)` / `.action(review:)` when one direction is enough); `.state(\.slice)` / `.state { $0.slice }` / `.state(get:set:)`.
 
-**Optionals and collections are the same builder, different hosts.** `liftOptional` is the 0-or-1 host — a pass-through `Identity` action + `Identity` environment + affine state scope (`behavior.liftOptional(.state(\.maybeChild))`, runs only while `.some`; the plain `liftOptional(\.maybeChild)` key-path form is sugar). `liftCollection` (route one addressed element) and `liftEach` (broadcast to all) are the 0-or-n hosts, and take the *same* leading-dot scope — the element-addressing rides in the lanes, so the spelling stays naked:
+**Optionals and collections are the same builder, different hosts.** `liftOptional` is the 0-or-1 host — a pass-through `Identity` action + `Identity` environment + affine state scope (`behavior.liftOptional(.state(\.maybeChild))`, runs only while `.some`). `liftCollection` (route one addressed element) and `liftEach` (broadcast to all) are the 0-or-n hosts, and take the *same* leading-dot scope — the element-addressing rides in the lanes, so the spelling stays naked:
 
 ```swift
 // route one element by Identifiable id — same shape as a single child, only the host name differs:
@@ -433,7 +433,7 @@ rowBehavior.liftCollection(.action(AppAction.prism.row).state(\AppState.rows, id
 rowBehavior.liftCollection(.action(AppAction.prism.row).state(indexed: \AppState.rows)…)
 rowBehavior.liftCollection(.action(AppAction.prism.cfg).state(dictionary: \AppState.configs)…)
 // broadcast one action to every element (its action lane bridges the plain-in / id-addressed-out cases):
-rowBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.row).state(\AppState.rows)…)
+rowBehavior.liftEach(.action(broadcast: \.tickAll, into: \.row).state(\AppState.rows)…)
 ```
 
 The lifted behavior sees the **unwrapped** element (never `Element?`), and each element's effects/channels are re-embedded and scoped to its id automatically. The same lanes drive `Reducer`/`Middleware` lifts and a per-element `store.projection(.action(\.row).state(\.rows), element: id)` (a `StoreCollectionFocus`, whose state is `Element?`).
@@ -513,7 +513,7 @@ Navigation is a function of state: routes live in the state tree, behaviors muta
 | collection of scene ids | `viewStore.hasScene(…)` | `WindowGroup(for:)` |
 
 ```swift
-NavigationStack(path: viewStore.binding(.state(\.nav.path).action(review: { .nav(.setPath($0)) }))) {
+NavigationStack(path: viewStore.binding(.state(\.nav.path).action(\.nav.setPath))) {
     HomeView(viewStore: viewStore)
         .navigationDestination(for: AppRoute.self) { route in
             route.view(in: viewStore, world: world) // a switch resolving scopes — no AnyView

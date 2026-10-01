@@ -63,7 +63,7 @@
             switch route {
             case .detail:
                 RDetail.view(
-                    store: store.projection(action: \.detail, state: \.detail), // prism + key-path sugar
+                    store: store.projection(.action(\.detail).state(\.detail)),
                     environment: RDetail.Environment(greet: world.greet) // env supplied HERE
                 )
             }

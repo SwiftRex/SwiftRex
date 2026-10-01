@@ -101,6 +101,50 @@
             return StoreOptionalFocus(projection(action: scope.action.review, state: { reads.get($0).wrapped }), present: current)
         }
 
+        // MARK: - A declared scope's slot
+
+        /// The affine slot of a **declared** scope — `ScopeOf<AppFeature>.action(\.detail).state(\.detail)…`, the
+        /// same scope that lifts the child's behavior over an optional (its environment lane is ignored here: a view
+        /// store has none) — as a store of the unwrapped value, present while the slot is.
+        public func traverse<
+            A: Relay.ActionAxis.EmbedsProtocol,
+            S: Relay.StateAxis.WritesProtocol,
+            GE,
+            E: Relay.EnvironmentAxis.Strategy
+        >(
+            _ scope: Relay.Scope<Action, A, State, S, GE, E>,
+            id: AnyHashableSendable? = nil,
+            fileID: String = #fileID,
+            line: UInt = #line,
+            column: UInt = #column
+        ) -> StoreOptionalFocus<A.Local, S.Local>? where A.Global == Action, S.Global == State {
+            traverse(action: scope.action.review, state: scope.state.preview, id: id, fileID: fileID, line: line, column: column)
+        }
+
+        /// The ``Presentation`` slot of a **declared** scope (its environment lane ignored), as a store of its
+        /// presented value — present while `presented` **or** `dismissing`.
+        public func traverse<
+            A: Relay.ActionAxis.EmbedsProtocol,
+            S: Relay.StateAxis.ReadsProtocol,
+            Wrapped: Sendable,
+            GE,
+            E: Relay.EnvironmentAxis.Strategy
+        >(
+            _ scope: Relay.Scope<Action, A, State, S, GE, E>,
+            id: AnyHashableSendable? = nil,
+            fileID: String = #fileID,
+            line: UInt = #line,
+            column: UInt = #column
+        ) -> StoreOptionalFocus<A.Local, Wrapped>? where A.Global == Action, S.Global == State, S.Local == Presentation<Wrapped> {
+            traverse(
+                Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>(action: scope.action, state: scope.state),
+                id: id,
+                fileID: fileID,
+                line: line,
+                column: column
+            )
+        }
+
         // MARK: - One element of a collection
 
         /// One element of a collection, as a store of the element — present while it's in the collection. The same

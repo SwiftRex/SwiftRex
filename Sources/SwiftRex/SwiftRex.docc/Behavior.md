@@ -45,11 +45,10 @@ let app = Behavior.combine(counter.lifted, profile.lifted) // or counter.lifted 
 let lifted: Behavior<AppAction, AppState, World> = room.lift(.action(\.room).state(\.room).environment(\.roomEnv))
 ```
 
-`liftOptional` is the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with the action and environment axes left pass-through (``Relay/Identity``). While the focus is `nil` the behavior is a **complete no-op** — never asked to mutate, produce, or supervise (stricter than a plain affine state lift); while present it runs on the **unwrapped** value. A key-path spelling is sugar for the same call:
+`liftOptional` is the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with the action and environment axes left pass-through (``Relay/Identity``). While the focus is `nil` the behavior is a **complete no-op** — never asked to mutate, produce, or supervise (stricter than a plain affine state lift); while present it runs on the **unwrapped** value:
 
 ```swift
 dayBehavior.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
-dayBehavior.liftOptional(\AppState.currentDay) // key-path sugar
 ```
 
 ``liftCollection(_:)`` routes an addressed global action to **one** element of a collection. The state lane locates it — by `Identifiable` id (`.state(\.rows)`), a custom key (`.state(\.rows, id: \.slug)`), position (`.state(indexed: \.rows)`), or dictionary key (`.state(dictionary: \.configs)`) — while the action lane carries an ``ElementAction``:
@@ -64,7 +63,7 @@ let rows: Behavior<AppAction, AppState, World> = rowBehavior.liftCollection(
 
 ```swift
 let ticks: Behavior<AppAction, AppState, World> = rowBehavior.liftEach(
-    .action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.row)
+    .action(broadcast: \.tickAll, into: \.row)
         .state(\.rows).environment(\.rowEnv)
 )
 ```
@@ -127,8 +126,6 @@ State is **never copied** unless the action filter passes first. Variants withou
 - ``liftAction(_:)``
 - ``liftState(_:)``
 - ``liftEnvironment(_:)``
-- ``liftCollection(action:embed:stateContainer:elements:)``
-- ``liftEach(action:embed:each:stateContainer:)``
 
 ## See Also
 

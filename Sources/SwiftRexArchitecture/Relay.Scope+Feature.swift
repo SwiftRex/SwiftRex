@@ -2,6 +2,7 @@
 
 #if canImport(Observation) && canImport(SwiftUI)
     import SwiftRex
+    import SwiftRexSwiftUI
     import SwiftUI
 
     // The feature-lift capabilities on ``Relay/Scope``. A scope that re-indexes a feature's `(Action, State, Environment)` into a parent
@@ -51,6 +52,73 @@
         ) -> F.Body
         where F.Action == ActionStrategy.Local, F.State == StateStrategy.Local, F.Environment == EnvironmentStrategy.Local {
             F.view(store: store.projection(action: action.review, state: state.get), environment: environment.narrow(world))
+        }
+    }
+
+    extension Relay.Scope where
+        ActionStrategy: Relay.ActionAxis.EmbedsProtocol,
+        StateStrategy: Relay.StateAxis.WritesProtocol,
+        EnvironmentStrategy: Relay.EnvironmentAxis.NarrowsProtocol,
+        ActionStrategy.Global == Action,
+        StateStrategy.Global == State,
+        EnvironmentStrategy.Global == Environment {
+        /// Build `feature`'s view from this scope's **optional** slot — `nil` while the slot is absent. The same
+        /// declared scope that lifts the child's behavior over the optional (`.state(\.detail)` on a `Detail?`). Reads
+        /// the slot's presence on `viewStore` (the caller depends on that edge only) and hands the feature a pure stage
+        /// that holds its last value while the screen animates away; the feature's view keeps its own view store.
+        ///
+        /// ```swift
+        /// if let detail = AppScopes.detail.view(of: DetailFeature.self, from: viewStore, world: world) { detail }
+        /// ```
+        @MainActor
+        public func view<F: ViewFactory>(
+            of feature: F.Type,
+            from viewStore: ViewStore<Action, State>,
+            world: Environment,
+            fileID: String = #fileID,
+            line: UInt = #line,
+            column: UInt = #column
+        ) -> F.Body?
+        where F.Action == ActionStrategy.Local, F.State == StateStrategy.Local, F.Environment == EnvironmentStrategy.Local {
+            viewStore.traverse(self, fileID: fileID, line: line, column: column)
+                .map { F.view(store: $0, environment: environment.narrow(world)) }
+        }
+    }
+
+    extension Relay.Scope where
+        ActionStrategy: Relay.ActionAxis.EmbedsProtocol,
+        StateStrategy: Relay.StateAxis.ReadsProtocol,
+        EnvironmentStrategy: Relay.EnvironmentAxis.NarrowsProtocol,
+        ActionStrategy.Global == Action,
+        StateStrategy.Global == State,
+        EnvironmentStrategy.Global == Environment {
+        /// Build `feature`'s view from this scope's ``Presentation`` slot — present while `presented` **or**
+        /// `dismissing`, so the screen stays alive and steady while SwiftUI animates it out. The same declared scope
+        /// `liftPresentation` lifts the child's behavior through.
+        ///
+        /// ```swift
+        /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
+        ///     AppScopes.editor.view(of: EditorFeature.self, from: viewStore, world: world)
+        /// }
+        /// ```
+        @MainActor
+        public func view<F: ViewFactory, ChildAction>(
+            of feature: F.Type,
+            from viewStore: ViewStore<Action, State>,
+            world: Environment,
+            fileID: String = #fileID,
+            line: UInt = #line,
+            column: UInt = #column
+        ) -> F.Body?
+        where ActionStrategy.Local == PresentationAction<ChildAction>, F.Action == ChildAction,
+            StateStrategy.Local == Presentation<F.State>, F.Environment == EnvironmentStrategy.Local {
+            let childLane = Relay.ActionAxis.Embeds<Action, ChildAction> { action.review(.child($0)) }
+            let child = Relay.Scope<Action, Relay.ActionAxis.Embeds<Action, ChildAction>, State, StateStrategy, Never, Relay.Absurd<Never>>(
+                action: childLane,
+                state: state
+            )
+            return viewStore.traverse(child, fileID: fileID, line: line, column: column)
+                .map { F.view(store: $0, environment: environment.narrow(world)) }
         }
     }
 #endif
