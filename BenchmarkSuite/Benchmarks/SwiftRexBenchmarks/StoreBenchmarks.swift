@@ -60,21 +60,15 @@ func storeDispatchBenchmarks() {
 }
 
 func storeReadBenchmarks() {
-    // StoreProjection element lookup — the stream's map runs `collection.first { id matches }` for each
-    // value: O(n) per delivered state over a 1,000-element collection. Measured through the current value a
-    // new observer receives. This is roadmap item 23's baseline.
+    // StoreCollectionFocus element lookup — a NEW observer starts with an empty hint and searches outward from the
+    // start: O(n) for the last of 1,000 elements. Measured through the current value a new observer receives (an
+    // existing observer keeps its hint: O(distance moved) per change).
     let targetId = collectionSize - 1
-    Benchmark("StoreProjection current value — by id in \(collectionSize)") { benchmark in
+    Benchmark("StoreCollectionFocus current value — by id in \(collectionSize)") { benchmark in
         let iterations = benchmark.scaledIterations
         await MainActor.run {
             let store: Store<ListAction, ListState, Void> = Store(initial: makeList(collectionSize), reducer: .identity)
-            let projection = StoreProjection<ItemAction, Item?>(
-                store: store,
-                element: targetId,
-                actionReview: { (ea: ElementAction<Int, ItemAction>) in ListAction.item(ea) },
-                stateCollection: \ListState.items,
-                identifier: { (item: Item) in item.id }
-            )
+            let projection = store.projection(itemScope, element: targetId)
             for _ in iterations {
                 blackHole(projection.stateStream.subscribe { _ in }.current?.n)
             }
