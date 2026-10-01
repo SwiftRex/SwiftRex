@@ -60,17 +60,16 @@
 
     // The parent reads `tick` only; children receive the root node and read their own paths.
     private struct ParentView: View {
-        let store: Store<HAction, HState, Void>
-        let strategy: ViewStrategy
+        @OwnedStore var observed: ViewStore<HAction, HState>
         let renders: Renders
-        var body: some View {
-            ProjectionKeeper {
+        init(store: Store<HAction, HState, Void>, strategy: ViewStrategy, renders: Renders) {
+            _observed = OwnedStore(wrappedValue: {
                 renders.makes += 1
                 return store.viewStore(strategy)
-            } content: { observed in
-                ParentContent(observed: observed, renders: renders)
-            }
+            }())
+            self.renders = renders
         }
+        var body: some View { ParentContent(observed: observed, renders: renders) }
     }
 
     private struct ParentContent: View {
@@ -90,9 +89,14 @@
     // main actor hostage and starve main-actor work in suites running in parallel.
     // An owner built with @OwnedStore inside a parent that keeps re-rendering (it reads `tick`).
     private struct OuterView: View {
-        let outer: ViewStore<HAction, HState>
+        @OwnedStore var outer: ViewStore<HAction, HState>
         let makeInner: @MainActor () -> Store<HAction, HState, Void>
         let renders: Renders
+        init(store: Store<HAction, HState, Void>, makeInner: @escaping @MainActor () -> Store<HAction, HState, Void>, renders: Renders) {
+            _outer = OwnedStore(wrappedValue: store.viewStore())
+            self.makeInner = makeInner
+            self.renders = renders
+        }
         var body: some View {
             renders.parent += 1
             return VStack {
@@ -173,16 +177,14 @@
         @Test func ownedStoreBuildsOnceAcrossParentReRenders() {
             let outerStore = makeHStore()
             let renders = Renders()
-            let outer = ProjectionKeeper { outerStore.viewStore() } content: { outer in
-                OuterView(
-                    outer: outer,
-                    makeInner: {
-                        renders.makes += 1
-                        return makeHStore()
-                    },
-                    renders: renders
-                )
-            }
+            let outer = OuterView(
+                store: outerStore,
+                makeInner: {
+                    renders.makes += 1
+                    return makeHStore()
+                },
+                renders: renders
+            )
             let host = NSHostingView(rootView: outer)
             host.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
             settle(host)

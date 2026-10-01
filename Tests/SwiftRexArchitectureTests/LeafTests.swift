@@ -35,6 +35,7 @@
     private struct ListState: Sendable, Equatable {
         var rows: [Row] = (1...5).map { Row(id: $0, title: "r\($0)") }
         var other = 0
+        var playhead = 0
     }
 
     private struct Mutation: Sendable { let apply: @Sendable (inout ListState) -> Void }
@@ -128,7 +129,7 @@
             var rowStores: [Int: StoreOptionalFocus<RowAction, Row>] = [:]
             let listBody = track {
                 for row in list.state.each(\.rows) {
-                    rowStores[row.id] = list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: row.id)
+                    rowStores[row.id] = list.traverse(.action(ListAction.prism.row).state(\ListState.rows), element: row.id)
                 }
             }
             let rows = rowStores.mapValues { $0.viewStore(.observation) }     // each row owned (by the test)
@@ -147,7 +148,7 @@
             let store = makeStore()
             let list = store.viewStore(.observation)
             let rows = (1...5).compactMap { id in
-                list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: id)?.viewStore(.observation)
+                list.traverse(.action(ListAction.prism.row).state(\ListState.rows), element: id)?.viewStore(.observation)
             }
             let reads = rows.map { row in track { _ = row.state.title } }
             store.dispatch(mutate { $0.rows.reverse() })
@@ -161,13 +162,13 @@
             let store = makeStore()
             let list = store.viewStore(.observation)
             var slot: StoreOptionalFocus<RowAction, Row>?
-            let presence = track { slot = list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: 4) }
+            let presence = track { slot = list.traverse(.action(ListAction.prism.row).state(\ListState.rows), element: 4) }
             let row = slot?.viewStore(.observation)
             store.dispatch(.row(ElementAction(4, action: .rename("R4"))))
             #expect(presence.value == 0)                                      // content: not the edge
             store.dispatch(mutate { $0.rows.removeAll { $0.id == 4 } })
             #expect(presence.value == 1)
-            #expect(list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: 4) == nil)
+            #expect(list.traverse(.action(ListAction.prism.row).state(\ListState.rows), element: 4) == nil)
             #expect(row?.state.title == "R4")
         }
 
@@ -194,9 +195,147 @@
 
         @Test func aRowDispatchesThroughItsElementLane() {
             let store = makeStore()
-            let row = store.viewStore(.combine).transpose(.action(ListAction.prism.row).state(\ListState.rows), element: 5)?.viewStore(.combine)
+            let row = store.viewStore(.combine).traverse(.action(ListAction.prism.row).state(\ListState.rows), element: 5)?.viewStore(.combine)
             row?.dispatch(.rename("five"))
             #expect(store.currentState.rows.last?.title == "five")
+        }
+    }
+
+    // MARK: - A view store forwards its upstream; each
+
+    private typealias RowScope = Relay.Scope<
+        ListAction,
+        Relay.ActionAxis.Element<ListAction, Int, RowAction>,
+        ListState,
+        Relay.StateAxis.Keyed<ListState, [Row], Int, Row>,
+        Never,
+        Relay.Absurd<Never>
+    >
+    private let rowScope: RowScope = .action(ListAction.prism.row).state(\ListState.rows)
+
+    @Suite("Leaf — forwarding and each")
+    @MainActor
+    struct LeafForwardingTests {
+        @Test func theParentChainRunsOncePerChangeHoweverManyChildren() {
+            let store = makeStore(ListState(rows: (0..<50).map { Row(id: $0, title: "\($0)") }))
+            let maps = LockProtectedCounter()
+            let list = store
+                .projection(action: { $0 }, state: { (state: ListState) -> ListState in
+                    maps.bump()
+                    return state
+                })
+                .viewStore(.combine)
+            let rows = list.each(rowScope).map { $0.viewStore(.combine) }
+            let before = maps.value
+            store.dispatch(.row(ElementAction(7, action: .rename("seven"))))
+            #expect(maps.value - before == 1)                                // not once per row
+            #expect(rows[7].state.title == "seven")
+        }
+
+        @Test func childrenGetEveryUpstreamValueEvenWhenTheParentReadsNothing() {
+            let store = makeStore()
+            let list = store.viewStore(.combine)                             // no view read anything from it
+            var seen: [Int] = []
+            let token = list.projection(action: { $0 }, state: \.other).stateStream.observe { seen.append($0) }
+            store.dispatch(mutate { $0.other = 1 })
+            store.dispatch(mutate { $0.other = 2 })
+            #expect(seen == [0, 1, 2])
+            _ = token
+        }
+
+        @Test func eachGivesOneIdentifiedStorePerElementInOrder() {
+            let store = makeStore()
+            let list = store.viewStore(.combine)
+            let items = list.each(rowScope)
+            #expect(items.map(\.id) == [1, 2, 3, 4, 5])
+            #expect(items.map { $0.viewStore(.combine).state.title } == ["r1", "r2", "r3", "r4", "r5"])
+            items[2].dispatch(.rename("three"))
+            #expect(store.currentState.rows[2].title == "three")
+        }
+
+        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+        @Test func eachDependsOnTheIdsOnly() {
+            let store = makeStore()
+            let list = store.viewStore(.observation)
+            let edit = track { _ = list.each(rowScope) }
+            store.dispatch(.row(ElementAction(2, action: .rename("two"))))
+            #expect(edit.value == 0)                                         // a change inside an element: not the list
+            let insert = track { _ = list.each(rowScope) }
+            store.dispatch(mutate { $0.rows.append(Row(id: 9, title: "nine")) })
+            #expect(insert.value == 1)
+        }
+
+        @Test func anItemHoldsItsLastValueOnceRemoved() {
+            let store = makeStore()
+            let item = store.viewStore(.combine).each(rowScope)[0].viewStore(.combine)
+            store.dispatch(mutate { $0.rows.removeFirst() })
+            #expect(item.state.title == "r1")
+        }
+    }
+
+    // MARK: - BusDriver-shaped: many eager elements, a 10 Hz playhead
+
+    @Suite("Leaf — many eager elements and a hot playhead", .serialized)
+    @MainActor
+    struct LeafPlayheadTests {
+        #if DEBUG
+            static let count = 300
+        #else
+            static let count = 3_000
+        #endif
+        static let ticks = 50
+
+        private func manyRows() -> Store<ListAction, ListState, Void> {
+            var initial = ListState()
+            initial.rows = (0..<Self.count).map { Row(id: $0, title: "\($0)") }
+            return makeStore(initial)
+        }
+
+        // A parent chain in front of the list, like a feature's view projection.
+        private func viewChain(_ store: Store<ListAction, ListState, Void>) -> some StoreType<ListAction, ListState> {
+            store.projection(action: { $0 }, state: { $0 }).buffer()
+        }
+
+        private func tick(_ store: Store<ListAction, ListState, Void>) -> Duration {
+            ContinuousClock().measure {
+                for _ in 0..<Self.ticks { store.dispatch(mutate { $0.playhead += 1 }) }
+            }
+        }
+
+        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+        @Test func positionsFromOneViewStore() {
+            let store = manyRows()
+            let list = viewChain(store).viewStore(.observation)
+            let reads = track { list.state.each(\.rows).forEach { _ = $0.title } }
+            let elapsed = withExtendedLifetime(list) { tick(store) } // release builds end lifetimes at the last use
+            #expect(reads.value == 0)
+            #expect(elapsed / Self.ticks < .milliseconds(1)) // unchanged rows are skipped at the `\.rows` guard
+            print("PLAYHEAD positions rows=\(Self.count) perTick=\(elapsed / Self.ticks)")
+        }
+
+        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+        @Test func aViewStorePerElementFollowingTheParentViewStore() {
+            let store = manyRows()
+            let list = viewChain(store).viewStore(.observation)
+            let rows = list.each(rowScope).map { $0.viewStore(.observation) }
+            let reads = track { rows.forEach { _ = $0.state.title } }
+            let elapsed = withExtendedLifetime((list, rows)) { tick(store) } // release builds end lifetimes at the last use
+            #expect(reads.value == 0)
+            print("PLAYHEAD perElement-forwarded rows=\(Self.count) perTick=\(elapsed / Self.ticks)")
+        }
+
+        @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
+        @Test func aViewStorePerElementEachReRunningTheChain() {
+            // What every row did before forwarding: follow the parent's pure chain on its own.
+            let store = manyRows()
+            let chain = viewChain(store)
+            let rows = (0..<Self.count).compactMap { id in
+                StoreOptionalFocus(chain.projection(rowScope, element: id), present: Row(id: id, title: "\(id)")).viewStore(.observation)
+            }
+            let reads = track { rows.forEach { _ = $0.state.title } }
+            let elapsed = withExtendedLifetime(rows) { tick(store) } // release builds end lifetimes at the last use
+            #expect(reads.value == 0)
+            print("PLAYHEAD perElement-rerun rows=\(Self.count) perTick=\(elapsed / Self.ticks)")
         }
     }
 
@@ -222,7 +361,7 @@
             var rows: [ViewStore<RowAction, Row>] = []
             let build = clock.measure {
                 rows = (0..<count).compactMap { id in
-                    list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: id)?.viewStore(.observation)
+                    list.traverse(.action(ListAction.prism.row).state(\ListState.rows), element: id)?.viewStore(.observation)
                 }
             }
             func arm() { rows.forEach { row in _ = track { _ = row.state.title } } }
@@ -256,9 +395,17 @@
         var rowMakes = 0
     }
 
+    // A row keeps its own view store, made once from the pure stage it's handed.
     private struct HostedRow: View {
-        let viewStore: ViewStore<RowAction, Row>
+        @OwnedStore var viewStore: ViewStore<RowAction, Row>
         let renders: ListRenders
+        init(store: some StoreType<RowAction, Row>, renders: ListRenders) {
+            _viewStore = OwnedStore(wrappedValue: {
+                renders.rowMakes += 1
+                return store.viewStore()
+            }())
+            self.renders = renders
+        }
         var body: some View {
             renders.rows[viewStore.state.value.id, default: 0] += 1
             return Text(viewStore.state.title)
@@ -271,21 +418,26 @@
         var body: some View {
             renders.list += 1
             return VStack {
-                ForEach(viewStore.state.each(\.rows)) { row in
-                    if let rowStore = viewStore.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: row.id) {
-                        ProjectionKeeper(id: row.id) {
-                            renders.rowMakes += 1
-                            return rowStore.viewStore()
-                        } content: { HostedRow(viewStore: $0, renders: renders) }
-                    }
+                ForEach(viewStore.each(.action(ListAction.prism.row).state(\ListState.rows))) { row in
+                    HostedRow(store: row, renders: renders)
                 }
             }
         }
     }
 
+    private struct HostedRoot: View {
+        @OwnedStore var viewStore: ViewStore<ListAction, ListState>
+        let renders: ListRenders
+        init(_ store: Store<ListAction, ListState, Void>, _ strategy: ViewStrategy, _ renders: ListRenders) {
+            _viewStore = OwnedStore(wrappedValue: store.viewStore(strategy))
+            self.renders = renders
+        }
+        var body: some View { HostedList(viewStore: viewStore, renders: renders) }
+    }
+
     @MainActor
     private func hostedList(_ store: Store<ListAction, ListState, Void>, _ strategy: ViewStrategy, _ renders: ListRenders) -> some View {
-        ProjectionKeeper { store.viewStore(strategy) } content: { HostedList(viewStore: $0, renders: renders) }
+        HostedRoot(store, strategy, renders)
     }
 
     @MainActor

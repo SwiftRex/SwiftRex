@@ -18,7 +18,7 @@ viewStore.state.player         // GranularTracking<Player> — a position you ke
 viewStore.state.player.value   // the whole Player — a coarse read, depends on \.player
 ```
 
-The same rule, one level up: **only a `ViewStore` reads, and every view store has one owner.** Anything you derive — a projection, a transposed optional, a collection element — is a pure stage with no state to read; a child observes it through its own view store, owned where the child is built.
+The same rule, one level up: **only a `ViewStore` reads, and every view store has one owner.** Anything you derive — a projection, a transposed optional, a collection element — is a pure stage with no state to read; a child observes it through its own view store, kept by the child.
 
 That one fact explains most compiler errors below. Old code where `viewStore.state.title` was a plain read keeps compiling (now granular). Old code that *used* `viewStore.state.x` as a value — `ForEach(viewStore.state.items)`, `.detail(for: viewStore.state.selection)`, `.dispatch(.open(viewStore.state.item))` — doesn't, because `x` is now a position.
 
@@ -55,14 +55,14 @@ The old `ViewStore<ViewState, ViewAction>` was a class you could build anywhere.
 | `let viewStore: ViewStore<…>` in a receiver view | unchanged — receivers stay a plain `let` |
 | `viewStore = ViewStore(store)` in a view's `init` | `@OwnedStore var viewStore: ViewStore<A, S>` + `_viewStore = OwnedStore(wrappedValue: store.viewStore())` |
 | same, where `store` is `any StoreType<A, S>` | `_viewStore = OwnedStore(wrappedValue: store.viewStore())` (an existential makes one the same way) |
-| `Root(viewStore: ViewStore(store), …)` in a hand-written `view(store:environment:)` | `ProjectionKeeper { store.viewStore() } content: { Root(viewStore: $0, …) }` |
-| `store.observable()` / `asObservableObject()` | `store.viewStore(.combine)`, kept by `@OwnedStore` / `ProjectionKeeper` |
+| `Root(viewStore: ViewStore(store), …)` in a hand-written `view(store:environment:)` | `Root(store: store, …)`, where `Root` keeps `@OwnedStore var viewStore` made from it in `init` |
+| `store.observable()` / `asObservableObject()` | `store.viewStore(.combine)`, kept by `@OwnedStore` |
 
 Safe rewrites:
 
 ```
 ViewStore<(\w+)\.State, (\w+)\.Action>                              →  ViewStore<\2.Action, \1.State>
-(\w+)\(viewStore: ViewStore\(store\), environment: environment\)   →  ProjectionKeeper { store.viewStore() } content: { \1(viewStore: $0, environment: environment) }
+(\w+)\(viewStore: ViewStore\(store\), environment: environment\)   →  \1(store: store, environment: environment)
 ```
 
 > Warning: The generic-order swap is **not idempotent**. `ViewStore<AppState, AppAction>` (no `.State` / `.Action` suffix) isn't matched by the pattern and has to be swapped by hand — and running any "swap the two arguments" rule over already-migrated code swaps them back. Run it once, on old code only.
@@ -107,13 +107,13 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 
 | Before | After |
 |---|---|
-| `store.projection(…).transpose()` in a body or router | `viewStore.transpose(.action(\.x).state(\.x))` (key paths) or `viewStore.transpose(action: …, state: …)` (closure lane) |
-| a list row built with a projection by id | `viewStore.transpose(.action(\.row).state(\.rows), element: row.id)` |
-| a child view taking a slice it dispatches into | `ProjectionKeeper { viewStore.projection(.action(\.x).state(\.x)).viewStore() } content: { Child(viewStore: $0) }` |
+| `store.projection(…).transpose()` in a body or router | `viewStore.traverse(.action(\.x).state(\.x))` (key paths) or `viewStore.traverse(action: …, state: …)` (closure lane) |
+| a list row built with a projection by id | `viewStore.traverse(.action(\.row).state(\.rows), element: row.id)` |
+| a child view taking a slice it dispatches into | `Child(store: viewStore.projection(.action(\.x).state(\.x)))`, the child keeping `.viewStore()` of it with `@OwnedStore` |
 | a router holding `any StoreType<…>` / `MainStoreType` | a router holding the app's `ViewStore<AppAction, AppState>` |
 | `store.projection(…).transpose()` outside SwiftUI (UIKit) | follow presence as state: `store.stateStream.map { $0.x != nil }.removeDuplicates().observe { … }` |
 
-**Pure until the leaf.** Everything derived — a projection, a transposed slot, an element — is a pure stage: it follows a stream and has no state to read. A child observes it through its **own** view store, so own it where the child is built: a feature's `view(store:environment:)` does it for you, `ProjectionKeeper` in a body, `@OwnedStore` as a property. The parent keeps nothing for its children, and a child redraws only for what it reads.
+**Pure until the leaf.** Everything derived — a projection, a transposed slot, an element — is a pure stage: it follows a stream and has no state to read. A child observes it through its **own** view store, kept by the view that uses it: `@OwnedStore var viewStore` made from the stage (`store.viewStore()`) in that view's `init` — a feature's `view(store:environment:)` does it for you. The parent keeps nothing for its children, and a child redraws only for what it reads.
 
 ## Step 7 — Code outside SwiftUI
 
@@ -141,8 +141,8 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 | `'subscript(dynamicMember:)' is unavailable: a state collection is a position, not a collection …` | `ForEach` over a position | step 5 — `each(\.items)` (older SwiftRex said `requires that 'X' conform to 'IndivisibleTracking'`) |
 | `… on 'Optional' requires that 'X' conform to 'IndivisibleTracking'` | a non-leaf position passed as a value | step 5 — `.value` |
 | `value of type 'StoreProjection<…>' has no member 'transpose'` | core transpose is gone | step 6 |
-| `value of type 'ViewStore<…>' has no member 'focus'` | children are derived and owned | step 6 — `projection(scope)` / `transpose(scope)`, owned by the child |
-| `value of type 'StoreOptionalFocus<…>' has no member 'state'` / `'binding'` | a derived stage used as a view store | own it: `ProjectionKeeper { stage.viewStore() } content: { … }` or the child feature's view |
+| `value of type 'ViewStore<…>' has no member 'focus'` | children are derived and owned | step 6 — `projection(scope)` / `traverse(scope)`, owned by the child |
+| `value of type 'StoreOptionalFocus<…>' has no member 'state'` / `'binding'` | a derived stage used as a view store | hand it to a child that keeps `@OwnedStore var viewStore` made from it, or to the child feature's view |
 | `'state' is inaccessible due to 'private' protection level` | reading a `Store` | step 7 |
 
 ## Pitfalls — learned doing this
@@ -170,10 +170,10 @@ The SwiftRexNavGallery migration, in the order above:
 
 1. `@Feature(strategy: .observationSimple)` → `@Feature` (6 modules), `@BoundTo(…, strategy:)` → `@BoundTo(…)` (6 views).
 2. 26 `@available(iOS 17, …)` gates removed from views, routers and `Feature` conformances.
-3. `ViewStore<X.State, X.Action>` → `ViewStore<X.Action, X.State>` (4 container views by regex, 3 `ViewStore<AppState, AppAction>` by hand); four hand-written `view(store:environment:)` → `ProjectionKeeper { store.viewStore() } content: { … }`; the app root → `@OwnedStore` with `OwnedStore(wrappedValue: store.viewStore())`.
+3. `ViewStore<X.State, X.Action>` → `ViewStore<X.Action, X.State>` (4 container views by regex, 3 `ViewStore<AppState, AppAction>` by hand); four hand-written `view(store:environment:)` → a root view keeping `@OwnedStore` made from `store.viewStore()`; the app root → `@OwnedStore` with `OwnedStore(wrappedValue: store.viewStore())`.
 4. Twelve binding call sites → `binding(.state(…).action(…))`: six former `presence` (two of them the iOS / macOS branches of one cover) and six `binding(…, dispatch:)`.
 5. Five `ForEach(viewStore.state.xs)` → `each(\.xs)` with `.value` where the element is dispatched; one `.value` on a selection passed to a router.
-6. The router holds the app `ViewStore`; three `store.projection(…).transpose()` → `store.transpose(action:state:)`.
+6. The router holds the app `ViewStore`; three `store.projection(…).transpose()` → `store.traverse(action:state:)`.
 
 ## See Also
 

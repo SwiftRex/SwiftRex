@@ -51,14 +51,14 @@
         ///
         /// ```swift
         /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
-        ///     if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
+        ///     if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
         ///         EditorFeature.view(store: editor, environment: world.editorEnv)   // the feature's view owns it
         ///     }
         /// }
         /// ```
         ///
         /// SwiftUI keys the sheet on the value's `id`. Build the sheet's content from the view store
-        /// (`transpose(scope)`, owned by the child's view), which stays live and holds the last value while the sheet
+        /// (`traverse(scope)`, owned by the child's view), which stays live and holds the last value while the sheet
         /// animates out; the value passed to `content` is the one that opened it.
         public func sheet<Wrapped: Identifiable, Content: View>(
             item presentation: Binding<Presentation<Wrapped>>,

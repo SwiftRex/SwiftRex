@@ -217,7 +217,7 @@ public enum AppScopes {
 
 `AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the view store's `transpose()` (`store.transpose(.action(…).state(\.book))`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the view store's `transpose()` (`store.traverse(.action(…).state(\.book))`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
@@ -238,7 +238,7 @@ The **router** holds the app's *view store* and the world and resolves a route t
         // The optional `book` slice, focused with its action lane, transposes to `Optional<Store>` — build the
         // child only while it's present (a real app loads `state.book` when `.book(id)` is pushed); the empty
         // frame renders nothing. The router depends on the presence edge only, not on the book's contents.
-        if let child = store.transpose(.action(AppAction.prism.book).state(\.book)) {
+        if let child = store.traverse(.action(AppAction.prism.book).state(\.book)) {
             BookFeature.view(store: child, environment: .init())
         }
     }
@@ -278,7 +278,7 @@ struct BookView: View, Routable {
                 // `transpose()` inverts `Store<Presentation<Editor>>` into `Store<Editor>?` — live through
                 // both `presented` and `dismissing(last:)`, `nil` only once dismissed, so no flicker:
                 if let editor = router.store
-                    .transpose(.action(review: { AppAction.editor(.child($0)) }).state(\.editor)) {
+                    .traverse(.action(review: { AppAction.editor(.child($0)) }).state(\.editor)) {
                     EditorFeature.view(store: editor, environment: router.world.editorEnv)
                 }
             }

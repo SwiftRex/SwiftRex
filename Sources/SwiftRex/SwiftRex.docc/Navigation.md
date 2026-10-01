@@ -77,12 +77,12 @@ An optional-shaped destination is a store of an *optional* (`Child?`), but `Chil
 
 ```swift
 // Optional child slice — scope by key path, then transpose:
-if let child = store.transpose(.action(\.child).state(\.child)) {
+if let child = store.traverse(.action(\.child).state(\.child)) {
     Detail.view(store: child, environment: world.detailEnv)
 }
 
 // A lane no key path expresses (an affine `preview`, the top of a stack, an enum case):
-if let screen = store.transpose(action: { .detail($0) }, state: { $0.path.last?.detail }) {
+if let screen = store.traverse(action: { .detail($0) }, state: { $0.path.last?.detail }) {
     Detail.view(store: screen, environment: world.detailEnv)
 }
 ```
@@ -90,7 +90,7 @@ if let screen = store.transpose(action: { .detail($0) }, state: { $0.path.last?.
 For the ``Presentation`` shape, `transpose()` reads the live child through **both** `presented` and `dismissing(last:)`, going `nil` only once `dismissed` — the child store (and its view) stay alive and steady while SwiftUI animates the sheet out, so building a destination this way is flicker-free without any view-layer latch:
 
 ```swift
-if let editor = store.transpose(.action(\.editor.child).state(\.editor)) {   // state: Presentation<Editor.State>
+if let editor = store.traverse(.action(\.editor.child).state(\.editor)) {   // state: Presentation<Editor.State>
     Editor.view(store: editor, environment: world.editorEnv)
 }
 ```
@@ -99,7 +99,7 @@ A list iterates the collection with `each` — the list depends on the ids, each
 
 ```swift
 List(store.state.each(\.rows)) { row in
-    if let rowStore = store.transpose(.action(\.row).state(\.rows), element: row.id) {
+    if let rowStore = store.traverse(.action(\.row).state(\.rows), element: row.id) {
         Row.view(store: rowStore, environment: world.rowEnv)
     }
 }

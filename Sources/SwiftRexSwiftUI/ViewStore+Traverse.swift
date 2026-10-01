@@ -3,17 +3,20 @@
 #if canImport(SwiftUI) && canImport(Combine)
     import SwiftRex
 
-    // `transpose` — swap a store of an optional into an optional store: `F<T?>` into `F<T>?`. Deciding *whether* the
-    // value is there is a **read**, so it lives on the view store (the only store that reads), and the caller depends
-    // on the **presence edge only**, never on the child's contents. What comes back is a **pure stage** — a
-    // `StoreOptionalFocus` built on this view store's pure side — that holds its last present value while the child animates
-    // away. To observe it, own it: a feature's view (`Feature.view(store:)`), ``ProjectionKeeper`` in a body,
-    // ``OwnedStore`` as a property.
+    // `transpose()` swaps a store of an optional into an optional store: `F<T?>` into `F<T>?`. `traverse` is map then
+    // transpose — through a scope (or a closure lane), then swap. Deciding *whether* the value is there is a **read**,
+    // so both live on the view store (the only store that reads), and the caller depends on the **presence edge
+    // only**, never on the child's contents. What comes back is a **pure stage** — a `StoreOptionalFocus` built on
+    // this view store's pure side — that holds its last present value while the child animates away. To observe
+    // it, make its view store where a view keeps it: `@OwnedStore var viewStore = child.viewStore()`, or a feature's
+    // `view(store:environment:)`.
     //
-    //   • `T?`                 — present while `.some`.
-    //   • `Presentation<T>`    — present through **both** `presented` and `dismissing(last:)`, `nil` only once `dismissed`.
-    //   • a collection element — `transpose(scope, element: id)`: present while the element is in the collection.
-    //   • a closure lane       — `transpose(action:state:)`, for what no key path expresses.
+    //   • `T?`                 — `transpose()`: present while `.some`.
+    //   • `Presentation<T>`    — `transpose()`: present through **both** `presented` and `dismissing(last:)`.
+    //   • a scope's slot       — `traverse(scope)`, for a `T?` or `Presentation<T>` slot.
+    //   • a collection element — `traverse(scope, element: id)`: present while the element is in the collection.
+    //     For a loop over every element, `each(scope)`.
+    //   • a closure lane       — `traverse(action:state:)`, for what no key path expresses.
 
     extension ViewStore {
         // MARK: - This view store's own state
@@ -21,7 +24,7 @@
         /// Swap a view store of `T?` into a store of `T` — present while `.some`.
         ///
         /// ```swift
-        /// if let book = viewStore.transpose() { ProjectionKeeper { book.viewStore() } content: { BookView(viewStore: $0) } }
+        /// if let book = viewStore.transpose() { BookView(store: book) }   // BookView keeps @OwnedStore made from it
         /// ```
         public func transpose<Wrapped: Sendable>() -> StoreOptionalFocus<Action, Wrapped>? where State == Wrapped? {
             reader.read(\Wrapped?.observationIsPresent)
@@ -43,14 +46,14 @@
         /// The optional slot a scope reaches, as a store of its unwrapped value — present while the slot is `.some`.
         ///
         /// ```swift
-        /// if let detail = viewStore.transpose(.action(\.detail).state(\.detail)) {
+        /// if let detail = viewStore.traverse(.action(\.detail).state(\.detail)) {
         ///     DetailFeature.view(store: detail, environment: world.detailEnv)     // the feature's view owns it
         /// }
         /// ```
         ///
         /// A key-path state lane depends on the slot's presence edge alone; a closure lane on its presence, compared
         /// per call site (pass `id` when one call site transposes different lanes of the same types).
-        public func transpose<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol, Wrapped: Sendable>(
+        public func traverse<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol, Wrapped: Sendable>(
             _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
             id: AnyHashableSendable? = nil,
             fileID: String = #fileID,
@@ -74,12 +77,12 @@
         ///
         /// ```swift
         /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
-        ///     if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
+        ///     if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
         ///         EditorFeature.view(store: editor, environment: world.editorEnv)
         ///     }
         /// }
         /// ```
-        public func transpose<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol, Wrapped: Sendable>(
+        public func traverse<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol, Wrapped: Sendable>(
             _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
             id: AnyHashableSendable? = nil,
             fileID: String = #fileID,
@@ -106,8 +109,8 @@
         ///
         /// ```swift
         /// ForEach(viewStore.state.each(\.rows)) { row in
-        ///     if let rowStore = viewStore.transpose(.action(\.row).state(\.rows), element: row.id) {
-        ///         RowFeature.view(store: rowStore, environment: world.rowEnv)      // or ProjectionKeeper { rowStore.viewStore() } …
+        ///     if let rowStore = viewStore.traverse(.action(\.row).state(\.rows), element: row.id) {
+        ///         RowFeature.view(store: rowStore, environment: world.rowEnv)      // or RowView(store: rowStore)
         ///     }
         /// }
         /// ```
@@ -115,7 +118,7 @@
         /// The caller depends on the element's **presence** only. The row store is a pure `StoreOptionalFocus` over a
         /// `StoreCollectionFocus`: whoever owns it follows the element through its own hint (O(distance moved)) and holds
         /// the last value once the element is removed.
-        public func transpose<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol>(
+        public func traverse<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol>(
             _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
             element id: A.ID,
             fileID: String = #fileID,
@@ -137,6 +140,43 @@
             return StoreOptionalFocus(projection(scope, element: id), present: current)
         }
 
+        // MARK: - Every element of a collection
+
+        /// One store per element of a collection, for a `ForEach` — each a ``StoreOptionalFocus`` over that
+        /// element (holding its last value while the row animates away), identified by the element's id.
+        ///
+        /// ```swift
+        /// ForEach(viewStore.each(.action(\.row).state(\.rows))) { row in
+        ///     RowView(store: row)          // RowView: @OwnedStore var viewStore = store.viewStore()
+        /// }
+        /// ```
+        ///
+        /// The list depends on the **ids** only (in order): a change inside an element redraws that element's row,
+        /// never the list. Every item is a pure stage — it costs nothing until a row makes its view store.
+        public func each<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol>(
+            _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
+            fileID: String = #fileID,
+            line: UInt = #line,
+            column: UInt = #column
+        ) -> [IdentifiedStore<A.ID, StoreOptionalFocus<A.Local, S.Local>>]
+        where A.Global == Action, S.Global == State, A.ID == S.ID {
+            let lane = scope.state
+            let ids = read(
+                derived: { lane.ids(lane.container.get($0)) },
+                types: [ObjectIdentifier(A.Local.self), ObjectIdentifier(S.Local.self)],
+                id: nil,
+                site: "\(fileID):\(line):\(column)"
+            )
+            let whole = reader.peekWhole()
+            let hint = ElementHint() // walking the ids in order: element `offset` is expected at `offset`
+            return ids.enumerated().compactMap { offset, id in
+                hint.offset = offset
+                return lane.find(id, in: whole, hint: hint).map {
+                    IdentifiedStore(id: id, store: StoreOptionalFocus(projection(scope, element: id), present: $0))
+                }
+            }
+        }
+
         // MARK: - A closure lane
 
         /// Projects through a **closure** lane and swaps `Store<T?>` into `Store<T>?` — depending only on the
@@ -144,7 +184,7 @@
         /// top of a stack, an enum case), a `Relay.Scope`'s `state.preview` in a router:
         ///
         /// ```swift
-        /// if let screen = viewStore.transpose(action: scope.action.review, state: scope.state.preview) {
+        /// if let screen = viewStore.traverse(action: scope.action.review, state: scope.state.preview) {
         ///     Feature.view(store: screen, environment: scope.environment.narrow(world))
         /// }
         /// ```
@@ -152,7 +192,7 @@
         /// The presence dependency is identified by the call site plus the lane's types (see
         /// ``read(derived:id:fileID:line:column:)``); pass `id` when one call site transposes different lanes of
         /// the same types.
-        public func transpose<LocalAction: Sendable, Wrapped: Sendable>(
+        public func traverse<LocalAction: Sendable, Wrapped: Sendable>(
             action: @escaping @Sendable (LocalAction) -> Action,
             state: @escaping @Sendable (State) -> Wrapped?,
             id: AnyHashableSendable? = nil,

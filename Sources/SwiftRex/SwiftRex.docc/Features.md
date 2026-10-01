@@ -203,7 +203,7 @@ For lists, `each` gives one position per `Identifiable` element — the list dep
 List(viewStore.state.each(\.songs)) { song in SongRow(song: song) }
 ```
 
-A subview that needs to send actions or build bindings gets its **own** view store: derive a pure stage (`viewStore.projection(.action(\.transport).state(\.transport))`) and own it where the subview is built (`ProjectionKeeper { … } content: { … }`, or a child feature's view).
+A subview that needs to send actions or build bindings gets its **own** view store: derive a pure stage (`viewStore.projection(.action(\.transport).state(\.transport))`) and hand it to the subview, which keeps `.viewStore()` of it with `@OwnedStore` (a child feature's view does it for you).
 
 ### Composing projection, buffer and the view store
 
@@ -217,7 +217,7 @@ Three stages, one job each — each follows the one below through its `stateStre
 
 The view store already *is* the buffer after the map — it only signals what changed — so the one placement decision left is **before** the map: `store.buffer().projection(…)` skips the map entirely when the input didn't change. `@Feature`'s generated view does exactly that when the feature's `State` is `Equatable` (`buffer → projection → view store`).
 
-A projection from a view store is a plain `StoreProjection` over the view store's pure upstream (never its snapshot); to observe it, make its `.viewStore()` and keep it (`@OwnedStore`, `ProjectionKeeper`).
+A projection from a view store is a plain `StoreProjection` over the view store's pure upstream (never its snapshot); to observe it, hand it to the view that uses it, which keeps `.viewStore()` of it with `@OwnedStore`.
 
 ### Owners, receivers and strategies
 
@@ -349,7 +349,7 @@ Library.view(
 That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (`@OwnedStore var root = store.viewStore()`) and transposes the slice, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?` — a pure stage the child feature's view owns. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
 
 ```swift
-if let hero = root.transpose(.action(\.heroDetail).state(\.heroDetail)) {
+if let hero = root.traverse(.action(\.heroDetail).state(\.heroDetail)) {
     HeroDetails.view(store: hero, environment: appEnv.heroDetail)
 }
 ```

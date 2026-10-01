@@ -81,7 +81,7 @@ import Testing
 /// ## StoreType conformance
 ///
 /// `TestStore` conforms to ``StoreType`` so it can be used as a backing store for
-/// ``StoreProjection`` — and, owned by `@OwnedStore` / `ProjectionKeeper`, behind a live SwiftUI view — so a feature's
+/// ``StoreProjection`` — and, kept by `@OwnedStore`, behind a live SwiftUI view — so a feature's
 /// real view can run against the test store (e.g. for snapshot tests).
 @MainActor
 public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable>: StoreType, @unchecked Sendable {

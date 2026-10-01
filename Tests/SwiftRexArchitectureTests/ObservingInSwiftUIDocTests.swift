@@ -90,8 +90,8 @@
                     .navigationDestination(for: Route.self) { route in destination(route) }
             }
             .sheet(isPresented: viewStore.binding(.state(\.settings).action(\.closeSettings))) {
-                if let settings = viewStore.transpose(.action(\.settings).state(\.settings)) {
-                    ProjectionKeeper { settings.viewStore() } content: { SettingsView(viewStore: $0) }
+                if let settings = viewStore.traverse(.action(\.settings).state(\.settings)) {
+                    SettingsView(store: settings)
                 }
             }
         }
@@ -99,8 +99,8 @@
         @ViewBuilder func destination(_ route: Route) -> some View {
             switch route {
             case .detail:
-                if let detail = viewStore.transpose(.action(\.detail).state(\.detail)) {
-                    ProjectionKeeper { detail.viewStore() } content: { DetailView(viewStore: $0) }
+                if let detail = viewStore.traverse(.action(\.detail).state(\.detail)) {
+                    DetailView(store: detail)
                 }
             }
         }
@@ -163,12 +163,14 @@
     }
 
     private struct SettingsView: View {
-        let viewStore: ViewStore<SettingsAction, Settings>
+        @OwnedStore var viewStore: ViewStore<SettingsAction, Settings>
+        init(store: some StoreType<SettingsAction, Settings>) { _viewStore = OwnedStore(wrappedValue: store.viewStore()) }
         var body: some View { Button("Dark: \(viewStore.state.darkMode)") { viewStore.dispatch(.toggleDark) } }
     }
 
     private struct DetailView: View {
-        let viewStore: ViewStore<DetailAction, Detail>
+        @OwnedStore var viewStore: ViewStore<DetailAction, Detail>
+        init(store: some StoreType<DetailAction, Detail>) { _viewStore = OwnedStore(wrappedValue: store.viewStore()) }
         var body: some View { Text(viewStore.state.text) }
     }
 

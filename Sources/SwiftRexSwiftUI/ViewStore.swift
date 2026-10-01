@@ -23,14 +23,14 @@
     /// ```
     ///
     /// **Who owns it.** A view store keeps a snapshot and the record of what its views read, so it is built once
-    /// and owned. You make it explicitly — `store.viewStore()` — and keep it in ``OwnedStore`` (a property), in
-    /// ``ProjectionKeeper`` (inside a body) or in `@Feature`'s generated view. Views below receive it as a plain `let` — it carries its own
+    /// and owned. You make it explicitly — `store.viewStore()` — and keep it with ``OwnedStore`` in the view that uses
+    /// it (`@Feature`'s generated view does it for you). Views below receive it as a plain `let` — it carries its own
     /// Combine subscription, so no property wrapper is needed under either signal.
     ///
     /// **The leaf.** Composition is pure — `StoreProjection`, `StoreBuffer`,
     /// `StoreCollectionFocus`, `StoreOptionalFocus` are stages that follow a stream and keep nothing a parent
     /// holds. A view store is where that ends: it owns a snapshot (a cache) and the observation work, which are
-    /// effects. Deriving a child from a view store — `viewStore.projection(…)`, or `transpose(…)` for an optional or
+    /// effects. Deriving a child from a view store — `viewStore.projection(…)`, or `traverse(…)` for an optional or
     /// an element — gives a pure stage built on the view store's **pure side** (its upstream), never on its snapshot;
     /// to observe that child, make its own view store (`.viewStore()`) and keep it.
     ///
@@ -41,8 +41,9 @@
     public struct ViewStore<Action: Sendable, State: Sendable>: StoreType, DynamicProperty {
         let reader: any TrackingReader<State>
         private let send: @MainActor (Action, ActionSource) -> Void
-        /// The state over time — the **pure** side of this view store: its upstream's stream, untouched by the
-        /// snapshot or observation. Stores derived from a view store follow this. Views read ``state`` instead.
+        /// The state over time — the **pure** side of this view store: every value its upstream delivers, forwarded
+        /// from the one subscription this view store keeps (so children don't re-run the parent's chain), never gated
+        /// by what its views read. Stores derived from a view store follow this. Views read ``state`` instead.
         public let stateStream: StateStream<State>
         @ObservedObject private var signal: ViewStoreSignal
 
@@ -58,7 +59,7 @@
         }
 
         init(engine: ViewStoreEngine<Action, State>) {
-            self.init(reader: RootReader(engine: engine), send: engine.dispatch, stateStream: engine.upstreamStream)
+            self.init(reader: RootReader(engine: engine), send: engine.dispatch, stateStream: engine.forwardedStream)
         }
 
         init(_ upstream: some StoreType<Action, State>, strategy: ViewStrategy) {
@@ -134,12 +135,11 @@
         /// the record of what views read, and the signal to SwiftUI through `strategy` (Observation on iOS 17+,
         /// Combine below, by default).
         ///
-        /// Whoever holds the result owns it, so make it where it's kept — ``OwnedStore``, ``ProjectionKeeper``, a
-        /// feature's view — never in a `body` on its own (a new one per render would forget what the views read):
+        /// Whoever holds the result owns it, so make it where it's kept — ``OwnedStore`` in the view that uses it, a
+        /// feature's view — never in a `body` (a new one per render would forget what the views read):
         ///
         /// ```swift
         /// @OwnedStore var viewStore = store.viewStore()
-        /// ProjectionKeeper { store.projection(\.detail).viewStore() } content: { DetailView(viewStore: $0) }
         /// ```
         ///
         /// On a view store it makes a **new** one, following the same pure upstream (never the first one's snapshot).
@@ -162,8 +162,8 @@
     /// }
     /// ```
     ///
-    /// The signal is chosen where the view store is made: `store.viewStore(.combine)`. Inside a body, where no
-    /// property can be declared, use ``ProjectionKeeper``.
+    /// The signal is chosen where the view store is made: `store.viewStore(.combine)`. In a body, hand a stage to a
+    /// child view and let the child keep its view store this way — a stage is a pure value, cheap to rebuild.
     @MainActor @propertyWrapper
     public struct OwnedStore<Action: Sendable, State: Sendable>: DynamicProperty {
         @StateObject private var holder: OwnedViewStore<Action, State>

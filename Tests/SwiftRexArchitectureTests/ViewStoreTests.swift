@@ -431,7 +431,7 @@
             let store = makeStore(Screen(detail: Transport(position: 1)))
             let parent = store.viewStore(.observation)
             var slot: StoreOptionalFocus<TransportAction, Transport>?
-            let edge = track { slot = parent.transpose(.action(review: ScreenAction.transport).state(\.detail)) }
+            let edge = track { slot = parent.traverse(.action(review: ScreenAction.transport).state(\.detail)) }
             let child = slot?.viewStore(.observation)                   // the owner — here, the test
             #expect(child?.testSignal !== parent.testSignal)
             let position = track { _ = child?.state.position }
@@ -443,13 +443,13 @@
             #expect(position.value == 1)
             store.dispatch(.mutate { $0.detail = nil })
             #expect(edge.value == 1)
-            #expect(parent.transpose(.action(review: ScreenAction.transport).state(\.detail)) == nil)
+            #expect(parent.traverse(.action(review: ScreenAction.transport).state(\.detail)) == nil)
             #expect(child?.state.position == 7)                        // holds the last present value
         }
 
         @Test func aTransposedStageHoldsTheLastPresentValue() {
             let store = makeStore(Screen(detail: Transport(position: 1)))
-            let child = store.viewStore(.combine).transpose(.action(review: ScreenAction.transport).state(\.detail))
+            let child = store.viewStore(.combine).traverse(.action(review: ScreenAction.transport).state(\.detail))
             var shown: [Double] = []
             let token = child?.stateStream.observe { shown.append($0.position) }
             store.dispatch(.mutate { $0.detail?.position = 7 })
@@ -463,14 +463,14 @@
             let store = makePresentationStore(.presented(Transport(position: 4)))
             let parent = store.viewStore()
             var slot: StoreOptionalFocus<PresentationAction<TransportAction>, Transport>?
-            let edge = track { slot = parent.transpose(.action(review: PAction.editor).state(\.editor)) }
+            let edge = track { slot = parent.traverse(.action(review: PAction.editor).state(\.editor)) }
             let child = slot?.viewStore()
             store.dispatch(.editor(.dismiss))                           // presented → dismissing: still present
             #expect(edge.value == 0)
             #expect(child?.state.position == 4)
             store.dispatch(.editor(.dismissed))                         // the animation ended → dismissed
             #expect(edge.value == 1)
-            #expect(parent.transpose(.action(review: PAction.editor).state(\.editor)) == nil)
+            #expect(parent.traverse(.action(review: PAction.editor).state(\.editor)) == nil)
             #expect(child?.state.position == 4)
         }
     }
@@ -597,29 +597,6 @@
         }
     }
 
-    // MARK: - Host
-
-    @Suite("ProjectionKeeper")
-    @MainActor
-    struct ProjectionKeeperTests {
-        @Test func boxBuildsOncePerId() {
-            let store = makeStore()
-            let makes = Counter()
-            let box = ProjectionKeeper<ScreenAction, Screen, EmptyView>.Box()
-            let make = { () -> ViewStore<ScreenAction, Screen> in
-                makes.bump()
-                return store.viewStore(.combine)
-            }
-            let first = box.viewStore(id: nil, make: make)
-            let again = box.viewStore(id: nil, make: make)
-            #expect(first.testSignal === again.testSignal)
-            #expect(makes.value == 1)
-            let other = box.viewStore(id: 1, make: make)
-            #expect(other.testSignal !== first.testSignal)
-            #expect(makes.value == 2)
-        }
-    }
-
     // MARK: - Making a view store is explicit
 
     @Suite("ViewStore — .viewStore()")
@@ -644,7 +621,7 @@
             // A router hands a feature's view a transposed child of its view store: a pure stage, made into its own
             // view store — every view store owns its snapshot.
             let parent = makeStore(Screen(detail: Transport(position: 1))).viewStore(.combine)
-            let child = parent.transpose(.action(review: ScreenAction.transport).state(\.detail))?.viewStore(.combine)
+            let child = parent.traverse(.action(review: ScreenAction.transport).state(\.detail))?.viewStore(.combine)
             #expect(child?.testSignal !== parent.testSignal)
             #expect(child?.state.position == 1)
         }
