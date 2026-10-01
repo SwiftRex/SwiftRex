@@ -77,6 +77,10 @@ package final class EffectEngine<Action: Sendable> {
     /// Keys of channels currently open. Exhaustive test mode fails if any remain at end-of-test.
     package var openChannelKeys: Set<AnyHashableSendable> { Set(channelSinks.keys) }
 
+    /// Keys a supervisor currently keeps (the last reconciled set) — channels whose lifetime is the state's, not the
+    /// test's: exhaustive test mode doesn't count them as left open.
+    package var supervisedKeys: Set<AnyHashableSendable> { Set(reconciledStates.keys) }
+
     // MARK: - Scheduling
 
     /// Distinct key type for anonymous (id-less) effects, so a `UInt64` counter value can never

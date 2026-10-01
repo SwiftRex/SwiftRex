@@ -68,8 +68,10 @@ core and every non-Apple product build on Linux.
   `StackNavigation`, `ModalNavigation`, `SelectionNavigation`.
 
 ### Testing (`SwiftRex.Testing`)
-- `TestStore`: exhaustive `dispatch(_:assert:)` / `receive`, effects run through the production effect engine
-  (scheduling and channels included), an injectable test clock.
+- `TestStore`: exhaustive `dispatch(_:assert:)` / `receive(\.case)`, effects run through the production effect
+  engine (scheduling and channels included), supervision reconciled on every state change as in the `Store`, an
+  injectable test clock. It is a `StoreType`: project it, or make `testStore.viewStore()` and run a real view
+  against it.
 
 ### Packaging
 - Products renamed to `SwiftRex`, `SwiftRex.Operators`, `SwiftRex.SwiftConcurrency`, `SwiftRex.Combine`,

@@ -16,8 +16,11 @@ import Testing
 ///   ``receivedActions``.
 /// - ``receive(_:sourceLocation:assert:)-9ofio`` (with associated value) or
 ///   ``receive(_:sourceLocation:assert:)-6yjj4`` (without associated value) validates that
-///   the next received action matches a ``Prism``, dispatches it through the behavior, and
-///   validates the resulting state.
+///   the next received action matches a `\.case` key path (or a ``Prism``), dispatches it through the behavior,
+///   and validates the resulting state.
+/// - Supervision runs as in the production `Store`: the channels ``Behavior/supervise(_:)`` keeps for the initial
+///   state open at init, and every state change reconciles them — opened, recreated, piped or cancelled. Their
+///   output lands in ``receivedActions`` like any effect's (drain with ``runEffects()``, then `receive`).
 ///
 /// ## State assertions
 ///
@@ -34,18 +37,18 @@ import Testing
 /// store.dispatch(.setPage(3)) { $0.currentPage = 3 }
 ///
 /// // receive with associated value — value is extracted from the action by the prism
-/// store.receive(AppAction.prism.didLoad) { items, state in
+/// store.receive(\.didLoad) { items, state in
 ///     state.isLoading = false
 ///     state.items = items
 /// }
 ///
 /// // receive without associated value (Void prism)
-/// store.receive(AppAction.prism.didReset) { $0 = .initial }
+/// store.receive(\.didReset) { $0 = .initial }
 /// ```
 ///
-/// ## Action matching via Prism
+/// ## Action matching via a case key path
 ///
-/// `receive` validates the received action by applying a ``Prism``. If `preview` returns `nil`
+/// `receive` validates the received action with a `\.case` key path (`@Prisms` actions) or a ``Prism``. If `preview` returns `nil`
 /// (different action case), a failure is recorded but the action is still dispatched so
 /// subsequent assertions remain meaningful.
 ///
@@ -65,7 +68,8 @@ import Testing
 ///    produced must be accounted for.
 /// 3. **Open channels** — a pipeable `Effect.channel` left open at deallocation records a
 ///    failure. Long-lived channels don't end on their own, so each must be torn down with
-///    `cancelInFlight(id:)` before the test ends.
+///    `cancelInFlight(id:)` before the test ends. A channel a supervisor keeps is the state's to close, not
+///    the test's: it doesn't count.
 ///
 /// Because `runEffects()` schedules through the same ``EffectScheduling`` engine the production
 /// `Store` uses, the action set you must exhaustively account for is exactly what a live Store
@@ -195,6 +199,8 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         self.environment = environment
         _exhaustive = exhaustive
         resolvedClock = clock(environment).eraseToAnyClock()
+        // As the Store: activate the state-driven channels implied by the initial state.
+        if behavior.supervises { reconcileSupervised() }
     }
 
     // MARK: - Deinit check
@@ -311,7 +317,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
         await drainToQuiescence()
         _receivedCount = receivedActions.count
-        _openChannelCount = engine.openChannelKeys.count
+        _openChannelCount = engine.openChannelKeys.subtracting(engine.supervisedKeys).count
     }
 
     /// Dequeues the next action from ``receivedActions``, validates it via `prism`, dispatches
@@ -322,7 +328,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// state should become:
     ///
     /// ```swift
-    /// store.receive(AppAction.prism.didLoad) { items, state in
+    /// store.receive(\.didLoad) { items, state in
     ///     state.isLoading = false
     ///     state.items = items
     /// }
@@ -382,7 +388,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// Use this overload for action cases that carry no associated value:
     ///
     /// ```swift
-    /// store.receive(AppAction.prism.didReset) { $0 = .initial }
+    /// store.receive(\.didReset) { $0 = .initial }
     /// ```
     ///
     /// - Parameters:
@@ -401,6 +407,26 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
+    /// ``receive(_:sourceLocation:assert:)-9ofio`` through a `\.case` key path: `receive(\.loaded) { value, state in … }`.
+    @discardableResult
+    public func receive<Value>(
+        _ keyPath: PrismKeyPath<Action, Value>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedStateChange: (Value, inout State) -> Void
+    ) -> Action? where Action: Prismatic {
+        receive(Prism(keyPath), sourceLocation: sourceLocation, assert: expectedStateChange)
+    }
+
+    /// ``receive(_:sourceLocation:assert:)-6yjj4`` through a `\.case` key path to a payload-less case.
+    @discardableResult
+    public func receive(
+        _ keyPath: PrismKeyPath<Action, Void>,
+        sourceLocation: SourceLocation = #_sourceLocation,
+        assert expectedStateChange: (inout State) -> Void
+    ) -> Action? where Action: Prismatic {
+        receive(Prism(keyPath), sourceLocation: sourceLocation, assert: expectedStateChange)
+    }
+
     // MARK: - Private
 
     private func run(_ dispatched: DispatchedAction<Action>) {
@@ -417,6 +443,8 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
             mutation.runEndoMut(&state)
             let current = state
             stateObservers.values.forEach { $0(current) }
+            // As the Store: reconcile the supervised channels after every state change.
+            if behavior.supervises { reconcileSupervised() }
         }
         let postCtx = PostReducerContext<State, Environment>(
             environment: environment,
@@ -427,6 +455,13 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
             pendingEffects.append(effect)
         }
         _pendingCount = pendingEffects.count
+    }
+
+    /// Reconciles the engine against `behavior.supervisor(state)` — the channels the current state keeps, opened,
+    /// recreated or cancelled exactly as the production `Store` does. Their output lands in ``receivedActions``.
+    private func reconcileSupervised() {
+        guard let supervisor = behavior.supervisor else { return }
+        engine.reconcile(supervisor(state).runReader(environment).map { $0.reconcileEntry })
     }
 
     private func assertState(

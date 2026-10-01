@@ -540,7 +540,7 @@ Each destination is built from a pure stage (a `projection`, or `traverse` for a
 
     store.dispatch(.onAppear) { _ in } // assert state; an effect is queued
     await store.runEffects()
-    store.receive(Library.Action.prism.loaded) { loaded, state in
+    store.receive(\.loaded) { loaded, state in
         state.books = loaded // describe the expected post-action state
     }
 }

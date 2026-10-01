@@ -371,7 +371,7 @@ A feature's `behavior()` is a pure value, so `TestStore` from `SwiftRex.Testing`
 
     store.dispatch(.onAppear) { $0.isLoading = true }
     await store.runEffects()
-    store.receive(Library.Action.prism.loaded) { loaded, state in
+    store.receive(\.loaded) { loaded, state in
         state.books = loaded
         state.isLoading = false
     }
