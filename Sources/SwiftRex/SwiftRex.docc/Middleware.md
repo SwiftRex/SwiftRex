@@ -77,7 +77,7 @@ Every lift carries **both** effect axes — including `supervise`: a lifted midd
 
 ### Becoming a Behavior
 
-``asBehavior`` lifts a `Middleware` into a ``Behavior`` whose state mutation is always ``ReducerOutcome/unchanged`` — the bridge for combining pure effects with reducers under one type. Its `supervise` axis carries through unchanged.
+``asBehavior()`` lifts a `Middleware` into a ``Behavior`` whose state mutation is always ``ReducerOutcome/unchanged`` — the bridge for combining pure effects with reducers under one type. Its `supervise` axis carries through unchanged.
 
 ## Topics
 
@@ -102,7 +102,7 @@ Every lift carries **both** effect axes — including `supervise`: a lifted midd
 
 ### Bridging
 
-- ``asBehavior``
+- ``asBehavior()``
 
 ## See Also
 

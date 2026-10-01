@@ -27,7 +27,7 @@ Behavior.react { action, _ in
 }
 ```
 
-You can also pair the reducer and middleware axes with `Behavior(reducer:middleware:)`; ``Reducer/asBehavior()`` and ``Middleware/asBehavior`` lift each half on its own (a `Middleware`'s own `supervise` axis carries through).
+You can also pair the reducer and middleware axes with `Behavior(reducer:middleware:)`; ``Reducer/asBehavior()`` and ``Middleware/asBehavior()`` lift each half on its own (a `Middleware`'s own `supervise` axis carries through).
 
 ### The algebra — the free monoid `[Consequence]`
 
