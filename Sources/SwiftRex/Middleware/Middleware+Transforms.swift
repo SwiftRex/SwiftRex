@@ -131,25 +131,6 @@ extension Middleware {
         )
     }
 
-    /// Lifts this middleware over an **optional** sub-state — the 0-or-1 sibling of
-    /// ``liftCollection(_:)``/``liftEach(_:)`` (0-or-n).
-    ///
-    /// The middleware is skipped entirely while the optional is `nil`, and runs focused on the
-    /// unwrapped value while it is `.some` — the shape presentation uses for a child shown only
-    /// while its state exists.
-    ///
-    /// ```swift
-    /// let lifted = dayMiddleware.liftOptional(\AppState.currentDay) // currentDay: DayDetail.State?
-    /// ```
-    ///
-    /// - Parameter optional: A `WritableKeyPath<GlobalState, State?>` to the optional sub-state.
-    /// - Returns: A `Middleware<Action, GlobalState, Environment>` skipped entirely while absent.
-    public func liftOptional<GlobalState: Sendable>(
-        _ optional: WritableKeyPath<GlobalState, State?>
-    ) -> Middleware<Action, GlobalState, Environment> {
-        liftOptional(Relay.Scope(action: Relay.Identity(), state: Relay.StateAxis.Writes(optional), environment: Relay.Identity()))
-    }
-
     /// Lifts the environment axis of this middleware using a projection closure, embedding it
     /// in a wider global environment.
     ///

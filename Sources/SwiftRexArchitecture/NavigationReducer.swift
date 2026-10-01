@@ -2,13 +2,15 @@
 
 #if canImport(Observation) && canImport(SwiftUI)
     import CoreFP
+    import FPMacros
     import SwiftRex
 
     // MARK: - Navigation action vocabulary
 
     /// The standard operations on a **stack** (`[Route]`) navigation slice. Embed one case of this in
     /// your feature's `Action` (e.g. `case nav(StackNavigation<AppRoute>)`) and reduce it with
-    /// ``Behavior/navigationStack(_:action:allow:)``.
+    /// ``Behavior/navigationStack(_:action:allow:)``. `@Prisms`, so `\.nav.setPath` reaches a case.
+    @Prisms
     public enum StackNavigation<Route: Hashable & Sendable>: Sendable {
         case push(Route)
         case pop
@@ -20,6 +22,7 @@
 
     /// The standard operations on a **modal / optional** (`Item?`) navigation slice — present sets the
     /// slice to `.some`, dismiss clears it. Reduce with ``Behavior/navigationItem(_:action:allow:)``.
+    @Prisms
     public enum ModalNavigation<Item: Sendable>: Sendable {
         case present(Item)
         case dismiss
@@ -27,9 +30,14 @@
 
     /// The operation on a **selection** (1-of-N) navigation slice. Reduce with
     /// ``Behavior/navigationSelection(_:action:allow:)``.
+    @Prisms
     public enum SelectionNavigation<Selection: Sendable>: Sendable {
         case select(Selection)
     }
+
+    extension StackNavigation: Equatable {}
+    extension ModalNavigation: Equatable where Item: Equatable {}
+    extension SelectionNavigation: Equatable where Selection: Equatable {}
 
     // MARK: - Navigation reducers
 

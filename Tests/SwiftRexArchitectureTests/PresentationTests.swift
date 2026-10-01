@@ -69,7 +69,9 @@ struct LiftPresentationTests {
             preview: { if case let .detail(inner) = $0 { inner } else { nil } },
             review: GlobalAct.detail
         )
-        let behavior = child.liftPresentation(action: detailPrism, state: \GlobalSt.detail, environment: { (_: Void) in () })
+        let behavior: Behavior<GlobalAct, GlobalSt, Void> = child.liftPresentation(
+            .action(detailPrism).state(\GlobalSt.detail).environment { (env: Void) in env }
+        )
         return Store(initial: GlobalSt(detail: .presented(ChildState(n: 5))), behavior: behavior, environment: ())
     }
 

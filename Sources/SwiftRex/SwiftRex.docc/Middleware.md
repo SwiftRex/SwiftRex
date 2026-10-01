@@ -57,11 +57,10 @@ The state is read lazily — only when a subscriber attaches — so it always re
 A middleware written at *local* types is lifted to your app's *global* types before composing, each lift naming its axes through a ``Relay/Scope`` leading-dot builder. A middleware only **reads** state — it never mutates — so the `.state` lane is a plain focus, not a write:
 
 - ``lift(_:)`` — all three axes in one scope: `.action` re-indexes, `.state` reads the slice, `.environment` narrows the world.
-- `liftOptional` — the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with action and environment left absent. While the focus is `nil` the middleware is skipped entirely (no effect produced); while present it reads the **unwrapped** value. A key-path spelling is sugar for the same call:
+- `liftOptional` — the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with action and environment left absent. While the focus is `nil` the middleware is skipped entirely (no effect produced); while present it reads the **unwrapped** value:
 
 ```swift
 dayMiddleware.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
-dayMiddleware.liftOptional(\AppState.currentDay) // key-path sugar
 ```
 
 - ``liftCollection(_:)`` — route an addressed global action to **one** element the state lane locates (`.state(\.rows)`, `.state(\.rows, id: \.slug)`, `.state(indexed: \.rows)`, `.state(dictionary: \.configs)`), observing that element's **unwrapped** state:
@@ -100,8 +99,6 @@ Every lift carries **both** effect axes — including `supervise`: a lifted midd
 - ``liftAction(_:)``
 - ``liftState(_:)``
 - ``liftEnvironment(_:)``
-- ``liftCollection(action:embed:stateContainer:elements:)``
-- ``liftEach(action:embed:each:stateContainer:)``
 
 ### Bridging
 

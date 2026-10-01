@@ -135,6 +135,28 @@ extension Relay.Scope where
         .init(action: .init(), state: .init(AffineTraversal(preview: preview, set: set)), environment: .init())
     }
 
+    /// Start a declared scope from an enum case of the state (`\.loaded`) → ``Relay/StateAxis/Writes``.
+    @_disfavoredOverload // `\.self` and plain key paths resolve to the key-path entries
+    public static func state<LS>(
+        _ keyPath: PrismKeyPath<State, LS>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Writes<State, LS>, Environment, EnvironmentStrategy> {
+        .init(action: .init(), state: .init(CoreFP.Prism(keyPath)), environment: .init())
+    }
+
+    /// Start a declared scope from a state `Prism` (an enum case) → ``Relay/StateAxis/Writes``.
+    public static func state<LS>(
+        _ prism: CoreFP.Prism<State, LS>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Writes<State, LS>, Environment, EnvironmentStrategy> {
+        .init(action: .init(), state: .init(prism), environment: .init())
+    }
+
+    /// Start a declared scope from a state `AffineTraversal` → ``Relay/StateAxis/Writes``.
+    public static func state<LS>(
+        _ affine: AffineTraversal<State, LS>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Writes<State, LS>, Environment, EnvironmentStrategy> {
+        .init(action: .init(), state: .init(affine), environment: .init())
+    }
+
     /// Start a declared scope from a narrowing environment closure.
     public static func environment<LE>(
         _ narrow: @escaping @Sendable (Environment) -> LE
@@ -308,6 +330,31 @@ extension Relay.Scope {
     where A.Global == Action, E.Global == Environment {
         .init(action: .init(), state: .init(AffineTraversal(preview: preview, set: set)), environment: .init())
     }
+
+    /// Start a scope from an enum case of the state (`\.loaded`) → ``Relay/StateAxis/Writes``.
+    @_disfavoredOverload // `\.self` and plain key paths resolve to the key-path entries
+    public static func state<A: Relay.ActionAxis.Strategy & Relay.AxisDefault, LS, E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault>(
+        _ keyPath: PrismKeyPath<State, LS>
+    ) -> Relay.Scope<Action, A, State, Relay.StateAxis.Writes<State, LS>, Environment, E>
+    where A.Global == Action, E.Global == Environment {
+        .init(action: .init(), state: .init(CoreFP.Prism(keyPath)), environment: .init())
+    }
+
+    /// Start a scope from a state `Prism` (an enum case) → ``Relay/StateAxis/Writes``.
+    public static func state<A: Relay.ActionAxis.Strategy & Relay.AxisDefault, LS, E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault>(
+        _ prism: CoreFP.Prism<State, LS>
+    ) -> Relay.Scope<Action, A, State, Relay.StateAxis.Writes<State, LS>, Environment, E>
+    where A.Global == Action, E.Global == Environment {
+        .init(action: .init(), state: .init(prism), environment: .init())
+    }
+
+    /// Start a scope from a state `AffineTraversal` → ``Relay/StateAxis/Writes``.
+    public static func state<A: Relay.ActionAxis.Strategy & Relay.AxisDefault, LS, E: Relay.EnvironmentAxis.Strategy & Relay.AxisDefault>(
+        _ affine: AffineTraversal<State, LS>
+    ) -> Relay.Scope<Action, A, State, Relay.StateAxis.Writes<State, LS>, Environment, E>
+    where A.Global == Action, E.Global == Environment {
+        .init(action: .init(), state: .init(affine), environment: .init())
+    }
 }
 
 // MARK: - State axis — instance refiners (only where the state axis is still `Identity`)
@@ -355,6 +402,28 @@ extension Relay.Scope where StateStrategy == Relay.Identity<State> {
         set: @escaping @Sendable (State, LS) -> State
     ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Writes<State, LS>, Environment, EnvironmentStrategy> {
         .init(action: action, state: .init(AffineTraversal(preview: preview, set: set)), environment: environment)
+    }
+
+    /// Replace the pass-through state axis with an enum case of the state (`\.loaded`).
+    @_disfavoredOverload // `\.self` and plain key paths resolve to the key-path entries
+    public func state<LS>(
+        _ keyPath: PrismKeyPath<State, LS>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Writes<State, LS>, Environment, EnvironmentStrategy> {
+        .init(action: action, state: .init(CoreFP.Prism(keyPath)), environment: environment)
+    }
+
+    /// Replace the pass-through state axis with a state `Prism` (an enum case).
+    public func state<LS>(
+        _ prism: CoreFP.Prism<State, LS>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Writes<State, LS>, Environment, EnvironmentStrategy> {
+        .init(action: action, state: .init(prism), environment: environment)
+    }
+
+    /// Replace the pass-through state axis with a state `AffineTraversal`.
+    public func state<LS>(
+        _ affine: AffineTraversal<State, LS>
+    ) -> Relay.Scope<Action, ActionStrategy, State, Relay.StateAxis.Writes<State, LS>, Environment, EnvironmentStrategy> {
+        .init(action: action, state: .init(affine), environment: environment)
     }
 }
 

@@ -172,7 +172,7 @@ struct StoreReactionTests {
                 ]
             }
         }
-        let lifted = itemBehavior.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let lifted = itemBehavior.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         let store = Store(
             initial: AppState(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)]),
             behavior: .combine(globalReducer, lifted)

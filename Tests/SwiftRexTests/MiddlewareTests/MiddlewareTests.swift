@@ -326,13 +326,13 @@ struct MiddlewareLiftOptionalTests {
 
     @Test func runsWhenPresent() {
         struct OptGS: Sendable { var current: Int? }
-        let sut = echo.liftOptional(\OptGS.current)
+        let sut = echo.liftOptional(.state(\OptGS.current))
         #expect(actions(sut, action: 0, state: OptGS(current: 7), env: ()) == [7])
     }
 
     @Test func skippedWhenNil() {
         struct OptGS: Sendable { var current: Int? }
-        let sut = echo.liftOptional(\OptGS.current)
+        let sut = echo.liftOptional(.state(\OptGS.current))
         #expect(actions(sut, action: 0, state: OptGS(current: nil), env: ()).isEmpty)
     }
 }

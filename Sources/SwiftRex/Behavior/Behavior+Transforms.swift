@@ -190,27 +190,6 @@ extension Behavior {
             }
         )
     }
-
-    /// Lifts this behavior over an **optional** sub-state — the 0-or-1 sibling of ``liftCollection(_:)``
-    /// and ``liftEach(_:)`` (which are 0-or-n).
-    ///
-    /// While the optional is `nil`, the behavior is a complete no-op — no mutation, no effects — and
-    /// its supervised channels are torn down by the reconciler. While it is `.some`, the behavior
-    /// runs focused on the unwrapped value. This is exactly the shape presentation uses: a child
-    /// module whose state exists only while it is shown.
-    ///
-    /// ```swift
-    /// // Runs only while AppState.currentDay is non-nil:
-    /// let lifted = dayBehavior.liftOptional(\AppState.currentDay) // currentDay: DayDetail.State?
-    /// ```
-    ///
-    /// - Parameter optional: A `WritableKeyPath<GlobalState, State?>` to the optional sub-state.
-    /// - Returns: A `Behavior<Action, GlobalState, Environment>` that no-ops while the focus is absent.
-    public func liftOptional<GlobalState: Sendable>(
-        _ optional: WritableKeyPath<GlobalState, State?>
-    ) -> Behavior<Action, GlobalState, Environment> {
-        liftOptional(Relay.Scope(action: Relay.Identity(), state: Relay.StateAxis.Writes(optional), environment: Relay.Identity()))
-    }
 }
 
 // MARK: - Environment axis

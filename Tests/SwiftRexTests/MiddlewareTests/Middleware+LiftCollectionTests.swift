@@ -66,7 +66,7 @@ struct MiddlewareLiftCollectionTests {
     // MARK: - Output action re-embedding
 
     @Test func emittedActionIsReEmbeddedAtSameElement() {
-        let sut = elementMiddleware.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let sut = elementMiddleware.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         let state = AppState(items: [Item(id: id1, value: 0)])
         let received = LockProtected([AppAction]())
         subscribeAll(effect(sut, action: .item(ElementAction(id1, action: .bump)), state: state)) { d in
@@ -81,7 +81,7 @@ struct MiddlewareLiftCollectionTests {
     }
 
     @Test func unmatchedActionIsNoOp() {
-        let sut = elementMiddleware.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let sut = elementMiddleware.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         let state = AppState(items: [Item(id: id1, value: 5)])
         #expect(effect(sut, action: .unrelated, state: state).components.isEmpty)
     }
@@ -89,7 +89,7 @@ struct MiddlewareLiftCollectionTests {
     // MARK: - Per-element effect-scheduling scope
 
     @Test func schedulingIdIsScopedPerElement() {
-        let sut = elementMiddleware.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let sut = elementMiddleware.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         let state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 0)])
 
         let effA = effect(sut, action: .item(ElementAction(id1, action: .bump)), state: state)
@@ -116,7 +116,7 @@ struct MiddlewareLiftCollectionTests {
             preview: { if case let .keyed(ea) = $0 { ea } else { nil } },
             review: { .keyed($0) }
         )
-        let sut = elementMiddleware.liftCollection(action: prism, stateDictionary: \AppState.lookup)
+        let sut = elementMiddleware.liftCollection(.action(prism).state(dictionary: \AppState.lookup).environment { (v: Void) in v })
         let state = AppState(lookup: ["x": Item(id: id1, value: 1)])
         let eff = effect(sut, action: .keyed(ElementAction("x", action: .bump)), state: state)
         let expected = AnyHashableSendable(

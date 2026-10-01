@@ -164,11 +164,7 @@ public extension AppFeature {
             // an optional \.book → affine state lane: runs only while a book is on the stack
             BookFeature.behavior().lift(.action(\.book).state(\.book).environment { _ in BookFeature.Environment() }),
             // a presentation slot → the stage machine + the child, in one lift
-            EditorFeature.behavior().liftPresentation(
-                action: \.editor,
-                state: \.editor,
-                environment: { $0.editorEnv }
-            ),
+            EditorFeature.behavior().liftPresentation(.action(\.editor).state(\.editor).environment(\.editorEnv)),
 
             // 2. one reducer per navigation shape (from SwiftRex.Architecture)
             .navigationSelection(\.tab, action: \.tab), // selection
@@ -259,8 +255,8 @@ struct RootView: View, Routable {
     let router: AppRouter
 
     var body: some View {
-        TabView(selection: viewStore.binding(.state(\.tab).action(review: { AppAction.tab(.select($0)) }))) { // SELECTION
-            NavigationStack(path: viewStore.binding(.state(\.path).action(review: { AppAction.nav(.setPath($0)) }))) { // STACK
+        TabView(selection: viewStore.binding(.state(\.tab).action(\.tab.select))) { // SELECTION
+            NavigationStack(path: viewStore.binding(.state(\.path).action(\.nav.setPath))) { // STACK
                 AppScopes.library.view(of: LibraryFeature.self, from: viewStore, world: router.world)
                     .navigationDestination(for: AppRoute.self) { router.view(for: $0) }
             }
@@ -353,7 +349,7 @@ The URL never navigates directly — `onOpenURL` turns it into `.openedURL`, and
 |---|---|---|---|---|---|
 | **Selection** | `tab: Tab` | `.tab(SelectionNavigation<Tab>)` | `.navigationSelection(\.tab, action: \.tab)` | `binding(.state(…).action(…))` | `TabView` / split |
 | **Stack** | `path: [AppRoute]` | `.nav(StackNavigation<AppRoute>)` | `.navigationStack(\.path, action: \.nav)` | `binding(.state(…).action(…))` | `NavigationStack(path:)` |
-| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(action: \.editor, state: \.editor, …)` | `binding(.state(…).action(…))` → `Binding<Presentation<…>>` | sheet / cover |
+| **Presentation** | `editor: Presentation<…>` | `.editor(PresentationAction<…>)` | `.liftPresentation(.action(\.editor).state(\.editor).environment(…))` | `binding(.state(…).action(…))` → `Binding<Presentation<…>>` | sheet / cover |
 | **Optional** | `deleting: Book?` | `.book(.tappedDelete/…)` | `.navigationItem(…)` or a plain reducer | `binding(.state(…).action(…))` → `Binding<Bool>` / `Binding<Item?>` | alert / sheet / popover |
 
 Every one is the same recipe: **store the shape in state, dispatch through an action, fold a reducer/lift for it, bind a native container to it, resolve destinations through the router.** No new dialect — just state, actions, and `some View`.

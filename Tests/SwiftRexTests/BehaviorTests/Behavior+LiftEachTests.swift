@@ -35,6 +35,18 @@ struct BehaviorLiftEachTests {
         review: { AppAction.timer($0) }
     )
 
+    // `.tickAll` broadcasts `.tick` to every timer; each timer's output is re-addressed at its id.
+    private static func liftTickAll(_ perElement: Behavior<TimerAction, Timer, Void>) -> Behavior<AppAction, AppState, Void> {
+        perElement.liftEach(
+            .action(
+                broadcast: { (a: AppAction) -> TimerAction? in if case .tickAll = a { .tick } else { nil } },
+                embed: { (id: Int, local: TimerAction) in AppAction.timer(ElementAction(id, action: local)) }
+            )
+            .state(\AppState.timers)
+            .environment { (v: Void) in v }
+        )
+    }
+
     private func poll(until condition: @MainActor () -> Bool) async {
         for _ in 0..<1_000 where !condition() {
             await Task.yield()
@@ -48,11 +60,7 @@ struct BehaviorLiftEachTests {
             case .didTick: .doNothing
             }
         }
-        let lifted = perElement.liftEach(
-            action: { if case .tickAll = $0 { TimerAction.tick } else { nil } },
-            embed: { local, id in AppAction.timer(ElementAction(id, action: local)) },
-            stateCollection: \AppState.timers
-        )
+        let lifted = Self.liftTickAll(perElement)
         let store = Store(initial: AppState(timers: [Timer(id: 1), Timer(id: 2), Timer(id: 3)]), behavior: lifted, environment: ())
         store.dispatch(.tickAll)
         #expect(store.currentState.timers.map(\.count) == [1, 1, 1])
@@ -68,12 +76,8 @@ struct BehaviorLiftEachTests {
             }
         }
         let lifted = Behavior.combine(
-            perElement.liftEach(
-                action: { if case .tickAll = $0 { TimerAction.tick } else { nil } },
-                embed: { local, id in AppAction.timer(ElementAction(id, action: local)) },
-                stateCollection: \AppState.timers
-            ),
-            perElement.liftCollection(action: Self.timerPrism, stateCollection: \AppState.timers)
+            Self.liftTickAll(perElement),
+            perElement.liftCollection(.action(Self.timerPrism).state(\AppState.timers).environment { (v: Void) in v })
         )
         let store = Store(initial: AppState(timers: [Timer(id: 1), Timer(id: 2)]), behavior: lifted, environment: ())
         store.dispatch(.tickAll)

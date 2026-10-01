@@ -21,52 +21,49 @@ extension Behavior {
     ///   `slot.wrapped`.
     ///
     /// ```swift
-    /// DetailFeature.behavior().liftPresentation(
-    ///     action: \.detail, // Action.detail: PresentationAction<DetailFeature.Action>
-    ///     state: \.detail, // State.detail: Presentation<DetailFeature.State>
-    ///     environment: { $0.detailEnv }
-    /// )
+    /// DetailFeature.behavior().liftPresentation(.action(\.detail).state(\.detail).environment { $0.detailEnv })
+    /// // Action.detail: PresentationAction<DetailFeature.Action>, State.detail: Presentation<DetailFeature.State>
     /// ```
-    public func liftPresentation<GlobalAction: Sendable, GlobalState: Sendable, GlobalEnvironment: Sendable>(
-        action outer: Prism<GlobalAction, PresentationAction<Action>>,
-        state slot: WritableKeyPath<GlobalState, Presentation<State>>,
-        environment narrow: @escaping @Sendable (GlobalEnvironment) -> Environment
-    ) -> Behavior<GlobalAction, GlobalState, GlobalEnvironment> {
+    ///
+    /// Takes a ``Relay/Scope`` like every other lift — an inline chain or a declared `ScopeOf` scope: a duplex action
+    /// lane into the `PresentationAction`, a writing state lane into the `Presentation` slot, a narrowing environment.
+    public func liftPresentation<
+        A: Relay.ActionAxis.ExtractsProtocol & Relay.ActionAxis.EmbedsProtocol,
+        S: Relay.StateAxis.WritesProtocol,
+        E: Relay.EnvironmentAxis.NarrowsProtocol
+    >(
+        _ scope: Relay.Scope<A.Global, A, S.Global, S, E.Global, E>
+    ) -> Behavior<A.Global, S.Global, E.Global>
+    where A.Local == PresentationAction<Action>, S.Local == Presentation<State>, E.Local == Environment {
         // Child actions travel as `.child(_)` inside the presentation action — a prism through both hops.
-        let childAction = Prism<GlobalAction, Action>(
+        let childAction = Prism<A.Global, Action>(
             preview: { global in
-                guard case let .child(childAction)? = outer.preview(global) else { return nil }
+                guard case let .child(childAction)? = scope.action.preview(global) else { return nil }
                 return childAction
             },
-            review: { childAction in outer.review(.child(childAction)) }
+            review: { childAction in scope.action.review(.child(childAction)) }
         )
 
         // The two dismissal edges — the pure stage machine on the presentation slot. (Presenting is the parent's
         // own reducer setting `slot = .presented(_)`, so it never needs the child State in the action.)
-        let control = Behavior<GlobalAction, GlobalState, GlobalEnvironment>.reduce { global, state in
-            switch outer.preview(global) {
-            case .dismiss?: state[keyPath: slot] = state[keyPath: slot].dismiss()
-            case .dismissed?: state[keyPath: slot] = .dismissed
+        let control = Behavior<A.Global, S.Global, E.Global>.reduce { global, state in
+            switch scope.action.preview(global) {
+            case .dismiss?: scope.state.modify(&state) { $0 = $0.dismiss() }
+            case .dismissed?: scope.state.modify(&state) { $0 = .dismissed }
             case .child?, nil: break
             }
         }
 
         // The child behavior, focused on `slot.wrapped` (present while presented or dismissing).
+        let wrapped = AffineTraversal<S.Global, State>(
+            preview: { scope.state.preview($0)?.wrapped },
+            setMut: { whole, part in scope.state.modify(&whole) { $0.wrapped = part } }
+        )
         let child = liftAction(childAction)
-            .liftOptional(slot.appending(path: \Presentation<State>.wrapped))
-            .liftEnvironment(narrow)
+            .liftOptional(Relay.Scope(action: Relay.Identity(), state: Relay.StateAxis.Writes(wrapped), environment: Relay.Identity()))
+            .liftEnvironment(scope.environment.narrow)
 
-        return Behavior<GlobalAction, GlobalState, GlobalEnvironment>.combine(control, child)
-    }
-
-    /// `\.case` key-path spelling of ``liftPresentation(action:state:environment:)-(Prism<_,_>,_,_)`` —
-    /// pass `action: \.detail` instead of a `Prism`.
-    public func liftPresentation<GlobalAction: Prismatic & Sendable, GlobalState: Sendable, GlobalEnvironment: Sendable>(
-        action path: PrismKeyPath<GlobalAction, PresentationAction<Action>>,
-        state slot: WritableKeyPath<GlobalState, Presentation<State>>,
-        environment narrow: @escaping @Sendable (GlobalEnvironment) -> Environment
-    ) -> Behavior<GlobalAction, GlobalState, GlobalEnvironment> {
-        liftPresentation(action: Prism(path), state: slot, environment: narrow)
+        return Behavior<A.Global, S.Global, E.Global>.combine(control, child)
     }
 }
 

@@ -74,7 +74,7 @@ struct BehaviorLiftCollectionTests {
     // MARK: - Identifiable mutation
 
     @Test func identifiableMutatesTargetedElement() {
-        let sut = elementBehavior.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let sut = elementBehavior.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         var state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 10)])
         consequence(sut, action: .item(ElementAction(id1, action: .bump)), state: state)
             .mutation.runEndoMut(&state)
@@ -83,7 +83,7 @@ struct BehaviorLiftCollectionTests {
     }
 
     @Test func unmatchedActionIsNoOp() {
-        let sut = elementBehavior.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let sut = elementBehavior.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         var state = AppState(items: [Item(id: id1, value: 5)])
         let c = consequence(sut, action: .unrelated, state: state)
         c.mutation.runEndoMut(&state)
@@ -94,7 +94,7 @@ struct BehaviorLiftCollectionTests {
     // MARK: - Output action re-embedding
 
     @Test func emittedActionIsReEmbeddedAtSameElement() {
-        let sut = elementBehavior.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let sut = elementBehavior.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         let state = AppState(items: [Item(id: id1, value: 0)])
         let c = consequence(sut, action: .item(ElementAction(id1, action: .bump)), state: state)
         let effect = c.produce(PostReducerContext(environment: (), getter: { state }))
@@ -111,7 +111,7 @@ struct BehaviorLiftCollectionTests {
     // MARK: - Per-element effect-scheduling scope
 
     @Test func schedulingIdIsScopedPerElement() {
-        let sut = elementBehavior.liftCollection(action: itemPrism, stateCollection: \AppState.items)
+        let sut = elementBehavior.liftCollection(.action(itemPrism).state(\AppState.items).environment { (v: Void) in v })
         let state = AppState(items: [Item(id: id1, value: 0), Item(id: id2, value: 0)])
 
         let effA = consequence(sut, action: .item(ElementAction(id1, action: .bump)), state: state)
@@ -149,11 +149,7 @@ struct BehaviorLiftCollectionTests {
             preview: { if case let .named(ea) = $0 { ea } else { nil } },
             review: { .named($0) }
         )
-        let sut = namedBehavior.liftCollection(
-            action: prism,
-            stateCollection: \AppState.named,
-            identifier: { $0.tag }
-        )
+        let sut = namedBehavior.liftCollection(.action(prism).state(\AppState.named, id: \.tag).environment { (v: Void) in v })
         var state = AppState(named: [Named(tag: "a", value: 0), Named(tag: "b", value: 5)])
         let c = consequence(sut, action: .named(ElementAction("b", action: .bump)), state: state)
         c.mutation.runEndoMut(&state)
@@ -174,7 +170,7 @@ struct BehaviorLiftCollectionTests {
             preview: { if case let .keyed(ea) = $0 { ea } else { nil } },
             review: { .keyed($0) }
         )
-        let sut = elementBehavior.liftCollection(action: prism, stateDictionary: \AppState.lookup)
+        let sut = elementBehavior.liftCollection(.action(prism).state(dictionary: \AppState.lookup).environment { (v: Void) in v })
         var state = AppState(lookup: ["x": Item(id: id1, value: 1)])
         let c = consequence(sut, action: .keyed(ElementAction("x", action: .bump)), state: state)
         c.mutation.runEndoMut(&state)

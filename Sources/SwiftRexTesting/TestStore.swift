@@ -245,16 +245,6 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
-    // MARK: - Enqueue
-
-    /// Appends `action` directly to ``receivedActions`` without running it through the behavior — so a
-    /// test harness can make an action visible as the next entry in the received queue, to be processed
-    /// with `receive` like any effect output.
-    public func enqueue(_ action: Action) {
-        receivedActions.append(action)
-        _receivedCount = receivedActions.count
-    }
-
     // MARK: - Test API
 
     /// Dispatches `action` through the behavior and validates the resulting state.
@@ -409,37 +399,6 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         receive(prism, sourceLocation: sourceLocation) { (_, state: inout State) in
             expectedStateChange(&state)
         }
-    }
-
-    // MARK: - Module-internal
-
-    // Dequeues and runs the next received action without a state assertion — for a harness that asserts
-    // at another layer. Currently unused.
-
-    @discardableResult
-    func dequeueAndRun<Value>(
-        _ prism: Prism<Action, Value>,
-        sourceLocation: SourceLocation
-    ) -> (action: Action, value: Value)? {
-        guard !receivedActions.isEmpty else {
-            Issue.record(
-                "receive() called but receivedActions is empty — call runEffects() first if you expect effect output",
-                sourceLocation: sourceLocation
-            )
-            return nil
-        }
-        let action = receivedActions.removeFirst()
-        _receivedCount = receivedActions.count
-        guard let value = prism.preview(action) else {
-            Issue.record(
-                "Action case mismatch in receive() — prism did not match the dequeued action\nActual: \(action)",
-                sourceLocation: sourceLocation
-            )
-            run(DispatchedAction(action))
-            return nil
-        }
-        run(DispatchedAction(action))
-        return (action, value)
     }
 
     // MARK: - Private

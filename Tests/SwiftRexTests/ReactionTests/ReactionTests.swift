@@ -151,8 +151,9 @@ struct SuperviseTests {
             Supervision { _ in item.connected ? [Channel(id: "socket") { _ in .cancelOnly {} }] : [] }
         }
         let lifted = feature.liftCollection(
-            action: Prism<ElementAction<Int, A>, ElementAction<Int, A>>(preview: { $0 }, review: { $0 }),
-            stateCollection: \Global.items
+            .action(Prism<ElementAction<Int, A>, ElementAction<Int, A>>(preview: { $0 }, review: { $0 }))
+                .state(\Global.items)
+                .environment { (v: Void) in v }
         )
         // Two connected elements → two channels, with element-scoped (distinct) ids.
         let both = resolve(lifted, Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)]), ())
@@ -169,7 +170,11 @@ struct SuperviseTests {
         let feature = Behavior<A, Item, Void>.supervise { item in
             Supervision { _ in item.connected ? [Channel(id: "socket") { _ in .cancelOnly {} }] : [] }
         }
-        let lifted = feature.liftEach(action: { _ in nil }, embed: { a, _ in a }, stateCollection: \Global.items)
+        let lifted = feature.liftEach(
+            .action(broadcast: { (_: A) -> A? in nil }, embed: { (_: Int, a: A) in a })
+                .state(\Global.items)
+                .environment { (v: Void) in v }
+        )
         // Fan-out supervise: every connected element keeps its own element-scoped (distinct) channel.
         let both = resolve(lifted, Global(items: [Item(id: 1, connected: true), Item(id: 2, connected: true)]), ())
         #expect(both.count == 2)

@@ -34,12 +34,6 @@ supervise — stricter than a plain affine state lift):
 dayBehavior.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
 ```
 
-The bare key-path form is kept as sugar:
-
-```swift
-dayBehavior.liftOptional(\AppState.currentDay)
-```
-
 This is exactly the shape presentation uses — a child module whose state exists only while it is shown.
 (There is no `Reducer.liftOptional`: a reducer has no effects or supervision to switch off, so its plain `lift`
 over an optional state key path — `.action(\AppAction.day).state(\AppState.currentDay)`, an affine lane — already
@@ -57,7 +51,7 @@ needed — the host pins the globals):
 rowBehavior.liftCollection(.action(AppAction.prism.row).state(\AppState.rows).environment(\AppEnvironment.rowEnv))
 
 // broadcast: the action lane bridges a plain inbound case and the id-addressed outbound case
-rowBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.row).state(\AppState.rows).environment(\AppEnvironment.rowEnv))
+rowBehavior.liftEach(.action(broadcast: \.tickAll, into: \.row).state(\AppState.rows).environment(\AppEnvironment.rowEnv))
 
 // the view dispatches an addressed action; the wiring finds and unwraps the element:
 store.dispatch(.row(ElementAction(row.id, action: .toggleDone)))

@@ -297,7 +297,7 @@ struct BehaviorLiftStateTests {
 
     @Test func liftOptionalMutatesWhenPresent() {
         struct OptGS: Sendable { var current: Int? }
-        let sut = adder.liftOptional(\OptGS.current)
+        let sut = adder.liftOptional(.state(\OptGS.current))
         let initial = OptGS(current: 10)
         var state = initial
         sut.handle(5, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
@@ -306,7 +306,7 @@ struct BehaviorLiftStateTests {
 
     @Test func liftOptionalIsNoOpWhenNil() {
         struct OptGS: Sendable { var current: Int? }
-        let sut = adder.liftOptional(\OptGS.current)
+        let sut = adder.liftOptional(.state(\OptGS.current))
         let initial = OptGS(current: nil)
         var state = initial
         sut.handle(5, PreReducerContext(source: anySource, getter: { initial })).mutation.runEndoMut(&state)
@@ -320,7 +320,7 @@ struct BehaviorLiftStateTests {
             seen.mutate { $0.append(context.stateBefore ?? -1) }
             return .doNothing
         }
-        let present = observer.liftOptional(\OptGS.current)
+        let present = observer.liftOptional(.state(\OptGS.current))
         _ = present.handle(0, PreReducerContext(source: anySource, getter: { OptGS(current: 42) }))
         _ = present.handle(0, PreReducerContext(source: anySource, getter: { OptGS(current: nil) }))
         #expect(seen.value == [42]) // second dispatch is skipped while nil

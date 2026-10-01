@@ -72,8 +72,10 @@ In each case the lifted reducer sees the **unwrapped** element. There is no per-
 
 - ``lift(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``
 - ``lift(_:)-(Relay.Scope<A.Global,A,S.Global,S,GE,E>)``
-- ``liftCollection(action:stateContainer:)``
-- ``liftEach(action:each:stateContainer:)``
+- ``liftCollection(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``
+- ``liftCollection(_:)-(Relay.Scope<A.Global,A,S.Global,S,GE,E>)``
+- ``liftEach(_:)-(Relay.Scope<A.Global,A,S.Global,S,Never,Relay.Absurd<Never>>)``
+- ``liftEach(_:)-(Relay.Scope<A.Global,A,S.Global,S,GE,E>)``
 
 ### Bridging
 

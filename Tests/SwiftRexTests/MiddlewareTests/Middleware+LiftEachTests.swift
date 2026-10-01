@@ -54,11 +54,14 @@ struct MiddlewareLiftEachTests {
             if case .didTick = action { timer.ticked = true }
         }
         let behavior = Behavior(
-            reducer: recorder.liftCollection(action: { timerPrism.preview($0) }, stateCollection: \AppState.timers),
+            reducer: recorder.liftCollection(.action(timerPrism).state(\AppState.timers)),
             middleware: perElement.liftEach(
-                action: { if case .tickAll = $0 { TimerAction.tick } else { nil } },
-                embed: { local, id in AppAction.timer(ElementAction(id, action: local)) },
-                stateCollection: \AppState.timers
+                .action(
+                    broadcast: { (a: AppAction) -> TimerAction? in if case .tickAll = a { .tick } else { nil } },
+                    embed: { (id: Int, local: TimerAction) in AppAction.timer(ElementAction(id, action: local)) }
+                )
+                .state(\AppState.timers)
+                .environment { (v: Void) in v }
             )
         )
         let store = Store(initial: AppState(timers: [Timer(id: 1), Timer(id: 2)]), behavior: behavior, environment: ())

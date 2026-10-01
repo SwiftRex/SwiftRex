@@ -71,12 +71,8 @@
         @Test func perSceneProjectionCarriesTheSlice() {
             let store = makeStore()
             store.dispatch(.open(3, "C"))
-            // Each window projects its own slice by id — the existing dictionary projection.
-            let window = store.projection(
-                key: 3,
-                actionReview: SceneAppAction.document,
-                stateDictionary: \.documents
-            )
+            // Each window focuses its own slice by id — a dictionary collection scope.
+            let window = store.projection(.action(\.document).state(dictionary: \.documents), element: 3)
             #expect(window.currentState?.title == "C")
             window.dispatch(.bumpEdits) // dispatches into the ONE store, scoped to id 3
             #expect(store.currentState.documents[3]?.edits == 1)

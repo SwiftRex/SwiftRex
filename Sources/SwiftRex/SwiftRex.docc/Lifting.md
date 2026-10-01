@@ -57,7 +57,8 @@ Which kind of key path or optic you put in a lane depends on the *shape* of your
 - **`WritableKeyPath<GlobalState, LocalState>`** — `\AppState.counter`, when the slice is a `var` stored property.
 - **`Lens<GlobalState, LocalState>`** — `AppState.lens.counter` (`@Lenses`), when the slice is a `let` / immutable property; lenses compose through nested immutables with `>>>`.
 - **`WritableKeyPath<GlobalState, LocalState?>`** — `\AppState.currentDay`, when the slice is **optional**: the lane is affine, and the unit is skipped while there's nothing to focus.
-- **`(preview, set)` closures** — `.state(preview:set:)`, any other affine focus — e.g. when the *state itself is an enum* and the feature applies to one case; the unit runs only while `preview` finds it. (`liftState(_:)` also takes a `Prism<GlobalState, CaseState>` such as `SessionState.prism.loggedIn`, or an `AffineTraversal`, directly.)
+- **`\.case` key path into a state enum** — `.state(\.loggedIn)` when the *state itself is an enum* (`@Prisms`) and the feature applies to one case; the lane is affine and the unit runs only while the state is in that case. `.state(SessionState.prism.loggedIn)` (a `Prism`) and `.state(affineTraversal)` are the value forms.
+- **`(preview, set)` closures** — `.state(preview:set:)`, any other affine focus no optic expresses.
 
 ### Environment — narrow
 
@@ -130,7 +131,7 @@ lanes it can honour, and the unit always sees the **unwrapped** focus (never `El
   inbound case and the id-addressed outbound case:
 
   ```swift
-  todoBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.todo).state(\AppState.todos)…)
+  todoBehavior.liftEach(.action(broadcast: \.tickAll, into: \.todo).state(\AppState.todos)…)
   ```
 
 The same lanes drive `Reducer` and `Middleware` lifts, and a per-element
