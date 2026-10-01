@@ -97,7 +97,7 @@ struct MiddlewareAsBehaviorTests {
 
     @Test func leavesStateUnchanged() {
         var state = 42
-        middleware.asBehavior.handle(
+        middleware.asBehavior().handle(
             1,
             PreReducerContext(source: anySource, getter: { 0 })
         ).mutation.runEndoMut(&state)
@@ -105,7 +105,7 @@ struct MiddlewareAsBehaviorTests {
     }
 
     @Test func producesEffect() {
-        #expect(receivedActions(middleware.asBehavior, action: 5, state: 0) == [105])
+        #expect(receivedActions(middleware.asBehavior(), action: 5, state: 0) == [105])
     }
 }
 

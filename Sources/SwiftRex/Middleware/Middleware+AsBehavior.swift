@@ -6,8 +6,13 @@ extension Middleware {
     /// Wraps this middleware as a `Behavior` with an identity reducer (no state mutation).
     ///
     /// A `Middleware` *is* a `Behavior` with no mutations — it shares the same ``Consequence`` model,
-    /// so this just rewraps the consequence list (effect-producing reactions plus supervisions).
-    public var asBehavior: Behavior<Action, State, Environment> {
+    /// so this just rewraps the consequence list (effect-producing reactions plus supervisions). A method, like
+    /// ``Reducer/asBehavior()`` (which must be one: a reducer has no environment, so it takes the behavior's from context).
+    ///
+    /// ```swift
+    /// let behavior = reducer.asBehavior() <> middleware.asBehavior()
+    /// ```
+    public func asBehavior() -> Behavior<Action, State, Environment> {
         Behavior(consequences: consequences)
     }
 }

@@ -56,7 +56,7 @@ struct SuperviseTests {
 
     @Test func middlewareSuperviseCarriesThroughAsBehavior() {
         let middleware = Middleware<A, S, Void>.supervise { _ in Supervision { _ in [channel("m")] } }
-        #expect(channels(middleware.asBehavior, S()).count == 1)
+        #expect(channels(middleware.asBehavior(), S()).count == 1)
     }
 
     @Test func reducerMiddlewareBehaviorCarriesMiddlewareSupervise() {
@@ -84,7 +84,7 @@ struct SuperviseTests {
         // Middleware mirrors it, including through asBehavior
         #expect(Middleware<A, S, Void>.produce { _, _ in Reader { _ in .empty } }.supervises == false)
         #expect(Middleware<A, S, Void>.supervise { _ in Supervision { _ in [] } }.supervises == true)
-        #expect(Middleware<A, S, Void>.supervise { _ in Supervision { _ in [] } }.asBehavior.supervises == true)
+        #expect(Middleware<A, S, Void>.supervise { _ in Supervision { _ in [] } }.asBehavior().supervises == true)
         // Providing a supervisor to the public Middleware init means it supervises (no silent drop)
         #expect(Middleware<A, S, Void>(handle: { _, _ in Reader { _ in .empty } }, supervisor: { _ in Supervision { _ in [] } }).supervises == true)
     }
@@ -115,7 +115,7 @@ struct SuperviseTests {
         let middleware = Middleware<A, S, Void>
             .supervise { _ in Supervision { _ in [channel("m")] } }
             .produce { _, _ in Reader { _ in .empty } }
-        #expect(channels(middleware.asBehavior, S()).count == 1)
+        #expect(channels(middleware.asBehavior(), S()).count == 1)
     }
 
     // MARK: - supervise threads through the lifts
