@@ -6,7 +6,7 @@ Time-shift every event by a fixed amount — the one pacing the framework delibe
 
 ``ChannelDelivery`` offers ``ChannelDelivery/throttle(_:)`` and ``ChannelDelivery/debounce(_:)`` — the cases that need *stateful coordination across emissions* (a shared window, a restartable timer) the engine is best placed to own. It deliberately omits a per-value **delay** (RxSwift's `.delay`: shift each event by a fixed amount, preserving their spacing — events at 4s, 6s, 9s surface at 5s, 7s, 10s with a 1s delay). A framework-level delay would need one independent timer per in-flight value plus their teardown, for a behaviour you can express trivially yourself: sleep on the injected clock before dispatching.
 
-So `delay` is a *story*, like ``ExampleTimer`` and ``ExamplePolling`` — a pattern you build, not a helper you call.
+So `delay` is a *story*, like <doc:ExampleTimer> and <doc:ExamplePolling> — a pattern you build, not a helper you call.
 
 ```swift
 import SwiftRex
@@ -46,7 +46,7 @@ let feed = Behavior<FeedAction, FeedState, FeedEnv>
                         await withTaskGroup(of: Void.self) { group in
                             for await event in env.events {
                                 group.addTask {
-                                    try? await env.clock.sleep(for: env.lag)   // shift this event by `lag`
+                                    try? await env.clock.sleep(for: env.lag) // shift this event by `lag`
                                     dispatch(.surfaced(event))
                                 }
                             }

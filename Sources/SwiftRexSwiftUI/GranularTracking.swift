@@ -13,9 +13,9 @@
     /// read whole) or ask for ``value``:
     ///
     /// ```swift
-    /// Text(viewStore.state.player.title)        // String — depends on \.player.title
-    /// viewStore.state.player                    // GranularTracking<Player> — nothing recorded yet
-    /// viewStore.state.player.value              // the whole Player — depends on \.player
+    /// Text(viewStore.state.player.title) // String — depends on \.player.title
+    /// viewStore.state.player // GranularTracking<Player> — nothing recorded yet
+    /// viewStore.state.player.value // the whole Player — depends on \.player
     /// ```
     ///
     /// Formally it is a *getter* optic built from key paths (appending paths composes it), whose application also
@@ -26,7 +26,7 @@
     /// changes ten times a second redraws the one small view that shows it:
     ///
     /// ```swift
-    /// Console(mixer: viewStore.state.mixer)      // let mixer: GranularTracking<Mixer>
+    /// Console(mixer: viewStore.state.mixer) // let mixer: GranularTracking<Mixer>
     /// Playhead(transport: viewStore.state.transport)
     /// ```
     ///

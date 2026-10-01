@@ -8,7 +8,7 @@ import CoreFP
 /// collection's element lane (`ElementAction(id, action)`).
 ///
 /// ```swift
-/// let row = store.projection(.action(\.row).state(\.rows), element: rowID)   // StoreCollectionFocus<RowAction, Row>
+/// let row = store.projection(.action(\.row).state(\.rows), element: rowID) // StoreCollectionFocus<RowAction, Row>
 /// ```
 ///
 /// **Finding the element.** The lane's `ix` (`element(id)`) is an affine traversal — correct, but a linear search

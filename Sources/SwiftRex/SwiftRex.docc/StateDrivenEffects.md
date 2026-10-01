@@ -21,7 +21,7 @@ let room = Behavior<RoomAction, RoomState, RoomEnv>
     }
     .supervise { state in
         Supervision { env in
-            guard let id = state.joinedRoom else { return [] }   // no room → no socket
+            guard let id = state.joinedRoom else { return [] } // no room → no socket
             return [Channel(id: id) { dispatch in
                 let socket = env.connect(id)
                 socket.onMessage { dispatch(.received($0)) }
@@ -45,9 +45,9 @@ A ``Behavior`` folds three independent concerns, each a fluent builder that comp
 
 ```swift
 Behavior
-    .reduce { action, state in … }   // what changes
-    .produce { action, ctx in … }    // what to do because of an action
-    .supervise { state in … }        // what to keep alive while the state holds
+    .reduce { action, state in … } // what changes
+    .produce { action, ctx in … } // what to do because of an action
+    .supervise { state in … } // what to keep alive while the state holds
 ```
 
 A ``Middleware`` carries the same two effect axes (`produce` and `supervise`) — it just never mutates. ``Reducer`` owns only the first.

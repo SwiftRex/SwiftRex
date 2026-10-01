@@ -16,11 +16,15 @@ A `Reaction<Action, State, Environment>` pairs a ``ReducerOutcome`` (the state m
 ```swift
 Behavior<AppAction, AppState, AppEnvironment>.react { action, _ in
     switch action {
-    case .increment:          .reduce  { $0.count += 1 }
-    case .fetch(let query):   .produce { ctx in ctx.environment.api.search(query).asEffect() }
-    case .fetchAndShow(let q): .reduce { $0.isLoading = true }
-                               .produce { ctx in ctx.environment.api.search(q).asEffect() }
-    case .noop:               .doNothing
+    case .increment:
+        .reduce { $0.count += 1 }
+    case .fetch(let query):
+        .produce { ctx in ctx.environment.api.search(query).asEffect() }
+    case .fetchAndShow(let q):
+        .reduce { $0.isLoading = true }
+            .produce { ctx in ctx.environment.api.search(q).asEffect() }
+    case .noop:
+        .doNothing
     }
 }
 ```

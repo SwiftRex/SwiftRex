@@ -32,7 +32,7 @@ let timer = Behavior<TimerAction, TimerState, Void>
     }
     .supervise { state in
         Supervision { _ in
-            guard state.isRunning else { return [] }            // stopped → the ticker is cancelled
+            guard state.isRunning else { return [] } // stopped → the ticker is cancelled
             return [Channel(id: "ticker", lifetime: .ephemeral(resetKey: state.interval)) { dispatch in
                 let task = Task {
                     while !Task.isCancelled {

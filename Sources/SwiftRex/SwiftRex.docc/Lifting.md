@@ -10,34 +10,42 @@ The point of SwiftRex's composition is that a feature never needs to know about 
 - **focuses the state** — it reads the relevant slice, runs, and writes the slice back;
 - **narrows the environment** (``Middleware``/``Behavior`` only) — it projects the app's dependencies down to what the feature needs.
 
-The lift API is the **same shape on `Reducer`, `Behavior`, and `Middleware`** — learn it once. After lifting, every feature is at the global types, so they compose with `combine` / the `@ReducerBuilder` DSL. See <doc:Algebra> for why that composition is lawful.
+The lift API is the **same shape on `Reducer`, `Behavior`, and `Middleware`** — learn it once: each takes one ``Relay/Scope``, the carrier every host's `lift`/`projection` accepts. After lifting, every feature is at the global types, so they compose with `combine` / the `@ReducerBuilder` DSL. See <doc:Algebra> for why that composition is lawful.
 
 ## The three axes
 
+Build a scope with the fluent builder — `.action(…).state(…).environment(…)` — one lane per axis:
+
 ```swift
-// counterReducer:  Reducer<CounterAction, Int>
-// lifted:          Reducer<AppAction, AppState>
-let lifted = counterReducer.lift(
-    action: \AppAction.counter,   // narrow the action
-    state:  \AppState.counter     // focus the state
-)
+// counterReducer: Reducer<CounterAction, Int>
+// lifted: Reducer<AppAction, AppState>
+let lifted = counterReducer.lift(.action(\AppAction.counter).state(\AppState.counter))
 ```
 
 `Behavior` and `Middleware` add a third axis, the environment:
 
 ```swift
 let lifted = searchBehavior.lift(
-    action:      \AppAction.search,
-    state:       \AppState.search,
-    environment: \AppEnvironment.searchAPI
+    .action(\AppAction.search).state(\AppState.search).environment(\AppEnvironment.searchAPI)
 )
 ```
 
-Lift one axis at a time with the single-axis primitives — `liftAction`, `liftState`, and `liftEnvironment` on ``Behavior`` and ``Middleware`` — or **all three together through a ``Relay/Scope``**, the one carrier every host's `lift`/`projection` accepts. Build a scope with the fluent builder (`.action(…).state(…).environment(…)`); each host constrains on only the capabilities it needs.
+A scope you reuse — lifting the behavior, projecting a store for the screen — is declared once through ``ScopeOf``, whose ``Rig`` pins every key-path root, and then passed by name:
+
+```swift
+enum AppScopes {
+    static let search = ScopeOf<AppFeature>.action(\.search).state(\.search).environment(\.searchAPI)
+}
+
+searchBehavior.lift(AppScopes.search)
+store.projection(AppScopes.search)
+```
+
+Each host constrains on only the capabilities it needs: a `Reducer` only extracts the action and ignores the environment lane, a `Behavior` needs a two-way action lane and a writable state lane. To lift one axis at a time, ``Behavior`` and ``Middleware`` also keep the single-axis primitives `liftAction`, `liftState`, and `liftEnvironment`.
 
 ## Choosing the right optic per axis
 
-Which kind of key path or optic you pass depends on the *shape* of your global type. SwiftRex accepts plain `KeyPath`s and the FP optics interchangeably.
+Which kind of key path or optic you put in a lane depends on the *shape* of your global type. The lanes accept plain `KeyPath`s and the FP optics interchangeably.
 
 ### Action — narrow
 
@@ -48,12 +56,12 @@ Which kind of key path or optic you pass depends on the *shape* of your global t
 
 - **`WritableKeyPath<GlobalState, LocalState>`** — `\AppState.counter`, when the slice is a `var` stored property.
 - **`Lens<GlobalState, LocalState>`** — `AppState.lens.counter` (`@Lenses`), when the slice is a `let` / immutable property; lenses compose through nested immutables with `>>>`.
-- **`Prism<GlobalState, CaseState>`** — when the *state itself is an enum* and the feature applies to one case (`SessionState.prism.loggedIn`); the unit runs only in that case.
-- **`AffineTraversal<GlobalState, LocalState>`** — when the focus may be **absent** (`preview` returns `nil`); the unit is skipped when there's nothing to focus.
+- **`WritableKeyPath<GlobalState, LocalState?>`** — `\AppState.currentDay`, when the slice is **optional**: the lane is affine, and the unit is skipped while there's nothing to focus.
+- **`(preview, set)` closures** — `.state(preview:set:)`, any other affine focus — e.g. when the *state itself is an enum* and the feature applies to one case; the unit runs only while `preview` finds it. (`liftState(_:)` also takes a `Prism<GlobalState, CaseState>` such as `SessionState.prism.loggedIn`, or an `AffineTraversal`, directly.)
 
 ### Environment — narrow
 
-A projection (`\AppEnvironment.searchAPI` or a closure) maps the app's dependencies to the feature's. Library modules that don't know the app's environment commonly export a `(Dependencies) -> Behavior<…>` factory and let the app inject.
+A projection (`.environment(\AppEnvironment.searchAPI)` or `.environment { $0.searchAPI }`) maps the app's dependencies to the feature's. Library modules that don't know the app's environment commonly export a `(Dependencies) -> Behavior<…>` factory and let the app inject.
 
 ## Direction of the arrows
 
@@ -66,24 +74,29 @@ Lifting is type-directed; the arrows explain why each axis wants the optic it do
 
 ### Closures — the escape hatch
 
-Every key path and optic parameter is a compact spelling of a function. When a transformation doesn't fit an optic — computed slices, legacy types, cross-cutting projections — pass the function directly:
+Every key path and optic in a lane is a compact spelling of a function. When a transformation doesn't fit an optic — computed slices, legacy types, cross-cutting projections — give the lane the functions directly:
 
 ```swift
-// state focus, as closures
-{ (global: AppState) -> Piece in global.something.piece }                     // get
-{ (global: inout AppState, new: Piece) -> Void in global.something.piece = new }  // set
-
-// output-action embed is a case constructor — a function reference, not a KeyPath
-AppAction.counter
+pieceBehavior.lift(
+    .action(
+        preview: { (global: AppAction) -> PieceAction? in if case let .piece(local) = global { local } else { nil } },
+        review: AppAction.piece // the output-action embed is a case constructor — a function, not a KeyPath
+    )
+    .state(
+        get: { (global: AppState) -> Piece in global.something.piece },
+        set: { global, new in var copy = global; copy.something.piece = new; return copy }
+    )
+    .environment { (world: AppEnvironment) in world.pieces }
+)
 ```
 
 ### Identity, ignore and absurd
 
 Three degenerate lifts cover the axes a unit doesn't use:
 
-- **`identity`** (`{ $0 }`) — the axis is already at the global type; pass it through unchanged.
+- **`identity`** (`{ $0 }`) — the axis is already at the global type; pass it through unchanged. An axis a scope leaves un-set is ``Relay/Identity``.
 - **`ignore`** (`{ _ in }`) — the unit needs no state, so its `State` is `Void`; any global state "narrows" to `Void` by discarding it.
-- **`absurd`** (`(Never) -> Anything`) — the unit never dispatches, so its output action is `Never`; `absurd` satisfies the embed requirement with a function that can never be called.
+- **`absurd`** (`(Never) -> Anything`) — the unit never dispatches, so its output action is `Never`; `absurd` satisfies the embed requirement with a function that can never be called. An axis a host seals is ``Relay/Absurd``.
 
 `Void` and `Never` are dual: everything maps *into* `Void` (the terminal object — exactly one value), and `Never` maps into *everything* (the initial object — no values). `absurd` can promise any return type because nobody can ever hand it a `Never` to make good on the promise.
 
@@ -94,11 +107,11 @@ leading-dot ``Relay/Scope``** — the element/optional addressing rides in the l
 naked. Each host is constrained on its own decorator capabilities, so the compiler only offers a host the
 lanes it can honour, and the unit always sees the **unwrapped** focus (never `Element?`).
 
-- **`liftOptional`** (0-or-1) — a pass-through `Identity` action + `Identity` environment + affine **state** scope. Runs
+- **`liftOptional`** (0-or-1, on `Behavior` and `Middleware`) — a pass-through `Identity` action + `Identity` environment + affine **state** scope. Runs
   only while the focus is `.some`; a complete no-op (no mutation, no effect, no supervise) while `nil`:
 
   ```swift
-  dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
+  dayBehavior.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
   ```
 
 - **`liftCollection`** (0-or-n, route one) — the action lane carries the element id (an ``ElementAction``
@@ -106,11 +119,11 @@ lanes it can honour, and the unit always sees the **unwrapped** focus (never `El
   or a dictionary key:
 
   ```swift
-  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(\AppState.todos).environment(\.todoEnv))
-  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(\AppState.todos, id: \.slug)…)   // custom id
-  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(indexed: \AppState.todos)…)       // by position
-  todoBehavior.liftCollection(.action(AppAction.prism.cfg).state(dictionary: \AppState.configs)…)   // dictionary
-  // dispatch:  store.dispatch(.todo(ElementAction(todo.id, action: .toggleDone)))
+  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(\AppState.todos).environment(\AppEnvironment.todoEnv))
+  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(\AppState.todos, id: \.slug)…) // custom id
+  todoBehavior.liftCollection(.action(AppAction.prism.todo).state(indexed: \AppState.todos)…) // by position
+  todoBehavior.liftCollection(.action(AppAction.prism.cfg).state(dictionary: \AppState.configs)…) // dictionary
+  // dispatch: store.dispatch(.todo(ElementAction(todo.id, action: .toggleDone)))
   ```
 
 - **`liftEach`** (0-or-n, broadcast) — one action drives *every* element. Its action lane bridges a plain
@@ -121,11 +134,11 @@ lanes it can honour, and the unit always sees the **unwrapped** focus (never `El
   ```
 
 The same lanes drive `Reducer` and `Middleware` lifts, and a per-element
-``StoreType/projection(_:element:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>,_)`` (whose projected state is `Element?` — the view unwraps). Per-element
+``StoreType/projection(_:element:)-(Relay.Scope<Self.Action,A,Self.State,S,Never,Relay.Absurd<Never>>,_)`` (a ``StoreCollectionFocus`` whose state is `Element?`; in SwiftUI, `viewStore.each(scope)` / `viewStore.traverse(scope, element:)` unwrap it). Per-element
 effect scheduling is tagged per element, so one row's `.debounce(id:)` never collides with another's.
 
 > For the full picture — the input zoo (prism / key path / macro-free closures), all four locators, the
-> view-side projections, `transpose()`, `Presentation`, and two-way bindings — see
+> view-side stages, `transpose()` / `traverse(…)`, `Presentation`, and two-way bindings — see
 > <doc:OptionalsAndCollections>.
 
 ## Putting it together
@@ -133,12 +146,12 @@ effect scheduling is tagged per element, so one row's `.debounce(id:)` never col
 Lifting is what lets independently-built feature modules meet at the Store:
 
 ```swift
-let app = Behavior.combine(
-    authBehavior.lift(.action(AppAction.prism.auth).state(\.auth).environment(\.auth)),
-    searchBehavior.lift(.action(AppAction.prism.search).state(\.search).environment(\.searchAPI)),
-    todoReducer.liftCollection(.action(AppAction.prism.todo).state(\.todos)).asBehavior()
-)
-let store = Store(initial: .init(), behavior: app, environment: appEnv)
+let app = Behavior.combine([
+    authBehavior.lift(.action(\AppAction.auth).state(\AppState.auth).environment(\AppEnvironment.auth)),
+    searchBehavior.lift(AppScopes.search),
+    todoReducer.liftCollection(.action(AppAction.prism.todo).state(\AppState.todos)).asBehavior()
+])
+let store = Store(initial: AppState(), behavior: app, environment: appEnv)
 ```
 
 > A ``Relay/Scope`` builds up axis by axis (`.action(…).state(…).environment(…)`), each step refining an
@@ -147,8 +160,8 @@ let store = Store(initial: .init(), behavior: app, environment: appEnv)
 > inferable — a bare `\.case` action key path infers its root fine in store init, `projection`, a
 > function return, or a **typed `Behavior<Global,…>` local**. The only spot that can't infer is inlining
 > **directly** into `Behavior.combine(...)` (its bidirectional inference doesn't pin the global): there,
-> either lift into a typed local first and combine the locals, or pass an action **prism**
-> (`AppAction.prism.auth`). For a *declared* scope with no surrounding host, enter through ``ScopeOf`` —
+> either lift into a typed local first and combine the locals, or spell the roots
+> (`\AppAction.auth`, `\AppState.auth`), or pass an action **prism** (`AppAction.prism.auth`). For a *declared* scope with no surrounding host, enter through ``ScopeOf`` —
 > `let movies = ScopeOf<AppFeature>.action(\.movies).state(\.movies).environment(\.moviesEnv)` — the
 > concrete all-`Identity` scope over the ``Rig``'s triad, whose statics pin every key-path root. Axes the
 > chain leaves un-set stay concretely pass-through, so a partial declaration (`.action(…).state(…)`) is a
@@ -160,4 +173,6 @@ let store = Store(initial: .init(), behavior: app, environment: appEnv)
 - ``Behavior``
 - ``Middleware``
 - ``ElementAction``
+- ``ScopeOf``
+- <doc:OptionalsAndCollections>
 - <doc:Algebra>

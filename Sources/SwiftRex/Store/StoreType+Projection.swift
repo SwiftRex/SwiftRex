@@ -3,21 +3,23 @@
 import DataStructure
 
 extension StoreType {
-    /// Creates a ``StoreProjection`` that narrows this store to a local action and state interface.
+    /// Creates a ``StoreProjection`` that narrows this store to a local action and state interface through
+    /// closures.
     ///
-    /// The projection holds no state of its own — `state` is recomputed from the underlying
-    /// store on every access by applying `mapState`. Actions dispatched to the projection are
-    /// transformed by `mapAction` before reaching the underlying store.
+    /// The projection holds no state of its own — its ``StoreProjection/stateStream`` is this store's stream
+    /// mapped through `mapState`, once per upstream change for each observer. Actions dispatched to the
+    /// projection are transformed by `mapAction` before reaching the underlying store.
     ///
-    /// Global types appear only in this call; the resulting ``StoreProjection`` exposes only
-    /// `LocalAction` and `LocalState`:
+    /// For a plain slice, project through a ``Relay/Scope`` instead —
+    /// `appStore.projection(.action(\.counter).state(\.counter))`. The closure form is for a derived view
+    /// state no key path expresses:
     ///
     /// ```swift
-    /// let counterStore = appStore.projection(
-    ///     action: { AppAction.counter($0) },  // CounterAction → AppAction
-    ///     state:  { $0.counterState }          // AppState → CounterState
+    /// let counterView = counterStore.projection(
+    ///     action: { $0 },
+    ///     state: { CounterViewState(label: "\($0.count)", canDecrement: $0.count > 0) }
     /// )
-    /// // counterStore: StoreProjection<CounterAction, CounterState>
+    /// // counterView: StoreProjection<CounterAction, CounterViewState>
     /// ```
     ///
     /// Delegates to ``StoreProjection/init(store:action:state:)``.
@@ -36,7 +38,7 @@ extension StoreType {
     /// Creates a ``StoreProjection`` whose action **and** state maps are `Reader`s over an
     /// `Environment`, applied with `environment` at creation.
     ///
-    /// The environment-aware counterpart of ``projection(action:state:)`` (which is the
+    /// The environment-aware counterpart of `projection(action:state:)` (which is the
     /// `Environment == Void` case). Use it when the projection depends on live dependencies on
     /// either side — locale-aware formatting on the state map, resilient/locale-aware parsing on
     /// the action map. Whoever projects supplies the environment (they hold the underlying store).
@@ -45,7 +47,7 @@ extension StoreType {
     /// let counterStore = appStore.projection(
     ///     environment: world,
     ///     action: Reader { env in { CounterAction.edited($0, env.locale) } },
-    ///     state:  Reader { env in { env.format($0.count) } }
+    ///     state: Reader { env in { env.format($0.count) } }
     /// )
     /// ```
     ///

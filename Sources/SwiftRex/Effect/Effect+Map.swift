@@ -15,7 +15,7 @@ extension Effect {
     ///
     /// ```swift
     /// // authEffect: Effect<AuthAction>
-    /// // mapped:     Effect<AppAction>
+    /// // mapped: Effect<AppAction>
     /// let mapped = authEffect.map { AppAction.auth($0) }
     /// ```
     ///

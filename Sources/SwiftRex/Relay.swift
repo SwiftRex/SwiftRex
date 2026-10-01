@@ -20,10 +20,10 @@ import CoreFP
 /// grant methods purely by conformance — no `@available` suppression:
 ///
 /// ```
-/// …Axis.Strategy            the slot type — everything an axis can be (carries `Global`; Scope binds here)
-/// └─ …Axis.Transformation   a real, present axis (NOT Absurd)
-///    ├─ …Axis.IdentityProtocol   pass-through (local == global) — the fluent INSTANCE refiner
-///    └─ …Axis.LiftingProtocol    carries `Local` + capability — the static FACTORY entry
+/// …Axis.Strategy — the slot type, everything an axis can be (carries `Global`; Scope binds here)
+/// └─ …Axis.Transformation — a real, present axis (NOT Absurd)
+///    ├─ …Axis.IdentityProtocol — pass-through (local == global), the fluent INSTANCE refiner
+///    └─ …Axis.LiftingProtocol — carries `Local` + capability, the static FACTORY entry
 ///       └─ ExtractsProtocol / EmbedsProtocol / ReadsProtocol / WritesProtocol / NarrowsProtocol
 /// ```
 ///

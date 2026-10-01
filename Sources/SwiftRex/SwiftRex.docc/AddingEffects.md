@@ -12,7 +12,7 @@ The `Environment` is whatever the feature needs from the outside. Model it as a 
 
 ```swift
 import SwiftRex
-import SwiftRexSwiftConcurrency   // async/await → Effect bridges
+import SwiftRexSwiftConcurrency // async/await → Effect bridges
 
 struct API: Sendable {
     var fetch: @Sendable (Int) async throws -> String
@@ -69,7 +69,7 @@ func runLoader() {
     let store = Store(initial: LoaderState(), behavior: loaderBehavior, environment: live)
 
     let token = store.stateStream.observe { print($0) }
-    store.dispatch(.load(42))   // isLoading = true → … → value = "item 42", isLoading = false
+    store.dispatch(.load(42)) // isLoading = true → … → value = "item 42", isLoading = false
     _ = token
 }
 ```

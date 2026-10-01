@@ -7,19 +7,20 @@ import Hourglass
 
 /// The sole owner of mutable `State` and the central coordinator of the three-phase dispatch pipeline.
 ///
-/// Create one `Store` per application and pass it — or narrowed ``StoreProjection`` values — to
-/// your features. The ``Store`` is `@MainActor`, so all mutations and observer notifications happen on
-/// the main thread without any manual actor-hopping. Its state is private: follow it through ``stateStream``.
+/// Create one `Store` per application (the `App` keeps it as a plain `let`) and pass it — or narrowed
+/// ``StoreProjection`` values — to your features; SwiftUI views read through a view store made from it.
+/// The ``Store`` is `@MainActor`, so all mutations and observer notifications happen on the main thread
+/// without any manual actor-hopping. Its state is private: follow it through ``stateStream``.
 ///
 /// ## Dispatch pipeline
 ///
 /// Every dispatched action runs through these steps in `runPhases`:
 ///
 /// ```
-/// 1. behavior.handle(action, stateAccess)    — all Behaviors; stateAccess = pre-mutation state
-/// 2. consequence.mutation.runEndoMut(&state)  — zero-copy inout; refcount stays at 1
+/// 1. behavior.handle(action, stateAccess) — all Behaviors; stateAccess = pre-mutation state
+/// 2. consequence.mutation.runEndoMut(&state) — zero-copy inout; refcount stays at 1
 ///    stateStream observers receive the new state (skipped for a provably unchanged action)
-/// 3. consequence.produce.runReader(env)        — Reader runs; stateAccess = post-mutation state
+/// 3. consequence.produce.runReader(env) — Reader runs; stateAccess = post-mutation state
 /// 4. engine.schedule(component) per component — action-driven effects (produce / Cmd)
 /// 5. engine.reconcile(behavior.supervisor(state)) — state-driven channels (Sub); only if state changed
 /// ```

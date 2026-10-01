@@ -16,7 +16,7 @@ Everything in this article follows from two rules:
 
 | | Code | Under every strategy |
 |---|---|---|
-| **Make** a view store from any store | `store.viewStore()` — a `Store`, a projection, a buffer, a transposed slot | ✓ |
+| **Make** a view store from any store | `store.viewStore()` — a `Store`, a projection, a buffer, a traversed slot or element | ✓ |
 | **Keep** it, once, in the view that uses it | `@OwnedStore var viewStore = store.viewStore()` | ✓ |
 | **Every view below** receives it | `let viewStore: ViewStore<Action, State>` | ✓ |
 
@@ -40,13 +40,11 @@ A view store holds a snapshot, the record of what each view read, and its subscr
 **In a view — `@OwnedStore`** (the common case). The initial value is an autoclosure: it runs the first time the view appears, never on a re-initialisation.
 
 ```swift
-struct DetailScreen: View {
-    @OwnedStore var viewStore: ViewStore<DetailAction, DetailState>
+struct ProfileScreen: View {
+    @OwnedStore var viewStore: ViewStore<ProfileAction, Profile>
 
-    init(appStore: some StoreType<AppAction, AppState>, id: Item.ID) {
-        _viewStore = OwnedStore(wrappedValue: appStore
-            .projection(action: { AppAction.detail(id, $0) }, state: { $0.details[id] ?? .empty })
-            .viewStore())
+    init(appStore: some StoreType<AppAction, AppState>) {
+        _viewStore = OwnedStore(wrappedValue: appStore.projection(.action(\.profile).state(\.profile)).viewStore())
     }
 
     var body: some View { … }
@@ -55,11 +53,11 @@ struct DetailScreen: View {
 
 Pick the signal where the view store is made: `store.viewStore(.combine)`. An existential store (`any StoreType<A, S>`) makes one the same way.
 
-**In the `App`**, keep the two apart. The real ``Store`` runs the app and is never observed — create it once, in the shell, and keep a plain reference (deep links, scene delegates and effects dispatch to it). The root view keeps the view store made from it:
+**In the `App`**, keep the two apart. The real ``Store`` runs the app and is never observed — create it once, in the shell, and keep it as a plain `let` (deep links, scene delegates and effects dispatch to it). The root view keeps the view store made from it:
 
 ```swift
 @main struct MyApp: App {
-    let store = Store(initial: AppState(), behavior: appBehavior, environment: World.live)   // runs the app
+    let store = Store(initial: AppState(), behavior: appBehavior, environment: World.live) // runs the app
 
     var body: some Scene {
         WindowGroup { RootView(store: store) }
@@ -67,7 +65,7 @@ Pick the signal where the view store is made: `store.viewStore(.combine)`. An ex
 }
 
 struct RootView: View {
-    @OwnedStore var viewStore: ViewStore<AppAction, AppState>                              // the leaf, kept here
+    @OwnedStore var viewStore: ViewStore<AppAction, AppState> // the leaf, kept here
 
     init(store: Store<AppAction, AppState, World>) {
         _viewStore = OwnedStore(wrappedValue: store.viewStore())
@@ -80,8 +78,8 @@ struct RootView: View {
 **In a body — hand the stage to the child view**, which keeps its own view store: a router's `switch`, a `ForEach` row, a sheet's content. A stage is a pure value, cheap to build on every render; the child's `@OwnedStore` makes the view store from it only the first time that view appears.
 
 ```swift
-.sheet(item: viewStore.binding(.state(\.editing).action(\.closeEditor))) { _ in
-    if let editor = viewStore.traverse(.action(\.editor).state(\.editor)) {
+.sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in // a Presentation<EditorState> slot
+    if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
         EditorView(store: editor)
     }
 }
@@ -110,14 +108,16 @@ A child never builds anything. It takes what the parent hands down, as a plain `
 | is a row of a list | a row position: `ForEach(viewStore.state.each(\.songs)) { SongRow(song: $0) }` | `let song: GranularTracking<Song>` |
 | only needs values | plain values | `let title: String` |
 
+Give a row its own view store only when it dispatches or binds. Measured over 3,000 rows (release build): positions from one view store cost about 30 µs for a change no row reads, while a view store per row does its own work on every change even when nothing that row reads changed — about 4 µs per row, some 13 ms per change.
+
 Reads are granular at any depth. A member whose type is `IndivisibleTracking` (strings, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those…) comes back as the value; anything else comes back as a position you keep reading into:
 
 ```swift
-Text(viewStore.state.title)                   // depends on \.title
-Text(viewStore.state.player.title)            // depends on \.player.title only
-viewStore.state.player                        // GranularTracking<Player> — nothing recorded yet
-viewStore.state.player.value                  // the whole Player — depends on \.player
-extension Status: IndivisibleTracking {}      // opt a small value in to be read whole
+Text(viewStore.state.title) // depends on \.title
+Text(viewStore.state.player.title) // depends on \.player.title only
+viewStore.state.player // GranularTracking<Player> — nothing recorded yet
+viewStore.state.player.value // the whole Player — depends on \.player
+extension Status: IndivisibleTracking {} // opt a small value in to be read whole
 ```
 
 **Pass positions down, not values.** A child that receives `viewStore.state.transport` depends only on what *it* reads, so a field that changes ten times a second redraws the one small view that shows it — no hand-split sub-stores:
@@ -127,8 +127,8 @@ struct PlayerScreen: View {
     let viewStore: ViewStore<PlayerAction, PlayerState>
 
     var body: some View {
-        Console(mixer: viewStore.state.mixer)            // untouched by playhead ticks
-        Playhead(transport: viewStore.state.transport)   // redraws on every tick, alone
+        Console(mixer: viewStore.state.mixer) // untouched by playhead ticks
+        Playhead(transport: viewStore.state.transport) // redraws on every tick, alone
     }
 }
 ```
@@ -143,7 +143,7 @@ Stores compose declaratively: each one *follows* the one below through its ``Sto
 
 | Operator | Does | Costs per upstream change, per observer |
 |---|---|---|
-| `projection(action:state:)` | narrows the types; keeps nothing | the map, once |
+| `projection(scope)` / `projection(action:state:)` | narrows the types; keeps nothing | the map, once |
 | `buffer()` | passes a change on only when `!=` | one `==` |
 | a view store (`.viewStore()`, kept by `@OwnedStore`) | keeps a snapshot; signals the views whose paths changed | the changed paths |
 
@@ -156,8 +156,8 @@ A view store already *is* a buffer on its output — it only signals what change
 | a slice a subview dispatches into or binds | `PlayerView(store: viewStore.projection(.action(\.player).state(\.player)))`, which keeps `.viewStore()` of it | the child's own view store |
 | a derived view state (a map) | `@OwnedStore var viewStore = appStore.projection(action: …, state: makeViewState).viewStore()` | the map runs once per upstream change |
 | a derived view state, and the map is expensive or the app is busy | `@OwnedStore var viewStore = appStore.buffer().projection(…).viewStore()` | the map runs only when its input changed — needs the input `Equatable` |
-| a derived view state of one feature's slice | `appStore.projection(action: …, state: \.feature).buffer().projection(action: { $0 }, state: makeViewState)` | slice → dedup on the slice → map |
-| a derived view state *from a view store* | `@OwnedStore var detail = viewStore.projection(action: …, state: …).viewStore()` | the child follows the parent's pure chain, not its snapshot |
+| a derived view state of one feature's slice | `appStore.projection(.action(\.feature).state(\.feature)).buffer().projection(action: …, state: makeViewState)` | slice → dedup on the slice → map |
+| a derived view state *from a view store* | `ChildView(store: viewStore.projection(action: …, state: makeViewState))`, which keeps `.viewStore()` of it | the child follows the parent's pure chain, not its snapshot |
 
 A pure stage has no `state` to read and no bindings — the types make you call `.viewStore()` before you can observe it.
 
@@ -185,11 +185,15 @@ Either way, a dispatch reaches the view store synchronously on the main actor �
 
 ## Bindings and navigation
 
-The binding and presentation helpers exist only on `ViewStore`. A two-way binding over an `Equatable` value dispatches only real changes — SwiftUI sometimes writes a binding twice for one gesture (a list row tap writes its selection twice), and an equal write is dropped. On iPhone, make `List(selection:)` rows `NavigationLink(value:)`: a `.tag`ged row selects only in edit mode there. On a plain `Store` or `StoreProjection` they don't compile: a binding SwiftUI can't observe would never update. They read granularly too — `presence(.state(\.detail))` redraws on the presence edge, not on every change inside `detail`.
+The binding and presentation helpers exist only on `ViewStore`. A two-way binding over an `Equatable` value dispatches only real changes — SwiftUI sometimes writes a binding twice for one gesture (a list row tap writes its selection twice), and an equal write is dropped. On iPhone, make `List(selection:)` rows `NavigationLink(value:)`: a `.tag`ged row selects only in edit mode there. On a plain `Store` or `StoreProjection` they don't compile: a binding SwiftUI can't observe would never update. They read granularly too — an `isPresented:` binding over an optional slot (`binding(.state(\.settings).action(\.closeSettings))`) redraws on the presence edge, not on every change inside `settings`.
 
 ```swift
 struct RootView: View {
-    @OwnedStore var viewStore = appStore.viewStore()
+    @OwnedStore var viewStore: ViewStore<AppAction, AppState>
+
+    init(store: Store<AppAction, AppState, World>) {
+        _viewStore = OwnedStore(wrappedValue: store.viewStore())
+    }
 
     var body: some View {
         NavigationStack(path: viewStore.binding(.state(\.path).action(review: AppAction.setPath))) {
@@ -199,7 +203,7 @@ struct RootView: View {
         .sheet(isPresented: viewStore.binding(.state(\.settings).action(\.closeSettings))) {
             // `settings` is optional state: present while it exists; the child keeps a view store of its own.
             if let settings = viewStore.traverse(.action(\.settings).state(\.settings)) {
-                SettingsView(store: settings)            // @OwnedStore var viewStore = store.viewStore(), in its init
+                SettingsView(store: settings) // keeps _viewStore = OwnedStore(wrappedValue: store.viewStore()) in its init
             }
         }
     }
@@ -225,13 +229,13 @@ Anything that isn't a SwiftUI view follows a store through its ``StoreType/state
 
 ```swift
 let token = store.stateStream.map(\.username).removeDuplicates().observe { nameLabel.text = $0 }
-for await state in store.stateStream { … }                    // AsyncSequence, latest value first
-store.stateStream.sink { … }.store(in: &cancellables)          // a Combine Publisher (SwiftRex.Combine)
+for await state in store.stateStream { … } // AsyncSequence, latest value first
+store.stateStream.sink { … }.store(in: &cancellables) // a Combine Publisher (SwiftRex.Combine)
 ```
 
 Keep the returned ``UISubscriptionToken`` for as long as you follow; releasing it stops delivery immediately.
 
-An optional child outside SwiftUI is just state: follow its presence and present or dismiss on the edge, handing the child screen an ordinary projection of the slot:
+An optional child outside SwiftUI is just state: follow its presence and present or dismiss on the edge, handing the child screen a ``StoreOptionalFocus`` over a projection of the slot (`StoreOptionalFocus(store.projection(.action(\.editor).state(\.editor)), present: editor)`):
 
 ```swift
 token = store.stateStream

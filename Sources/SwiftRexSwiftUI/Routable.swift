@@ -8,14 +8,14 @@
     /// `Routable`, stores its router as a `let`, and calls it from destination closures:
     ///
     /// ```swift
-    /// struct HomeView: View, Routable {
-    ///     let viewStore: ViewStore<Home.Action, Home.State>
-    ///     let router: AppRouter                        // handed in at construction, traps store + world
+    /// struct RootView: View, Routable {
+    ///     let viewStore: ViewStore<AppAction, AppState>
+    ///     let router: AppRouter // handed in at construction; holds the app view store and the world
     ///
     ///     var body: some View {
-    ///         List { … }
-    ///             .sheet(isPresented: viewStore.binding(.state(\.route).action(\.dismiss))) {
-    ///                 router.view(for: .detail)        // env-free body; the router supplies env
+    ///         HomeView(viewStore: viewStore)
+    ///             .sheet(item: viewStore.binding(.state(\.detail).action(\.detail))) { _ in
+    ///                 router.detail() // env-free body; the router builds the child and supplies its env
     ///             }
     ///     }
     /// }
@@ -26,7 +26,7 @@
     /// A router injected at construction is deterministic across sheet/modal boundaries — the exact
     /// place SwiftUI's `@Environment` propagation is unreliable. Because the router builds every view,
     /// it re-hands itself at each construction, so nested flows (a sheet that itself navigates) always
-    /// have their router. See ``Router`` for the destination-building side.
+    /// have their router. The router (an app type) is the destination-building side.
     ///
     /// A view conforms manually today; a future `routing:` argument on the feature macros can synthesize
     /// the `router` property and this conformance.

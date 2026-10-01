@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
-// The recommended app shape: a container `@Feature` whose hand-written `view` owns the observed store
-// (`ObservableStoreHost`) and hands a `ViewStore` to a router and a root view.
+// The recommended app shape: a container `@Feature` whose hand-written `view` returns a root view that keeps the
+// app's view store (`@OwnedStore`) and hands it to a router and a root view.
 
 #if canImport(AppKit) && canImport(SwiftUI) && canImport(Combine)
     import AppKit

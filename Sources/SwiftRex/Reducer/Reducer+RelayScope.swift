@@ -3,8 +3,8 @@
 import CoreFP
 
 extension Reducer {
-    /// Lift this reducer into a global domain through a ``Relay/Scope`` — the single replacement for the
-    /// `lift(action:state:…)` family. A reducer only **extracts** the action (`ExtractsProtocol` — no
+    /// Lift this reducer into a global domain through a ``Relay/Scope`` —
+    /// `reducer.lift(.action(\.child).state(\.child))`. A reducer only **extracts** the action (`ExtractsProtocol` — no
     /// `review` needed) and **writes** the state (`WritesProtocol`, total or affine); it has no
     /// environment, so the env slot is pinned sealed (`Never` global) — an inline builder chain
     /// (`.action(…).state(…)`) leaves nothing free. Reconstructs an `AffineTraversal` from the state lane

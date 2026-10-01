@@ -9,9 +9,11 @@ Where an ``Effect`` is a one-shot you fire, a ``Channel`` is a *resource you dec
 ```swift
 Channel(id: "socket") { dispatch in
     let s = openSocket()
-    s.onMessage { dispatch(.received($0)) }                       // events out → actions
-    return ChannelHandler(receive: { s.write($0) },              // values in → the resource
-                          cancel:  { s.close() })                // teardown, written once
+    s.onMessage { dispatch(.received($0)) } // events out → actions
+    return ChannelHandler(
+        receive: { s.write($0) }, // values in → the resource
+        cancel: { s.close() } // teardown, written once
+    )
 }
 ```
 
@@ -165,5 +167,4 @@ Because the desired set is recomputed from state every cycle, the same channel i
 ## See Also
 
 - <doc:StateDrivenEffects>
-- `supervise`
-- `supervise`
+- ``Supervision``

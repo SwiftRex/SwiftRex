@@ -18,13 +18,13 @@
 //
     // Three overloads mirror the Combine bridge:
 //
-    //   Case A   Infallible<Action>               .asEffect(scheduling:)
+    //   Case A: Infallible<Action> → .asEffect(scheduling:)
 //            Output is already the Action — new ActionSource from call site.
 //
-    //   Case A2  Infallible<DispatchedAction<A>>  .asEffect(scheduling:)   — forwarding
+    //   Case A2: Infallible<DispatchedAction<A>> → .asEffect(scheduling:) — forwarding
 //            Output is pre-sourced — dispatcher forwarded unchanged.
 //
-    //   Case B   Infallible<Output>               .asEffect(_ transform:scheduling:)
+    //   Case B: Infallible<Output> → .asEffect(_ transform:scheduling:)
 //            User maps Output → Action.
 
     extension InfallibleType {
@@ -139,10 +139,10 @@
 //
     // Four overloads cover every common Observable-to-Effect pattern:
 //
-    //   Case A   Observable<Action>               .asEffect(scheduling:)           — errors discarded
-    //   Case A2  Observable<DispatchedAction<A>>  .asEffect(scheduling:)           — forwarding
-    //   Case B   Observable<Output>               .asEffect(_ transform:scheduling:) — errors discarded
-    //   Case C   Observable<Output>               .asEffect(_ transform:scheduling:) — Result
+    //   Case A: Observable<Action> → .asEffect(scheduling:) — errors discarded
+    //   Case A2: Observable<DispatchedAction<A>> → .asEffect(scheduling:) — forwarding
+    //   Case B: Observable<Output> → .asEffect(_ transform:scheduling:) — errors discarded
+    //   Case C: Observable<Output> → .asEffect(_ transform:scheduling:) — Result
 //
     // Error handling in Cases A, A2, B:
     //   onError fires `complete()` immediately — the error is silently consumed. Use Case C when
@@ -273,7 +273,7 @@
         /// }
         ///
         /// apiObservable.asEffect(AppAction.didFetch)
-        /// // Each model  → .didFetch(.success(model))
+        /// // Each model → .didFetch(.success(model))
         /// // Observable error → .didFetch(.failure(error)) then complete
         /// ```
         ///

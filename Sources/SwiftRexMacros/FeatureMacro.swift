@@ -12,13 +12,14 @@ import SwiftSyntaxMacros
 ///   the `ViewState` view projection. A user attribute (`@ApplyOptics`/`@Lenses`/`@Prisms`/`@NoOptics`) on a
 ///   nested type wins. State declared in an *extension* of the feature isn't visible to the macro —
 ///   annotate that extension with `@ApplyOptics(recursively: true)` directly.
-/// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
-///   generates `view(store:environment:) -> some View` (when a `Content` view exists) handing `Content`
-///   a `ViewStore` (made once per view identity and kept by the generated `FeatureRoot` view) over an environment-aware projection, signalling
-///   through `strategy:` (default `.automatic`: Observation on iOS 17+, Combine below; nothing is gated).
-/// - `ExtensionMacro`       — generates the `Feature` conformance when the type has a view (a `Content`,
-///   or a hand-written `view`); a view-less feature is a behavior only and gets no `Feature`
-///   conformance. Nothing is availability-gated: the store picks Observation or Combine at runtime.
+/// - `MemberMacro` — synthesises `initialState(with:)` (Void seed) when not written, and generates
+///   `view(store:environment:) -> some View` (when a `Content` view exists) handing `Content` a `ViewStore`
+///   (made once per view identity and kept by the generated `FeatureRoot` view) over an environment-aware
+///   projection, signalling through `strategy:` (default `.automatic`: Observation on iOS 17+, Combine below;
+///   nothing is gated).
+/// - `ExtensionMacro` — generates the `Feature` conformance when the type has a view (a `Content`, or a
+///   hand-written `view`); a view-less feature is a behavior only and gets no `Feature` conformance. Nothing is
+///   availability-gated: the view store picks Observation or Combine at runtime.
 ///
 /// **Access follows the `enum`'s own modifier** — a `public enum` gets `public` members; a plain `enum`
 /// keeps them `internal` — read from the declaration, exactly like `@BoundTo`. `ViewState`/
@@ -75,9 +76,9 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
     /// Builds `view(store:environment:)`: a `FeatureRoot` that keeps the feature's `ViewStore` (made once per view
     /// identity), signalling through `strategy:` (chosen at runtime, so ungated). When a `ViewState` struct /
     /// `ViewAction` enum exists the store is projected through the (env-aware) maps — buffered before the map
-    /// when the feature's `State` is `Equatable`, picked by overload resolution in `featureProjection` —
-    /// otherwise the feature's store is observed as-is, with an unmapped axis in a mixed feature falling back to
-    /// identity.
+    /// when the feature's `State` is `Equatable`, picked by overload resolution in `featureProjection` — and
+    /// the view store is made over that projection (an unmapped axis in a mixed feature falls back to
+    /// identity); otherwise it is made over the feature's store as-is.
     private static func viewMember(
         access: String,
         node: AttributeSyntax,
@@ -131,8 +132,8 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
 
     /// Generates the protocol conformance. A feature that builds a view — it has a `Content` (the macro
     /// generates `view()`) or a hand-written `view` — conforms to `Feature`; a view-less feature is a
-    /// behavior only and conforms to `HasBehavior`. Ungated, like the generated `view()` — the store picks
-    /// Observation or Combine at runtime.
+    /// behavior only and gets no conformance (it can declare `: HasBehavior` itself). Ungated, like the
+    /// generated `view()` — the view store picks Observation or Combine at runtime.
     public static func expansion(
         of node: AttributeSyntax,
         attachedTo declaration: some DeclGroupSyntax,

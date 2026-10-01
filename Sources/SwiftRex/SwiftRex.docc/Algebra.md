@@ -28,7 +28,7 @@ The left of each pair is a pure description; the ``Store`` is the only thing tha
 
 ```swift
 // Two independent features, composed with the monoid:
-let app = counter.lifted <> profile.lifted        // <> is `combine`
+let app = counter.lifted <> profile.lifted // <> is `combine`
 // `app` is one Behavior; dispatching an action runs both, atomically.
 ```
 
@@ -53,11 +53,13 @@ The monoid-plus-one-interpreter design isn't aesthetic — it's where the runtim
 
 ## The view boundary stays pure too
 
-The ``Store`` never deduplicates — it always notifies, copies nothing. Narrowing and observing for views is done by helpers around it:
+The ``Store`` never deduplicates — it notifies on every state-changing action and copies nothing. It can't be read either, only followed through its ``StoreType/stateStream``. Narrowing for views is done by **pure stages** around it — values that follow a stream and keep nothing a parent holds (any state they need is per subscriber and dies with the subscription):
 
 - ``StoreProjection`` — a *stateless* `struct` that maps global action/state to a local slice (a lens with no storage of its own).
-- the observed store (`SwiftRex.SwiftUI`) — what SwiftUI reads: one snapshot, and a dependency per key path each view read, signalled only when that value changes (see <doc:StoresAtAGlance>).
-- ``StoreBuffer`` — the caching/deduplicating layer that skips propagation when the projected slice is unchanged (`Equatable`, or a custom predicate).
+- ``StoreBuffer`` — `removeDuplicates` per subscriber: skips propagation when the projected slice is unchanged (`Equatable`, or a custom predicate).
+- ``StoreCollectionFocus`` and ``StoreOptionalFocus`` — one element of a collection (state `Element?`), and a store of `T` over a store of `T?`.
+
+Where the chain ends is the leaf: `ViewStore` (`SwiftRex.SwiftUI`), the only readable store — one snapshot, and a dependency per key path each view read, signalled only when that value changes. It is made explicitly (`store.viewStore()`) and kept by the view that uses it (see <doc:StoresAtAGlance>).
 
 ## See also
 

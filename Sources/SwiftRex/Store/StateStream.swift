@@ -7,7 +7,7 @@
 ///
 /// ```swift
 /// let token = store.stateStream.observe { state in
-///     render(state)          // called right away with the current state, then after every change
+///     render(state) // called right away with the current state, then after every change
 /// }
 /// ```
 ///
@@ -93,7 +93,7 @@ public struct StateStream<State: Sendable> {
 
 extension StateStream {
     /// The wrapped value while `.some`, and the **last present one** once `nil` — seeded with `fallback` when the
-    /// stream starts out `nil`. Each observer remembers its own last value. Plumbing behind `transpose`: a child
+    /// stream starts out `nil`. Each observer remembers its own last value. Plumbing behind ``StoreOptionalFocus``: a child
     /// screen can outlive its state for the frames of a dismissal and must keep showing what it last showed.
     package func holdingLastPresent<Wrapped: Sendable>(fallback: Wrapped) -> StateStream<Wrapped> where State == Wrapped? {
         let start = self.start

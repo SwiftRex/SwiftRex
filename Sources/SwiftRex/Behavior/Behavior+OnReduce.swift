@@ -4,7 +4,8 @@ import CoreFP
 import DataStructure
 
 // `on` overloads that match an action case and reduce state WITHOUT dispatching (the
-// no-dispatch counterpart of the `on(…, dispatch:, reduce:)` family in Behavior+Bridge).
+// no-dispatch counterpart of the `on(…, dispatch:, reduce:)` family). Prefer the axis-separated form in
+// Behavior+AxisBridge: `.on(.action(\.retry), when: { … }, reduce: { … })`.
 extension Behavior {
     /// Matches a `Prism` and runs a state mutation with no dispatch.
     public func on<T: Sendable>(

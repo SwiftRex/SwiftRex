@@ -11,16 +11,16 @@
 //
     // Four overloads cover every common SignalProducer-to-Effect pattern:
 //
-    //   Case A   SignalProducer<Action, Never>               .asEffect(scheduling:)
+    //   Case A: SignalProducer<Action, Never> → .asEffect(scheduling:)
 //            Value is already the Action — new ActionSource from call site.
 //
-    //   Case A2  SignalProducer<DispatchedAction<A>, Never>  .asEffect(scheduling:)  — forwarding
+    //   Case A2: SignalProducer<DispatchedAction<A>, Never> → .asEffect(scheduling:) — forwarding
 //            Value is pre-sourced — dispatcher forwarded unchanged.
 //
-    //   Case B   SignalProducer<V, Never>                    .asEffect(_ transform:scheduling:)
+    //   Case B: SignalProducer<V, Never> → .asEffect(_ transform:scheduling:)
 //            Infallible; user maps V → Action.
 //
-    //   Case C   SignalProducer<V, E: Error>                 .asEffect(_ transform:scheduling:)
+    //   Case C: SignalProducer<V, E: Error> → .asEffect(_ transform:scheduling:)
 //            Failable; user maps Result<V, E> → Action.
 //
     // Lazy subscription model:
@@ -159,7 +159,7 @@
         /// // Producer<MyModel, APIError> bridges directly using the enum case as transform
         /// apiProducer.asEffect(AppAction.didFetch)
         /// // Each model → .didFetch(.success(model))
-        /// // API error  → .didFetch(.failure(error)) then complete
+        /// // API error → .didFetch(.failure(error)) then complete
         /// ```
         ///
         /// - Parameters:

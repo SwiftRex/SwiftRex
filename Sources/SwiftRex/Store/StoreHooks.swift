@@ -2,7 +2,7 @@
 
 /// Diagnostic passed to ``StoreHooks/onReentranceDetected`` when a single dispatch cycle drains
 /// more than ``StoreHooks/reentranceThreshold`` actions — the signature of a runaway re-dispatch
-/// loop (e.g. a `willChange`/`didChange` observer that dispatches on every change).
+/// loop (e.g. a ``StateStream`` observer that dispatches on every change).
 public struct StoreReentranceInfo {
     /// How many actions the drain processed before tripping the threshold.
     public let drainedCount: Int

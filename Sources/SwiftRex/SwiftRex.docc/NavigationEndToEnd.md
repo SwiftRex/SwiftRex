@@ -52,13 +52,13 @@ public enum LibraryFeature {
     public static func behavior() -> Behavior<Action, State, Environment> {
         .handle { action, _ in
             switch action {
-            case .onAppear:      .produce { ctx in ctx.environment.loadShelves().asEffect(Action.loaded) }
-            case let .loaded(s):  .reduce { $0.shelves = s }
-            case .tappedShelf:    .doNothing   // OUTPUT — the app bridges this into a push (Layer 4)
+            case .onAppear: .produce { ctx in ctx.environment.loadShelves().asEffect(Action.loaded) }
+            case let .loaded(s): .reduce { $0.shelves = s }
+            case .tappedShelf: .doNothing // OUTPUT — the app bridges this into a push (Layer 4)
             }
         }
     }
-    public typealias Content = LibraryView
+    typealias Content = LibraryView // the view layer stays internal
 }
 
 // BookFeature — a single book; owns "edit" + "delete" intents (a module entry point).
@@ -71,13 +71,13 @@ public enum BookFeature {
     public static func behavior() -> Behavior<Action, State, Environment> {
         .reduce { action, state in
             switch action {
-            case .tappedDelete:  state.deleting = state.book     // the alert's content IS the presentation
-            case .cancelDelete:  state.deleting = nil
-            case .tappedEdit, .confirmDelete: break   // OUTPUT — bridged by the app (Layer 4)
+            case .tappedDelete: state.deleting = state.book // the alert's content IS the presentation
+            case .cancelDelete: state.deleting = nil
+            case .tappedEdit, .confirmDelete: break // OUTPUT — bridged by the app (Layer 4)
             }
         }
     }
-    public typealias Content = BookView
+    typealias Content = BookView
 }
 
 // EditorFeature — the modal editor (a module entry point).
@@ -95,11 +95,11 @@ public enum EditorFeature {
             switch action {
             case let .editedTitle(t): state.book.title = t
             case let .editedNotes(n): state.book.notes = n
-            case .tappedSave, .tappedCancel: break   // OUTPUT — bridged to dismiss (Layer 4)
+            case .tappedSave, .tappedCancel: break // OUTPUT — bridged to dismiss (Layer 4)
             }
         }
     }
-    public typealias Content = EditorView
+    typealias Content = EditorView
 }
 ```
 
@@ -107,7 +107,7 @@ public enum EditorFeature {
 
 ## Layer 3 — The global feature: where every shape is *stored*
 
-The whole app is one ``FeatureDomain`` — the parent that scopes hang off. Its `State`/`Action`/`Environment` is where each navigation shape lives. **This is the "how do I store this" answer:**
+The whole app is one `FeatureDomain` (the `SwiftRex.Architecture` name for a ``Rig``) — the parent that scopes hang off. Its `State`/`Action`/`Environment` is where each navigation shape lives. **This is the "how do I store this" answer:**
 
 ```swift
 // AppFeature — the parent FeatureDomain. `Relay.Scope` (declared in `AppScopes`) embeds each child here.
@@ -119,27 +119,27 @@ public enum AppFeature: FeatureDomain {
 
 @Lenses
 public struct AppState: Sendable, Equatable {
-    // selection shape  → a plain value
+    // selection shape → a plain value
     public var tab: Tab = .library
-    // stack shape      → an ordered array of routes
+    // stack shape → an ordered array of routes
     public var path: [AppRoute] = []
     // presentation shape → the three-stage lifecycle
     public var editor: Presentation<EditorFeature.State> = .dismissed
     // the feature state slices (present siblings, always alive)
     public var library = LibraryFeature.State()
-    public var book: BookFeature.State?          // optional: only while a book is on the stack
+    public var book: BookFeature.State? // optional: only while a book is on the stack
 }
 
 @Prisms
 public enum AppAction: Sendable {
     // one nav-operation case per shape (payload enums from SwiftRex.Architecture)
-    case tab(SelectionNavigation<Tab>)           // .select(tab)
-    case nav(StackNavigation<AppRoute>)          // .push / .pop / .popToRoot / .setPath
-    case editor(PresentationAction<EditorFeature.Action>)  // .dismiss / .child — no State in the action
+    case tab(SelectionNavigation<Tab>) // .select(tab)
+    case nav(StackNavigation<AppRoute>) // .push / .pop / .popToRoot / .setPath
+    case editor(PresentationAction<EditorFeature.Action>) // .dismiss / .dismissed / .child — no State in the action
     // the child features' own actions
     case library(LibraryFeature.Action)
     case book(BookFeature.Action)
-    case openedURL(URL)                          // deep link in
+    case openedURL(URL) // deep link in
 }
 ```
 
@@ -159,15 +159,20 @@ public extension AppFeature {
     static func behavior(world: World) -> Behavior<AppAction, AppState, World> {
         Behavior.combine([
             // 1. children, lifted to the app types
-            AppScopes.library.behavior(of: LibraryFeature.self),                                   // present sibling → plain lift
-            BookFeature.behavior().lift(.action(AppAction.prism.book).state(\.book)
-                .environment { _ in .init() }),  // optional \.book → affine state: runs only while on the stack
-            EditorFeature.behavior().liftPresentation(action: \.editor, state: \.editor,
-                                                      environment: { $0.editorEnv }),  // presentation stage machine + child
+            // a present sibling → a declared scope, total lift
+            AppScopes.library.behavior(of: LibraryFeature.self),
+            // an optional \.book → affine state lane: runs only while a book is on the stack
+            BookFeature.behavior().lift(.action(\.book).state(\.book).environment { _ in BookFeature.Environment() }),
+            // a presentation slot → the stage machine + the child, in one lift
+            EditorFeature.behavior().liftPresentation(
+                action: \.editor,
+                state: \.editor,
+                environment: { $0.editorEnv }
+            ),
 
             // 2. one reducer per navigation shape (from SwiftRex.Architecture)
-            .navigationSelection(\.tab,  action: \.tab),                     // selection
-            .navigationStack(\.path,     action: \.nav),                     // stack: push/pop/setPath
+            .navigationSelection(\.tab, action: \.tab), // selection
+            .navigationStack(\.path, action: \.nav), // stack: push/pop/setPath
 
             // 3. bridges — child OUTPUT → navigation (the core `.on` bridge)
             bridges()
@@ -179,17 +184,17 @@ public extension AppFeature {
         .reduce { action, state in
             switch action {
             case let .library(.tappedShelf(id)):
-                state.path.append(.shelf(id))                       // tap a shelf → push it
+                state.path.append(.shelf(id)) // tap a shelf → push it
 
             case .book(.tappedEdit):
                 if let book = state.book?.book {
-                    state.editor = .presented(EditorFeature.initialState(with: book))   // "Edit" → present editor
+                    state.editor = .presented(EditorFeature.initialState(with: book)) // "Edit" → present editor
                 }
 
             case .editor(.child(.tappedSave)), .editor(.child(.tappedCancel)):
-                state.editor = state.editor.dismiss()               // begin dismiss; SwiftUI's onDismiss finishes it
+                state.editor = state.editor.dismiss() // begin dismiss; SwiftUI's onDismiss finishes it
 
-            case let .openedURL(url):                               // deep link → navigation is just state
+            case let .openedURL(url): // deep link → navigation is just state
                 if let id = bookID(from: url) { state.tab = .library; state.path = [.book(id)] }
 
             default:
@@ -200,7 +205,7 @@ public extension AppFeature {
 }
 ```
 
-> A plain pattern-matching reducer is the clearest way to turn a child *output* into navigation. For a pure route→re-dispatch with no state (e.g. a logout button that fires an auth action), the point-free ``Behavior/on(_:dispatch:)`` bridge does the same in one line. The editor's `dismiss()` here is the **programmatic** first step (`presented → dismissing`); SwiftUI's `onDismiss` supplies the second (Layer 6).
+> A plain pattern-matching reducer is the clearest way to turn a child *output* into navigation. For a pure route→re-dispatch with no state (e.g. a logout button that fires an auth action), the core `.on(.action(…), dispatch: .action(…))` bridge does the same in one line. The editor's `dismiss()` here is the **programmatic** first step (`presented → dismissing`); SwiftUI's `onDismiss` supplies the second (Layer 6).
 
 ## Layer 5 — Scopes: declare the wiring once
 
@@ -209,7 +214,7 @@ A ``Relay/Scope`` bundles `(action prism, state key path, env narrow)` and drive
 ```swift
 public enum AppScopes {
     public static let library = ScopeOf<AppFeature>
-        .action(\.library)                   // a PRESENT sibling slice → a clean total lift
+        .action(\.library) // a PRESENT sibling slice → a clean total lift
         .state(\.library)
         .environment { world in LibraryFeature.Environment(loadShelves: world.loadShelves) }
 }
@@ -217,71 +222,72 @@ public enum AppScopes {
 
 `AppScopes.library.behavior(of: LibraryFeature.self)` folds into Layer 4; `AppScopes.library.view(of: LibraryFeature.self, from:, world:)` is called by the router (Layer 6). The literal is a **compile-time proof**: a wrong slot, case, or env mapping won't type-check.
 
-> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router or the `.presenting` content — by the view store's `transpose()` (`store.traverse(.action(…).state(\.book))`), which inverts a `Store<Child?>` (or `Store<Presentation<Child>>`) into an `Optional<Store<Child>>` — depending only on whether the child is there — so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
+> **Only present-state children lift with a total state key path.** A total `WritableKeyPath` to the child state fits the *selection* siblings and the library — and only such a scope can build a view with `.view(of:from:world:)`. An **optional** child (`book: BookFeature.State?`) or a **presentation** child (`editor: Presentation<…>`) has no such key path: its behavior lifts with an **affine** state lane (`.state(\.book)`, an optional key path) or `liftPresentation` (Layer 4), and its *view* is built where it's rendered — the router, or the sheet's content — with the view store's `traverse(.action(…).state(…))`. That maps the view store through the scope and swaps the nesting: a store of `Child?` (or `Presentation<Child>`) becomes an optional store of `Child` — a pure stage the child's feature view keeps its own view store over. The caller depends only on whether the child is there, so the frame where the slot is empty simply renders nothing — no placeholder (Layer 6). Same store, same wiring, one level in.
 
 ## Layer 6 — The Router and the Views (all four bindings)
 
-The **router** holds the app's *view store* and the world and resolves a route to `some View`, supplying each child's environment (which an env-free view body can't). Navigation reads state in a view body, so it must go through a `ViewStore` — the binding and presentation helpers don't even exist on the plain `Store`:
+The **router** holds the app's *view store* and the world and resolves a route to `some View`, handing each child feature a pure stage and supplying its environment (which an env-free view body can't). Navigation reads state in a view body, so it goes through a `ViewStore` — the binding and `traverse` helpers don't even exist on the plain `Store`:
 
 ```swift
 @MainActor struct AppRouter {
-    let store: AppViewStore   // the app's view store, owned once by the shell (Layer 7)
+    let store: AppViewStore // the app's view store, kept by the shell with @OwnedStore (Layer 7)
     let world: World
 
     @ViewBuilder func view(for route: AppRoute) -> some View {
         switch route {
-        case .shelf: AppScopes.library.view(of: LibraryFeature.self, from: store, world: world)   // (a real app wires a ShelfFeature)
-        case let .book(id): bookView(id)
+        case .shelf: AppScopes.library.view(of: LibraryFeature.self, from: store, world: world) // (a real app wires a ShelfFeature)
+        case .book: bookView()
         }
     }
-    @ViewBuilder private func bookView(_ id: Book.ID) -> some View {
-        // The optional `book` slice, focused with its action lane, transposes to `Optional<Store>` — build the
-        // child only while it's present (a real app loads `state.book` when `.book(id)` is pushed); the empty
-        // frame renders nothing. The router depends on the presence edge only, not on the book's contents.
-        if let child = store.traverse(.action(AppAction.prism.book).state(\.book)) {
-            BookFeature.view(store: child, environment: .init())
+
+    @ViewBuilder private func bookView() -> some View {
+        // The optional `book` slice, mapped through its scope and swapped into an optional store — build the child
+        // only while it's present (a real app loads `state.book` when `.book(id)` is pushed); the empty frame
+        // renders nothing. The router depends on the presence edge only, not on the book's contents.
+        if let book = store.traverse(.action(\.book).state(\.book)) {
+            BookFeature.view(store: book, environment: BookFeature.Environment())
         }
     }
 }
 ```
 
-The **root view** wires **selection** (tabs) and **stack** (path); the book view wires **presentation** (editor) and **optional** (delete alert):
+The **root view** receives the app's view store and wires **selection** (tabs), **stack** (path) and **presentation** (the editor — an app-level slot, so it's presented where the app's view store is); the book's own view wires **optional** (the delete alert) on the book's view store:
 
 ```swift
-struct RootView: View {
-    let store: AppViewStore
+struct RootView: View, Routable {
+    let viewStore: AppViewStore // received — a plain let
     let router: AppRouter
 
     var body: some View {
-        TabView(selection: store.binding(.state(\.tab).action(review: { AppAction.tab(.select($0)) }))) {   // SELECTION
-            NavigationStack(path: store.binding(.state(\.path).action(review: { AppAction.nav(.setPath($0)) }))) {   // STACK
-                AppScopes.library.view(of: LibraryFeature.self, from: store, world: router.world)
+        TabView(selection: viewStore.binding(.state(\.tab).action(review: { AppAction.tab(.select($0)) }))) { // SELECTION
+            NavigationStack(path: viewStore.binding(.state(\.path).action(review: { AppAction.nav(.setPath($0)) }))) { // STACK
+                AppScopes.library.view(of: LibraryFeature.self, from: viewStore, world: router.world)
                     .navigationDestination(for: AppRoute.self) { router.view(for: $0) }
             }
-            .tabItem { Label("Library", systemImage: "books.vertical") }.tag(Tab.library)
+            .tabItem { Label("Library", systemImage: "books.vertical") }
+            .tag(Tab.library)
 
-            SettingsView().tabItem { Label("Settings", systemImage: "gearshape") }.tag(Tab.settings)
+            SettingsView()
+                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(Tab.settings)
+        }
+        // PRESENTATION — a Binding<Presentation> wires both dismiss edges:
+        .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
+            // Map through the slot's child lane (`.editor(.child(_))`) and the `Presentation<…>` state, then swap:
+            // live through both `presented` and `dismissing(last:)`, `nil` only once dismissed — no flicker.
+            if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
+                EditorFeature.view(store: editor, environment: router.world.editorEnv)
+            }
         }
     }
 }
 
-struct BookView: View, Routable {
-    let viewStore: ViewStore<BookFeature.Action, BookFeature.State>
-    let router: AppRouter
-
+@BoundTo(BookFeature.self)
+struct BookView: View {
+    // injected: let viewStore: ViewStore<BookFeature.Action, BookFeature.State>
     var body: some View {
         Form { Text(viewStore.state.book.title) }
             .toolbar { Button("Edit") { viewStore.dispatch(.tappedEdit) } }
-            // PRESENTATION — a Binding<Presentation> wires both dismiss edges; content is live from the store:
-            .sheet(item: router.store.binding(.state(\.editor).action(\.editor))) { _ in
-                // Project the slot's action (`.editor(.child(_))`) + the `Presentation<…>` state, then
-                // `transpose()` inverts `Store<Presentation<Editor>>` into `Store<Editor>?` — live through
-                // both `presented` and `dismissing(last:)`, `nil` only once dismissed, so no flicker:
-                if let editor = router.store
-                    .traverse(.action(review: { AppAction.editor(.child($0)) }).state(\.editor)) {
-                    EditorFeature.view(store: editor, environment: router.world.editorEnv)
-                }
-            }
             // OPTIONAL — a delete confirmation; the optional is both "is it shown" and "what it shows":
             .alert(
                 "Delete book?",
@@ -294,6 +300,8 @@ struct BookView: View, Routable {
     }
 }
 ```
+
+`BookView` is `BookFeature`'s `Content`: the generated `BookFeature.view(store:environment:)` keeps the book's view store and hands it in, so the view never sees the app types — "Edit" is an output the app bridges into the editor presentation (Layer 4).
 
 `binding(.state(\.editor).action(\.editor))` on a `Presentation` slot gives a `Binding<Presentation<…>>`: `.sheet(item:)` takes it directly when the value is `Identifiable` (`EditorFeature.State` is), and for any other container use its parts — `.fullScreenCover(isPresented: editor.isPresented(), onDismiss: editor.onDismiss())`. On an optional slot, `binding(.state(\.deleting).action(\.cancelDelete))` gives the `Binding<Bool>` or `Binding<Item?>` the SwiftUI parameter asks for.
 
@@ -316,7 +324,7 @@ public typealias AppViewStore = ViewStore<AppAction, AppState>
     var body: some Scene {
         WindowGroup {
             AppShell(store: store, world: world)
-                .onOpenURL { store.dispatch(.openedURL($0)) }   // deep link → action on the real store (reduced in Layer 4)
+                .onOpenURL { store.dispatch(.openedURL($0)) } // deep link → action on the real store (reduced in Layer 4)
         }
     }
 }
@@ -332,7 +340,7 @@ struct AppShell: View {
     }
 
     var body: some View {
-        RootView(store: viewStore, router: AppRouter(store: viewStore, world: world))
+        RootView(viewStore: viewStore, router: AppRouter(store: viewStore, world: world))
     }
 }
 ```
@@ -356,5 +364,4 @@ Every one is the same recipe: **store the shape in state, dispatch through an ac
 - <doc:Features>
 - <doc:Lifting>
 - ``Relay/Scope``
-- ``Presentation``
 - <doc:StoresAtAGlance>

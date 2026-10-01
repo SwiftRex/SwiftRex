@@ -18,7 +18,7 @@
 ///
 /// ```swift
 /// Behavior<MyAction, MyState, MyEnvironment> { action, context in
-///     let before = context.stateBefore   // ✅ safe — @MainActor, pre-mutation
+///     let before = context.stateBefore // ✅ safe — @MainActor, pre-mutation
 ///
 ///     return .reduce { $0.count += 1 }
 ///            .produce { ctx in

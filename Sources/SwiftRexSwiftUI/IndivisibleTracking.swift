@@ -18,7 +18,7 @@ import Foundation
 ///
 /// ```swift
 /// extension Status: IndivisibleTracking {}
-/// Text(viewStore.state.status.label)   // `viewStore.state.status` is now a `Status`, not a position
+/// Text(viewStore.state.status.label) // `viewStore.state.status` is now a `Status`, not a position
 /// ```
 ///
 /// Without the conformance the member is a position — reach the whole value with `.value`.

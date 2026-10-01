@@ -4,17 +4,18 @@ import CoreFP
 
 extension StoreType where Action: Prismatic {
     /// Projects this store to a child feature using a **prism key path** for the action and a
-    /// read key path for the state — the ergonomic form for a router that resolves a route to a
-    /// child view.
+    /// read key path for the state.
     ///
     /// The prism's `review` embeds the child action back into this store's action; the key path
     /// reads the child's state slice. Equivalent to the closure-based
-    /// ``projection(action:state:)`` with `action: prism.review` and `state: { $0[keyPath:] }`.
+    /// `projection(action:state:)` with `action: prism.review` and `state: { $0[keyPath:] }`.
+    ///
+    /// Prefer the ``Relay/Scope`` form, which also takes a declared `ScopeOf` scope:
     ///
     /// ```swift
     /// // in a router's @ViewBuilder switch:
     /// Detail.view(
-    ///     store: store.projection(action: \.detail, state: \.detail),
+    ///     store: store.projection(.action(\.detail).state(\.detail)),
     ///     environment: world.detailEnvironment
     /// )
     /// ```

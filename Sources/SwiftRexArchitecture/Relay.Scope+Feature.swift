@@ -4,15 +4,14 @@
     import SwiftRex
     import SwiftUI
 
-    // The feature-lift capabilities on ``Relay/Scope`` — what the old `Gateway` provided, now folded onto
-    // the one carrier. A scope that re-indexes a feature's `(Action, State, Environment)` into a parent
+    // The feature-lift capabilities on ``Relay/Scope``. A scope that re-indexes a feature's `(Action, State, Environment)` into a parent
     // (its lanes' *local* types match the feature's) drives **both** the app behavior and the router view
     // from one declared value:
     //
     //     static let movies = ScopeOf<AppFeature>
     //         .action(\.movies).state(\.movies).environment(\.moviesEnv)
-    //     movies.behavior(of: MoviesFeature.self)                          // fold into the app behavior
-    //     movies.view(of: MoviesFeature.self, from: store, world: world)   // build the screen in the router
+    //     movies.behavior(of: MoviesFeature.self) // fold into the app behavior
+    //     movies.view(of: MoviesFeature.self, from: store, world: world) // build the screen in the router
     //
     // The coherence constraints (`…Strategy.Global == …`) restate what the only `Scope` initializer
     // already guarantees — they give the compiler the same-type knowledge locally.

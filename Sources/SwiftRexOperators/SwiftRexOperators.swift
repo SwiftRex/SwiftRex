@@ -15,8 +15,8 @@ import SwiftRex
 // operator works for them automatically — no SwiftRex-specific overload is needed.
 //
 // Examples:
-//     effectA <> effectB           // Effect.combine(effectA, effectB)  — concurrent
-//     reducerA <> reducerB         // Reducer.combine(reducerA, reducerB) — sequential
+//     effectA <> effectB // Effect.combine(effectA, effectB) — concurrent
+//     reducerA <> reducerB // Reducer.combine(reducerA, reducerB) — sequential
 
 // MARK: - Effect Functor
 

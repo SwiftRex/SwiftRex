@@ -4,8 +4,15 @@ import CoreFP
 import DataStructure
 
 extension Behavior {
-    /// Lift this behavior into a global domain through a ``Relay/Scope`` — the single replacement for the
-    /// three-axis `lift(action:state:environment:)` family. Needs the action lane to be **duplex**
+    /// Lift this behavior into a global domain through a ``Relay/Scope`` — an inline chain or a declared
+    /// `ScopeOf` scope:
+    ///
+    /// ```swift
+    /// childBehavior.lift(.action(\.child).state(\.child).environment { $0.childEnv })
+    /// childBehavior.lift(AppScopes.child) // static let child = ScopeOf<AppFeature>.action(\.child)…
+    /// ```
+    ///
+    /// Needs the action lane to be **duplex**
     /// (`ExtractsProtocol & EmbedsProtocol` — extract inbound global actions, re-embed emitted ones), the
     /// state lane to **write** (`WritesProtocol`, total or affine), and the environment lane to **narrow**
     /// (`NarrowsProtocol`). It delegates to the per-axis primitives, reconstructing a `Prism` and an
@@ -37,7 +44,7 @@ extension Behavior {
     /// no-op; while present it runs on the **unwrapped** value.
     ///
     /// ```swift
-    /// dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
+    /// dayBehavior.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
     /// ```
     public func liftOptional<S: Relay.StateAxis.WritesProtocol>(
         _ scope: Relay.Scope<Action, Relay.Identity<Action>, S.Global, S, Environment, Relay.Identity<Environment>>

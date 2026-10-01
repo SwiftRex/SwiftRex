@@ -9,7 +9,8 @@ import SwiftSyntaxMacros
 ///
 /// A `ViewStore` is a receiver that works under every `ViewStrategy` (it carries its own Combine
 /// subscription), so the strategy — chosen once, on `@Feature` — never has to be repeated here. The
-/// struct's synthesised memberwise `init(viewStore:)` receives the store from `Feature.view()`.
+/// struct's synthesised memberwise `init(viewStore:)` receives the view store from the `FeatureRoot` that
+/// `@Feature`'s generated `view(store:environment:)` returns (which keeps it with `@OwnedStore`).
 public struct BoundToMacro: MemberMacro {
     public static func expansion(
         of node: AttributeSyntax,

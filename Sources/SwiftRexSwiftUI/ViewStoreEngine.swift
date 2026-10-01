@@ -37,8 +37,8 @@
     ///   everything beneath it) and signals the changed ones: per path through the Observation registrar, or
     ///   one `objectWillChange` under Combine. The "will change" moment happens here, against the stale
     ///   snapshot SwiftUI can still read to prepare animations.
-    /// - Its own `stateStream` passes a state on only when something changed, so stores that follow a view
-    ///   store are woken only by changes that reached it.
+    /// - It forwards every upstream value it receives to the stages derived from its view store
+    ///   (``forwardedStream``) — never gated by what the views read — so children don't re-run the parent's chain.
     @MainActor
     final class ViewStoreEngine<Action: Sendable, State: Sendable>: ViewStoreSignal {
         typealias Dependency = ObservationDependency<ViewStoreEngine, State>

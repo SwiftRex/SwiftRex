@@ -11,16 +11,16 @@
 //
     // Four overloads cover every common Publisher-to-Effect pattern:
 //
-    //   Case A   Publisher<Action, Never>               .asEffect(scheduling:)
+    //   Case A: Publisher<Action, Never> → .asEffect(scheduling:)
 //            Output is already the Action — new ActionSource from call site.
 //
-    //   Case A2  Publisher<DispatchedAction<A>, Never>  .asEffect(scheduling:)
+    //   Case A2: Publisher<DispatchedAction<A>, Never> → .asEffect(scheduling:)
 //            Output is pre-sourced — dispatcher forwarded unchanged, no new ActionSource.
 //
-    //   Case B   Publisher<Output, Never>               .asEffect(_ transform:scheduling:)
+    //   Case B: Publisher<Output, Never> → .asEffect(_ transform:scheduling:)
 //            Infallible; user maps Output → Action.
 //
-    //   Case C   Publisher<Output, Failure: Error>      .asEffect(_ transform:scheduling:)
+    //   Case C: Publisher<Output, Failure: Error> → .asEffect(_ transform:scheduling:)
 //            Failable; user maps Result<Output, Failure> → Action.
 //
     // Lazy subscription model:
@@ -160,7 +160,7 @@
         /// // Publisher<MyModel, APIError> bridges directly using the enum case as transform
         /// apiPublisher.asEffect(AppAction.didFetch)
         /// // Each model → .didFetch(.success(model))
-        /// // API error  → .didFetch(.failure(error)) then complete
+        /// // API error → .didFetch(.failure(error)) then complete
         /// ```
         ///
         /// - Parameters:

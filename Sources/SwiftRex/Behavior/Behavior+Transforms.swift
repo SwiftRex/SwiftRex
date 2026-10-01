@@ -45,7 +45,7 @@ extension Behavior {
     /// spelling of ``liftAction(_:)``.
     ///
     /// ```swift
-    /// let lifted = authBehavior.liftAction(\.auth)   // instead of AppAction.prism.auth
+    /// let lifted = authBehavior.liftAction(\.auth) // instead of AppAction.prism.auth
     /// ```
     ///
     /// - Parameter path: A `\.case` key path from the global action to this behavior's action.
@@ -191,8 +191,8 @@ extension Behavior {
         )
     }
 
-    /// Lifts this behavior over an **optional** sub-state — the 0-or-1 sibling of ``liftCollection``
-    /// and ``liftEach`` (which are 0-or-n).
+    /// Lifts this behavior over an **optional** sub-state — the 0-or-1 sibling of ``liftCollection(_:)``
+    /// and ``liftEach(_:)`` (which are 0-or-n).
     ///
     /// While the optional is `nil`, the behavior is a complete no-op — no mutation, no effects — and
     /// its supervised channels are torn down by the reconciler. While it is `.some`, the behavior
@@ -201,7 +201,7 @@ extension Behavior {
     ///
     /// ```swift
     /// // Runs only while AppState.currentDay is non-nil:
-    /// let lifted = dayBehavior.liftOptional(\AppState.currentDay)   // currentDay: DayDetail.State?
+    /// let lifted = dayBehavior.liftOptional(\AppState.currentDay) // currentDay: DayDetail.State?
     /// ```
     ///
     /// - Parameter optional: A `WritableKeyPath<GlobalState, State?>` to the optional sub-state.
@@ -257,7 +257,7 @@ extension Behavior where Environment == Void {
     /// counterBehavior
     ///     .liftAction(AppAction.prism.counter)
     ///     .liftState(AppState.lens.counter)
-    ///     .liftEnvironment()   // discards AppEnvironment; counter needs none
+    ///     .liftEnvironment() // discards AppEnvironment; counter needs none
     /// ```
     public func liftEnvironment<GlobalEnvironment: Sendable>() -> Behavior<Action, State, GlobalEnvironment> {
         liftEnvironment(ignore)

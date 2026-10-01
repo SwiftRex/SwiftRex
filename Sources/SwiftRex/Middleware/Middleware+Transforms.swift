@@ -132,14 +132,14 @@ extension Middleware {
     }
 
     /// Lifts this middleware over an **optional** sub-state — the 0-or-1 sibling of
-    /// ``liftCollection``/``liftEach`` (0-or-n).
+    /// ``liftCollection(_:)``/``liftEach(_:)`` (0-or-n).
     ///
     /// The middleware is skipped entirely while the optional is `nil`, and runs focused on the
     /// unwrapped value while it is `.some` — the shape presentation uses for a child shown only
     /// while its state exists.
     ///
     /// ```swift
-    /// let lifted = dayMiddleware.liftOptional(\AppState.currentDay)   // currentDay: DayDetail.State?
+    /// let lifted = dayMiddleware.liftOptional(\AppState.currentDay) // currentDay: DayDetail.State?
     /// ```
     ///
     /// - Parameter optional: A `WritableKeyPath<GlobalState, State?>` to the optional sub-state.

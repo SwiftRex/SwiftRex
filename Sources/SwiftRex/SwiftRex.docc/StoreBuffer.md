@@ -8,10 +8,12 @@ A deduplicating wrapper — passes a state on only when it actually changed.
 
 ```swift
 let counter = appStore
-    .projection(action: AppAction.counter, state: \.counter)       // the feature's slice
-    .buffer()                                                      // dedup on it — Counter.State: Equatable
-    .projection(action: { $0 }, state: CounterView.init)           // the (possibly wide) view map
+    .projection(.action(\.counter).state(\.counter)) // the feature's slice
+    .buffer() // dedup on it — Counter.State: Equatable
+    .projection(action: { $0 }, state: CounterViewState.init) // the (possibly wide) view map
 ```
+
+Without `Equatable`, say what counts as a change: `buffer(hasChanged:)` takes `(previous, new) -> Bool` — `store.buffer { $0.items.count != $1.items.count }`.
 
 Which side of a projection it sits on decides what it saves:
 
@@ -25,6 +27,7 @@ For SwiftUI, the view store a view reads (`@OwnedStore`, or `@Feature`'s generat
 ### Creating a Buffer
 
 - ``StoreType/buffer()``
+- ``StoreType/buffer(hasChanged:)``
 
 ### Following & Dispatching
 

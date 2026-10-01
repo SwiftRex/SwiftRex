@@ -4,9 +4,9 @@
 /// `nil`. For a child screen that exists while its value does and keeps showing what it showed while it animates away.
 ///
 /// ```swift
-/// if let editor = state.editor {                         // presence decided by whoever reads the state
-///     let editorStore = StoreOptionalFocus(store.projection(action: AppAction.editor, state: \.editor), present: editor)
-///     presentEditor(editorStore)
+/// // presence decided by whoever follows the state, e.g. inside `store.stateStream.observe { state in … }`
+/// if let editor = state.editor {
+///     presentEditor(StoreOptionalFocus(store.projection(.action(\.editor).state(\.editor)), present: editor))
 /// }
 /// ```
 ///
