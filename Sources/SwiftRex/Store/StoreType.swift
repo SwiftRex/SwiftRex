@@ -9,7 +9,7 @@
 /// snapshot and records what each view read.
 ///
 /// ```swift
-/// let token = store.stateStream.observe { state in print(state.count) }   // prints now, then on every change
+/// let token = store.stateStream.observe { state in print(state.count) } // prints now, then on every change
 /// store.dispatch(.increment)
 /// ```
 ///
@@ -20,6 +20,9 @@
 /// | ``Store`` | Runs the app: owns the state, reduces actions, schedules effects — typically one per app |
 /// | ``StoreProjection`` | Narrows action and state types: a mapped ``stateStream`` + a mapped dispatch |
 /// | ``StoreBuffer`` | Skips states equal to the previous one (`Equatable`, or a predicate) |
+/// | ``StoreCollectionFocus`` | One element of a collection (`Element?`), found through a per-observer hint |
+/// | ``StoreOptionalFocus`` | A store of `T` over a store of `T?`, holding the last present value |
+/// | ``IdentifiedStore`` | A store plus an `id`, for `ForEach` |
 /// | `ViewStore` (`SwiftRex.SwiftUI`) | What SwiftUI views hold — adds a granular, observed `state` |
 ///
 /// ## Dispatch

@@ -15,7 +15,7 @@ import DataStructure
 //       action: { (ea: ElementAction<UUID, TodoAction>?) in
 //           ea.map { (action: $0.action, element: [Todo].ix(id: $0.id)) }
 //       },
-//       stateContainer: \.todos              // WritableKeyPath
+//       stateContainer: \.todos // WritableKeyPath
 //   )
 //
 // All `ElementAction`-based `liftCollection` overloads delegate here.

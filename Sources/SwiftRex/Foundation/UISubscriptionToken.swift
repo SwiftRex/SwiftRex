@@ -10,8 +10,8 @@
 /// the main actor instead.
 ///
 /// ```swift
-/// let token = store.stateStream.observe { state in render(state) }   // first call happens right here
-/// token.cancel()                                                      // or just drop `token`
+/// let token = store.stateStream.observe { state in render(state) } // first call happens right here
+/// token.cancel() // or just drop `token`
 /// ```
 ///
 /// Retain it for as long as you want values: discarding it cancels immediately.

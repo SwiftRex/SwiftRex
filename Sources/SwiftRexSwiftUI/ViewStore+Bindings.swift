@@ -4,15 +4,15 @@
 import SwiftRex
 import SwiftUI
 
-// One name for everything SwiftUI takes as a `Binding`: `binding`, taking the same chained scope as `focus` and
+// One name for everything SwiftUI takes as a `Binding`: `binding`, taking the same chained scope as `traverse` and
 // `projection` — a `.state(…)` lane to read and an `.action(…)` lane to dispatch. What the action lane embeds
 // decides the kind of binding:
 //
-//   • `.state(\.name).action(\.setName)`       — the lane embeds the value: two-way `Binding<T>`, dispatching on
+//   • `.state(\.name).action(\.setName)` — the lane embeds the value: two-way `Binding<T>`, dispatching on
 //     every change (`TextField`, `Toggle`, `NavigationStack(path:)`, `TabView(selection:)`).
 //   • `.state(\.deleting).action(\.cancelDelete)` — an optional slot and a no-payload case: dismiss-only,
 //     `Binding<Bool>` for `isPresented:` or `Binding<T?>` for `item:` — whichever the SwiftUI parameter asks for.
-//   • `.state(\.editor).action(\.editor)`      — a `Presentation` slot and its `PresentationAction`: a
+//   • `.state(\.editor).action(\.editor)` — a `Presentation` slot and its `PresentationAction`: a
 //     `Binding<Presentation<T>>` carrying **both** dismissal edges (`.dismiss`, then `.dismissed`). Hand it straight
 //     to `.sheet(item:)`, or take `.isPresented()` / `.item()` + `.onDismiss()` for any other container.
 //
@@ -50,7 +50,7 @@ extension ViewStore {
     /// toggle, an "append to history" — would run twice.
     ///
     /// ```swift
-    /// List(selection: viewStore.binding(.state(\.selection).action(\.select))) { … }   // one `.select` per tap
+    /// List(selection: viewStore.binding(.state(\.selection).action(\.select))) { … } // one `.select` per tap
     /// ```
     @MainActor
     public func binding<A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
@@ -76,8 +76,11 @@ extension ViewStore {
     /// presence edge only.
     ///
     /// ```swift
-    /// .alert("Delete?", isPresented: viewStore.binding(.state(\.deleting).action(\.cancelDelete)),
-    ///        presenting: viewStore.state.deleting.value) { … }
+    /// .alert(
+    ///     "Delete?",
+    ///     isPresented: viewStore.binding(.state(\.deleting).action(\.cancelDelete)),
+    ///     presenting: viewStore.state.deleting.value
+    /// ) { … }
     /// ```
     @MainActor
     public func binding<Wrapped: Sendable, A: Relay.ActionAxis.EmbedsProtocol, S: Relay.StateAxis.ReadsProtocol>(
@@ -131,7 +134,7 @@ extension ViewStore {
     /// ```swift
     /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
     ///     if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
-    ///         EditorView(store: editor)          // keeps @OwnedStore var viewStore = store.viewStore()
+    ///         EditorView(store: editor) // keeps @OwnedStore var viewStore = store.viewStore()
     ///     }
     /// }
     ///

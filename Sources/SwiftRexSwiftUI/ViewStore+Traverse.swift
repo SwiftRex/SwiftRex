@@ -11,12 +11,12 @@
     // it, make its view store where a view keeps it: `@OwnedStore var viewStore = child.viewStore()`, or a feature's
     // `view(store:environment:)`.
     //
-    //   • `T?`                 — `transpose()`: present while `.some`.
-    //   • `Presentation<T>`    — `transpose()`: present through **both** `presented` and `dismissing(last:)`.
-    //   • a scope's slot       — `traverse(scope)`, for a `T?` or `Presentation<T>` slot.
+    //   • `T?` — `transpose()`: present while `.some`.
+    //   • `Presentation<T>` — `transpose()`: present through **both** `presented` and `dismissing(last:)`.
+    //   • a scope's slot — `traverse(scope)`, for a `T?` or `Presentation<T>` slot.
     //   • a collection element — `traverse(scope, element: id)`: present while the element is in the collection.
     //     For a loop over every element, `each(scope)`.
-    //   • a closure lane       — `traverse(action:state:)`, for what no key path expresses.
+    //   • a closure lane — `traverse(action:state:)`, for what no key path expresses.
 
     extension ViewStore {
         // MARK: - This view store's own state
@@ -24,7 +24,7 @@
         /// Swap a view store of `T?` into a store of `T` — present while `.some`.
         ///
         /// ```swift
-        /// if let book = viewStore.transpose() { BookView(store: book) }   // BookView keeps @OwnedStore made from it
+        /// if let book = viewStore.transpose() { BookView(store: book) } // BookView keeps @OwnedStore made from it
         /// ```
         public func transpose<Wrapped: Sendable>() -> StoreOptionalFocus<Action, Wrapped>? where State == Wrapped? {
             reader.read(\Wrapped?.observationIsPresent)
@@ -47,7 +47,7 @@
         ///
         /// ```swift
         /// if let detail = viewStore.traverse(.action(\.detail).state(\.detail)) {
-        ///     DetailFeature.view(store: detail, environment: world.detailEnv)     // the feature's view owns it
+        ///     DetailFeature.view(store: detail, environment: world.detailEnv) // the feature's view owns it
         /// }
         /// ```
         ///
@@ -110,7 +110,7 @@
         /// ```swift
         /// ForEach(viewStore.state.each(\.rows)) { row in
         ///     if let rowStore = viewStore.traverse(.action(\.row).state(\.rows), element: row.id) {
-        ///         RowFeature.view(store: rowStore, environment: world.rowEnv)      // or RowView(store: rowStore)
+        ///         RowFeature.view(store: rowStore, environment: world.rowEnv) // or RowView(store: rowStore)
         ///     }
         /// }
         /// ```
@@ -147,7 +147,7 @@
         ///
         /// ```swift
         /// ForEach(viewStore.each(.action(\.row).state(\.rows))) { row in
-        ///     RowView(store: row)          // RowView: @OwnedStore var viewStore = store.viewStore()
+        ///     RowView(store: row) // RowView: @OwnedStore var viewStore = store.viewStore()
         /// }
         /// ```
         ///

@@ -12,9 +12,9 @@ A `Behavior<Action, State, Environment>` *is* `[Consequence]`. Three fluent buil
 
 ```swift
 let room = Behavior<RoomAction, RoomState, RoomEnv>
-    .reduce { action, state in … }                 // what changes
-    .produce { action, ctx in … }                    // what to do because of an action
-    .supervise { state in … }                      // what to keep alive while the state holds
+    .reduce { action, state in … } // what changes
+    .produce { action, ctx in … } // what to do because of an action
+    .supervise { state in … } // what to keep alive while the state holds
 ```
 
 Each builder exists as a **static** factory (`Behavior.reduce { … }`) and as an **instance** method (`someBehavior.produce { … }`), so a fluent chain is exactly an `<>` fold. To share pre-work between a mutation and its effect, use the grouped ``react(_:)`` builder — it hands you the action and returns a whole ``Reaction``:
@@ -22,8 +22,8 @@ Each builder exists as a **static** factory (`Behavior.reduce { … }`) and as a
 ```swift
 Behavior.react { action, _ in
     guard case .load(let id) = action else { return .doNothing }
-    return .reduce  { $0.isLoading = true }
-           .produce { ctx in ctx.environment.api.fetch(id).asEffect() }
+    return .reduce { $0.isLoading = true }
+        .produce { ctx in ctx.environment.api.fetch(id).asEffect() }
 }
 ```
 
@@ -34,7 +34,7 @@ You can also pair the reducer and middleware axes with `Behavior(reducer:middlew
 `Behavior` is a `Monoid` — literally the free monoid over its consequences: ``combine(_:_:)`` **concatenates** the lists, ``identity`` is `[]`. Composing runs both behaviors' reactions on the same pre-mutation state (mutations fold **sequentially**, effects merge in **parallel** — each ``Reaction`` is a product monoid) and **unions** their supervisions. It is a single flat pass, not a nested closure tree, and an all-no-op fold stays ``ReducerOutcome/unchanged`` so the ``Store`` skips the notification entirely. See <doc:Algebra>.
 
 ```swift
-let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifted <> profile.lifted
+let app = Behavior.combine(counter.lifted, profile.lifted) // or counter.lifted <> profile.lifted
 ```
 
 ### Scaling a feature up
@@ -42,28 +42,28 @@ let app = Behavior.combine(counter.lifted, profile.lifted)   // or counter.lifte
 ``lift(_:)`` raises a feature from its local types to the app's global types in one shot: a ``Relay/Scope`` names all three axes through a leading-dot builder — `.action` re-indexes the action (a `Prism`/`\.case`), `.state` focuses the slice (a `WritableKeyPath`/`Lens`/`AffineTraversal`), `.environment` narrows the world.
 
 ```swift
-let lifted = room.lift(.action(AppAction.prism.room).state(\.room).environment(\.roomEnv))
+let lifted: Behavior<AppAction, AppState, World> = room.lift(.action(\.room).state(\.room).environment(\.roomEnv))
 ```
 
 `liftOptional` is the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with the action and environment axes left pass-through (``Relay/Identity``). While the focus is `nil` the behavior is a **complete no-op** — never asked to mutate, produce, or supervise (stricter than a plain affine state lift); while present it runs on the **unwrapped** value. A key-path spelling is sugar for the same call:
 
 ```swift
-dayBehavior.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
-dayBehavior.liftOptional(\AppState.currentDay)           // key-path sugar
+dayBehavior.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
+dayBehavior.liftOptional(\AppState.currentDay) // key-path sugar
 ```
 
 ``liftCollection(_:)`` routes an addressed global action to **one** element of a collection. The state lane locates it — by `Identifiable` id (`.state(\.rows)`), a custom key (`.state(\.rows, id: \.slug)`), position (`.state(indexed: \.rows)`), or dictionary key (`.state(dictionary: \.configs)`) — while the action lane carries an ``ElementAction``:
 
 ```swift
-rowBehavior.liftCollection(
-    .action(AppAction.prism.row).state(\.rows).environment(\.rowEnv)
+let rows: Behavior<AppAction, AppState, World> = rowBehavior.liftCollection(
+    .action(\.row).state(\.rows).environment(\.rowEnv)
 )
 ```
 
 ``liftEach(_:)`` is the broadcast form: one global action reaches **every** present element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``:
 
 ```swift
-rowBehavior.liftEach(
+let ticks: Behavior<AppAction, AppState, World> = rowBehavior.liftEach(
     .action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.row)
         .state(\.rows).environment(\.rowEnv)
 )
@@ -82,15 +82,21 @@ let behavior = Behavior<AppAction, AppState, World>.identity
     // + a state guard (right after the trigger — it gates dispatch and reduce)
     .on(.action(\.didTapBuy), when: { $0.isLoggedIn }, dispatch: .action(\.checkout))
     // + a co-located mutation
-    .on(.action(\.didLoad), dispatch: .action(\.renderItems),
-        reduce: { items, state in state.items = items; state.isLoading = false })
+    .on(
+        .action(\.didLoad),
+        dispatch: .action(\.renderItems),
+        reduce: { items, state in state.items = items; state.isLoading = false }
+    )
     // transform the payload — a trailing closure is the embed (the `review:` label is implicit)
     .on(.action(\.didSearch), dispatch: .action { AppAction.performSearch($0) })
     // react by mutating state only, no dispatch
     .on(.action(\.reset), reduce: { _, state in state = .init() })
     // a bool test with no payload → extract Void, guard, then route
-    .on(.action { if case .submit = $0 { () } else { nil } },
-        when: { !$0.isSubmitting }, dispatch: .action(\.doSubmit))
+    .on(
+        .action { if case .submit = $0 { () } else { nil } },
+        when: { !$0.isSubmitting },
+        dispatch: .action(\.doSubmit)
+    )
 ```
 
 The trigger reads with any `.action(…)` strategy (`\.case` / prism / a `preview` closure); the dispatch embeds with any (`\.case` / prism / a `review` closure) — and a trailing closure drops the `review:`/`preview:` label, so a transform is simply `.action { … }`. Both `reduce` and `when` are optional.
@@ -116,6 +122,8 @@ State is **never copied** unless the action filter passes first. Variants withou
 ### Lifting to a Larger Scope
 
 - ``lift(_:)``
+- ``liftCollection(_:)``
+- ``liftEach(_:)``
 - ``liftAction(_:)``
 - ``liftState(_:)``
 - ``liftEnvironment(_:)``

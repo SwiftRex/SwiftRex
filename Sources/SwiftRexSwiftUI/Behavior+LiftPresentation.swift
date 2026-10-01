@@ -22,8 +22,8 @@ extension Behavior {
     ///
     /// ```swift
     /// DetailFeature.behavior().liftPresentation(
-    ///     action: \.detail,     // Action.detail: PresentationAction<DetailFeature.Action>
-    ///     state:  \.detail,     // State.detail:  Presentation<DetailFeature.State>
+    ///     action: \.detail, // Action.detail: PresentationAction<DetailFeature.Action>
+    ///     state: \.detail, // State.detail: Presentation<DetailFeature.State>
     ///     environment: { $0.detailEnv }
     /// )
     /// ```

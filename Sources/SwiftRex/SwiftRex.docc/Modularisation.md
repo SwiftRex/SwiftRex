@@ -19,31 +19,32 @@ A feature is just the SwiftRex pieces at *local* types:
 
 ```swift
 // In the Counter feature package — knows nothing about AppAction/AppState.
-public enum CounterAction { case increment, decrement, reset }
-public struct CounterState: Equatable { public var count = 0 }
-public struct CounterEnvironment { public var analytics: Analytics }
+public enum CounterAction: Sendable { case increment, decrement, reset }
+public struct CounterState: Sendable, Equatable { public var count = 0 }
+public struct CounterEnvironment: Sendable { public var analytics: Analytics }
 
-public let counterBehavior = Behavior<CounterAction, CounterState, CounterEnvironment> { action, _ in
+public let counterBehavior = Behavior<CounterAction, CounterState, CounterEnvironment>.handle { action, _ in
     switch action {
     case .increment: .reduce { $0.count += 1 }
     case .decrement: .reduce { $0.count -= 1 }
-    case .reset:     .reduce { $0.count = 0 }
+    case .reset: .reduce { $0.count = 0 }
     }
 }
 ```
 
-Its SwiftUI view observes a projection of that slice (the feature's generated view owns an observed store over it), so the view, too, only knows the local types.
+Its SwiftUI view is handed a pure stage over that slice — the app projects its store through the feature's scope — and keeps its own view store over it (the feature's generated view does this for you), so the view, too, only knows the local types.
 
 ## Wiring features into the app
 
 The app owns the global `AppAction` / `AppState` / `AppEnvironment` and assembles the features by **lifting** each one (see <doc:Lifting>) and combining:
 
 ```swift
-let appBehavior = Behavior.combine(
-    counterBehavior.lift(.action(AppAction.prism.counter).state(\.counter).environment(\.counterEnv)),
-    searchBehavior.lift(.action(AppAction.prism.search).state(\.search).environment(\.searchEnv)),
-    todoBehavior.liftCollection(action: \.todo, stateContainer: \.todos)
-)
+let appBehavior = Behavior.combine([
+    counterBehavior.lift(.action(\.counter).state(\.counter).environment(\.counterEnv)),
+    searchBehavior.lift(.action(\.search).state(\.search).environment(\.searchEnv)),
+    // `todos: [TodoState]` (Identifiable), `case todo(ElementAction<TodoState.ID, TodoAction>)`
+    todoBehavior.liftCollection(.action(\.todo).state(\.todos).environment(\.todoEnv))
+])
 let store = Store(initial: .init(), behavior: appBehavior, environment: appEnv)
 ```
 
@@ -51,7 +52,7 @@ Crossing the **environment** boundary is the same idea applied to dependencies: 
 
 ## The opinionated layer: `SwiftRex.Architecture`
 
-`SwiftRex.Architecture` packages this pattern so a feature is a single `enum` namespace. `@Feature` (optionally `strategy:`, a `ViewStrategy`) generates `initialState(with:)`, `view(store:environment:) -> some View`, and the `Feature` conformance (view-bearing features only; a logic-only feature is a behavior with no `Feature` conformance). Access follows the `enum`'s own modifier — a `public enum` is a module's public entry, a plain `enum` a screen composed inside it — so there is no `type:` argument. The generated `view` owns a `ViewStore` (kept by a generated `FeatureRoot` view with `@OwnedStore`) over an environment-aware projection (both `mapState` and `mapAction` are `Reader<Environment, …>`, so the view can format and parse with live dependencies) and hands it to the feature's `Content` as a `ViewStore`. The `strategy:` picks how it signals SwiftUI — `.automatic` (default: Observation on iOS 17+, Combine below) or `.combine`. The view (bound with `@BoundTo(Feature.self)`) reads `viewStore.state.field` identically under every strategy. The concrete `ViewState`/`ViewAction`/`Content` stay `internal` and never cross the module boundary — only `State`/`Action`/`Environment`/`Input` (which you lift with the core `lift(...)`) and the opaque `view` are public. The app composes each feature's `behavior()` with `lift` and renders it with `view(store:environment:)`.
+`SwiftRex.Architecture` packages this pattern so a feature is a single `enum` namespace. `@Feature` (optionally `strategy:`, a `ViewStrategy`) generates `initialState(with:)`, `view(store:environment:) -> some View`, and the `Feature` conformance (view-bearing features only; a logic-only feature is a behavior with no `Feature` conformance). Access follows the `enum`'s own modifier — a `public enum` is a module's public entry, a plain `enum` a screen composed inside it — so there is no `type:` argument. The generated `view` makes a `ViewStore` (once per view identity, kept by a generated `FeatureRoot` view with `@OwnedStore`) over an environment-aware projection (both `mapState` and `mapAction` are `Reader<Environment, …>`, so the view can format and parse with live dependencies) and hands it to the feature's `Content` as a `ViewStore`. The `strategy:` picks how it signals SwiftUI — `.automatic` (default: Observation on iOS 17+, Combine below) or `.combine`. The view (bound with `@BoundTo(Feature.self)`) reads `viewStore.state.field` identically under every strategy. The concrete `ViewState`/`ViewAction`/`Content` stay `internal` and never cross the module boundary — only `State`/`Action`/`Environment`/`Input` (which you lift with the core `lift(...)`), `behavior()` and the opaque `view` are public. The app declares one ``Relay/Scope`` per feature and uses it on both sides: `scope.behavior(of: F.self)` folds the lifted behavior, and `scope.view(of: F.self, from: store, world: world)` renders the view with the projected store and the narrowed environment — see <doc:Navigation>.
 
 ## See Also
 

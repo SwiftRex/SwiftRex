@@ -78,7 +78,7 @@ public final class SubscriptionToken: Sendable {
     /// subscribe: { send, complete in
     ///     send(action)
     ///     complete()
-    ///     return .empty   // no cancellation needed
+    ///     return .empty // no cancellation needed
     /// }
     /// ```
     public static let empty = SubscriptionToken {}

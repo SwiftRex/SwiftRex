@@ -8,7 +8,8 @@ SwiftRex ships as several products (each its own import). The three third-party 
 `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, and `SwiftRex.ReactiveConcurrency` — are each gated
 behind a Swift Package Manager **trait** of the same name, and **all traits are off by default**. So a
 consumer who picks one bridge never downloads — nor sees in their acknowledgements — the other two.
-`SwiftRex`, `SwiftRex.Combine`, and `SwiftRex.SwiftConcurrency` need no trait. Requires a Swift 6.3+
+Every other product — `SwiftRex`, `SwiftRex.Operators`, `SwiftRex.SwiftConcurrency`, `SwiftRex.Combine`,
+`SwiftRex.SwiftUI`, `SwiftRex.Architecture`, and `SwiftRex.Testing` — needs no trait. Requires a Swift 6.3+
 toolchain.
 
 ## Swift Package Manager
@@ -26,18 +27,20 @@ dependencies: [
 ],
 targets: [
     .target(name: "MyApp", dependencies: [
-        .product(name: "SwiftRex", package: "SwiftRex"),                      // core — no trait
-        .product(name: "SwiftRex.ReactiveConcurrency", package: "SwiftRex"),  // needs the trait enabled above
+        .product(name: "SwiftRex", package: "SwiftRex"), // core — no trait
+        .product(name: "SwiftRex.SwiftUI", package: "SwiftRex"), // ViewStore, @OwnedStore — no trait
+        .product(name: "SwiftRex.ReactiveConcurrency", package: "SwiftRex"), // needs the trait enabled above
     ])
 ]
 ```
 
-Omit `traits:` entirely if you only use the core, `Combine`, or `SwiftConcurrency` products — then
+Omit `traits:` entirely if you use none of the three third-party bridges — then
 RxSwift/ReactiveSwift/ReactiveConcurrency are never even resolved.
 
 Supported platforms: macOS 13+, iOS 16+, tvOS 16+, watchOS 9+, visionOS 1+, and Linux (Swift 6.3+).
-`SwiftRex`, `SwiftRex.SwiftConcurrency`, and `SwiftRex.Testing` are fully cross-platform including
-Linux; `SwiftRex.Combine` and `SwiftRex.SwiftUI` require Apple platforms.
+`SwiftRex`, `SwiftRex.Operators`, `SwiftRex.SwiftConcurrency`, and `SwiftRex.Testing` are fully cross-platform
+including Linux; `SwiftRex.Combine` and `SwiftRex.SwiftUI` (and the view side of `SwiftRex.Architecture`) require
+Apple platforms.
 
 ## Xcode
 

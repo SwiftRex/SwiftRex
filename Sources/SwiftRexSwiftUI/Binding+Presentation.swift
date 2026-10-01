@@ -52,7 +52,7 @@
         /// ```swift
         /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
         ///     if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
-        ///         EditorFeature.view(store: editor, environment: world.editorEnv)   // the feature's view owns it
+        ///         EditorFeature.view(store: editor, environment: world.editorEnv) // the feature's view owns it
         ///     }
         /// }
         /// ```

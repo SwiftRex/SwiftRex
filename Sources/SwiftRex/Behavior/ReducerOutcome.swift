@@ -6,13 +6,13 @@ import CoreFP
 /// provable no-op.
 ///
 /// `ReducerOutcome` makes "this action does not touch state" a **named case** rather than an
-/// indistinguishable identity closure. The ``Store`` uses that distinction to skip observer
-/// notifications (`willChange`/`didChange`) entirely for actions that cannot change state —
-/// pure routing, effect-only behaviors, `.doNothing` — so `ObservableObject`/`@Observable`
-/// consumers don't re-render on actions that only produce effects.
+/// indistinguishable identity closure. The ``Store`` uses that distinction to skip its
+/// ``StateStream`` delivery entirely for actions that cannot change state — pure routing,
+/// effect-only behaviors, `.doNothing` — so views (through their view stores) don't re-render on
+/// actions that only produce effects.
 ///
 /// - ``unchanged``: provably no mutation. The Store applies nothing and notifies no observer.
-/// - ``mutation(_:)``: carries an `EndoMut<State>` to run in phase 2, bracketed by notifications.
+/// - ``mutation(_:)``: carries an `EndoMut<State>` to run in phase 2, then delivered to observers.
 ///
 /// ## Monoid
 ///

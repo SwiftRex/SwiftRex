@@ -15,8 +15,8 @@ import CoreFP
 // `Environment`), so the roots of `\.case` / `\.slice` key paths are pinned by whatever fixes `Self` — a
 // host call for inline chains, or the concrete ``ScopeOf`` entry type for declared ones:
 //
-//     store.projection(.action(prism).state(\.slice))                    // host pins the globals
-//     static let child = ScopeOf<AppFeature>                             // the entry type pins the globals
+//     store.projection(.action(prism).state(\.slice)) // host pins the globals
+//     static let child = ScopeOf<AppFeature> // the entry type pins the globals
 //         .action(\.child).state(\.child).environment(\.childEnv)
 //
 // A declared chain may leave axes un-set — the entry statics carry them through as concrete

@@ -45,14 +45,14 @@ let feed = Behavior<FeedAction, FeedState, FeedEnv>
         Supervision { env in
             [Channel(
                 id: "feed",
-                lifetime: .ephemeral(resetKey: state.token),        // reconnect when the token rotates
-                broadcasting: .onChange(state.presence)             // publish presence on open + on change
+                lifetime: .ephemeral(resetKey: state.token), // reconnect when the token rotates
+                broadcasting: .onChange(state.presence) // publish presence on open + on change
             ) { dispatch in
                 let ws = env.open(state.url, state.token)
-                ws.onEvent { dispatch(.event($0)) }                 // inbound stream → actions
+                ws.onEvent { dispatch(.event($0)) } // inbound stream → actions
                 return ChannelHandler(
-                    receive: { presence in ws.send(presence) },     // each presence value → ws.send
-                    cancel:  { ws.close() }
+                    receive: { presence in ws.send(presence) }, // each presence value → ws.send
+                    cancel: { ws.close() }
                 )
             }]
         }

@@ -9,9 +9,9 @@
 ///
 /// ```swift
 /// let counter = appStore
-///     .projection(action: { AppAction.counter($0) }, state: \.counter)   // the feature's slice
-///     .buffer()                                                           // skip repeats of it (Counter.State: Equatable)
-///     .projection(action: { $0 }, state: CounterView.ViewState.init)      // the view map runs only on real changes
+///     .projection(.action(\.counter).state(\.counter)) // the feature's slice
+///     .buffer() // skip repeats of it (Counter.State: Equatable)
+///     .projection(action: { $0 }, state: CounterView.ViewState.init) // the view map runs only on real changes
 /// ```
 ///
 /// **After** a map it only drops identical results, so the map still runs on every upstream change. For

@@ -15,22 +15,17 @@ extension StoreType {
     /// in the collection. Dispatched actions are wrapped in an ``ElementAction`` and lifted
     /// through `actionReview` before reaching the underlying store.
     ///
-    /// This enables per-element store projections in list views without the view needing to
-    /// know where the collection lives in the global state:
+    /// Prefer the collection scope, which returns a ``StoreCollectionFocus`` that finds the element through a
+    /// per-observer hint (O(distance moved)) instead of a scan:
     ///
     /// ```swift
-    /// // In a list cell view — only knows the todo id and todo-level actions
-    /// let todoStore = appStore.projection(
-    ///     element: todo.id,
-    ///     actionReview: { AppAction.todo($0) },
-    ///     stateCollection: \AppState.todos
-    /// )
-    /// // todoStore: StoreProjection<TodoAction, Todo?>
+    /// let todoStore = appStore.projection(.action(\.todo).state(\.todos), element: todo.id)
+    /// // todoStore: StoreCollectionFocus<TodoAction, Todo>
     /// ```
     ///
     /// **Performance.** The element is resolved with a linear `first { $0.id == id }` scan **on
-    /// every state read** — i.e. on every observation/render — so projecting one element out of a
-    /// collection of `n` costs O(n) per read. Choosing a container:
+    /// every upstream change**, for each observer — so projecting one element out of a collection of
+    /// `n` costs O(n) per change. Choosing a container:
     ///
     /// - Prefer a plain `Array` (this factory) for **small collections**, for collections with
     ///   **frequent inserts / removals / reordering**, or **whenever display order matters** — the
@@ -38,12 +33,12 @@ extension StoreType {
     ///   structural edits.
     /// - For **large, read-heavy (or edit-in-place-by-id) collections where order is irrelevant**,
     ///   store the data as `[ID: Element]` and use ``projection(key:actionReview:stateDictionary:)``
-    ///   instead — dictionary lookup is O(1) per read.
+    ///   instead — dictionary lookup is O(1) per change.
     /// - Caveat: a dictionary is **unordered**, so driving a list UI directly from one produces
     ///   arbitrary, unstable row order. If you need both O(1) by-id access *and* stable order,
     ///   keep a separate `[ID]` order array alongside it, or wait for a dedicated ordered indexed
-    ///   container. Do **not** reach for a dictionary purely to avoid the O(n) read when order
-    ///   matters — accept the linear read on the `Array` instead.
+    ///   container. Do **not** reach for a dictionary purely to avoid the O(n) scan when order
+    ///   matters — accept the linear scan on the `Array` instead.
     ///
     /// Delegates to ``StoreProjection/init(store:element:actionReview:stateCollection:)``.
     ///
@@ -73,20 +68,17 @@ extension StoreType {
     /// Use this when the collection's element type is not `Identifiable`, or when you want
     /// to focus by a field other than the standard `id` property:
     ///
+    /// Prefer the collection scope with a custom id:
+    ///
     /// ```swift
-    /// // Focus by a custom "slug" field rather than Identifiable.id
-    /// let featureStore = appStore.projection(
-    ///     element: "auth",
-    ///     actionReview: { AppAction.feature($0) },
-    ///     stateCollection: \AppState.features,
-    ///     identifier: \.slug
-    /// )
-    /// // featureStore: StoreProjection<FeatureAction, Feature?>
+    /// // By a custom "slug" field rather than Identifiable.id
+    /// let featureStore = appStore.projection(.action(\.feature).state(\.features, id: \.slug), element: "auth")
+    /// // featureStore: StoreCollectionFocus<FeatureAction, Feature>
     /// ```
     ///
-    /// **Performance.** Same O(n)-per-read cost as
+    /// **Performance.** Same O(n)-per-change cost as
     /// ``projection(element:actionReview:stateCollection:)`` — a linear `first(where:)` scan runs on
-    /// every state read. See that factory's discussion for when to prefer an `Array`, a dictionary,
+    /// every upstream change. See that factory's discussion for when to prefer an `Array`, a dictionary,
     /// or a dedicated ordered indexed container.
     ///
     /// Delegates to ``StoreProjection/init(store:element:actionReview:stateCollection:identifier:)``.
@@ -117,17 +109,14 @@ extension StoreType {
     /// Dispatched actions are wrapped in an ``ElementAction`` keyed by `key` and lifted through
     /// `actionReview` before reaching the underlying store:
     ///
+    /// Prefer the dictionary collection scope:
+    ///
     /// ```swift
-    /// // Focus on a specific user-settings entry
-    /// let settingStore = appStore.projection(
-    ///     key: "notifications",
-    ///     actionReview: { AppAction.setting($0) },
-    ///     stateDictionary: \AppState.userSettings
-    /// )
-    /// // settingStore: StoreProjection<SettingAction, SettingValue?>
+    /// let settingStore = appStore.projection(.action(\.setting).state(dictionary: \.userSettings), element: "notifications")
+    /// // settingStore: StoreCollectionFocus<SettingAction, SettingValue>
     /// ```
     ///
-    /// **Performance.** Dictionary lookup is O(1) per read — the O(1) counterpart to the
+    /// **Performance.** Dictionary lookup is O(1) per change — the O(1) counterpart to the
     /// `Array`-based ``projection(element:actionReview:stateCollection:)``. Prefer this for large,
     /// read-heavy collections keyed by id where ordering is **not** required; if you need stable
     /// display order, see that factory's discussion (a dictionary alone cannot provide it).

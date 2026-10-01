@@ -52,7 +52,7 @@
 /// ```swift
 /// return .produce { ctx in
 ///     Effect.task {
-///         let count = await ctx.liveState?.count  // main-actor hop happens here
+///         let count = await ctx.liveState?.count // main-actor hop happens here
 ///         return .log(count: count)
 ///     }
 /// }
@@ -156,7 +156,7 @@ extension PostReducerContext {
     ///
     /// ```swift
     /// // liftEnvironment: Reader<PostReducerContext<State, LocalEnv>, _> →
-    /// //                  Reader<PostReducerContext<State, GlobalEnv>, _>
+    /// // Reader<PostReducerContext<State, GlobalEnv>, _>
     /// c.effect.contramapEnvironment { $0.mapEnvironment { $0.auth } }
     /// ```
     ///

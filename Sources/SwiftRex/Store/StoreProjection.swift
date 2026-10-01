@@ -17,29 +17,23 @@ import DataStructure
 /// `State` represent the **local** (narrowed) types — the types the feature or view cares about.
 ///
 /// ```swift
-/// // Direct construction — global types in init only
-/// let counterProj = StoreProjection<CounterAction, CounterState>(
-///     store:  appStore,
-///     action: { AppAction.counter($0) },
-///     state:  { $0.counterState }
-/// )
+/// // Through a Relay scope — the usual way (inline, or a declared `ScopeOf` scope)
+/// let counterProj = appStore.projection(.action(\.counter).state(\.counter))
 ///
-/// // Convenience factory on StoreType
-/// let counterProj = appStore.projection(
-///     action: { AppAction.counter($0) },
-///     state:  { $0.counterState }
+/// // Through closures — for a derived view state no key path expresses
+/// let counterView = StoreProjection<CounterAction, CounterViewState>(
+///     store: counterProj,
+///     action: { $0 },
+///     state: { CounterViewState(label: "\($0.count)") }
 /// )
 /// ```
 ///
 /// ## Collection element projections
 ///
-/// Three additional initialisers project to a single element within a collection:
-///
-/// - `init(store:element:actionReview:stateCollection:)` — for `Identifiable` elements.
-/// - `init(store:element:actionReview:stateCollection:identifier:)` — for custom `Hashable` ids.
-/// - `init(store:key:actionReview:stateDictionary:)` — for `[Key: Value]` dictionary values.
-///
-/// All wrap the element action in an ``ElementAction`` and dispatch it through the global store.
+/// One element of a collection is a ``StoreCollectionFocus``, made through a collection scope:
+/// `store.projection(.action(\.row).state(\.rows), element: id)` (also `.state(\.rows, id: \.slug)`,
+/// `.state(indexed: \.rows)`, `.state(dictionary: \.byKey)`). The older element initialisers below
+/// (`init(store:element:actionReview:stateCollection:)` and siblings) remain, with a linear scan per change.
 ///
 /// ## Observation
 ///
@@ -65,11 +59,14 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     /// Global store types (`GA`, `GS`) appear only in this initialiser's type parameters and
     /// are captured into the closures — they are not visible on the struct itself.
     ///
+    /// For a plain slice prefer `store.projection(.action(\.counter).state(\.counter))`; the closures are for a
+    /// derived view state:
+    ///
     /// ```swift
-    /// let counterProj = StoreProjection<CounterAction, CounterState>(
-    ///     store:  appStore,                              // Store<AppAction, AppState, AppEnv>
-    ///     action: { AppAction.counter($0) },             // CounterAction → AppAction
-    ///     state:  { $0.counterState }                    // AppState → CounterState
+    /// let counterView = StoreProjection<CounterAction, CounterViewState>(
+    ///     store: counterStore, // StoreProjection<CounterAction, CounterState>
+    ///     action: { $0 },
+    ///     state: { CounterViewState(label: "\($0.count)") } // CounterState → CounterViewState
     /// )
     /// ```
     ///
@@ -119,12 +116,10 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     /// exists in the collection. Actions are wrapped in an ``ElementAction`` and lifted
     /// through `actionReview` before reaching the global store.
     ///
+    /// Prefer the collection scope, which finds the element through a per-observer hint instead of a scan:
+    ///
     /// ```swift
-    /// let todoProj = appStore.projection(
-    ///     element: todo.id,
-    ///     actionReview: { AppAction.todo($0) },
-    ///     stateCollection: \.todos
-    /// )
+    /// let todo = appStore.projection(.action(\.todo).state(\.todos), element: todo.id) // StoreCollectionFocus
     /// ```
     ///
     /// - Parameters:
@@ -149,13 +144,10 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     /// Use this when the collection's element type is not `Identifiable` or when you want to
     /// focus by a field other than the standard `id` property.
     ///
+    /// Prefer the collection scope with a custom id:
+    ///
     /// ```swift
-    /// let featureProj = appStore.projection(
-    ///     element: "auth",
-    ///     actionReview: { AppAction.feature($0) },
-    ///     stateCollection: \.features,
-    ///     identifier: \.slug
-    /// )
+    /// let feature = appStore.projection(.action(\.feature).state(\.features, id: \.slug), element: "auth")
     /// ```
     ///
     /// - Parameters:
@@ -181,12 +173,10 @@ public struct StoreProjection<Action: Sendable, State: Sendable>: StoreType {
     ///
     /// The projected `State` is `Value?` — `nil` when the key is absent from the dictionary.
     ///
+    /// Prefer the dictionary collection scope:
+    ///
     /// ```swift
-    /// let configProj = appStore.projection(
-    ///     key: "darkMode",
-    ///     actionReview: { AppAction.config($0) },
-    ///     stateDictionary: \.userSettings
-    /// )
+    /// let config = appStore.projection(.action(\.config).state(dictionary: \.userSettings), element: "darkMode")
     /// ```
     ///
     /// - Parameters:

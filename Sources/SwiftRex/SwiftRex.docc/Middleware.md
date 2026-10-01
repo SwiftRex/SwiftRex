@@ -28,9 +28,9 @@ Both builders exist as **static** factories and **instance** methods, so a `.pro
 
 ```swift
 let logger = Middleware<AppAction, AppState, Logger>.handle { action, context in
-    let before = context.stateBefore                    // phase 1 — pre-mutation
+    let before = context.stateBefore // phase 1 — pre-mutation
     return Producer { ctx in
-        ctx.environment.log(action, before: before)     // phase 3 — runs with the environment
+        ctx.environment.log(action, before: before) // phase 3 — runs with the environment
         return .empty
     }
 }
@@ -40,7 +40,7 @@ let logger = Middleware<AppAction, AppState, Logger>.handle { action, context in
 
 ```swift
 return .produce { ctx in
-    ctx.readLiveState()                                 // e.g. Publisher<State, Never>
+    ctx.readLiveState() // e.g. Publisher<State, Never>
         .flatMap { state in ctx.environment.api.save(state.draft) }
         .asEffect()
 }
@@ -60,21 +60,21 @@ A middleware written at *local* types is lifted to your app's *global* types bef
 - `liftOptional` — the 0-or-1 host: a *state-only* scope over an optional (or otherwise affine) slice, with action and environment left absent. While the focus is `nil` the middleware is skipped entirely (no effect produced); while present it reads the **unwrapped** value. A key-path spelling is sugar for the same call:
 
 ```swift
-dayMiddleware.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
-dayMiddleware.liftOptional(\AppState.currentDay)           // key-path sugar
+dayMiddleware.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
+dayMiddleware.liftOptional(\AppState.currentDay) // key-path sugar
 ```
 
-- ``liftCollection(action:embed:stateContainer:elements:)`` — route an addressed global action to **one** element the state lane locates (`.state(\.rows)`, `.state(\.rows, id: \.slug)`, `.state(indexed: \.rows)`, `.state(dictionary: \.configs)`), observing that element's **unwrapped** state:
+- ``liftCollection(_:)`` — route an addressed global action to **one** element the state lane locates (`.state(\.rows)`, `.state(\.rows, id: \.slug)`, `.state(indexed: \.rows)`, `.state(dictionary: \.configs)`), observing that element's **unwrapped** state:
 
 ```swift
-rowMiddleware.liftCollection(
-    .action(AppAction.prism.row).state(\.rows).environment(\.rowEnv)
+let rows: Middleware<AppAction, AppState, World> = rowMiddleware.liftCollection(
+    .action(\.row).state(\.rows).environment(\.rowEnv)
 )
 ```
 
-- ``liftEach(action:embed:each:stateContainer:)`` — the broadcast form: observe **every** present element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``.
+- ``liftEach(_:)`` — the broadcast form: observe **every** present element, the action lane bridging a plain inbound prism into the per-element ``ElementAction``.
 
-Every lift carries **both** effect axes — including `supervise`: a lifted middleware's channels are re-embedded and (for collections) per-element stamped, so each element's effect ids and supervision fan out per element automatically. Use the `on(…)` family to route by action case without a manual `guard case` — the same Prism / KeyPath / predicate families documented on ``Behavior``, minus the `reduce:` parameter (a middleware never mutates).
+Every lift carries **both** effect axes — including `supervise`: a lifted middleware's channels are re-embedded and (for collections) per-element stamped, so each element's effect ids and supervision fan out per element automatically. Use `.on(.action(…), when:, dispatch: .action(…))` to route by action case without a manual `guard case` — the same axis vocabulary documented on ``Behavior``, minus the `reduce:` parameter (a middleware never mutates).
 
 ### Becoming a Behavior
 
@@ -95,6 +95,8 @@ Every lift carries **both** effect axes — including `supervise`: a lifted midd
 ### Lifting to a Larger Scope
 
 - ``lift(_:)``
+- ``liftCollection(_:)``
+- ``liftEach(_:)``
 - ``liftAction(_:)``
 - ``liftState(_:)``
 - ``liftEnvironment(_:)``

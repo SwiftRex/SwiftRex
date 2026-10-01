@@ -40,21 +40,23 @@ let chat = Behavior<ChatAction, ChatState, ChatEnv>
         case .join(let id): state.room = id
         case .leave: state.room = nil
         case .received(let m): state.log.append(m)
-        case .send: break                                       // the write is a side-effect, see react
+        case .send: break // the write is a side-effect, see produce
         }
     }
     .produce { action, _ in
         guard case .send(let text) = action else { return .doNothing }
-        return Producer { _ in .broadcast(text, channel: "chat-socket") }    // → into the live socket
+        return Producer { _ in .broadcast(text, channel: "chat-socket") } // → into the live socket
     }
     .supervise { state in
         Supervision { env in
-            guard let room = state.room else { return [] }      // not in a room → socket closed
+            guard let room = state.room else { return [] } // not in a room → socket closed
             return [Channel(id: "chat-socket", lifetime: .ephemeral(resetKey: room)) { dispatch in
                 let socket = env.connect(room)
-                socket.onMessage { dispatch(.received($0)) }    // inbound → actions
-                return ChannelHandler(receive: { socket.write($0) },   // outbound (piped in) → socket
-                                      cancel:  { socket.close() })      // teardown, once
+                socket.onMessage { dispatch(.received($0)) } // inbound → actions
+                return ChannelHandler(
+                    receive: { socket.write($0) }, // outbound (piped in) → socket
+                    cancel: { socket.close() } // teardown, once
+                )
             }]
         }
     }

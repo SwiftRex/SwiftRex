@@ -25,10 +25,10 @@ import DataStructure
 /// `.supervision` consequences (the **state clock**):
 ///
 /// ```
-/// Phase 1  handle(action, preCtx)         — fold all reactions, pre-mutation state
-/// Phase 2  reaction.mutation.runEndoMut(&state) — all mutations, zero-copy inout
-/// Phase 3  reaction.produce.runReader(postCtx)  — all effects, post-mutation state
-/// Phase 5  reconcile(supervisor(state))    — state-driven channels, diffed
+/// Phase 1: handle(action, preCtx) — fold all reactions, pre-mutation state
+/// Phase 2: reaction.mutation.runEndoMut(&state) — all mutations, zero-copy inout
+/// Phase 3: reaction.produce.runReader(postCtx) — all effects, post-mutation state
+/// Phase 5: reconcile(supervisor(state)) — state-driven channels, diffed
 /// ```
 ///
 /// Because every reaction in phase 1 sees the same pre-mutation state, composing two behaviors with
@@ -40,15 +40,15 @@ import DataStructure
 /// // Grouped action builder — react, with reduce and/or produce inside
 /// let loader = Behavior<AppAction, AppState, AppEnvironment>.react { action, _ in
 ///     guard case .load(let id) = action else { return .doNothing }
-///     return .reduce  { $0.isLoading = true }
-///            .produce { ctx in ctx.environment.api.fetch(id).asEffect() }
+///     return .reduce { $0.isLoading = true }
+///         .produce { ctx in ctx.environment.api.fetch(id).asEffect() }
 /// }
 ///
 /// // Fluent — each concern combined into one behavior
 /// let feature = Behavior<AppAction, AppState, AppEnvironment>
-///     .reduce    { action, state in /* … */ }
-///     .produce   { action, ctx   in Reader { c in /* … */ } }
-///     .supervise { state         in Supervision { env in /* … */ } }
+///     .reduce { action, state in /* … */ }
+///     .produce { action, ctx in Reader { c in /* … */ } }
+///     .supervise { state in Supervision { env in /* … */ } }
 ///
 /// // From a Reducer, or a Reducer + Middleware
 /// let counter = counterReducer.asBehavior()
@@ -158,8 +158,8 @@ extension Behavior {
     /// ```swift
     /// Behavior.react { action, context in
     ///     guard case .load(let id) = action else { return .doNothing }
-    ///     return .reduce  { $0.isLoading = true }
-    ///            .produce { ctx in ctx.environment.api.fetch(id).asEffect() }
+    ///     return .reduce { $0.isLoading = true }
+    ///         .produce { ctx in ctx.environment.api.fetch(id).asEffect() }
     /// }
     /// ```
     public static func react(

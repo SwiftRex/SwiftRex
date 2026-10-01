@@ -4,8 +4,8 @@ import CoreFP
 import DataStructure
 
 extension Middleware {
-    /// Lift this middleware into a global domain through a ``Relay/Scope`` — the single replacement for
-    /// the three-axis `lift(action:state:environment:)` family. A middleware **reads** state (never
+    /// Lift this middleware into a global domain through a ``Relay/Scope`` (inline, or a declared `ScopeOf`
+    /// scope). A middleware **reads** state (never
     /// mutates it), so it needs a **duplex** action lane, a **reading** state lane (`ReadsProtocol`), and
     /// a **narrowing** environment lane; it delegates to the per-axis primitives.
     public func lift<
@@ -26,7 +26,7 @@ extension Middleware {
     /// skipped entirely.
     ///
     /// ```swift
-    /// dayMiddleware.liftOptional(.state(\AppState.currentDay))   // currentDay: DayDetail.State?
+    /// dayMiddleware.liftOptional(.state(\AppState.currentDay)) // currentDay: DayDetail.State?
     /// ```
     public func liftOptional<S: Relay.StateAxis.WritesProtocol>(
         _ scope: Relay.Scope<Action, Relay.Identity<Action>, S.Global, S, Environment, Relay.Identity<Environment>>

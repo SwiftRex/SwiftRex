@@ -13,9 +13,9 @@ You rarely build a `Consequence` by hand. The ``Behavior`` and ``Middleware`` bu
 
 ```swift
 Behavior<AppAction, AppState, AppEnvironment>
-    .reduce    { action, state in /* … */ }   // → .reaction (mutation)
-    .produce   { action, ctx   in /* … */ }   // → .reaction (effect)
-    .supervise { state         in /* … */ }   // → .supervision
+    .reduce { action, state in /* … */ } // → .reaction (mutation)
+    .produce { action, ctx in /* … */ } // → .reaction (effect)
+    .supervise { state in /* … */ } // → .supervision
 ```
 
 ### Describe, don't do

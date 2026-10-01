@@ -13,9 +13,9 @@ Work top to bottom: each step makes the next step's compiler errors meaningful. 
 **A store can't be read anymore; only a `ViewStore` can.** ``StoreType`` is `dispatch` plus a ``StoreType/stateStream`` you follow. There is no `store.state` and no `observe(didChange:)`. A SwiftUI view reads through a `ViewStore`, and `viewStore.state` is not the state value — it is a *position* in it:
 
 ```swift
-viewStore.state.title          // String — a leaf comes back as the value (and depends on \.title only)
-viewStore.state.player         // GranularTracking<Player> — a position you keep reading into
-viewStore.state.player.value   // the whole Player — a coarse read, depends on \.player
+viewStore.state.title // String — a leaf comes back as the value (and depends on \.title only)
+viewStore.state.player // GranularTracking<Player> — a position you keep reading into
+viewStore.state.player.value // the whole Player — a coarse read, depends on \.player
 ```
 
 The same rule, one level up: **only a `ViewStore` reads, and every view store has one owner.** Anything you derive — a projection, a transposed optional, a collection element — is a pure stage with no state to read; a child observes it through its own view store, kept by the child.
@@ -57,6 +57,9 @@ The old `ViewStore<ViewState, ViewAction>` was a class you could build anywhere.
 | same, where `store` is `any StoreType<A, S>` | `_viewStore = OwnedStore(wrappedValue: store.viewStore())` (an existential makes one the same way) |
 | `Root(viewStore: ViewStore(store), …)` in a hand-written `view(store:environment:)` | `Root(store: store, …)`, where `Root` keeps `@OwnedStore var viewStore` made from it in `init` |
 | `store.observable()` / `asObservableObject()` | `store.viewStore(.combine)`, kept by `@OwnedStore` |
+| the `App` holding the store in `@StateObject` / an observable wrapper | the `App` keeps the real `Store` as a plain `let` (deep links and scene code dispatch to it); the root view keeps `@OwnedStore` made from `store.viewStore()` |
+
+Making a view store is always explicit — `.viewStore()` (or `.viewStore(.combine)`), a method on every store: a `Store`, a projection, a buffer, a derived stage, an `any StoreType<A, S>`. `@OwnedStore` only keeps the `ViewStore` it is given; it never holds a `Store`, and never takes a strategy. Never call `.viewStore()` bare in a `body` — that makes a new view store every render.
 
 Safe rewrites:
 
@@ -108,10 +111,22 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 | Before | After |
 |---|---|
 | `store.projection(…).transpose()` in a body or router | `viewStore.traverse(.action(\.x).state(\.x))` (key paths) or `viewStore.traverse(action: …, state: …)` (closure lane) |
-| a list row built with a projection by id | `viewStore.traverse(.action(\.row).state(\.rows), element: row.id)` |
+| a view store whose own state is `T?` / `Presentation<T>`, unwrapped | `viewStore.transpose()` (no arguments) |
+| `ForEach` of rows built with a projection by id | `ForEach(viewStore.each(.action(\.row).state(\.rows))) { RowView(store: $0) }` — display-only rows: `viewStore.state.each(\.rows)` |
+| one element outside a loop, by id | `viewStore.traverse(.action(\.row).state(\.rows), element: id)` |
 | a child view taking a slice it dispatches into | `Child(store: viewStore.projection(.action(\.x).state(\.x)))`, the child keeping `.viewStore()` of it with `@OwnedStore` |
 | a router holding `any StoreType<…>` / `MainStoreType` | a router holding the app's `ViewStore<AppAction, AppState>` |
 | `store.projection(…).transpose()` outside SwiftUI (UIKit) | follow presence as state: `store.stateStream.map { $0.x != nil }.removeDuplicates().observe { … }` |
+
+A child view that keeps its own view store over a stage it is handed:
+
+```swift
+struct DetailView: View {
+    @OwnedStore var viewStore: ViewStore<DetailAction, Detail>
+    init(store: some StoreType<DetailAction, Detail>) { _viewStore = OwnedStore(wrappedValue: store.viewStore()) }
+    var body: some View { … }
+}
+```
 
 **Pure until the leaf.** Everything derived — a projection, a transposed slot, an element — is a pure stage: it follows a stream and has no state to read. A child observes it through its **own** view store, kept by the view that uses it: `@OwnedStore var viewStore` made from the stage (`store.viewStore()`) in that view's `init` — a feature's `view(store:environment:)` does it for you. The parent keeps nothing for its children, and a child redraws only for what it reads.
 
@@ -125,6 +140,19 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 | `store.publisher` (ReactiveConcurrency) | `store.stateStream.asPublisher` |
 | `store.stream()` | `for await state in store.stateStream` |
 | `SubscriptionToken` from `observe` | ``UISubscriptionToken`` — keep it; releasing it stops delivery |
+
+## Coming from an intermediate version
+
+If you already moved to an earlier cut of this API, these names are gone:
+
+| Intermediate | Current |
+|---|---|
+| `ProjectionKeeper` (a body keeping a child's projection) | hand the pure stage to a child view; the child keeps its own `@OwnedStore` view store |
+| `@OwnedStore var viewStore = store` / `OwnedStore(store)` (a `Store` in the wrapper) | `@OwnedStore var viewStore = store.viewStore()` / `OwnedStore(wrappedValue: store.viewStore())` |
+| `@OwnedStore(.combine)` / `OwnedStore(wrappedValue: s, .combine)` | `OwnedStore(wrappedValue: s.viewStore(.combine))` — the strategy goes where the view store is made |
+| `viewStore.focus(…)` | `viewStore.projection(scope)` for a slice, `viewStore.traverse(scope)` for an optional, `viewStore.each(scope)` / `traverse(scope, element:)` for elements |
+| `viewStore.transpose(scope)` (with arguments) | `viewStore.traverse(scope)`; `transpose()` takes no arguments |
+| `StoreElement` / `StoreUnwrap` | ``StoreCollectionFocus`` / ``StoreOptionalFocus`` |
 
 ## Symptoms → fixes
 
@@ -143,6 +171,8 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 | `value of type 'StoreProjection<…>' has no member 'transpose'` | core transpose is gone | step 6 |
 | `value of type 'ViewStore<…>' has no member 'focus'` | children are derived and owned | step 6 — `projection(scope)` / `traverse(scope)`, owned by the child |
 | `value of type 'StoreOptionalFocus<…>' has no member 'state'` / `'binding'` | a derived stage used as a view store | hand it to a child that keeps `@OwnedStore var viewStore` made from it, or to the child feature's view |
+| `cannot find 'ProjectionKeeper' in scope` | the keeper is gone | *Coming from an intermediate version* |
+| `cannot convert value of type 'Store<…>' to expected argument type 'ViewStore<…>'` on `@OwnedStore` | a store put in the wrapper | `.viewStore()` it first |
 | `'state' is inaccessible due to 'private' protection level` | reading a `Store` | step 7 |
 
 ## Pitfalls — learned doing this
@@ -173,7 +203,7 @@ The SwiftRexNavGallery migration, in the order above:
 3. `ViewStore<X.State, X.Action>` → `ViewStore<X.Action, X.State>` (4 container views by regex, 3 `ViewStore<AppState, AppAction>` by hand); four hand-written `view(store:environment:)` → a root view keeping `@OwnedStore` made from `store.viewStore()`; the app root → `@OwnedStore` with `OwnedStore(wrappedValue: store.viewStore())`.
 4. Twelve binding call sites → `binding(.state(…).action(…))`: six former `presence` (two of them the iOS / macOS branches of one cover) and six `binding(…, dispatch:)`.
 5. Five `ForEach(viewStore.state.xs)` → `each(\.xs)` with `.value` where the element is dispatched; one `.value` on a selection passed to a router.
-6. The router holds the app `ViewStore`; three `store.projection(…).transpose()` → `store.traverse(action:state:)`.
+6. The router holds the app `ViewStore`; three `store.projection(…).transpose()` → `viewStore.traverse(action:state:)`, each handing the stage to a child view that keeps its own view store.
 
 ## See Also
 

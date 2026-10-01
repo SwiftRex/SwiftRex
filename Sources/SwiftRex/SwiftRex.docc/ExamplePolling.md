@@ -35,7 +35,7 @@ let search = Behavior<SearchAction, SearchState, SearchEnv>
     }
     .supervise { state in
         Supervision { env in
-            guard !state.query.isEmpty else { return [] }       // no query → no poll
+            guard !state.query.isEmpty else { return [] } // no query → no poll
             let query = state.query
             return [Channel(id: "poll", lifetime: .ephemeral(resetKey: query)) { dispatch in
                 let task = Task {

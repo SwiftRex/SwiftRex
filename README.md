@@ -23,7 +23,8 @@ SwiftRex is a [Redux](https://redux.js.org/basics/data-flow)-style unidirectiona
 
 ```swift
 import SwiftRex
-import SwiftRexArchitecture   // @Feature, @BoundTo
+import SwiftRexArchitecture // @Feature, @BoundTo
+import SwiftRexSwiftConcurrency // Effect.task
 import SwiftUI
 
 @Feature
@@ -64,7 +65,7 @@ struct MoviesView: View {
     // injected: let viewStore: ViewStore<Movies.ViewAction, Movies.ViewState>
     // (no ViewState/ViewAction declared, so they alias State/Action — the view reads the domain state)
     var body: some View {
-        List(viewStore.state.each(\.movies)) { movie in Text(movie.title) }   // each row depends on its own movie
+        List(viewStore.state.each(\.movies)) { movie in Text(movie.title) } // each row depends on its own movie
             .onAppear { viewStore.dispatch(.onAppear) }
     }
 }
@@ -73,12 +74,23 @@ struct MoviesView: View {
 Everything above is a pure value. To run it, create the one object in the whole design — the `Store` — at your app's entry point:
 
 ```swift
-@State var store = Store(
-    initial: Movies.initialState(with: ()),
-    behavior: Movies.behavior(),
-    environment: Movies.Environment(fetchMovies: { await API.live.movies() })
-)
+@main
+struct MoviesApp: App {
+    static let environment = Movies.Environment(fetchMovies: { await API.live.movies() })
+
+    let store = Store(
+        initial: Movies.initialState(with: ()),
+        behavior: Movies.behavior(),
+        environment: MoviesApp.environment
+    )
+
+    var body: some Scene {
+        WindowGroup { Movies.view(store: store, environment: MoviesApp.environment) }
+    }
+}
 ```
+
+The `App` keeps the real `Store` as a plain `let` — it's never observed, only dispatched to and followed. The generated `Movies.view(store:environment:)` makes the view store from it once and keeps it with `@OwnedStore`.
 
 The [Build Your First Feature](https://swiftrex.ios.lu/documentation/swiftrex/buildyourfirstfeature) article walks through this step by step.
 
@@ -91,7 +103,7 @@ dependencies: [
     .package(
         url: "https://github.com/SwiftRex/SwiftRex.git",
         from: "1.0.0",
-        traits: ["ReactiveConcurrency"]   // only if you use a trait-gated bridge; omit otherwise
+        traits: ["ReactiveConcurrency"] // only if you use a trait-gated bridge; omit otherwise
     )
 ],
 targets: [
@@ -249,19 +261,21 @@ A CRUD or document app is usually **all producers** — discrete IO, nothing lon
 let room = Behavior<RoomAction, RoomState, RoomEnv>
     .reduce { action, state in
         switch action {
-        case .join(let id):    state.joinedRoom = id
-        case .leave:           state.joinedRoom = nil
+        case .join(let id): state.joinedRoom = id
+        case .leave: state.joinedRoom = nil
         case .received(let m): state.messages.append(m)
         }
     }
     .supervise { state in
         Supervision { env in
-            guard let id = state.joinedRoom else { return [] }   // no room → no socket
+            guard let id = state.joinedRoom else { return [] } // no room → no socket
             return [Channel(id: id) { dispatch in
                 let socket = env.connect(id)
-                socket.onMessage { dispatch(.received($0)) }          // events out → actions
-                return ChannelHandler(receive: { socket.write($0) },  // values in → the resource
-                                      cancel:  { socket.close() })    // teardown, written once
+                socket.onMessage { dispatch(.received($0)) } // events out → actions
+                return ChannelHandler(
+                    receive: { socket.write($0) }, // values in → the resource
+                    cancel: { socket.close() } // teardown, written once
+                )
             }]
         }
     }
@@ -280,7 +294,7 @@ The core `Effect` is deliberately runtime-agnostic; each companion product bridg
 **Swift Concurrency** (`SwiftRex.SwiftConcurrency`, no third-party dependency):
 
 ```swift
-// one-shot async work
+// one-shot async work (inside a `.handle` case)
 .produce { ctx in
     Effect.task { .loaded(await ctx.environment.fetch()) }
 }
@@ -305,8 +319,8 @@ for await state in store.stateStream { render(state) }
 ```swift
 // Publisher → Effect; failures arrive as a Result in the action
 .produce { ctx in
-    ctx.environment.search(query)        // Publisher<[Movie], APIError>
-        .asEffect(Action.results)        // Effect<Action>
+    ctx.environment.search(query) // Publisher<[Movie], APIError>
+        .asEffect(Action.results) // Effect<Action>
 }
 
 // Publisher → supervised channel
@@ -355,7 +369,7 @@ Pair them back up with `Behavior(reducer:middleware:)`, or lift either half alon
 
 `SwiftRex.Architecture` packages the recommended app structure. `@Feature` turns a namespace enum into a full feature: it applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type (recursive `@Lenses`/`@Prisms` down the whole tree), generates `initialState(with:)` and the SwiftUI `view(store:environment:)` factory, and generates the `Feature` conformance when the feature has a view (a view-less feature is a behavior only, with no `Feature` conformance). `@BoundTo` injects the matching `viewStore` into the view — the body never changes when you swap observation strategies.
 
-Views read **granularly**, at any depth, with state kept as plain structs: `viewStore.state.title` makes the view depend on `\.title` alone (compared with `==`), `viewStore.state.player` is a position you keep reading into, and `viewStore.state.each(\.songs)` gives one dependency per row. Pass positions to subviews and a hot field (a 10 Hz playhead) redraws only the view that shows it. A plain store can't be read at all — only followed through its `stateStream` — so bindings and navigation exist only on the `ViewStore`. One view owns it — `@Feature` does it for you, or `@OwnedStore var viewStore = appStore.viewStore()` (the real `Store` included, no identity projection needed) — and every view below takes `let viewStore: ViewStore<…>`. [Features → observation and composition](https://swiftrex.ios.lu/documentation/swiftrex/features) has the full model, and [Stores at a Glance](https://swiftrex.ios.lu/documentation/swiftrex/storesataglance) maps every store type and which views redraw under Observation vs Combine.
+Views read **granularly**, at any depth, with state kept as plain structs: `viewStore.state.title` makes the view depend on `\.title` alone (compared with `==`), `viewStore.state.player` is a position you keep reading into, and `viewStore.state.each(\.songs)` gives one dependency per row. Pass positions to subviews and a hot field (a 10 Hz playhead) redraws only the view that shows it. A plain store can't be read at all — only followed through its `stateStream` — so bindings and navigation exist only on the `ViewStore`. Making one is always explicit — `store.viewStore()` on any store — and the view that uses it keeps it: `@Feature` does it for you, or `@OwnedStore var viewStore = appStore.viewStore()` (the real `Store` included, no identity projection needed). Views below take `let viewStore: ViewStore<…>`; a child screen derived in a body (`traverse`, `each`, `projection`) receives a pure stage and keeps its own view store. [Features → observation and composition](https://swiftrex.ios.lu/documentation/swiftrex/features) has the full model, and [Stores at a Glance](https://swiftrex.ios.lu/documentation/swiftrex/storesataglance) maps every store type and which views redraw under Observation vs Combine.
 
 You saw the minimal shape in the hero example. Features scale up by *adding* declarations, never rewriting: an `Environment` for dependencies, a distinct `ViewState`/`ViewAction` pair with `mapState`/`mapAction` as `Reader<Environment, …>` when the view's shape diverges from the domain's, an `Input` seed for parameterised features, and a `public enum` (access follows the declaration) when the feature becomes its own SPM module:
 
@@ -366,14 +380,14 @@ public enum HeroDetails {
     public enum Action: Sendable { … }
     public struct Environment: Sendable { … }
 
-    public struct ViewState: Sendable, Equatable { … }   // what the pixels need
-    public enum ViewAction: Sendable { case onAppear }   // what the pixels can say
+    public struct ViewState: Sendable, Equatable { … } // what the pixels need
+    public enum ViewAction: Sendable { case onAppear } // what the pixels can say
 
     public static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewState> { env in
         { state in ViewState(state, formatter: env.formatter) }
     }
     public static let mapAction = Reader<Environment, @Sendable (ViewAction) -> Action> { _ in
-        { viewAction in .load }
+        { _ in .load }
     }
 
     public static func behavior() -> Behavior<Action, State, Environment> { … }
@@ -401,8 +415,8 @@ Features never know about the app. They're written against local types and **lif
 
 let moviesBehavior: Behavior<AppAction, AppState, World> =
     Movies.behavior().lift(
-        .action(\.movies)                    // PrismKeyPath — narrows incoming, embeds outgoing
-            .state(\AppState.movies)         // WritableKeyPath — focus the slice
+        .action(\.movies) // PrismKeyPath — narrows incoming, embeds outgoing
+            .state(\AppState.movies) // WritableKeyPath — focus the slice
             .environment { world in Movies.Environment(fetchMovies: world.api.movies) }
     )
 ```
@@ -422,15 +436,20 @@ rowBehavior.liftCollection(.action(AppAction.prism.cfg).state(dictionary: \AppSt
 rowBehavior.liftEach(.action(broadcast: AppAction.prism.tickAll, into: AppAction.prism.row).state(\AppState.rows)…)
 ```
 
-The lifted behavior sees the **unwrapped** element (never `Element?`), and each element's effects/channels are re-embedded and scoped to its id automatically. The same lanes drive `Reducer`/`Middleware` lifts and a per-element `store.projection(scope, element: id)` (whose state is `Element?` — the view unwraps).
+The lifted behavior sees the **unwrapped** element (never `Element?`), and each element's effects/channels are re-embedded and scoped to its id automatically. The same lanes drive `Reducer`/`Middleware` lifts and a per-element `store.projection(.action(\.row).state(\.rows), element: id)` (a `StoreCollectionFocus`, whose state is `Element?`).
 
-**The view side inverts the store.** A projection over an optional slice is a *store of an optional*; a child screen wants an *optional store of the unwrapped value*. `transpose()` swaps the two — `Store<T?>` → `Store<T>?` — the store analogue of transposing `Optional<[T]>` ⇄ `[Optional<T>]` (it's not `sequence`: a `Store` isn't `Traversable`). It runs on the view store and depends only on whether the child is there; a three-stage `Presentation` slot keeps the child live through the dismiss animation (flicker-free). Two-way bindings read state and *dispatch* on write, so the reducer stays the only writer:
+**The view side inverts the store.** A projection over an optional slice is a *store of an optional*; a child screen wants an *optional store of the unwrapped value*. On a view store, `transpose()` swaps the two for its own `T?` (or `Presentation<T>`) state — `F<T?>` → `F<T>?`, the `sequence` shape — and `traverse(scope)` maps then transposes, reaching a child slot in one step. Both return a pure stage (`StoreOptionalFocus`), depend only on whether the child is there, and hold the last present value while it goes away; a three-stage `Presentation` slot keeps the child live through the dismiss animation (flicker-free). For rows, `viewStore.each(.action(\.row).state(\.rows))` gives one identified stage per element for a `ForEach`. Two-way bindings read state and *dispatch* on write, so the reducer stays the only writer:
 
 ```swift
-// an optional child → an unwrapped child store → a live child view (nothing while it's absent):
+// an optional child → an unwrapped child stage → a live child view (nothing while it's absent);
+// the child view makes and keeps its own view store from the stage:
 if let detail = viewStore.traverse(.action(\.detail).state(\.detail)) {
     DetailFeature.view(store: detail, environment: world.detailEnv)
 }
+
+// rows that dispatch or bind — one stage per element; each RowView keeps its own view store
+// (display-only rows read `viewStore.state.each(\.rows)` positions instead, which is cheaper):
+ForEach(viewStore.each(.action(\.row).state(\.rows))) { row in RowView(store: row) }
 
 // two-way binding — a `.state(…)` read paired with the `.action(…)` case it dispatches on write:
 TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName)))
@@ -439,41 +458,44 @@ TextField("Name", text: viewStore.binding(.state(\.name).action(\.setName)))
 A **`Relay.Scope`** captures how a child feature embeds into the app — action prism, state slice, environment narrowing — as one declared, compile-checked value used by both the store fold *and* the view router. Given that wiring it lifts whatever the child provides: `.behavior(of:)` when the child is `HasBehavior`, `.view(of:from:world:)` when it is `ViewFactory`, both for a full `Feature` — so a logic-only capability lifts exactly like a screen:
 
 ```swift
-enum AppFeature: Rig {                                 // the app's (Action, State, Environment) triad
+// the app's (Action, State, Environment) triad
+enum AppFeature: Rig {
     typealias Action = AppAction
     typealias State = AppState
     typealias Environment = World
 }
 
-enum AppScopes {                                       // one wiring per feature, declared once
-    static let movies = ScopeOf<AppFeature>            // the identity-scope entry — pins the triad
-        .action(\.movies)                              // `\.case` prism — narrows incoming, embeds outgoing
-        .state(\.movies)                               // WritableKeyPath — focus the slice
+// one wiring per feature, declared once
+enum AppScopes {
+    static let movies = ScopeOf<AppFeature> // the identity-scope entry — pins the triad
+        .action(\.movies) // `\.case` prism — narrows incoming, embeds outgoing
+        .state(\.movies) // WritableKeyPath — focus the slice
         .environment { world in Movies.Environment(fetchMovies: world.api.movies) }
 }
 
 let store = Store(
     initial: AppState(),
     behavior: AppScopes.movies.behavior(of: Movies.self)
-           <> AppScopes.player.behavior(of: Player.self),
+        <> AppScopes.player.behavior(of: Player.self),
     environment: world
 )
 
-// …and in the router, the same scope builds the screen:
+// …and in the router, the same scope builds the screen from the store it's handed:
 AppScopes.movies.view(of: Movies.self, from: store, world: world)
 ```
 
-**Bridge behaviors** connect modules without coupling them. Prisms compose with `>>>`, so a root-level `.on` can route one feature's output into another feature's input — neither module imports the other:
+The same declared scope also projects a store: `store.projection(AppScopes.movies)`.
+
+**Bridge behaviors** connect modules without coupling them. Prism key paths compose with dot-notation (`\.player.finished`), so a root-level `.on` can route one feature's output into another feature's input — neither module imports the other:
 
 ```swift
 let bridge = Behavior<AppAction, AppState, World>.identity
-    .on(.action(AppAction.prism.player >>> Player.Action.prism.finished),
-        dispatch: .action { movieID in .movies(.markWatched(movieID)) })
+    .on(.action(\.player.finished), dispatch: .action { movieID in .movies(.markWatched(movieID)) })
 
 // compose it into the store fold like any other behavior:
 behavior: AppScopes.movies.behavior(of: Movies.self)
-       <> AppScopes.player.behavior(of: Player.self)
-       <> bridge
+    <> AppScopes.player.behavior(of: Player.self)
+    <> bridge
 ```
 
 Deep dives: [Lifting](https://swiftrex.ios.lu/documentation/swiftrex/lifting) · [Optionals and Collections](https://swiftrex.ios.lu/documentation/swiftrex/optionalsandcollections) · [Modularisation](https://swiftrex.ios.lu/documentation/swiftrex/modularisation).
@@ -484,21 +506,22 @@ Navigation is a function of state: routes live in the state tree, behaviors muta
 
 | State shape | Binding | Container |
 |---|---|---|
-| `Route?` (the optional *is* the content) | `store.binding(.state(…).action(…))` → `Binding<Route?>` / `Binding<Bool>` | `.sheet`, `.fullScreenCover`, `.popover` |
-| `[Route]` | `store.binding(…)` | `NavigationStack(path:)` |
-| selection enum / id | `store.binding(…)` | `TabView`, `NavigationSplitView` |
-| collection of scene ids | `store.hasScene(…)` | `WindowGroup(for:)` |
+| `Route?` (the optional *is* the content) | `viewStore.binding(.state(…).action(…))` → `Binding<Route?>` / `Binding<Bool>` | `.sheet`, `.fullScreenCover`, `.popover` |
+| `Presentation<Child>` + `PresentationAction` | `viewStore.binding(.state(\.editor).action(\.editor))` — `.sheet(item:)` directly; `.isPresented()` / `.item()` / `.onDismiss()` for other containers | `.sheet`, `.fullScreenCover`, `.popover` |
+| `[Route]` | `viewStore.binding(…)` | `NavigationStack(path:)` |
+| selection enum / id | `viewStore.binding(…)` | `TabView`, `NavigationSplitView` |
+| collection of scene ids | `viewStore.hasScene(…)` | `WindowGroup(for:)` |
 
 ```swift
-NavigationStack(path: store.binding(.state(\.nav.path).action(review: { .nav(.setPath($0)) }))) {
-    HomeView()
+NavigationStack(path: viewStore.binding(.state(\.nav.path).action(review: { .nav(.setPath($0)) }))) {
+    HomeView(viewStore: viewStore)
         .navigationDestination(for: AppRoute.self) { route in
-            route.view(in: store, world: world)   // a switch resolving scopes — no AnyView
+            route.view(in: viewStore, world: world) // a switch resolving scopes — no AnyView
         }
 }
 ```
 
-Dismissal is popping state, deep links are just setting state, and a route's supervised effects cancel when its state leaves the tree. The [Navigation article](https://swiftrex.ios.lu/documentation/swiftrex/navigation) covers all four shapes, `Scope`-based routers, and deep linking.
+Each destination is built from a pure stage (a `projection`, or `traverse` for an optional slot) and keeps its own view store — `@Feature`'s generated view does that for you. Dismissal is popping state, deep links are just setting state, and a route's supervised effects cancel when its state leaves the tree. The [Navigation article](https://swiftrex.ios.lu/documentation/swiftrex/navigation) covers every shape, `Relay.Scope`-based routers, and deep linking.
 
 # Testing
 
@@ -515,10 +538,10 @@ Dismissal is popping state, deep links are just setting state, and a route's sup
         environment: Library.Environment(fetch: { _ in books })
     )
 
-    store.dispatch(.onAppear) { _ in }        // assert state; an effect is queued
+    store.dispatch(.onAppear) { _ in } // assert state; an effect is queued
     await store.runEffects()
     store.receive(Library.Action.prism.loaded) { loaded, state in
-        state.books = loaded                  // describe the expected post-action state
+        state.books = loaded // describe the expected post-action state
     }
 }
 ```

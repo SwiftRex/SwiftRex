@@ -42,8 +42,8 @@
         /// operation simply leaves the path unchanged, and the `NavigationStack` binding re-presents it.
         ///
         /// ```swift
-        /// Behavior.navigationStack(\.path, action: \.nav)                         // always apply
-        /// Behavior.navigationStack(\.path, action: \.nav) { op, s in !s.isDirty } // veto pop while dirty
+        /// Behavior.navigationStack(\.path, action: \.nav) // always apply
+        /// Behavior.navigationStack(\.path, action: \.nav) { op, s in if case .pop = op { !s.isDirty } else { true } } // veto pop while dirty
         /// ```
         public static func navigationStack<Route: Hashable & Sendable>(
             _ path: WritableKeyPath<State, [Route]>,

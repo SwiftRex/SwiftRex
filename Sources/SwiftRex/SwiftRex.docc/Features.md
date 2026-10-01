@@ -4,7 +4,7 @@ Co-locate a whole feature — state, actions, behavior, and its SwiftUI screen �
 
 ## Overview
 
-`SwiftRex.Architecture` is the opinionated layer on top of `SwiftRex.SwiftUI`. Where <doc:BuildYourFirstFeature> wires a `Store`, a `Behavior`, and a view by hand, `@Feature` folds that wiring into a single `enum` namespace: you describe the feature, and the macro synthesizes `initialState(with:)` and an erased `view(store:environment:) -> some View`, applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type — `@Lenses` for structs, `@Prisms` for enums, recursively down the whole nested tree — and hands `Content` a `ViewStore` that redraws only what changed. (State you declare in an *extension* of the feature isn't visible to the macro: annotate that extension with `@ApplyOptics(recursively: true)` yourself.)
+`SwiftRex.Architecture` is the opinionated layer on top of `SwiftRex.SwiftUI`. Where <doc:BuildYourFirstFeature> wires a `Store`, a `Behavior`, and a view by hand, `@Feature` folds that wiring into a single `enum` namespace: you describe the feature, and the macro synthesizes `initialState(with:)` and an erased `view(store:environment:) -> some View`, applies `@ApplyOptics(recursively: true)` to `State`, `Action`, and any other nested domain type — `@Lenses` for structs, `@Prisms` for enums, recursively down the whole nested tree — and hands `Content` a `ViewStore` that redraws only what changed — made once per view identity and kept, with `@OwnedStore`, by a generated `FeatureRoot` view. (State you declare in an *extension* of the feature isn't visible to the macro: annotate that extension with `@ApplyOptics(recursively: true)` yourself.)
 
 `@Feature` takes one optional knob:
 
@@ -12,9 +12,9 @@ Co-locate a whole feature — state, actions, behavior, and its SwiftUI screen �
 
 **Access follows the `enum`'s own modifier** — exactly like `@BoundTo`. A `public enum` is a module's public entry: the generated `view()`/`initialState(with:)` are `public`, so the composing app can render and seed it (declare its `State`/`Action`/`Environment`/`Input` `public` too, so they can be lifted). A plain `enum` is a screen composed *inside* a module — its generated members stay `internal`. There is no `type:` argument; the declaration says it.
 
-**The `Feature` conformance is generated too.** A feature that builds a view (it has a `Content`, or a hand-written `view`) conforms to ``Feature`` — you never write `extension X: Feature {}` by hand. A view-less feature is a behavior only: it gets no `Feature` conformance, and (it already has `behavior()`) declares `: HasBehavior` itself in one line on the rare occasion it must be used through that protocol.
+**The `Feature` conformance is generated too.** A feature that builds a view (it has a `Content`, or a hand-written `view`) conforms to `Feature` — you never write `extension X: Feature {}` by hand. A view-less feature is a behavior only: it gets no `Feature` conformance, and (it already has `behavior()`) declares `: HasBehavior` itself in one line on the rare occasion it must be used through that protocol.
 
-The paired SwiftUI view carries `@BoundTo(Feature.self)`, which injects `let viewStore: ViewStore<ViewAction, ViewState>` — a plain-`let` receiver under every strategy (the generated `view()` owns the store). The view body is the same under every strategy — `viewStore.<field>` to read (granular: the view depends on that path only), `viewStore.dispatch(.<action>)` to send.
+The paired SwiftUI view carries `@BoundTo(Feature.self)`, which injects `let viewStore: ViewStore<ViewAction, ViewState>` — a plain-`let` receiver under every strategy (the generated `view()` keeps the view store). The view body is the same under every strategy — `viewStore.state.<field>` to read (granular: the view depends on that path only), `viewStore.dispatch(.<action>)` to send.
 
 This article is the full L0→L4 progression; the [README](https://github.com/SwiftRex/SwiftRex#readme) shows the condensed form — one feature in one screen.
 
@@ -63,7 +63,7 @@ enum Counter {
 struct CounterView: View {
     // injected: let viewStore: ViewStore<Counter.ViewAction, Counter.ViewState> (aliases of Action/State here)
     var body: some View {
-        Button("count: \(viewStore.count)") { viewStore.dispatch(.tick) }
+        Button("count: \(viewStore.state.count)") { viewStore.dispatch(.tick) }
     }
 }
 ```
@@ -89,27 +89,27 @@ When the UI needs a shape the domain doesn't have — an `Int` shown as a `Strin
 enum HeroDetails {
     struct State: Sendable {
         var codename = "Kryptonian"
-        var aliases  = ["Superman", "Man of Steel"]
-        var powers   = ["flight", "heat vision"]
+        var aliases = ["Superman", "Man of Steel"]
+        var powers = ["flight", "heat vision"]
         var isRetired = false
     }
 
     enum Action: Sendable, Equatable {
         case savePowers([String])
-        case toggleRetirement
+        case setRetired(Bool)
     }
 
     struct Environment: Sendable {}
 
     struct ViewState: Sendable, Equatable {
-        var displayName: String   // aliases.first ?? codename
-        var powersText: String    // joined for the TextField
+        var displayName: String // aliases.first ?? codename
+        var powersText: String // joined for the TextField
         var isRetired: Bool
     }
 
     enum ViewAction: Sendable {
         case editedPowers(String) // raw comma-separated TextField content
-        case tappedRetirement
+        case toggledRetirement(Bool)
     }
 
     static let mapState = Reader<Environment, @MainActor @Sendable (State) -> ViewState> { _ in
@@ -127,8 +127,8 @@ enum HeroDetails {
             switch va {
             case .editedPowers(let raw):
                 .savePowers(raw.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) })
-            case .tappedRetirement:
-                .toggleRetirement
+            case .toggledRetirement(let isRetired):
+                .setRetired(isRetired)
             }
         }
     }
@@ -137,7 +137,7 @@ enum HeroDetails {
         .reduce { action, state in
             switch action {
             case .savePowers(let p): state.powers = p
-            case .toggleRetirement:  state.isRetired.toggle()
+            case .setRetired(let isRetired): state.isRetired = isRetired
             }
         }
     }
@@ -155,9 +155,8 @@ struct HeroDetailsView: View {
     var body: some View {
         Form {
             Text(viewStore.state.displayName).font(.headline)
-            // `.action(review:)` takes `(Value) -> ViewAction`, so pass the case constructor directly:
-            TextField("Powers", text: viewStore.binding(.state(\.powersText).action(review: HeroDetails.ViewAction.editedPowers)))
-            Toggle("Retired", isOn: viewStore.binding(.state(\.isRetired).action(\.tappedRetirement)))
+            TextField("Powers", text: viewStore.binding(.state(\.powersText).action(\.editedPowers)))
+            Toggle("Retired", isOn: viewStore.binding(.state(\.isRetired).action(\.toggledRetirement)))
         }
     }
 }
@@ -166,10 +165,10 @@ struct HeroDetailsView: View {
 `binding` takes an axis pair — a `.state(…)` lane that *reads* the slice and a `.action(…)` lane that
 *embeds* the same value type — coupling into a `Binding` of that value. The slots are typed so they can't
 be crossed, and each offers only its own strategies (`\.case` / prism / `review:` for the action, key
-path / closure for the state):
+path / closure for the state). A `\.case` key path and a `review:` case constructor are interchangeable:
 
 ```swift
-TextField("Powers", text: viewStore.binding(.state(\.powersText).action(\.editedPowers)))
+TextField("Powers", text: viewStore.binding(.state(\.powersText).action(review: HeroDetails.ViewAction.editedPowers)))
 ```
 
 ## L3 — observation and composition
@@ -179,10 +178,10 @@ A view reads its store **granularly**: `viewStore.state.title` records a depende
 The walk goes as deep as you read. A member whose type is `IndivisibleTracking` (strings, numbers, `Bool`, `Date`, `UUID`, `URL`, `Data`, optionals and arrays of those…) comes back as the value; anything else comes back as a `GranularTracking` position you keep reading into:
 
 ```swift
-Text(viewStore.state.transport.position, format: .number)   // depends on \.transport.position only
-viewStore.state.transport                                   // a GranularTracking<Transport>
-viewStore.state.transport.value                             // the whole Transport — depends on \.transport
-extension Status: IndivisibleTracking {}                    // opt a type in to be read whole
+Text(viewStore.state.transport.position, format: .number) // depends on \.transport.position only
+viewStore.state.transport // a GranularTracking<Transport>
+viewStore.state.transport.value // the whole Transport — depends on \.transport
+extension Status: IndivisibleTracking {} // opt a type in to be read whole
 ```
 
 **Pass positions, not values, to subviews.** The child then depends only on what *it* reads, so a hot field redraws the one view that shows it:
@@ -191,8 +190,8 @@ extension Status: IndivisibleTracking {}                    // opt a type in to 
 struct PlayerScreen: View {
     let viewStore: ViewStore<Player.ViewAction, Player.ViewState>
     var body: some View {
-        Console(mixer: viewStore.state.mixer)            // never redraws on playhead ticks
-        Playhead(transport: viewStore.state.transport)   // redraws 10× a second, alone
+        Console(mixer: viewStore.state.mixer) // never redraws on playhead ticks
+        Playhead(transport: viewStore.state.transport) // redraws 10× a second, alone
     }
 }
 ```
@@ -203,7 +202,7 @@ For lists, `each` gives one position per `Identifiable` element — the list dep
 List(viewStore.state.each(\.songs)) { song in SongRow(song: song) }
 ```
 
-A subview that needs to send actions or build bindings gets its **own** view store: derive a pure stage (`viewStore.projection(.action(\.transport).state(\.transport))`) and hand it to the subview, which keeps `.viewStore()` of it with `@OwnedStore` (a child feature's view does it for you).
+A subview that needs to send actions or build bindings gets its **own** view store: derive a pure stage (`viewStore.projection(.action(\.transport).state(\.transport))`) and hand it to the subview, which keeps `.viewStore()` of it with `@OwnedStore` (a child feature's view does it for you). For a list whose rows dispatch, `viewStore.each(.action(\.song).state(\.songs))` hands each row such a stage — see <doc:Navigation>. Positions are cheaper: keep per-row view stores for rows that are interactive.
 
 ### Composing projection, buffer and the view store
 
@@ -211,11 +210,11 @@ Three stages, one job each — each follows the one below through its `stateStre
 
 | Stage | Does | Costs per upstream change |
 |---|---|---|
-| `projection(action:state:)` | narrows types; keeps nothing | the map, once per observer |
+| `projection(_:)` | narrows types; keeps nothing | the map, once per observer |
 | `buffer()` | passes changes on only when `!=` | one `==` |
 | the view store | keeps a snapshot, signals SwiftUI per changed dependency | the changed dependencies |
 
-The view store already *is* the buffer after the map — it only signals what changed — so the one placement decision left is **before** the map: `store.buffer().projection(…)` skips the map entirely when the input didn't change. `@Feature`'s generated view does exactly that when the feature's `State` is `Equatable` (`buffer → projection → view store`).
+The view store already *is* the buffer after the map — it only signals what changed — so the one placement decision left is **before** the map: `store.buffer().projection(…)` skips the map entirely when the input didn't change. `@Feature`'s generated view does exactly that when it maps to a declared `ViewState` and the feature's `State` is `Equatable` (`buffer → projection → view store`).
 
 A projection from a view store is a plain `StoreProjection` over the view store's pure upstream (never its snapshot); to observe it, hand it to the view that uses it, which keeps `.viewStore()` of it with `@OwnedStore`.
 
@@ -228,15 +227,15 @@ The view store is built **once**, by its owner, and handed down: the owner is `@
 The strategy is chosen by the owner and changes only how the store signals SwiftUI — receivers and bodies are identical:
 
 ```swift
-@Feature(strategy: .combine)                 // force Combine, even on iOS 17+
+@Feature(strategy: .combine) // force Combine, even on iOS 17+
 enum Widget { … }
 
-@BoundTo(Widget.self)                        // injects `let viewStore: ViewStore<…>` — no strategy here
+@BoundTo(Widget.self) // injects `let viewStore: ViewStore<…>` — no strategy here
 struct WidgetView: View {
     var body: some View { Text(viewStore.state.label) }
 }
 
-@OwnedStore var viewStore = appStore.viewStore(.combine)   // the same override on a hand-written owner
+@OwnedStore var viewStore = appStore.viewStore(.combine) // the same override on a hand-written owner
 ```
 
 Under Observation (the `.automatic` default on iOS 17+) only the views that read a changed path redraw. Combine can't be per view — `ObservableObject` has one signal — but it's still sent only when a path some view read has changed, so unrelated state changes redraw nothing.
@@ -256,7 +255,7 @@ public enum Library {
         var shelfID: String
         var isLoading = false
         var books: [Book] = []
-        var selected: Book?        // non-nil ⇒ present the detail sheet
+        var selected: Book? // non-nil ⇒ present the detail sheet
     }
 
     public enum Action: Sendable {
@@ -299,7 +298,7 @@ public enum Library {
 }
 ```
 
-Navigation is state-driven: the `Binding<Book?>` from `binding(.state(\.selected).action(\.dismissedDetail))` presents while `selected` is `.some` and only ever dispatches the *dismiss* action when SwiftUI clears it — presentation is always a function of state, never driven by the binding. The sibling `presence` binding does the same for `.sheet(isPresented:)`.
+Navigation is state-driven: the `Binding<Book?>` from `binding(.state(\.selected).action(\.dismissedDetail))` presents while `selected` is `.some` and only ever dispatches the *dismiss* action when SwiftUI clears it — presentation is always a function of state, never driven by the binding. The same binding form gives a `Binding<Bool>` wherever the modifier takes `isPresented:` instead.
 
 ```swift
 @BoundTo(Library.self)
@@ -319,42 +318,42 @@ struct LibraryView: View {
 
 ## Composing modules into the app
 
-The app lifts each feature's `behavior()` into the parent store and renders it through the erased `view()`. A whole child module lifts through a ``Relay/Scope`` (`.action(…).state(…).environment(…)`); an *optional* child screen uses an optional state key path (an **affine** state lane — it runs only while the sub-state is `.some`); a collection of children through `liftCollection` — see <doc:Lifting> and <doc:Modularisation>.
+The app lifts each feature's `behavior()` into the parent store and renders it through the erased `view()`. A whole child module lifts through a ``Relay/Scope`` (`.action(…).state(…).environment(…)`); an *optional* child screen uses an optional state key path (an **affine** state lane — it runs only while the sub-state is `.some`); a collection of children through `liftCollection` — see <doc:Lifting> and <doc:Modularisation>. The same declared scope also builds the child's view with `.view(of:from:world:)`.
 
 ```swift
 // Declared scopes — `ScopeOf<AppFeature>` pins the app triad, so every root infers.
-let library = ScopeOf<AppFeature>
-    .action(\.library)                       // a `\.case` prism — Prism<AppAction, Library.Action>
-    .state(\.library)                        // total WritableKeyPath → ReadsWrites lane
-    .environment { $0.library }
-let heroDetail = ScopeOf<AppFeature>
-    .action(\.heroDetail)
-    .state(\.heroDetail)                     // optional key path → affine Writes lane
-    .environment { $0.heroDetail }
+enum AppScopes {
+    static let library = ScopeOf<AppFeature>
+        .action(\.library) // a `\.case` prism — Prism<AppAction, Library.Action>
+        .state(\.library) // total WritableKeyPath → ReadsWrites lane
+        .environment(\.library)
+    static let heroDetail = ScopeOf<AppFeature>
+        .action(\.heroDetail)
+        .state(\.heroDetail) // optional key path → affine Writes lane
+        .environment(\.heroDetail)
+}
 
 let appBehavior = Behavior.combine(
-    Library.behavior().lift(library),
-    HeroDetails.behavior().lift(heroDetail)   // active only while heroDetail != nil
+    AppScopes.library.behavior(of: Library.self), // the same as Library.behavior().lift(AppScopes.library)
+    HeroDetails.behavior().lift(AppScopes.heroDetail) // active only while heroDetail != nil
 )
 
 let store = Store(initial: .init(), behavior: appBehavior, environment: appEnv)
 
-// Render the module — the opaque view() hides ViewState/ViewAction/Content behind `some View`:
-Library.view(
-    store: store.projection(action: AppAction.library, state: { $0.library }),   // plain closures
-    environment: appEnv.library
-)
+// Render the module — the opaque view() hides ViewState/ViewAction/Content behind `some View`;
+// the scope projects the store and narrows the environment:
+AppScopes.library.view(of: Library.self, from: store, world: appEnv)
 ```
 
-That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (`@OwnedStore var root = store.viewStore()`) and transposes the slice, inverting `Store<HeroDetails.State?>` into `Store<HeroDetails.State>?` — a pure stage the child feature's view owns. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
+That total projection fits a **present** sibling. When the child slice is **optional** (like `heroDetail: HeroDetails.State?`), a view decides whether to show it — so it reads through the app's **view store** (kept by the root view: `@OwnedStore var viewStore = store.viewStore()`) and traverses the slice: mapped through the scope and swapped, a store of `HeroDetails.State?` becomes an optional store of `HeroDetails.State` — a pure stage the child feature's view keeps its own view store over. The child view exists only while the state is `.some`, with no placeholder, and the parent depends only on that presence edge:
 
 ```swift
-if let hero = root.traverse(.action(\.heroDetail).state(\.heroDetail)) {
+if let hero = viewStore.traverse(.action(\.heroDetail).state(\.heroDetail)) {
     HeroDetails.view(store: hero, environment: appEnv.heroDetail)
 }
 ```
 
-Only `State`/`Action`/`Environment`/`Input` and the opaque `view()` cross the module boundary; the entire view layer (`ViewState`, `ViewAction`, `Content`) stays `internal`.
+Only `State`/`Action`/`Environment`/`Input`, `behavior()` and the opaque `view()` cross the module boundary; the entire view layer (`ViewState`, `ViewAction`, `Content`) stays `internal`.
 
 ## Testing a feature
 

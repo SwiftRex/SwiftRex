@@ -14,9 +14,9 @@
     ///
     /// ```swift
     /// struct Counter: View {
-    ///     let viewStore: ViewStore<CounterAction, CounterState>       // a receiver: a plain `let`
+    ///     let viewStore: ViewStore<CounterAction, CounterState> // a receiver: a plain `let`
     ///     var body: some View {
-    ///         Text("\(viewStore.state.count)")                         // depends on \.count only
+    ///         Text("\(viewStore.state.count)") // depends on \.count only
     ///         Button("+") { viewStore.dispatch(.increment) }
     ///     }
     /// }
@@ -79,7 +79,7 @@
         /// instead of on the whole state — for what no key path expresses: a count, a "has any unread" flag.
         ///
         /// ```swift
-        /// let hasUnread = viewStore.read(derived: { $0.messages.contains { !$0.isRead } })   // redraws on the flag only
+        /// let hasUnread = viewStore.read(derived: { $0.messages.contains { !$0.isRead } }) // redraws on the flag only
         /// ```
         ///
         /// Closures can't be compared, so the dependency is identified by the call site plus the types involved:
@@ -158,7 +158,7 @@
     /// struct Root: View {
     ///     @OwnedStore var viewStore: ViewStore<AppAction, AppState>
     ///     init(store: Store<AppAction, AppState, World>) { _viewStore = OwnedStore(wrappedValue: store.viewStore()) }
-    ///     var body: some View { Child(viewStore: viewStore) }         // children receive `let ViewStore`
+    ///     var body: some View { Child(viewStore: viewStore) } // children receive `let ViewStore`
     /// }
     /// ```
     ///
@@ -175,8 +175,9 @@
         public var wrappedValue: ViewStore<Action, State> { holder.viewStore }
     }
 
-    /// What `@OwnedStore` keeps in SwiftUI's state: the view store it holds. Its `objectWillChange` **is** that view store's signal (no forwarding), so under
-    /// ``ViewStrategy/combine`` SwiftUI subscribes to the engine directly; under Observation it never sends.
+    /// What `@OwnedStore` keeps in SwiftUI's state: the view store it holds. Its `objectWillChange` **is** that view
+    /// store's signal (no forwarding), so under ``ViewStrategy/combine`` SwiftUI subscribes to the engine directly;
+    /// under Observation it never sends.
     @MainActor
     final class OwnedViewStore<Action: Sendable, State: Sendable>: @MainActor ObservableObject {
         let viewStore: ViewStore<Action, State>

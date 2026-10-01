@@ -23,12 +23,12 @@
     /// - Generates `static func view(store:environment:) -> some View` (when a `Content` view exists),
     ///   which makes a `ViewStore` once per view identity (kept by the generated `FeatureRoot` view) from an
     ///   environment-aware projection — buffered before the map when `State` is `Equatable` — and hands it
-    ///   to `Content` as a `ViewStore`. Nothing is availability-gated — the store picks its signal at
+    ///   to `Content` as a `ViewStore`. Nothing is availability-gated — the view store picks its signal at
     ///   runtime. `ViewState`/`ViewAction`/`Content` stay behind `some View`.
     ///
     /// The **view projection layer is optional**: omit `ViewState`/`ViewAction`/`mapState`/`mapAction`
-    /// and the macro aliases `ViewState = State`, `ViewAction = Action`, and `view()` wraps the store
-    /// directly (no projection). The view then reads the domain `State`/`Action`. Declare a `ViewState`
+    /// and the macro aliases `ViewState = State`, `ViewAction = Action`, and `view()` makes the view store
+    /// over the store directly (no projection). The view then reads the domain `State`/`Action`. Declare a `ViewState`
     /// struct only when the UI needs a different shape (e.g. an `Int` shown as a `String`) — reads are
     /// granular per key path either way, so a `ViewState` is never needed just for performance. **`Environment`
     /// is optional too** — omit it and the macro aliases it to `Void`. So the leanest feature is just
@@ -46,17 +46,17 @@
     ///
     /// ```swift
     /// @Feature
-    /// public enum Movies {                               // `public` ⇒ public members + `Feature`
-    ///     public struct State: Sendable { ... }          // @Lenses applied automatically
-    ///     public enum Action: Sendable { ... }           // @Prisms applied automatically
+    /// public enum Movies { // `public` ⇒ public members + `Feature`
+    ///     public struct State: Sendable { ... } // @Lenses applied automatically
+    ///     public enum Action: Sendable { ... } // @Prisms applied automatically
     ///     public struct Environment: Sendable { ... }
     ///
-    ///     struct ViewState: Sendable, Equatable { ... }   // optional — only when the UI needs another shape
-    ///     enum ViewAction: Sendable { ... }               // @Prisms applied automatically
-    ///     static let mapState  = ...                      // Reader<Environment, (State) -> ViewState>
-    ///     static let mapAction = ...                      // Reader<Environment, (ViewAction) -> Action>
+    ///     struct ViewState: Sendable, Equatable { ... } // optional — only when the UI needs another shape
+    ///     enum ViewAction: Sendable { ... } // @Prisms applied automatically
+    ///     static let mapState = ... // Reader<Environment, @MainActor @Sendable (State) -> ViewState>
+    ///     static let mapAction = ... // Reader<Environment, @Sendable (ViewAction) -> Action>
     ///     static func behavior() -> Behavior<Action, State, Environment> { ... }
-    ///     typealias Content = MoviesView                  // internal view; @BoundTo(Movies.self) injects its viewStore
+    ///     typealias Content = MoviesView // internal view; @BoundTo(Movies.self) injects its viewStore
     ///     // `initialState(with:)`, `view(store:environment:)`, and `: Feature` are generated.
     /// }
     /// ```

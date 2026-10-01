@@ -8,10 +8,6 @@ import Testing
 /// A controllable, synchronous store for testing ``Behavior`` values at the **domain**
 /// layer (assert on `State`, match on `Action`).
 ///
-/// `TestStore` is the lower-level primitive. For a higher-level test harness that
-/// assert at the **view-state** layer and gives you access to the rendered view for
-/// snapshot testing, use the feature test harness from the same module.
-///
 /// `TestStore` drives the dispatch pipeline deterministically:
 /// - ``dispatch(_:sourceLocation:assert:)`` applies phases 1 and 2 immediately (handle → mutate),
 ///   validates the resulting state against an assertion closure, and captures any produced
@@ -81,8 +77,10 @@ import Testing
 /// ## StoreType conformance
 ///
 /// `TestStore` conforms to ``StoreType`` so it can be used as a backing store for
-/// ``StoreProjection`` — and, kept by `@OwnedStore`, behind a live SwiftUI view — so a feature's
-/// real view can run against the test store (e.g. for snapshot tests).
+/// ``StoreProjection`` and other stages — and, through a view store made from it
+/// (`testStore.viewStore()`, kept by `@OwnedStore`), behind a live SwiftUI view — so a feature's
+/// real view can run against the test store (e.g. for snapshot tests). Unlike every other store,
+/// its ``state`` is readable — for assertions only.
 @MainActor
 public final class TestStore<Action: Sendable, State: Sendable & Equatable, Environment: Sendable>: StoreType, @unchecked Sendable {
     /// The current state after all dispatched and received actions have been processed.
@@ -144,7 +142,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// while the store is "frozen". Test-driven dispatch (`dispatch(_:)`) and
     /// ``receive`` keep working.
     ///
-    /// Toggle via `ignoringActions(_:)`.
+    /// Set it directly from the test.
     public var isIgnoringActions: Bool = false
 
     // MARK: - Init
@@ -228,7 +226,7 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
     /// Dispatches an action through the behavior without a test assertion.
     ///
     /// This satisfies the ``StoreType`` requirement and is used internally when a
-    /// ``StoreProjection`` (e.g. inside a the feature test harness ViewModel) forwards a dispatch.
+    /// ``StoreProjection`` or a view store over this test store forwards a dispatch.
     /// For test-driven dispatch with state assertions, use ``dispatch(_:sourceLocation:assert:)``.
     public func dispatch(_ action: Action, source: ActionSource) {
         guard !isIgnoringActions else { return }
@@ -247,13 +245,11 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
-    // MARK: - Enqueue (used by view-model test harnesses)
+    // MARK: - Enqueue
 
-    /// Appends `action` directly to ``receivedActions`` without running it through the behavior.
-    ///
-    /// Used by the feature test harness so that `dispatch(viewAction:)` makes the mapped domain action
-    /// visible as the first entry in the received queue — keeping the whole dispatch → receive
-    /// cycle symmetric and explicit.
+    /// Appends `action` directly to ``receivedActions`` without running it through the behavior — so a
+    /// test harness can make an action visible as the next entry in the received queue, to be processed
+    /// with `receive` like any effect output.
     public func enqueue(_ action: Action) {
         receivedActions.append(action)
         _receivedCount = receivedActions.count
@@ -415,10 +411,10 @@ public final class TestStore<Action: Sendable, State: Sendable & Equatable, Envi
         }
     }
 
-    // MARK: - Module-internal (used by view-model test harnesses, which assert on ViewState
+    // MARK: - Module-internal
 
-    // and therefore must dispatch the domain action without TestStore second-guessing
-    // it at the domain-State layer).
+    // Dequeues and runs the next received action without a state assertion — for a harness that asserts
+    // at another layer. Currently unused.
 
     @discardableResult
     func dequeueAndRun<Value>(

@@ -29,7 +29,7 @@
 ///             .flatMap { try? JSONDecoder().decode(MyModel.self, from: $0) }
 ///             .map { AppAction.didFetch(.success($0)) }
 ///             ?? AppAction.didFetch(.failure(error ?? URLError(.unknown)))
-///         completer.complete(action)    // second call would not compile
+///         completer.complete(action) // second call would not compile
 ///     }.resume()
 /// }
 /// ```

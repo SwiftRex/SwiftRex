@@ -11,9 +11,9 @@ SwiftRex models your whole app as one loop:
 
 ```swift
 let feature = Behavior<Action, State, Environment>
-    .reduce { action, state in … }      // the Reducer — reduces actions into state
-    .produce { action, ctx in … }       // the Effect Producer — produces effects from actions
-    .supervise { state in … }           // the Effect Supervisor — supervises effects for a given state
+    .reduce { action, state in … } // the Reducer — reduces actions into state
+    .produce { action, ctx in … } // the Effect Producer — produces effects from actions
+    .supervise { state in … } // the Effect Supervisor — supervises effects for a given state
 ```
 
 - The ``Store`` is the **only** thing that runs: a behavior only *describes* — the Store **maintains** state (via `reduce`), **performs** the effects a `produce` yields, and **supervises** the channels a `supervise` keeps. It notifies observers exactly once per change; actions an effect dispatches loop back through the same path.
@@ -31,7 +31,7 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 - **`SwiftRex.SwiftConcurrency`** — `async`/`await` effect bridges (`Task`, `AsyncSequence`), `asChannel` for long-lived subscriptions (a store's `stateStream` is an `AsyncSequence` in the core).
 - **`SwiftRex.Combine`** — `asEffect()` / `asChannel()` on `Publisher`, `stateStream` as a `Publisher`, `ctx.readLiveState()`.
 - **`SwiftRex.RxSwift`** · **`SwiftRex.ReactiveSwift`** · **`SwiftRex.ReactiveConcurrency`** — the same `asEffect` / `asChannel` bridge surface for each reactive runtime *(each behind a trait of the same name)*.
-- **`SwiftRex.SwiftUI`** — `.viewStore()` (makes one), `@OwnedStore` (keeps it) and `ViewStore` (what views read): the store a view reads, granular per key path at any depth (Observation on iOS 17+, a dependency-aware Combine signal below, picked automatically), plus the store-backed `Binding`s and presentation helpers.
+- **`SwiftRex.SwiftUI`** — `.viewStore()` (makes one), `@OwnedStore` (keeps it) and `ViewStore` (what views read): the store a view reads, granular per key path at any depth (Observation on iOS 17+, a dependency-aware Combine signal below, picked automatically), plus the store-backed `Binding`s, presentation helpers, and `traverse`/`each` for optional and collection children.
 - **`SwiftRex.Architecture`** — the opinionated `@Feature` module pattern.
 - **`SwiftRex.Operators`** — symbolic operators (`<>`, `|>`, …) for the types above.
 - **`SwiftRex.Testing`** — `TestStore` for deterministic, exhaustive unit tests.
@@ -115,6 +115,7 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 
 - ``ReducerBuilder``
 - ``Relay``
+- ``Relay/Scope``
 - ``Transceiver``
 - ``Rig``
 - ``ScopeOf``

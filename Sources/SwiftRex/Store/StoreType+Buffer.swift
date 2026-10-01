@@ -1,28 +1,23 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extension StoreType {
-    /// Wraps this store in a ``StoreBuffer`` that caches state and only notifies observers
-    /// when `hasChanged(oldState, newState)` returns `true`.
-    ///
-    /// Use this to add notification deduplication after a ``StoreProjection`` has narrowed
-    /// the types:
+    /// Wraps this store in a ``StoreBuffer`` that passes a state on only when
+    /// `hasChanged(previousState, newState)` returns `true`. Each observer remembers its own previous
+    /// value; nothing is cached in the stage.
     ///
     /// ```swift
     /// // Step 1 — narrow types
-    /// let proj = appStore.projection(
-    ///     action: { AppAction.counter($0) },
-    ///     state:  { $0.counterState }
-    /// )
+    /// let proj = appStore.projection(.action(\.counter).state(\.counter))
     ///
-    /// // Step 2 — add deduplication with a custom predicate
+    /// // Step 2 — skip repeats with a custom predicate
     /// let buffered = proj.buffer { old, new in old.count != new.count }
     /// ```
     ///
     /// Delegates to ``StoreBuffer/init(_:hasChanged:)``.
     ///
-    /// - Parameter hasChanged: A predicate called with `(oldState, newState)`. Return `true`
-    ///   to propagate notifications and update the cached state; return `false` to suppress them.
-    /// - Returns: A ``StoreBuffer`` observing this store and gating notifications through `hasChanged`.
+    /// - Parameter hasChanged: A predicate called with `(previousState, newState)`. Return `true`
+    ///   to pass the new state on; return `false` to skip it.
+    /// - Returns: A ``StoreBuffer`` following this store and skipping states `hasChanged` rejects.
     public func buffer(
         hasChanged: @escaping @Sendable (State, State) -> Bool
     ) -> StoreBuffer<Action, State> {
@@ -31,8 +26,8 @@ extension StoreType {
 
     /// Wraps this store in a ``StoreBuffer`` using `!=` as the change predicate.
     ///
-    /// Available when `State: Equatable`. Notifies observers only when the new state differs
-    /// from the cached state under `Equatable` equality:
+    /// Available when `State: Equatable`. Passes a state on only when it differs from the
+    /// previous one (per observer) under `Equatable` equality:
     ///
     /// ```swift
     /// // CounterState: Equatable — no predicate needed
@@ -41,7 +36,7 @@ extension StoreType {
     ///
     /// Delegates to ``StoreBuffer/init(_:)`` (the `Equatable` convenience initialiser).
     ///
-    /// - Returns: A ``StoreBuffer`` that uses `!=` to gate notifications.
+    /// - Returns: A ``StoreBuffer`` that uses `!=` to skip repeats.
     public func buffer() -> StoreBuffer<Action, State> where State: Equatable {
         StoreBuffer(self)
     }

@@ -191,9 +191,9 @@ extension Effect {
     /// world receives `.broadcast`s from the other.
     ///
     /// ```swift
-    /// case .connect:    .produce { _ in .open(socketChannel) }
+    /// case .connect: .produce { _ in .open(socketChannel) }
     /// case .send(let t): .produce { _ in .broadcast(t, channel: "socket") }
-    /// case .disconnect:  .produce { _ in .cancel(id: "socket") }
+    /// case .disconnect: .produce { _ in .cancel(id: "socket") }
     /// ```
     ///
     /// - Parameter channel: The channel to open. Its `lifetime`/`broadcasting` are honoured.
