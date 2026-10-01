@@ -130,8 +130,8 @@ extension ViewStore {
     ///
     /// ```swift
     /// .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
-    ///     if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
-    ///         ProjectionKeeper { editor.viewStore() } content: { EditorView(viewStore: $0) }
+    ///     if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
+    ///         EditorView(store: editor)          // keeps @OwnedStore var viewStore = store.viewStore()
     ///     }
     /// }
     ///

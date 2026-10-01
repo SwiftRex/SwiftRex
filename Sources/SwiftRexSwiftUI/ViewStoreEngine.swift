@@ -65,10 +65,13 @@
         private let registry = ObservationRegistry<ViewStoreEngine, State>()
         private var sweepThreshold = ViewStoreEngine.minimumSweepThreshold
 
-        /// The upstream's state over time — the **pure** side of a view store. Stores that follow a view store
-        /// (`viewStore.projection(…)`, a bridge) follow this, never the snapshot: observation stays out of composition.
-        let upstreamStream: StateStream<State>
-        // The hints this view store's own element-presence reads keep (`transpose(_:element:)`) — observation state
+        // Stages derived from this view store (`viewStore.projection(…)`, `each`, `traverse`, a bridge) follow the
+        // upstream values this engine already receives — forwarded as they arrive, never gated by what the views
+        // read — so the parent's chain runs once per change however many children follow it. Only their
+        // callbacks are kept, and each child's token removes its own.
+        private var followers: [Int: @MainActor (State) -> Void] = [:]
+        private var nextFollower = 0
+        // The hints this view store's own element-presence reads keep (`traverse(_:element:)`) — observation state
         // of this leaf, keyed by call site + element id; never held for a child.
         private var elementHints: [AnyHashable: ElementHint] = [:]
 
@@ -79,11 +82,21 @@
             self.strategy = strategy
             snapshot = current
             send = { action, source in upstream.dispatch(action, source: source) }
-            upstreamStream = upstream.stateStream
             registrar = ViewStoreEngine.makeRegistrar(strategy)
             self.token = token
             super.init()
             inbox.target = { [weak self] in self?.receive($0) }
+        }
+
+        /// The upstream's state over time — the **pure** side of a view store, forwarded from this engine's one
+        /// subscription. Never the snapshot's observation: what the views read doesn't gate it.
+        var forwardedStream: StateStream<State> {
+            StateStream { [self] onChange in
+                let key = nextFollower
+                nextFollower += 1
+                followers[key] = onChange
+                return (snapshot, UISubscriptionToken { [weak self] in self?.followers[key] = nil })
+            }
         }
 
         func dispatch(_ action: Action, source: ActionSource) {
@@ -133,6 +146,19 @@
         // MARK: - Change propagation
 
         private func receive(_ new: State) {
+            // Sweep between bodies, never during one: a sweep mid-body would drop the parent links of the paths it
+            // is still reading, and every row read after it would become a root compared on every change.
+            if fastKeys.count + paths.count > sweepThreshold { sweep() }
+            update(new)
+            forward(new)
+        }
+
+        private func forward(_ new: State) {
+            guard !followers.isEmpty else { return }
+            for key in Array(followers.keys) { followers[key]?(new) } // a follower may leave while others are called
+        }
+
+        private func update(_ new: State) {
             guard !registry.isEmpty else {
                 snapshot = new
                 return
@@ -157,7 +183,6 @@
         private static var minimumSweepThreshold: Int { 1_024 }
 
         fileprivate func resolve<T>(_ keyPath: KeyPath<State, T>) -> Dependency {
-            if fastKeys.count + paths.count > sweepThreshold { sweep() }
             let dependency = dependencies[keyPath] ?? makeDependency(keyPath)
             dependencies[keyPath] = dependency
             fastDependencies[ObjectIdentifier(keyPath)] = dependency

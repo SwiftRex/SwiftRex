@@ -83,7 +83,7 @@
             let view = store.viewStore()
             let fired = Sends()
             withObservationTracking {
-                _ = view.transpose(action: { $0 }, state: { $0.detail })
+                _ = view.traverse(action: { $0 }, state: { $0.detail })
             } onChange: { fired.bump() }
             store.dispatch(.other)
             #expect(fired.value == 0)       // an unrelated change doesn't redraw the caller
@@ -94,9 +94,9 @@
         @Test func closureTransposeFollowsTheValue() {
             let store = makeUStore()
             let view = store.viewStore()
-            #expect(view.transpose(action: { $0 }, state: { $0.detail }) == nil)
+            #expect(view.traverse(action: { $0 }, state: { $0.detail }) == nil)
             store.dispatch(.show)
-            let detail = view.transpose(action: { $0 }, state: { $0.detail })
+            let detail = view.traverse(action: { $0 }, state: { $0.detail })
             #expect(detail?.currentState == 1)
             store.dispatch(.hide)
             #expect(detail?.currentState == 1)     // lingers on its last value while SwiftUI tears it down

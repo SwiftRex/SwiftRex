@@ -57,22 +57,22 @@ token = store.stateStream
 
 ### In SwiftUI — `transpose()`
 
-A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it decides the nesting directly: `transpose(scope)` reads the presence edge from its snapshot — the body re-runs exactly when the child appears or goes away — and returns a pure ``StoreOptionalFocus`` of the unwrapped value, for the child to own:
+A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it decides the nesting directly: `traverse(scope)` reads the presence edge from its snapshot — the body re-runs exactly when the child appears or goes away — and returns a pure ``StoreOptionalFocus`` of the unwrapped value, for the child to own:
 
 | State | Form |
 |---|---|
-| `T?` reached by a key path | `viewStore.transpose(.action(\.child).state(\.child))` |
-| ``Presentation`` — alive through `presented` **and** `dismissing(last:)`, `nil` once `dismissed` (flicker-free) | `viewStore.transpose(.action(\.editor.child).state(\.editor))` |
-| `T?` reached by a closure lane (an affine preview, the top of a stack) | `viewStore.transpose(action: { .child($0) }, state: { $0.path.last?.child })` |
-| one element of a collection | `viewStore.transpose(.action(\.row).state(\.rows), element: id)` |
+| `T?` reached by a key path | `viewStore.traverse(.action(\.child).state(\.child))` |
+| ``Presentation`` — alive through `presented` **and** `dismissing(last:)`, `nil` once `dismissed` (flicker-free) | `viewStore.traverse(.action(\.editor.child).state(\.editor))` |
+| `T?` reached by a closure lane (an affine preview, the top of a stack) | `viewStore.traverse(action: { .child($0) }, state: { $0.path.last?.child })` |
+| one element of a collection | `viewStore.traverse(.action(\.row).state(\.rows), element: id)` |
 
 ```swift
-if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
-    ProjectionKeeper { editor.viewStore() } content: { EditorView(viewStore: $0) }   // or EditorFeature.view(store: editor, …)
+if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
+    EditorView(store: editor)   // keeps @OwnedStore made from it; or EditorFeature.view(store: editor, …)
 }
 ```
 
-It is named **transpose**, not `sequence`/`traverse`, because a ``Store`` is not `Traversable` — there is no lawful traversal here; the current value decides the nesting.
+`transpose()` is the `sequence`-shaped swap of a view store's own optional; `traverse(scope)` is map then `transpose` — the names follow `sequence`/`traverse`. Neither is a lawful `Traversable` instance: a ``Store`` holds a value over time, and the current value decides the nesting.
 
 ## Topics
 

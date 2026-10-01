@@ -105,14 +105,17 @@ A view reads through a **view store** (a `ViewStore`, handed down by `@Feature` 
 ForEach(viewStore.state.each(\.rows)) { row in RowView(row: row) }
 
 // an optional child — its presence (a read, on the view store), then a pure stage the child's view owns
-if let child = viewStore.transpose(.action(\.child).state(\.child)) { ChildFeature.view(store: child, environment: world.childEnv) }
+if let child = viewStore.traverse(.action(\.child).state(\.child)) { ChildFeature.view(store: child, environment: world.childEnv) }
 
 // one element — by id, by position or by key — through the same collection scope a projection takes
-if let cell = viewStore.transpose(.action(\.row).state(\.rows), element: id) { ProjectionKeeper { cell.viewStore() } content: { … } }
+if let cell = viewStore.traverse(.action(\.row).state(\.rows), element: id) { RowView(store: cell) }
+
+// every element, for a ForEach
+ForEach(viewStore.each(.action(\.row).state(\.rows))) { RowView(store: $0) }
 ```
 
 Deriving from any store gives a **pure stage** — something that follows a stream and keeps nothing a parent holds.
-To observe one, own it: a feature's view does, `ProjectionKeeper` in a body, `@OwnedStore` as a property.
+To observe one, hand it to the view that uses it, which keeps `@OwnedStore var viewStore` made from it (`store.viewStore()` in its `init`); a feature's view does it for you.
 
 ```swift
 let list: StoreProjection<BulkAction, [Row]> = store.projection(.action(AppAction.prism.bulk).state(\.rows))
@@ -135,11 +138,11 @@ holds its last present value while the child animates away. Own it where the chi
 
 ```swift
 // in a view body:
-viewStore.transpose(.action(\.child).state(\.child))                 // StoreOptionalFocus<ChildAction, Child>?
+viewStore.traverse(.action(\.child).state(\.child))                 // StoreOptionalFocus<ChildAction, Child>?
     .map { ChildFeature.view(store: $0, environment: world.childEnv) }  // View? — the feature's view owns it
 
 // a lane no key path expresses:
-viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
+viewStore.traverse(action: { AppAction.row(id, $0) }, state: { $0.rows.first { $0.id == id } })
 ```
 
 Outside SwiftUI, presence is plain state: follow `store.stateStream.map { $0.child != nil }.removeDuplicates()`,
@@ -158,7 +161,7 @@ bare `T?`. Its `transpose` form keeps the child store live through **both** `pre
 
 ```swift
 .sheet(item: viewStore.binding(.state(\.editor).action(\.editor))) { _ in
-    if let editor = viewStore.transpose(.action(\.editor.child).state(\.editor)) {
+    if let editor = viewStore.traverse(.action(\.editor.child).state(\.editor)) {
         EditorFeature.view(store: editor, environment: world.editorEnv)
     }
 }
@@ -168,19 +171,25 @@ bare `T?`. Its `transpose` form keeps the child store live through **both** `pre
 
 ``StoreCollectionFocus`` is a pure stage for one element: `store.projection(scope, element: id)` — by `id`, custom id
 `.state(\.rows, id: \.slug)`, position `.state(indexed:)` or key `.state(dictionary:)` — with the `ElementAction`
-envelope, and an optional element because it can go away. In a view, `viewStore.transpose(scope, element: id)` reads
-the element's presence and returns the row's store to own:
+envelope, and an optional element because it can go away. In a view, `viewStore.each(scope)` gives one store per
+element for a `ForEach` — a ``StoreOptionalFocus`` (holding the last value while the row animates away) identified by
+the element's id — and the row keeps its own view store:
 
 ```swift
-ForEach(viewStore.state.each(\.rows)) { row in
-    if let rowStore = viewStore.transpose(.action(\.row).state(\.rows), element: row.id) {
-        ProjectionKeeper(id: row.id) { rowStore.viewStore() } content: { RowView(viewStore: $0) }   // or RowFeature.view(store:…)
-    }
+ForEach(viewStore.each(.action(\.row).state(\.rows))) { row in
+    RowView(store: row)                                                  // or RowFeature.view(store: row, …)
+}
+
+struct RowView: View {
+    @OwnedStore var viewStore: ViewStore<RowAction, Row>
+    init(store: some StoreType<RowAction, Row>) { _viewStore = OwnedStore(wrappedValue: store.viewStore()) }
+    var body: some View { … }
 }
 ```
 
-Each row owns its own view store: it redraws only for its own element, is built once per id, and survives reorders.
-The list's body depends on the ids (`each`) and each row's presence, never on a row's contents.
+Each row keeps its own view store: it redraws only for its own element, is made once per id, and survives reorders.
+The list's body depends on the ids only, never on a row's contents. For one element outside a loop,
+`viewStore.traverse(scope, element: id)` reads its presence and returns the same kind of store.
 
 Finding the element: by position and by key it's O(1). By **id** each row's stage keeps a hint — where it last found
 its element — and searches outward from it, so an element that moved by `k` costs `k` steps: O(1) for an insert or

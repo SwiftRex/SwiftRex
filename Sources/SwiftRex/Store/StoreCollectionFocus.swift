@@ -20,7 +20,7 @@ import CoreFP
 /// optics (no locator) uses its `ix` as is.
 ///
 /// Its state is optional because the element can go away. A view that shows it while it's there transposes it
-/// (`viewStore.transpose(scope, element: id)` in SwiftUI) or wraps it in ``StoreOptionalFocus``.
+/// (`viewStore.traverse(scope, element: id)` in SwiftUI) or wraps it in ``StoreOptionalFocus``.
 @MainActor
 public struct StoreCollectionFocus<Action: Sendable, Element: Sendable>: StoreType {
     /// The element over time, `nil` while it isn't in the collection.
@@ -55,7 +55,7 @@ public struct StoreCollectionFocus<Action: Sendable, Element: Sendable>: StoreTy
 ///
 /// `@unchecked Sendable`: created and used inside one subscription of a main-actor stream; never shared.
 public final class ElementHint: @unchecked Sendable {
-    var offset: Int?
+    package var offset: Int?
     public init() {}
 }
 

@@ -10,7 +10,7 @@
 /// }
 /// ```
 ///
-/// It decides nothing about presence — deciding is a read, done by the view layer (`viewStore.transpose(…)` in
+/// It decides nothing about presence — deciding is a read, done by the view layer (`viewStore.traverse(…)` in
 /// SwiftUI returns one of these) or by code following the parent's state. `present` is the value to start from.
 /// Each observer remembers its own last present value.
 @MainActor

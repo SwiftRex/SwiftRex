@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Granular SwiftUI reads (`SwiftRex.SwiftUI`): `ViewStore<Action, State>` — the only readable store —
   keeps one snapshot and a dependency per key path each view read through `viewStore.state`, signalling only
   what changed (compared with `==`), at any depth. `GranularTracking` (a position in the state, `each(_:)`
-  for list rows), `IndivisibleTracking` (types read whole), owners `@OwnedStore` and `ProjectionKeeper`.
+  for list rows), `IndivisibleTracking` (types read whole), `@OwnedStore`, which keeps a view store.
 - **Pure until the leaf.** Composition is pure stages — `StoreProjection`, `StoreBuffer`, and new `StoreCollectionFocus`
   (one element of a collection, by id, position or key; each observer keeps a hint, O(distance moved)) and
   `StoreOptionalFocus` (a store of `T` over `T?`, holding the last present value). The `ViewStore` is the only leaf: it
@@ -26,10 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   built on its pure side (its `stateStream` is the upstream chain, never the snapshot).
 - `ViewStrategy.automatic` (default): Observation on iOS 17+, Combine below, decided at runtime.
 - `read(derived:)` — depend on a computed value instead of the whole state.
-- `transpose` — `F<T?>` into `F<T>?`, depending on the presence edge only. On a `ViewStore`: its own optional or
-  `Presentation` state, a scope's slot (`transpose(.action(\.x).state(\.x))`), a collection element
-  (`transpose(scope, element: id)`) or a closure lane (`transpose(action:state:)`) — each returns a `StoreOptionalFocus`
-  for the child to own. On a position, `GranularTracking<T?>` → `GranularTracking<T>?`. Both hold the last present
+- `transpose()` — `F<T?>` into `F<T>?` (its own optional or `Presentation` state), and `traverse` — map then
+  transpose: a scope's slot (`traverse(.action(\.x).state(\.x))`), a collection element
+  (`traverse(scope, element: id)`) or a closure lane (`traverse(action:state:)`). All depend on the presence edge
+  only and return a `StoreOptionalFocus` for the child to make its view store from.
+- `each(scope)` on a `ViewStore` — one `StoreOptionalFocus` per present element of a collection, identified by id,
+  for a `ForEach`; the list depends on the ids only.
+- A view store forwards the upstream values it receives to the stages derived from it, so a child doesn't re-run the
+  parent's chain. On a position, `GranularTracking<T?>` → `GranularTracking<T>?`. Both hold the last present
   value while the value is going away.
 - One `binding` taking a chained scope, `binding(.state(…).action(…))`; what the action lane embeds decides the
   kind: the value (two-way `Binding<T>`), a no-payload case on an optional slot (dismiss-only `Binding<Bool>` /
@@ -38,8 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `.isPresented()`, `.item()` and `.onDismiss()` feed any other container).
 - `PresentationAction` gets the full `@Prisms` surface (`\.editor.child` reaches the presented child's lane).
 - A `ViewStore` is made explicitly, from any store: `store.viewStore()` / `store.viewStore(.combine)` (existentials
-  included). `@OwnedStore` and `ProjectionKeeper` only keep the `ViewStore` they're given — no strategy argument,
-  no upstream-taking initialiser: `@OwnedStore var viewStore = store.viewStore()`.
+  included). `@OwnedStore` only keeps the `ViewStore` it's given — no strategy argument, no upstream-taking initialiser:
+  `@OwnedStore var viewStore = store.viewStore()`. It's the one keeper: a view that uses a store keeps it; a
+  parent hands a child a pure stage. `@Feature`'s generated view is a `FeatureRoot` view keeping it this way.
 - A two-way `binding` over an `Equatable` value drops a write equal to the current value — SwiftUI can write a
   binding twice for one gesture, which dispatched the action twice.
 - `ForEach(viewStore.state.items)` now fails with a message naming the fix (`each(\.items)`, or `.value`) instead of
@@ -61,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Presentation.dismiss()` only starts a dismissal.
 - **Breaking:** `@BoundTo(Feature.self)` takes no `strategy:` and injects `let viewStore: ViewStore<…>`;
   `@Feature(strategy:)` defaults to `.automatic`; generated views and `Feature` conformances are no longer
-  availability-gated. The generated view owns its view store once per view identity (a `ProjectionKeeper`),
+  availability-gated. The generated view owns its view store once per view identity (a generated `FeatureRoot` view),
   buffered before the map when `State: Equatable`.
 - **Breaking:** `ViewStrategy` cases are `.automatic` / `.observation` / `.combine`.
 - Bumped dependencies to their first stable majors: FP → 2.0.1, Hourglass → 1.0.1,

@@ -14,7 +14,7 @@ import SwiftSyntaxMacros
 ///   annotate that extension with `@ApplyOptics(recursively: true)` directly.
 /// - `MemberMacro`          — synthesises `initialState(with:)` (Void seed) when not written, and
 ///   generates `view(store:environment:) -> some View` (when a `Content` view exists) handing `Content`
-///   a `ViewStore` (built once per view identity by a `ProjectionKeeper`) over an environment-aware projection, signalling
+///   a `ViewStore` (made once per view identity and kept by the generated `FeatureRoot` view) over an environment-aware projection, signalling
 ///   through `strategy:` (default `.automatic`: Observation on iOS 17+, Combine below; nothing is gated).
 /// - `ExtensionMacro`       — generates the `Feature` conformance when the type has a view (a `Content`,
 ///   or a hand-written `view`); a view-less feature is a behavior only and gets no `Feature`
@@ -66,13 +66,14 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
         // The erased entry — generated only when the feature has a `Content` view.
         if hasNestedType("Content", in: declaration) {
             members.append(viewMember(access: access, node: node, declaration: declaration))
+            members.append(rootMember())
         }
 
         return members
     }
 
-    /// Builds `view(store:environment:)`: a `ProjectionKeeper` that builds the feature's `ViewStore` once per view
-    /// identity, signalling through `strategy:` (chosen at runtime, so ungated). When a `ViewState` struct /
+    /// Builds `view(store:environment:)`: a `FeatureRoot` that keeps the feature's `ViewStore` (made once per view
+    /// identity), signalling through `strategy:` (chosen at runtime, so ungated). When a `ViewState` struct /
     /// `ViewAction` enum exists the store is projected through the (env-aware) maps — buffered before the map
     /// when the feature's `State` is `Equatable`, picked by overload resolution in `featureProjection` —
     /// otherwise the feature's store is observed as-is, with an unmapped axis in a mixed feature falling back to
@@ -107,11 +108,21 @@ public struct FeatureMacro: MemberAttributeMacro, MemberMacro, ExtensionMacro {
             store: any StoreType<Action, State>,
             environment: Environment
         ) -> some View {
-            ProjectionKeeper {
-                \(raw: source).viewStore(.\(raw: strategy))
-            } content: {
-                Content(viewStore: $0)
+            FeatureRoot(\(raw: source).viewStore(.\(raw: strategy)))
+        }
+        """
+    }
+
+    /// The view `view(store:environment:)` returns: it keeps the feature's `ViewStore` with `@OwnedStore` (made
+    /// once per view identity — the autoclosure runs only the first time) and hands it to `Content`.
+    private static func rootMember() -> DeclSyntax {
+        """
+        @MainActor struct FeatureRoot: View {
+            @OwnedStore var viewStore: ViewStore<ViewAction, ViewState>
+            init(_ viewStore: @autoclosure @escaping () -> ViewStore<ViewAction, ViewState>) {
+                _viewStore = OwnedStore(wrappedValue: viewStore())
             }
+            var body: some View { Content(viewStore: viewStore) }
         }
         """
     }

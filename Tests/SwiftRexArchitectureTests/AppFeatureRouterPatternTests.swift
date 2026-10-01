@@ -56,9 +56,7 @@
 
         @MainActor
         static func view(store: any StoreType<Action, State>, environment: RPWorld) -> some View {
-            ProjectionKeeper { store.viewStore() } content: { viewStore in
-                RPRootView(viewStore: viewStore, router: RPRouter(store: viewStore, world: environment))
-            }
+            RPAppRoot(store: store, world: environment)
         }
 
         static func behavior() -> Behavior<Action, State, RPWorld> {
@@ -97,6 +95,17 @@
             case .child: RPScopes.child.view(of: RPChild.self, from: store, world: world)
             }
         }
+    }
+
+    // A hand-written feature view keeps its own view store.
+    struct RPAppRoot: View {
+        @OwnedStore var viewStore: ViewStore<RPApp.Action, RPApp.State>
+        let world: RPWorld
+        init(store: any StoreType<RPApp.Action, RPApp.State>, world: RPWorld) {
+            _viewStore = OwnedStore(wrappedValue: store.viewStore())
+            self.world = world
+        }
+        var body: some View { RPRootView(viewStore: viewStore, router: RPRouter(store: viewStore, world: world)) }
     }
 
     struct RPRootView: View, Routable {

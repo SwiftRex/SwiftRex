@@ -118,7 +118,7 @@ Pick the products that match your project; the core is self-contained:
 | `SwiftRex.RxSwift` | `RxSwift` | The same bridge surface for `Observable` |
 | `SwiftRex.ReactiveSwift` | `ReactiveSwift` | The same bridge surface for `SignalProducer`/`Signal` |
 | `SwiftRex.ReactiveConcurrency` | `ReactiveConcurrency` | The same bridge surface for ReactiveConcurrency's cold, async/await-native `Publisher` |
-| `SwiftRex.SwiftUI` | — | `@OwnedStore` / `ProjectionKeeper` / `ViewStore` — granular per-key-path observation (Observation on iOS 17+, Combine below, picked automatically), store-backed `Binding`s and presentation |
+| `SwiftRex.SwiftUI` | — | `.viewStore()` / `@OwnedStore` / `ViewStore` — granular per-key-path observation (Observation on iOS 17+, Combine below, picked automatically), store-backed `Binding`s and presentation |
 | `SwiftRex.Architecture` | — | The `@Feature` / `@BoundTo` macros and the `Relay.Scope` feature lift — `.behavior(of:)` / `.view(of:from:world:)` (Swift 6.3+) |
 | `SwiftRex.Operators` | — | Symbolic operators (`<>`, `\|>`, `>>>`, …) |
 | `SwiftRex.Testing` | — | `TestStore` — test target only |
@@ -428,7 +428,7 @@ The lifted behavior sees the **unwrapped** element (never `Element?`), and each 
 
 ```swift
 // an optional child → an unwrapped child store → a live child view (nothing while it's absent):
-if let detail = viewStore.transpose(.action(\.detail).state(\.detail)) {
+if let detail = viewStore.traverse(.action(\.detail).state(\.detail)) {
     DetailFeature.view(store: detail, environment: world.detailEnv)
 }
 
