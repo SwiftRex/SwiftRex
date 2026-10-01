@@ -142,7 +142,7 @@ After steps 1–4, the remaining errors are almost all the mental shift. Fix eac
 | `… on 'Optional' requires that 'X' conform to 'IndivisibleTracking'` | a non-leaf position passed as a value | step 5 — `.value` |
 | `value of type 'StoreProjection<…>' has no member 'transpose'` | core transpose is gone | step 6 |
 | `value of type 'ViewStore<…>' has no member 'focus'` | children are derived and owned | step 6 — `projection(scope)` / `transpose(scope)`, owned by the child |
-| `value of type 'StoreUnwrap<…>' has no member 'state'` / `'binding'` | a derived stage used as a view store | own it: `ProjectionKeeper { stage.viewStore() } content: { … }` or the child feature's view |
+| `value of type 'StoreOptionalFocus<…>' has no member 'state'` / `'binding'` | a derived stage used as a view store | own it: `ProjectionKeeper { stage.viewStore() } content: { … }` or the child feature's view |
 | `'state' is inaccessible due to 'private' protection level` | reading a `Store` | step 7 |
 
 ## Pitfalls — learned doing this

@@ -6,7 +6,7 @@
     // `transpose` — swap a store of an optional into an optional store: `F<T?>` into `F<T>?`. Deciding *whether* the
     // value is there is a **read**, so it lives on the view store (the only store that reads), and the caller depends
     // on the **presence edge only**, never on the child's contents. What comes back is a **pure stage** — a
-    // `StoreUnwrap` built on this view store's pure side — that holds its last present value while the child animates
+    // `StoreOptionalFocus` built on this view store's pure side — that holds its last present value while the child animates
     // away. To observe it, own it: a feature's view (`Feature.view(store:)`), ``ProjectionKeeper`` in a body,
     // ``OwnedStore`` as a property.
     //
@@ -23,16 +23,18 @@
         /// ```swift
         /// if let book = viewStore.transpose() { ProjectionKeeper { book.viewStore() } content: { BookView(viewStore: $0) } }
         /// ```
-        public func transpose<Wrapped: Sendable>() -> StoreUnwrap<Action, Wrapped>? where State == Wrapped? {
+        public func transpose<Wrapped: Sendable>() -> StoreOptionalFocus<Action, Wrapped>? where State == Wrapped? {
             reader.read(\Wrapped?.observationIsPresent)
-                ? reader.peekWhole().map { StoreUnwrap(self, present: $0) }
+                ? reader.peekWhole().map { StoreOptionalFocus(self, present: $0) }
                 : nil
         }
 
         /// Swap a view store of `Presentation<T>` into a store of `T` — present while `presented` **or** `dismissing`.
-        public func transpose<Wrapped: Sendable>() -> StoreUnwrap<Action, Wrapped>? where State == Presentation<Wrapped> {
+        public func transpose<Wrapped: Sendable>() -> StoreOptionalFocus<Action, Wrapped>? where State == Presentation<Wrapped> {
             reader.read(\Presentation<Wrapped>.wrapped.observationIsPresent)
-                ? reader.peekWhole().wrapped.map { StoreUnwrap(StoreProjection(store: self, action: { $0 }, state: { $0.wrapped }), present: $0) }
+                ? reader.peekWhole().wrapped.map {
+                    StoreOptionalFocus(StoreProjection(store: self, action: { $0 }, state: { $0.wrapped }), present: $0)
+                }
                 : nil
         }
 
@@ -54,7 +56,7 @@
             fileID: String = #fileID,
             line: UInt = #line,
             column: UInt = #column
-        ) -> StoreUnwrap<A.Local, Wrapped>? where A.Global == Action, S.Global == State, S.Local == Wrapped? {
+        ) -> StoreOptionalFocus<A.Local, Wrapped>? where A.Global == Action, S.Global == State, S.Local == Wrapped? {
             let reads = scope.state
             let present = reads.keyPath.map { reader.slice($0).read(\Wrapped?.observationIsPresent) }
                 ?? read(
@@ -64,7 +66,7 @@
                     site: "\(fileID):\(line):\(column)"
                 )
             guard present, let current = reads.get(reader.peekWhole()) else { return nil }
-            return StoreUnwrap(projection(action: scope.action.review, state: reads.get), present: current)
+            return StoreOptionalFocus(projection(action: scope.action.review, state: reads.get), present: current)
         }
 
         /// The ``Presentation`` slot a scope reaches, as a store of its presented value — present while `presented`
@@ -83,7 +85,7 @@
             fileID: String = #fileID,
             line: UInt = #line,
             column: UInt = #column
-        ) -> StoreUnwrap<A.Local, Wrapped>? where A.Global == Action, S.Global == State, S.Local == Presentation<Wrapped> {
+        ) -> StoreOptionalFocus<A.Local, Wrapped>? where A.Global == Action, S.Global == State, S.Local == Presentation<Wrapped> {
             let reads = scope.state
             let present = reads.keyPath.map { reader.slice($0).read(\Presentation<Wrapped>.wrapped.observationIsPresent) }
                 ?? read(
@@ -93,7 +95,7 @@
                     site: "\(fileID):\(line):\(column)"
                 )
             guard present, let current = reads.get(reader.peekWhole()).wrapped else { return nil }
-            return StoreUnwrap(projection(action: scope.action.review, state: { reads.get($0).wrapped }), present: current)
+            return StoreOptionalFocus(projection(action: scope.action.review, state: { reads.get($0).wrapped }), present: current)
         }
 
         // MARK: - One element of a collection
@@ -110,8 +112,8 @@
         /// }
         /// ```
         ///
-        /// The caller depends on the element's **presence** only. The row store is a pure `StoreUnwrap` over a
-        /// `StoreElement`: whoever owns it follows the element through its own hint (O(distance moved)) and holds
+        /// The caller depends on the element's **presence** only. The row store is a pure `StoreOptionalFocus` over a
+        /// `StoreCollectionFocus`: whoever owns it follows the element through its own hint (O(distance moved)) and holds
         /// the last value once the element is removed.
         public func transpose<A: Relay.ActionAxis.ElementProtocol, S: Relay.StateAxis.KeyedProtocol>(
             _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
@@ -119,15 +121,12 @@
             fileID: String = #fileID,
             line: UInt = #line,
             column: UInt = #column
-        ) -> StoreUnwrap<A.Local, S.Local>? where A.Global == Action, S.Global == State, A.ID == S.ID {
-            let keyed = scope.state
+        ) -> StoreOptionalFocus<A.Local, S.Local>? where A.Global == Action, S.Global == State, A.ID == S.ID {
+            let lane = scope.state
             let site = "\(fileID):\(line):\(column)"
             // This view store's own presence read keeps a hint too (its observation state, never a child's).
             let hint = reader.elementHint(AnyHashable([AnyHashable(site), AnyHashable(id)]))
-            let locate: @Sendable (State) -> S.Local? = { state in
-                let container = keyed.container.get(state)
-                return keyed.locate.map { $0(container, id, hint) } ?? keyed.element(id).preview(container)
-            }
+            let locate: @Sendable (State) -> S.Local? = { lane.find(id, in: $0, hint: hint) }
             let present = read(
                 derived: { locate($0) != nil },
                 types: [ObjectIdentifier(A.Local.self), ObjectIdentifier(S.Local.self)],
@@ -135,7 +134,7 @@
                 site: site
             )
             guard present, let current = locate(reader.peekWhole()) else { return nil }
-            return StoreUnwrap(projection(scope, element: id), present: current)
+            return StoreOptionalFocus(projection(scope, element: id), present: current)
         }
 
         // MARK: - A closure lane
@@ -160,7 +159,7 @@
             fileID: String = #fileID,
             line: UInt = #line,
             column: UInt = #column
-        ) -> StoreUnwrap<LocalAction, Wrapped>? {
+        ) -> StoreOptionalFocus<LocalAction, Wrapped>? {
             let present = read(
                 derived: { state($0) != nil },
                 types: [ObjectIdentifier(LocalAction.self), ObjectIdentifier(Wrapped.self)],
@@ -168,7 +167,7 @@
                 site: "\(fileID):\(line):\(column)"
             )
             guard present, let current = state(reader.peekWhole()) else { return nil }
-            return StoreUnwrap(projection(action: action, state: state), present: current)
+            return StoreOptionalFocus(projection(action: action, state: state), present: current)
         }
     }
 #endif

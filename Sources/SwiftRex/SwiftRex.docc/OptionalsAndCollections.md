@@ -116,7 +116,7 @@ To observe one, own it: a feature's view does, `ProjectionKeeper` in a body, `@O
 
 ```swift
 let list: StoreProjection<BulkAction, [Row]> = store.projection(.action(AppAction.prism.bulk).state(\.rows))
-let cell: StoreElement<RowAction, Row> = store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
+let cell: StoreCollectionFocus<RowAction, Row> = store.projection(.action(AppAction.prism.row).state(\.rows), element: id)
 let child: StoreProjection<ChildAction, Child?> = store.projection(.action(AppAction.prism.child).state(\.child))
 ```
 
@@ -130,12 +130,12 @@ To hand a child `Feature` a store of the **unwrapped** value, invert the two typ
 `Optional<[T]>` ⇄ `[Optional<T>]`.
 
 Deciding *whether* the value is there is a read, so `transpose` lives on the `ViewStore` and the calling view
-depends on the **presence edge only**. What it returns is a pure ``StoreUnwrap``: a store of the unwrapped value that
+depends on the **presence edge only**. What it returns is a pure ``StoreOptionalFocus``: a store of the unwrapped value that
 holds its last present value while the child animates away. Own it where the child is built.
 
 ```swift
 // in a view body:
-viewStore.transpose(.action(\.child).state(\.child))                 // StoreUnwrap<ChildAction, Child>?
+viewStore.transpose(.action(\.child).state(\.child))                 // StoreOptionalFocus<ChildAction, Child>?
     .map { ChildFeature.view(store: $0, environment: world.childEnv) }  // View? — the feature's view owns it
 
 // a lane no key path expresses:
@@ -143,7 +143,7 @@ viewStore.transpose(action: { AppAction.row(id, $0) }, state: { $0.rows.first { 
 ```
 
 Outside SwiftUI, presence is plain state: follow `store.stateStream.map { $0.child != nil }.removeDuplicates()`,
-and on `true` build `StoreUnwrap(store.projection(…), present: value)` for the child screen.
+and on `true` build `StoreOptionalFocus(store.projection(…), present: value)` for the child screen.
 
 > It is deliberately **not** called `sequence`: a `Store` is not `Traversable`, so the swap claims no
 > traversal law. It works because a view store knows the current value, which decides the nesting at call
@@ -166,7 +166,7 @@ bare `T?`. Its `transpose` form keeps the child store live through **both** `pre
 
 ### One element of a collection
 
-``StoreElement`` is a pure stage for one element: `store.projection(scope, element: id)` — by `id`, custom id
+``StoreCollectionFocus`` is a pure stage for one element: `store.projection(scope, element: id)` — by `id`, custom id
 `.state(\.rows, id: \.slug)`, position `.state(indexed:)` or key `.state(dictionary:)` — with the `ElementAction`
 envelope, and an optional element because it can go away. In a view, `viewStore.transpose(scope, element: id)` reads
 the element's presence and returns the row's store to own:

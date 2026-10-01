@@ -105,7 +105,7 @@ List(store.state.each(\.rows)) { row in
 }
 ```
 
-The row store is a pure stage (``StoreElement`` under ``StoreUnwrap``) that the row's feature view owns: its own view store, redrawing only for its own element. It dispatches `RowAction` as `.row(ElementAction(id, action))`, finds its element through a hint of its own (O(distance moved)), and holds its last value while it animates out. The list holds nothing for it, and nothing is asked of the state: a plain array of `Identifiable` values.
+The row store is a pure stage (``StoreCollectionFocus`` under ``StoreOptionalFocus``) that the row's feature view owns: its own view store, redrawing only for its own element. It dispatches `RowAction` as `.row(ElementAction(id, action))`, finds its element through a hint of its own (O(distance moved)), and holds its last value while it animates out. The list holds nothing for it, and nothing is asked of the state: a plain array of `Identifiable` values.
 
 > Note: `transpose` reads the presence edge synchronously in a body, so it lives on `ViewStore`. Outside SwiftUI, presence is plain state — follow `stateStream.map { $0.child != nil }.removeDuplicates()` and present or dismiss on the edge. The forms above depend on the presence edge only, never on the child's contents.
 

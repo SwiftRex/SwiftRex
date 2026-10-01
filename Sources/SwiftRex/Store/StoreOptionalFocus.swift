@@ -5,7 +5,7 @@
 ///
 /// ```swift
 /// if let editor = state.editor {                         // presence decided by whoever reads the state
-///     let editorStore = StoreUnwrap(store.projection(action: AppAction.editor, state: \.editor), present: editor)
+///     let editorStore = StoreOptionalFocus(store.projection(action: AppAction.editor, state: \.editor), present: editor)
 ///     presentEditor(editorStore)
 /// }
 /// ```
@@ -14,7 +14,7 @@
 /// SwiftUI returns one of these) or by code following the parent's state. `present` is the value to start from.
 /// Each observer remembers its own last present value.
 @MainActor
-public struct StoreUnwrap<Action: Sendable, State: Sendable>: StoreType {
+public struct StoreOptionalFocus<Action: Sendable, State: Sendable>: StoreType {
     /// The wrapped value over time, holding the last present one while the upstream reads `nil`.
     public let stateStream: StateStream<State>
     private let _dispatch: @MainActor @Sendable (Action, ActionSource) -> Void

@@ -25,8 +25,8 @@ SwiftRex has one store that *runs* the app and several that *follow* it: they ta
 | ``Store`` | class | owns *the* state (privately) | run the app: reducers, effects, the one source of truth. Build it once, at launch. |
 | ``StoreProjection`` | struct | no — maps each state for each observer | narrow action/state types (`store.projection(action:state:)`, or through a ``Relay/Scope``). |
 | ``StoreBuffer`` | struct | no — each observer remembers its previous value | skip redundant work: passes a change on only when `!=`. Put it **before** a costly map. |
-| ``StoreElement`` | struct | no — each observer keeps a hint of where its element was | one element of a collection (by id, position or key): `store.projection(scope, element: id)`. O(distance moved) per change. |
-| ``StoreUnwrap`` | struct | no — each observer remembers the last present value | a store of `T` over a store of `T?`, holding the last present value; what `viewStore.transpose(…)` returns. |
+| ``StoreCollectionFocus`` | struct | no — each observer keeps a hint of where its element was | one element of a collection (by id, position or key): `store.projection(scope, element: id)`. O(distance moved) per change. |
+| ``StoreOptionalFocus`` | struct | no — each observer remembers the last present value | a store of `T` over a store of `T?`, holding the last present value; what `viewStore.transpose(…)` returns. |
 | `TestStore` | class | owns a test state, readable (`state`) | exhaustive tests (`SwiftRex.Testing`). |
 | ``StoreOf`` / ``StoreTypeOf`` | type aliases | — | spell `Store<A, S, E>` / `any StoreType<A, S>` from a ``Rig`` / ``Transceiver``. |
 
@@ -82,7 +82,7 @@ Migrating an app step by step, with the rewrite rules and the pitfalls: <doc:Mig
 | `ObservableStoreHost` / `observable()` | `ProjectionKeeper { store.viewStore() } content: { viewStore in … }` |
 | `peek` in action closures | dispatch the intent; the reducer reads the state |
 | `store.publisher` / `store.stream` | `store.stateStream` (a `Publisher` / an `AsyncSequence`) |
-| core `transpose()` on ``StoreType`` | `viewStore.transpose(scope)` → ``StoreUnwrap```?`, owned by the child; elsewhere presence is state (`stateStream.map { $0.child != nil }.removeDuplicates()`) |
+| core `transpose()` on ``StoreType`` | `viewStore.transpose(scope)` → ``StoreOptionalFocus```?`, owned by the child; elsewhere presence is state (`stateStream.map { $0.child != nil }.removeDuplicates()`) |
 | `TrackedViewStore` + `@Tracked` | nothing to write — reads are granular at any depth |
 | `ObservableObjectStore` / `asObservableObject()` | `@OwnedStore var viewStore = appStore.viewStore(.combine)` |
 | `ViewStrategy.observationSimple` / `.observationGranular` / `.combineObservable` | `.automatic` / `.observation` / `.combine` |

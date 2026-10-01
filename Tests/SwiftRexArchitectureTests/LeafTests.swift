@@ -86,7 +86,7 @@
     struct LeafChainTests {
         @Test func combineSignalFiresInsideTheDispatchAndInsideWithAnimation() {
             let store = makeStore()
-            let row = StoreUnwrap(
+            let row = StoreOptionalFocus(
                 store.projection(action: { $0 }, state: { $0 }).buffer().projection(.action(ListAction.prism.row).state(\ListState.rows), element: 2),
                 present: Row(id: 2, title: "r2")
             ).viewStore(.combine)
@@ -104,7 +104,7 @@
         @available(iOS 17, macOS 14, tvOS 17, watchOS 10, *)
         @Test func observationInvalidatesInsideTheDispatch() {
             let store = makeStore()
-            let row = StoreUnwrap(
+            let row = StoreOptionalFocus(
                 store.projection(action: { $0 }, state: { $0 }).buffer().projection(.action(ListAction.prism.row).state(\ListState.rows), element: 2),
                 present: Row(id: 2, title: "r2")
             ).viewStore(.observation)
@@ -125,7 +125,7 @@
         @Test func aRowRedrawsForItsOwnElementOnlyAndTheListForMembershipOnly() {
             let store = makeStore()
             let list = store.viewStore(.observation)
-            var rowStores: [Int: StoreUnwrap<RowAction, Row>] = [:]
+            var rowStores: [Int: StoreOptionalFocus<RowAction, Row>] = [:]
             let listBody = track {
                 for row in list.state.each(\.rows) {
                     rowStores[row.id] = list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: row.id)
@@ -160,7 +160,7 @@
         @Test func removalFlipsThePresenceEdgeAndTheRowHoldsItsLastValue() {
             let store = makeStore()
             let list = store.viewStore(.observation)
-            var slot: StoreUnwrap<RowAction, Row>?
+            var slot: StoreOptionalFocus<RowAction, Row>?
             let presence = track { slot = list.transpose(.action(ListAction.prism.row).state(\ListState.rows), element: 4) }
             let row = slot?.viewStore(.observation)
             store.dispatch(.row(ElementAction(4, action: .rename("R4"))))
@@ -177,7 +177,7 @@
             let reads = LockProtectedCounter()
             weak var engine: ViewStoreSignal?
             do {
-                let child = StoreUnwrap(
+                let child = StoreOptionalFocus(
                     list.projection(action: { $0 }, state: { (state: ListState) -> ListState in reads.bump(); return state })
                         .projection(.action(ListAction.prism.row).state(\ListState.rows), element: 1),
                     present: Row(id: 1, title: "r1")

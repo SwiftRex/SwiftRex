@@ -5,7 +5,7 @@ import Foundation
 @testable import SwiftRex
 import Testing
 
-// The pure stages between stores — StoreProjection, StoreBuffer, StoreElement, StoreUnwrap: they follow a stream, keep
+// The pure stages between stores — StoreProjection, StoreBuffer, StoreCollectionFocus, StoreOptionalFocus: they follow a stream, keep
 // nothing a parent holds, run nothing until observed, and deliver synchronously on the main actor.
 
 private enum RowAction: Sendable, Equatable { case rename(String) }
@@ -62,9 +62,9 @@ private typealias RowScope = Relay.Scope<
 
 private func mutate(_ apply: @escaping @Sendable (inout AppState) -> Void) -> AppAction { .mutate(Mutation(apply: apply)) }
 
-@Suite("Pure stages — StoreElement")
+@Suite("Pure stages — StoreCollectionFocus")
 @MainActor
-struct StoreElementTests {
+struct StoreCollectionFocusTests {
     @Test func followsItsElementByIDAcrossReordersInsertsAndRemoval() {
         let store = makeStore()
         let row = store.projection(.action(AppAction.prism.row).state(\AppState.rows), element: 3)
@@ -153,13 +153,13 @@ struct StoreElementTests {
     }
 }
 
-@Suite("Pure stages — StoreUnwrap")
+@Suite("Pure stages — StoreOptionalFocus")
 @MainActor
-struct StoreUnwrapTests {
+struct StoreOptionalFocusTests {
     @Test func holdsTheLastPresentValuePerObserver() {
         let store = makeStore()
         let slot = store.projection(action: { AppAction.row(ElementAction(7, action: $0)) }, state: \AppState.optional)
-        let unwrapped = StoreUnwrap(slot, present: Row(id: 7, title: "seven"))
+        let unwrapped = StoreOptionalFocus(slot, present: Row(id: 7, title: "seven"))
         var seen: [String] = []
         let token = unwrapped.stateStream.observe { seen.append($0.title) }
         store.dispatch(mutate { $0.optional?.title = "SEVEN" })
@@ -172,7 +172,7 @@ struct StoreUnwrapTests {
         var initial = AppState()
         initial.optional = nil
         let store = makeStore(initial)
-        let unwrapped = StoreUnwrap(store.projection(action: { $0 }, state: \AppState.optional), present: Row(id: 0, title: "seed"))
+        let unwrapped = StoreOptionalFocus(store.projection(action: { $0 }, state: \AppState.optional), present: Row(id: 0, title: "seed"))
         #expect(unwrapped.currentState.title == "seed")
     }
 }
@@ -182,7 +182,7 @@ struct StoreUnwrapTests {
 struct PureChainTests {
     @Test func aDispatchReachesTheEndOfTheChainBeforeItReturns() {
         let store = makeStore()
-        let chain = StoreUnwrap(
+        let chain = StoreOptionalFocus(
             store
                 .projection(action: { $0 }, state: { $0 })
                 .buffer()

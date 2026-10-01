@@ -430,7 +430,7 @@
         @Test func optionalTransposeDependsOnTheEdgeAndGivesAPureStage() {
             let store = makeStore(Screen(detail: Transport(position: 1)))
             let parent = store.viewStore(.observation)
-            var slot: StoreUnwrap<TransportAction, Transport>?
+            var slot: StoreOptionalFocus<TransportAction, Transport>?
             let edge = track { slot = parent.transpose(.action(review: ScreenAction.transport).state(\.detail)) }
             let child = slot?.viewStore(.observation)                   // the owner — here, the test
             #expect(child?.testSignal !== parent.testSignal)
@@ -462,7 +462,7 @@
         @Test func presentationTransposeIsPresentWhileDismissing() {
             let store = makePresentationStore(.presented(Transport(position: 4)))
             let parent = store.viewStore()
-            var slot: StoreUnwrap<PresentationAction<TransportAction>, Transport>?
+            var slot: StoreOptionalFocus<PresentationAction<TransportAction>, Transport>?
             let edge = track { slot = parent.transpose(.action(review: PAction.editor).state(\.editor)) }
             let child = slot?.viewStore()
             store.dispatch(.editor(.dismiss))                           // presented → dismissing: still present

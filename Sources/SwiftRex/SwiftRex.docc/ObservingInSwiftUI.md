@@ -10,7 +10,7 @@ A ``StoreType`` can't be read — only observed (its ``StoreType/stateStream``) 
 
 Everything in this article follows from two rules:
 
-**Pure until the leaf.** Stores compose as pure stages — ``Store`` → ``StoreProjection`` / ``StoreBuffer`` / ``StoreElement`` / ``StoreUnwrap`` → … — each following the one before, keeping nothing a parent holds. The `ViewStore` is the leaf where that ends: it owns a snapshot (a cache) and does the observation work, which are effects. Deriving anything from a view store — `projection`, `transpose` — gives a pure stage again, built on the view store's pure side.
+**Pure until the leaf.** Stores compose as pure stages — ``Store`` → ``StoreProjection`` / ``StoreBuffer`` / ``StoreCollectionFocus`` / ``StoreOptionalFocus`` → … — each following the one before, keeping nothing a parent holds. The `ViewStore` is the leaf where that ends: it owns a snapshot (a cache) and does the observation work, which are effects. Deriving anything from a view store — `projection`, `transpose` — gives a pure stage again, built on the view store's pure side.
 
 **You make a view store explicitly, keep it once, and hand it down.**
 
@@ -210,7 +210,7 @@ struct RootView: View {
 }
 ```
 
-`transpose(scope)` reads whether the slot is there — a read, so it's on the view store, and the caller depends on the **presence edge only** — and returns a ``StoreUnwrap``, a pure stage of the unwrapped value that holds its last value while SwiftUI animates the child away. Make its view store where the child keeps it: `ProjectionKeeper { detail.viewStore() }` for a plain view, nothing for a feature's view (`DetailFeature.view(store: detail, environment: …)` owns it). The same works for a `Presentation` slot, a collection element (`transpose(scope, element: id)`), and lanes no key path expresses (`transpose(action:state:)`).
+`transpose(scope)` reads whether the slot is there — a read, so it's on the view store, and the caller depends on the **presence edge only** — and returns a ``StoreOptionalFocus``, a pure stage of the unwrapped value that holds its last value while SwiftUI animates the child away. Make its view store where the child keeps it: `ProjectionKeeper { detail.viewStore() }` for a plain view, nothing for a feature's view (`DetailFeature.view(store: detail, environment: …)` owns it). The same works for a `Presentation` slot, a collection element (`transpose(scope, element: id)`), and lanes no key path expresses (`transpose(action:state:)`).
 
 For routers built on ``Relay/Scope`` and features, see <doc:Navigation> and <doc:NavigationEndToEnd>.
 
