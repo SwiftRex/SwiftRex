@@ -57,7 +57,7 @@ token = store.stateStream
 
 ### In SwiftUI — `transpose()`
 
-A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it decides the nesting directly: `transpose(scope)` reads the presence edge from its snapshot — the body re-runs exactly when the child appears or goes away — and returns a pure ``StoreUnwrap`` of the unwrapped value, for the child to own:
+A `ViewStore` (`SwiftRex.SwiftUI`) can read, so it decides the nesting directly: `transpose(scope)` reads the presence edge from its snapshot — the body re-runs exactly when the child appears or goes away — and returns a pure ``StoreOptionalFocus`` of the unwrapped value, for the child to own:
 
 | State | Form |
 |---|---|

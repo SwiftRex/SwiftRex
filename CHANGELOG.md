@@ -19,16 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   keeps one snapshot and a dependency per key path each view read through `viewStore.state`, signalling only
   what changed (compared with `==`), at any depth. `GranularTracking` (a position in the state, `each(_:)`
   for list rows), `IndivisibleTracking` (types read whole), owners `@OwnedStore` and `ProjectionKeeper`.
-- **Pure until the leaf.** Composition is pure stages — `StoreProjection`, `StoreBuffer`, and new `StoreElement`
+- **Pure until the leaf.** Composition is pure stages — `StoreProjection`, `StoreBuffer`, and new `StoreCollectionFocus`
   (one element of a collection, by id, position or key; each observer keeps a hint, O(distance moved)) and
-  `StoreUnwrap` (a store of `T` over `T?`, holding the last present value). The `ViewStore` is the only leaf: it
+  `StoreOptionalFocus` (a store of `T` over `T?`, holding the last present value). The `ViewStore` is the only leaf: it
   owns a snapshot and the observation work, always has one owner, and whatever is derived from it is a pure stage
   built on its pure side (its `stateStream` is the upstream chain, never the snapshot).
 - `ViewStrategy.automatic` (default): Observation on iOS 17+, Combine below, decided at runtime.
 - `read(derived:)` — depend on a computed value instead of the whole state.
 - `transpose` — `F<T?>` into `F<T>?`, depending on the presence edge only. On a `ViewStore`: its own optional or
   `Presentation` state, a scope's slot (`transpose(.action(\.x).state(\.x))`), a collection element
-  (`transpose(scope, element: id)`) or a closure lane (`transpose(action:state:)`) — each returns a `StoreUnwrap`
+  (`transpose(scope, element: id)`) or a closure lane (`transpose(action:state:)`) — each returns a `StoreOptionalFocus`
   for the child to own. On a position, `GranularTracking<T?>` → `GranularTracking<T>?`. Both hold the last present
   value while the value is going away.
 - One `binding` taking a chained scope, `binding(.state(…).action(…))`; what the action lane embeds decides the

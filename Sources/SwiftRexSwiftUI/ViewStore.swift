@@ -28,7 +28,7 @@
     /// Combine subscription, so no property wrapper is needed under either signal.
     ///
     /// **The leaf.** Composition is pure — `StoreProjection`, `StoreBuffer`,
-    /// `StoreElement`, `StoreUnwrap` are stages that follow a stream and keep nothing a parent
+    /// `StoreCollectionFocus`, `StoreOptionalFocus` are stages that follow a stream and keep nothing a parent
     /// holds. A view store is where that ends: it owns a snapshot (a cache) and the observation work, which are
     /// effects. Deriving a child from a view store — `viewStore.projection(…)`, or `transpose(…)` for an optional or
     /// an element — gives a pure stage built on the view store's **pure side** (its upstream), never on its snapshot;

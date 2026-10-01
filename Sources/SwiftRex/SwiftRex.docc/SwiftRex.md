@@ -76,8 +76,8 @@ Everything except the `Store` is inert and composable. Two `Behavior`s combine i
 - ``UISubscriptionToken``
 - ``StoreProjection``
 - ``StoreBuffer``
-- ``StoreElement``
-- ``StoreUnwrap``
+- ``StoreCollectionFocus``
+- ``StoreOptionalFocus``
 - ``StoreHooks``
 - ``StoreReentranceInfo``
 

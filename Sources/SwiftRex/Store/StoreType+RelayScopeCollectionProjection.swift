@@ -6,7 +6,7 @@ import CoreFP
 // (a list cell projecting to its own element), so — unlike `liftCollection`, which extracts the id from
 // the action — the id is a parameter here. The `Keyed` state lane abstracts the locator, so this one host
 // covers Identifiable / custom-id / index / dictionary alike. The element can be absent, so the stage's state is
-// `Element?`; it's a ``StoreElement``, which finds its element through a per-observer hint. The lane's `review` addresses dispatched
+// `Element?`; it's a ``StoreCollectionFocus``, which finds its element through a per-observer hint. The lane's `review` addresses dispatched
 // sub-actions at `id`. Only `review` (embed) + the element read are used — the same capabilities a single
 // projection needs, in their id-keyed form.
 //
@@ -22,7 +22,7 @@ extension StoreType {
     public func projection<A, S>(
         _ scope: Relay.Scope<Action, A, State, S, Never, Relay.Absurd<Never>>,
         element id: A.ID
-    ) -> StoreElement<A.Local, S.Local>
+    ) -> StoreCollectionFocus<A.Local, S.Local>
     where
         A: Relay.ActionAxis.ElementProtocol,
         S: Relay.StateAxis.KeyedProtocol,
@@ -36,7 +36,7 @@ extension StoreType {
     public func projection<A, S, GE, E>(
         _ scope: Relay.Scope<Action, A, State, S, GE, E>,
         element id: A.ID
-    ) -> StoreElement<A.Local, S.Local>
+    ) -> StoreCollectionFocus<A.Local, S.Local>
     where
         A: Relay.ActionAxis.ElementProtocol,
         S: Relay.StateAxis.KeyedProtocol,
@@ -49,21 +49,12 @@ extension StoreType {
     private func elementProjection<A, S, GE, E>(
         _ scope: Relay.Scope<Action, A, State, S, GE, E>,
         id: A.ID
-    ) -> StoreElement<A.Local, S.Local>
+    ) -> StoreCollectionFocus<A.Local, S.Local>
     where
         A: Relay.ActionAxis.ElementProtocol,
         S: Relay.StateAxis.KeyedProtocol,
         E: Relay.EnvironmentAxis.Strategy,
         A.Global == Action, S.Global == State, A.ID == S.ID {
-        let keyed = scope.state
-        return StoreElement(
-            store: self,
-            action: { subAction in scope.action.review(id, subAction) },
-            read: {
-                guard let locate = keyed.locate else { return { keyed.element(id).preview(keyed.container.get($0)) } }
-                let hint = ElementHint()
-                return { locate(keyed.container.get($0), id, hint) }
-            }
-        )
+        StoreCollectionFocus(store: self, lane: scope.state, id: id, action: { scope.action.review(id, $0) })
     }
 }
