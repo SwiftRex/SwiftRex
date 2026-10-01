@@ -45,6 +45,17 @@ enum ListAction: Sendable {
     case item(ElementAction<Int, ItemAction>)
 }
 
+/// One item of the list, by id — the route-to-one lane `liftCollection` and the element projection share.
+let itemScope = Relay.Scope(
+    action: Relay.ActionAxis.Element<ListAction, Int, ItemAction>(
+        preview: { (a: ListAction) -> (id: Int, action: ItemAction)? in
+            if case let .item(ea) = a { (id: ea.id, action: ea.action) } else { nil }
+        },
+        review: { (id: Int, action: ItemAction) in ListAction.item(ElementAction(id, action: action)) }
+    ),
+    state: Relay.StateAxis.Keyed<ListState, [Item], Int, Item>(collection: lens(\ListState.items), id: \Item.id)
+)
+
 // A list of `count` items with ids 0..<count.
 func makeList(_ count: Int) -> ListState {
     ListState(items: (0..<count).map { Item(id: $0) })

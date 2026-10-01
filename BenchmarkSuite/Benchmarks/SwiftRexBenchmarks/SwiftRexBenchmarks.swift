@@ -101,10 +101,15 @@ func liftBenchmarks() {
 
     // Broadcast to EVERY element of a 1,000-element collection — O(n) per dispatch.
     let liftedEach = itemReducer.liftEach(
-        action: { (a: ListAction) -> ItemAction? in
-            if case .bumpAll = a { .bump } else { nil }
-        },
-        stateCollection: \ListState.items
+        Relay.Scope(
+            action: Relay.ActionAxis.Broadcast<ListAction, Int, ItemAction>(
+                preview: { (a: ListAction) -> ItemAction? in
+                    if case .bumpAll = a { .bump } else { nil }
+                },
+                review: { (id: Int, action: ItemAction) in ListAction.item(ElementAction(id, action: action)) }
+            ),
+            state: itemScope.state
+        )
     )
     Benchmark("Reducer.liftEach — broadcast \(collectionSize)") { benchmark in
         var state = makeList(collectionSize)
@@ -115,13 +120,7 @@ func liftBenchmarks() {
     }
 
     // Target ONE element by id in a 1,000-element collection — O(n) lookup per dispatch.
-    let liftedColl = itemReducer.liftCollection(
-        action: { (a: ListAction) -> ElementAction<Int, ItemAction>? in
-            if case let .item(ea) = a { ea } else { nil }
-        },
-        stateCollection: \ListState.items,
-        identifier: { (item: Item) in item.id }
-    )
+    let liftedColl = itemReducer.liftCollection(itemScope)
     let targetId = collectionSize - 1
     Benchmark("Reducer.liftCollection — by id in \(collectionSize)") { benchmark in
         var state = makeList(collectionSize)
