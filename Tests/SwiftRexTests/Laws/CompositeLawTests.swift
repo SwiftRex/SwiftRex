@@ -14,7 +14,7 @@ import Testing
 private let anySource = ActionSource(file: "law.swift", function: "law()", line: 0)
 
 // A behavior that both mutates (via a reducer) and emits a (captured) effect.
-let behaviorGen: Gen<Behavior<Int, Int, Void>> = Gen.zip(reducerGen, effectGen).map { pair in
+let behaviorGen: Gen<SplitMix64, Behavior<Int, Int, Void>> = Gen.zip(reducerGen, effectGen).map { pair in
     let (reducer, effect) = pair
     return Behavior<Int, Int, Void>.handle { action, _ in
         .reduce { state in reducer.reduce(action)(&state) }
@@ -22,12 +22,12 @@ let behaviorGen: Gen<Behavior<Int, Int, Void>> = Gen.zip(reducerGen, effectGen).
     }
 }
 
-let consequenceGen: Gen<Reaction<Int, Int, Void>> = Gen.zip(reducerOutcomeGen, effectGen).map { pair in
+let consequenceGen: Gen<SplitMix64, Reaction<Int, Int, Void>> = Gen.zip(reducerOutcomeGen, effectGen).map { pair in
     let (outcome, effect) = pair
     return Reaction<Int, Int, Void>(mutation: outcome, produce: Reader { _ in effect })
 }
 
-let middlewareGen: Gen<Middleware<Int, Int, Void>> = effectGen.map { effect in
+let middlewareGen: Gen<SplitMix64, Middleware<Int, Int, Void>> = effectGen.map { effect in
     Middleware<Int, Int, Void>.handle { _, _ in Reader { _ in effect } }
 }
 
