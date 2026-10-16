@@ -78,7 +78,7 @@ core and every non-Apple product build on Linux.
   `SwiftRex.RxSwift`, `SwiftRex.ReactiveSwift`, `SwiftRex.ReactiveConcurrency`, `SwiftRex.SwiftUI`,
   `SwiftRex.Architecture`, `SwiftRex.Testing`; the dynamic-library products and the XCFramework release path are
   gone (Swift Package Manager only).
-- Depends on FP 2.2.0, Hourglass 1.0.1, ReactiveConcurrency 1.1.0 (trait), RxSwift 6.10 / ReactiveSwift 7.2
+- Depends on FP 3.0.0, Hourglass 1.0.1, ReactiveConcurrency 2.0.0 (trait), RxSwift 6.10 / ReactiveSwift 7.2
   (traits), swift-syntax 603.
 
 ## [0.8.12] - 2022-04-02
