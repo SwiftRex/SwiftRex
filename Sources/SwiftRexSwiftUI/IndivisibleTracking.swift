@@ -47,6 +47,11 @@ extension Date: IndivisibleTracking {}
 extension UUID: IndivisibleTracking {}
 extension URL: IndivisibleTracking {}
 extension Data: IndivisibleTracking {}
+#if canImport(Darwin)
+    /// A localised string a feature's state carries for its view (`Text` shows it in the reader's
+    /// language): read whole, as a `String` is.
+    extension LocalizedStringResource: IndivisibleTracking {}
+#endif
 
 #if canImport(CoreGraphics)
     extension CGFloat: IndivisibleTracking {}
